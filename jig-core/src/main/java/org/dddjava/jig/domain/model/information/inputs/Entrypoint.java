@@ -41,8 +41,8 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
 
     private Stream<EntrypointMethod> requetHandlerMethodStream() {
         return list.stream()
-                .filter(entrypointGroup -> entrypointGroup.isRequestHandler())
-                .flatMap(entrypointGroup -> entrypointGroup.entrypointMethod().stream());
+                .flatMap(entrypointGroup -> entrypointGroup.entrypointMethod().stream())
+                .filter(entrypointMethod -> entrypointMethod.entrypointType() == EntrypointType.HTTP_API);
     }
 
     public boolean isEmpty() {

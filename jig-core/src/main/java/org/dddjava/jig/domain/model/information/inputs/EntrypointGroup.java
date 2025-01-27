@@ -17,26 +17,19 @@ import java.util.*;
  * - SpringMVCのControllerのRequestMapping
  * - SpringRabbitのRabbitListener
  */
-public record EntrypointGroup
-        (JigType jigType, EntrypointKind entrypointKind, List<EntrypointMethod> entrypointMethod) {
+public record EntrypointGroup(JigType jigType, List<EntrypointMethod> entrypointMethod) {
     public EntrypointGroup {
         if (entrypointMethod.isEmpty()) throw new IllegalArgumentException("entrypointMethod is empty");
-    }
-
-    enum EntrypointKind {
-        RequestHandler,
-        Others
     }
 
     static Optional<EntrypointGroup> from(EntrypointMethodDetector entrypointMethodDetector, JigType jigType) {
         var entrypointMethods = entrypointMethodDetector.collectMethod(jigType);
         if (!entrypointMethods.isEmpty()) {
-            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler, entrypointMethods));
+            return Optional.of(new EntrypointGroup(jigType, entrypointMethods));
         }
         // not entrypoint
         return Optional.empty();
     }
-
 
     public String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {
 
@@ -116,9 +109,5 @@ public record EntrypointGroup
 
         mermaidText.add(apiMethodRelationText.toString());
         return mermaidText.toString();
-    }
-
-    public boolean isRequestHandler() {
-        return entrypointKind == EntrypointKind.RequestHandler;
     }
 }

@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -88,7 +89,8 @@ public class JigService {
     }
 
     public Entrypoint entrypoint(JigDataProvider jigDataProvider) {
-        Entrypoint from = Entrypoint.from(jigTypes(jigDataProvider));
+        var entrypointMethodDetector = new EntrypointMethodDetector();
+        Entrypoint from = Entrypoint.from(entrypointMethodDetector, jigTypes(jigDataProvider));
         if (from.isEmpty()) jigReporter.registerエントリーポイントが見つからない();
         return from;
     }

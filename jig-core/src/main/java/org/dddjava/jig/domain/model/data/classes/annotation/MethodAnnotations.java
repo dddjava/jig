@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.annotation;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.List;
 
@@ -31,5 +32,9 @@ public class MethodAnnotations {
                         .filter(a -> a.methodDeclaration().sameIdentifier(methodDeclaration))
                         .collect(toList())
         );
+    }
+
+    public boolean contains(TypeIdentifier typeIdentifier) {
+        return list.stream().anyMatch(e -> e.annotationType().equals(typeIdentifier));
     }
 }

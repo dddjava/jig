@@ -14,10 +14,10 @@ import static java.util.stream.Collectors.toList;
 
 public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelations) {
 
-    public static Entrypoint from(JigTypes jigTypes) {
+    public static Entrypoint from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
         return new Entrypoint(
                 jigTypes.stream()
-                        .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
+                        .flatMap(jigType -> EntrypointGroup.from(entrypointMethodDetector, jigType).stream())
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 MethodRelations.from(jigTypes));

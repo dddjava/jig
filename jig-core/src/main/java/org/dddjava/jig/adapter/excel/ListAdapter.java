@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.validations.Validations;
@@ -123,12 +124,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("CONTROLLER", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item -> item.method().declaration().asSignatureSimpleText()),
-                        Map.entry("メソッド戻り値の型", item -> item.method().declaration().methodReturn().asSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.jigMethod().declaration().asSignatureSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.jigMethod().declaration().methodReturn().asSimpleText()),
                         Map.entry("クラス別名", item -> item.jigType().typeAlias().asText()),
-                        Map.entry("使用しているフィールドの型", item -> item.method().usingFields().typeIdentifiers().asSimpleText()),
-                        Map.entry("分岐数", item -> item.method().decisionNumber().intValue()),
-                        Map.entry("パス", item -> item.pathText())
+                        Map.entry("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeIdentifiers().asSimpleText()),
+                        Map.entry("分岐数", item -> item.jigMethod().decisionNumber().intValue()),
+                        Map.entry("パス", item -> HttpEndpoint.from(item).pathText())
                 ), entrypoint.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
                         Map.entry("パッケージ名", item -> item.serviceMethod().declaringType().packageIdentifier().asText()),

@@ -167,4 +167,8 @@ public class JigMethod {
     public String name() {
         return declaration().methodSignature().methodName();
     }
+
+    public boolean hasAnnotation(TypeIdentifier annotation) {
+        return methodAnnotations().contains(annotation);
+    }
 }

@@ -26,7 +26,7 @@ class MyBatisMyBatisStatementReaderTest {
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
         MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(
-                TestSupport.getTestResourceRootURLs(),
+                TestSupport.getRawSourceLocations(),
                 List.of(TestSupport.getClassSource(SampleMapper.class))));
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().get(0);
@@ -39,7 +39,7 @@ class MyBatisMyBatisStatementReaderTest {
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
         MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(
-                TestSupport.getTestResourceRootURLs(),
+                TestSupport.getRawSourceLocations(),
                 Collections.singletonList(TestSupport.getClassSource(CanonicalMapper.class))));
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()

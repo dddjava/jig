@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +40,18 @@ public class MyBatisSqlReader implements SqlReader {
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わない
         if (sqlSources.classNames().isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
 
-        try (URLClassLoader classLoader = new URLClassLoader(sqlSources.urls(), Configuration.class.getClassLoader())) {
+        URL[] classLocationUrls = sqlSources.sourceBasePaths().classSourceBasePaths().stream()
+                .map(path -> {
+                    try {
+                        return path.toUri().toURL();
+                    } catch (MalformedURLException e) {
+                        logger.warn("pathのURLへの変換に失敗しました。{}を読み飛ばします。", path, e);
+                        return null;
+                    }
+                })
+                .filter(url -> url != null)
+                .toArray(URL[]::new);
+        try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
             return extractSql(sqlSources, classLoader);

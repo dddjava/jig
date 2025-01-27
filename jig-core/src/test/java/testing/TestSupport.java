@@ -1,6 +1,9 @@
 package testing;
 
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -10,6 +13,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Objects;
 
 public class TestSupport {
@@ -72,5 +76,12 @@ public class TestSupport {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static SourceBasePaths getRawSourceLocations() {
+        return new SourceBasePaths(
+                new ClassSourceBasePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve("stub"))),
+                new JavaSourceBasePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("java").resolve("stub")))
+        );
     }
 }

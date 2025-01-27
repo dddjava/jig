@@ -5,9 +5,6 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
 
-import java.io.UncheckedIOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -30,17 +27,8 @@ public class Sources {
     }
 
     public SqlSources sqlSources() {
-        URL[] classLocationUrls = sourceBasePaths.classSourceBasePaths().stream()
-                .map(path -> {
-                    try {
-                        return path.toUri().toURL();
-                    } catch (MalformedURLException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                }).toArray(URL[]::new);
         List<ClassSource> mapperClassSource = classSources.filterClassName(name -> name.endsWith("Mapper"));
-        // クラスのURLとクラス名を別のリストで渡しているけれど、クラスごとにURL明確なのでMapで渡したほうがよさそう
-        return new SqlSources(classLocationUrls, mapperClassSource);
+        return new SqlSources(sourceBasePaths, mapperClassSource);
     }
 
     public boolean emptyClassSources() {

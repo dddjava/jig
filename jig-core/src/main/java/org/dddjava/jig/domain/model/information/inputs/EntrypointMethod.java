@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
-import java.util.Optional;
-
 /**
  * ハンドラ
  *
@@ -38,50 +36,8 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
     };
 
     public static final String[] _RabbitListener = {
-            "org.springframework.amqp.rabbit.annotation.RabbitListener"
+
     };
-
-    public String interfacePointDescription() {
-        var methodAnnotations = jigMethod.methodAnnotations();
-
-        var requestMappingPath = methodAnnotations.list().stream()
-                .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RequestMapping))
-                .map(methodAnnotation -> {
-                    var httpMethod = switch (methodAnnotation.annotationType().asSimpleText()) {
-                        case "GetMapping" -> "GET";
-                        case "PostMapping" -> "POST";
-                        case "PutMapping" -> "PUT";
-                        case "DeleteMapping" -> "DELETE";
-                        case "PatchMapping" -> "PATCH";
-                        default -> "???";
-                    };
-                    var pathDescription = methodAnnotation.annotation().descriptionTextAnyOf("value", "path")
-                            // valueもpathがなかったり空文字であってもRequestMappingがあれば "/" にバインドされるので明示しておく
-                            .filter(path -> !path.isEmpty()).orElse("/");
-
-                    return "%s %s".formatted(httpMethod, pathDescription);
-                })
-                // アノテーションは複数取れないはずなのでこれで。
-                .findFirst();
-
-        Optional<String> rabbitListenerQueues = methodAnnotations.list().stream()
-                .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RabbitListener))
-                .map(methodAnnotation -> {
-                    // queue複数未対応
-                    var queueName = methodAnnotation.annotation().descriptionTextAnyOf("queues");
-                    return "queue: " + queueName.orElse("???");
-                })
-                // アノテーションは複数取れないはずなのでこれで。
-                .findFirst();
-
-        return requestMappingPath
-                .or(() -> rabbitListenerQueues)
-                .orElseGet(() -> {
-                    // 想定するdescriptionがなかった場合。想定が増えたら追加する。
-                    // api methodと判定されてるのにアノテーションがなかった場合もきちゃうけど、それは想定していない感じ
-                    return "???";
-                });
-    }
 
     public String interfaceLabelText() {
         if (isRequestMappingMethod()) {

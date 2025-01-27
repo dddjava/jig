@@ -54,7 +54,14 @@ public record EntrypointGroup
             apiMethodRelationText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, label));
 
             // path -> apiMethod
-            var description = entrypointMethod.interfacePointDescription();
+            var description = switch (entrypointMethod.entrypointType()) {
+                case HTTP_API -> {
+                    var httpEndpoint = HttpEndpoint.from(entrypointMethod);
+                    yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
+                }
+                case QUEUE_LISTENER -> "queue: %s".formatted(QueueListener.from(entrypointMethod).queueName());
+                default -> entrypointMethod.entrypointType().name();
+            };
             String apiPointMmdId = "__" + apiMethodMmdId;
             apiMethodRelationText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
 

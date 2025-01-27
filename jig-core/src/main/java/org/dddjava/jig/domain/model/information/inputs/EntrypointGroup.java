@@ -31,10 +31,9 @@ public record EntrypointGroup
 
     static Optional<EntrypointGroup> from(JigType jigType) {
         List<EntrypointMethod> entrypointMethods = jigType.instanceMember().instanceMethods().stream()
-                .map(jigMethod -> new EntrypointMethod(jigType, jigMethod))
-                .filter(entrypointMethod1 -> {
+                .filter(jigMethod -> {
                     if (jigType.typeCategory() == TypeCategory.InputAdapter) {
-                        return entrypointMethod1.method().methodAnnotations().list().stream()
+                        return jigMethod.methodAnnotations().list().stream()
                                 .anyMatch(annotatedMethod -> {
                                     String annotationName = annotatedMethod.annotationType().fullQualifiedName();
                                     // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
@@ -49,7 +48,7 @@ public record EntrypointGroup
                                             || annotationName.equals("org.dddjava.jig.adapter.HandleDocument");
                                 });
                     } else if (jigType.typeCategory() == TypeCategory.BoundaryComponent) {
-                        return entrypointMethod1.method().methodAnnotations().list().stream()
+                        return jigMethod.methodAnnotations().list().stream()
                                 .anyMatch(annotatedMethod -> {
                                     String annotationName = annotatedMethod.annotationType().fullQualifiedName();
                                     return annotationName.equals("org.springframework.amqp.rabbit.annotation.RabbitListener");
@@ -57,6 +56,7 @@ public record EntrypointGroup
                     }
                     return false;
                 })
+                .map(jigMethod -> new EntrypointMethod(jigType, jigMethod))
                 .toList();
         if (!entrypointMethods.isEmpty()) {
             return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler, entrypointMethods));

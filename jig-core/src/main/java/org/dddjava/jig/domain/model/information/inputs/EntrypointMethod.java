@@ -93,31 +93,6 @@ public class EntrypointMethod {
         return pathText;
     }
 
-    public boolean isRequestHandler() {
-        return method.methodAnnotations().list().stream()
-                .anyMatch(annotatedMethod -> {
-                    String annotationName = annotatedMethod.annotationType().fullQualifiedName();
-                    // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
-                    // そのため独自アノテーションに対応できない
-                    return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
-                            || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
-                            || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
-                            || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
-                            || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
-                            || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping")
-                            // TODO カスタムアノテーション対応
-                            || annotationName.equals("org.dddjava.jig.adapter.HandleDocument");
-                });
-    }
-
-    public boolean isRabbitListener() {
-        return method.methodAnnotations().list().stream()
-                .anyMatch(annotatedMethod -> {
-                    String annotationName = annotatedMethod.annotationType().fullQualifiedName();
-                    return annotationName.equals("org.springframework.amqp.rabbit.annotation.RabbitListener");
-                });
-    }
-
     public boolean anyMatch(CallerMethods callerMethods) {
         return callerMethods.contains(method.declaration());
     }

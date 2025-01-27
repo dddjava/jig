@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.information.relation.methods.MethodRelation;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * エントリーポイントメソッドのグループ。
@@ -31,12 +30,30 @@ public record EntrypointGroup
     }
 
     static Optional<EntrypointGroup> from(JigType jigType) {
-        List<EntrypointMethod> entrypointMethods = collectHandlerMethod(jigType)
-                .filter(entrypointMethod -> {
+        List<EntrypointMethod> entrypointMethods = jigType.instanceMember().instanceMethods().stream()
+                .map(jigMethod -> new EntrypointMethod(jigType, jigMethod))
+                .filter(entrypointMethod1 -> {
                     if (jigType.typeCategory() == TypeCategory.InputAdapter) {
-                        return entrypointMethod.isRequestHandler();
+                        return entrypointMethod1.method().methodAnnotations().list().stream()
+                                .anyMatch(annotatedMethod -> {
+                                    String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                                    // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
+                                    // そのため独自アノテーションに対応できない
+                                    return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
+                                            || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
+                                            || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
+                                            || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
+                                            || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
+                                            || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping")
+                                            // TODO カスタムアノテーション対応
+                                            || annotationName.equals("org.dddjava.jig.adapter.HandleDocument");
+                                });
                     } else if (jigType.typeCategory() == TypeCategory.BoundaryComponent) {
-                        return entrypointMethod.isRabbitListener();
+                        return entrypointMethod1.method().methodAnnotations().list().stream()
+                                .anyMatch(annotatedMethod -> {
+                                    String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                                    return annotationName.equals("org.springframework.amqp.rabbit.annotation.RabbitListener");
+                                });
                     }
                     return false;
                 })
@@ -49,11 +66,6 @@ public record EntrypointGroup
         return Optional.empty();
     }
 
-
-    private static Stream<EntrypointMethod> collectHandlerMethod(JigType jigType) {
-        return jigType.instanceMember().instanceMethods().stream()
-                .map(jigMethod -> new EntrypointMethod(jigType, jigMethod));
-    }
 
     public String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {
 

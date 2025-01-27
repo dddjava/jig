@@ -54,7 +54,7 @@ public class MyBatisSqlReader implements SqlReader {
         }
     }
 
-    private MyBatisStatements extractSql(SqlSources sqlSources, URLClassLoader classLoader) {
+    private MyBatisStatements extractSql(SqlSources sqlSources, ClassLoader classLoader) {
         SqlReadStatus sqlReadStatus = SqlReadStatus.成功;
 
         Configuration config = new Configuration();

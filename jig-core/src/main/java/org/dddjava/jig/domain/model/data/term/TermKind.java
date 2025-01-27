@@ -6,6 +6,5 @@ package org.dddjava.jig.domain.model.data.term;
 public enum TermKind {
     パッケージ,
     クラス,
-    メソッド,
-    フィールド
+    メソッド
 }

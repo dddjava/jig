@@ -26,37 +26,6 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
         return jigType.identifier();
     }
 
-    public static final String[] _RequestMapping = {
-            "org.springframework.web.bind.annotation.RequestMapping",
-            "org.springframework.web.bind.annotation.GetMapping",
-            "org.springframework.web.bind.annotation.PostMapping",
-            "org.springframework.web.bind.annotation.PutMapping",
-            "org.springframework.web.bind.annotation.DeleteMapping",
-            "org.springframework.web.bind.annotation.PatchMapping"
-    };
-
-    public static final String[] _RabbitListener = {
-
-    };
-
-    public String interfaceLabelText() {
-        if (isRequestMappingMethod()) {
-            var optOperationSummary = jigMethod.methodAnnotations().list().stream()
-                    .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals("io.swagger.v3.oas.annotations.Operation"))
-                    .flatMap(methodAnnotation -> methodAnnotation.annotation().descriptionTextAnyOf("summary").stream())
-                    .findAny();
-
-            return optOperationSummary.orElseGet(jigMethod::labelText);
-        }
-
-        return jigMethod.labelText();
-    }
-
-    private boolean isRequestMappingMethod() {
-        return jigMethod.methodAnnotations().list().stream()
-                .anyMatch(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RequestMapping));
-    }
-
     public MethodDeclaration declaration() {
         return jigMethod.declaration();
     }

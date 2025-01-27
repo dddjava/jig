@@ -50,18 +50,20 @@ public record EntrypointGroup
         entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
             var apiMethodMmdId = entrypointMethod.declaration().htmlIdText();
-            var label = entrypointMethod.interfaceLabelText();
-            apiMethodRelationText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, label));
+            String apiMethodLabel = entrypointMethod.jigMethod().labelText();
 
-            // path -> apiMethod
             var description = switch (entrypointMethod.entrypointType()) {
                 case HTTP_API -> {
                     var httpEndpoint = HttpEndpoint.from(entrypointMethod);
+                    apiMethodLabel = httpEndpoint.interfaceLabel();
                     yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
                 }
                 case QUEUE_LISTENER -> "queue: %s".formatted(QueueListener.from(entrypointMethod).queueName());
                 default -> entrypointMethod.entrypointType().name();
             };
+            // apiMethod
+            apiMethodRelationText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, apiMethodLabel));
+            // path -> apiMethod
             String apiPointMmdId = "__" + apiMethodMmdId;
             apiMethodRelationText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
 

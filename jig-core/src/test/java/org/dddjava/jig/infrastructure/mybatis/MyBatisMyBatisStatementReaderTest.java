@@ -9,9 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import stub.infrastructure.datasource.CanonicalMapper;
+import stub.infrastructure.datasource.SampleMapper;
 import testing.TestSupport;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +25,9 @@ class MyBatisMyBatisStatementReaderTest {
     void bindを使ってても解析できる() {
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
-        MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper")));
+        MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(
+                TestSupport.getTestResourceRootURLs(),
+                List.of(TestSupport.getClassSource(SampleMapper.class))));
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().get(0);
         assertEquals("[fuga]", myBatisStatement.tables().asText());
@@ -33,7 +38,9 @@ class MyBatisMyBatisStatementReaderTest {
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType) {
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
-        MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.CanonicalMapper")));
+        MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(
+                TestSupport.getTestResourceRootURLs(),
+                Collections.singletonList(TestSupport.getClassSource(CanonicalMapper.class))));
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
                 .filter(current -> current.identifier().equals(new MyBatisStatementId("stub.infrastructure.datasource.CanonicalMapper." + methodName)))

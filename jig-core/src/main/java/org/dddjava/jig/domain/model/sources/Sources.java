@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.sources;
 
+import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
@@ -37,9 +38,9 @@ public class Sources {
                         throw new UncheckedIOException(e);
                     }
                 }).toArray(URL[]::new);
-        List<String> mapperClassNames = classSources.classNames(name -> name.endsWith("Mapper"));
+        List<ClassSource> mapperClassSource = classSources.filterClassName(name -> name.endsWith("Mapper"));
         // クラスのURLとクラス名を別のリストで渡しているけれど、クラスごとにURL明確なのでMapで渡したほうがよさそう
-        return new SqlSources(classLocationUrls, mapperClassNames);
+        return new SqlSources(classLocationUrls, mapperClassSource);
     }
 
     public boolean emptyClassSources() {

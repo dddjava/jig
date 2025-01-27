@@ -14,10 +14,9 @@ public record ClassSources(List<ClassSource> list) {
         return list.isEmpty();
     }
 
-    public List<String> classNames(Predicate<String> nameMatcher) {
+    public List<ClassSource> filterClassName(Predicate<String> nameMatcher) {
         return list.stream()
-                .map(classSource -> classSource.className())
-                .filter(nameMatcher)
+                .filter(classSource -> nameMatcher.test(classSource.className()))
                 .collect(toList());
     }
 }

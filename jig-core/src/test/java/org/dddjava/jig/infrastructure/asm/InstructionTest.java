@@ -15,8 +15,6 @@ import testing.TestSupport;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -122,9 +120,7 @@ public class InstructionTest {
     }
 
     private JigType buildJigType(Class<?> definitionClass) throws URISyntaxException, IOException {
-        Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
-
         AsmClassSourceReader sut = new AsmClassSourceReader();
-        return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
+        return sut.typeByteCode(TestSupport.getClassSource(definitionClass)).orElseThrow().build();
     }
 }

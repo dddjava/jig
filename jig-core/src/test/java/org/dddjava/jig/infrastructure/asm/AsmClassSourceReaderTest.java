@@ -35,12 +35,8 @@ import stub.domain.model.type.SimpleNumber;
 import stub.misc.DecisionClass;
 import testing.TestSupport;
 
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -263,13 +259,10 @@ public class AsmClassSourceReaderTest {
 
     private JigType JigType構築(Class<?> clz) {
         try {
-            String resourcePath = clz.getName().replace('.', '/') + ".class";
-            logger.info(resourcePath);
-            URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
-            Path path = Paths.get(url.toURI());
+            var classSource = TestSupport.getClassSource(clz);
 
             AsmClassSourceReader sut = new AsmClassSourceReader();
-            return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
+            return sut.typeByteCode(classSource).orElseThrow().build();
         } catch (Exception e) {
             throw new AssertionError(e);
         }

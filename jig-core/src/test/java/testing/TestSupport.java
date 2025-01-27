@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 public class TestSupport {
 
@@ -52,12 +53,24 @@ public class TestSupport {
         }
     }
 
-    public static ClassSource newClassSource(Path path) {
+    private static ClassSource newClassSource(Path path, String className) {
         try {
             byte[] bytes = Files.readAllBytes(path);
-            return new ClassSource(bytes, "DUMMY");
+            return new ClassSource(bytes, className);
         } catch (IOException e) {
             throw new AssertionError(e);
+        }
+    }
+
+    public static ClassSource getClassSource(Class<?> clz) {
+        var className = clz.getName();
+        String resourcePath = className.replace('.', '/') + ".class";
+        URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
+        try {
+            Path path = Paths.get(url.toURI());
+            return newClassSource(path, className);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }

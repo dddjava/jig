@@ -4,9 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -21,18 +19,6 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 MethodRelations.from(jigTypes));
-    }
-
-    public Map<String, String> mermaidMap(JigTypes jigTypes) {
-        var map = new HashMap<String, String>();
-
-        for (EntrypointGroup entrypointGroup : list()) {
-            var jigType = entrypointGroup.jigType();
-            var mermaidText = entrypointGroup.mermaid(methodRelations, jigTypes);
-            map.put(jigType.fqn(), mermaidText);
-        }
-
-        return map;
     }
 
     public List<EntrypointMethod> listRequestHandlerMethods() {

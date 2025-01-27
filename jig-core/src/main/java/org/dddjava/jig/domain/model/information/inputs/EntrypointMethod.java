@@ -130,11 +130,6 @@ public class EntrypointMethod {
         return jigType.identifier();
     }
 
-    public String typeLabel() {
-        return jigType.label();
-    }
-
-
     public static final String[] _RequestMapping = {
             "org.springframework.web.bind.annotation.RequestMapping",
             "org.springframework.web.bind.annotation.GetMapping",

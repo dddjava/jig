@@ -4,14 +4,17 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 class JavaparserReaderTest {
 
@@ -52,48 +55,49 @@ class JavaparserReaderTest {
         assertTrue(packageComment.isEmpty());
     }
 
-    @Test
-    void 概要のみのコメントが読み取れる() {
-        String code = """
-                /**
-                 * packageにつけられたコメント
-                 */
-                package org.dddjava.jig.my_package;
-                """;
+    @MethodSource
+    @ParameterizedTest
+    void コメントが取得できる(String code, String expectedTitle, String expectedBody) {
         CompilationUnit cu = StaticJavaParser.parse(code);
 
         Optional<PackageComment> packageComment = sut.readPackageComment(cu);
 
         PackageComment actual = packageComment.orElseThrow();
-        assertEquals("packageにつけられたコメント", actual.asText());
+        assertEquals(expectedTitle, actual.asText());
+        assertEquals(expectedBody, actual.descriptionComment().bodyText());
     }
 
-    @Test
-    void 概要と本文のコメントが読み取れる() {
-        String code = """
-                /**
-                 * packageにつけられたコメント。ここからが本文です。複文もOK
-                 *
-                 * 改行されたものも入ります。
-                 * 末尾の改行は入りません。
-                 *
-                 * @link javadocタグは入りません。
-                 * @original 独自タグも入りません。
-                 */
-                package org.dddjava.jig.my_package;
-                """;
-        CompilationUnit cu = StaticJavaParser.parse(code);
-
-        Optional<PackageComment> packageComment = sut.readPackageComment(cu);
-
-        PackageComment actual = packageComment.orElseThrow();
-        assertEquals("packageにつけられたコメント", actual.asText());
-        assertEquals("""
-                ここからが本文です。複文もOK
-                
-                改行されたものも入ります。
-                末尾の改行は入りません。""", actual.descriptionComment().bodyText());
+    static Stream<Arguments> コメントが取得できる() {
+        return Stream.of(
+                argumentSet("概要のみ",
+                        """
+                                /**
+                                 * packageにつけられたコメント
+                                 */
+                                package org.dddjava.jig.my_package;
+                                """,
+                        "packageにつけられたコメント",
+                        ""),
+                argumentSet("概要と本文",
+                        """
+                                /**
+                                 * packageにつけられたコメント。ここからが本文です。複文もOK
+                                 *
+                                 * 改行されたものも入ります。
+                                 * 末尾の改行は入りません。
+                                 *
+                                 * @link javadocタグは入りません。
+                                 * @original 独自タグも入りません。
+                                 */
+                                package org.dddjava.jig.my_package;
+                                """,
+                        "packageにつけられたコメント",
+                        """
+                                ここからが本文です。複文もOK
+                                
+                                改行されたものも入ります。
+                                末尾の改行は入りません。"""
+                )
+        );
     }
-
-
 }

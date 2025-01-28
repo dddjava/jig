@@ -95,7 +95,7 @@ class AsmMethodVisitor extends MethodVisitor {
         return Visibility.PACKAGE;
     }
 
-    static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+    private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
         return AsmClassVisitor.toTypeIdentifier(Type.getReturnType(descriptor));
     }
 

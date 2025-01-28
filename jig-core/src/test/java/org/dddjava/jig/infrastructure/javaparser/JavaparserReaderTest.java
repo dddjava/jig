@@ -5,6 +5,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
 
@@ -21,15 +23,19 @@ class JavaparserReaderTest {
         sut = new JavaparserReader(null);
     }
 
-    @Test
-    void コメントのないものはエラーにならずPackageCommentも生成されない() {
-        String code = """
-                package org.dddjava.jig.my_package;
-                """;
+    @ValueSource(strings = {"""
+            package org.dddjava.jig.my_package;
+            """, """
+            /*
+             * none-javadocコメント
+             */
+            package org.dddjava.jig.my_package;
+            """
+    })
+    @ParameterizedTest
+    void JavadocコメントのないものはエラーにならずPackageCommentも生成されない(String code) {
         CompilationUnit cu = StaticJavaParser.parse(code);
-
         Optional<PackageComment> packageComment = sut.readPackageComment(cu);
-
         assertTrue(packageComment.isEmpty());
     }
 
@@ -47,21 +53,6 @@ class JavaparserReaderTest {
 
         PackageComment actual = packageComment.orElseThrow();
         assertEquals("packageにつけられたコメント", actual.asText());
-    }
-
-    @Test
-    void javadocコメントでないものはスルーされる() {
-        String code = """
-                /*
-                 * none-javadocコメント
-                 */
-                package org.dddjava.jig.my_package;
-                """;
-        CompilationUnit cu = StaticJavaParser.parse(code);
-
-        Optional<PackageComment> packageComment = sut.readPackageComment(cu);
-
-        assertTrue(packageComment.isEmpty());
     }
 
     @Test

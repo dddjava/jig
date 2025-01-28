@@ -167,10 +167,6 @@ class AsmClassVisitor extends ClassVisitor {
         return TypeVisibility.NOT_PUBLIC;
     }
 
-    static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
-        return toTypeIdentifier(Type.getReturnType(descriptor));
-    }
-
     private FieldType typeDescriptorToFieldType(String descriptor, String signature) {
         if (signature == null) {
             return typeDescriptorToFieldType(descriptor);

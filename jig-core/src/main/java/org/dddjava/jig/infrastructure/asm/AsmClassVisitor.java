@@ -20,6 +20,22 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * visit
+ * [ visitSource ]
+ * [ visitModule ]
+ * [ visitNestHost ][ visitOuterClass ]
+ * ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
+ * (
+ *     visitNestMember
+ *   | [ * visitPermittedSubclass ]
+ *   | visitInnerClass
+ *   | visitRecordComponent
+ *   | visitField
+ *   | visitMethod
+ * )*
+ * visitEnd
+ */
 class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 

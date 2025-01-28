@@ -13,7 +13,10 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -133,45 +136,19 @@ class AsmClassVisitor extends ClassVisitor {
         // name: 名前
         // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
 
-        MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
-                .flatMap(nonNullSignature ->
-                        // signatureがあればこちらから構築する
-                        AsmMethodSignatureVisitor.buildMethodDeclaration(this.api, name, this.jigTypeBuilder.typeIdentifier(), nonNullSignature)
-                ).orElseGet(() -> {
-                    // signatureがないもしくは失敗した場合はdescriptorから構築する
-                    // signatureの解析失敗はともかく、descriptorしかない場合はこの生成で適切なMethodSignatureができる
-
-                    // descriptorから戻り値型を生成
-                    MethodReturn methodReturn = MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor));
-                    // descriptorから引数型を生成
-                    List<ParameterizedType> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                            .map(AsmClassVisitor::toTypeIdentifier)
-                            .map(ParameterizedType::noneGenerics)
-                            .collect(Collectors.toList());
-                    var methodSignature = MethodSignature.from(name, argumentTypes);
-                    return new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
-                });
-
         List<TypeIdentifier> signatureContainedTypes = extractClassTypeFromGenericsSignature(signature);
-
-        List<TypeIdentifier> throwsTypes = new ArrayList<>();
-        if (exceptions != null) {
-            for (String exception : exceptions) {
-                throwsTypes.add(TypeIdentifier.valueOf(exception));
-            }
-        }
 
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
-                methodDeclaration.identifier(),
+                jigTypeBuilder.typeIdentifier(),
                 data -> {
                     JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
                             jigTypeBuilder,
                             access,
-                            resolveMethodVisibility(access),
+                            data.visibility,
                             signatureContainedTypes,
-                            throwsTypes,
-                            methodDeclaration);
+                            data.throwsTypes,
+                            data.methodDeclaration);
                     jigMethodBuilder.setAnnotations(data.annotationList);
                     jigMethodBuilder.setInstructions(data.methodInstructions);
                 });
@@ -188,13 +165,6 @@ class AsmClassVisitor extends ClassVisitor {
     private TypeVisibility resolveVisibility(int access) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) return TypeVisibility.PUBLIC;
         return TypeVisibility.NOT_PUBLIC;
-    }
-
-    private Visibility resolveMethodVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
-        if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
-        if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
-        return Visibility.PACKAGE;
     }
 
     static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

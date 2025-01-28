@@ -1,17 +1,22 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
+import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,16 +33,21 @@ import java.util.stream.Collectors;
  */
 class AsmMethodVisitor extends MethodVisitor {
 
-    private final MethodIdentifier methodIdentifier;
     private final Consumer<AsmMethodVisitor> endConsumer;
 
-    // 取得したデータ
+    // visitMethod由来の情報
+    final MethodDeclaration methodDeclaration;
+    final Visibility visibility;
+    final List<TypeIdentifier> throwsTypes;
+    // このVisitorで収集した情報
     final Instructions methodInstructions;
     final List<Annotation> annotationList;
 
-    public AsmMethodVisitor(int api, MethodIdentifier methodIdentifier, Consumer<AsmMethodVisitor> endConsumer) {
+    public AsmMethodVisitor(int api, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);
-        this.methodIdentifier = methodIdentifier;
+        this.visibility = visibility;
+        this.throwsTypes = throwsTypes;
+        this.methodDeclaration = methodDeclaration;
         this.methodInstructions = Instructions.newInstance();
         this.annotationList = new ArrayList<>();
         this.endConsumer = endConsumer;
@@ -46,8 +56,47 @@ class AsmMethodVisitor extends MethodVisitor {
     public static MethodVisitor from(int api,
                                      // visitMethodの引数
                                      int access, String name, String descriptor, String signature, String[] exceptions,
-                                     MethodIdentifier identifier, Consumer<AsmMethodVisitor> endConsumer) {
-        return new AsmMethodVisitor(api, identifier, endConsumer);
+                                     TypeIdentifier typeIdentifier, Consumer<AsmMethodVisitor> endConsumer) {
+        MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
+                .flatMap(nonNullSignature ->
+                        // signatureがあればこちらから構築する
+                        AsmMethodSignatureVisitor.buildMethodDeclaration(api, name, typeIdentifier, nonNullSignature)
+                ).orElseGet(() -> {
+                    // signatureがないもしくは失敗した場合はdescriptorから構築する
+                    // signatureの解析失敗はともかく、descriptorしかない場合はこの生成で適切なMethodSignatureができる
+
+                    // descriptorから戻り値型を生成
+                    MethodReturn methodReturn = MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor));
+                    // descriptorから引数型を生成
+                    List<ParameterizedType> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                            .map(AsmClassVisitor::toTypeIdentifier)
+                            .map(ParameterizedType::noneGenerics)
+                            .collect(Collectors.toList());
+                    var methodSignature = MethodSignature.from(name, argumentTypes);
+                    return new MethodDeclaration(typeIdentifier, methodSignature, methodReturn);
+                });
+
+        List<TypeIdentifier> throwsTypes = Optional.ofNullable(exceptions).stream()
+                .flatMap(Arrays::stream)
+                .map(TypeIdentifier::valueOf)
+                .toList();
+
+        return new AsmMethodVisitor(api,
+                resolveMethodVisibility(access),
+                throwsTypes,
+                methodDeclaration,
+                endConsumer);
+    }
+
+    private static Visibility resolveMethodVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
+        if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
+        if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
+        return Visibility.PACKAGE;
+    }
+
+    static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+        return AsmClassVisitor.toTypeIdentifier(Type.getReturnType(descriptor));
     }
 
     @Override
@@ -118,7 +167,7 @@ class AsmMethodVisitor extends MethodVisitor {
         if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())
                 && "metafactory".equals(bootstrapMethodHandle.getName())) {
             if (bootstrapMethodArguments.length != 3) {
-                AsmClassVisitor.logger.warn("想定外のInvokeDynamicが {} で検出されました。読み飛ばします。", methodIdentifier);
+                AsmClassVisitor.logger.warn("想定外のInvokeDynamicが {} で検出されました。読み飛ばします。", methodDeclaration);
             } else {
                 // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
                 // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ

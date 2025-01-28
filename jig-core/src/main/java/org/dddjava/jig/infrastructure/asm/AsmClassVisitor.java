@@ -161,18 +161,17 @@ class AsmClassVisitor extends ClassVisitor {
             }
         }
 
-        JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
-                jigTypeBuilder,
-                access,
-                resolveMethodVisibility(access),
-                signatureContainedTypes,
-                throwsTypes,
-                methodDeclaration);
-
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
                 methodDeclaration.identifier(),
                 data -> {
+                    JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
+                            jigTypeBuilder,
+                            access,
+                            resolveMethodVisibility(access),
+                            signatureContainedTypes,
+                            throwsTypes,
+                            methodDeclaration);
                     jigMethodBuilder.setAnnotations(data.annotationList);
                     jigMethodBuilder.setInstructions(data.methodInstructions);
                 });

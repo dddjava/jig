@@ -200,10 +200,6 @@ class AsmClassVisitor extends ClassVisitor {
 
     static TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
         Type type = Type.getType(descriptor);
-        return toTypeIdentifier(type);
-    }
-
-    static TypeIdentifier toTypeIdentifier(Type type) {
         return TypeIdentifier.valueOf(type.getClassName());
     }
 

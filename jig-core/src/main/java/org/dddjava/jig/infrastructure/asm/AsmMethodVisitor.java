@@ -69,7 +69,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     MethodReturn methodReturn = MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor));
                     // descriptorから引数型を生成
                     List<ParameterizedType> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                            .map(AsmClassVisitor::toTypeIdentifier)
+                            .map(type -> TypeIdentifier.valueOf(type.getClassName()))
                             .map(ParameterizedType::noneGenerics)
                             .collect(Collectors.toList());
                     var methodSignature = MethodSignature.from(name, argumentTypes);
@@ -97,7 +97,7 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
-        return AsmClassVisitor.toTypeIdentifier(Type.getReturnType(descriptor));
+        return TypeIdentifier.valueOf(Type.getReturnType(descriptor).getClassName());
     }
 
     @Override
@@ -127,7 +127,7 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(AsmClassVisitor::toTypeIdentifier)
+                .map(type -> TypeIdentifier.valueOf(type.getClassName()))
                 .toList();
         TypeIdentifier returnType = methodDescriptorToReturnIdentifier(descriptor);
 
@@ -140,7 +140,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitLdcInsn(Object value) {
         if (value instanceof Type typeValue) {
             // `Xxx.class` などのクラス参照を読み込む
-            var typeIdentifier = AsmClassVisitor.toTypeIdentifier(typeValue);
+            var typeIdentifier = TypeIdentifier.valueOf(typeValue.getClassName());
             methodInstructions.registerClassReference(typeIdentifier);
         }
 
@@ -179,13 +179,13 @@ class AsmMethodVisitor extends MethodVisitor {
                     var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
                     var handleMethodName = handle.getName();
                     var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
-                            .map(AsmClassVisitor::toTypeIdentifier)
+                            .map(type1 -> TypeIdentifier.valueOf(type1.getClassName()))
                             .collect(Collectors.toList());
                     var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
                     var handleInvokeMethod = new InvokedMethod(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
 
-                    var returnType = AsmClassVisitor.toTypeIdentifier(type.getReturnType());
-                    var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> AsmClassVisitor.toTypeIdentifier(t)).toList();
+                    var returnType = TypeIdentifier.valueOf(type.getReturnType().getClassName());
+                    var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> TypeIdentifier.valueOf(t.getClassName())).toList();
 
                     methodInstructions.registerInvokeDynamic(new InvokeDynamicInstruction(handleInvokeMethod, returnType, argumentTypes));
                 }

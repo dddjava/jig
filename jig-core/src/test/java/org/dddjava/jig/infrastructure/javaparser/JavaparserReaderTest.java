@@ -38,6 +38,11 @@ class JavaparserReaderTest {
             /**
              * 後ろにあるJavadoc風コメント
              */
+            """, """
+            /**
+             * @see javadocタグのみある
+             */
+            package org.dddjava.jig.my_package;
             """
     })
     @ParameterizedTest

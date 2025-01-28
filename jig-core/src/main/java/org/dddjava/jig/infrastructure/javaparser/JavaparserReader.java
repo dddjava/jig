@@ -80,6 +80,7 @@ public class JavaparserReader implements JavaSourceReader {
         Optional<Comment> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)
                 .map(JavadocDescription::toText)
+                .filter(text -> !text.isBlank())
                 .map(Comment::fromCodeComment);
 
         Optional<PackageComment> packageComment = optPackageIdentifier

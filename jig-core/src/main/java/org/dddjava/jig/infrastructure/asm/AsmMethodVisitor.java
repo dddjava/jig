@@ -1,15 +1,18 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
 import org.objectweb.asm.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -25,13 +28,19 @@ import java.util.stream.Collectors;
  */
 class AsmMethodVisitor extends MethodVisitor {
 
-    private final Instructions methodInstructions;
-    private final JigMethodBuilder jigMethodBuilder;
+    private final MethodIdentifier methodIdentifier;
+    private final Consumer<AsmMethodVisitor> endConsumer;
 
-    public AsmMethodVisitor(int api, Instructions methodInstructions, JigMethodBuilder jigMethodBuilder) {
+    // 取得したデータ
+    final Instructions methodInstructions;
+    final List<Annotation> annotationList;
+
+    public AsmMethodVisitor(int api, MethodIdentifier methodIdentifier, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);
-        this.methodInstructions = methodInstructions;
-        this.jigMethodBuilder = jigMethodBuilder;
+        this.methodIdentifier = methodIdentifier;
+        this.methodInstructions = Instructions.newInstance();
+        this.annotationList = new ArrayList<>();
+        this.endConsumer = endConsumer;
     }
 
     @Override
@@ -46,7 +55,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api,
                 AsmClassVisitor.typeDescriptorToIdentifier(descriptor),
-                annotation -> jigMethodBuilder.addAnnotation(annotation));
+                annotation -> annotationList.add(annotation));
     }
 
     @Override
@@ -102,7 +111,7 @@ class AsmMethodVisitor extends MethodVisitor {
         if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())
                 && "metafactory".equals(bootstrapMethodHandle.getName())) {
             if (bootstrapMethodArguments.length != 3) {
-                AsmClassVisitor.logger.warn("想定外のInvokeDynamicが {} で検出されました。読み飛ばします。", jigMethodBuilder.methodIdentifier());
+                AsmClassVisitor.logger.warn("想定外のInvokeDynamicが {} で検出されました。読み飛ばします。", methodIdentifier);
             } else {
                 // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
                 // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ
@@ -174,6 +183,6 @@ class AsmMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitEnd() {
-        super.visitEnd();
+        endConsumer.accept(this);
     }
 }

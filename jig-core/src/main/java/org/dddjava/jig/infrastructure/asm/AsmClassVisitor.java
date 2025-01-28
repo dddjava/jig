@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
@@ -162,17 +161,19 @@ class AsmClassVisitor extends ClassVisitor {
             }
         }
 
-        var methodInstructions = Instructions.newInstance();
         JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
                 jigTypeBuilder,
                 access,
                 resolveMethodVisibility(access),
                 signatureContainedTypes,
                 throwsTypes,
-                methodInstructions,
                 methodDeclaration);
 
-        return new AsmMethodVisitor(this.api, methodInstructions, jigMethodBuilder);
+        return new AsmMethodVisitor(this.api, methodDeclaration.identifier(),
+                data -> {
+                    jigMethodBuilder.setAnnotations(data.annotationList);
+                    jigMethodBuilder.setInstructions(data.methodInstructions);
+                });
     }
 
     /**
@@ -414,9 +415,9 @@ class AsmClassVisitor extends ClassVisitor {
                                                      Visibility visibility,
                                                      List<TypeIdentifier> signatureContainedTypes,
                                                      List<TypeIdentifier> throwsTypes,
-                                                     Instructions instructions, MethodDeclaration methodDeclaration) {
+                                                     MethodDeclaration methodDeclaration) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access);
-        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, instructions);
+        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes);
 
         if (methodDeclaration.isConstructor()) {
             // コンストラクタ

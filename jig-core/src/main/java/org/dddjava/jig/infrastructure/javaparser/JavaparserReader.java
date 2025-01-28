@@ -50,21 +50,11 @@ public class JavaparserReader implements JavaSourceReader {
 
     JavaSourceModel readJava(Path path) {
         try {
+            // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
 
             if (path.endsWith("package-info.java")) {
-                Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
-                        .map(NodeWithName::getNameAsString)
-                        .map(PackageIdentifier::valueOf);
-
-                Optional<Comment> optAlias = getJavadoc(cu)
-                        .map(Javadoc::getDescription)
-                        .map(JavadocDescription::toText)
-                        .map(Comment::fromCodeComment);
-
-                Optional<PackageComment> packageComment = optPackageIdentifier
-                        .flatMap(packageIdentifier -> optAlias
-                                .map(alias -> new PackageComment(packageIdentifier, alias)));
+                Optional<PackageComment> packageComment = readPackageComment(cu);
                 return packageComment.map(JavaSourceModel::from).orElseGet(JavaSourceModel::empty);
             } else {
                 String packageName = cu.getPackageDeclaration()
@@ -80,6 +70,22 @@ public class JavaparserReader implements JavaSourceReader {
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
             return JavaSourceModel.empty();
         }
+    }
+
+    Optional<PackageComment> readPackageComment(CompilationUnit cu) {
+        Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
+                .map(NodeWithName::getNameAsString)
+                .map(PackageIdentifier::valueOf);
+
+        Optional<Comment> optAlias = getJavadoc(cu)
+                .map(Javadoc::getDescription)
+                .map(JavadocDescription::toText)
+                .map(Comment::fromCodeComment);
+
+        Optional<PackageComment> packageComment = optPackageIdentifier
+                .flatMap(packageIdentifier -> optAlias
+                        .map(alias -> new PackageComment(packageIdentifier, alias)));
+        return packageComment;
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

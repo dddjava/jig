@@ -228,54 +228,6 @@ class AsmClassVisitor extends ClassVisitor {
         return useTypes;
     }
 
-    private MethodReturn extractParameterizedReturnType(String signature, String descriptor) {
-
-        TypeIdentifier[] collector = new TypeIdentifier[2];
-        // ジェネリクスを使用している場合だけsignatureが入る
-        if (signature != null) {
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(this.api) {
-
-                        @Override
-                        public SignatureVisitor visitReturnType() {
-                            return new SignatureVisitor(this.api) {
-                                @Override
-                                public void visitClassType(String name) {
-                                    // 戻り値の型
-                                    collector[0] = TypeIdentifier.valueOf(name);
-                                }
-
-                                @Override
-                                public SignatureVisitor visitTypeArgument(char wildcard) {
-                                    if (wildcard != '=') {
-                                        // 境界型は対応しない
-                                        return super.visitTypeArgument(wildcard);
-                                    }
-                                    return new SignatureVisitor(this.api) {
-                                        @Override
-                                        public void visitClassType(String name) {
-                                            // 型引数の型
-                                            collector[1] = TypeIdentifier.valueOf(name);
-                                        }
-                                    };
-                                }
-                            };
-                        }
-                    }
-            );
-        }
-
-        boolean 戻り値型が解決できない = collector[0] == null;
-        boolean 型引数がバインドされていない = collector[1] == null;
-        if (戻り値型が解決できない || 型引数がバインドされていない) {
-            // signatureではなくdescriptorから取得する
-            TypeIdentifier returnTypeIdentifier = methodDescriptorToReturnIdentifier(descriptor);
-            return MethodReturn.fromTypeOnly(returnTypeIdentifier);
-        }
-
-        return new MethodReturn(new ParameterizedType(collector[0], collector[1]));
-    }
-
     private ParameterizedType superType(String superName, String signature) {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature == null) {

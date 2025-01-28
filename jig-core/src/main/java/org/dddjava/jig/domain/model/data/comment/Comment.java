@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.comment;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -8,13 +10,19 @@ import java.util.stream.Stream;
  * 通常はソースコードから読み取るJavadoc
  */
 public class Comment {
+    /**
+     * インラインのlinkタグをテキストにするためのパターン
+     */
+    private static final Pattern INLINETAG_LINK_PATTERN = Pattern.compile("\\{@link\\s+(?:\\S+\\s+)?(\\S+)\\s*}");
+
     private static final Comment EMPTY = new Comment("");
 
     final String value;
     volatile String firstSentence = null;
 
     private Comment(String value) {
-        this.value = value;
+        Matcher matcher = INLINETAG_LINK_PATTERN.matcher(value);
+        this.value = matcher.replaceAll("$1");
     }
 
     public static Comment empty() {

@@ -76,6 +76,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     return new MethodDeclaration(typeIdentifier, methodSignature, methodReturn);
                 });
 
+        // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
         List<TypeIdentifier> throwsTypes = Optional.ofNullable(exceptions).stream()
                 .flatMap(Arrays::stream)
                 .map(TypeIdentifier::valueOf)

@@ -67,6 +67,6 @@ public class Comment {
             return "";
         }
 
-        return value.substring(beginIndex);
+        return value.substring(beginIndex).trim();
     }
 }

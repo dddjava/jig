@@ -81,6 +81,18 @@ class JavaparserReaderTest {
                 argumentSet("概要と本文",
                         """
                                 /**
+                                 * 概要です。
+                                 *
+                                 * 本文です。
+                                 */
+                                package org.dddjava.jig.my_package;
+                                """,
+                        "概要です",
+                        "本文です。"
+                ),
+                argumentSet("概要と本文",
+                        """
+                                /**
                                  * packageにつけられたコメント。ここからが本文です。複文もOK
                                  *
                                  * 改行されたものも入ります。

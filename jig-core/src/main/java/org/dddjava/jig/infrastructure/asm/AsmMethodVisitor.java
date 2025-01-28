@@ -43,6 +43,13 @@ class AsmMethodVisitor extends MethodVisitor {
         this.endConsumer = endConsumer;
     }
 
+    public static MethodVisitor from(int api,
+                                     // visitMethodの引数
+                                     int access, String name, String descriptor, String signature, String[] exceptions,
+                                     MethodIdentifier identifier, Consumer<AsmMethodVisitor> endConsumer) {
+        return new AsmMethodVisitor(api, identifier, endConsumer);
+    }
+
     @Override
     public void visitInsn(int opcode) {
         if (opcode == Opcodes.ACONST_NULL) {

@@ -169,7 +169,9 @@ class AsmClassVisitor extends ClassVisitor {
                 throwsTypes,
                 methodDeclaration);
 
-        return new AsmMethodVisitor(this.api, methodDeclaration.identifier(),
+        return AsmMethodVisitor.from(this.api,
+                access, name, descriptor, signature, exceptions,
+                methodDeclaration.identifier(),
                 data -> {
                     jigMethodBuilder.setAnnotations(data.annotationList);
                     jigMethodBuilder.setInstructions(data.methodInstructions);

@@ -26,10 +26,18 @@ class JavaparserReaderTest {
     @ValueSource(strings = {"""
             package org.dddjava.jig.my_package;
             """, """
+            // ラインコメント
+            package org.dddjava.jig.my_package;
+            """, """
             /*
-             * none-javadocコメント
+             * ブロックコメント
              */
             package org.dddjava.jig.my_package;
+            """, """
+            package org.dddjava.jig.my_package;
+            /**
+             * 後ろにあるJavadoc風コメント
+             */
             """
     })
     @ParameterizedTest

@@ -56,20 +56,18 @@ public class JigTypeAttribute {
     }
 
     public TypeCategory typeCategory() {
+        // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))
-                // TODO カスタムアノテーション対応
                 || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Service.class))) {
             return TypeCategory.Usecase;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
-                // TODO カスタムアノテーション対応
                 || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.adapter.HandleDocument.class))) {
             return TypeCategory.InputAdapter;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))
-                // TODO カスタムアノテーション対応
                 || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Repository.class))) {
             return TypeCategory.OutputAdapter;
         }

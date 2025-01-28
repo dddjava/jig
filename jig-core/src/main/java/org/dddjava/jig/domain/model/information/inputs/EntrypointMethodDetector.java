@@ -28,7 +28,7 @@ public class EntrypointMethodDetector {
                 new DetectorCondition(EntrypointType.QUEUE_LISTENER,
                         List.of("org.springframework.stereotype.Component"),
                         List.of("org.springframework.amqp.rabbit.annotation.RabbitListener")),
-                // TODO カスタムアノテーション
+                // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
                 new DetectorCondition(EntrypointType.OTHER,
                         List.of("org.dddjava.jig.adapter.HandleDocument"),
                         List.of("org.dddjava.jig.adapter.HandleDocument"))

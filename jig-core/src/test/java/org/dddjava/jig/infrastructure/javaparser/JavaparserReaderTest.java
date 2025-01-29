@@ -64,7 +64,10 @@ class JavaparserReaderTest {
 
         PackageComment actual = packageComment.orElseThrow();
         assertEquals(expectedTitle, actual.asText());
-        assertEquals(expectedBody, actual.descriptionComment().bodyText());
+        assertEquals(expectedBody, actual.descriptionComment().bodyText()
+                // FIXME javaparserを通すとline.separatorの改行コードになるのの暫定対応
+                //  StaticJavaParser#parse(String) 使用時のみ？ #parse(Path) のファイルが\nの場合はこういうのは\nのままの模様
+                .replace("\r\n", "\n"));
     }
 
     static Stream<Arguments> コメントが取得できる() {

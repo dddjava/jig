@@ -10,17 +10,16 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
                                      JavaSourceModel javaSourceModel,
                                      Map<Class<?>, Object> map,
-                                     AtomicReference<JigTypes> jigTypesAtomicReference)
+                                     JigTypes jigTypes)
         implements JigDataProvider {
 
     public DefaultJigDataProvider(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
-        this(classSourceModel, javaSourceModel, new HashMap<>(), new AtomicReference<>());
+        this(classSourceModel, javaSourceModel, new HashMap<>(), initializeJigTypes(classSourceModel, javaSourceModel));
     }
 
     public void addSqls(MyBatisStatements myBatisStatements) {
@@ -39,7 +38,7 @@ public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
 
     @Override
     public JigTypes fetchJigTypes() {
-        return jigTypesAtomicReference().get();
+        return jigTypes();
     }
 
     @Override
@@ -47,12 +46,9 @@ public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
         return javaSourceModel().toTerms();
     }
 
-    public void initialize() {
-        if (jigTypesAtomicReference().get() == null) {
-            JigTypes jigTypes = classSourceModel.jigTypeBuilders().stream()
-                    .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(javaSourceModel).build())
-                    .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
-            jigTypesAtomicReference().compareAndSet(null, jigTypes);
-        }
+    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
+        return classSourceModel.jigTypeBuilders().stream()
+                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(javaSourceModel).build())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 }

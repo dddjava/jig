@@ -91,9 +91,7 @@ public class JigSourceReader {
         ClassSources classSources = sources.classSources();
         ClassSourceModel classSourceModel = classSourceReader.classSourceModel(classSources);
 
-        DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(classSourceModel, javaSourceModel);
-        defaultJigDataProvider.initialize();
-        return defaultJigDataProvider;
+        return new DefaultJigDataProvider(classSourceModel, javaSourceModel);
     }
 
     /**

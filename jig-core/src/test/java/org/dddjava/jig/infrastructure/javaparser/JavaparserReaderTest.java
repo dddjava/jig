@@ -116,14 +116,17 @@ class JavaparserReaderTest {
                 argumentSet("インラインタグ（@link）をただの文字列にする",
                         """
                                 /**
-                                 * 概要に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト}にします
+                                 * 概要に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト}にします。
                                  *
+                                 * 本文に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト }にします
                                  * 本文に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト }にします
                                  */
                                 package org.dddjava.jig.my_package;
                                 """,
                         "概要に使われたインラインタグ text をただのテキストにします",
-                        "本文に使われたインラインタグ text をただのテキストにします"
+                        """
+                                本文に使われたインラインタグ text をただのテキストにします
+                                本文に使われたインラインタグ text をただのテキストにします"""
                 )
         );
     }

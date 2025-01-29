@@ -54,9 +54,6 @@ public class JigSourceReader {
         if (source.emptyClassSources()) readEvents.add(ReadStatus.バイナリソースなし);
         if (source.emptyJavaSources()) readEvents.add(ReadStatus.テキストソースなし);
 
-        MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
-        if (myBatisStatements.status().not正常())
-            readEvents.add(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         readEvents.forEach(readStatus -> {
             jigReporter.registerReadStatus(readStatus);
@@ -67,7 +64,13 @@ public class JigSourceReader {
         }
 
         var jigSource = readProjectData(source);
+
+        // クラス名の解決や対象の選別にjigSource(jigType)を使用するため readProjectData の後で行う
+        MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
+        if (myBatisStatements.status().not正常())
+            jigReporter.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
         jigSource.addSqls(myBatisStatements);
+
         return Optional.of(jigSource);
     }
 

@@ -1,6 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Repository;
+import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,14 @@ public class JigReporter {
 
     public void notifyWithLogger() {
         warnings.stream().map(Warning::localizedMessage).forEach(logger::warn);
+    }
+
+    public void registerReadStatus(ReadStatus readStatus) {
+        if (readStatus.isError()) {
+            logger.error(readStatus.localizedMessage());
+        } else {
+            logger.warn(readStatus.localizedMessage());
+        }
     }
 
     /**

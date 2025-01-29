@@ -59,11 +59,7 @@ public class JigSourceReader {
             readEvents.add(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         readEvents.forEach(readStatus -> {
-            if (readStatus.isError()) {
-                logger.error("{}", readStatus.localizedMessage());
-            } else {
-                logger.warn("{}", readStatus.localizedMessage());
-            }
+            jigReporter.registerReadStatus(readStatus);
         });
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
         if (readEvents.stream().anyMatch(event -> event.isError())) {

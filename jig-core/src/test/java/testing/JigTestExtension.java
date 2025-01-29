@@ -2,7 +2,6 @@ package testing;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -51,12 +50,7 @@ public class JigTestExtension implements ParameterResolver {
         if (parameterType == Configuration.class) return configuration;
         if (parameterType == Sources.class) return getTestRawSource();
         if (parameterType == SourceBasePaths.class) return TestSupport.getRawSourceLocations();
-
-        if (parameterType == JigDataProvider.class) {
-            DefaultJigDataProvider defaultJigDataProvider = configuration.sourceReader().readProjectData(getTestRawSource());
-            defaultJigDataProvider.initialize();
-            return defaultJigDataProvider;
-        }
+        if (parameterType == JigDataProvider.class) return configuration.sourceReader().readProjectData(getTestRawSource());
 
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterType) {

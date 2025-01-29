@@ -71,7 +71,6 @@ public class JigSourceReader {
             jigReporter.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
         jigDataProvider.addSqls(myBatisStatements);
 
-        jigDataProvider.initialize();
         return Optional.of(jigDataProvider);
     }
 
@@ -92,7 +91,9 @@ public class JigSourceReader {
         ClassSources classSources = sources.classSources();
         ClassSourceModel classSourceModel = classSourceReader.classSourceModel(classSources);
 
-        return new DefaultJigDataProvider(classSourceModel, javaSourceModel);
+        DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(classSourceModel, javaSourceModel);
+        defaultJigDataProvider.initialize();
+        return defaultJigDataProvider;
     }
 
     /**

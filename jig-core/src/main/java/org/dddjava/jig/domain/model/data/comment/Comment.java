@@ -41,7 +41,7 @@ public class Comment {
         }
 
         // 改行や句点の手前まで。
-        firstSentence = Stream.of(this.value.indexOf("\n"), this.value.indexOf("。"))
+        firstSentence = Stream.of(this.value.indexOf("\r\n"), this.value.indexOf("\n"), this.value.indexOf("。"))
                 .filter(length -> length >= 0)
                 .min(Integer::compareTo)
                 .map(end -> this.value.substring(0, end))

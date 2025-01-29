@@ -1,8 +1,8 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
-import org.dddjava.jig.domain.model.sources.Sources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -16,9 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PackageDependenciesTest {
 
     @Test
-    void パッケージ依存(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        var jigSource = jigSourceReader.readProjectData(sources);
-        PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies(jigSource);
+    void パッケージ依存(JigService jigService, JigDataProvider jigDataProvider) {
+        PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies(jigDataProvider);
 
         // パッケージのリストアップ
         List<String> packageNames = packageRelationDiagram.allPackages().list().stream()

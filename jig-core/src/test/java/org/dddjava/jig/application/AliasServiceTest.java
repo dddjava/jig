@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
@@ -8,7 +9,6 @@ import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.sources.Sources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -27,24 +27,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AliasServiceTest {
 
     JigDocumentContext sut;
-    JigSourceReader jigSourceReader;
 
-    public AliasServiceTest(JigDocumentContext jigDocumentContext, JigSourceReader jigSourceReader) {
+    public AliasServiceTest(JigDocumentContext jigDocumentContext) {
         sut = jigDocumentContext;
-        this.jigSourceReader = jigSourceReader;
     }
 
     @Test
-    void パッケージ別名取得(Sources source) {
-        jigSourceReader.readProjectData(source);
-
+    void パッケージ別名取得() {
         assertEquals("テストでJIGに読み取らせる実装", sut.packageComment(PackageIdentifier.valueOf("stub")).asText());
     }
 
     @ParameterizedTest
     @MethodSource
-    void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
-        var jigTypes = jigSourceReader.readProjectData(source).fetchJigTypes();
+    void クラス別名取得(TypeIdentifier typeIdentifier, String comment, JigDataProvider jigDataProvider) {
+        var jigTypes = jigDataProvider.fetchJigTypes();
         ClassComment classComment = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
@@ -62,8 +58,8 @@ class AliasServiceTest {
     }
 
     @Test
-    void メソッド別名取得(Sources source) {
-        JigTypes jigTypes = jigSourceReader.readProjectData(source).fetchJigTypes();
+    void メソッド別名取得(JigDataProvider jigDataProvider) {
+        JigTypes jigTypes = jigDataProvider.fetchJigTypes();
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
         JigType jigType = jigTypes.listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 

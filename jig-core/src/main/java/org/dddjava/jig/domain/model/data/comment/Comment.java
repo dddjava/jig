@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.comment;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -10,10 +9,6 @@ import java.util.stream.Stream;
  * 通常はソースコードから読み取るJavadoc
  */
 public class Comment {
-    /**
-     * インラインのlinkタグをテキストにするためのパターン
-     */
-    private static final Pattern INLINETAG_LINK_PATTERN = Pattern.compile("\\{@link\\s+(?:\\S+\\s+)?(\\S+)\\s*}");
 
     private static final Comment EMPTY = new Comment("");
 
@@ -21,8 +16,7 @@ public class Comment {
     volatile String firstSentence = null;
 
     private Comment(String value) {
-        Matcher matcher = INLINETAG_LINK_PATTERN.matcher(value);
-        this.value = matcher.replaceAll("$1");
+        this.value = value;
     }
 
     public static Comment empty() {
@@ -49,8 +43,22 @@ public class Comment {
         return firstSentence; // 改行も句点も無い場合はそのまま返す
     }
 
+    /**
+     * インラインのlinkタグをテキストにするためのパターン
+     */
+    private static final Pattern INLINETAG_LINK_PATTERN = Pattern.compile("\\{@link\\s+(?:\\S+\\s+)?(\\S+)\\s*}");
+
+    /**
+     * 改行コードを統一するためのパターン。
+     * Javaparserを使用する場合、ソースの改行コードに関わらずline.separatorに置き換えられる。JIGの出力は\nに寄せるので、ここで一律置き換える。
+     */
+    private static final Pattern LINE_SEPARATOR_PATTERN = Pattern.compile("\\R");
+
     public static Comment fromCodeComment(String sourceText) {
-        return new Comment(sourceText);
+        return new Comment(
+                INLINETAG_LINK_PATTERN.matcher(
+                        LINE_SEPARATOR_PATTERN.matcher(sourceText).replaceAll("\n")
+                ).replaceAll("$1"));
     }
 
     public String asText() {

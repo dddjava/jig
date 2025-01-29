@@ -12,8 +12,7 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlReader;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
+import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,14 +33,14 @@ public class JigSourceReader {
 
     final ClassSourceReader classSourceReader;
     final JavaSourceReader javaSourceReader;
-    final SqlReader sqlReader;
+    final MyBatisStatementsReader myBatisStatementsReader;
     private final JigReporter jigReporter;
 
-    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, SqlReader sqlReader, SourceReader sourceReader, JigReporter jigReporter) {
+    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigReporter jigReporter) {
         this.commentRepository = commentRepository;
         this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;
-        this.sqlReader = sqlReader;
+        this.myBatisStatementsReader = myBatisStatementsReader;
         this.sourceReader = sourceReader;
         this.jigReporter = jigReporter;
     }
@@ -66,7 +65,7 @@ public class JigSourceReader {
         var jigDataProvider = readProjectData(source);
 
         // クラス名の解決や対象の選別にjigSource(jigType)を使用するため readProjectData の後で行う
-        MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
+        MyBatisStatements myBatisStatements = readSqlSource(source);
         if (myBatisStatements.status().not正常())
             jigReporter.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
         jigDataProvider.addSqls(myBatisStatements);
@@ -97,7 +96,7 @@ public class JigSourceReader {
     /**
      * ソースからSQLを読み取る
      */
-    public MyBatisStatements readSqlSource(SqlSources sqlSources) {
-        return sqlReader.readFrom(sqlSources);
+    public MyBatisStatements readSqlSource(Sources sources) {
+        return myBatisStatementsReader.readFrom(sources);
     }
 }

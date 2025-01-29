@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
-import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
+import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 
 public class Configuration {
@@ -31,7 +31,7 @@ public class Configuration {
                 commentRepository,
                 new AsmClassSourceReader(),
                 new JavaparserReader(properties),
-                new MyBatisSqlReader(),
+                new MyBatisMyBatisStatementsReader(),
                 new ClassOrJavaSourceReader(),
                 jigReporter
         );

@@ -1,11 +1,7 @@
 package org.dddjava.jig.domain.model.sources;
 
-import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
-
-import java.util.List;
 
 /**
  * 生ソース
@@ -26,11 +22,6 @@ public class Sources {
         return javaSources;
     }
 
-    public SqlSources sqlSources() {
-        List<ClassSource> mapperClassSource = classSources.filterClassName(name -> name.endsWith("Mapper"));
-        return new SqlSources(sourceBasePaths, mapperClassSource);
-    }
-
     public boolean emptyClassSources() {
         return classSources.nothing();
     }
@@ -41,5 +32,9 @@ public class Sources {
 
     public ClassSources classSources() {
         return classSources;
+    }
+
+    public SourceBasePaths sourceBasePaths() {
+        return sourceBasePaths;
     }
 }

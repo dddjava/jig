@@ -10,7 +10,8 @@ import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.*;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlReader;
+import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,13 @@ import java.util.List;
  * クラスパスにMapperが依存しているクラスが存在しない場合、MyBatisがMapperを読み取れないため解析できません。
  * それでも出力したい場合は、実行時に該当のクラスをクラスパスに含めてください。
  */
-public class MyBatisSqlReader implements SqlReader {
+public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyBatisSqlReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyBatisMyBatisStatementsReader.class);
 
     @Override
-    public MyBatisStatements readFrom(SqlSources sqlSources) {
+    public MyBatisStatements readFrom(Sources sources) {
+        SqlSources sqlSources = SqlSources.from(sources);
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わない
         if (sqlSources.classNames().isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
 

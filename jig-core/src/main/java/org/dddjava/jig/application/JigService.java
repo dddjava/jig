@@ -29,9 +29,9 @@ public class JigService {
     private final Architecture architecture;
     private final JigReporter jigReporter;
 
-    public JigService(Architecture architecture) {
+    public JigService(Architecture architecture, JigReporter jigReporter) {
         this.architecture = architecture;
-        this.jigReporter = new JigReporter();
+        this.jigReporter = jigReporter;
     }
 
     public JigTypes jigTypes(JigDataProvider jigDataProvider) {

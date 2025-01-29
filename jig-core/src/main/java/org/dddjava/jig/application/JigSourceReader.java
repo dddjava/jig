@@ -35,13 +35,15 @@ public class JigSourceReader {
     final ClassSourceReader classSourceReader;
     final JavaSourceReader javaSourceReader;
     final SqlReader sqlReader;
+    private final JigReporter jigReporter;
 
-    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, SqlReader sqlReader, SourceReader sourceReader, JigReporter jigReporter) {
         this.commentRepository = commentRepository;
         this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
+        this.jigReporter = jigReporter;
     }
 
     public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {

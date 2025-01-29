@@ -1,44 +1,39 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import stub.infrastructure.datasource.CanonicalMapper;
 import stub.infrastructure.datasource.SampleMapper;
-import testing.TestSupport;
+import testing.JigServiceTest;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@JigServiceTest
 class MyBatisMyBatisStatementReaderTest {
 
     @Test
-    void bindを使ってても解析できる() {
-        MyBatisMyBatisStatementsReader sut = new MyBatisMyBatisStatementsReader();
+    void bindを使ってても解析できる(JigSourceReader jigSourceReader, Sources sources) {
+        MyBatisStatements myBatisStatements = jigSourceReader.readSqlSource(sources);
 
-        MyBatisStatements myBatisStatements = sut.readFrom(
-                new Sources(TestSupport.getRawSourceLocations(), null, new ClassSources(List.of(TestSupport.getClassSource(SampleMapper.class)))));
-
-        MyBatisStatement myBatisStatement = myBatisStatements.list().get(0);
+        MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
+                .filter(statement -> statement.identifier().equals(new MyBatisStatementId(SampleMapper.class.getCanonicalName() + ".binding")))
+                .findAny().orElseThrow();
         assertEquals("[fuga]", myBatisStatement.tables().asText());
     }
 
     @ParameterizedTest
     @MethodSource
-    void 標準的なパターン(String methodName, String tableName, SqlType sqlType) {
-        MyBatisMyBatisStatementsReader sut = new MyBatisMyBatisStatementsReader();
-
-        MyBatisStatements myBatisStatements = sut.readFrom(
-                new Sources(TestSupport.getRawSourceLocations(), null, new ClassSources(List.of(TestSupport.getClassSource(CanonicalMapper.class)))));
+    void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigSourceReader jigSourceReader, Sources sources) {
+        MyBatisStatements myBatisStatements = jigSourceReader.readSqlSource(sources);
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
                 .filter(current -> current.identifier().equals(new MyBatisStatementId("stub.infrastructure.datasource.CanonicalMapper." + methodName)))

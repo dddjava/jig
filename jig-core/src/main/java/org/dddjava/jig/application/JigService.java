@@ -123,8 +123,4 @@ public class JigService {
     public void notifyReportInformation() {
         jigReporter.notifyWithLogger();
     }
-
-    public void initialize(JigDataProvider jigDataProvider) {
-        jigTypes(jigDataProvider);
-    }
 }

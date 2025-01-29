@@ -78,7 +78,6 @@ public class JigDocumentGenerator {
     }
 
     public List<HandleResult> generateDocuments(JigDataProvider jigDataProvider) {
-        jigService.initialize(jigDataProvider);
         List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
                 .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigDataProvider))

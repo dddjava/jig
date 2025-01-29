@@ -39,23 +39,20 @@ public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
 
     @Override
     public JigTypes fetchJigTypes() {
-        if (jigTypesAtomicReference().get() == null) {
-            JigTypes jigTypes = initJigTypes();
-            if (jigTypesAtomicReference().compareAndSet(null, jigTypes)) {
-                return jigTypes;
-            }
-        }
         return jigTypesAtomicReference().get();
-    }
-
-    private JigTypes initJigTypes() {
-        return classSourceModel.jigTypeBuilders().stream()
-                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(javaSourceModel).build())
-                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
     @Override
     public Terms fetchTerms() {
         return javaSourceModel().toTerms();
+    }
+
+    public void initialize() {
+        if (jigTypesAtomicReference().get() == null) {
+            JigTypes jigTypes = classSourceModel.jigTypeBuilders().stream()
+                    .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(javaSourceModel).build())
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
+            jigTypesAtomicReference().compareAndSet(null, jigTypes);
+        }
     }
 }

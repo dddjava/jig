@@ -63,15 +63,16 @@ public class JigSourceReader {
             return Optional.empty();
         }
 
-        var jigSource = readProjectData(source);
+        var jigDataProvider = readProjectData(source);
 
         // クラス名の解決や対象の選別にjigSource(jigType)を使用するため readProjectData の後で行う
         MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
         if (myBatisStatements.status().not正常())
             jigReporter.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
-        jigSource.addSqls(myBatisStatements);
+        jigDataProvider.addSqls(myBatisStatements);
 
-        return Optional.of(jigSource);
+        jigDataProvider.initialize();
+        return Optional.of(jigDataProvider);
     }
 
     /**

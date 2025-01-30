@@ -73,20 +73,16 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     Optional<PackageComment> readPackageComment(CompilationUnit cu) {
-        Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
+        return cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
-                .map(PackageIdentifier::valueOf);
-
-        Optional<Comment> optAlias = getJavadoc(cu)
-                .map(Javadoc::getDescription)
-                .map(JavadocDescription::toText)
-                .filter(text -> !text.isBlank())
-                .map(Comment::fromCodeComment);
-
-        Optional<PackageComment> packageComment = optPackageIdentifier
-                .flatMap(packageIdentifier -> optAlias
+                .map(PackageIdentifier::valueOf)
+                // packageIdentifierがPackageCommentで必要になるのでここはネストにしておく
+                .flatMap(packageIdentifier -> getJavadoc(cu)
+                        .map(Javadoc::getDescription)
+                        .map(JavadocDescription::toText)
+                        .filter(text -> !text.isBlank())
+                        .map(Comment::fromCodeComment)
                         .map(alias -> new PackageComment(packageIdentifier, alias)));
-        return packageComment;
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

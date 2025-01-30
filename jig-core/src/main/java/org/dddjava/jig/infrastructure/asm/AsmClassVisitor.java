@@ -157,7 +157,7 @@ class AsmClassVisitor extends ClassVisitor {
     /**
      * Visibilityに持っていきたいが、accessの定数はasmが持っているのでここに置いておく。
      * 実際はバイトコードの固定値。
-     * <p>
+     *
      * classの場合、ソースコードではpublic,protected,default,privateは定義できるが、
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）

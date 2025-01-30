@@ -26,11 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 @JigServiceTest
-class AliasServiceTest {
+class ReadableLabelTest {
 
     JigDocumentContext sut;
 
-    public AliasServiceTest(JigDocumentContext jigDocumentContext) {
+    public ReadableLabelTest(JigDocumentContext jigDocumentContext) {
         sut = jigDocumentContext;
     }
 

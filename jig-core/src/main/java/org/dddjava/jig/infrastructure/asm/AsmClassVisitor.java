@@ -226,43 +226,9 @@ class AsmClassVisitor extends ClassVisitor {
             return new ParameterizedType(TypeIdentifier.valueOf(superName));
         }
 
-        SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {
-        };
-
-        List<TypeIdentifier> typeParameters = new ArrayList<>();
-
-        new SignatureReader(signature).accept(
-                new SignatureVisitor(this.api) {
-                    @Override
-                    public SignatureVisitor visitSuperclass() {
-
-                        return new SignatureVisitor(this.api) {
-
-                            @Override
-                            public SignatureVisitor visitTypeArgument(char wildcard) {
-                                if (wildcard == '=') {
-                                    return new SignatureVisitor(this.api) {
-                                        @Override
-                                        public void visitClassType(String name) {
-                                            typeParameters.add(TypeIdentifier.valueOf(name));
-                                        }
-
-                                        @Override
-                                        public SignatureVisitor visitTypeArgument(char wildcard) {
-                                            // ジェネリクスのネストは対応しない
-                                            return noOpVisitor;
-                                        }
-                                    };
-                                }
-                                // 境界型は対応しない
-                                return noOpVisitor;
-                            }
-                        };
-                    }
-                }
-        );
-
-        return ParameterizedType.convert(TypeIdentifier.valueOf(superName), typeParameters);
+        AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
+        new SignatureReader(signature).accept(asmClassSignatureVisitor);
+        return asmClassSignatureVisitor.superclass();
     }
 
     private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {

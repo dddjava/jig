@@ -85,6 +85,10 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                         .toList());
     }
 
+    ParameterizedType superclass() {
+        return superclassAsmTypeSignatureVisitor.generateParameterizedType();
+    }
+
     public List<String> typeParameterNames() {
         return typeParameters.stream().map(TypeParameter::name).toList();
     }

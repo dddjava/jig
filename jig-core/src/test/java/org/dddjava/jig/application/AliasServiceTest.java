@@ -43,7 +43,7 @@ class AliasServiceTest {
         var jigTypes = jigDataProvider.fetchJigTypes();
         ClassComment classComment = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().equals(typeIdentifier))
-                .map(jigType -> jigType.typeAlias())
+                .map(jigType -> jigType.classComment())
                 .findAny().orElseThrow(AssertionError::new);
 
         assertEquals(comment, classComment.asText());

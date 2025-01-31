@@ -12,6 +12,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * ClassSignature = ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )* (visitSuperclass visitInterface* )
  *
+ * 例: {@code <T:Ljava/lang/Number;>LParentClass;Ljava/lang/Comparable<TT;>;}
+ *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-400">JVMS 4.7.9.1-400</a>
  */
 class AsmClassSignatureVisitor extends SignatureVisitor {

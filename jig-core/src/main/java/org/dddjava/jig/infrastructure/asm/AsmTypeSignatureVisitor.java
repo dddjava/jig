@@ -11,10 +11,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * TypeSignature = visitBaseType
+ * TypeSignature =
+ *   visitBaseType
  * | visitTypeVariable
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
+ *
+ * 例: {@code Ljava/util/List<Ljava/lang/String;>;}
+ *
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-600">JVMS 4.7.9.1-600 FieldSignature</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-300-B">JVMS 4.7.9.1-300-B ReferenceTypeSignature</a>
  */
 class AsmTypeSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmTypeSignatureVisitor.class);

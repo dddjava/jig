@@ -228,15 +228,15 @@ class AsmClassVisitor extends ClassVisitor {
         return TypeIdentifier.valueOf(type.getClassName());
     }
 
-    public JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder,
-                                                     int access,
-                                                     Visibility visibility,
-                                                     List<TypeIdentifier> signatureContainedTypes,
-                                                     List<TypeIdentifier> throwsTypes,
-                                                     MethodDeclaration methodDeclaration,
-                                                     List<Annotation> annotationList,
-                                                     Instructions methodInstructions) {
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access);
+    public static JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder,
+                                                            int access,
+                                                            Visibility visibility,
+                                                            List<TypeIdentifier> signatureContainedTypes,
+                                                            List<TypeIdentifier> throwsTypes,
+                                                            MethodDeclaration methodDeclaration,
+                                                            List<Annotation> annotationList,
+                                                            Instructions methodInstructions) {
+        MethodDerivation methodDerivation = AsmClassVisitor.resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access, jigTypeBuilder);
         var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
 
         if (methodDeclaration.isConstructor()) {
@@ -253,7 +253,7 @@ class AsmClassVisitor extends ClassVisitor {
         return jigMethodBuilder;
     }
 
-    private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access) {
+    private static MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access, JigTypeBuilder jigTypeBuilder) {
         String name = methodSignature.methodName();
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return MethodDerivation.CONSTRUCTOR;

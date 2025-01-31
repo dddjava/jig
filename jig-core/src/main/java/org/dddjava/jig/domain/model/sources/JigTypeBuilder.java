@@ -4,8 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.*;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
-import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
@@ -149,11 +148,11 @@ public class JigTypeBuilder {
         recordComponentDefinitions.add(new RecordComponentDefinition(name, typeIdentifier));
     }
 
-    public boolean isRecordComponent(MethodSignature methodSignature, MethodReturn methodReturn) {
+    public boolean isRecordComponent(MethodDeclaration methodDeclaration) {
         return recordComponentDefinitions.stream()
                 .anyMatch(recordComponentDefinition ->
-                        methodSignature.methodName().equals(recordComponentDefinition.name())
-                                && methodReturn.typeIdentifier().equals(recordComponentDefinition.typeIdentifier())
+                        methodDeclaration.methodSignature().methodName().equals(recordComponentDefinition.name())
+                                && methodDeclaration.methodReturn().typeIdentifier().equals(recordComponentDefinition.typeIdentifier())
                 );
 
     }

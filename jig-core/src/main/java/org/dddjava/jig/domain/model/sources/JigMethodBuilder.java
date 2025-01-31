@@ -39,7 +39,8 @@ public class JigMethodBuilder {
         this.instructions = methodInstructions;
     }
 
-    public static MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access, JigTypeBuilder jigTypeBuilder, boolean isEnum) {
+    public static MethodDerivation resolveMethodDerivation(MethodDeclaration methodDeclaration, int access, boolean isEnum, boolean isRecordComponent) {
+        MethodSignature methodSignature = methodDeclaration.methodSignature();
         String name = methodSignature.methodName();
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return MethodDerivation.CONSTRUCTOR;
@@ -49,7 +50,7 @@ public class JigMethodBuilder {
             return MethodDerivation.COMPILER_GENERATED;
         }
 
-        if (jigTypeBuilder.isRecordComponent(methodSignature, methodReturn)) {
+        if (isRecordComponent) {
             return MethodDerivation.RECORD_COMPONENT;
         }
 
@@ -67,15 +68,14 @@ public class JigMethodBuilder {
         return MethodDerivation.PROGRAMMER;
     }
 
-    public static JigMethodBuilder builder(JigTypeBuilder jigTypeBuilder,
-                                           int access,
+    public static JigMethodBuilder builder(int access,
                                            Visibility visibility,
                                            List<TypeIdentifier> signatureContainedTypes,
                                            List<TypeIdentifier> throwsTypes,
                                            MethodDeclaration methodDeclaration,
                                            List<Annotation> annotationList,
-                                           Instructions methodInstructions, boolean isEnum) {
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access, jigTypeBuilder, isEnum);
+                                           Instructions methodInstructions, boolean isEnum, boolean isRecordComponent) {
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
         var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
         return jigMethodBuilder;
     }

@@ -60,7 +60,17 @@ class AsmClassVisitor extends ClassVisitor {
         List<ParameterizedType> actualTypeParameters = extractClassTypeFromGenericsSignature(signature).stream().map(ParameterizedType::new).collect(Collectors.toList());
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
-        ParameterizedType superType = superType(superName, signature);
+
+        ParameterizedType superType;
+        // ジェネリクスを使用している場合だけsignatureが入る
+        if (signature != null) {
+            AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
+            new SignatureReader(signature).accept(asmClassSignatureVisitor);
+            superType = asmClassSignatureVisitor.superclass();
+        } else {
+            superType = new ParameterizedType(TypeIdentifier.valueOf(superName));
+        }
+
         List<ParameterizedType> interfaceTypes = interfaceTypes(interfaces, signature);
         jigTypeBuilder = new JigTypeBuilder(type, superType, interfaceTypes, typeKind(access), resolveVisibility(access));
 
@@ -218,17 +228,6 @@ class AsmClassVisitor extends ClassVisitor {
             );
         }
         return useTypes;
-    }
-
-    private ParameterizedType superType(String superName, String signature) {
-        // ジェネリクスを使用している場合だけsignatureが入る
-        if (signature == null) {
-            return new ParameterizedType(TypeIdentifier.valueOf(superName));
-        }
-
-        AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
-        new SignatureReader(signature).accept(asmClassSignatureVisitor);
-        return asmClassSignatureVisitor.superclass();
     }
 
     private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {

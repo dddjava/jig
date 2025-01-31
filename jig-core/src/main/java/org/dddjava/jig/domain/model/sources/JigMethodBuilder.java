@@ -39,7 +39,7 @@ public class JigMethodBuilder {
         this.instructions = methodInstructions;
     }
 
-    public static MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access, JigTypeBuilder jigTypeBuilder) {
+    public static MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access, JigTypeBuilder jigTypeBuilder, boolean isEnum) {
         String name = methodSignature.methodName();
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return MethodDerivation.CONSTRUCTOR;
@@ -53,7 +53,7 @@ public class JigMethodBuilder {
             return MethodDerivation.RECORD_COMPONENT;
         }
 
-        if (jigTypeBuilder.superType().typeIdentifier().isEnum() && (access & Opcodes.ACC_STATIC) != 0) {
+        if (isEnum && (access & Opcodes.ACC_STATIC) != 0) {
             // enumで生成されるstaticメソッド2つをコンパイラ生成として扱う
             if (methodSignature.isSame(new MethodSignature("values"))) {
                 return MethodDerivation.COMPILER_GENERATED;
@@ -74,8 +74,8 @@ public class JigMethodBuilder {
                                            List<TypeIdentifier> throwsTypes,
                                            MethodDeclaration methodDeclaration,
                                            List<Annotation> annotationList,
-                                           Instructions methodInstructions) {
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access, jigTypeBuilder);
+                                           Instructions methodInstructions, boolean isEnum) {
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access, jigTypeBuilder, isEnum);
         var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
         return jigMethodBuilder;
     }

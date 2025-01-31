@@ -172,7 +172,8 @@ class AsmClassVisitor extends ClassVisitor {
                             data.throwsTypes,
                             data.methodDeclaration,
                             data.annotationList,
-                            data.methodInstructions);
+                            data.methodInstructions,
+                            jigTypeBuilder.superType().typeIdentifier().isEnum());
 
                     if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
                         // コンストラクタ

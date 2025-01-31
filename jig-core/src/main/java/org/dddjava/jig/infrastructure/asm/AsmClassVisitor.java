@@ -66,55 +66,9 @@ class AsmClassVisitor extends ClassVisitor {
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
+
             superType = asmClassSignatureVisitor.superclass();
-
-            SignatureVisitor noOpVisitor = new SignatureVisitor(AsmClassVisitor.this.api) {
-            };
-
-            // インタフェースのParameterizedTypeを生成
-            interfaceTypes = new ArrayList<>();
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(AsmClassVisitor.this.api) {
-                        @Override
-                        public SignatureVisitor visitInterface() {
-
-                            return new SignatureVisitor(this.api) {
-                                final List<TypeIdentifier> typeParameters = new ArrayList<>();
-                                String interfaceName;
-
-                                @Override
-                                public void visitClassType(String name1) {
-                                    interfaceName = name1;
-                                }
-
-                                @Override
-                                public SignatureVisitor visitTypeArgument(char wildcard) {
-                                    if (wildcard == '=') {
-                                        return new SignatureVisitor(this.api) {
-                                            @Override
-                                            public void visitClassType(String name1) {
-                                                typeParameters.add(TypeIdentifier.valueOf(name1));
-                                            }
-
-                                            @Override
-                                            public SignatureVisitor visitTypeArgument(char wildcard) {
-                                                // ジェネリクスのネストは対応しない
-                                                return noOpVisitor;
-                                            }
-                                        };
-                                    }
-                                    // 境界型は対応しない
-                                    return noOpVisitor;
-                                }
-
-                                @Override
-                                public void visitEnd() {
-                                    interfaceTypes.add(ParameterizedType.convert(TypeIdentifier.valueOf(interfaceName), typeParameters));
-                                }
-                            };
-                        }
-                    }
-            );
+            interfaceTypes = asmClassSignatureVisitor.interfaces();
 
             // シグネチャに登場する型を全部取り出す
             List<TypeIdentifier> useTypes = new ArrayList<>();

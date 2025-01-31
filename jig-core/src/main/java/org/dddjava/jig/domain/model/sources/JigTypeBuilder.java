@@ -132,15 +132,15 @@ public class JigTypeBuilder {
         staticFieldDeclarations.add(new StaticFieldDeclaration(type.typeIdentifier(), name, typeIdentifier));
     }
 
-    public void instanceJigMethodBuilders(JigMethodBuilder jigMethodBuilder) {
+    public void addInstanceMethod(JigMethodBuilder jigMethodBuilder) {
         instanceJigMethodBuilders.add(jigMethodBuilder);
     }
 
-    public void constructorFacts(JigMethodBuilder jigMethodBuilder) {
+    public void addConstructor(JigMethodBuilder jigMethodBuilder) {
         constructorFacts.add(jigMethodBuilder);
     }
 
-    public void staticJigMethodBuilders(JigMethodBuilder jigMethodBuilder) {
+    public void addStaticMethod(JigMethodBuilder jigMethodBuilder) {
         staticJigMethodBuilders.add(jigMethodBuilder);
     }
 

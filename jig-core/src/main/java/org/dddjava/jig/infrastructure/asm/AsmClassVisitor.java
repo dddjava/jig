@@ -172,13 +172,13 @@ class AsmClassVisitor extends ClassVisitor {
 
                     if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
                         // コンストラクタ
-                        jigTypeBuilder.constructorFacts(jigMethodBuilder);
+                        jigTypeBuilder.addConstructor(jigMethodBuilder);
                     } else if ((access & Opcodes.ACC_STATIC) != 0) {
                         // staticメソッド
-                        jigTypeBuilder.staticJigMethodBuilders(jigMethodBuilder);
+                        jigTypeBuilder.addStaticMethod(jigMethodBuilder);
                     } else {
                         // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
-                        jigTypeBuilder.instanceJigMethodBuilders(jigMethodBuilder);
+                        jigTypeBuilder.addInstanceMethod(jigMethodBuilder);
                     }
                 });
     }

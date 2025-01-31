@@ -71,7 +71,65 @@ class AsmClassVisitor extends ClassVisitor {
             superType = new ParameterizedType(TypeIdentifier.valueOf(superName));
         }
 
-        List<ParameterizedType> interfaceTypes = interfaceTypes(interfaces, signature);
+        List<ParameterizedType> interfaceTypes;
+        // ジェネリクスを使用している場合だけsignatureが入る
+        if (signature != null) {
+            SignatureVisitor noOpVisitor = new SignatureVisitor(AsmClassVisitor.this.api) {
+            };
+
+            List<ParameterizedType> parameterizedTypes = new ArrayList<>();
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(AsmClassVisitor.this.api) {
+                        @Override
+                        public SignatureVisitor visitInterface() {
+
+                            return new SignatureVisitor(this.api) {
+                                final List<TypeIdentifier> typeParameters = new ArrayList<>();
+                                String interfaceName;
+
+                                @Override
+                                public void visitClassType(String name1) {
+                                    interfaceName = name1;
+                                }
+
+                                @Override
+                                public SignatureVisitor visitTypeArgument(char wildcard) {
+                                    if (wildcard == '=') {
+                                        return new SignatureVisitor(this.api) {
+                                            @Override
+                                            public void visitClassType(String name1) {
+                                                typeParameters.add(TypeIdentifier.valueOf(name1));
+                                            }
+
+                                            @Override
+                                            public SignatureVisitor visitTypeArgument(char wildcard) {
+                                                // ジェネリクスのネストは対応しない
+                                                return noOpVisitor;
+                                            }
+                                        };
+                                    }
+                                    // 境界型は対応しない
+                                    return noOpVisitor;
+                                }
+
+                                @Override
+                                public void visitEnd() {
+                                    parameterizedTypes.add(ParameterizedType.convert(TypeIdentifier.valueOf(interfaceName), typeParameters));
+                                }
+                            };
+                        }
+                    }
+            );
+
+            interfaceTypes = parameterizedTypes;
+        } else {
+            // 非総称型で作成
+            interfaceTypes = Arrays.stream(interfaces)
+                    .map(TypeIdentifier::valueOf)
+                    .map(ParameterizedType::new)
+                    .collect(Collectors.toList());
+        }
+
         jigTypeBuilder = new JigTypeBuilder(type, superType, interfaceTypes, typeKind(access), resolveVisibility(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
@@ -228,66 +286,6 @@ class AsmClassVisitor extends ClassVisitor {
             );
         }
         return useTypes;
-    }
-
-    private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {
-        // ジェネリクスを使用している場合だけsignatureが入る
-        if (signature == null) {
-            // 非総称型で作成
-            return Arrays.stream(interfaces)
-                    .map(TypeIdentifier::valueOf)
-                    .map(ParameterizedType::new)
-                    .collect(Collectors.toList());
-        }
-
-        SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {
-        };
-
-        List<ParameterizedType> parameterizedTypes = new ArrayList<>();
-        new SignatureReader(signature).accept(
-                new SignatureVisitor(this.api) {
-                    @Override
-                    public SignatureVisitor visitInterface() {
-
-                        return new SignatureVisitor(this.api) {
-                            final List<TypeIdentifier> typeParameters = new ArrayList<>();
-                            String interfaceName;
-
-                            @Override
-                            public void visitClassType(String name) {
-                                interfaceName = name;
-                            }
-
-                            @Override
-                            public SignatureVisitor visitTypeArgument(char wildcard) {
-                                if (wildcard == '=') {
-                                    return new SignatureVisitor(this.api) {
-                                        @Override
-                                        public void visitClassType(String name) {
-                                            typeParameters.add(TypeIdentifier.valueOf(name));
-                                        }
-
-                                        @Override
-                                        public SignatureVisitor visitTypeArgument(char wildcard) {
-                                            // ジェネリクスのネストは対応しない
-                                            return noOpVisitor;
-                                        }
-                                    };
-                                }
-                                // 境界型は対応しない
-                                return noOpVisitor;
-                            }
-
-                            @Override
-                            public void visitEnd() {
-                                parameterizedTypes.add(ParameterizedType.convert(TypeIdentifier.valueOf(interfaceName), typeParameters));
-                            }
-                        };
-                    }
-                }
-        );
-
-        return parameterizedTypes;
     }
 
     public JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder,

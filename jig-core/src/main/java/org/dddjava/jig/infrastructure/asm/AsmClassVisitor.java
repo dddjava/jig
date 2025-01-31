@@ -71,6 +71,7 @@ class AsmClassVisitor extends ClassVisitor {
             SignatureVisitor noOpVisitor = new SignatureVisitor(AsmClassVisitor.this.api) {
             };
 
+            // インタフェースのParameterizedTypeを生成
             interfaceTypes = new ArrayList<>();
             new SignatureReader(signature).accept(
                     new SignatureVisitor(AsmClassVisitor.this.api) {

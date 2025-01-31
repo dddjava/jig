@@ -212,19 +212,6 @@ class AsmClassVisitor extends ClassVisitor {
         // name: 名前
         // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
 
-        List<TypeIdentifier> signatureContainedTypes = new ArrayList<>();
-        if (signature != null) {
-            // シグネチャに登場する型を全部取り出す
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(AsmClassVisitor.this.api) {
-                        @Override
-                        public void visitClassType(String name1) {
-                            signatureContainedTypes.add(TypeIdentifier.valueOf(name1));
-                        }
-                    }
-            );
-        }
-
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
                 jigTypeBuilder.typeIdentifier(),
@@ -233,7 +220,7 @@ class AsmClassVisitor extends ClassVisitor {
                             jigTypeBuilder,
                             access,
                             data.visibility,
-                            signatureContainedTypes,
+                            data.signatureContainedTypes,
                             data.throwsTypes,
                             data.methodDeclaration);
                     jigMethodBuilder.setAnnotations(data.annotationList);

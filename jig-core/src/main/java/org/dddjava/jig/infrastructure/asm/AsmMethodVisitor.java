@@ -12,6 +12,8 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstru
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.objectweb.asm.*;
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,12 +44,14 @@ class AsmMethodVisitor extends MethodVisitor {
     // このVisitorで収集した情報
     final Instructions methodInstructions;
     final List<Annotation> annotationList;
+    final List<TypeIdentifier> signatureContainedTypes;
 
-    public AsmMethodVisitor(int api, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer) {
+    public AsmMethodVisitor(int api, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
         super(api);
         this.visibility = visibility;
         this.throwsTypes = throwsTypes;
         this.methodDeclaration = methodDeclaration;
+        this.signatureContainedTypes = signatureContainedTypes;
         this.methodInstructions = Instructions.newInstance();
         this.annotationList = new ArrayList<>();
         this.endConsumer = endConsumer;
@@ -57,6 +61,19 @@ class AsmMethodVisitor extends MethodVisitor {
                                      // visitMethodの引数
                                      int access, String name, String descriptor, String signature, String[] exceptions,
                                      TypeIdentifier typeIdentifier, Consumer<AsmMethodVisitor> endConsumer) {
+        List<TypeIdentifier> signatureContainedTypes = new ArrayList<>();
+        if (signature != null) {
+            // シグネチャに登場する型を全部取り出す
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(api) {
+                        @Override
+                        public void visitClassType(String name1) {
+                            signatureContainedTypes.add(TypeIdentifier.valueOf(name1));
+                        }
+                    }
+            );
+        }
+
         MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
                 .flatMap(nonNullSignature ->
                         // signatureがあればこちらから構築する
@@ -88,7 +105,8 @@ class AsmMethodVisitor extends MethodVisitor {
                 resolveMethodVisibility(access),
                 throwsTypes,
                 methodDeclaration,
-                endConsumer);
+                endConsumer,
+                signatureContainedTypes);
     }
 
     private static Visibility resolveMethodVisibility(int access) {

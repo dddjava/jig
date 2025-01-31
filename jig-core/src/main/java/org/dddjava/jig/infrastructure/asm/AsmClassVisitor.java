@@ -62,18 +62,13 @@ class AsmClassVisitor extends ClassVisitor {
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
 
         ParameterizedType superType;
+        List<ParameterizedType> interfaceTypes;
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
             superType = asmClassSignatureVisitor.superclass();
-        } else {
-            superType = new ParameterizedType(TypeIdentifier.valueOf(superName));
-        }
 
-        List<ParameterizedType> interfaceTypes;
-        // ジェネリクスを使用している場合だけsignatureが入る
-        if (signature != null) {
             SignatureVisitor noOpVisitor = new SignatureVisitor(AsmClassVisitor.this.api) {
             };
 
@@ -124,6 +119,7 @@ class AsmClassVisitor extends ClassVisitor {
             interfaceTypes = parameterizedTypes;
         } else {
             // 非総称型で作成
+            superType = new ParameterizedType(TypeIdentifier.valueOf(superName));
             interfaceTypes = Arrays.stream(interfaces)
                     .map(TypeIdentifier::valueOf)
                     .map(ParameterizedType::new)

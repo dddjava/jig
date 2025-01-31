@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * ( visit | visitEnum | visitAnnotation | visitArray )* visitEnd.
+ */
 class AsmAnnotationVisitor extends AnnotationVisitor {
     final AnnotationDescription annotationDescription = new AnnotationDescription();
     private final TypeIdentifier annotationType;

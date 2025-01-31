@@ -57,7 +57,20 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
-        List<ParameterizedType> actualTypeParameters = extractClassTypeFromGenericsSignature(signature).stream().map(ParameterizedType::new).collect(Collectors.toList());
+        // ジェネリクスを使用している場合だけsignatureが入る
+        List<TypeIdentifier> useTypes = new ArrayList<>();
+        if (signature != null) {
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(AsmClassVisitor.this.api) {
+                        @Override
+                        public void visitClassType(String name1) {
+                            // 引数と戻り値に登場するクラスを収集
+                            useTypes.add(TypeIdentifier.valueOf(name1));
+                        }
+                    }
+            );
+        }
+        List<ParameterizedType> actualTypeParameters = useTypes.stream().map(ParameterizedType::new).collect(Collectors.toList());
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
 
@@ -200,7 +213,19 @@ class AsmClassVisitor extends ClassVisitor {
         // name: 名前
         // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
 
-        List<TypeIdentifier> signatureContainedTypes = extractClassTypeFromGenericsSignature(signature);
+        // ジェネリクスを使用している場合だけsignatureが入る
+        List<TypeIdentifier> signatureContainedTypes = new ArrayList<>();
+        if (signature != null) {
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(AsmClassVisitor.this.api) {
+                        @Override
+                        public void visitClassType(String name1) {
+                            // 引数と戻り値に登場するクラスを収集
+                            signatureContainedTypes.add(TypeIdentifier.valueOf(name1));
+                        }
+                    }
+            );
+        }
 
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
@@ -265,23 +290,6 @@ class AsmClassVisitor extends ClassVisitor {
     static TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
         Type type = Type.getType(descriptor);
         return TypeIdentifier.valueOf(type.getClassName());
-    }
-
-    private List<TypeIdentifier> extractClassTypeFromGenericsSignature(String signature) {
-        // ジェネリクスを使用している場合だけsignatureが入る
-        List<TypeIdentifier> useTypes = new ArrayList<>();
-        if (signature != null) {
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(this.api) {
-                        @Override
-                        public void visitClassType(String name) {
-                            // 引数と戻り値に登場するクラスを収集
-                            useTypes.add(TypeIdentifier.valueOf(name));
-                        }
-                    }
-            );
-        }
-        return useTypes;
     }
 
     public JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder,

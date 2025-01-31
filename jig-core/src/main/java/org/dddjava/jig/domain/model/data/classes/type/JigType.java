@@ -76,7 +76,7 @@ public class JigType {
     }
 
     public String label() {
-        return typeAlias().asTextOrIdentifierSimpleText();
+        return classComment().asTextOrIdentifierSimpleText();
     }
 
     public JigTypeDescription description() {
@@ -111,7 +111,7 @@ public class JigType {
     }
 
     public boolean markedCore() {
-        return jigTypeAttribute.alias().asText().startsWith("*");
+        return jigTypeAttribute.classcomment().asText().startsWith("*");
     }
 
     public boolean isDeprecated() {
@@ -136,15 +136,15 @@ public class JigType {
         return identifier();
     }
 
-    public ClassComment typeAlias() {
-        return jigTypeAttribute.alias();
+    public ClassComment classComment() {
+        return jigTypeAttribute.classcomment();
     }
 
     public String nodeLabel() {
-        return typeAlias().nodeLabel();
+        return classComment().nodeLabel();
     }
 
     public String nodeLabel(String delimiter) {
-        return typeAlias().nodeLabel(delimiter);
+        return classComment().nodeLabel(delimiter);
     }
 }

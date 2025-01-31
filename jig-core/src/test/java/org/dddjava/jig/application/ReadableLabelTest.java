@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.ClassJavadocStub;
 import stub.domain.model.MethodJavadocStub;
@@ -22,13 +23,14 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 @JigServiceTest
-class AliasServiceTest {
+class ReadableLabelTest {
 
     JigDocumentContext sut;
 
-    public AliasServiceTest(JigDocumentContext jigDocumentContext) {
+    public ReadableLabelTest(JigDocumentContext jigDocumentContext) {
         sut = jigDocumentContext;
     }
 
@@ -39,21 +41,20 @@ class AliasServiceTest {
 
     @ParameterizedTest
     @MethodSource
-    void クラス別名取得(TypeIdentifier typeIdentifier, String comment, JigDataProvider jigDataProvider) {
+    void クラスコメント取得(Class<?> targetClass, String expectedCommentText, JigDataProvider jigDataProvider) {
         var jigTypes = jigDataProvider.fetchJigTypes();
-        ClassComment classComment = jigTypes.stream()
-                .filter(jigType -> jigType.identifier().equals(typeIdentifier))
-                .map(jigType -> jigType.typeAlias())
-                .findAny().orElseThrow(AssertionError::new);
+        ClassComment classComment = jigTypes.resolveJigType(TypeIdentifier.from(targetClass))
+                .map(jigType -> jigType.classComment())
+                .orElseThrow(AssertionError::new);
 
-        assertEquals(comment, classComment.asText());
+        assertEquals(expectedCommentText, classComment.asText());
     }
 
-    static Stream<org.junit.jupiter.params.provider.Arguments> クラス別名取得() {
+    static Stream<Arguments> クラスコメント取得() {
         return Stream.of(
-                org.junit.jupiter.params.provider.Arguments.of(TypeIdentifier.from(ClassJavadocStub.class), "クラスのJavadoc"),
-                org.junit.jupiter.params.provider.Arguments.of(TypeIdentifier.from(MethodJavadocStub.class), ""),
-                org.junit.jupiter.params.provider.Arguments.of(TypeIdentifier.from(NotJavadocStub.class), "")
+                argumentSet("クラスのJavadocがClassCommentになるできる", ClassJavadocStub.class, "クラスのJavadoc"),
+                argumentSet("メソッドのJavadocはClassCommentではない", MethodJavadocStub.class, ""),
+                argumentSet("ブロックコメントはClassCommentではない", NotJavadocStub.class, "")
         );
     }
 

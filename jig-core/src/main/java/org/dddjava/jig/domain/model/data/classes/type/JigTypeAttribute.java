@@ -23,7 +23,7 @@ public class JigTypeAttribute {
         this.annotations = annotations;
     }
 
-    public ClassComment alias() {
+    public ClassComment classcomment() {
         return classComment;
     }
 

@@ -12,7 +12,7 @@ public class TreeLeaf implements TreeComponent {
 
     @Override
     public String name() {
-        return jigType.typeAlias().asTextOrIdentifierSimpleText();
+        return jigType.classComment().asTextOrIdentifierSimpleText();
     }
 
     @Override

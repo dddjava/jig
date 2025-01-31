@@ -237,9 +237,7 @@ class AsmClassVisitor extends ClassVisitor {
                                                      List<Annotation> annotationList,
                                                      Instructions methodInstructions) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access);
-        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes);
-        jigMethodBuilder.setAnnotations(annotationList);
-        jigMethodBuilder.setInstructions(methodInstructions);
+        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
 
         if (methodDeclaration.isConstructor()) {
             // コンストラクタ

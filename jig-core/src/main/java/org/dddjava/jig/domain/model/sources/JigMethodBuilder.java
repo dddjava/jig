@@ -18,24 +18,24 @@ import java.util.stream.Collectors;
 public class JigMethodBuilder {
     private static final Logger logger = LoggerFactory.getLogger(JigMethodBuilder.class);
 
-    MethodDeclaration methodDeclaration;
-    Visibility visibility;
-    MethodDerivation methodDerivation;
-    List<TypeIdentifier> throwsTypes;
+    private final MethodDeclaration methodDeclaration;
+    private final Visibility visibility;
+    private final MethodDerivation methodDerivation;
+    private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
-
-
-    private Instructions instructions;
+    private final List<Annotation> annotations;
+    private final Instructions instructions;
 
     private MethodImplementation methodImplementation = null;
-    private List<Annotation> annotations = null;
 
-    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes) {
+    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, List<Annotation> annotationList, Instructions methodInstructions) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
         this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
+        this.annotations = annotationList;
+        this.instructions = methodInstructions;
     }
 
     public JigMethod build() {
@@ -65,13 +65,5 @@ public class JigMethodBuilder {
 
     public void registerMethodImplementation(MethodImplementation methodImplementation) {
         this.methodImplementation = methodImplementation;
-    }
-
-    public void setAnnotations(List<Annotation> annotations) {
-        this.annotations = annotations;
-    }
-
-    public void setInstructions(Instructions instructions) {
-        this.instructions = instructions;
     }
 }

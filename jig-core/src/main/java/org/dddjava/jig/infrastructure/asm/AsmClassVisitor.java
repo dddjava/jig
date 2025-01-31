@@ -44,16 +44,6 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     @Override
-    public void visitEnd() {
-        super.visitEnd();
-    }
-
-    public JigTypeBuilder jigTypeBuilder() {
-        // visitEnd後にしか呼んではいけない
-        return Objects.requireNonNull(jigTypeBuilder);
-    }
-
-    @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
         // ジェネリクスを使用している場合だけsignatureが入る
@@ -97,29 +87,21 @@ class AsmClassVisitor extends ClassVisitor {
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
-    private TypeKind typeKind(int access) {
-        if ((access & Opcodes.ACC_ENUM) != 0) {
-            if ((access & Opcodes.ACC_FINAL) == 0) {
-                return TypeKind.抽象列挙型;
-            }
-            return TypeKind.列挙型;
-        }
-
-        // FIXME: アノテーション、インタフェース、抽象型の判定が足りない
-
-        // この判定できるのはASM固有
-        if ((access & Opcodes.ACC_RECORD) != 0) {
-            return TypeKind.レコード型;
-        }
-
-        return TypeKind.通常型;
-    }
-
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
                 jigTypeBuilder.addAnnotation(annotation)
         );
+    }
+
+    /**
+     * {@link ClassReader} の読み取り順が recordComponent -> field -> method となっているので、
+     * ここで recordComponent の名前を記録して field/method の判定に使える。
+     */
+    @Override
+    public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
+        jigTypeBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
+        return super.visitRecordComponent(name, descriptor, signature);
     }
 
     @Override
@@ -141,16 +123,6 @@ class AsmClassVisitor extends ClassVisitor {
         }
 
         return super.visitField(access, name, descriptor, signature, value);
-    }
-
-    /**
-     * {@link ClassReader} の読み取り順が recordComponent -> field -> method となっているので、
-     * ここで recordComponent の名前を記録して field/method の判定に使える。
-     */
-    @Override
-    public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
-        jigTypeBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
-        return super.visitRecordComponent(name, descriptor, signature);
     }
 
     @Override
@@ -183,6 +155,11 @@ class AsmClassVisitor extends ClassVisitor {
                 });
     }
 
+    @Override
+    public void visitEnd() {
+        super.visitEnd();
+    }
+
     /**
      * Visibilityに持っていきたいが、accessの定数はasmが持っているのでここに置いておく。
      * 実際はバイトコードの固定値。
@@ -194,6 +171,24 @@ class AsmClassVisitor extends ClassVisitor {
     private TypeVisibility resolveVisibility(int access) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) return TypeVisibility.PUBLIC;
         return TypeVisibility.NOT_PUBLIC;
+    }
+
+    private TypeKind typeKind(int access) {
+        if ((access & Opcodes.ACC_ENUM) != 0) {
+            if ((access & Opcodes.ACC_FINAL) == 0) {
+                return TypeKind.抽象列挙型;
+            }
+            return TypeKind.列挙型;
+        }
+
+        // FIXME: アノテーション、インタフェース、抽象型の判定が足りない
+
+        // この判定できるのはASM固有
+        if ((access & Opcodes.ACC_RECORD) != 0) {
+            return TypeKind.レコード型;
+        }
+
+        return TypeKind.通常型;
     }
 
     private FieldType typeDescriptorToFieldType(String descriptor, String signature) {
@@ -230,5 +225,10 @@ class AsmClassVisitor extends ClassVisitor {
     static TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
         Type type = Type.getType(descriptor);
         return TypeIdentifier.valueOf(type.getClassName());
+    }
+
+    public JigTypeBuilder jigTypeBuilder() {
+        // visitEnd後にしか呼んではいけない
+        return Objects.requireNonNull(jigTypeBuilder);
     }
 }

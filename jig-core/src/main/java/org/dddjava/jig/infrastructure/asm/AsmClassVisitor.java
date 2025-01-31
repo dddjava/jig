@@ -111,7 +111,8 @@ class AsmClassVisitor extends ClassVisitor {
             // インスタンスフィールド
             FieldType result;
             if (signature == null) {
-                result = typeDescriptorToFieldType(descriptor);
+                TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
+                result = new FieldType(typeIdentifier);
             } else {
                 ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
                 new SignatureReader(signature).accept(
@@ -214,11 +215,6 @@ class AsmClassVisitor extends ClassVisitor {
         }
 
         return TypeKind.通常型;
-    }
-
-    private FieldType typeDescriptorToFieldType(String descriptor) {
-        TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
-        return new FieldType(typeIdentifier);
     }
 
     static TypeIdentifier typeDescriptorToIdentifier(String descriptor) {

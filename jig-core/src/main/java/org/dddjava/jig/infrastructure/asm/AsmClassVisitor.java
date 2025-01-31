@@ -130,15 +130,12 @@ class AsmClassVisitor extends ClassVisitor {
             // インスタンスフィールド
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
 
-            FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
-            return new FieldVisitor(this.api) {
-                @Override
-                public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                    TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                    return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier,
-                            annotation -> jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
-                }
-            };
+            return new AsmFieldVisitor(this.api, it -> {
+                FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
+                it.annotations.forEach(annotation -> {
+                    jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
+                });
+            });
         } else if (!name.equals("$VALUES")) {
             // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
             jigTypeBuilder.addStaticField(name, typeDescriptorToIdentifier(descriptor));

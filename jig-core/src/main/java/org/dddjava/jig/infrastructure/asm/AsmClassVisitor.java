@@ -1,11 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
@@ -167,7 +164,7 @@ class AsmClassVisitor extends ClassVisitor {
                 access, name, descriptor, signature, exceptions,
                 jigTypeBuilder.typeIdentifier(),
                 data -> {
-                    createPlainMethodBuilder(
+                    JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             jigTypeBuilder,
                             access,
                             data.visibility,
@@ -176,6 +173,17 @@ class AsmClassVisitor extends ClassVisitor {
                             data.methodDeclaration,
                             data.annotationList,
                             data.methodInstructions);
+
+                    if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
+                        // コンストラクタ
+                        jigTypeBuilder.constructorFacts(jigMethodBuilder);
+                    } else if ((access & Opcodes.ACC_STATIC) != 0) {
+                        // staticメソッド
+                        jigTypeBuilder.staticJigMethodBuilders(jigMethodBuilder);
+                    } else {
+                        // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
+                        jigTypeBuilder.instanceJigMethodBuilders(jigMethodBuilder);
+                    }
                 });
     }
 
@@ -227,58 +235,4 @@ class AsmClassVisitor extends ClassVisitor {
         Type type = Type.getType(descriptor);
         return TypeIdentifier.valueOf(type.getClassName());
     }
-
-    public static JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder,
-                                                            int access,
-                                                            Visibility visibility,
-                                                            List<TypeIdentifier> signatureContainedTypes,
-                                                            List<TypeIdentifier> throwsTypes,
-                                                            MethodDeclaration methodDeclaration,
-                                                            List<Annotation> annotationList,
-                                                            Instructions methodInstructions) {
-        MethodDerivation methodDerivation = AsmClassVisitor.resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access, jigTypeBuilder);
-        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
-
-        if (methodDeclaration.isConstructor()) {
-            // コンストラクタ
-            jigTypeBuilder.constructorFacts(jigMethodBuilder);
-        } else if ((access & Opcodes.ACC_STATIC) != 0) {
-            // staticメソッド
-            jigTypeBuilder.staticJigMethodBuilders(jigMethodBuilder);
-        } else {
-            // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
-            jigTypeBuilder.instanceJigMethodBuilders(jigMethodBuilder);
-        }
-
-        return jigMethodBuilder;
-    }
-
-    private static MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access, JigTypeBuilder jigTypeBuilder) {
-        String name = methodSignature.methodName();
-        if ("<init>".equals(name) || "<clinit>".equals(name)) {
-            return MethodDerivation.CONSTRUCTOR;
-        }
-
-        if ((access & Opcodes.ACC_BRIDGE) != 0 || (access & Opcodes.ACC_SYNTHETIC) != 0) {
-            return MethodDerivation.COMPILER_GENERATED;
-        }
-
-        if (jigTypeBuilder.isRecordComponent(methodSignature, methodReturn)) {
-            return MethodDerivation.RECORD_COMPONENT;
-        }
-
-        if (jigTypeBuilder.superType().typeIdentifier().isEnum() && (access & Opcodes.ACC_STATIC) != 0) {
-            // enumで生成されるstaticメソッド2つをコンパイラ生成として扱う
-            if (methodSignature.isSame(new MethodSignature("values"))) {
-                return MethodDerivation.COMPILER_GENERATED;
-            } else {
-                if (methodSignature.isSame(new MethodSignature("valueOf", TypeIdentifier.from(String.class)))) {
-                    return MethodDerivation.COMPILER_GENERATED;
-                }
-            }
-        }
-
-        return MethodDerivation.PROGRAMMER;
-    }
-
 }

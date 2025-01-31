@@ -149,12 +149,7 @@ class AsmClassVisitor extends ClassVisitor {
      */
     @Override
     public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
-        // name: 名前
-        // descriptor: Type
-        // ジェネリクスを使用している場合だけsignatureが入る
-
         jigTypeBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
-
         return super.visitRecordComponent(name, descriptor, signature);
     }
 

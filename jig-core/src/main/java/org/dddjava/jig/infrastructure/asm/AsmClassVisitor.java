@@ -109,7 +109,32 @@ class AsmClassVisitor extends ClassVisitor {
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールド
-            FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
+            FieldType result;
+            if (signature == null) {
+                result = typeDescriptorToFieldType(descriptor);
+            } else {
+                ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
+                new SignatureReader(signature).accept(
+                        new SignatureVisitor(AsmClassVisitor.this.api) {
+                            @Override
+                            public SignatureVisitor visitTypeArgument(char wildcard) {
+                                if (wildcard == '=') {
+                                    return new SignatureVisitor(this.api) {
+                                        @Override
+                                        public void visitClassType(String name1) {
+                                            typeParameters.add(TypeIdentifier.valueOf(name1));
+                                        }
+                                    };
+                                }
+                                return super.visitTypeArgument(wildcard);
+                            }
+                        }
+                );
+                TypeIdentifiers typeIdentifiers = new TypeIdentifiers(typeParameters);
+                result = new FieldType(typeDescriptorToIdentifier(descriptor), typeIdentifiers);
+            }
+
+            FieldType fieldType = result;
 
             return new AsmFieldVisitor(this.api, it -> {
                 FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
@@ -189,32 +214,6 @@ class AsmClassVisitor extends ClassVisitor {
         }
 
         return TypeKind.通常型;
-    }
-
-    private FieldType typeDescriptorToFieldType(String descriptor, String signature) {
-        if (signature == null) {
-            return typeDescriptorToFieldType(descriptor);
-        }
-
-        ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
-        new SignatureReader(signature).accept(
-                new SignatureVisitor(this.api) {
-                    @Override
-                    public SignatureVisitor visitTypeArgument(char wildcard) {
-                        if (wildcard == '=') {
-                            return new SignatureVisitor(this.api) {
-                                @Override
-                                public void visitClassType(String name) {
-                                    typeParameters.add(TypeIdentifier.valueOf(name));
-                                }
-                            };
-                        }
-                        return super.visitTypeArgument(wildcard);
-                    }
-                }
-        );
-        TypeIdentifiers typeIdentifiers = new TypeIdentifiers(typeParameters);
-        return new FieldType(typeDescriptorToIdentifier(descriptor), typeIdentifiers);
     }
 
     private FieldType typeDescriptorToFieldType(String descriptor) {

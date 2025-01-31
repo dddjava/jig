@@ -161,9 +161,6 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        // name: 名前
-        // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
-
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
                 jigTypeBuilder.typeIdentifier(),

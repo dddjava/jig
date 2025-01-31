@@ -33,11 +33,13 @@ class AsmFieldVisitor extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible) {
+        // いまはなにもしていない
         return super.visitTypeAnnotation(typeRef, typePath, descriptor, visible);
     }
 
     @Override
     public void visitAttribute(Attribute attribute) {
+        // いまはなにもしていない
         super.visitAttribute(attribute);
     }
 

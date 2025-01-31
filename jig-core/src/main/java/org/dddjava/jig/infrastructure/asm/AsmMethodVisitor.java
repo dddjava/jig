@@ -60,6 +60,8 @@ class AsmMethodVisitor extends MethodVisitor {
         MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
                 .flatMap(nonNullSignature ->
                         // signatureがあればこちらから構築する
+                        // TODO MethodDeclarationだけ取得しているがsignatureから取得できる型の収集を別でやっているため、
+                        //  methodSignatureを2回読み取るようになっている。この１か所だけで読むように寄せる。（useTypesもやめたい）
                         AsmMethodSignatureVisitor.buildMethodDeclaration(api, name, typeIdentifier, nonNullSignature)
                 ).orElseGet(() -> {
                     // signatureがないもしくは失敗した場合はdescriptorから構築する

@@ -55,6 +55,7 @@ class AsmClassVisitor extends ClassVisitor {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
+            logger.debug(signature);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
 
             superType = asmClassSignatureVisitor.superclass();

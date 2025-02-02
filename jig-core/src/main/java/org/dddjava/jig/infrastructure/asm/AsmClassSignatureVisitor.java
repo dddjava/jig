@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.infrastructure.asm.data.JigTypeParameter;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 
@@ -19,15 +20,20 @@ import static org.slf4j.LoggerFactory.getLogger;
 class AsmClassSignatureVisitor extends SignatureVisitor {
     private static Logger logger = getLogger(AsmClassSignatureVisitor.class);
 
-    record TypeParameter(String name, List<AsmTypeSignatureVisitor> classBound,
-                         List<AsmTypeSignatureVisitor> interfaceBounds) {
-        TypeParameter(String name) {
+    record JigTypeParameterBuilder(String name,
+                                   List<AsmTypeSignatureVisitor> classBound,
+                                   List<AsmTypeSignatureVisitor> interfaceBounds) {
+        JigTypeParameterBuilder(String name) {
             this(name, new ArrayList<>(), new ArrayList<>());
+        }
+
+        JigTypeParameter build() {
+            return new JigTypeParameter(name);
         }
     }
 
-    private final List<TypeParameter> typeParameters = new ArrayList<>();
-    private transient TypeParameter currentTypeParameter;
+    private final List<JigTypeParameterBuilder> jigTypeParameterBuilders = new ArrayList<>();
+    private transient JigTypeParameterBuilder currentJigTypeParameterBuilder;
 
     private AsmTypeSignatureVisitor superclassAsmTypeSignatureVisitor;
     private final List<AsmTypeSignatureVisitor> interfaceAsmTypeSignatureVisitors = new ArrayList<>();
@@ -39,14 +45,14 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     @Override
     public void visitFormalTypeParameter(String name) {
         logger.debug("visitFormalTypeParameter:{}", name);
-        typeParameters.add(currentTypeParameter = new TypeParameter(name));
+        jigTypeParameterBuilders.add(currentJigTypeParameterBuilder = new JigTypeParameterBuilder(name));
     }
 
     @Override
     public SignatureVisitor visitClassBound() {
         logger.debug("visitClassBound");
         AsmTypeSignatureVisitor visitor = new AsmTypeSignatureVisitor(this.api);
-        List<AsmTypeSignatureVisitor> list = currentTypeParameter.classBound();
+        List<AsmTypeSignatureVisitor> list = currentJigTypeParameterBuilder.classBound();
         if (!list.isEmpty()) {
             throw new IllegalStateException("1つのTypeParameterに複数のClassBoundが存在する？？");
         }
@@ -58,7 +64,7 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     public SignatureVisitor visitInterfaceBound() {
         logger.debug("visitInterfaceBound");
         AsmTypeSignatureVisitor visitor = new AsmTypeSignatureVisitor(this.api);
-        currentTypeParameter.interfaceBounds().add(visitor);
+        currentJigTypeParameterBuilder.interfaceBounds().add(visitor);
         return visitor;
     }
 
@@ -97,7 +103,9 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                 .toList();
     }
 
-    public List<String> typeParameterNames() {
-        return typeParameters.stream().map(TypeParameter::name).toList();
+    public List<JigTypeParameter> jigTypeParameters() {
+        return jigTypeParameterBuilders.stream()
+                .map(JigTypeParameterBuilder::build)
+                .toList();
     }
 }

@@ -10,11 +10,13 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.infrastructure.asm.ut.MyClass;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.annotation.RuntimeRetainedAnnotation;
@@ -35,6 +37,7 @@ import stub.domain.model.type.SimpleNumber;
 import stub.misc.DecisionClass;
 import testing.TestSupport;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -49,6 +52,18 @@ public class AsmClassSourceReaderTest {
 
     @Nested
     class クラス {
+        @Test
+        void name() throws IOException {
+            AsmClassVisitor visitor = new AsmClassVisitor();
+            new ClassReader(MyClass.class.getName()).accept(visitor, 0);
+
+            var typeData = visitor.jigTypeData();
+
+            assertEquals("MyClass", typeData.simpleName());
+            assertEquals("org.dddjava.jig.infrastructure.asm.ut.MyClass", typeData.fqn());
+            assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
+        }
+
         @Test
         void クラス定義に使用している型が取得できる() throws Exception {
             JigType actual = JigType構築(ClassDefinition.class);

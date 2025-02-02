@@ -6,16 +6,14 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
+import org.dddjava.jig.infrastructure.asm.data.*;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,12 +23,12 @@ import java.util.stream.Collectors;
  * [ visitNestHost ][ visitOuterClass ]
  * ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
  * (
- *     visitNestMember
- *   | [ * visitPermittedSubclass ]
- *   | visitInnerClass
- *   | visitRecordComponent
- *   | visitField
- *   | visitMethod
+ * visitNestMember
+ * | [ * visitPermittedSubclass ]
+ * | visitInnerClass
+ * | visitRecordComponent
+ * | visitField
+ * | visitMethod
  * )*
  * visitEnd
  */
@@ -38,6 +36,9 @@ class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
     private JigTypeBuilder jigTypeBuilder;
+
+    // class宣言の中のジェネリクス
+    private List<JigTypeParameter> jigTypeParameters;
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -58,6 +59,7 @@ class AsmClassVisitor extends ClassVisitor {
 
             superType = asmClassSignatureVisitor.superclass();
             interfaceTypes = asmClassSignatureVisitor.interfaces();
+            jigTypeParameters = asmClassSignatureVisitor.jigTypeParameters();
 
             // シグネチャに登場する型を全部取り出す
             List<TypeIdentifier> useTypes = new ArrayList<>();
@@ -225,5 +227,21 @@ class AsmClassVisitor extends ClassVisitor {
     public JigTypeBuilder jigTypeBuilder() {
         // visitEnd後にしか呼んではいけない
         return Objects.requireNonNull(jigTypeBuilder);
+    }
+
+    public JigTypeData jigTypeData() {
+        var typeIdentifier = jigTypeBuilder.typeIdentifier();
+
+        return new JigTypeData(
+                new JigObjectId<>(typeIdentifier.fullQualifiedName()),
+                JigTypeKind.CLASS,
+                new JigTypeAttributeData(
+                        TypeVisibility.PUBLIC,
+                        List.of(),
+                        jigTypeParameters
+                ),
+                Optional.empty(),
+                List.of()
+        );
     }
 }

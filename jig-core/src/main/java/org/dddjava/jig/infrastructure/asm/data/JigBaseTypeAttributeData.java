@@ -5,19 +5,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record JigBaseTypeAttributeData(Collection<JigAnnotationData> declarationAnnotations,
-                                       List<JigTypeParameter> typeParameters) {
+                                       List<JigTypeArgument> typeArgumentList) {
 
-    public String typeParametersSimpleName() {
-        if (typeParameters.isEmpty()) return "";
-        return typeParameters.stream()
+    public String typeArgumentSimpleName() {
+        if (typeArgumentList.isEmpty()) return "";
+        return typeArgumentList.stream()
                 .map(jigTypeParameter -> jigTypeParameter.simpleName())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 
-    public String typeParametersFqn() {
-        if (typeParameters.isEmpty()) return "";
-        return typeParameters.stream()
-                .map(jigTypeParameter -> jigTypeParameter.name())
+    public String typeArgumentsFqn() {
+        if (typeArgumentList.isEmpty()) return "";
+        return typeArgumentList.stream()
+                .map(typeArgument -> typeArgument.value())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 }

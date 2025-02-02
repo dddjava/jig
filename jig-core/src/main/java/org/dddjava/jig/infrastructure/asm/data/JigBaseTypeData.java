@@ -9,10 +9,10 @@ public record JigBaseTypeData(JigObjectId<JigTypeData> id, JigBaseTypeAttributeD
     }
 
     public String simpleNameWithGenerics() {
-        return simpleName() + attributeData.typeParametersSimpleName();
+        return simpleName() + attributeData.typeArgumentSimpleName();
     }
 
     public String fqnWithGenerics() {
-        return id.value() + attributeData.typeParametersFqn();
+        return id.value() + attributeData.typeArgumentsFqn();
     }
 }

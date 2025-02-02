@@ -1,12 +1,15 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.infrastructure.asm.data.JigTypeArgument;
 import org.dddjava.jig.infrastructure.asm.data.JigTypeParameter;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -33,7 +36,12 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
         }
 
         JigTypeParameter build() {
-            return new JigTypeParameter(name);
+            List<JigTypeArgument> bounds = Stream.concat(classBound.stream(), interfaceBounds.stream())
+                    .map(AsmTypeSignatureVisitor::typeArgument)
+                    .flatMap(Optional::stream)
+                    .toList();
+
+            return new JigTypeParameter(name, bounds);
         }
     }
 

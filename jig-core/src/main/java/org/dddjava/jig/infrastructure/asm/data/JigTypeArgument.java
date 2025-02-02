@@ -5,4 +5,8 @@ public record JigTypeArgument(String value) {
         int lastDotIndex = value.lastIndexOf('.');
         return (lastDotIndex != -1) ? value.substring(lastDotIndex + 1) : value;
     }
+
+    public boolean notObject() {
+        return !"java.lang.Object".equals(value);
+    }
 }

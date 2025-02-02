@@ -13,7 +13,7 @@ public record JigTypeAttributeData(TypeVisibility typeVisibility,
     public String typeParametersSimpleName() {
         if (typeParameters.isEmpty()) return "";
         return typeParameters.stream()
-                .map(jigTypeParameter -> jigTypeParameter.name())
+                .map(jigTypeParameter -> jigTypeParameter.nameAndBounds())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 }

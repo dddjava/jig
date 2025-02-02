@@ -2,12 +2,14 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.infrastructure.asm.data.JigTypeArgument;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -164,5 +166,16 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         }
 
         throw new IllegalStateException("想定していたシグネチャではありませんでした。TypeSignatureでないところにAsmTypeSignatureVisitorが使用された？");
+    }
+
+    Optional<JigTypeArgument> typeArgument() {
+        if (typeVariableIdentifier != null) {
+            return Optional.of(new JigTypeArgument(typeVariableIdentifier));
+        } else if (classType != null) {
+            // こっちはInnerClassはありえる？
+            return Optional.of(new JigTypeArgument(classType.name.replace('/', '.')));
+        }
+        // TODO ほかのぱたん
+        return Optional.empty();
     }
 }

@@ -53,7 +53,7 @@ public class AsmClassSourceReaderTest {
     @Nested
     class クラス {
         @Test
-        void name() throws IOException {
+        void JigTypeDataの取得() throws IOException {
             AsmClassVisitor visitor = new AsmClassVisitor();
             new ClassReader(MyClass.class.getName()).accept(visitor, 0);
 

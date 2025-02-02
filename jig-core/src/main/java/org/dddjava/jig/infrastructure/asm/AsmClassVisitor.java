@@ -231,6 +231,10 @@ class AsmClassVisitor extends ClassVisitor {
 
     public JigTypeData jigTypeData() {
         var typeIdentifier = jigTypeBuilder.typeIdentifier();
+        JigType jigType = jigTypeBuilder.build();
+        TypeDeclaration typeDeclaration = jigType.typeDeclaration();
+        ParameterizedType superType = typeDeclaration.superType();
+        ParameterizedTypes interfaceTypes = typeDeclaration.interfaceTypes();
 
         return new JigTypeData(
                 new JigObjectId<>(typeIdentifier.fullQualifiedName()),
@@ -240,8 +244,11 @@ class AsmClassVisitor extends ClassVisitor {
                         List.of(),
                         jigTypeParameters
                 ),
-                Optional.empty(),
-                List.of()
+                Optional.of(new JigObjectId<>(superType.typeIdentifier().fullQualifiedName())),
+                interfaceTypes.list().stream()
+                        .map(parameterizedType ->
+                                new JigObjectId<JigTypeData>(parameterizedType.typeIdentifier().fullQualifiedName()))
+                        .toList()
         );
     }
 }

@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class AsmClassSourceReaderTest {
@@ -62,6 +63,9 @@ public class AsmClassSourceReaderTest {
             assertEquals("MyClass", typeData.simpleName());
             assertEquals("org.dddjava.jig.infrastructure.asm.ut.MyClass", typeData.fqn());
             assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
+
+            assertTrue(typeData.superType().isPresent());
+            assertEquals(1, typeData.interfaceTypes().size());
         }
 
         @Test

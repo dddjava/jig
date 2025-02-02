@@ -16,11 +16,11 @@ import java.util.Optional;
 public record JigTypeData(JigObjectId<JigTypeData> id,
                           JigTypeKind jigTypeKind,
                           JigTypeAttributeData jigTypeAttributeData,
-                          Optional<JigObjectId<JigTypeData>> superType,
-                          Collection<JigObjectId<JigTypeData>> interfaceTypes) {
+                          Optional<JigBaseTypeData> superType,
+                          Collection<JigBaseTypeData> interfaceTypes) {
 
     public String simpleName() {
-        return id.value().substring(id.value().lastIndexOf('.') + 1);
+        return id.simpleValue();
     }
 
     public String fqn() {

@@ -244,10 +244,17 @@ class AsmClassVisitor extends ClassVisitor {
                         List.of(),
                         jigTypeParameters
                 ),
-                Optional.of(new JigObjectId<>(superType.typeIdentifier().fullQualifiedName())),
+                Optional.of(new JigBaseTypeData(
+                        new JigObjectId<>(superType.typeIdentifier().fullQualifiedName()),
+                        new JigBaseTypeAttributeData(List.of(), List.of())
+                )),
                 interfaceTypes.list().stream()
                         .map(parameterizedType ->
-                                new JigObjectId<JigTypeData>(parameterizedType.typeIdentifier().fullQualifiedName()))
+                                new JigBaseTypeData(
+                                        new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
+                                        new JigBaseTypeAttributeData(List.of(), List.of())
+                                )
+                        )
                         .toList()
         );
     }

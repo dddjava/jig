@@ -13,6 +13,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 /**
  * ClassSignature = ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )* (visitSuperclass visitInterface* )
  *
+ * ClassSignatureは型パラメタ、親クラス、インタフェースからなる。
+ * 親クラスとインタフェースはさらに型引数をとることがある。
+ * このクラスではクラス自身の型パラメタを扱い、親クラスやインタフェースはそれぞれでAsmTypeSignatureVisitorを生成して扱う。
+ * ClassSignatureのvisitEndは呼ばれない。
+ *
  * 例: {@code <T:Ljava/lang/Number;>LParentClass;Ljava/lang/Comparable<TT;>;}
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-400">JVMS 4.7.9.1-400</a>

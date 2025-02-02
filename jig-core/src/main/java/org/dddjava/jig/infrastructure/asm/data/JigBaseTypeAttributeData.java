@@ -10,6 +10,13 @@ public record JigBaseTypeAttributeData(Collection<JigAnnotationData> declaration
     public String typeParametersSimpleName() {
         if (typeParameters.isEmpty()) return "";
         return typeParameters.stream()
+                .map(jigTypeParameter -> jigTypeParameter.simpleName())
+                .collect(Collectors.joining(", ", "<", ">"));
+    }
+
+    public String typeParametersFqn() {
+        if (typeParameters.isEmpty()) return "";
+        return typeParameters.stream()
                 .map(jigTypeParameter -> jigTypeParameter.name())
                 .collect(Collectors.joining(", ", "<", ">"));
     }

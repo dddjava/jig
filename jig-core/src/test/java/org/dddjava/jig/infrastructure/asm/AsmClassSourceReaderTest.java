@@ -65,9 +65,8 @@ public class AsmClassSourceReaderTest {
             assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
 
             assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
-            assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypes().stream()
+            assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypeList().stream()
                     .map(JigBaseTypeData::simpleName)
-                    .sorted() // TODO 並び替えは中でやる
                     .toList());
         }
 

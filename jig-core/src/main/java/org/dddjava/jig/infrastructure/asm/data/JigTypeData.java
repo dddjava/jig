@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm.data;
 
-import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -33,7 +34,9 @@ public record JigTypeData(JigObjectId<JigTypeData> id,
         return baseTypeDataBundle.superType();
     }
 
-    public Collection<JigBaseTypeData> interfaceTypes() {
-        return baseTypeDataBundle.interfaceTypes();
+    public List<JigBaseTypeData> interfaceTypeList() {
+        return baseTypeDataBundle.interfaceTypes().stream()
+                .sorted(Comparator.comparing(jigBaseTypeData -> jigBaseTypeData.id()))
+                .toList();
     }
 }

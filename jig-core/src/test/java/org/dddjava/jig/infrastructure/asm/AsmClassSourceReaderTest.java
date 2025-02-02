@@ -68,6 +68,8 @@ public class AsmClassSourceReaderTest {
             assertEquals("MySuperClass<Integer, X, Long>", typeData.superType().orElseThrow().simpleNameWithGenerics());
             assertEquals("org.dddjava.jig.infrastructure.asm.ut.MySuperClass<java.lang.Integer, X, java.lang.Long>", typeData.superType().orElseThrow().fqnWithGenerics());
             assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleName).toList());
+            assertEquals(List.of("MyInterface<Y, String>", "MyInterface2<String, Y>"),
+                    typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleNameWithGenerics).toList());
         }
 
         @Test

@@ -65,7 +65,7 @@ public class AsmClassSourceReaderTest {
             assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
 
             assertTrue(typeData.superType().isPresent());
-            assertEquals(1, typeData.interfaceTypes().size());
+            assertEquals(2, typeData.interfaceTypes().size());
         }
 
         @Test

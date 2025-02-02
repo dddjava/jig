@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.infrastructure.asm.data.JigBaseTypeData;
 import org.dddjava.jig.infrastructure.asm.ut.MyClass;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,10 @@ public class AsmClassSourceReaderTest {
             assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
 
             assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
-            assertEquals(2, typeData.interfaceTypes().size());
+            assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypes().stream()
+                    .map(JigBaseTypeData::simpleName)
+                    .sorted() // TODO 並び替えは中でやる
+                    .toList());
         }
 
         @Test

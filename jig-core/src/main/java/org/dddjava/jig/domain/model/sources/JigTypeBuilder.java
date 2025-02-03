@@ -31,7 +31,7 @@ public class JigTypeBuilder {
     final List<JigField> instanceFields;
     final List<JigMethodBuilder> instanceJigMethodBuilders;
     final List<JigMethodBuilder> staticJigMethodBuilders;
-    final List<JigMethodBuilder> constructorFacts;
+    final List<JigMethodBuilder> constructorBuilders;
 
     ClassComment classComment;
 
@@ -48,7 +48,7 @@ public class JigTypeBuilder {
         this.annotations = new ArrayList<>();
         this.instanceJigMethodBuilders = new ArrayList<>();
         this.staticJigMethodBuilders = new ArrayList<>();
-        this.constructorFacts = new ArrayList<>();
+        this.constructorBuilders = new ArrayList<>();
         this.instanceFields = new ArrayList<>();
         this.staticFieldDeclarations = new ArrayList<>();
         this.classComment = ClassComment.empty(type.typeIdentifier());
@@ -63,7 +63,7 @@ public class JigTypeBuilder {
         ArrayList<JigMethodBuilder> list = new ArrayList<>();
         list.addAll(instanceJigMethodBuilders);
         list.addAll(staticJigMethodBuilders);
-        list.addAll(constructorFacts);
+        list.addAll(constructorBuilders);
         return list;
     }
 
@@ -82,7 +82,7 @@ public class JigTypeBuilder {
         JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, visibility, annotations);
 
         JigStaticMember jigStaticMember = new JigStaticMember(
-                new JigMethods(constructorFacts.stream().map(JigMethodBuilder::build).collect(toList())),
+                new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                 new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                 new StaticFieldDeclarations(this.staticFieldDeclarations));
 
@@ -137,7 +137,7 @@ public class JigTypeBuilder {
     }
 
     public void addConstructor(JigMethodBuilder jigMethodBuilder) {
-        constructorFacts.add(jigMethodBuilder);
+        constructorBuilders.add(jigMethodBuilder);
     }
 
     public void addStaticMethod(JigMethodBuilder jigMethodBuilder) {

@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.data.types;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * JSL`NormalClassDeclaration` の `ClassBody` 以外で得られる情報
@@ -17,6 +15,15 @@ public record JigTypeHeader(JigObjectId<JigTypeHeader> id,
                             JigTypeKind jigTypeKind,
                             JigTypeAttributeData jigTypeAttributeData,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
+
+    public Set<JigObjectId<JigTypeHeader>> containedIds() {
+        // アノテーションは含めない
+        // 型パラメタは除く
+        Set<JigObjectId<JigTypeHeader>> ids = new HashSet<>();
+        ids.add(id);
+        ids.addAll(baseTypeDataBundle.typeIdSet());
+        return ids;
+    }
 
     /**
      * FQNのみで生成する。主にテスト用。

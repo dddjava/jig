@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record JigBaseTypeAttributeData(Collection<JigAnnotationData> typeAnnotations,
+public record JigBaseTypeAttributeData(Collection<JigAnnotationData> typeAnnotations, // typeAnnotationの収集未実装
                                        List<JigTypeArgument> typeArgumentList) {
 
     public static JigBaseTypeAttributeData empty() {

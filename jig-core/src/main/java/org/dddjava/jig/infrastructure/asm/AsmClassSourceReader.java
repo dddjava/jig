@@ -10,8 +10,8 @@ import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class AsmClassSourceReader implements ClassSourceReader {
@@ -19,10 +19,11 @@ public class AsmClassSourceReader implements ClassSourceReader {
 
     @Override
     public ClassSourceModel classSourceModel(ClassSources classSources) {
-        return classSources.list().stream()
+        List<JigTypeBuilder> jigTypeBuilders = classSources.list().stream()
                 .map(classSource -> typeByteCode(classSource))
                 .flatMap(Optional::stream)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> ClassSourceModel.from(list)));
+                .toList();
+        return new ClassSourceModel(jigTypeBuilders);
     }
 
     Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {

@@ -108,11 +108,12 @@ class BusinessRuleServiceTest {
         var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
         var classRelations = ClassRelations.internalTypeRelationsFrom(jigTypes, targetJigType);
 
-        assertEquals(classRelations.dotText(), """
+        assertEquals("""
                 "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ClassAnnotation";
                 "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.GenericsParameter";
                 "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ImplementA";
                 "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ImplementB";
-                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.SuperClass";""");
+                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.SuperClass";""",
+                classRelations.dotText());
     }
 }

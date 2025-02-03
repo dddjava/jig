@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 public record JigBaseTypeAttributeData(Collection<JigAnnotationData> typeAnnotations,
                                        List<JigTypeArgument> typeArgumentList) {
 
+    public static JigBaseTypeAttributeData empty() {
+        return new JigBaseTypeAttributeData(List.of(), List.of());
+    }
+
     public String typeArgumentSimpleName() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()

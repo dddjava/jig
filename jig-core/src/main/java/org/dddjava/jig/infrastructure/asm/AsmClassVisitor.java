@@ -13,10 +13,7 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,10 +38,8 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
-    // JigTypeHeaderに必要な情報
-    private List<JigTypeParameter> jigTypeParameters;
     private List<JigAnnotationData> jigAnnotationDataList = new ArrayList<>();
-    private JigBaseTypeDataBundle jigBaseTypeDataBundle;
+    private JigTypeHeader jigTypeHeader;
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -52,6 +47,9 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        List<JigTypeParameter> jigTypeParameters;
+        JigBaseTypeDataBundle jigBaseTypeDataBundle;
+
         // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
         // ジェネリクスを使用している場合だけsignatureが入る
 
@@ -89,13 +87,35 @@ class AsmClassVisitor extends ClassVisitor {
                     .map(ParameterizedType::new)
                     .collect(Collectors.toList());
             actualTypeParameters = List.of();
+
+            jigTypeParameters = List.of();
+            jigBaseTypeDataBundle = new JigBaseTypeDataBundle(
+                    Optional.of(JigBaseTypeData.fromNameOnly(slashToDot(superName))),
+                    Arrays.stream(interfaces).map(this::slashToDot)
+                            .map(JigBaseTypeData::fromNameOnly)
+                            .toList()
+            );
         }
 
-        ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
+        jigTypeHeader = new JigTypeHeader(
+                new JigObjectId<>(slashToDot(name)),
+                resolveTypeKind(access),
+                new JigTypeAttributeData(
+                        resolveVisibility(access),
+                        jigAnnotationDataList,
+                        jigTypeParameters
+                ),
+                jigBaseTypeDataBundle
+        );
 
+        ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
         jigTypeBuilder = new JigTypeBuilder(type, superType, interfaceTypes, typeKind(access), resolveVisibility(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    private String slashToDot(String bytecodeName) {
+        return bytecodeName.replace('/', '.');
     }
 
     @Override
@@ -211,6 +231,16 @@ class AsmClassVisitor extends ClassVisitor {
         return TypeVisibility.NOT_PUBLIC;
     }
 
+    private JigTypeKind resolveTypeKind(int access) {
+        if ((access & Opcodes.ACC_ENUM) != 0) return JigTypeKind.ENUM;
+        if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
+        if ((access & Opcodes.ACC_INTERFACE) != 0) return JigTypeKind.INTERFACE;
+        if ((access & Opcodes.ACC_ABSTRACT) != 0) return JigTypeKind.ABSTRACT_CLASS;
+        if ((access & Opcodes.ACC_ANNOTATION) != 0) return JigTypeKind.ANNOTATION;
+        // 不明なものはCLASSにしておく
+        return JigTypeKind.CLASS;
+    }
+
     private TypeKind typeKind(int access) {
         if ((access & Opcodes.ACC_ENUM) != 0) {
             if ((access & Opcodes.ACC_FINAL) == 0) {
@@ -240,17 +270,6 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     public JigTypeHeader jigTypeHeader() {
-        var typeIdentifier = jigTypeBuilder.typeIdentifier();
-
-        return new JigTypeHeader(
-                new JigObjectId<>(typeIdentifier.fullQualifiedName()),
-                JigTypeKind.CLASS,
-                new JigTypeAttributeData(
-                        TypeVisibility.PUBLIC,
-                        jigAnnotationDataList,
-                        jigTypeParameters
-                ),
-                jigBaseTypeDataBundle
-        );
+        return jigTypeHeader;
     }
 }

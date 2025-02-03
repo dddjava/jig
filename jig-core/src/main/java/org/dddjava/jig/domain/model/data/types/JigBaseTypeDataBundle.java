@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.asm.data;
+package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
 import java.util.Optional;

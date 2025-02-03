@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.asm.data;
+package org.dddjava.jig.domain.model.data.types;
 
 public record JigTypeArgument(String value) {
     public String simpleName() {

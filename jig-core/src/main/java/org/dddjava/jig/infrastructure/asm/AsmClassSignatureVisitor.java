@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.infrastructure.asm.data.JigTypeArgument;
-import org.dddjava.jig.infrastructure.asm.data.JigTypeParameter;
+import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
+import org.dddjava.jig.domain.model.data.types.JigTypeParameter;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 

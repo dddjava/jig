@@ -66,8 +66,9 @@ public class AsmClassSourceReaderTest {
             assertEquals("org.dddjava.jig.infrastructure.asm.ut.MyClass", typeData.fqn());
             assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
 
-            assertEquals(List.of("MyDeclarationAnnotation"), typeData.jigTypeAttributeData()
-                    .declarationAnnotations().stream().map(JigAnnotationData::simpleTypeName).toList());
+            // MyDeclarationAnnotationForSourceは含まれない
+            assertEquals(List.of("MyDeclarationAnnotationForClass", "MyDeclarationAnnotationForRuntime"), typeData.jigTypeAttributeData()
+                    .declarationAnnotationList().stream().map(JigAnnotationData::simpleTypeName).toList());
 
             assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
             assertEquals("MySuperClass<Integer, X, Long>", typeData.superType().orElseThrow().simpleNameWithGenerics());

@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm.data;
 import java.util.Collection;
 import java.util.List;
 
-public record JigAnnotationData(JigObjectId<JigTypeData> id,
+public record JigAnnotationData(JigObjectId<JigAnnotationData> id,
                                 Collection<JigAnnotationElementValueData> elementValueData) {
 
     public static JigAnnotationData from(String name) {

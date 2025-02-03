@@ -1,9 +1,13 @@
 package org.dddjava.jig.infrastructure.asm.ut;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@MyDeclarationAnnotation
+@MyDeclarationAnnotationForSource
+@MyDeclarationAnnotationForClass
+@MyDeclarationAnnotationForRuntime
 public class MyClass<@MyTypeAnnotation X, Y>
         extends @MyTypeAnnotation MySuperClass<Integer, X, Long>
         implements MyInterface<Y, @MyTypeAnnotation String>, MyInterface2<String, Y> {
@@ -18,7 +22,16 @@ interface MyInterface<T1, T2> {
 interface MyInterface2<T1, T2> {
 }
 
-@interface MyDeclarationAnnotation {
+@Retention(RetentionPolicy.SOURCE)
+@interface MyDeclarationAnnotationForSource {
+}
+
+@Retention(RetentionPolicy.CLASS)
+@interface MyDeclarationAnnotationForClass {
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyDeclarationAnnotationForRuntime {
 }
 
 @Target(ElementType.TYPE_USE)

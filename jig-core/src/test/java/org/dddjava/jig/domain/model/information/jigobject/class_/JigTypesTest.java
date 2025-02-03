@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +57,7 @@ class JigTypesTest {
     private static JigType callerMethodsOfJigType(String fqn) {
         var typeIdentifier = TypeIdentifier.valueOf(fqn);
         return new JigType(
+                JigTypeHeader.simple(fqn),
                 new TypeDeclaration(
                         new ParameterizedType(typeIdentifier),
                         new ParameterizedType(TypeIdentifier.from(Object.class)),

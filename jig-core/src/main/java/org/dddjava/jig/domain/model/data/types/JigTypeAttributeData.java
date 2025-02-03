@@ -11,6 +11,10 @@ public record JigTypeAttributeData(TypeVisibility typeVisibility,
                                    Collection<JigAnnotationData> declarationAnnotations,
                                    List<JigTypeParameter> typeParameters) {
 
+    public static JigTypeAttributeData simple() {
+        return new JigTypeAttributeData(TypeVisibility.PUBLIC, List.of(), List.of());
+    }
+
     public String typeParametersSimpleName() {
         if (typeParameters.isEmpty()) return "";
         return typeParameters.stream()

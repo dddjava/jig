@@ -18,6 +18,13 @@ public record JigTypeHeader(JigObjectId<JigTypeHeader> id,
                             JigTypeAttributeData jigTypeAttributeData,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
+    /**
+     * FQNのみで生成する。主にテスト用。
+     */
+    public static JigTypeHeader simple(String fqn) {
+        return new JigTypeHeader(new JigObjectId<>(fqn), JigTypeKind.CLASS, JigTypeAttributeData.simple(), JigBaseTypeDataBundle.simple());
+    }
+
     public String simpleName() {
         return id.simpleValue();
     }

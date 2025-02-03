@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
  * JIGが識別する型
  */
 public class JigType {
+    private final JigTypeHeader jigTypeHeader;
     private final TypeDeclaration typeDeclaration;
 
     private final JigTypeAttribute jigTypeAttribute;
@@ -23,7 +25,8 @@ public class JigType {
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    public JigType(JigTypeHeader jigTypeHeader, TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+        this.jigTypeHeader = jigTypeHeader;
         this.typeDeclaration = typeDeclaration;
         this.jigTypeAttribute = jigTypeAttribute;
         this.jigStaticMember = jigStaticMember;

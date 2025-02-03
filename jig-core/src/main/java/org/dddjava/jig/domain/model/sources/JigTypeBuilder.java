@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.field.*;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
@@ -75,7 +76,7 @@ public class JigTypeBuilder {
         this.classComment = classComment;
     }
 
-    public JigType build() {
+    public JigType build(JigTypeHeader jigTypeHeader) {
 
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
 
@@ -90,7 +91,7 @@ public class JigTypeBuilder {
                 new JigFields(instanceFields),
                 new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
 
-        return new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
+        return new JigType(jigTypeHeader, typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
     }
 
     public JigTypeBuilder applyTextSource(JavaSourceModel javaSourceModel) {

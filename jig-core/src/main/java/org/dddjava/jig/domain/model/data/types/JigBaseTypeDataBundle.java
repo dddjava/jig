@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -10,4 +11,7 @@ import java.util.Optional;
 public record JigBaseTypeDataBundle(
         Optional<JigBaseTypeData> superType,
         Collection<JigBaseTypeData> interfaceTypes) {
+    public static JigBaseTypeDataBundle simple() {
+        return new JigBaseTypeDataBundle(Optional.of(JigBaseTypeData.fromNameOnly("java.lang.Object")), List.of());
+    }
 }

@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm.ut;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
-@MyDecralationAnnotation
+@MyDeclarationAnnotation
 public class MyClass<@MyTypeAnnotation X, Y> extends MySuperClass<Integer, X, Long> implements MyInterface<Y, @MyTypeAnnotation String>, MyInterface2<String, Y> {
 }
 
@@ -16,7 +16,7 @@ interface MyInterface<T1, T2> {
 interface MyInterface2<T1, T2> {
 }
 
-@interface MyDecralationAnnotation {
+@interface MyDeclarationAnnotation {
 }
 
 @Target(ElementType.TYPE_USE)

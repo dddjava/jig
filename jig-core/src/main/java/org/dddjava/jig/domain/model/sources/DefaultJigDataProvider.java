@@ -47,8 +47,8 @@ public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
     }
 
     private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
-        return classSourceModel.jigTypeBuilders().stream()
-                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(javaSourceModel).build())
+        return classSourceModel.classDeclarations().stream()
+                .map(classDeclaration -> classDeclaration.jigTypeBuilder().applyTextSource(javaSourceModel).build())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 }

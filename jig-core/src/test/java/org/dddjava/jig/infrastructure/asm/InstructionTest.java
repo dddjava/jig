@@ -121,6 +121,6 @@ public class InstructionTest {
 
     private JigType buildJigType(Class<?> definitionClass) throws URISyntaxException, IOException {
         AsmClassSourceReader sut = new AsmClassSourceReader();
-        return sut.typeByteCode(TestSupport.getClassSource(definitionClass)).orElseThrow().build();
+        return sut.classDeclaration(TestSupport.getClassSource(definitionClass)).orElseThrow().build();
     }
 }

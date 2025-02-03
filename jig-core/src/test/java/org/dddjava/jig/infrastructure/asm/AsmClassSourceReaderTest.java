@@ -310,7 +310,7 @@ public class AsmClassSourceReaderTest {
             var classSource = TestSupport.getClassSource(clz);
 
             AsmClassSourceReader sut = new AsmClassSourceReader();
-            return sut.typeByteCode(classSource).orElseThrow().build();
+            return sut.classDeclaration(classSource).orElseThrow().build();
         } catch (Exception e) {
             throw new AssertionError(e);
         }

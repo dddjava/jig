@@ -4,4 +4,7 @@ import java.util.Collection;
 
 public record JigAnnotationData(JigObjectId<JigTypeData> id,
                                 Collection<JigAnnotationElementValueData> elementValueData) {
+    public String simpleTypeName() {
+        return id.simpleValue();
+    }
 }

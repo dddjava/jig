@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.TypeVisibility;
+import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
@@ -25,7 +25,7 @@ public class JigTypeBuilder {
     private final ParameterizedType superType;
     private final List<ParameterizedType> interfaceTypes;
     private final TypeKind typeKind;
-    private final TypeVisibility visibility;
+    private final JigTypeVisibility visibility;
 
     final List<Annotation> annotations;
 
@@ -39,7 +39,7 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, TypeVisibility visibility) {
+    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, JigTypeVisibility visibility) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;

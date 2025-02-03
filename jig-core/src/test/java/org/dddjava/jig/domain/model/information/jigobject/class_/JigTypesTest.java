@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.TypeVisibility;
+import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -65,7 +65,7 @@ class JigTypesTest {
                                 Comment.empty()
                         ),
                         TypeKind.通常型,
-                        TypeVisibility.PUBLIC,
+                        JigTypeVisibility.PUBLIC,
                         List.of()
                 ),
                 new JigStaticMember(

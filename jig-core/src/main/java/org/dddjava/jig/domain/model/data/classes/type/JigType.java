@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.TypeVisibility;
+import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ public class JigType {
         return jigTypeAttribute.kind();
     }
 
-    public TypeVisibility visibility() {
+    public JigTypeVisibility visibility() {
         return jigTypeAttribute.visibility();
     }
 

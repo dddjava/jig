@@ -3,7 +3,7 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeVisibility;
+import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
@@ -27,22 +27,22 @@ class BusinessRuleServiceTest {
         JigType publicType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PublicType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(TypeVisibility.PUBLIC, publicType.visibility());
+        assertEquals(JigTypeVisibility.PUBLIC, publicType.visibility());
 
         JigType protectedType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("ProtectedType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(TypeVisibility.PUBLIC, protectedType.visibility());
+        assertEquals(JigTypeVisibility.PUBLIC, protectedType.visibility());
 
         JigType defaultType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("DefaultType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(TypeVisibility.NOT_PUBLIC, defaultType.visibility());
+        assertEquals(JigTypeVisibility.NOT_PUBLIC, defaultType.visibility());
 
         JigType privateType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PrivateType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(TypeVisibility.NOT_PUBLIC, privateType.visibility());
+        assertEquals(JigTypeVisibility.NOT_PUBLIC, privateType.visibility());
     }
 
     @Test

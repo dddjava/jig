@@ -5,12 +5,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record JigTypeAttributeData(TypeVisibility typeVisibility,
+public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
                                    Collection<JigAnnotationData> declarationAnnotations,
                                    List<JigTypeParameter> typeParameters) {
 
     public static JigTypeAttributeData simple() {
-        return new JigTypeAttributeData(TypeVisibility.PUBLIC, List.of(), List.of());
+        return new JigTypeAttributeData(JigTypeVisibility.PUBLIC, List.of(), List.of());
     }
 
     public String typeParametersSimpleName() {

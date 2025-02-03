@@ -3,7 +3,10 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.classes.type.TypeKind;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
@@ -226,9 +229,9 @@ class AsmClassVisitor extends ClassVisitor {
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
      */
-    private TypeVisibility resolveVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return TypeVisibility.PUBLIC;
-        return TypeVisibility.NOT_PUBLIC;
+    private JigTypeVisibility resolveVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return JigTypeVisibility.PUBLIC;
+        return JigTypeVisibility.NOT_PUBLIC;
     }
 
     private JigTypeKind resolveTypeKind(int access) {

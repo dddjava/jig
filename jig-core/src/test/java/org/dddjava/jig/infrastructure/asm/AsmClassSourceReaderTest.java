@@ -60,7 +60,7 @@ public class AsmClassSourceReaderTest {
             AsmClassVisitor visitor = new AsmClassVisitor();
             new ClassReader(MyClass.class.getName()).accept(visitor, 0);
 
-            var typeData = visitor.jigTypeData();
+            var typeData = visitor.jigTypeHeader();
 
             assertEquals("MyClass", typeData.simpleName());
             assertEquals("org.dddjava.jig.infrastructure.asm.ut.MyClass", typeData.fqn());
@@ -83,7 +83,7 @@ public class AsmClassSourceReaderTest {
             AsmClassVisitor visitor = new AsmClassVisitor();
             new ClassReader(MyGenericsMadnessInterface.class.getName()).accept(visitor, 0);
 
-            var typeData = visitor.jigTypeData();
+            var typeData = visitor.jigTypeHeader();
             assertEquals("MyGenericsMadnessInterface", typeData.simpleName());
             assertEquals("MyGenericsMadnessInterface<T extends List>", typeData.simpleNameWithGenerics());
             // とれるようにしたいけどとりあえずはいいかなと

@@ -232,7 +232,7 @@ class AsmClassVisitor extends ClassVisitor {
         return Objects.requireNonNull(jigTypeBuilder);
     }
 
-    public JigTypeHeader jigTypeData() {
+    public JigTypeHeader jigTypeHeader() {
         var typeIdentifier = jigTypeBuilder.typeIdentifier();
         JigType jigType = jigTypeBuilder.build();
         TypeDeclaration typeDeclaration = jigType.typeDeclaration();

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @MyDeclarationAnnotationForSource
 @MyDeclarationAnnotationForClass
 @MyDeclarationAnnotationForRuntime
-public class MyClass<@MyTypeAnnotation X, Y>
+public class MyClass<@MyTypeAnnotation X, @MyTypeParameterAnnotation Y>
         extends @MyTypeAnnotation MySuperClass<Integer, X, Long>
         implements MyInterface<Y, @MyTypeAnnotation String>, MyInterface2<String, Y> {
 }
@@ -36,4 +36,8 @@ interface MyInterface2<T1, T2> {
 
 @Target(ElementType.TYPE_USE)
 @interface MyTypeAnnotation {
+}
+
+@Target(ElementType.TYPE_PARAMETER)
+@interface MyTypeParameterAnnotation {
 }

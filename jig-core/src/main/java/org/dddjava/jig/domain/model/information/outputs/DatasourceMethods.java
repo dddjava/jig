@@ -35,12 +35,15 @@ public class DatasourceMethods {
                 .collect(Collectors.collectingAndThen(Collectors.toList(), RepositoryMethods::new));
     }
 
+    // FIXME これのテストがない
     public static DatasourceMethods from(JigTypes jigTypes) {
         List<DatasourceMethod> list = new ArrayList<>();
         // backend実装となる@RepositoryのついているJigTypeを抽出
         for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.typeCategory() == TypeCategory.OutputAdapter)) {
             // インタフェースを抽出（通常1件）
-            for (JigType interfaceJigType : jigTypes.listMatches(item -> implJigType.typeDeclaration().interfaceTypes().listTypeIdentifiers().contains(item.identifier()))) {
+            for (JigType interfaceJigType : jigTypes
+                    .listMatches(item -> implJigType.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
+                            .anyMatch(jigBaseTypeData -> jigBaseTypeData.id().equals(item.id())))) {
                 for (JigMethod interfaceJigMethod : interfaceJigType.instanceMember().instanceMethods().list()) {
                     implJigType.instanceMember().instanceMethods().stream()
                             // シグネチャが一致するもの

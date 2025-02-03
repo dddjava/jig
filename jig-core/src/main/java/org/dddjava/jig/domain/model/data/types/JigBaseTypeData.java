@@ -19,4 +19,8 @@ public record JigBaseTypeData(JigObjectId<JigTypeHeader> id, JigBaseTypeAttribut
     public String fqnWithGenerics() {
         return id.value() + attributeData.typeArgumentsFqn();
     }
+
+    public String fqn() {
+        return id.value();
+    }
 }

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 
 import java.util.ArrayList;
@@ -34,11 +35,16 @@ public class JigType {
     }
 
     public TypeIdentifier identifier() {
-        return typeDeclaration().identifier();
+        return TypeIdentifier.valueOf(jigTypeHeader.id().value());
     }
 
-    public TypeDeclaration typeDeclaration() {
-        return typeDeclaration;
+    // HeaderのほうもId<JigType>にする？
+    public JigObjectId<JigTypeHeader> id() {
+        return jigTypeHeader.id();
+    }
+
+    public JigTypeHeader jigTypeHeader() {
+        return jigTypeHeader;
     }
 
     public TypeKind typeKind() {
@@ -71,11 +77,11 @@ public class JigType {
     }
 
     public String simpleName() {
-        return typeDeclaration.identifier().asSimpleText();
+        return jigTypeHeader.simpleName();
     }
 
     public String fqn() {
-        return typeDeclaration.identifier().fullQualifiedName();
+        return jigTypeHeader.fqn();
     }
 
     public String label() {

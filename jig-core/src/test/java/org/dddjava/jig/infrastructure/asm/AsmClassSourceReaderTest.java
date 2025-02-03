@@ -43,6 +43,7 @@ import testing.TestSupport;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,16 +112,9 @@ public class AsmClassSourceReaderTest {
                             TypeIdentifier.from(GenericsParameter.class)
                     );
 
-            ParameterizedType parameterizedSuperType = actual.typeDeclaration().superType();
-            assertThat(parameterizedSuperType)
-                    .extracting(
-                            ParameterizedType::asSimpleText,
-                            ParameterizedType::typeIdentifier
-                    )
-                    .containsExactly(
-                            "SuperClass<Integer, Long>",
-                            TypeIdentifier.from(SuperClass.class)
-                    );
+            JigBaseTypeData superTypeData = actual.jigTypeHeader().baseTypeDataBundle().superType().orElseThrow();
+            assertEquals("SuperClass<Integer, Long>", superTypeData.simpleNameWithGenerics());
+            assertEquals(SuperClass.class.getName(), superTypeData.fqn());
         }
 
         @Test
@@ -135,16 +129,10 @@ public class AsmClassSourceReaderTest {
                             TypeIdentifier.from(GenericsParameter.class)
                     );
 
-            ParameterizedType parameterizedType = actual.typeDeclaration().interfaceTypes().list().get(0);
-            assertThat(parameterizedType)
-                    .extracting(
-                            ParameterizedType::asSimpleText,
-                            ParameterizedType::typeIdentifier
-                    )
-                    .containsExactly(
-                            "Comparable<GenericsParameter>",
-                            TypeIdentifier.from(Comparable.class)
-                    );
+            String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
+                    .map(JigBaseTypeData::fqnWithGenerics)
+                    .collect(Collectors.joining());
+            assertEquals("java.lang.Comparable<stub.domain.model.relation.clz.GenericsParameter>", actualText);
         }
 
         @Test

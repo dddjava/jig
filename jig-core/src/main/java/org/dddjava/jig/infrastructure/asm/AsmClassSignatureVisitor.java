@@ -35,7 +35,7 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                 Optional.of(new JigBaseTypeData(
                         new JigObjectId<>(superType.typeIdentifier().fullQualifiedName()),
                         new JigBaseTypeAttributeData(
-                                List.of(),
+                                List.of(), // 型アノテーション未対応
                                 superType.typeParameters().list().stream()
                                         .map(it -> new JigTypeArgument(it.fullQualifiedName()))
                                         .toList()
@@ -45,7 +45,8 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                         .map(parameterizedType ->
                                 new JigBaseTypeData(
                                         new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
-                                        new JigBaseTypeAttributeData(List.of(),
+                                        new JigBaseTypeAttributeData(
+                                                List.of(), // 型アノテーション未対応
                                                 parameterizedType.typeParameters().list().stream()
                                                         .map(it -> new JigTypeArgument(it.fullQualifiedName()))
                                                         .toList())

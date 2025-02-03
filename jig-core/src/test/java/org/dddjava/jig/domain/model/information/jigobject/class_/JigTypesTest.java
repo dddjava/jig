@@ -58,10 +58,6 @@ class JigTypesTest {
         var typeIdentifier = TypeIdentifier.valueOf(fqn);
         return new JigType(
                 JigTypeHeader.simple(fqn),
-                new TypeDeclaration(
-                        new ParameterizedType(typeIdentifier),
-                        new ParameterizedType(TypeIdentifier.from(Object.class)),
-                        new ParameterizedTypes(List.of())),
                 new JigTypeAttribute(
                         new ClassComment(
                                 typeIdentifier,

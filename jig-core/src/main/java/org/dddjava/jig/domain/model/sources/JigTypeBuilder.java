@@ -77,9 +77,6 @@ public class JigTypeBuilder {
     }
 
     public JigType build(JigTypeHeader jigTypeHeader) {
-
-        TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
-
         JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, visibility, annotations);
 
         JigStaticMember jigStaticMember = new JigStaticMember(
@@ -91,7 +88,7 @@ public class JigTypeBuilder {
                 new JigFields(instanceFields),
                 new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
 
-        return new JigType(jigTypeHeader, typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
+        return new JigType(jigTypeHeader, jigTypeAttribute, jigStaticMember, jigInstanceMember);
     }
 
     public JigTypeBuilder applyTextSource(JavaSourceModel javaSourceModel) {

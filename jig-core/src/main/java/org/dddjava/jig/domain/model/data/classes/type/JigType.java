@@ -19,16 +19,14 @@ import java.util.stream.Stream;
  */
 public class JigType {
     private final JigTypeHeader jigTypeHeader;
-    private final TypeDeclaration typeDeclaration;
 
     private final JigTypeAttribute jigTypeAttribute;
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(JigTypeHeader jigTypeHeader, TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    public JigType(JigTypeHeader jigTypeHeader, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.jigTypeHeader = jigTypeHeader;
-        this.typeDeclaration = typeDeclaration;
         this.jigTypeAttribute = jigTypeAttribute;
         this.jigStaticMember = jigStaticMember;
         this.jigInstanceMember = jigInstanceMember;

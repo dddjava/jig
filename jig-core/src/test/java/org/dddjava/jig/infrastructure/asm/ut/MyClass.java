@@ -4,7 +4,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 @MyDeclarationAnnotation
-public class MyClass<@MyTypeAnnotation X, Y> extends MySuperClass<Integer, X, Long> implements MyInterface<Y, @MyTypeAnnotation String>, MyInterface2<String, Y> {
+public class MyClass<@MyTypeAnnotation X, Y>
+        extends @MyTypeAnnotation MySuperClass<Integer, X, Long>
+        implements MyInterface<Y, @MyTypeAnnotation String>, MyInterface2<String, Y> {
 }
 
 class MySuperClass<T1, T2, T3> {

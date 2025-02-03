@@ -13,10 +13,10 @@ import java.util.Optional;
  * @param baseTypeDataBundle 親クラス及び実装インタフェース
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">jls/Chapter 8. Classes</a>
  */
-public record JigTypeData(JigObjectId<JigTypeData> id,
-                          JigTypeKind jigTypeKind,
-                          JigTypeAttributeData jigTypeAttributeData,
-                          JigBaseTypeDataBundle baseTypeDataBundle) {
+public record JigTypeHeader(JigObjectId<JigTypeHeader> id,
+                            JigTypeKind jigTypeKind,
+                            JigTypeAttributeData jigTypeAttributeData,
+                            JigBaseTypeDataBundle baseTypeDataBundle) {
 
     public String simpleName() {
         return id.simpleValue();

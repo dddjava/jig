@@ -1,8 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
-import org.dddjava.jig.domain.model.data.types.JigTypeParameter;
+import org.dddjava.jig.domain.model.data.types.*;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 
@@ -27,6 +26,34 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 class AsmClassSignatureVisitor extends SignatureVisitor {
     private static Logger logger = getLogger(AsmClassSignatureVisitor.class);
+
+    public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
+        ParameterizedType superType = superclass();
+        List<ParameterizedType> interfaceTypes = interfaces();
+
+        return new JigBaseTypeDataBundle(
+                Optional.of(new JigBaseTypeData(
+                        new JigObjectId<>(superType.typeIdentifier().fullQualifiedName()),
+                        new JigBaseTypeAttributeData(
+                                List.of(),
+                                superType.typeParameters().list().stream()
+                                        .map(it -> new JigTypeArgument(it.fullQualifiedName()))
+                                        .toList()
+                        )
+                )),
+                interfaceTypes.stream()
+                        .map(parameterizedType ->
+                                new JigBaseTypeData(
+                                        new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
+                                        new JigBaseTypeAttributeData(List.of(),
+                                                parameterizedType.typeParameters().list().stream()
+                                                        .map(it -> new JigTypeArgument(it.fullQualifiedName()))
+                                                        .toList())
+                                )
+                        )
+                        .toList()
+        );
+    }
 
     record JigTypeParameterBuilder(String name,
                                    List<AsmTypeSignatureVisitor> classBound,

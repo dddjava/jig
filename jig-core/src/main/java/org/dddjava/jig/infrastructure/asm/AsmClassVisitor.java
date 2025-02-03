@@ -13,7 +13,10 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +41,10 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
-    // class宣言の中のジェネリクス
+    // JigTypeHeaderに必要な情報
     private List<JigTypeParameter> jigTypeParameters;
     private List<JigAnnotationData> jigAnnotationDataList = new ArrayList<>();
+    private JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -62,6 +66,8 @@ class AsmClassVisitor extends ClassVisitor {
 
             superType = asmClassSignatureVisitor.superclass();
             interfaceTypes = asmClassSignatureVisitor.interfaces();
+
+            jigBaseTypeDataBundle = asmClassSignatureVisitor.jigBaseTypeDataBundle();
             jigTypeParameters = asmClassSignatureVisitor.jigTypeParameters();
 
             // シグネチャに登場する型を全部取り出す
@@ -248,28 +254,7 @@ class AsmClassVisitor extends ClassVisitor {
                         jigAnnotationDataList,
                         jigTypeParameters
                 ),
-                new JigBaseTypeDataBundle(
-                        Optional.of(new JigBaseTypeData(
-                                new JigObjectId<>(superType.typeIdentifier().fullQualifiedName()),
-                                new JigBaseTypeAttributeData(
-                                        List.of(),
-                                        superType.typeParameters().list().stream()
-                                                .map(it -> new JigTypeArgument(it.fullQualifiedName()))
-                                                .toList()
-                                )
-                        )),
-                        interfaceTypes.list().stream()
-                                .map(parameterizedType ->
-                                        new JigBaseTypeData(
-                                                new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
-                                                new JigBaseTypeAttributeData(List.of(),
-                                                        parameterizedType.typeParameters().list().stream()
-                                                                .map(it -> new JigTypeArgument(it.fullQualifiedName()))
-                                                                .toList())
-                                        )
-                                )
-                                .toList()
-                )
+                jigBaseTypeDataBundle
         );
     }
 }

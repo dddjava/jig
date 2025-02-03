@@ -39,6 +39,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     // class宣言の中のジェネリクス
     private List<JigTypeParameter> jigTypeParameters;
+    private List<JigAnnotationData> jigAnnotationDataList = new ArrayList<>();
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -92,9 +93,10 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                jigTypeBuilder.addAnnotation(annotation)
-        );
+        return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
+            jigTypeBuilder.addAnnotation(annotation);
+            jigAnnotationDataList.add(JigAnnotationData.from(annotation.typeIdentifier().fullQualifiedName()));
+        });
     }
 
     /**
@@ -242,7 +244,7 @@ class AsmClassVisitor extends ClassVisitor {
                 JigTypeKind.CLASS,
                 new JigTypeAttributeData(
                         TypeVisibility.PUBLIC,
-                        List.of(),
+                        jigAnnotationDataList,
                         jigTypeParameters
                 ),
                 new JigBaseTypeDataBundle(

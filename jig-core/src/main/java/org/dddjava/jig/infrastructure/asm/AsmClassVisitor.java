@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
+    @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
     // class宣言の中のジェネリクス

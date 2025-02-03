@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.infrastructure.asm.data.JigAnnotationData;
 import org.dddjava.jig.infrastructure.asm.data.JigBaseTypeData;
 import org.dddjava.jig.infrastructure.asm.ut.MyClass;
+import org.dddjava.jig.infrastructure.asm.ut.MyGenericsMadnessInterface;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -73,6 +74,25 @@ public class AsmClassSourceReaderTest {
             assertEquals("org.dddjava.jig.infrastructure.asm.ut.MySuperClass<java.lang.Integer, X, java.lang.Long>", typeData.superType().orElseThrow().fqnWithGenerics());
             assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleName).toList());
             assertEquals(List.of("MyInterface<Y, String>", "MyInterface2<String, Y>"),
+                    typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleNameWithGenerics).toList());
+        }
+
+        @Test
+        void JigTypeDataの取得_やりすぎばん() throws IOException {
+            AsmClassVisitor visitor = new AsmClassVisitor();
+            new ClassReader(MyGenericsMadnessInterface.class.getName()).accept(visitor, 0);
+
+            var typeData = visitor.jigTypeData();
+            assertEquals("MyGenericsMadnessInterface", typeData.simpleName());
+            assertEquals("MyGenericsMadnessInterface<T extends List>", typeData.simpleNameWithGenerics());
+            // とれるようにしたいけどとりあえずはいいかなと
+            //assertEquals("MyGenericsMadnessInterface<T extends List<Predicate<T>>", typeData.simpleNameWithGenerics());
+
+            // interfaceのsuperは入ってないとおもってたけどObjectが入っている
+            assertEquals("Object", typeData.superType().orElseThrow().simpleName());
+
+            // interfaceのextendsはinterfaceで取れる模様
+            assertEquals(List.of("Consumer<Consumer>"),
                     typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleNameWithGenerics).toList());
         }
 

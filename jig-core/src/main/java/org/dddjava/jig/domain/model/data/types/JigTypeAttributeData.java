@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.data.types;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;

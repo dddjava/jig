@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.classes.type;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
+import org.dddjava.jig.domain.model.data.types.TypeVisibility;
 
 import java.util.List;
 import java.util.stream.Collectors;

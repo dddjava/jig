@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.domain.model.data.types;
 
 /**
  * 型の可視性

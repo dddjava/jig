@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.data.types.TypeVisibility;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 

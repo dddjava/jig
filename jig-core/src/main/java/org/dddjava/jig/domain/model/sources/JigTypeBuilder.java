@@ -62,16 +62,22 @@ public class JigTypeBuilder {
         }
         JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, annotations);
 
-        JigStaticMember jigStaticMember = new JigStaticMember(
+        JigStaticMember jigStaticMember = buildStaticMember();
+        JigInstanceMember jigInstanceMember = buildInstanceMember();
+        return new JigType(jigTypeHeader, jigTypeAttribute, jigStaticMember, jigInstanceMember);
+    }
+
+    public JigInstanceMember buildInstanceMember() {
+        return new JigInstanceMember(
+                new JigFields(instanceFields),
+                new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
+    }
+
+    public JigStaticMember buildStaticMember() {
+        return new JigStaticMember(
                 new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                 new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                 new StaticFieldDeclarations(this.staticFieldDeclarations));
-
-        JigInstanceMember jigInstanceMember = new JigInstanceMember(
-                new JigFields(instanceFields),
-                new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
-
-        return new JigType(jigTypeHeader, jigTypeAttribute, jigStaticMember, jigInstanceMember);
     }
 
     public void addAnnotation(Annotation annotation) {

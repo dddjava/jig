@@ -1,7 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.data.types.JigBaseTypeDataBundle;
+import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
+import org.dddjava.jig.domain.model.data.types.JigTypeParameter;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 
@@ -28,18 +30,8 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = getLogger(AsmClassSignatureVisitor.class);
 
     public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
-        ParameterizedType superType = superclassAsmTypeSignatureVisitor.generateParameterizedType();
-
         return new JigBaseTypeDataBundle(
-                Optional.of(new JigBaseTypeData(
-                        new JigObjectId<>(superType.typeIdentifier().fullQualifiedName()),
-                        new JigBaseTypeAttributeData(
-                                List.of(), // 型アノテーション未対応
-                                superType.typeParameters().list().stream()
-                                        .map(it -> new JigTypeArgument(it.fullQualifiedName()))
-                                        .toList()
-                        )
-                )),
+                Optional.of(superclassAsmTypeSignatureVisitor.jigBaseTypeData()),
                 interfaceAsmTypeSignatureVisitors.stream()
                         .map(AsmTypeSignatureVisitor::jigBaseTypeData)
                         .toList()

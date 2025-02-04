@@ -26,4 +26,9 @@ public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
                 .sorted(Comparator.comparing(jigAnnotationData -> jigAnnotationData.id()))
                 .toList();
     }
+
+    public boolean declaredAnnotation(TypeIdentifier typeIdentifier) {
+        return declarationAnnotationInstances.stream()
+                .anyMatch(jigAnnotationInstance -> jigAnnotationInstance.id().equals(typeIdentifier));
+    }
 }

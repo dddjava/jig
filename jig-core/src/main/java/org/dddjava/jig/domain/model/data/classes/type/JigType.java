@@ -122,7 +122,7 @@ public class JigType {
     }
 
     public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
-        return jigTypeAttribute.hasAnnotation(typeIdentifier);
+        return jigTypeHeader.jigTypeAttributeData().declaredAnnotation(typeIdentifier);
     }
 
     public boolean markedCore() {

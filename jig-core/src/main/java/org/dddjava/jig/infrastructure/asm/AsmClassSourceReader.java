@@ -15,11 +15,11 @@ public class AsmClassSourceReader implements ClassSourceReader {
 
     @Override
     public ClassSourceModel classSourceModel(ClassSources classSources) {
-        List<ClassDeclaration> jigTypeBuilders = classSources.list().stream()
+        List<ClassDeclaration> classDeclarations = classSources.list().stream()
                 .map(classSource -> classDeclaration(classSource))
                 .flatMap(Optional::stream)
                 .toList();
-        return new ClassSourceModel(jigTypeBuilders);
+        return new ClassSourceModel(classDeclarations);
     }
 
     Optional<ClassDeclaration> classDeclaration(ClassSource classSource) {

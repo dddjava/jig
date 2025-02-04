@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.data.types.JigAnnotationData;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationInstance;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
 import org.dddjava.jig.infrastructure.asm.ut.MyClass;
 import org.dddjava.jig.infrastructure.asm.ut.MyGenericsMadnessInterface;
@@ -69,7 +69,7 @@ public class AsmClassSourceReaderTest {
 
             // MyDeclarationAnnotationForSourceは含まれない
             assertEquals(List.of("MyDeclarationAnnotationForClass", "MyDeclarationAnnotationForRuntime"), typeData.jigTypeAttributeData()
-                    .declarationAnnotationList().stream().map(JigAnnotationData::simpleTypeName).toList());
+                    .declarationAnnotationList().stream().map(JigAnnotationInstance::simpleTypeName).toList());
 
             assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
             assertEquals("MySuperClass<Integer, X, Long>", typeData.superType().orElseThrow().simpleNameWithGenerics());

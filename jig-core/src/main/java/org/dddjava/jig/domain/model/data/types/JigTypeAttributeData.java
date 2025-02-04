@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
-                                   Collection<JigAnnotationData> declarationAnnotations,
+                                   Collection<JigAnnotationInstance> declarationAnnotationInstances,
                                    List<JigTypeParameter> typeParameters) {
 
     public static JigTypeAttributeData simple() {
@@ -20,8 +20,8 @@ public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 
-    public List<JigAnnotationData> declarationAnnotationList() {
-        return declarationAnnotations.stream()
+    public List<JigAnnotationInstance> declarationAnnotationList() {
+        return declarationAnnotationInstances.stream()
                 .sorted(Comparator.comparing(jigAnnotationData -> jigAnnotationData.id()))
                 .toList();
     }

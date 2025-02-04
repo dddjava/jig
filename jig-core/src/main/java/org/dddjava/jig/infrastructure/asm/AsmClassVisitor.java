@@ -41,7 +41,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
-    private List<JigAnnotationData> jigAnnotationDataList = new ArrayList<>();
+    private List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
 
     AsmClassVisitor() {
@@ -105,7 +105,7 @@ class AsmClassVisitor extends ClassVisitor {
                 resolveTypeKind(access),
                 new JigTypeAttributeData(
                         resolveVisibility(access),
-                        jigAnnotationDataList,
+                        jigAnnotationInstanceList,
                         jigTypeParameters
                 ),
                 jigBaseTypeDataBundle
@@ -125,7 +125,7 @@ class AsmClassVisitor extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
             jigTypeBuilder.addAnnotation(annotation);
-            jigAnnotationDataList.add(JigAnnotationData.from(annotation.typeIdentifier().fullQualifiedName()));
+            jigAnnotationInstanceList.add(JigAnnotationInstance.from(annotation.typeIdentifier().fullQualifiedName()));
         });
     }
 

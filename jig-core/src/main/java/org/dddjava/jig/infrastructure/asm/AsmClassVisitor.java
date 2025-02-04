@@ -123,11 +123,9 @@ class AsmClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_ABSTRACT) != 0) {
             set.add(JigTypeModifier.ABSTRACT);
         }
-        ;
         if ((access & Opcodes.ACC_FINAL) != 0) {
             set.add(JigTypeModifier.FINAL);
         }
-        ;
 
         return set;
     }

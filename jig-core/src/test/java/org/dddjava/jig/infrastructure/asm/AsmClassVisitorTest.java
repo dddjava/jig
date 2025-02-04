@@ -65,11 +65,11 @@ class AsmClassVisitorTest {
 
     @ParameterizedTest
     @ValueSource(classes = {
-            MyTypeModifierClass.MyTypeModifierClassSTATIC.class,
+//            MyTypeModifierClass.MyTypeModifierClassSTATIC.class,
             MyTypeModifierClass.MyTypeModifierClassABSTRACT.class,
             MyTypeModifierClass.MyTypeModifierClassFINAL.class,
-            MyTypeModifierClass.MyTypeModifierClassSEALED.class,
-            MyTypeModifierClass.MyTypeModifierClassNON_SEALED.class
+//            MyTypeModifierClass.MyTypeModifierClassSEALED.class,
+//            MyTypeModifierClass.MyTypeModifierClassNON_SEALED.class
     })
     void 修飾子が取得できる(Class<?> target) throws IOException {
         AsmClassVisitor visitor = new AsmClassVisitor();

@@ -120,8 +120,15 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     private Collection<JigTypeModifier> resolveTypeModifiers(int access) {
+        EnumSet<JigTypeModifier> set = EnumSet.noneOf(JigTypeModifier.class);
+        if ((access & Opcodes.ACC_ABSTRACT) != 0) {
+            set.add(JigTypeModifier.ABSTRACT);
+        };
+        if ((access & Opcodes.ACC_FINAL) != 0) {
+            set.add(JigTypeModifier.FINAL);
+        };
 
-        return List.of();
+        return set;
     }
 
     private String slashToDot(String bytecodeName) {

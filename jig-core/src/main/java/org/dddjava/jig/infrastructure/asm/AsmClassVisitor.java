@@ -92,16 +92,16 @@ class AsmClassVisitor extends ClassVisitor {
 
             jigTypeParameters = List.of();
             jigBaseTypeDataBundle = new JigBaseTypeDataBundle(
-                    Optional.of(JigBaseTypeData.fromNameOnly(slashToDot(superName))),
-                    Arrays.stream(interfaces).map(this::slashToDot)
-                            .map(JigBaseTypeData::fromNameOnly)
+                    Optional.of(JigBaseTypeData.fromId(JigObjectId.fromJvmBinaryName(superName))),
+                    Arrays.stream(interfaces)
+                            .map(interfaceName -> JigBaseTypeData.fromId(JigObjectId.fromJvmBinaryName(interfaceName)))
                             .toList()
             );
         }
 
         Collection<JigTypeModifier> jigTypeModifiers = resolveTypeModifiers(access);
         jigTypeHeader = new JigTypeHeader(
-                new JigObjectId<>(slashToDot(name)),
+                JigObjectId.fromJvmBinaryName(name),
                 resolveTypeKind(access),
                 new JigTypeAttributeData(
                         resolveVisibility(access),
@@ -128,10 +128,6 @@ class AsmClassVisitor extends ClassVisitor {
         }
 
         return set;
-    }
-
-    private String slashToDot(String bytecodeName) {
-        return bytecodeName.replace('/', '.');
     }
 
     @Override

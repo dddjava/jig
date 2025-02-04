@@ -15,7 +15,7 @@ public record JigBaseTypeDataBundle(
         Optional<JigBaseTypeData> superType,
         Collection<JigBaseTypeData> interfaceTypes) {
     public static JigBaseTypeDataBundle simple() {
-        return new JigBaseTypeDataBundle(Optional.of(JigBaseTypeData.fromNameOnly("java.lang.Object")), List.of());
+        return new JigBaseTypeDataBundle(Optional.of(JigBaseTypeData.fromId(new JigObjectId<>("java.lang.Object"))), List.of());
     }
 
     public Set<JigObjectId<JigTypeHeader>> typeIdSet() {
@@ -23,7 +23,8 @@ public record JigBaseTypeDataBundle(
                 .flatMap(jigBaseTypeData -> Stream.concat(
                         Stream.of(jigBaseTypeData.id()),
                         jigBaseTypeData.attributeData().typeArgumentList().stream()
-                                .map(JigTypeArgument::value).map(value -> new JigObjectId<JigTypeHeader>(value))
+                                .map(JigTypeArgument::value)
+                                .map(value -> new JigObjectId<JigTypeHeader>(value))
                 ))
                 // "." の含まれていないものは型パラメタとして扱う。デフォルトパッケージのクラスも該当してしまうが、良しとする。
                 .filter(jigTypeHeaderJigObjectId -> jigTypeHeaderJigObjectId.value().contains("."))

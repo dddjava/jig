@@ -28,15 +28,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 class AsmClassSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = getLogger(AsmClassSignatureVisitor.class);
 
-    public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
-        return new JigBaseTypeDataBundle(
-                Optional.ofNullable(superclassAsmTypeSignatureVisitor).map(AsmTypeSignatureVisitor::jigBaseTypeData),
-                interfaceAsmTypeSignatureVisitors.stream()
-                        .map(AsmTypeSignatureVisitor::jigBaseTypeData)
-                        .toList()
-        );
-    }
-
     record JigTypeParameterBuilder(String name,
                                    List<AsmTypeSignatureVisitor> classBound,
                                    List<AsmTypeSignatureVisitor> interfaceBounds) {
@@ -111,4 +102,14 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                 .map(JigTypeParameterBuilder::build)
                 .toList();
     }
+
+    public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
+        return new JigBaseTypeDataBundle(
+                Optional.ofNullable(superclassAsmTypeSignatureVisitor).map(AsmTypeSignatureVisitor::jigBaseTypeData),
+                interfaceAsmTypeSignatureVisitors.stream()
+                        .map(AsmTypeSignatureVisitor::jigBaseTypeData)
+                        .toList()
+        );
+    }
+
 }

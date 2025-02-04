@@ -238,7 +238,6 @@ class AsmClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_ENUM) != 0) return JigTypeKind.ENUM;
         if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
         if ((access & Opcodes.ACC_INTERFACE) != 0) return JigTypeKind.INTERFACE;
-        if ((access & Opcodes.ACC_ABSTRACT) != 0) return JigTypeKind.ABSTRACT_CLASS;
         if ((access & Opcodes.ACC_ANNOTATION) != 0) return JigTypeKind.ANNOTATION;
         // 不明なものはCLASSにしておく
         return JigTypeKind.CLASS;

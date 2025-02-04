@@ -15,8 +15,12 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
 
     private final String value;
 
-    private TypeIdentifier(String value) {
+    protected TypeIdentifier(String value) {
         this.value = value.replace('/', '.');
+    }
+
+    public String value() {
+        return value;
     }
 
     private static final Map<String, TypeIdentifier> cache = new ConcurrentHashMap<>();

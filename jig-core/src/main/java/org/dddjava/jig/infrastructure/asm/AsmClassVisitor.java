@@ -181,7 +181,7 @@ class AsmClassVisitor extends ClassVisitor {
             FieldType fieldType = result;
 
             return new AsmFieldVisitor(this.api, it -> {
-                FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
+                FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(typeHeaderJigObjectId, fieldType, name);
                 it.annotations.forEach(annotation -> {
                     jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });

@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.data.classes.field;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.JigObjectId;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 
 /**
  * フィールド定義
@@ -13,6 +15,12 @@ public class FieldDeclaration {
 
     public FieldDeclaration(TypeIdentifier declaringType, FieldType fieldType, String name) {
         this.declaringType = declaringType;
+        this.name = name;
+        this.fieldType = fieldType;
+    }
+
+    public FieldDeclaration(JigObjectId<JigTypeHeader> jigTypeId, FieldType fieldType, String name) {
+        this.declaringType = TypeIdentifier.valueOf(jigTypeId.value());
         this.name = name;
         this.fieldType = fieldType;
     }

@@ -30,11 +30,6 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
         ParameterizedType superType = superclass();
 
-        // TODO parameterized typeをはさまなくする
-        List<ParameterizedType> interfaceTypes = interfaceAsmTypeSignatureVisitors.stream()
-                .map(AsmTypeSignatureVisitor::generateParameterizedType)
-                .toList();
-
         return new JigBaseTypeDataBundle(
                 Optional.of(new JigBaseTypeData(
                         new JigObjectId<>(superType.typeIdentifier().fullQualifiedName()),
@@ -45,17 +40,8 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                                         .toList()
                         )
                 )),
-                interfaceTypes.stream()
-                        .map(parameterizedType ->
-                                new JigBaseTypeData(
-                                        new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
-                                        new JigBaseTypeAttributeData(
-                                                List.of(), // 型アノテーション未対応
-                                                parameterizedType.typeParameters().list().stream()
-                                                        .map(it -> new JigTypeArgument(it.fullQualifiedName()))
-                                                        .toList())
-                                )
-                        )
+                interfaceAsmTypeSignatureVisitors.stream()
+                        .map(AsmTypeSignatureVisitor::jigBaseTypeData)
                         .toList()
         );
     }

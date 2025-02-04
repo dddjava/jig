@@ -2,6 +2,9 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.JigBaseTypeAttributeData;
+import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
+import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
@@ -14,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * TypeSignature =
- *   visitBaseType
+ * visitBaseType
  * | visitTypeVariable
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
@@ -177,5 +180,17 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         }
         // TODO ほかのぱたん
         return Optional.empty();
+    }
+
+    public JigBaseTypeData jigBaseTypeData() {
+        var parameterizedType = generateParameterizedType();
+        return new JigBaseTypeData(
+                new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
+                new JigBaseTypeAttributeData(
+                        List.of(), // 型アノテーション未対応
+                        parameterizedType.typeParameters().list().stream()
+                                .map(it -> new JigTypeArgument(it.fullQualifiedName()))
+                                .toList())
+        );
     }
 }

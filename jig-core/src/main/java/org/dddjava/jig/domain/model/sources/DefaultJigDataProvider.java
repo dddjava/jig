@@ -47,7 +47,20 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
 
     private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
         return classSourceModel.classDeclarations().stream()
-                .map(classDeclaration -> classDeclaration.jigTypeBuilder().applyTextSource(javaSourceModel).build(classDeclaration.jigTypeHeader()))
+                .map(classDeclaration -> {
+                    // クラスのコメント
+                    javaSourceModel.optClassComment(classDeclaration.jigTypeHeader().id())
+                            .ifPresent(classComment -> classDeclaration.jigTypeBuilder().registerClassComment(classComment));
+                    // メソッドのコメント登録
+                    for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigTypeBuilder().allMethodFacts()) {
+                        javaSourceModel.methodImplementations.stream()
+                                .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
+                                .findAny()
+                                .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
+                    }
+
+                    return classDeclaration.build();
+                })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 }

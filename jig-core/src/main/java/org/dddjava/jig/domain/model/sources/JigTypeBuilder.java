@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +19,6 @@ import static java.util.stream.Collectors.toList;
  * 型の実装から読み取れること
  */
 public class JigTypeBuilder {
-
-    private final ParameterizedType type;
 
     final List<Annotation> annotations;
 
@@ -35,8 +32,7 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder(ParameterizedType type) {
-        this.type = type;
+    public JigTypeBuilder() {
 
         // 空を準備
         this.annotations = new ArrayList<>();
@@ -45,12 +41,7 @@ public class JigTypeBuilder {
         this.constructorBuilders = new ArrayList<>();
         this.instanceFields = new ArrayList<>();
         this.staticFieldDeclarations = new ArrayList<>();
-        this.classComment = ClassComment.empty(type.typeIdentifier());
         this.recordComponentDefinitions = new ArrayList<>();
-    }
-
-    public TypeIdentifier typeIdentifier() {
-        return type.typeIdentifier();
     }
 
     public List<JigMethodBuilder> allMethodFacts() {
@@ -66,6 +57,9 @@ public class JigTypeBuilder {
     }
 
     public JigType build(JigTypeHeader jigTypeHeader) {
+        if (classComment == null) {
+            classComment = ClassComment.empty(jigTypeHeader.id());
+        }
         JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, annotations);
 
         JigStaticMember jigStaticMember = new JigStaticMember(
@@ -78,20 +72,6 @@ public class JigTypeBuilder {
                 new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
 
         return new JigType(jigTypeHeader, jigTypeAttribute, jigStaticMember, jigInstanceMember);
-    }
-
-    public JigTypeBuilder applyTextSource(JavaSourceModel javaSourceModel) {
-        // クラスのコメントを適用
-        javaSourceModel.optClassComment(typeIdentifier())
-                .ifPresent(this::registerClassComment);
-
-        for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-            javaSourceModel.methodImplementations.stream()
-                    .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
-                    .findAny()
-                    .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
-        }
-        return this;
     }
 
     public void addAnnotation(Annotation annotation) {

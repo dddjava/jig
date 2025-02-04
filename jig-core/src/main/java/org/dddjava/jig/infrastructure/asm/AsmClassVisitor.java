@@ -107,7 +107,7 @@ class AsmClassVisitor extends ClassVisitor {
         );
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(classInternalName), actualTypeParameters);
-        jigTypeBuilder = new JigTypeBuilder(type);
+        jigTypeBuilder = new JigTypeBuilder();
 
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }
@@ -197,7 +197,7 @@ class AsmClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
-                jigTypeBuilder.typeIdentifier(),
+                typeIdentifier,
                 data -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             access,

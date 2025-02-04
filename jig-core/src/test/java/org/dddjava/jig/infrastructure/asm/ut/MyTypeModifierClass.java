@@ -2,6 +2,11 @@ package org.dddjava.jig.infrastructure.asm.ut;
 
 public class MyTypeModifierClass {
     public static class MyTypeModifierClassSTATIC {
+        public static class MyTypeModifierClassSTATICNest {
+        }
+
+        public class MyTypeModifierClassSTATICInner {
+        }
     }
 
     public abstract class MyTypeModifierClassABSTRACT {

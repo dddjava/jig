@@ -42,8 +42,11 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
+    private String name;
+
     private List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
+    private boolean isStaticNestedClass = false;
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -51,6 +54,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        this.name = name;
         List<JigTypeParameter> jigTypeParameters;
         JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
@@ -124,10 +128,12 @@ class AsmClassVisitor extends ClassVisitor {
         EnumSet<JigTypeModifier> set = EnumSet.noneOf(JigTypeModifier.class);
         if ((access & Opcodes.ACC_ABSTRACT) != 0) {
             set.add(JigTypeModifier.ABSTRACT);
-        };
+        }
+        ;
         if ((access & Opcodes.ACC_FINAL) != 0) {
             set.add(JigTypeModifier.FINAL);
-        };
+        }
+        ;
 
         return set;
     }
@@ -142,6 +148,22 @@ class AsmClassVisitor extends ClassVisitor {
             jigTypeBuilder.addAnnotation(annotation);
             jigAnnotationInstanceList.add(JigAnnotationInstance.from(annotation.typeIdentifier().fullQualifiedName()));
         });
+    }
+
+    /**
+     * InnerClassesにはインナークラス/ネストクラスの情報が入っている。
+     * 自身がどちらかの場合は自身の情報もはいっており、ネストした場合のみの修飾子はここにあらわれる。
+     */
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        // nameが一致するもののみ、このクラスの情報として採用する
+        if (name.equals(this.name)) {
+            if ((access & Opcodes.ACC_STATIC) != 0) {
+                isStaticNestedClass = true;
+            }
+        }
+
+        super.visitInnerClass(name, outerName, innerName, access);
     }
 
     /**
@@ -233,6 +255,10 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
+
+        if (isStaticNestedClass) {
+            jigTypeHeader = jigTypeHeader.withStatic();
+        }
         super.visitEnd();
     }
 

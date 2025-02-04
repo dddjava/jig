@@ -53,4 +53,10 @@ public record JigTypeHeader(JigObjectId<JigTypeHeader> id,
                 .sorted(Comparator.comparing(jigBaseTypeData -> jigBaseTypeData.id()))
                 .toList();
     }
+
+    public JigTypeHeader withStatic() {
+        // JigTypeModifiersが変更可能なのでひとまずこうしておく
+        jigTypeAttributeData.jigTypeModifiers().add(JigTypeModifier.STATIC);
+        return this;
+    }
 }

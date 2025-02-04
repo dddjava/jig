@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AsmClassVisitorTest {
 
@@ -65,7 +65,7 @@ class AsmClassVisitorTest {
 
     @ParameterizedTest
     @ValueSource(classes = {
-//            MyTypeModifierClass.MyTypeModifierClassSTATIC.class,
+            MyTypeModifierClass.MyTypeModifierClassSTATIC.class,
             MyTypeModifierClass.MyTypeModifierClassABSTRACT.class,
             MyTypeModifierClass.MyTypeModifierClassFINAL.class,
 //            MyTypeModifierClass.MyTypeModifierClassSEALED.class,
@@ -84,5 +84,23 @@ class AsmClassVisitorTest {
                 // クラス名からMyTypeModifierClassを除いたものがenumと一致する
                 target.getSimpleName().replace("MyTypeModifierClass", ""),
                 jigTypeModifiers.iterator().next().name());
+    }
+
+    @Test
+    void 多重ネスト_static_inner() throws IOException {
+        AsmClassVisitor nestInnerVisitor = new AsmClassVisitor();
+        new ClassReader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class.getName()).accept(nestInnerVisitor, 0);
+
+        var header = nestInnerVisitor.jigTypeHeader();
+        assertFalse(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
+    }
+
+    @Test
+    void 多重ネスト_static_static() throws IOException {
+        AsmClassVisitor nestNestVisitor = new AsmClassVisitor();
+        new ClassReader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class.getName()).accept(nestNestVisitor, 0);
+
+        var header = nestNestVisitor.jigTypeHeader();
+        assertTrue(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }
 }

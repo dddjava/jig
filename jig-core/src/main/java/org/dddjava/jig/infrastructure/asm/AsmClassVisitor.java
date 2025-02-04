@@ -39,7 +39,6 @@ class AsmClassVisitor extends ClassVisitor {
 
     private TypeIdentifier typeIdentifier;
 
-    private final List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
     private boolean isStaticNestedClass = false;
 
@@ -68,7 +67,7 @@ class AsmClassVisitor extends ClassVisitor {
                     new JigTypeAttributeData(
                             jigTypeVisibility,
                             jigTypeModifiers,
-                            jigAnnotationInstanceList,
+                            new ArrayList<>(), // アノテーションは後で追加する
                             asmClassSignatureVisitor.jigTypeParameters()
                     ),
                     asmClassSignatureVisitor.jigBaseTypeDataBundle()
@@ -81,7 +80,7 @@ class AsmClassVisitor extends ClassVisitor {
                     new JigTypeAttributeData(
                             jigTypeVisibility,
                             jigTypeModifiers,
-                            jigAnnotationInstanceList,
+                            new ArrayList<>(), // アノテーションは後で追加する
                             List.of()
                     ),
                     new JigBaseTypeDataBundle(
@@ -98,7 +97,7 @@ class AsmClassVisitor extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
             jigTypeBuilder.addAnnotation(annotation);
-            jigAnnotationInstanceList.add(JigAnnotationInstance.from(annotation.typeIdentifier()));
+            jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().add(JigAnnotationInstance.from(annotation.typeIdentifier()));
         });
     }
 

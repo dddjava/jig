@@ -98,8 +98,8 @@ public class JigTypeBuilder {
         this.annotations.add(annotation);
     }
 
-    public FieldDeclaration addInstanceField(FieldType fieldType, String name) {
-        FieldDeclaration fieldDeclaration = new FieldDeclaration(type.typeIdentifier(), fieldType, name);
+    public FieldDeclaration addInstanceField(TypeIdentifier owner, FieldType fieldType, String name) {
+        FieldDeclaration fieldDeclaration = new FieldDeclaration(owner, fieldType, name);
         instanceFields.add(new JigField(fieldDeclaration));
 
         return fieldDeclaration;
@@ -115,8 +115,9 @@ public class JigTypeBuilder {
         });
     }
 
-    public void addStaticField(String name, TypeIdentifier typeIdentifier) {
-        staticFieldDeclarations.add(new StaticFieldDeclaration(type.typeIdentifier(), name, typeIdentifier));
+    public void addStaticField(TypeIdentifier owner, TypeIdentifier fieldTypeIdentifier, String name) {
+        // instanceフィールドはFieldTypeを使っているが、staticフィールドのジェネリクスは扱えていなさそう
+        staticFieldDeclarations.add(new StaticFieldDeclaration(owner, name, fieldTypeIdentifier));
     }
 
     public void addInstanceMethod(JigMethodBuilder jigMethodBuilder) {

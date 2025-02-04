@@ -180,14 +180,14 @@ class AsmClassVisitor extends ClassVisitor {
             FieldType fieldType = result;
 
             return new AsmFieldVisitor(this.api, it -> {
-                FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
+                FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(typeIdentifier, fieldType, name);
                 it.annotations.forEach(annotation -> {
                     jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
             });
         } else if (!name.equals("$VALUES")) {
             // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
-            jigTypeBuilder.addStaticField(name, typeDescriptorToIdentifier(descriptor));
+            jigTypeBuilder.addStaticField(typeIdentifier, typeDescriptorToIdentifier(descriptor), name);
         }
 
         return super.visitField(access, name, descriptor, signature, value);

@@ -1,10 +1,12 @@
 package org.dddjava.jig.domain.model.data.types;
 
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+
 /**
  * extendsおよびimplements
  */
-public record JigBaseTypeData(JigObjectId<JigTypeHeader> id, JigBaseTypeAttributeData attributeData) {
-    public static JigBaseTypeData fromId(JigObjectId<JigTypeHeader> id) {
+public record JigBaseTypeData(TypeIdentifier id, JigBaseTypeAttributeData attributeData) {
+    public static JigBaseTypeData fromId(TypeIdentifier id) {
         return new JigBaseTypeData(id, JigBaseTypeAttributeData.empty());
     }
 

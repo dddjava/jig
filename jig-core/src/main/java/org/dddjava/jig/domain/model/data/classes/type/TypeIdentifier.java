@@ -23,6 +23,15 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return value;
     }
 
+    public String simpleValue() {
+        int lastDotIndex = value().lastIndexOf('.');
+        return (lastDotIndex != -1) ? value().substring(lastDotIndex + 1) : value();
+    }
+
+    public static TypeIdentifier fromJvmBinaryName(String jvmBinaryName) {
+        return new TypeIdentifier(jvmBinaryName.replace('/', '.'));
+    }
+
     private static final Map<String, TypeIdentifier> cache = new ConcurrentHashMap<>();
 
     public static TypeIdentifier from(Class<?> clz) {

@@ -1,25 +1,27 @@
 package org.dddjava.jig.domain.model.data.types;
 
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+
 import java.util.*;
 
 /**
  * JSL`NormalClassDeclaration` の `ClassBody` 以外で得られる情報
  *
- * @param id             完全修飾クラス名
+ * @param id                   完全修飾クラス名
  * @param jigTypeKind
  * @param jigTypeAttributeData
- * @param baseTypeDataBundle 親クラス及び実装インタフェース
+ * @param baseTypeDataBundle   親クラス及び実装インタフェース
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">jls/Chapter 8. Classes</a>
  */
-public record JigTypeHeader(JigObjectId<JigTypeHeader> id,
+public record JigTypeHeader(TypeIdentifier id,
                             JigTypeKind jigTypeKind,
                             JigTypeAttributeData jigTypeAttributeData,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
-    public Set<JigObjectId<JigTypeHeader>> containedIds() {
+    public Set<TypeIdentifier> containedIds() {
         // アノテーションは含めない
         // 型パラメタは除く
-        Set<JigObjectId<JigTypeHeader>> ids = new HashSet<>();
+        Set<TypeIdentifier> ids = new HashSet<>();
         ids.add(id);
         ids.addAll(baseTypeDataBundle.typeIdSet());
         return ids;
@@ -29,7 +31,7 @@ public record JigTypeHeader(JigObjectId<JigTypeHeader> id,
      * FQNのみで生成する。主にテスト用。
      */
     public static JigTypeHeader simple(String fqn) {
-        return new JigTypeHeader(new JigObjectId<>(fqn), JigTypeKind.CLASS, JigTypeAttributeData.simple(), JigBaseTypeDataBundle.simple());
+        return new JigTypeHeader(TypeIdentifier.valueOf(fqn), JigTypeKind.CLASS, JigTypeAttributeData.simple(), JigBaseTypeDataBundle.simple());
     }
 
     public String simpleName() {

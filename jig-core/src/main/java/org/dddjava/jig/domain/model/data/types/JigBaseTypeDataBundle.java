@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.types;
 
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -15,16 +17,16 @@ public record JigBaseTypeDataBundle(
         Optional<JigBaseTypeData> superType,
         Collection<JigBaseTypeData> interfaceTypes) {
     public static JigBaseTypeDataBundle simple() {
-        return new JigBaseTypeDataBundle(Optional.of(JigBaseTypeData.fromId(new JigObjectId<>("java.lang.Object"))), List.of());
+        return new JigBaseTypeDataBundle(Optional.of(JigBaseTypeData.fromId(TypeIdentifier.from(Object.class))), List.of());
     }
 
-    public Set<JigObjectId<JigTypeHeader>> typeIdSet() {
+    public Set<TypeIdentifier> typeIdSet() {
         return Stream.concat(superType.stream(), interfaceTypes.stream())
                 .flatMap(jigBaseTypeData -> Stream.concat(
                         Stream.of(jigBaseTypeData.id()),
                         jigBaseTypeData.attributeData().typeArgumentList().stream()
                                 .map(JigTypeArgument::value)
-                                .map(value -> new JigObjectId<JigTypeHeader>(value))
+                                .map(value -> TypeIdentifier.valueOf(value))
                 ))
                 // "." の含まれていないものは型パラメタとして扱う。デフォルトパッケージのクラスも該当してしまうが、良しとする。
                 .filter(jigTypeHeaderJigObjectId -> jigTypeHeaderJigObjectId.value().contains("."))

@@ -41,7 +41,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
-    private JigObjectId<JigTypeHeader> typeHeaderJigObjectId;
+    private TypeIdentifier typeIdentifier;
 
     private List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
@@ -53,7 +53,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
-        this.typeHeaderJigObjectId = JigObjectId.fromJvmBinaryName(classInternalName);
+        this.typeIdentifier = TypeIdentifier.fromJvmBinaryName(classInternalName);
         List<JigTypeParameter> jigTypeParameters;
         JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
@@ -87,16 +87,16 @@ class AsmClassVisitor extends ClassVisitor {
 
             jigTypeParameters = List.of();
             jigBaseTypeDataBundle = new JigBaseTypeDataBundle(
-                    Optional.of(JigBaseTypeData.fromId(JigObjectId.fromJvmBinaryName(superName))),
+                    Optional.of(JigBaseTypeData.fromId(TypeIdentifier.fromJvmBinaryName(superName))),
                     Arrays.stream(interfaces)
-                            .map(interfaceName -> JigBaseTypeData.fromId(JigObjectId.fromJvmBinaryName(interfaceName)))
+                            .map(interfaceName -> JigBaseTypeData.fromId(TypeIdentifier.fromJvmBinaryName(interfaceName)))
                             .toList()
             );
         }
 
         Collection<JigTypeModifier> jigTypeModifiers = resolveTypeModifiers(access);
         jigTypeHeader = new JigTypeHeader(
-                this.typeHeaderJigObjectId,
+                this.typeIdentifier,
                 resolveTypeKind(access),
                 new JigTypeAttributeData(
                         resolveVisibility(access),
@@ -117,7 +117,7 @@ class AsmClassVisitor extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
             jigTypeBuilder.addAnnotation(annotation);
-            jigAnnotationInstanceList.add(JigAnnotationInstance.from(annotation.typeIdentifier().fullQualifiedName()));
+            jigAnnotationInstanceList.add(JigAnnotationInstance.from(annotation.typeIdentifier()));
         });
     }
 
@@ -128,7 +128,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // nameが一致するもののみ、このクラスの情報として採用する
-        if (JigObjectId.fromJvmBinaryName(name).equals(this.typeHeaderJigObjectId)) {
+        if (TypeIdentifier.fromJvmBinaryName(name).equals(this.typeIdentifier)) {
             if ((access & Opcodes.ACC_STATIC) != 0) {
                 isStaticNestedClass = true;
             }

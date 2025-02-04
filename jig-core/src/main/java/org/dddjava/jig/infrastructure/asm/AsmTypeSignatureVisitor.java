@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeAttributeData;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
-import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
@@ -184,7 +183,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
 
     public JigBaseTypeData jigBaseTypeData() {
         return new JigBaseTypeData(
-                JigObjectId.fromJvmBinaryName(classType.name()),
+                TypeIdentifier.fromJvmBinaryName(classType.name()),
                 new JigBaseTypeAttributeData(
                         List.of(), // 型アノテーション未対応
                         classType.arguments().stream()

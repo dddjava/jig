@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
@@ -39,7 +38,7 @@ public class JigType {
     }
 
     // HeaderのほうもId<JigType>にする？
-    public JigObjectId<JigTypeHeader> id() {
+    public TypeIdentifier id() {
         return jigTypeHeader.id();
     }
 
@@ -71,7 +70,7 @@ public class JigType {
 
     public TypeIdentifiers usingTypes() {
         Set<TypeIdentifier> set = new HashSet<>();
-        set.addAll(jigTypeHeader.containedIds().stream().map(JigObjectId::value).map(TypeIdentifier::valueOf).toList());
+        set.addAll(jigTypeHeader.containedIds());
         set.addAll(jigTypeAttribute.listUsingTypes());
         set.addAll(jigStaticMember.listUsingTypes());
         set.addAll(jigInstanceMember.listUsingTypes());

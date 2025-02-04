@@ -1,18 +1,21 @@
 package org.dddjava.jig.domain.model.data.types;
 
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+
 import java.util.Collection;
 import java.util.List;
 
 /**
  * 宣言アノテーションや型アノテーションとして記述されたアノテーションのインスタンス。
- * @param id アノテーションの型を示すID。FQCN。
+ *
+ * @param id               アノテーションの型を示すID
  * @param elementValueData
  */
-public record JigAnnotationInstance(JigObjectId<JigTypeHeader> id,
+public record JigAnnotationInstance(TypeIdentifier id,
                                     Collection<JigAnnotationInstanceElement> elementValueData) {
 
-    public static JigAnnotationInstance from(String name) {
-        return new JigAnnotationInstance(new JigObjectId<>(name), List.of());
+    public static JigAnnotationInstance from(TypeIdentifier typeIdentifier) {
+        return new JigAnnotationInstance(typeIdentifier, List.of());
     }
 
     public String simpleTypeName() {

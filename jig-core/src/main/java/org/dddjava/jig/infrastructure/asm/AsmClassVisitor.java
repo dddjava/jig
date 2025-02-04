@@ -41,7 +41,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
-    private String classInternalName;
+    private JigObjectId<JigTypeHeader> typeHeaderJigObjectId;
 
     private List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
@@ -53,7 +53,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
-        this.classInternalName = classInternalName;
+        this.typeHeaderJigObjectId = JigObjectId.fromJvmBinaryName(classInternalName);
         List<JigTypeParameter> jigTypeParameters;
         JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
@@ -96,7 +96,7 @@ class AsmClassVisitor extends ClassVisitor {
 
         Collection<JigTypeModifier> jigTypeModifiers = resolveTypeModifiers(access);
         jigTypeHeader = new JigTypeHeader(
-                JigObjectId.fromJvmBinaryName(classInternalName),
+                this.typeHeaderJigObjectId,
                 resolveTypeKind(access),
                 new JigTypeAttributeData(
                         resolveVisibility(access),
@@ -128,7 +128,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // nameが一致するもののみ、このクラスの情報として採用する
-        if (name.equals(this.classInternalName)) {
+        if (JigObjectId.fromJvmBinaryName(name).equals(this.typeHeaderJigObjectId)) {
             if ((access & Opcodes.ACC_STATIC) != 0) {
                 isStaticNestedClass = true;
             }

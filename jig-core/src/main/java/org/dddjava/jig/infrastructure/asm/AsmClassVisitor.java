@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
@@ -15,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * visit
@@ -37,12 +35,11 @@ import java.util.stream.Collectors;
 class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
-    @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
-    private JigTypeBuilder jigTypeBuilder;
+    private final JigTypeBuilder jigTypeBuilder = new JigTypeBuilder();
 
     private TypeIdentifier typeIdentifier;
 
-    private List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
+    private final List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
     private boolean isStaticNestedClass = false;
 
@@ -57,9 +54,7 @@ class AsmClassVisitor extends ClassVisitor {
         JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
         // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
-        // ジェネリクスを使用している場合だけsignatureが入る
 
-        List<ParameterizedType> actualTypeParameters;
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
@@ -68,22 +63,8 @@ class AsmClassVisitor extends ClassVisitor {
 
             jigBaseTypeDataBundle = asmClassSignatureVisitor.jigBaseTypeDataBundle();
             jigTypeParameters = asmClassSignatureVisitor.jigTypeParameters();
-
-            // シグネチャに登場する型を全部取り出す
-            List<TypeIdentifier> useTypes = new ArrayList<>();
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(AsmClassVisitor.this.api) {
-                        @Override
-                        public void visitClassType(String name1) {
-                            useTypes.add(TypeIdentifier.valueOf(name1));
-                        }
-                    }
-            );
-            actualTypeParameters = useTypes.stream().map(ParameterizedType::new).collect(Collectors.toList());
         } else {
             // 非総称型で作成
-            actualTypeParameters = List.of();
-
             jigTypeParameters = List.of();
             jigBaseTypeDataBundle = new JigBaseTypeDataBundle(
                     Optional.of(JigBaseTypeData.fromId(TypeIdentifier.fromJvmBinaryName(superName))),
@@ -105,9 +86,6 @@ class AsmClassVisitor extends ClassVisitor {
                 ),
                 jigBaseTypeDataBundle
         );
-
-        ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(classInternalName), actualTypeParameters);
-        jigTypeBuilder = new JigTypeBuilder();
 
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }

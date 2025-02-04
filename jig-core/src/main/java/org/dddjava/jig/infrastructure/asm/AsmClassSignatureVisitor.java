@@ -31,7 +31,7 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
 
     public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
         return new JigBaseTypeDataBundle(
-                Optional.of(superclassAsmTypeSignatureVisitor.jigBaseTypeData()),
+                Optional.ofNullable(superclassAsmTypeSignatureVisitor).map(AsmTypeSignatureVisitor::jigBaseTypeData),
                 interfaceAsmTypeSignatureVisitors.stream()
                         .map(AsmTypeSignatureVisitor::jigBaseTypeData)
                         .toList()

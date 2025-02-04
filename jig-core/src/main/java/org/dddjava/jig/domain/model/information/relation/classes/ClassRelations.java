@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.information.relation.classes;
 
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.HashSet;

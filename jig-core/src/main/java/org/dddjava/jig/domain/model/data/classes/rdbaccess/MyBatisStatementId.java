@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.data.classes.rdbaccess;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Objects;
 

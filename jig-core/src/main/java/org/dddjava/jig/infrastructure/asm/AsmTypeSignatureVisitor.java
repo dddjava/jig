@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeAttributeData;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

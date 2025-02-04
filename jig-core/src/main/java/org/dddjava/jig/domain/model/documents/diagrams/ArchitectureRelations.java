@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;

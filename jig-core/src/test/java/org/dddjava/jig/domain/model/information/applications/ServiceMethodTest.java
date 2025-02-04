@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.UsingMethods;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.domain.model.type.fuga.Fuga;

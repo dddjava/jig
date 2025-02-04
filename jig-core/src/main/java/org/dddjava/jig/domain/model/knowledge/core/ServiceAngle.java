@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.core;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.UsingFields;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethod;
 import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;

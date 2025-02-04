@@ -2,9 +2,9 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.CommentRepository;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;

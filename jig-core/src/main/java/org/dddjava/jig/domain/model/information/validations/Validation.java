@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.validations;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 /**
  * バリデーション

@@ -4,8 +4,8 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
 

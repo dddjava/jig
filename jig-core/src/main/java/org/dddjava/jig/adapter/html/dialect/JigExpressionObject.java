@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
 import java.util.List;

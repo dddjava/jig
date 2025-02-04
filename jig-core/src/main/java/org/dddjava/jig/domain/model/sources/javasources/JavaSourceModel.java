@@ -2,12 +2,12 @@ package org.dddjava.jig.domain.model.sources.javasources;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.data.types;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-
 /**
  * extendsおよびimplements
  */

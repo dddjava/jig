@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.annotation;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Optional;
 

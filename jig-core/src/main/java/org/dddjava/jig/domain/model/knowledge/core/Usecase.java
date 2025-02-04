@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 
 import java.util.List;

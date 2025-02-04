@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynami
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;

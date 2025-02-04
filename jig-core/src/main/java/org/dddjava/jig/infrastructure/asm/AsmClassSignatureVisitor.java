@@ -25,7 +25,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-400">JVMS 4.7.9.1-400</a>
  */
 class AsmClassSignatureVisitor extends SignatureVisitor {
-    private static Logger logger = getLogger(AsmClassSignatureVisitor.class);
+    private static final Logger logger = getLogger(AsmClassSignatureVisitor.class);
 
     public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
         ParameterizedType superType = superclass();

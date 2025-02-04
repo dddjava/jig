@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
@@ -23,7 +22,6 @@ public class JigTypeBuilder {
 
     private final ParameterizedType type;
     private final TypeKind typeKind;
-    private final JigTypeVisibility visibility;
 
     final List<Annotation> annotations;
 
@@ -37,10 +35,9 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder(ParameterizedType type, TypeKind typeKind, JigTypeVisibility visibility) {
+    public JigTypeBuilder(ParameterizedType type, TypeKind typeKind) {
         this.type = type;
         this.typeKind = typeKind;
-        this.visibility = visibility;
 
         // 空を準備
         this.annotations = new ArrayList<>();
@@ -70,7 +67,7 @@ public class JigTypeBuilder {
     }
 
     public JigType build(JigTypeHeader jigTypeHeader) {
-        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, visibility, annotations);
+        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, annotations);
 
         JigStaticMember jigStaticMember = new JigStaticMember(
                 new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),

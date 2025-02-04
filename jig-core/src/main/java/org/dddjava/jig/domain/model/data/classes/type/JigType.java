@@ -51,7 +51,7 @@ public class JigType {
     }
 
     public JigTypeVisibility visibility() {
-        return jigTypeAttribute.visibility();
+        return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
     }
 
     public JigInstanceMember instanceMember() {

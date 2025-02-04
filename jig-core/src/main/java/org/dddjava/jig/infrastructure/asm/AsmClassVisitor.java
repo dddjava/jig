@@ -109,7 +109,7 @@ class AsmClassVisitor extends ClassVisitor {
         );
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
-        jigTypeBuilder = new JigTypeBuilder(type, typeKind(access), resolveVisibility(access));
+        jigTypeBuilder = new JigTypeBuilder(type, typeKind(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

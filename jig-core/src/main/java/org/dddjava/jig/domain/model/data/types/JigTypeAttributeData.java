@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
+                                   Collection<JigTypeModifier> jigTypeModifiers,
                                    Collection<JigAnnotationInstance> declarationAnnotationInstances,
                                    List<JigTypeParameter> typeParameters) {
 
     public static JigTypeAttributeData simple() {
-        return new JigTypeAttributeData(JigTypeVisibility.PUBLIC, List.of(), List.of());
+        return new JigTypeAttributeData(JigTypeVisibility.PUBLIC, List.of(), List.of(), List.of());
     }
 
     public String typeParametersSimpleName() {

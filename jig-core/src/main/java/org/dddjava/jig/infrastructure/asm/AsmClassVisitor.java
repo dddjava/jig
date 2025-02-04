@@ -100,11 +100,13 @@ class AsmClassVisitor extends ClassVisitor {
             );
         }
 
+        Collection<JigTypeModifier> jigTypeModifiers = resolveTypeModifiers(access);
         jigTypeHeader = new JigTypeHeader(
                 new JigObjectId<>(slashToDot(name)),
                 resolveTypeKind(access),
                 new JigTypeAttributeData(
                         resolveVisibility(access),
+                        jigTypeModifiers,
                         jigAnnotationInstanceList,
                         jigTypeParameters
                 ),
@@ -115,6 +117,11 @@ class AsmClassVisitor extends ClassVisitor {
         jigTypeBuilder = new JigTypeBuilder(type, superType, interfaceTypes, typeKind(access), resolveVisibility(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    private Collection<JigTypeModifier> resolveTypeModifiers(int access) {
+
+        return List.of();
     }
 
     private String slashToDot(String bytecodeName) {

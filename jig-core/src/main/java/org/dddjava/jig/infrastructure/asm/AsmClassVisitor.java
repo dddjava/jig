@@ -41,7 +41,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Deprecated // jigTypeHeaderを作るようにしたらお役御免になるはず
     private JigTypeBuilder jigTypeBuilder;
 
-    private String name;
+    private String classInternalName;
 
     private List<JigAnnotationInstance> jigAnnotationInstanceList = new ArrayList<>();
     private JigTypeHeader jigTypeHeader;
@@ -52,8 +52,8 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        this.name = name;
+    public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
+        this.classInternalName = classInternalName;
         List<JigTypeParameter> jigTypeParameters;
         JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
@@ -96,7 +96,7 @@ class AsmClassVisitor extends ClassVisitor {
 
         Collection<JigTypeModifier> jigTypeModifiers = resolveTypeModifiers(access);
         jigTypeHeader = new JigTypeHeader(
-                JigObjectId.fromJvmBinaryName(name),
+                JigObjectId.fromJvmBinaryName(classInternalName),
                 resolveTypeKind(access),
                 new JigTypeAttributeData(
                         resolveVisibility(access),
@@ -107,10 +107,10 @@ class AsmClassVisitor extends ClassVisitor {
                 jigBaseTypeDataBundle
         );
 
-        ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
+        ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(classInternalName), actualTypeParameters);
         jigTypeBuilder = new JigTypeBuilder(type);
 
-        super.visit(version, access, name, signature, superName, interfaces);
+        super.visit(version, access, classInternalName, signature, superName, interfaces);
     }
 
     @Override
@@ -128,7 +128,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // nameが一致するもののみ、このクラスの情報として採用する
-        if (name.equals(this.name)) {
+        if (name.equals(this.classInternalName)) {
             if ((access & Opcodes.ACC_STATIC) != 0) {
                 isStaticNestedClass = true;
             }

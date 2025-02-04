@@ -23,10 +23,11 @@ import java.util.stream.Collectors;
  * visit
  * [ visitSource ]
  * [ visitModule ]
- * [ visitNestHost ][ visitOuterClass ]
+ * [ visitNestHost ]
+ * [ visitOuterClass ]
  * ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
  * (
- * visitNestMember
+ *   visitNestMember
  * | [ * visitPermittedSubclass ]
  * | visitInnerClass
  * | visitRecordComponent

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.sources;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.*;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
@@ -20,8 +19,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class JigMemberBuilder {
 
-    final List<Annotation> annotations;
-
     final List<StaticFieldDeclaration> staticFieldDeclarations;
     final List<JigField> instanceFields;
     final List<JigMethodBuilder> instanceJigMethodBuilders;
@@ -35,7 +32,6 @@ public class JigMemberBuilder {
     public JigMemberBuilder() {
 
         // 空を準備
-        this.annotations = new ArrayList<>();
         this.instanceJigMethodBuilders = new ArrayList<>();
         this.staticJigMethodBuilders = new ArrayList<>();
         this.constructorBuilders = new ArrayList<>();
@@ -60,7 +56,7 @@ public class JigMemberBuilder {
         if (classComment == null) {
             classComment = ClassComment.empty(jigTypeHeader.id());
         }
-        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, annotations);
+        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment);
 
         JigStaticMember jigStaticMember = buildStaticMember();
         JigInstanceMember jigInstanceMember = buildInstanceMember();
@@ -78,10 +74,6 @@ public class JigMemberBuilder {
                 new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                 new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                 new StaticFieldDeclarations(this.staticFieldDeclarations));
-    }
-
-    public void addAnnotation(Annotation annotation) {
-        this.annotations.add(annotation);
     }
 
     public FieldDeclaration addInstanceField(TypeIdentifier owner, FieldType fieldType, String name) {

@@ -63,8 +63,7 @@ class JigTypesTest {
                         new ClassComment(
                                 typeIdentifier,
                                 Comment.empty()
-                        ),
-                        List.of()
+                        )
                 ),
                 new JigStaticMember(
                         new JigMethods(List.of()),

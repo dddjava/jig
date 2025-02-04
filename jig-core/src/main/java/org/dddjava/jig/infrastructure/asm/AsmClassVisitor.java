@@ -61,15 +61,12 @@ class AsmClassVisitor extends ClassVisitor {
         // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
         // ジェネリクスを使用している場合だけsignatureが入る
 
-        ParameterizedType superType;
         List<ParameterizedType> actualTypeParameters;
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             logger.debug(signature);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
-
-            superType = asmClassSignatureVisitor.superclass();
 
             jigBaseTypeDataBundle = asmClassSignatureVisitor.jigBaseTypeDataBundle();
             jigTypeParameters = asmClassSignatureVisitor.jigTypeParameters();
@@ -87,7 +84,6 @@ class AsmClassVisitor extends ClassVisitor {
             actualTypeParameters = useTypes.stream().map(ParameterizedType::new).collect(Collectors.toList());
         } else {
             // 非総称型で作成
-            superType = new ParameterizedType(TypeIdentifier.valueOf(superName));
             actualTypeParameters = List.of();
 
             jigTypeParameters = List.of();
@@ -113,7 +109,7 @@ class AsmClassVisitor extends ClassVisitor {
         );
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
-        jigTypeBuilder = new JigTypeBuilder(type, superType, typeKind(access), resolveVisibility(access));
+        jigTypeBuilder = new JigTypeBuilder(type, typeKind(access), resolveVisibility(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -213,7 +209,7 @@ class AsmClassVisitor extends ClassVisitor {
                             data.methodDeclaration,
                             data.annotationList,
                             data.methodInstructions,
-                            jigTypeBuilder.superType().typeIdentifier().isEnum(),
+                            jigTypeHeader.jigTypeKind() == JigTypeKind.ENUM,
                             jigTypeBuilder.isRecordComponent(data.methodDeclaration));
 
                     if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {

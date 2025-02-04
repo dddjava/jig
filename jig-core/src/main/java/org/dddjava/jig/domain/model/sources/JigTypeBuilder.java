@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toList;
 public class JigTypeBuilder {
 
     private final ParameterizedType type;
-    private final ParameterizedType superType;
     private final TypeKind typeKind;
     private final JigTypeVisibility visibility;
 
@@ -38,9 +37,8 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, TypeKind typeKind, JigTypeVisibility visibility) {
+    public JigTypeBuilder(ParameterizedType type, TypeKind typeKind, JigTypeVisibility visibility) {
         this.type = type;
-        this.superType = superType;
         this.typeKind = typeKind;
         this.visibility = visibility;
 
@@ -65,10 +63,6 @@ public class JigTypeBuilder {
         list.addAll(staticJigMethodBuilders);
         list.addAll(constructorBuilders);
         return list;
-    }
-
-    public ParameterizedType superType() {
-        return superType;
     }
 
     public void registerClassComment(ClassComment classComment) {

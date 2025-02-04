@@ -110,10 +110,6 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return isPrimitive() || isVoid() || value.startsWith("java");
     }
 
-    public boolean isEnum() {
-        return equals(from(Enum.class));
-    }
-
     @Override
     public int compareTo(TypeIdentifier others) {
         return value.compareTo(others.value);

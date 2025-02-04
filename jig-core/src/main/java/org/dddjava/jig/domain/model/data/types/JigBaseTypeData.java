@@ -8,6 +8,10 @@ public record JigBaseTypeData(TypeIdentifier id, JigBaseTypeAttributeData attrib
         return new JigBaseTypeData(id, JigBaseTypeAttributeData.empty());
     }
 
+    public static JigBaseTypeData fromJvmBinaryName(String jvmBinaryName) {
+        return fromId(TypeIdentifier.fromJvmBinaryName(jvmBinaryName));
+    }
+
     public String simpleName() {
         return id.simpleValue();
     }

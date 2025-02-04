@@ -50,42 +50,46 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
         this.typeIdentifier = TypeIdentifier.fromJvmBinaryName(classInternalName);
-        List<JigTypeParameter> jigTypeParameters;
-        JigBaseTypeDataBundle jigBaseTypeDataBundle;
 
-        // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
+        // access: https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
+        var jigTypeModifiers = resolveTypeModifiers(access);
+        var jigTypeKind = resolveTypeKind(access);
+        var jigTypeVisibility = resolveVisibility(access);
 
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
-            AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             logger.debug(signature);
+            AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
 
-            jigBaseTypeDataBundle = asmClassSignatureVisitor.jigBaseTypeDataBundle();
-            jigTypeParameters = asmClassSignatureVisitor.jigTypeParameters();
+            jigTypeHeader = new JigTypeHeader(
+                    this.typeIdentifier,
+                    jigTypeKind,
+                    new JigTypeAttributeData(
+                            jigTypeVisibility,
+                            jigTypeModifiers,
+                            jigAnnotationInstanceList,
+                            asmClassSignatureVisitor.jigTypeParameters()
+                    ),
+                    asmClassSignatureVisitor.jigBaseTypeDataBundle()
+            );
         } else {
             // 非総称型で作成
-            jigTypeParameters = List.of();
-            jigBaseTypeDataBundle = new JigBaseTypeDataBundle(
-                    Optional.of(JigBaseTypeData.fromId(TypeIdentifier.fromJvmBinaryName(superName))),
-                    Arrays.stream(interfaces)
-                            .map(interfaceName -> JigBaseTypeData.fromId(TypeIdentifier.fromJvmBinaryName(interfaceName)))
-                            .toList()
+            jigTypeHeader = new JigTypeHeader(
+                    this.typeIdentifier,
+                    jigTypeKind,
+                    new JigTypeAttributeData(
+                            jigTypeVisibility,
+                            jigTypeModifiers,
+                            jigAnnotationInstanceList,
+                            List.of()
+                    ),
+                    new JigBaseTypeDataBundle(
+                            Optional.of(JigBaseTypeData.fromJvmBinaryName(superName)),
+                            Arrays.stream(interfaces).map(JigBaseTypeData::fromJvmBinaryName).toList()
+                    )
             );
         }
-
-        Collection<JigTypeModifier> jigTypeModifiers = resolveTypeModifiers(access);
-        jigTypeHeader = new JigTypeHeader(
-                this.typeIdentifier,
-                resolveTypeKind(access),
-                new JigTypeAttributeData(
-                        resolveVisibility(access),
-                        jigTypeModifiers,
-                        jigAnnotationInstanceList,
-                        jigTypeParameters
-                ),
-                jigBaseTypeDataBundle
-        );
 
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }

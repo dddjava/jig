@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.field.*;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
@@ -98,8 +97,8 @@ public class JigTypeBuilder {
         this.annotations.add(annotation);
     }
 
-    public FieldDeclaration addInstanceField(JigObjectId<JigTypeHeader> jigTypeId, FieldType fieldType, String name) {
-        FieldDeclaration fieldDeclaration = new FieldDeclaration(jigTypeId, fieldType, name);
+    public FieldDeclaration addInstanceField(FieldType fieldType, String name) {
+        FieldDeclaration fieldDeclaration = new FieldDeclaration(type.typeIdentifier(), fieldType, name);
         instanceFields.add(new JigField(fieldDeclaration));
 
         return fieldDeclaration;

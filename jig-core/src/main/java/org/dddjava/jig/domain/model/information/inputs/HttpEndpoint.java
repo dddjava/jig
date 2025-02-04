@@ -19,15 +19,9 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
         // NOTE: valueとpathの両方が指定されている場合は起動失敗（AnnotationConfigurationException）になるので、単純に合わせる
         // org.springframework.core.annotation.AbstractAliasAwareAnnotationAttributeExtractor.getAttributeValue
         // 複数（ @RequestMapping({"a", "b"}) など）への対応は、そのうち。
-        String classPath = null;
-        List<Annotation> list = entrypointMethod.jigType().annotationsOf(
-                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping")).list();
-        if (!list.isEmpty()) {
-            Annotation annotation = list.get(0);
-            classPath = annotation.descriptionTextOf("value");
-            if (classPath == null) classPath = annotation.descriptionTextOf("path");
-        }
-        if (classPath == null || "/".equals(classPath)) classPath = "";
+        String classPath = entrypointMethod.jigType()
+                .annotationValueOf(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
+                .filter(value -> !"/".equals(value)).orElse("");
 
         String methodPath;
         List<Annotation> methodAnnotations = jigMethod.methodAnnotations().annotations().filterAny(

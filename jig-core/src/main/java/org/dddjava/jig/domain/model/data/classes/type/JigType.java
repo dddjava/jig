@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.classes.type;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
@@ -13,6 +12,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -132,8 +132,13 @@ public class JigType {
         return hasAnnotation(TypeIdentifier.from(Deprecated.class));
     }
 
-    public Annotations annotationsOf(TypeIdentifier typeIdentifier) {
-        return jigTypeAttribute.annotationsOf(typeIdentifier);
+    public Optional<String> annotationValueOf(TypeIdentifier typeIdentifier, String... elementNames) {
+        return jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().stream()
+                .filter(annotation -> annotation.id().equals(typeIdentifier))
+                .flatMap(annotation -> annotation.elementValueData().stream())
+                .filter(element -> element.matchName(elementNames))
+                .map(element -> element.valueAsString())
+                .findFirst();
     }
 
     public Stream<JigMethod> allJigMethodStream() {

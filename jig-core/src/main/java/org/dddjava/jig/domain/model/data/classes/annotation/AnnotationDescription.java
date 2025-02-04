@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.annotation;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * アノテーションの記述
@@ -42,5 +43,9 @@ public class AnnotationDescription {
                 .filter(name -> map.containsKey(name))
                 .map(name -> map.get(name))
                 .findFirst();
+    }
+
+    public Stream<Map.Entry<String, String>> entryStream() {
+        return map.entrySet().stream();
     }
 }

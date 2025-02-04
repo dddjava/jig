@@ -25,6 +25,10 @@ public class Annotation {
         return typeIdentifier;
     }
 
+    public AnnotationDescription description() {
+        return description;
+    }
+
     public boolean is(TypeIdentifier typeIdentifier) {
         return this.typeIdentifier.equals(typeIdentifier);
     }

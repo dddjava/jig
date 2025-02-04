@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeDataBundle;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeParameter;
@@ -105,15 +104,6 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
         AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(this.api);
         interfaceAsmTypeSignatureVisitors.add(typeSignatureVisitor);
         return typeSignatureVisitor;
-    }
-
-    public String simpleText() {
-        return "extends [%s] implements %s".formatted(
-                superclassAsmTypeSignatureVisitor.generateParameterizedType().asSimpleText(),
-                interfaceAsmTypeSignatureVisitors.stream()
-                        .map(AsmTypeSignatureVisitor::generateParameterizedType)
-                        .map(ParameterizedType::asSimpleText)
-                        .toList());
     }
 
     public List<JigTypeParameter> jigTypeParameters() {

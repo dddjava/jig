@@ -183,13 +183,12 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     }
 
     public JigBaseTypeData jigBaseTypeData() {
-        var parameterizedType = generateParameterizedType();
         return new JigBaseTypeData(
-                new JigObjectId<>(parameterizedType.typeIdentifier().fullQualifiedName()),
+                JigObjectId.fromJvmBinaryName(classType.name()),
                 new JigBaseTypeAttributeData(
                         List.of(), // 型アノテーション未対応
-                        parameterizedType.typeParameters().list().stream()
-                                .map(it -> new JigTypeArgument(it.fullQualifiedName()))
+                        classType.arguments().stream()
+                                .flatMap(visitor -> visitor.typeArgument().stream())
                                 .toList())
         );
     }

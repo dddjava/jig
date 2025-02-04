@@ -118,18 +118,6 @@ class AsmClassVisitor extends ClassVisitor {
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
-    private Collection<JigTypeModifier> resolveTypeModifiers(int access) {
-        EnumSet<JigTypeModifier> set = EnumSet.noneOf(JigTypeModifier.class);
-        if ((access & Opcodes.ACC_ABSTRACT) != 0) {
-            set.add(JigTypeModifier.ABSTRACT);
-        }
-        if ((access & Opcodes.ACC_FINAL) != 0) {
-            set.add(JigTypeModifier.FINAL);
-        }
-
-        return set;
-    }
-
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
@@ -257,17 +245,37 @@ class AsmClassVisitor extends ClassVisitor {
      * classの場合、ソースコードではpublic,protected,default,privateは定義できるが、
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
+     *
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
      */
     private JigTypeVisibility resolveVisibility(int access) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) return JigTypeVisibility.PUBLIC;
         return JigTypeVisibility.NOT_PUBLIC;
     }
 
+    /**
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
+     */
+    private Collection<JigTypeModifier> resolveTypeModifiers(int access) {
+        EnumSet<JigTypeModifier> set = EnumSet.noneOf(JigTypeModifier.class);
+        if ((access & Opcodes.ACC_ABSTRACT) != 0) {
+            set.add(JigTypeModifier.ABSTRACT);
+        }
+        if ((access & Opcodes.ACC_FINAL) != 0) {
+            set.add(JigTypeModifier.FINAL);
+        }
+        return set;
+    }
+
+    /**
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
+     */
     private JigTypeKind resolveTypeKind(int access) {
         if ((access & Opcodes.ACC_ENUM) != 0) return JigTypeKind.ENUM;
-        if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
         if ((access & Opcodes.ACC_INTERFACE) != 0) return JigTypeKind.INTERFACE;
         if ((access & Opcodes.ACC_ANNOTATION) != 0) return JigTypeKind.ANNOTATION;
+        // ASM独自
+        if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
         // 不明なものはCLASSにしておく
         return JigTypeKind.CLASS;
     }

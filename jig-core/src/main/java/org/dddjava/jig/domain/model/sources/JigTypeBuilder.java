@@ -23,7 +23,6 @@ public class JigTypeBuilder {
 
     private final ParameterizedType type;
     private final ParameterizedType superType;
-    private final List<ParameterizedType> interfaceTypes;
     private final TypeKind typeKind;
     private final JigTypeVisibility visibility;
 
@@ -39,10 +38,9 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, JigTypeVisibility visibility) {
+    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, TypeKind typeKind, JigTypeVisibility visibility) {
         this.type = type;
         this.superType = superType;
-        this.interfaceTypes = interfaceTypes;
         this.typeKind = typeKind;
         this.visibility = visibility;
 

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * [ visitOuterClass ]
  * ( visitAnnotation | visitTypeAnnotation | visitAttribute )*
  * (
- *   visitNestMember
+ * visitNestMember
  * | [ * visitPermittedSubclass ]
  * | visitInnerClass
  * | visitRecordComponent
@@ -62,7 +62,6 @@ class AsmClassVisitor extends ClassVisitor {
         // ジェネリクスを使用している場合だけsignatureが入る
 
         ParameterizedType superType;
-        List<ParameterizedType> interfaceTypes;
         List<ParameterizedType> actualTypeParameters;
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
@@ -71,7 +70,6 @@ class AsmClassVisitor extends ClassVisitor {
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
 
             superType = asmClassSignatureVisitor.superclass();
-            interfaceTypes = asmClassSignatureVisitor.interfaces();
 
             jigBaseTypeDataBundle = asmClassSignatureVisitor.jigBaseTypeDataBundle();
             jigTypeParameters = asmClassSignatureVisitor.jigTypeParameters();
@@ -90,10 +88,6 @@ class AsmClassVisitor extends ClassVisitor {
         } else {
             // 非総称型で作成
             superType = new ParameterizedType(TypeIdentifier.valueOf(superName));
-            interfaceTypes = Arrays.stream(interfaces)
-                    .map(TypeIdentifier::valueOf)
-                    .map(ParameterizedType::new)
-                    .collect(Collectors.toList());
             actualTypeParameters = List.of();
 
             jigTypeParameters = List.of();
@@ -119,7 +113,7 @@ class AsmClassVisitor extends ClassVisitor {
         );
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
-        jigTypeBuilder = new JigTypeBuilder(type, superType, interfaceTypes, typeKind(access), resolveVisibility(access));
+        jigTypeBuilder = new JigTypeBuilder(type, superType, typeKind(access), resolveVisibility(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

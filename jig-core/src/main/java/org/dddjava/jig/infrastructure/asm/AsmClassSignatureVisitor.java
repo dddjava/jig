@@ -28,7 +28,7 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = getLogger(AsmClassSignatureVisitor.class);
 
     public JigBaseTypeDataBundle jigBaseTypeDataBundle() {
-        ParameterizedType superType = superclass();
+        ParameterizedType superType = superclassAsmTypeSignatureVisitor.generateParameterizedType();
 
         return new JigBaseTypeDataBundle(
                 Optional.of(new JigBaseTypeData(
@@ -122,10 +122,6 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
                         .map(AsmTypeSignatureVisitor::generateParameterizedType)
                         .map(ParameterizedType::asSimpleText)
                         .toList());
-    }
-
-    ParameterizedType superclass() {
-        return superclassAsmTypeSignatureVisitor.generateParameterizedType();
     }
 
     public List<JigTypeParameter> jigTypeParameters() {

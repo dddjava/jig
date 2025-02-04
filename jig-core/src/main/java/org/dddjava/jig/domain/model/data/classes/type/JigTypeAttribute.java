@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 型の属性
@@ -22,13 +21,6 @@ public class JigTypeAttribute {
 
     public ClassComment classcomment() {
         return classComment;
-    }
-
-    List<TypeIdentifier> listUsingTypes() {
-        // TODO アノテーションの属性に書かれる型が拾えていない
-        return annotations.stream()
-                .map(annotation -> annotation.typeIdentifier())
-                .collect(Collectors.toList());
     }
 
     public JigTypeDescription description() {

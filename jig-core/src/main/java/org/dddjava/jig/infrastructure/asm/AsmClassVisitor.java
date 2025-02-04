@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.classes.type.TypeKind;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
@@ -109,7 +108,7 @@ class AsmClassVisitor extends ClassVisitor {
         );
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
-        jigTypeBuilder = new JigTypeBuilder(type, typeKind(access));
+        jigTypeBuilder = new JigTypeBuilder(type);
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -274,24 +273,6 @@ class AsmClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
         // 不明なものはCLASSにしておく
         return JigTypeKind.CLASS;
-    }
-
-    private TypeKind typeKind(int access) {
-        if ((access & Opcodes.ACC_ENUM) != 0) {
-            if ((access & Opcodes.ACC_FINAL) == 0) {
-                return TypeKind.抽象列挙型;
-            }
-            return TypeKind.列挙型;
-        }
-
-        // FIXME: アノテーション、インタフェース、抽象型の判定が足りない
-
-        // この判定できるのはASM固有
-        if ((access & Opcodes.ACC_RECORD) != 0) {
-            return TypeKind.レコード型;
-        }
-
-        return TypeKind.通常型;
     }
 
     static TypeIdentifier typeDescriptorToIdentifier(String descriptor) {

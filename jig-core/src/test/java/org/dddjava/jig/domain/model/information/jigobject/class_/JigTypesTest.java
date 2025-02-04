@@ -63,7 +63,6 @@ class JigTypesTest {
                                 typeIdentifier,
                                 Comment.empty()
                         ),
-                        TypeKind.通常型,
                         List.of()
                 ),
                 new JigStaticMember(

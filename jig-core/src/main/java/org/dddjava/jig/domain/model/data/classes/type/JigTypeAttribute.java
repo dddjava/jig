@@ -11,22 +11,16 @@ import java.util.stream.Collectors;
  */
 public class JigTypeAttribute {
     private final ClassComment classComment;
-    private final TypeKind typeKind;
 
     private final List<Annotation> annotations;
 
-    public JigTypeAttribute(ClassComment classComment, TypeKind typeKind, List<Annotation> annotations) {
+    public JigTypeAttribute(ClassComment classComment, List<Annotation> annotations) {
         this.classComment = classComment;
-        this.typeKind = typeKind;
         this.annotations = annotations;
     }
 
     public ClassComment classcomment() {
         return classComment;
-    }
-
-    public TypeKind kind() {
-        return typeKind;
     }
 
     List<TypeIdentifier> listUsingTypes() {

@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigObjectId;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 
 import java.util.ArrayList;
@@ -47,7 +48,13 @@ public class JigType {
     }
 
     public TypeKind typeKind() {
-        return jigTypeAttribute.kind();
+        // 互換のためにTypeKindを返す形を維持するための実装。TypeKindはあまり活用できていないので、別の何かで再定義したい
+        return switch (jigTypeHeader.jigTypeKind()) {
+            case RECORD -> TypeKind.レコード型;
+            case ENUM -> jigTypeHeader.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
+                    ? TypeKind.抽象列挙型 : TypeKind.列挙型;
+            default -> TypeKind.通常型;
+        };
     }
 
     public JigTypeVisibility visibility() {

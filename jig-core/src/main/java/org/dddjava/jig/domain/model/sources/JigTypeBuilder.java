@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.toList;
 public class JigTypeBuilder {
 
     private final ParameterizedType type;
-    private final TypeKind typeKind;
 
     final List<Annotation> annotations;
 
@@ -35,9 +34,8 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder(ParameterizedType type, TypeKind typeKind) {
+    public JigTypeBuilder(ParameterizedType type) {
         this.type = type;
-        this.typeKind = typeKind;
 
         // 空を準備
         this.annotations = new ArrayList<>();
@@ -67,7 +65,7 @@ public class JigTypeBuilder {
     }
 
     public JigType build(JigTypeHeader jigTypeHeader) {
-        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, annotations);
+        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, annotations);
 
         JigStaticMember jigStaticMember = new JigStaticMember(
                 new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),

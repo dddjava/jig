@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * 型の実装から読み取れること
  */
-public class JigTypeBuilder {
+public class JigMemberBuilder {
 
     final List<Annotation> annotations;
 
@@ -32,7 +32,7 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    public JigTypeBuilder() {
+    public JigMemberBuilder() {
 
         // 空を準備
         this.annotations = new ArrayList<>();

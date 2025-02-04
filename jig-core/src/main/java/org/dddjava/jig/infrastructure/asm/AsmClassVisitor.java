@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.sources.JigMemberBuilder;
 import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
-import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -35,7 +35,7 @@ import java.util.*;
 class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
-    private final JigTypeBuilder jigTypeBuilder = new JigTypeBuilder();
+    private final JigMemberBuilder jigMemberBuilder = new JigMemberBuilder();
 
     private TypeIdentifier typeIdentifier;
 
@@ -96,7 +96,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
-            jigTypeBuilder.addAnnotation(annotation);
+            jigMemberBuilder.addAnnotation(annotation);
             jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().add(JigAnnotationInstance.from(annotation.typeIdentifier()));
         });
     }
@@ -123,7 +123,7 @@ class AsmClassVisitor extends ClassVisitor {
      */
     @Override
     public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
-        jigTypeBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
+        jigMemberBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
         return super.visitRecordComponent(name, descriptor, signature);
     }
 
@@ -161,14 +161,14 @@ class AsmClassVisitor extends ClassVisitor {
             FieldType fieldType = result;
 
             return new AsmFieldVisitor(this.api, it -> {
-                FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(typeIdentifier, fieldType, name);
+                FieldDeclaration fieldDeclaration = jigMemberBuilder.addInstanceField(typeIdentifier, fieldType, name);
                 it.annotations.forEach(annotation -> {
-                    jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
+                    jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
             });
         } else if (!name.equals("$VALUES")) {
             // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
-            jigTypeBuilder.addStaticField(typeIdentifier, typeDescriptorToIdentifier(descriptor), name);
+            jigMemberBuilder.addStaticField(typeIdentifier, typeDescriptorToIdentifier(descriptor), name);
         }
 
         return super.visitField(access, name, descriptor, signature, value);
@@ -189,17 +189,17 @@ class AsmClassVisitor extends ClassVisitor {
                             data.annotationList,
                             data.methodInstructions,
                             jigTypeHeader.jigTypeKind() == JigTypeKind.ENUM,
-                            jigTypeBuilder.isRecordComponent(data.methodDeclaration));
+                            jigMemberBuilder.isRecordComponent(data.methodDeclaration));
 
                     if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
                         // コンストラクタ
-                        jigTypeBuilder.addConstructor(jigMethodBuilder);
+                        jigMemberBuilder.addConstructor(jigMethodBuilder);
                     } else if ((access & Opcodes.ACC_STATIC) != 0) {
                         // staticメソッド
-                        jigTypeBuilder.addStaticMethod(jigMethodBuilder);
+                        jigMemberBuilder.addStaticMethod(jigMethodBuilder);
                     } else {
                         // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
-                        jigTypeBuilder.addInstanceMethod(jigMethodBuilder);
+                        jigMemberBuilder.addInstanceMethod(jigMethodBuilder);
                     }
                 });
     }
@@ -260,9 +260,9 @@ class AsmClassVisitor extends ClassVisitor {
         return TypeIdentifier.valueOf(type.getClassName());
     }
 
-    public JigTypeBuilder jigTypeBuilder() {
+    public JigMemberBuilder jigTypeBuilder() {
         // visitEnd後にしか呼んではいけない
-        return Objects.requireNonNull(jigTypeBuilder);
+        return Objects.requireNonNull(jigMemberBuilder);
     }
 
     public JigTypeHeader jigTypeHeader() {

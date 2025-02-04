@@ -50,9 +50,9 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                 .map(classDeclaration -> {
                     // クラスのコメント
                     javaSourceModel.optClassComment(classDeclaration.jigTypeHeader().id())
-                            .ifPresent(classComment -> classDeclaration.jigTypeBuilder().registerClassComment(classComment));
+                            .ifPresent(classComment -> classDeclaration.jigMemberBuilder().registerClassComment(classComment));
                     // メソッドのコメント登録
-                    for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigTypeBuilder().allMethodFacts()) {
+                    for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigMemberBuilder().allMethodFacts()) {
                         javaSourceModel.methodImplementations.stream()
                                 .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
                                 .findAny()

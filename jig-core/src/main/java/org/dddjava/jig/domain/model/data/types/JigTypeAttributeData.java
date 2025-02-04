@@ -31,4 +31,12 @@ public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
         return declarationAnnotationInstances.stream()
                 .anyMatch(jigAnnotationInstance -> jigAnnotationInstance.id().equals(typeIdentifier));
     }
+
+    public Collection<? extends TypeIdentifier> typeIdSet() {
+        // アノテーションのelementの型がまだはいっていない
+        // 型パラメタ（の境界型）がまだはいっていない
+        return declarationAnnotationInstances.stream()
+                .map(JigAnnotationInstance::id)
+                .collect(Collectors.toSet());
+    }
 }

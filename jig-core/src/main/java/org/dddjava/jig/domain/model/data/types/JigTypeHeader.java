@@ -17,10 +17,9 @@ public record JigTypeHeader(TypeIdentifier id,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
     public Set<TypeIdentifier> containedIds() {
-        // アノテーションは含めない
-        // 型パラメタは除く
         Set<TypeIdentifier> ids = new HashSet<>();
         ids.add(id);
+        ids.addAll(jigTypeAttributeData.typeIdSet());
         ids.addAll(baseTypeDataBundle.typeIdSet());
         return ids;
     }

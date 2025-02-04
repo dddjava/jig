@@ -12,14 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
-                                     JavaSourceModel javaSourceModel,
+public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                                      Map<Class<?>, Object> map,
                                      JigTypes jigTypes)
         implements JigDataProvider {
 
     public DefaultJigDataProvider(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
-        this(classSourceModel, javaSourceModel, new HashMap<>(), initializeJigTypes(classSourceModel, javaSourceModel));
+        this(javaSourceModel, new HashMap<>(), initializeJigTypes(classSourceModel, javaSourceModel));
     }
 
     public void addSqls(MyBatisStatements myBatisStatements) {

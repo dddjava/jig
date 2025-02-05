@@ -27,13 +27,14 @@ import java.util.Optional;
 public class JigSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(JigSourceReader.class);
 
-    final GlossaryRepository glossaryRepository;
+    private final SourceReader sourceReader;
+    private final GlossaryRepository glossaryRepository;
 
-    final SourceReader sourceReader;
+    private final JavaSourceReader javaSourceReader;
+    private final ClassSourceReader classSourceReader;
 
-    final ClassSourceReader classSourceReader;
-    final JavaSourceReader javaSourceReader;
-    final MyBatisStatementsReader myBatisStatementsReader;
+    private final MyBatisStatementsReader myBatisStatementsReader;
+
     private final JigReporter jigReporter;
 
     public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigReporter jigReporter) {

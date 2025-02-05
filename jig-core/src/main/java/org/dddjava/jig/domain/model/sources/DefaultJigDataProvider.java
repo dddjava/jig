@@ -8,26 +8,20 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
-                                     Map<Class<?>, Object> map,
-                                     JigTypes jigTypes)
+                                     JigTypes jigTypes,
+                                     MyBatisStatements myBatisStatements)
         implements JigDataProvider {
 
-    public DefaultJigDataProvider(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
-        this(javaSourceModel, new HashMap<>(), initializeJigTypes(classSourceModel, javaSourceModel));
-    }
-
-    public void addSqls(MyBatisStatements myBatisStatements) {
-        map().put(MyBatisStatements.class, myBatisStatements);
+    public static DefaultJigDataProvider from(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, MyBatisStatements myBatisStatements) {
+        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, javaSourceModel), myBatisStatements);
     }
 
     @Override
     public MyBatisStatements fetchMybatisStatements() {
-        return (MyBatisStatements) map().getOrDefault(MyBatisStatements.class, MyBatisStatements.empty());
+        return myBatisStatements;
     }
 
     @Override

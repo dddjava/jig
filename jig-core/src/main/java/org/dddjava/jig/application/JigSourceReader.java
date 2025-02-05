@@ -47,23 +47,16 @@ public class JigSourceReader {
     public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {
 
         // ソースのチェック
-        Sources source = sourceReader.readSources(sourceBasePaths);
-        if (source.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
-        if (source.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
+        Sources sources = sourceReader.readSources(sourceBasePaths);
+        if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
+        if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
         if (jigEventRepository.hasError()) {
             return Optional.empty();
         }
 
-        var jigDataProvider = readProjectData(source);
-
-        // クラス名の解決や対象の選別にjigSource(jigType)を使用するため readProjectData の後で行う
-        MyBatisStatements myBatisStatements = readSqlSource(source);
-        if (myBatisStatements.status().not正常())
-            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
-        jigDataProvider.addSqls(myBatisStatements);
-
+        var jigDataProvider = readProjectData(sources);
         return Optional.of(jigDataProvider);
     }
 
@@ -84,7 +77,13 @@ public class JigSourceReader {
         ClassSources classSources = sources.classSources();
         ClassSourceModel classSourceModel = classSourceReader.classSourceModel(classSources);
 
-        return new DefaultJigDataProvider(classSourceModel, javaSourceModel);
+        // クラス名の解決や対象の選別にClassSourceModelを使用するようにしたいので、この位置。
+        // 現状（すくなくとも2025.2.1時点まで）はClassSourceを作る際にASMを使用している。その時点でのASM使用をやめたい。
+        MyBatisStatements myBatisStatements = readSqlSource(sources);
+        if (myBatisStatements.status().not正常())
+            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+
+        return DefaultJigDataProvider.from(classSourceModel, javaSourceModel, myBatisStatements);
     }
 
     /**

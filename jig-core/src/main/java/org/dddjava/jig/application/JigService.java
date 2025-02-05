@@ -49,7 +49,7 @@ public class JigService {
 
     public JigTypes coreDomainJigTypes(JigDataProvider jigDataProvider) {
         JigTypes coreDomainJigTypes = jigTypes(jigDataProvider).filter(architecture::isCoreDomain);
-        jigReporter.registerコアドメインが見つからない();
+        if (coreDomainJigTypes.empty()) jigReporter.registerコアドメインが見つからない();
         return coreDomainJigTypes;
     }
 

@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -41,13 +40,13 @@ class ReadableLabelTest {
 
     @ParameterizedTest
     @MethodSource
-    void クラスコメント取得(Class<?> targetClass, String expectedCommentText, JigDataProvider jigDataProvider) {
+    void クラスコメント取得(Class<?> targetClass, String expectedText, JigDataProvider jigDataProvider) {
         var jigTypes = jigDataProvider.fetchJigTypes();
-        ClassComment classComment = jigTypes.resolveJigType(TypeIdentifier.from(targetClass))
-                .map(jigType -> jigType.classComment())
+        String label = jigTypes.resolveJigType(TypeIdentifier.from(targetClass))
+                .map(jigType -> jigType.label())
                 .orElseThrow(AssertionError::new);
 
-        assertEquals(expectedCommentText, classComment.asText());
+        assertEquals(expectedText, label);
     }
 
     static Stream<Arguments> クラスコメント取得() {

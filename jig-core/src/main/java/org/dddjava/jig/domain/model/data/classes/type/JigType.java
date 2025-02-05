@@ -10,8 +10,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -178,17 +176,6 @@ public class JigType {
 
     public TypeIdentifier typeIdentifier() {
         return identifier();
-    }
-
-    public ClassComment classComment() {
-        // ClassCommentはなくしたいが一旦Termから再構築する
-        Optional<Term> typeTerm = jigTypeTerms.typeTerm();
-
-        return new ClassComment(
-                jigTypeHeader.id(),
-                typeTerm.map(term -> Comment.from(term.title(), term.description()))
-                        .orElse(Comment.empty())
-        );
     }
 
     public String nodeLabel() {

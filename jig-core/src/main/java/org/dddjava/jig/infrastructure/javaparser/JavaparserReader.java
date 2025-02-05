@@ -47,18 +47,13 @@ public class JavaparserReader implements JavaSourceReader {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
 
-            if (path.endsWith("package-info.java")) {
-                // do-nothing
-                return JavaSourceModel.empty();
-            } else {
-                String packageName = cu.getPackageDeclaration()
-                        .map(PackageDeclaration::getNameAsString)
-                        .map(name -> name + ".")
-                        .orElse("");
-                JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
-                cu.accept(classVisitor, termCollector);
-                return classVisitor.javaSourceModel();
-            }
+            String packageName = cu.getPackageDeclaration()
+                    .map(PackageDeclaration::getNameAsString)
+                    .map(name -> name + ".")
+                    .orElse("");
+            JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
+            cu.accept(classVisitor, termCollector);
+            return classVisitor.javaSourceModel();
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
             return JavaSourceModel.empty();

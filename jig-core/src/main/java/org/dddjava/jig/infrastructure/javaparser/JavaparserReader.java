@@ -81,7 +81,7 @@ public class JavaparserReader implements JavaSourceReader {
                         .map(JavadocDescription::toText)
                         .filter(text -> !text.isBlank())
                         .map(javadocDescriptionText -> {
-                            return Term.fromPackage(packageIdentifier, javadocDescriptionText);
+                            return TermFactory.fromPackage(packageIdentifier, javadocDescriptionText);
                         }));
     }
 

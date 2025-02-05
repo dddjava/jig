@@ -95,7 +95,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            termCollector.accept(Term.fromClass(typeIdentifier, javadocText));
+            termCollector.accept(TermFactory.fromClass(typeIdentifier, javadocText));
         });
         node.accept(new JavaparserMethodVisitor(typeIdentifier), termCollector);
 

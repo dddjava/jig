@@ -33,7 +33,7 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<Consumer<Term>> {
         );
 
         n.getJavadoc().ifPresent(javadoc ->
-                termCollector.accept(Term.fromMethod(typeIdentifier, methodImplementationDeclarator, javadoc.getDescription().toText()))
+                termCollector.accept(TermFactory.fromMethod(typeIdentifier, methodImplementationDeclarator, javadoc.getDescription().toText()))
         );
     }
 }

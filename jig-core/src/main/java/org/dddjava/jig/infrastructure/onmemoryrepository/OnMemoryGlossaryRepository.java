@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +28,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.termKind() == TermKind.クラス)
                 .filter(term -> term.identifier().asText().equals(typeIdentifier.fullQualifiedName()))
                 .findAny()
-                .orElseGet(() -> Term.fromClass(typeIdentifier, typeIdentifier.asSimpleText()));
+                .orElseGet(() -> TermFactory.fromClass(typeIdentifier, typeIdentifier.asSimpleText()));
     }
 
     @Override
@@ -36,7 +37,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.termKind() == TermKind.パッケージ)
                 .filter(term -> term.identifier().asText().equals(packageIdentifier.asText()))
                 .findAny()
-                .orElseGet(() -> Term.fromPackage(packageIdentifier, packageIdentifier.simpleName()));
+                .orElseGet(() -> TermFactory.fromPackage(packageIdentifier, packageIdentifier.simpleName()));
     }
 
     @Override

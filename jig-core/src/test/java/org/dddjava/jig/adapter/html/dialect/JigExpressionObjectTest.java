@@ -32,7 +32,7 @@ class JigExpressionObjectTest {
                 "フィールド名");
 
         when(jigDocumentContext.classComment(any()))
-                .thenReturn(new ClassComment(fieldTypeIdentifier, Comment.fromCodeComment("FieldType和名")));
+                .thenReturn(new ClassComment(fieldTypeIdentifier, Comment.from("FieldType和名", "")));
 
         String actual = sut.fieldRawText(field);
 
@@ -103,7 +103,7 @@ class JigExpressionObjectTest {
                 "フィールド名");
 
         when(jigDocumentContext.classComment(domainType))
-                .thenReturn(new ClassComment(domainType, Comment.fromCodeComment("DomainType和名")));
+                .thenReturn(new ClassComment(domainType, Comment.from("DomainType和名", "")));
 
         String actual = sut.fieldRawText(field);
 
@@ -127,7 +127,7 @@ class JigExpressionObjectTest {
                 "フィールド名");
 
         when(jigDocumentContext.classComment(domainType))
-                .thenReturn(new ClassComment(domainType, Comment.fromCodeComment("ふが")));
+                .thenReturn(new ClassComment(domainType, Comment.from("ふが", "")));
 
         String actual = sut.fieldRawText(field);
 

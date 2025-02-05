@@ -18,6 +18,7 @@ public class Comment {
     private Comment(String value) {
         this.value = value;
     }
+
     public static Comment from(String title, String description) {
         return new Comment(title + "\n" + description);
     }
@@ -64,21 +65,4 @@ public class Comment {
                 ).replaceAll("$1"));
     }
 
-    public String asText() {
-        return summaryText();
-    }
-
-    public String fullText() {
-        return value;
-    }
-
-    public String bodyText() {
-        // 改行や句点を除くために+1
-        int beginIndex = summaryText().length() + 1;
-        if (value.length() <= beginIndex) {
-            return "";
-        }
-
-        return value.substring(beginIndex).trim();
-    }
 }

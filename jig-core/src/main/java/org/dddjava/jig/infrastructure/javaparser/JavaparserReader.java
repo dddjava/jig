@@ -12,8 +12,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,24 +64,14 @@ public class JavaparserReader implements JavaSourceReader {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
 
-            return cu.getPackageDeclaration()
-                    .map(NodeWithName::getNameAsString)
-                    .map(PackageIdentifier::valueOf)
-                    // packageIdentifierがPackageCommentで必要になるのでここはネストにしておく
-                    .flatMap(packageIdentifier -> getJavadoc(cu)
-                            .map(Javadoc::getDescription)
-                            .map(JavadocDescription::toText)
-                            .filter(text -> !text.isBlank())
-                            .map(javadocDescriptionText -> {
-                                return Term.fromPackage(packageIdentifier, javadocDescriptionText);
-                            }));
+            return parsePackageInfoJavaFile(cu);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
             return Optional.empty();
         }
     }
 
-    Optional<PackageComment> parsePackageInfoJavaFile(CompilationUnit cu) {
+    Optional<Term> parsePackageInfoJavaFile(CompilationUnit cu) {
         return cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::valueOf)
@@ -92,8 +80,9 @@ public class JavaparserReader implements JavaSourceReader {
                         .map(Javadoc::getDescription)
                         .map(JavadocDescription::toText)
                         .filter(text -> !text.isBlank())
-                        .map(Comment::fromCodeComment)
-                        .map(alias -> new PackageComment(packageIdentifier, alias)));
+                        .map(javadocDescriptionText -> {
+                            return Term.fromPackage(packageIdentifier, javadocDescriptionText);
+                        }));
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

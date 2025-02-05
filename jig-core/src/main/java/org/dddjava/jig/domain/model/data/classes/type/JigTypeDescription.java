@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.type;
 
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
-
+// htmlで使用しているので移動したい
 public class JigTypeDescription {
 
     private final String subject;
@@ -10,12 +9,6 @@ public class JigTypeDescription {
     public JigTypeDescription(String subject, String content) {
         this.subject = subject;
         this.content = content;
-    }
-
-    public static JigTypeDescription from(Comment comment) {
-        String subject = comment.summaryText();
-        String content = comment.bodyText();
-        return new JigTypeDescription(subject, content);
     }
 
     public String subject() {

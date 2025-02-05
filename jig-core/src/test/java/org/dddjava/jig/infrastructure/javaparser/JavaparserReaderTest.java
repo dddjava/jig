@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -51,7 +51,7 @@ class JavaparserReaderTest {
     @ParameterizedTest
     void JavadocコメントのないものはエラーにならずPackageCommentも生成されない(String code) {
         CompilationUnit cu = StaticJavaParser.parse(code);
-        Optional<PackageComment> packageComment = sut.parsePackageInfoJavaFile(cu);
+        Optional<Term> packageComment = sut.parsePackageInfoJavaFile(cu);
         assertTrue(packageComment.isEmpty());
     }
 
@@ -60,11 +60,11 @@ class JavaparserReaderTest {
     void コメントが取得できる(String code, String expectedTitle, String expectedBody) {
         CompilationUnit cu = StaticJavaParser.parse(code);
 
-        Optional<PackageComment> packageComment = sut.parsePackageInfoJavaFile(cu);
+        Optional<Term> packageComment = sut.parsePackageInfoJavaFile(cu);
 
-        PackageComment actual = packageComment.orElseThrow();
-        assertEquals(expectedTitle, actual.asText());
-        assertEquals(expectedBody, actual.descriptionComment().bodyText());
+        Term actual = packageComment.orElseThrow();
+        assertEquals(expectedTitle, actual.title());
+        assertEquals(expectedBody, actual.description());
     }
 
     static Stream<Arguments> コメントが取得できる() {

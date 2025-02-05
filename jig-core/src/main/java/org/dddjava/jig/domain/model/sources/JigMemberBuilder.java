@@ -20,16 +20,16 @@ import static java.util.stream.Collectors.toList;
 public class JigMemberBuilder {
 
     final List<StaticFieldDeclaration> staticFieldDeclarations;
+    final List<JigMethodBuilder> staticJigMethodBuilders;
+
+    final List<JigMethodBuilder> constructorBuilders;
+
     final List<JigField> instanceFields;
     final List<JigMethodBuilder> instanceJigMethodBuilders;
-    final List<JigMethodBuilder> staticJigMethodBuilders;
-    final List<JigMethodBuilder> constructorBuilders;
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
     public JigMemberBuilder() {
-
-        // 空を準備
         this.instanceJigMethodBuilders = new ArrayList<>();
         this.staticJigMethodBuilders = new ArrayList<>();
         this.constructorBuilders = new ArrayList<>();

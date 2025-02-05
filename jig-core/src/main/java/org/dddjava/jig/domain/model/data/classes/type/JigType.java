@@ -96,7 +96,7 @@ public class JigType {
     }
 
     public String label() {
-        return classComment().asTextOrIdentifierSimpleText();
+        return jigTypeTerms.typeTerm().map(Term::title).orElseGet(this::simpleName);
     }
 
     public JigTypeDescription description() {
@@ -192,10 +192,13 @@ public class JigType {
     }
 
     public String nodeLabel() {
-        return classComment().nodeLabel();
+        return nodeLabel("\\n");
     }
 
     public String nodeLabel(String delimiter) {
-        return classComment().nodeLabel(delimiter);
+        return jigTypeTerms.typeTerm()
+                .filter(term -> !term.title().isBlank())
+                .map(term -> term.title() + delimiter + term.description())
+                .orElseGet(() -> simpleName());
     }
 }

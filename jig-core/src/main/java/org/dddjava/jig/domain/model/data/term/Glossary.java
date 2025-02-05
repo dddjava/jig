@@ -15,7 +15,7 @@ public class Glossary {
 
     public List<Term> list() {
         return terms.stream()
-                .sorted(Comparator.comparing(Term::termKind).thenComparing(term -> term.identifier.asText()))
+                .sorted(Comparator.comparing(Term::termKind).thenComparing(term -> term.identifier().asText()))
                 .collect(Collectors.toList());
     }
 

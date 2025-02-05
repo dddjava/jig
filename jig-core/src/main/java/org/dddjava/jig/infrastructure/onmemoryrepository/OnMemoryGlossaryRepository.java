@@ -63,7 +63,8 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.termKind() == TermKind.メソッド)
                 .filter(term -> {
                     if (term.additionalInformation() instanceof JavaMethodDeclarator javaMethodDeclarator) {
-                        return javaMethodDeclarator.possiblyMatches(methodIdentifier.methodSignature());
+                        return methodIdentifier.declaringType().equals(javaMethodDeclarator.typeIdentifier())
+                                && javaMethodDeclarator.possiblyMatches(methodIdentifier.methodSignature());
                     } else {
                         return false;
                     }

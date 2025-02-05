@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+
 import java.util.List;
 
 /**
@@ -12,6 +14,7 @@ import java.util.List;
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4">JLS/Chapter 8. Classes/8.4. Method Declarations</a>
  */
 public record JavaMethodDeclarator(
+        TypeIdentifier typeIdentifier,
         String identifier,
         List<String> formalParameterList
 ) {

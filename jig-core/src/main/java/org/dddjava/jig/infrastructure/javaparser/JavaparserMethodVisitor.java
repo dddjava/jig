@@ -18,6 +18,7 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     @Override
     public void visit(MethodDeclaration n, Consumer<Term> termCollector) {
         var methodImplementationDeclarator = new JavaMethodDeclarator(
+                typeIdentifier,
                 n.getNameAsString(),
                 n.getParameters().stream()
                         .map(parameter -> {

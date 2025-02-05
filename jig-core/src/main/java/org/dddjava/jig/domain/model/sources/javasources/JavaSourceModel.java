@@ -5,12 +5,10 @@ import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,11 +85,5 @@ public class JavaSourceModel {
                 ).flatMap(term -> term)
                 .toList();
         return new Glossary(list);
-    }
-
-    public Optional<ClassComment> optClassComment(TypeIdentifier typeIdentifier) {
-        return classCommentList().stream()
-                .filter(classComment -> classComment.typeIdentifier().equals(typeIdentifier))
-                .findAny();
     }
 }

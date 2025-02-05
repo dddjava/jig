@@ -43,12 +43,12 @@ public class JavaparserReader implements JavaSourceReader {
     @Override
     public JavaSourceModel javaSourceModel(JavaSources javaSources) {
         return javaSources.paths().stream()
-                .map(path -> readJava(path))
+                .map(path -> parseJavaFileFromPath(path))
                 .reduce(JavaSourceModel::merge)
                 .orElseGet(JavaSourceModel::empty);
     }
 
-    JavaSourceModel readJava(Path path) {
+    JavaSourceModel parseJavaFileFromPath(Path path) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);

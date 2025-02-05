@@ -25,7 +25,7 @@ class PackageInfoReaderTest {
                 .orElseThrow(AssertionError::new);
 
         JavaparserReader sut = new JavaparserReader(null);
-        PackageComment packageComment = sut.readJava(targetPath).packageComments().get(0);
+        PackageComment packageComment = sut.parseJavaFileFromPath(targetPath).packageComments().get(0);
 
         assertEquals("スタブドメインモデル", packageComment.asText());
     }

@@ -24,8 +24,8 @@ public class Configuration {
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
-        JigReporter jigReporter = new JigReporter();
-        this.jigService = new JigService(architecture, jigReporter);
+        JigEventRepository jigEventRepository = new JigEventRepository();
+        this.jigService = new JigService(architecture, jigEventRepository);
 
         this.jigSourceReader = new JigSourceReader(
                 glossaryRepository,
@@ -33,7 +33,7 @@ public class Configuration {
                 new JavaparserReader(properties),
                 new MyBatisMyBatisStatementsReader(),
                 new ClassOrJavaSourceReader(),
-                jigReporter
+                jigEventRepository
         );
 
         this.jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);

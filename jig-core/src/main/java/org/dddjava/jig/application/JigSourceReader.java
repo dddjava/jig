@@ -35,15 +35,15 @@ public class JigSourceReader {
 
     private final MyBatisStatementsReader myBatisStatementsReader;
 
-    private final JigReporter jigReporter;
+    private final JigEventRepository jigEventRepository;
 
-    public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigReporter jigReporter) {
+    public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
         this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
         this.sourceReader = sourceReader;
-        this.jigReporter = jigReporter;
+        this.jigEventRepository = jigEventRepository;
     }
 
     public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {
@@ -56,7 +56,7 @@ public class JigSourceReader {
 
 
         readEvents.forEach(readStatus -> {
-            jigReporter.registerReadStatus(readStatus);
+            jigEventRepository.registerReadStatus(readStatus);
         });
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
         if (readEvents.stream().anyMatch(event -> event.isError())) {
@@ -68,7 +68,7 @@ public class JigSourceReader {
         // クラス名の解決や対象の選別にjigSource(jigType)を使用するため readProjectData の後で行う
         MyBatisStatements myBatisStatements = readSqlSource(source);
         if (myBatisStatements.status().not正常())
-            jigReporter.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+            jigEventRepository.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
         jigDataProvider.addSqls(myBatisStatements);
 
         return Optional.of(jigDataProvider);

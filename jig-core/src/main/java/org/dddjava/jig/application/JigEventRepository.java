@@ -13,8 +13,8 @@ import java.util.Set;
  * 生成における情報を記録する
  */
 @Repository
-public class JigReporter {
-    private static final Logger logger = LoggerFactory.getLogger(JigReporter.class);
+public class JigEventRepository {
+    private static final Logger logger = LoggerFactory.getLogger(JigEventRepository.class);
 
     private final Set<Warning> warnings = new HashSet<>();
 

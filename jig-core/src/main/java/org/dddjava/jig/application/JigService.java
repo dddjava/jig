@@ -27,11 +27,11 @@ import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 public class JigService {
 
     private final Architecture architecture;
-    private final JigReporter jigReporter;
+    private final JigEventRepository jigEventRepository;
 
-    public JigService(Architecture architecture, JigReporter jigReporter) {
+    public JigService(Architecture architecture, JigEventRepository jigEventRepository) {
         this.architecture = architecture;
-        this.jigReporter = jigReporter;
+        this.jigEventRepository = jigEventRepository;
     }
 
     public JigTypes jigTypes(JigDataProvider jigDataProvider) {
@@ -49,7 +49,7 @@ public class JigService {
 
     public JigTypes coreDomainJigTypes(JigDataProvider jigDataProvider) {
         JigTypes coreDomainJigTypes = jigTypes(jigDataProvider).filter(architecture::isCoreDomain);
-        if (coreDomainJigTypes.empty()) jigReporter.registerコアドメインが見つからない();
+        if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
         return coreDomainJigTypes;
     }
 
@@ -78,20 +78,20 @@ public class JigService {
     private ServiceMethods serviceMethods(JigDataProvider jigDataProvider) {
         JigTypes serviceJigTypes = serviceTypes(jigDataProvider);
         ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(jigTypes(jigDataProvider)));
-        if (serviceMethods.empty()) jigReporter.registerサービスが見つからない();
+        if (serviceMethods.empty()) jigEventRepository.registerサービスが見つからない();
         return serviceMethods;
     }
 
     private DatasourceMethods repositoryMethods(JigDataProvider jigDataProvider) {
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigDataProvider));
-        if (datasourceMethods.empty()) jigReporter.registerリポジトリが見つからない();
+        if (datasourceMethods.empty()) jigEventRepository.registerリポジトリが見つからない();
         return datasourceMethods;
     }
 
     public Entrypoint entrypoint(JigDataProvider jigDataProvider) {
         var entrypointMethodDetector = new EntrypointMethodDetector();
         Entrypoint from = Entrypoint.from(entrypointMethodDetector, jigTypes(jigDataProvider));
-        if (from.isEmpty()) jigReporter.registerエントリーポイントが見つからない();
+        if (from.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
         return from;
     }
 
@@ -121,6 +121,6 @@ public class JigService {
     }
 
     public void notifyReportInformation() {
-        jigReporter.notifyWithLogger();
+        jigEventRepository.notifyWithLogger();
     }
 }

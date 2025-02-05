@@ -16,8 +16,6 @@ import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -47,19 +45,14 @@ public class JigSourceReader {
     }
 
     public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {
-        List<ReadStatus> readEvents = new ArrayList<>();
 
         // ソースのチェック
         Sources source = sourceReader.readSources(sourceBasePaths);
-        if (source.emptyClassSources()) readEvents.add(ReadStatus.バイナリソースなし);
-        if (source.emptyJavaSources()) readEvents.add(ReadStatus.テキストソースなし);
+        if (source.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
+        if (source.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
-
-        readEvents.forEach(readStatus -> {
-            jigEventRepository.registerReadStatus(readStatus);
-        });
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
-        if (readEvents.stream().anyMatch(event -> event.isError())) {
+        if (jigEventRepository.hasError()) {
             return Optional.empty();
         }
 
@@ -68,7 +61,7 @@ public class JigSourceReader {
         // クラス名の解決や対象の選別にjigSource(jigType)を使用するため readProjectData の後で行う
         MyBatisStatements myBatisStatements = readSqlSource(source);
         if (myBatisStatements.status().not正常())
-            jigEventRepository.registerReadStatus(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
         jigDataProvider.addSqls(myBatisStatements);
 
         return Optional.of(jigDataProvider);

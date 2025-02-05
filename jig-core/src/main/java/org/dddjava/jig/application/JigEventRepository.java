@@ -5,9 +5,7 @@ import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 生成における情報を記録する
@@ -16,6 +14,7 @@ import java.util.Set;
 public class JigEventRepository {
     private static final Logger logger = LoggerFactory.getLogger(JigEventRepository.class);
 
+    private final List<ReadStatus> readStatuses = new ArrayList<>();
     private final Set<Warning> warnings = new HashSet<>();
 
     public void registerコアドメインが見つからない() {
@@ -38,12 +37,17 @@ public class JigEventRepository {
         warnings.stream().map(Warning::localizedMessage).forEach(logger::warn);
     }
 
-    public void registerReadStatus(ReadStatus readStatus) {
+    public void recordEvent(ReadStatus readStatus) {
+        readStatuses.add(readStatus);
         if (readStatus.isError()) {
             logger.error(readStatus.localizedMessage());
         } else {
             logger.warn(readStatus.localizedMessage());
         }
+    }
+
+    public boolean hasError() {
+        return readStatuses.stream().anyMatch(ReadStatus::isError);
     }
 
     /**

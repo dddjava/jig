@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.sources;
 
+import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
@@ -15,8 +16,8 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                                      MyBatisStatements myBatisStatements)
         implements JigDataProvider {
 
-    public static DefaultJigDataProvider from(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, MyBatisStatements myBatisStatements) {
-        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, javaSourceModel), myBatisStatements);
+    public static DefaultJigDataProvider from(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, MyBatisStatements myBatisStatements, GlossaryRepository glossaryRepository) {
+        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, javaSourceModel, glossaryRepository), myBatisStatements);
     }
 
     @Override
@@ -39,7 +40,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
         return javaSourceModel().toTerms();
     }
 
-    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
+    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, GlossaryRepository glossaryRepository) {
         return classSourceModel.classDeclarations().stream()
                 .map(classDeclaration -> {
                     // クラスのコメント

@@ -81,7 +81,7 @@ public class JigSourceReader {
         if (myBatisStatements.status().not正常())
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
-        return DefaultJigDataProvider.from(classSourceModel, javaSourceModel, myBatisStatements);
+        return DefaultJigDataProvider.from(classSourceModel, javaSourceModel, myBatisStatements, glossaryRepository);
     }
 
     /**

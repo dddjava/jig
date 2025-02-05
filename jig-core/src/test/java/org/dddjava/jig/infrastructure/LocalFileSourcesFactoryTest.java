@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
-import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
+import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -21,8 +21,8 @@ class LocalFileSourcesFactoryTest {
                 new JavaSourceBasePaths(Collections.singletonList(Paths.get("invalid-text-path")))
         );
 
-        ClassOrJavaSourceReader sut = new ClassOrJavaSourceReader();
-        Sources source = sut.readSources(sourceBasePaths);
+        ClassOrJavaSourceCollector sut = new ClassOrJavaSourceCollector();
+        Sources source = sut.collectSources(sourceBasePaths);
 
         assertTrue(source.emptyClassSources());
         assertTrue(source.emptyJavaSources());

@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.filesystem;
 
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.SourceReader;
+import org.dddjava.jig.domain.model.sources.SourceCollector;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
@@ -22,9 +22,9 @@ import static java.util.stream.Collectors.toList;
 /**
  * classやjavaファイルを対象とするSourceReader
  */
-public class ClassOrJavaSourceReader implements SourceReader {
+public class ClassOrJavaSourceCollector implements SourceCollector {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceCollector.class);
 
     ClassSources collectClassSources(SourceBasePaths sourceBasePaths) {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
@@ -68,7 +68,7 @@ public class ClassOrJavaSourceReader implements SourceReader {
     }
 
     @Override
-    public Sources readSources(SourceBasePaths sourceBasePaths) {
+    public Sources collectSources(SourceBasePaths sourceBasePaths) {
         logger.info("read paths: binary={}, text={}", sourceBasePaths.classSourceBasePaths(), sourceBasePaths.javaSourceBasePaths());
         return new Sources(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }

@@ -25,7 +25,7 @@ import java.util.Optional;
 public class JigSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(JigSourceReader.class);
 
-    private final SourceReader sourceReader;
+    private final SourceCollector sourceCollector;
     private final GlossaryRepository glossaryRepository;
 
     private final JavaSourceReader javaSourceReader;
@@ -35,19 +35,17 @@ public class JigSourceReader {
 
     private final JigEventRepository jigEventRepository;
 
-    public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigEventRepository jigEventRepository) {
+    public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
         this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
-        this.sourceReader = sourceReader;
+        this.sourceCollector = sourceCollector;
         this.jigEventRepository = jigEventRepository;
     }
 
     public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {
-
-        // ソースのチェック
-        Sources sources = sourceReader.readSources(sourceBasePaths);
+        Sources sources = sourceCollector.collectSources(sourceBasePaths);
         if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
         if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
@@ -56,14 +54,14 @@ public class JigSourceReader {
             return Optional.empty();
         }
 
-        var jigDataProvider = readProjectData(sources);
+        var jigDataProvider = generateJigDataProvider(sources);
         return Optional.of(jigDataProvider);
     }
 
     /**
      * プロジェクト情報を読み取る
      */
-    public DefaultJigDataProvider readProjectData(Sources sources) {
+    public DefaultJigDataProvider generateJigDataProvider(Sources sources) {
         JavaSources javaSources = sources.javaSources();
 
         JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(javaSources);

@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
+import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -50,7 +50,7 @@ public class JigTestExtension implements ParameterResolver {
         if (parameterType == Configuration.class) return configuration;
         if (parameterType == Sources.class) return getTestRawSource();
         if (parameterType == SourceBasePaths.class) return TestSupport.getRawSourceLocations();
-        if (parameterType == JigDataProvider.class) return configuration.sourceReader().readProjectData(getTestRawSource());
+        if (parameterType == JigDataProvider.class) return configuration.sourceReader().generateJigDataProvider(getTestRawSource());
 
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterType) {
@@ -69,7 +69,7 @@ public class JigTestExtension implements ParameterResolver {
 
     public Sources getTestRawSource() {
         SourceBasePaths sourceBasePaths = TestSupport.getRawSourceLocations();
-        ClassOrJavaSourceReader localFileRawSourceFactory = new ClassOrJavaSourceReader();
-        return localFileRawSourceFactory.readSources(sourceBasePaths);
+        ClassOrJavaSourceCollector localFileRawSourceFactory = new ClassOrJavaSourceCollector();
+        return localFileRawSourceFactory.collectSources(sourceBasePaths);
     }
 }

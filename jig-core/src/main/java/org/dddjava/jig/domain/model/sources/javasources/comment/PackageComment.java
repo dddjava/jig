@@ -1,6 +1,6 @@
-package org.dddjava.jig.domain.model.data.packages;
+package org.dddjava.jig.domain.model.sources.javasources.comment;
 
-import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 /**
  * パッケージ別名

@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.type;
 
+import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
+
 /**
  * 型の属性
  */

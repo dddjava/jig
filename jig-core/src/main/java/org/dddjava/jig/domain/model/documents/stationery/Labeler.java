@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 
 import java.util.Collection;
 import java.util.HashSet;

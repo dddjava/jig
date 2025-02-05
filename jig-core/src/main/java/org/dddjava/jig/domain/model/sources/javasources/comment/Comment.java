@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.comment;
+package org.dddjava.jig.domain.model.sources.javasources.comment;
 
 import java.util.regex.Pattern;
 import java.util.stream.Stream;

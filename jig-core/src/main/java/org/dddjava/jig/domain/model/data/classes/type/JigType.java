@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 
 import java.util.ArrayList;
 import java.util.HashSet;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.type;
 
-import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 
 public class JigTypeDescription {
 

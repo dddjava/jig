@@ -13,12 +13,12 @@ import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
-import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
+import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
+import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

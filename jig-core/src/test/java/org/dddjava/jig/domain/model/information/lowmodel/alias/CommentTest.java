@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.lowmodel.alias;
 
-import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

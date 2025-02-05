@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.domain.model.sources.javasources.comment;
 
-import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 /**

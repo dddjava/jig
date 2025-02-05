@@ -4,9 +4,10 @@ import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
+import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

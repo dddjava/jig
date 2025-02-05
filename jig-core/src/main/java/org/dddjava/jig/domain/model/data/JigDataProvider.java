@@ -13,5 +13,5 @@ public interface JigDataProvider {
 
     JigTypes fetchJigTypes();
 
-    Glossary fetchTerms();
+    Glossary fetchGlossary();
 }

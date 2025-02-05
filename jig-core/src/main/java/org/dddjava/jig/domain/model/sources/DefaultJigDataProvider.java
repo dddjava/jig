@@ -40,7 +40,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
     }
 
     @Override
-    public Glossary fetchTerms() {
+    public Glossary fetchGlossary() {
         return javaSourceModel().toTerms();
     }
 

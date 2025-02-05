@@ -39,7 +39,7 @@ public class JigService {
     }
 
     public Glossary glossary(JigDataProvider jigDataProvider) {
-        return jigDataProvider.fetchTerms();
+        return jigDataProvider.fetchGlossary();
     }
 
     public ArchitectureDiagram architectureDiagram(JigDataProvider jigDataProvider) {

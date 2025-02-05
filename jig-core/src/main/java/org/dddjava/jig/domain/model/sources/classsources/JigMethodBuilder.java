@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.sources;
+package org.dddjava.jig.domain.model.sources.classsources;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;

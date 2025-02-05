@@ -15,6 +15,8 @@ public interface JigDocumentContext {
 
     Term packageTerm(PackageIdentifier packageIdentifier);
 
+    Term typeTerm(TypeIdentifier typeIdentifier);
+
     ClassComment classComment(TypeIdentifier typeIdentifier);
 
     default JigPackage jigPackage(PackageIdentifier packageIdentifier) {

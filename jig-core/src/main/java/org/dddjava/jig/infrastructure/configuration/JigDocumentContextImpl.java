@@ -29,8 +29,13 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     }
 
     @Override
+    public Term typeTerm(TypeIdentifier typeIdentifier) {
+        return glossaryRepository.get(typeIdentifier);
+    }
+
+    @Override
     public ClassComment classComment(TypeIdentifier typeIdentifier) {
-        var term = glossaryRepository.get(typeIdentifier);
+        var term = typeTerm(typeIdentifier);
         return new ClassComment(typeIdentifier, Comment.from(term.title(), term.description()));
     }
 

@@ -68,13 +68,6 @@ public class Comment {
         return summaryText();
     }
 
-    public String asTextOrDefault(String defaultText) {
-        if (exists()) {
-            return summaryText();
-        }
-        return defaultText;
-    }
-
     public String fullText() {
         return value;
     }

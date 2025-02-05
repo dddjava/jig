@@ -7,6 +7,9 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
  * 用語
  */
 public record Term(TermIdentifier identifier, String title, String description, TermKind termKind) {
+    public Term {
+        description = description.trim();
+    }
 
     public static Term fromPackage(PackageIdentifier packageIdentifier, String title, String description) {
         return new Term(new TermIdentifier(packageIdentifier.asText()), title, description, TermKind.パッケージ);
@@ -18,10 +21,5 @@ public record Term(TermIdentifier identifier, String title, String description, 
 
     public static Term fromMethod(String identifier, String title, String description) {
         return new Term(new TermIdentifier(identifier), title, description, TermKind.メソッド);
-    }
-
-    @Override
-    public String description() {
-        return description.trim();
     }
 }

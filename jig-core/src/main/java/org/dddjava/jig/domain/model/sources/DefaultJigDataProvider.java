@@ -54,7 +54,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                                 .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
                     }
 
-                    return classDeclaration.build();
+                    return classDeclaration.jigMemberBuilder().build(classDeclaration.jigTypeHeader());
                 })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }

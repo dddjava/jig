@@ -2,6 +2,7 @@ package testing;
 
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
@@ -89,6 +90,7 @@ public class TestSupport {
 
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
-        return sut.classDeclaration(getClassSource(definitionClass)).orElseThrow().build();
+        ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
+        return classDeclaration.jigMemberBuilder().build(classDeclaration.jigTypeHeader());
     }
 }

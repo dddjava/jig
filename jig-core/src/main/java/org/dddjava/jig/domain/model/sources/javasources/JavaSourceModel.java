@@ -22,7 +22,7 @@ public class JavaSourceModel {
     List<EnumModel> enumModels;
     private List<PackageComment> packageComments;
 
-    public JavaSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels, List<PackageComment> packageComments) {
+    private JavaSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels, List<PackageComment> packageComments) {
         this.classComments = classComments;
         this.methodImplementations = methodImplementations;
         this.enumModels = enumModels;

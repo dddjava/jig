@@ -8,16 +8,15 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Repository
 public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     private final Collection<Term> terms = new ArrayList<>();
-
-    final Map<TypeIdentifier, ClassComment> map = new HashMap<>();
 
     @Override
     public Term get(TypeIdentifier typeIdentifier) {

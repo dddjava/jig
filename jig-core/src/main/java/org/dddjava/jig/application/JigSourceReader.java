@@ -64,6 +64,11 @@ public class JigSourceReader {
     public DefaultJigDataProvider generateJigDataProvider(Sources sources) {
         JavaSources javaSources = sources.javaSources();
 
+        javaSources.packageInfoPaths().forEach(path -> {
+            var term = javaSourceReader.parsePackageInfoJavaFile(path);
+            term.ifPresent(glossaryRepository::register);
+        });
+
         JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(javaSources);
         for (ClassComment classComment : javaSourceModel.classCommentList()) {
             glossaryRepository.register(classComment);

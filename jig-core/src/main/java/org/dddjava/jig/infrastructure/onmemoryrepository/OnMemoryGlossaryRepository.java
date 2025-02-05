@@ -9,12 +9,12 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class OnMemoryGlossaryRepository implements GlossaryRepository {
+
+    private final Collection<Term> terms = new ArrayList<>();
 
     final Map<TypeIdentifier, ClassComment> map = new HashMap<>();
     final Map<PackageIdentifier, PackageComment> packageMap = new HashMap<>();
@@ -58,5 +58,10 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                         classComment.documentationComment().bodyText()))
                 .toList();
         return new JigTypeTerms(list);
+    }
+
+    @Override
+    public void register(Term term) {
+        terms.add(term);
     }
 }

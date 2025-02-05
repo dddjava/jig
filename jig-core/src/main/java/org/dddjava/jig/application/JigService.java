@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
-import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
@@ -38,7 +38,7 @@ public class JigService {
         return jigDataProvider.fetchJigTypes();
     }
 
-    public Terms terms(JigDataProvider jigDataProvider) {
+    public Glossary gl(JigDataProvider jigDataProvider) {
         return jigDataProvider.fetchTerms();
     }
 

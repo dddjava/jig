@@ -13,7 +13,7 @@ import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.adapter.html.ThymeleafSummaryWriter;
 import org.dddjava.jig.adapter.html.dialect.JigExpressionObjectDialect;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -121,8 +121,8 @@ public class JigDocumentGenerator {
                 }
                 // 一覧
                 case TermList -> {
-                    Terms terms = jigService.terms(jigDataProvider);
-                    var modelReports = new ReportBook(new ReportSheet<>("TERM", Terms.reporter(), terms.list()));
+                    Glossary glossary = jigService.terms(jigDataProvider);
+                    var modelReports = new ReportBook(new ReportSheet<>("TERM", Glossary.reporter(), glossary.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,

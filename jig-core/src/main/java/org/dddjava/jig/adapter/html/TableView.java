@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
-import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -21,12 +21,12 @@ public class TableView {
         this.templateEngine = templateEngine;
     }
 
-    public List<Path> write(Path outputDirectory, Terms terms) {
+    public List<Path> write(Path outputDirectory, Glossary glossary) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "terms", terms
+                "terms", glossary
         );
 
         Context context = new Context(Locale.ROOT, contextMap);

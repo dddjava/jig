@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class Terms {
+public class Glossary {
     List<Term> terms;
 
-    public Terms(List<Term> terms) {
+    public Glossary(List<Term> terms) {
         this.terms = terms;
     }
 

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
@@ -41,7 +41,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
     }
 
     @Override
-    public Terms fetchTerms() {
+    public Glossary fetchTerms() {
         return javaSourceModel().toTerms();
     }
 

@@ -1,10 +1,10 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
-import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ class JigDocumentGeneratorTest {
     @Test
     void 用語一覧がtermをもとに出力できる() throws IOException {
         // data
-        var terms = new Terms(List.of(
+        var terms = new Glossary(List.of(
                 new Term(new TermIdentifier("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
                 new Term(new TermIdentifier("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
         ));

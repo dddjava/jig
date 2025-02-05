@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
@@ -68,7 +68,7 @@ public class JavaSourceModel {
         return packageComments;
     }
 
-    public Terms toTerms() {
+    public Glossary toTerms() {
         var list = Stream.of(
                         classCommentList().stream()
                                 .map(classComment -> Term.fromClass(
@@ -90,7 +90,7 @@ public class JavaSourceModel {
                                 ))
                 ).flatMap(term -> term)
                 .toList();
-        return new Terms(list);
+        return new Glossary(list);
     }
 
     public Optional<ClassComment> optClassComment(TypeIdentifier typeIdentifier) {

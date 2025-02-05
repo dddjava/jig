@@ -48,7 +48,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
         return classSourceModel.classDeclarations().stream()
                 .map(classDeclaration -> {
                     // メソッドのコメント登録
-                    for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigMemberBuilder().allMethodFacts()) {
+                    for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigMemberBuilder().allMethodBuilders()) {
                         javaSourceModel.methodImplementations.stream()
                                 .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
                                 .findAny()

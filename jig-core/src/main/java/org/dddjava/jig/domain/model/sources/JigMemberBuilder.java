@@ -38,7 +38,7 @@ public class JigMemberBuilder {
         this.recordComponentDefinitions = new ArrayList<>();
     }
 
-    public List<JigMethodBuilder> allMethodFacts() {
+    public List<JigMethodBuilder> allMethodBuilders() {
         ArrayList<JigMethodBuilder> list = new ArrayList<>();
         list.addAll(instanceJigMethodBuilders);
         list.addAll(staticJigMethodBuilders);

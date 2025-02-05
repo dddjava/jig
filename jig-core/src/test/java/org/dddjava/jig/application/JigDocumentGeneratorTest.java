@@ -34,7 +34,7 @@ class JigDocumentGeneratorTest {
         // environment
         var jigDocumentContextMock = mock(JigDocumentContext.class);
         var jigServiceMock = mock(JigService.class);
-        when(jigServiceMock.terms(jigDataProvider)).thenReturn(terms);
+        when(jigServiceMock.glossary(jigDataProvider)).thenReturn(terms);
 
         var sut = new JigDocumentGenerator(jigDocumentContextMock, jigServiceMock);
 

@@ -38,7 +38,7 @@ public class JigService {
         return jigDataProvider.fetchJigTypes();
     }
 
-    public Glossary gl(JigDataProvider jigDataProvider) {
+    public Glossary glossary(JigDataProvider jigDataProvider) {
         return jigDataProvider.fetchTerms();
     }
 

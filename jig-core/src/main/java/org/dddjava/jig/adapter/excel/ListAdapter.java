@@ -56,7 +56,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("ALL", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("クラス別名", item -> item.label()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
                         Map.entry("関連元ビジネスルール数", item -> ClassRelations.internalTypeRelationsTo(coreDomainJigTypes, item).size()),
                         Map.entry("関連先ビジネスルール数", item -> ClassRelations.internalTypeRelationsFrom(coreDomainJigTypes, item).size()),
@@ -71,7 +71,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("ENUM", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("クラス別名", item -> item.label()),
                         Map.entry("定数宣言", item -> item.staticMember().staticFieldDeclarations().selfDefineOnly().toNameText()),
                         Map.entry("フィールド", item -> item.instanceMember().fieldDeclarations().toSignatureText()),
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
@@ -85,7 +85,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("COLLECTION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("クラス別名", item -> item.label()),
                         Map.entry("フィールドの型", item -> item.instanceMember().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),

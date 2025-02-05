@@ -51,7 +51,7 @@ class JavaparserReaderTest {
     @ParameterizedTest
     void JavadocコメントのないものはエラーにならずPackageCommentも生成されない(String code) {
         CompilationUnit cu = StaticJavaParser.parse(code);
-        Optional<PackageComment> packageComment = sut.readPackageComment(cu);
+        Optional<PackageComment> packageComment = sut.parsePackageInfoJavaFile(cu);
         assertTrue(packageComment.isEmpty());
     }
 
@@ -60,7 +60,7 @@ class JavaparserReaderTest {
     void コメントが取得できる(String code, String expectedTitle, String expectedBody) {
         CompilationUnit cu = StaticJavaParser.parse(code);
 
-        Optional<PackageComment> packageComment = sut.readPackageComment(cu);
+        Optional<PackageComment> packageComment = sut.parsePackageInfoJavaFile(cu);
 
         PackageComment actual = packageComment.orElseThrow();
         assertEquals(expectedTitle, actual.asText());

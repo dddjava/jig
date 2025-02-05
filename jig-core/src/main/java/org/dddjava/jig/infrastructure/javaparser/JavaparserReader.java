@@ -54,7 +54,7 @@ public class JavaparserReader implements JavaSourceReader {
             CompilationUnit cu = StaticJavaParser.parse(path);
 
             if (path.endsWith("package-info.java")) {
-                Optional<PackageComment> packageComment = readPackageComment(cu);
+                Optional<PackageComment> packageComment = parsePackageInfoJavaFile(cu);
                 return packageComment.map(JavaSourceModel::from).orElseGet(JavaSourceModel::empty);
             } else {
                 String packageName = cu.getPackageDeclaration()
@@ -72,7 +72,7 @@ public class JavaparserReader implements JavaSourceReader {
         }
     }
 
-    Optional<PackageComment> readPackageComment(CompilationUnit cu) {
+    Optional<PackageComment> parsePackageInfoJavaFile(CompilationUnit cu) {
         return cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::valueOf)

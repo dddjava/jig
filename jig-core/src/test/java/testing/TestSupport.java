@@ -1,9 +1,11 @@
 package testing;
 
+import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
+import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -83,5 +85,10 @@ public class TestSupport {
                 new ClassSourceBasePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve("stub"))),
                 new JavaSourceBasePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("java").resolve("stub")))
         );
+    }
+
+    public static JigType buildJigType(Class<?> definitionClass) {
+        AsmClassSourceReader sut = new AsmClassSourceReader();
+        return sut.classDeclaration(getClassSource(definitionClass)).orElseThrow().build();
     }
 }

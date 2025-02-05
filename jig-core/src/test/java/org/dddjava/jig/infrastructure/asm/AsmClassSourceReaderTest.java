@@ -56,7 +56,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void クラス定義に使用している型が取得できる() throws Exception {
-            JigType actual = JigType構築(ClassDefinition.class);
+            JigType actual = TestSupport.buildJigType(ClassDefinition.class);
 
             TypeIdentifiers identifiers = actual.usingTypes();
             assertThat(identifiers.list())
@@ -75,7 +75,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void インタフェース定義に使用している型が取得できる() throws Exception {
-            JigType actual = JigType構築(InterfaceDefinition.class);
+            JigType actual = TestSupport.buildJigType(InterfaceDefinition.class);
 
             TypeIdentifiers identifiers = actual.usingTypes();
             assertThat(identifiers.list())
@@ -93,7 +93,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void enumで使用している型が取得できる() throws Exception {
-            JigType actual = JigType構築(EnumDefinition.class);
+            JigType actual = TestSupport.buildJigType(EnumDefinition.class);
 
             TypeIdentifiers identifiers = actual.usingTypes();
             assertThat(identifiers.list())
@@ -107,7 +107,7 @@ public class AsmClassSourceReaderTest {
         @MethodSource
         @ParameterizedTest
         void TypeKind判定(Class<?> targetType, TypeKind typeKind) throws Exception {
-            JigType actual = JigType構築(targetType);
+            JigType actual = TestSupport.buildJigType(targetType);
             assertEquals(typeKind, actual.typeKind());
         }
 
@@ -128,7 +128,7 @@ public class AsmClassSourceReaderTest {
     class フィールド {
         @Test
         void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-            JigType actual = JigType構築(MemberAnnotatedClass.class);
+            JigType actual = TestSupport.buildJigType(MemberAnnotatedClass.class);
 
             JigFields jigFields = actual.instanceMember().instanceFields();
 
@@ -157,7 +157,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void フィールド定義に使用している型が取得できる() throws Exception {
-            JigType jigType = JigType構築(FieldDefinition.class);
+            JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
 
             FieldDeclarations fieldDeclarations = jigType.instanceMember().fieldDeclarations();
             String fieldsText = fieldDeclarations.toSignatureText();
@@ -184,7 +184,7 @@ public class AsmClassSourceReaderTest {
     class メソッド {
         @Test
         void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-            JigType actual = JigType構築(MemberAnnotatedClass.class);
+            JigType actual = TestSupport.buildJigType(MemberAnnotatedClass.class);
 
             JigMethod method = resolveMethodBySignature(actual, new MethodSignature("method"));
             MethodAnnotation methodAnnotation = method.methodAnnotations().list().get(0);
@@ -204,7 +204,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void 戻り値のジェネリクスが取得できる() throws Exception {
-            JigType actual = JigType構築(InterfaceDefinition.class);
+            JigType actual = TestSupport.buildJigType(InterfaceDefinition.class);
 
             TypeIdentifiers identifiers = actual.usingTypes();
             assertThat(identifiers.list())
@@ -222,7 +222,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void resolveArgumentGenerics() {
-            JigType jigType = JigType構築(ResolveArgumentGenerics.class);
+            JigType jigType = TestSupport.buildJigType(ResolveArgumentGenerics.class);
 
             JigMethod actual = resolveMethodByName(jigType, "method");
 
@@ -232,7 +232,7 @@ public class AsmClassSourceReaderTest {
 
         @Test
         void メソッドでifやswitchを使用していると検出できる() throws Exception {
-            JigType actual = JigType構築(DecisionClass.class);
+            JigType actual = TestSupport.buildJigType(DecisionClass.class);
 
             JigMethods jigMethods = actual.instanceMethods();
             assertThat(jigMethods.list())
@@ -246,17 +246,6 @@ public class AsmClassSourceReaderTest {
                             // forは ifeq と goto で構成されるある意味での分岐
                             tuple("forがあるメソッド()", "1")
                     );
-        }
-    }
-
-    private JigType JigType構築(Class<?> clz) {
-        try {
-            var classSource = TestSupport.getClassSource(clz);
-
-            AsmClassSourceReader sut = new AsmClassSourceReader();
-            return sut.classDeclaration(classSource).orElseThrow().build();
-        } catch (Exception e) {
-            throw new AssertionError(e);
         }
     }
 

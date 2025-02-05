@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,6 @@ import stub.domain.model.relation.constant.to_primitive_wrapper_constant.Integer
 import stub.domain.model.relation.method.*;
 import testing.TestSupport;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -27,7 +24,7 @@ public class InstructionTest {
     @ParameterizedTest
     @ValueSource(classes = {MethodInstructionTestStub.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
-        var jigType = buildJigType(clz);
+        var jigType = TestSupport.buildJigType(clz);
 
         TypeIdentifiers identifiers = jigType.usingTypes();
         assertThat(identifiers.list())
@@ -78,7 +75,7 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() throws Exception {
-        var jigType = buildJigType(MethodInstructionTestStub.class);
+        var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
         var jigMethods = jigType.instanceMethods();
 
         var list = jigMethods.stream()
@@ -92,7 +89,7 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_メソッド参照() throws Exception {
-        var jigType = buildJigType(MethodInstructionTestStub.class);
+        var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
         var jigMethods = jigType.instanceMethods();
 
         var method3 = jigMethods.stream()
@@ -106,7 +103,7 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_lambda式() throws Exception {
-        var jigType = buildJigType(MethodInstructionTestStub.class);
+        var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
         var jigMethods = jigType.instanceMethods();
 
         var method2 = jigMethods.stream()
@@ -117,10 +114,5 @@ public class InstructionTest {
                 method2.get(0).usingMethods().methodDeclarations().asSimpleText()
         );
 
-    }
-
-    private JigType buildJigType(Class<?> definitionClass) throws URISyntaxException, IOException {
-        AsmClassSourceReader sut = new AsmClassSourceReader();
-        return sut.classDeclaration(TestSupport.getClassSource(definitionClass)).orElseThrow().build();
     }
 }

@@ -22,7 +22,7 @@ public class AsmClassSourceReader implements ClassSourceReader {
         return new ClassSourceModel(classDeclarations);
     }
 
-    Optional<ClassDeclaration> classDeclaration(ClassSource classSource) {
+    public Optional<ClassDeclaration> classDeclaration(ClassSource classSource) {
         try {
             AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
 

@@ -17,6 +17,6 @@ public record JigAnnotationInstance(TypeIdentifier id,
     }
 
     public String simpleTypeName() {
-        return id.simpleValue();
+        return id.asSimpleText();
     }
 }

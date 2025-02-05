@@ -32,7 +32,7 @@ public record JigTypeHeader(TypeIdentifier id,
     }
 
     public String simpleName() {
-        return id.simpleValue();
+        return id.asSimpleText();
     }
 
     public String fqn() {

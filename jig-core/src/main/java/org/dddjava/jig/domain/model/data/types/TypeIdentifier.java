@@ -23,11 +23,6 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return value;
     }
 
-    public String simpleValue() {
-        int lastDotIndex = value().lastIndexOf('.');
-        return (lastDotIndex != -1) ? value().substring(lastDotIndex + 1) : value();
-    }
-
     public static TypeIdentifier fromJvmBinaryName(String jvmBinaryName) {
         return new TypeIdentifier(jvmBinaryName.replace('/', '.'));
     }
@@ -58,7 +53,8 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
      * @return "TypeIdentifier"
      */
     public String asSimpleText() {
-        return hasPackage() ? value.substring(value.lastIndexOf(".") + 1) : value;
+        int lastDotIndex = value.lastIndexOf('.');
+        return (lastDotIndex != -1) ? value.substring(lastDotIndex + 1) : value;
     }
 
     private boolean hasPackage() {

@@ -13,7 +13,7 @@ public record JigBaseTypeData(TypeIdentifier id, JigBaseTypeAttributeData attrib
     }
 
     public String simpleName() {
-        return id.simpleValue();
+        return id.asSimpleText();
     }
 
     public String simpleNameWithGenerics() {

@@ -15,10 +15,9 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +29,10 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
-    ClassComment classComment;
     List<MethodImplementation> methods = new ArrayList<>();
     EnumModel enumModel;
     TypeIdentifier typeIdentifier;
+    private Term term;
 
     public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
@@ -102,7 +101,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            classComment = new ClassComment(typeIdentifier, Comment.fromCodeComment(javadocText));
+            term = Term.fromClass(typeIdentifier, javadocText);
         });
         node.accept(new JavaparserMethodVisitor(typeIdentifier), methods);
 
@@ -111,7 +110,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
 
     public JavaSourceModel javaSourceModel() {
         return JavaSourceModel.from(
-                classComment != null ? List.of(classComment) : List.of(),
+                term,
                 methods,
                 enumModel != null ? List.of(enumModel) : List.of());
     }

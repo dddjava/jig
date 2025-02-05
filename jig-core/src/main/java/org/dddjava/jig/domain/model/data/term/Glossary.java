@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.term;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Glossary {
-    List<Term> terms;
+    Collection<Term> terms;
 
-    public Glossary(List<Term> terms) {
+    public Glossary(Collection<Term> terms) {
         this.terms = terms;
     }
 

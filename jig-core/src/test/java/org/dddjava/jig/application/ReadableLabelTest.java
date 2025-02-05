@@ -53,8 +53,8 @@ class ReadableLabelTest {
     static Stream<Arguments> クラスコメント取得() {
         return Stream.of(
                 argumentSet("クラスのJavadocがClassCommentになるできる", ClassJavadocStub.class, "クラスのJavadoc"),
-                argumentSet("メソッドのJavadocはClassCommentではない", MethodJavadocStub.class, ""),
-                argumentSet("ブロックコメントはClassCommentではない", NotJavadocStub.class, "")
+                argumentSet("メソッドのJavadocはClassCommentではない", MethodJavadocStub.class, "MethodJavadocStub"),
+                argumentSet("ブロックコメントはClassCommentではない", NotJavadocStub.class, "NotJavadocStub")
         );
     }
 

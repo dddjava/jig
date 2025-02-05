@@ -18,4 +18,10 @@ public record JavaSources(List<Path> paths) {
                 .filter(path -> path.endsWith("package-info.java"))
                 .toList();
     }
+
+    public Collection<Path> javaPaths() {
+        return paths.stream()
+                .filter(path -> !path.endsWith("package-info.java"))
+                .toList();
+    }
 }

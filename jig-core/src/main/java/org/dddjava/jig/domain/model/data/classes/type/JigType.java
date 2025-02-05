@@ -186,7 +186,7 @@ public class JigType {
 
         return new ClassComment(
                 jigTypeHeader.id(),
-                typeTerm.map(term -> Comment.fromCodeComment(term.title() + "\n" + term.description()))
+                typeTerm.map(term -> Comment.from(term.title(), term.description()))
                         .orElse(Comment.empty())
         );
     }

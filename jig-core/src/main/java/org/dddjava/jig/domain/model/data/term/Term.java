@@ -30,6 +30,10 @@ public record Term(TermIdentifier identifier, String title, String description, 
         return JavadocParser.fromJavadoc(packageIdentifier.asText(), javadocDescriptionText, TermKind.パッケージ);
     }
 
+    public static Term fromClass(TypeIdentifier typeIdentifier, String javadocDescriptionText) {
+        return JavadocParser.fromJavadoc(typeIdentifier.fullQualifiedName(), javadocDescriptionText, TermKind.クラス);
+    }
+
     private static class JavadocParser {
 
         /**

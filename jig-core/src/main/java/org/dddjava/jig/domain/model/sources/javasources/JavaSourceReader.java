@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public interface JavaSourceReader {
 
-    JavaSourceModel javaSourceModel(JavaSources javaSources);
-
     Optional<Term> parsePackageInfoJavaFile(Path path);
+
+    JavaSourceModel parseJavaFile(Path path);
 }

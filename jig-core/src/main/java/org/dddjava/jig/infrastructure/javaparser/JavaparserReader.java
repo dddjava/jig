@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -42,21 +41,14 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     @Override
-    public JavaSourceModel javaSourceModel(JavaSources javaSources) {
-        return javaSources.paths().stream()
-                .map(path -> parseJavaFileFromPath(path))
-                .reduce(JavaSourceModel::merge)
-                .orElseGet(JavaSourceModel::empty);
-    }
-
-    JavaSourceModel parseJavaFileFromPath(Path path) {
+    public JavaSourceModel parseJavaFile(Path path) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
 
             if (path.endsWith("package-info.java")) {
-                Optional<PackageComment> packageComment = parsePackageInfoJavaFile(cu);
-                return packageComment.map(JavaSourceModel::from).orElseGet(JavaSourceModel::empty);
+                // do-nothing
+                return JavaSourceModel.empty();
             } else {
                 String packageName = cu.getPackageDeclaration()
                         .map(PackageDeclaration::getNameAsString)

@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -25,8 +24,8 @@ class PackageInfoReaderTest {
                 .orElseThrow(AssertionError::new);
 
         JavaparserReader sut = new JavaparserReader(null);
-        PackageComment packageComment = sut.parseJavaFileFromPath(targetPath).packageComments().get(0);
+        var term = sut.parsePackageInfoJavaFile(targetPath).orElseThrow();
 
-        assertEquals("スタブドメインモデル", packageComment.asText());
+        assertEquals("スタブドメインモデル", term.title());
     }
 }

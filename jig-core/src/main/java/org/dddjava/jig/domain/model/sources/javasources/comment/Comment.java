@@ -18,6 +18,9 @@ public class Comment {
     private Comment(String value) {
         this.value = value;
     }
+    public static Comment from(String title, String description) {
+        return new Comment(title + "\n" + description);
+    }
 
     public static Comment empty() {
         return EMPTY;

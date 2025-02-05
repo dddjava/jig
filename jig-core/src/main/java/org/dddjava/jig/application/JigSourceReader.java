@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,14 +63,17 @@ public class JigSourceReader {
         JavaSources javaSources = sources.javaSources();
 
         javaSources.packageInfoPaths().forEach(path -> {
-            var term = javaSourceReader.parsePackageInfoJavaFile(path);
-            term.ifPresent(glossaryRepository::register);
+            javaSourceReader.parsePackageInfoJavaFile(path).ifPresent(glossaryRepository::register);
         });
 
-        JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(javaSources);
-        for (ClassComment classComment : javaSourceModel.classCommentList()) {
-            glossaryRepository.register(classComment);
-        }
+        JavaSourceModel javaSourceModel = javaSources.javaPaths().stream()
+                .map(path -> {
+                    var it = javaSourceReader.parseJavaFile(path);
+                    it.term().ifPresent(glossaryRepository::register);
+                    return it;
+                })
+                .reduce(JavaSourceModel::merge)
+                .orElseGet(JavaSourceModel::empty);
 
         ClassSources classSources = sources.classSources();
         ClassSourceModel classSourceModel = classSourceReader.classSourceModel(classSources);

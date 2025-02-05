@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 
 public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                                      JigTypes jigTypes,
-                                     MyBatisStatements myBatisStatements)
-        implements JigDataProvider {
+                                     MyBatisStatements myBatisStatements,
+                                     Glossary glossary) implements JigDataProvider {
 
     public static DefaultJigDataProvider from(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, MyBatisStatements myBatisStatements, GlossaryRepository glossaryRepository) {
-        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, javaSourceModel, glossaryRepository), myBatisStatements);
+        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, javaSourceModel, glossaryRepository), myBatisStatements, glossaryRepository.all());
     }
 
     @Override
@@ -41,7 +41,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
 
     @Override
     public Glossary fetchGlossary() {
-        return javaSourceModel().toTerms();
+        return glossary;
     }
 
     private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, GlossaryRepository glossaryRepository) {

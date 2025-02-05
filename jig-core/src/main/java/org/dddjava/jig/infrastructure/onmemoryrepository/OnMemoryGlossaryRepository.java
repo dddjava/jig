@@ -4,6 +4,7 @@ import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -19,8 +20,12 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     final Map<TypeIdentifier, ClassComment> map = new HashMap<>();
 
     @Override
-    public ClassComment get(TypeIdentifier typeIdentifier) {
-        return map.getOrDefault(typeIdentifier, ClassComment.empty(typeIdentifier));
+    public Term get(TypeIdentifier typeIdentifier) {
+        return terms.stream()
+                .filter(term -> term.termKind() == TermKind.クラス)
+                .filter(term -> term.identifier().asText().equals(typeIdentifier.fullQualifiedName()))
+                .findAny()
+                .orElseGet(() -> Term.fromClass(typeIdentifier, typeIdentifier.asSimpleText()));
     }
 
     @Override
@@ -33,28 +38,19 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public void register(ClassComment classComment) {
-        map.put(classComment.typeIdentifier(), classComment);
-    }
-
-    @Override
     public JigTypeTerms collectJigTypeTerms(TypeIdentifier typeIdentifier) {
         // 型に紐づくTermを収集する。
         // 現在本クラスは扱っていないが、フィールドおよびメソッドのコメントも含むようにする。
-        List<Term> list = map.entrySet().stream()
-                .filter(entry -> entry.getKey().equals(typeIdentifier))
-                .map(Map.Entry::getValue)
-                // GlossaryでTermを直接もつようになるまで一旦この変換
-                .map(classComment -> Term.fromClass(
-                        classComment.typeIdentifier(),
-                        classComment.asTextOrIdentifierSimpleText(),
-                        classComment.documentationComment().bodyText()))
-                .toList();
-        return new JigTypeTerms(list);
+        return new JigTypeTerms(List.of(get(typeIdentifier)));
     }
 
     @Override
     public void register(Term term) {
         terms.add(term);
+    }
+
+    @Override
+    public Glossary all() {
+        return new Glossary(terms);
     }
 }

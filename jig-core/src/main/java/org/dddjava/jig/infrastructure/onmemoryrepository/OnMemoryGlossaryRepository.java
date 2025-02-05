@@ -42,7 +42,8 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     @Override
     public JigTypeTerms collectJigTypeTerms(TypeIdentifier typeIdentifier) {
         // 型に紐づくTermを収集する。
-        // 現在本クラスは扱っていないが、フィールドおよびメソッドのコメントも含むようにする。
+        // 現在本クラスは扱っていないが、フィールドおよびメソッドのコメントも含むようにしたい。
+        // そうしたらJigTypeでこれをもって、JigMethodはJigTypeから取得する際にここに入ってるコメントを付与して生成する形になる
         return new JigTypeTerms(List.of(get(typeIdentifier)));
     }
 

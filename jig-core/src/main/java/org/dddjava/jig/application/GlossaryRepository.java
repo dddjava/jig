@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 /**
  * 別名リポジトリ
  */
-public interface CommentRepository {
+public interface GlossaryRepository {
 
     ClassComment get(TypeIdentifier typeIdentifier);
 

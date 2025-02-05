@@ -27,7 +27,7 @@ import java.util.Optional;
 public class JigSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(JigSourceReader.class);
 
-    final CommentRepository commentRepository;
+    final GlossaryRepository glossaryRepository;
 
     final SourceReader sourceReader;
 
@@ -36,8 +36,8 @@ public class JigSourceReader {
     final MyBatisStatementsReader myBatisStatementsReader;
     private final JigReporter jigReporter;
 
-    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigReporter jigReporter) {
-        this.commentRepository = commentRepository;
+    public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceReader sourceReader, JigReporter jigReporter) {
+        this.glossaryRepository = glossaryRepository;
         this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
@@ -81,10 +81,10 @@ public class JigSourceReader {
 
         JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(javaSources);
         for (ClassComment classComment : javaSourceModel.classCommentList()) {
-            commentRepository.register(classComment);
+            glossaryRepository.register(classComment);
         }
         for (PackageComment packageComment : javaSourceModel.packageComments()) {
-            commentRepository.register(packageComment);
+            glossaryRepository.register(packageComment);
         }
 
         ClassSources classSources = sources.classSources();

@@ -7,7 +7,7 @@ import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 public class Configuration {
     JigProperties properties;
@@ -20,7 +20,7 @@ public class Configuration {
     public Configuration(JigProperties jigProperties) {
         this.properties = new JigPropertyLoader(jigProperties).load();
 
-        CommentRepository commentRepository = new OnMemoryCommentRepository();
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
@@ -28,7 +28,7 @@ public class Configuration {
         this.jigService = new JigService(architecture, jigReporter);
 
         this.jigSourceReader = new JigSourceReader(
-                commentRepository,
+                glossaryRepository,
                 new AsmClassSourceReader(),
                 new JavaparserReader(properties),
                 new MyBatisMyBatisStatementsReader(),
@@ -36,7 +36,7 @@ public class Configuration {
                 jigReporter
         );
 
-        this.jigDocumentContext = new JigDocumentContextImpl(commentRepository, properties);
+        this.jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
         this.jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
     }
 

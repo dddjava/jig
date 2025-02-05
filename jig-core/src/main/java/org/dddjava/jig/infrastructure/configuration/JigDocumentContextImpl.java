@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.application.CommentRepository;
+import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
@@ -14,22 +14,22 @@ import java.util.List;
 
 public class JigDocumentContextImpl implements JigDocumentContext {
 
-    private final CommentRepository commentRepository;
+    private final GlossaryRepository glossaryRepository;
     private final JigProperties properties;
 
-    public JigDocumentContextImpl(CommentRepository commentRepository, JigProperties properties) {
-        this.commentRepository = commentRepository;
+    public JigDocumentContextImpl(GlossaryRepository glossaryRepository, JigProperties properties) {
+        this.glossaryRepository = glossaryRepository;
         this.properties = properties;
     }
 
     @Override
     public PackageComment packageComment(PackageIdentifier packageIdentifier) {
-        return commentRepository.get(packageIdentifier);
+        return glossaryRepository.get(packageIdentifier);
     }
 
     @Override
     public ClassComment classComment(TypeIdentifier typeIdentifier) {
-        return commentRepository.get(typeIdentifier);
+        return glossaryRepository.get(typeIdentifier);
     }
 
     @Override

@@ -2,6 +2,8 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.application.GlossaryRepository;
+import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
@@ -12,6 +14,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OnMemoryGlossaryRepository implements GlossaryRepository {
@@ -51,5 +54,19 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     @Override
     public Glossary all() {
         return new Glossary(terms);
+    }
+
+    @Override
+    public Optional<Term> findMethodPossiblyMatches(MethodIdentifier methodIdentifier) {
+        return terms.stream()
+                .filter(term -> term.termKind() == TermKind.メソッド)
+                .filter(term -> {
+                    if (term.additionalInformation() instanceof JavaMethodDeclarator javaMethodDeclarator) {
+                        return javaMethodDeclarator.possiblyMatches(methodIdentifier.methodSignature());
+                    } else {
+                        return false;
+                    }
+                })
+                .findAny();
     }
 }

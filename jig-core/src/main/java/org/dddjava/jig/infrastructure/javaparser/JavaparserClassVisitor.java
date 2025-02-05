@@ -23,38 +23,36 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
+class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
     List<MethodImplementation> methods = new ArrayList<>();
     EnumModel enumModel;
     TypeIdentifier typeIdentifier;
-    private Term term;
 
     public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
     }
 
     @Override
-    public void visit(PackageDeclaration packageDeclaration, JavaSourceDataBuilder arg) {
-        arg.setPackage(packageDeclaration);
+    public void visit(PackageDeclaration packageDeclaration, Consumer<Term> arg) {
     }
 
     @Override
-    public void visit(ImportDeclaration importDeclaration, JavaSourceDataBuilder arg) {
-        arg.addImport(importDeclaration);
+    public void visit(ImportDeclaration importDeclaration, Consumer<Term> arg) {
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration node, JavaSourceDataBuilder arg) {
+    public void visit(ClassOrInterfaceDeclaration node, Consumer<Term> arg) {
         visitClassOrInterfaceOrEnumOrRecord(node, arg);
     }
 
     @Override
-    public void visit(EnumDeclaration node, JavaSourceDataBuilder arg) {
+    public void visit(EnumDeclaration node, Consumer<Term> arg) {
         TypeIdentifier typeIdentifier = visitClassOrInterfaceOrEnumOrRecord(node, arg);
 
         List<EnumConstant> constants = node.getEntries().stream()
@@ -65,7 +63,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
     }
 
     @Override
-    public void visit(ConstructorDeclaration n, JavaSourceDataBuilder arg) {
+    public void visit(ConstructorDeclaration n, Consumer<Term> arg) {
         // enumの時だけコンストラクタの引数名を取る
         if (enumModel != null) {
             enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).collect(Collectors.toList()));
@@ -74,44 +72,40 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
     }
 
     @Override
-    public void visit(RecordDeclaration n, JavaSourceDataBuilder arg) {
+    public void visit(RecordDeclaration n, Consumer<Term> arg) {
         visitClassOrInterfaceOrEnumOrRecord(n, arg);
     }
 
     @Override
-    public void visit(LocalRecordDeclarationStmt n, JavaSourceDataBuilder arg) {
+    public void visit(LocalRecordDeclarationStmt n, Consumer<Term> arg) {
         // メソッド内のRecordに対応する必要がある場合
         super.visit(n, arg);
     }
 
     @Override
-    public void visit(LocalClassDeclarationStmt n, JavaSourceDataBuilder arg) {
+    public void visit(LocalClassDeclarationStmt n, Consumer<Term> arg) {
         // メソッド内のclassに対応する必要がある場合
         super.visit(n, arg);
     }
 
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, JavaSourceDataBuilder arg) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, Consumer<Term> termCollector) {
         if (typeIdentifier != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum には現在対応していません。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。");
             return typeIdentifier;
         }
-        arg.setTypeName(node.getNameAsString());
 
         typeIdentifier = TypeIdentifier.valueOf(packageName + node.getNameAsString());
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            term = Term.fromClass(typeIdentifier, javadocText);
+            termCollector.accept(Term.fromClass(typeIdentifier, javadocText));
         });
-        node.accept(new JavaparserMethodVisitor(typeIdentifier), methods);
+        node.accept(new JavaparserMethodVisitor(typeIdentifier), termCollector);
 
         return typeIdentifier;
     }
 
     public JavaSourceModel javaSourceModel() {
-        return JavaSourceModel.from(
-                term,
-                methods,
-                enumModel != null ? List.of(enumModel) : List.of());
+        return JavaSourceModel.from(enumModel != null ? List.of(enumModel) : List.of());
     }
 }

@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.term;
 
+import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
@@ -9,9 +11,10 @@ import java.util.stream.Stream;
 /**
  * 用語
  */
-public record Term(TermIdentifier identifier, String title, String description, TermKind termKind) {
-    public Term {
-        description = description.trim();
+public record Term(TermIdentifier identifier, String title, String description, TermKind termKind,
+                   Object additionalInformation) {
+    public Term(TermIdentifier identifier, String title, String description, TermKind termKind) {
+        this(identifier, title, description.trim(), termKind, null);
     }
 
     public static Term fromPackage(PackageIdentifier packageIdentifier, String title, String description) {
@@ -27,11 +30,26 @@ public record Term(TermIdentifier identifier, String title, String description, 
     }
 
     public static Term fromPackage(PackageIdentifier packageIdentifier, String javadocDescriptionText) {
-        return JavadocParser.fromJavadoc(packageIdentifier.asText(), javadocDescriptionText, TermKind.パッケージ);
+        var text = JavadocParser.normalize(javadocDescriptionText);
+        var title = JavadocParser.summaryText(text);
+        return new Term(new TermIdentifier(packageIdentifier.asText()), title, JavadocParser.bodyText(title, text), TermKind.パッケージ);
     }
 
     public static Term fromClass(TypeIdentifier typeIdentifier, String javadocDescriptionText) {
-        return JavadocParser.fromJavadoc(typeIdentifier.fullQualifiedName(), javadocDescriptionText, TermKind.クラス);
+        var text = JavadocParser.normalize(javadocDescriptionText);
+        var title = JavadocParser.summaryText(text);
+        return new Term(new TermIdentifier(typeIdentifier.fullQualifiedName()), title, JavadocParser.bodyText(title, text), TermKind.クラス);
+    }
+
+    public static Term fromMethod(TypeIdentifier typeIdentifier, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
+        var text = JavadocParser.normalize(javadocDescriptionText);
+        var title = JavadocParser.summaryText(text);
+        return new Term(new TermIdentifier(typeIdentifier.fullQualifiedName() + "#" + javaMethodDeclarator.asText()),
+                title, JavadocParser.bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
+    }
+
+    public static Term defaultMethodTerm(MethodIdentifier identifier) {
+        return new Term(new TermIdentifier(identifier.asText()), identifier.asSimpleText(), "", TermKind.メソッド);
     }
 
     private static class JavadocParser {
@@ -51,12 +69,6 @@ public record Term(TermIdentifier identifier, String title, String description, 
             return INLINETAG_LINK_PATTERN.matcher(
                     LINE_SEPARATOR_PATTERN.matcher(javadocDescriptionText).replaceAll("\n")
             ).replaceAll("$1");
-        }
-
-        static Term fromJavadoc(String identifier, String javadocDescriptionText, TermKind termKind) {
-            var text = normalize(javadocDescriptionText);
-            var title = summaryText(text);
-            return new Term(new TermIdentifier(identifier), title, bodyText(title, text), termKind);
         }
 
         static String summaryText(String value) {

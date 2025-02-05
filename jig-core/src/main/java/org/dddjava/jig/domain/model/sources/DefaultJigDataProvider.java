@@ -49,10 +49,8 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                 .map(classDeclaration -> {
                     // メソッドのコメント登録
                     for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigMemberBuilder().allMethodBuilders()) {
-                        javaSourceModel.methodImplementations.stream()
-                                .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
-                                .findAny()
-                                .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
+                        glossaryRepository.findMethodPossiblyMatches(jigMethodBuilder.methodIdentifier())
+                                .ifPresent(term -> jigMethodBuilder.registerMethodTerm(term));
                     }
 
                     JigMemberBuilder jigMemberBuilder = classDeclaration.jigMemberBuilder();

@@ -3,13 +3,12 @@ package org.dddjava.jig.infrastructure.javaparser;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 
-import java.util.List;
+import java.util.function.Consumer;
 
-class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementation>> {
+class JavaparserMethodVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     private final TypeIdentifier typeIdentifier;
 
     public JavaparserMethodVisitor(TypeIdentifier typeIdentifier) {
@@ -17,7 +16,7 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementati
     }
 
     @Override
-    public void visit(MethodDeclaration n, List<MethodImplementation> collector) {
+    public void visit(MethodDeclaration n, Consumer<Term> termCollector) {
         var methodImplementationDeclarator = new JavaMethodDeclarator(
                 n.getNameAsString(),
                 n.getParameters().stream()
@@ -32,13 +31,8 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementati
                         .toList()
         );
 
-        collector.add(
-                n.getJavadoc().map(javadoc ->
-                        new MethodImplementation(typeIdentifier, methodImplementationDeclarator,
-                                Comment.fromCodeComment(javadoc.getDescription().toText())
-                        )).orElseGet(() ->
-                        new MethodImplementation(typeIdentifier, methodImplementationDeclarator,
-                                Comment.empty()))
+        n.getJavadoc().ifPresent(javadoc ->
+                termCollector.accept(Term.fromMethod(typeIdentifier, methodImplementationDeclarator, javadoc.getDescription().toText()))
         );
     }
 }

@@ -67,11 +67,7 @@ public class JigSourceReader {
         });
 
         JavaSourceModel javaSourceModel = javaSources.javaPaths().stream()
-                .map(path -> {
-                    var it = javaSourceReader.parseJavaFile(path);
-                    it.term().ifPresent(glossaryRepository::register);
-                    return it;
-                })
+                .map(path -> javaSourceReader.parseJavaFile(path, glossaryRepository::register))
                 .reduce(JavaSourceModel::merge)
                 .orElseGet(JavaSourceModel::empty);
 

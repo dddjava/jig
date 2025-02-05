@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;
@@ -22,20 +23,20 @@ public class JigMethod {
     Visibility visibility;
 
     MethodDerivation methodDerivation;
-    MethodImplementation methodImplementation;
     private final Instructions instructions;
     private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
+    private final Term term;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, MethodImplementation methodImplementation) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, Term term) {
         this.methodDeclaration = methodDeclaration;
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
-        this.methodImplementation = methodImplementation;
         this.instructions = instructions;
         this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
+        this.term = term;
     }
 
     public MethodDeclaration declaration() {
@@ -95,17 +96,19 @@ public class JigMethod {
     }
 
     public String aliasTextOrBlank() {
-        return methodImplementation.comment().summaryText();
+        var title = term.title();
+        return declaration().methodSignature().methodName().equals(title) ? "" : title;
     }
 
     public String aliasText() {
-        return methodImplementation.comment()
-                .asTextOrDefault(declaration().declaringType().asSimpleText() + "\\n"
-                        + declaration().methodSignature().methodName());
+        if (aliasTextOrBlank().isEmpty()) {
+            return declaration().declaringType().asSimpleText() + "\\n" + declaration().methodSignature().methodName();
+        }
+        return aliasTextOrBlank();
     }
 
     public JigMethodDescription description() {
-        return JigMethodDescription.from(methodImplementation.comment());
+        return JigMethodDescription.from(term);
     }
 
     /**
@@ -116,7 +119,7 @@ public class JigMethod {
     }
 
     public String labelText() {
-        return methodImplementation.comment().asTextOrDefault(declaration().methodSignature().methodName());
+        return term.title();
     }
 
     public String fqn() {
@@ -147,7 +150,7 @@ public class JigMethod {
     }
 
     public boolean documented() {
-        return methodImplementation.comment().exists();
+        return !aliasTextOrBlank().isEmpty();
     }
 
     /**

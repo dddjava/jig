@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Javaparserで読み取る
@@ -41,7 +42,7 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     @Override
-    public JavaSourceModel parseJavaFile(Path path) {
+    public JavaSourceModel parseJavaFile(Path path, Consumer<Term> termCollector) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
@@ -55,8 +56,7 @@ public class JavaparserReader implements JavaSourceReader {
                         .map(name -> name + ".")
                         .orElse("");
                 JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
-                JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
-                cu.accept(classVisitor, builder);
+                cu.accept(classVisitor, termCollector);
                 return classVisitor.javaSourceModel();
             }
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする

@@ -1,6 +1,7 @@
 package testing;
 
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
@@ -17,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class TestSupport {
@@ -91,6 +93,11 @@ public class TestSupport {
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
-        return classDeclaration.jigMemberBuilder().build(classDeclaration.jigTypeHeader());
+        return JigType.from(
+                classDeclaration.jigTypeHeader(),
+                classDeclaration.jigMemberBuilder().buildStaticMember(),
+                classDeclaration.jigMemberBuilder().buildInstanceMember(),
+                new JigTypeTerms(List.of())
+        );
     }
 }

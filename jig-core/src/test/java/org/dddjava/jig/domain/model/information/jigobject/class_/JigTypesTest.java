@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -57,15 +55,8 @@ class JigTypesTest {
     }
 
     private static JigType callerMethodsOfJigType(String fqn) {
-        var typeIdentifier = TypeIdentifier.valueOf(fqn);
-        return new JigType(
+        return JigType.from(
                 JigTypeHeader.simple(fqn),
-                new JigTypeAttribute(
-                        new ClassComment(
-                                typeIdentifier,
-                                Comment.empty()
-                        )
-                ),
                 new JigStaticMember(
                         new JigMethods(List.of()),
                         new JigMethods(List.of()),
@@ -74,7 +65,8 @@ class JigTypesTest {
                 new JigInstanceMember(
                         new JigFields(List.of()),
                         new JigMethods(List.of())
-                )
+                ),
+                new JigTypeTerms(List.of())
         );
     }
 }

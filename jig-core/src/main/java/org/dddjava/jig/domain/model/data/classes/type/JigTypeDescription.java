@@ -7,7 +7,7 @@ public class JigTypeDescription {
     private final String subject;
     private final String content;
 
-    private JigTypeDescription(String subject, String content) {
+    public JigTypeDescription(String subject, String content) {
         this.subject = subject;
         this.content = content;
     }

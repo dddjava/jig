@@ -5,11 +5,13 @@ import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
+import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,17 +24,20 @@ import java.util.stream.Stream;
  */
 public class JigType {
     private final JigTypeHeader jigTypeHeader;
-
-    private final JigTypeAttribute jigTypeAttribute;
+    private final JigTypeTerms jigTypeTerms;
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(JigTypeHeader jigTypeHeader, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    public JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.jigTypeHeader = jigTypeHeader;
-        this.jigTypeAttribute = jigTypeAttribute;
+        this.jigTypeTerms = jigTypeTerms;
         this.jigStaticMember = jigStaticMember;
         this.jigInstanceMember = jigInstanceMember;
+    }
+
+    public static JigType from(JigTypeHeader jigTypeHeader, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember, JigTypeTerms jigTypeTerms) {
+        return new JigType(jigTypeHeader, jigTypeTerms, jigStaticMember, jigInstanceMember);
     }
 
     public TypeIdentifier identifier() {
@@ -95,7 +100,7 @@ public class JigType {
     }
 
     public JigTypeDescription description() {
-        return jigTypeAttribute.description();
+        return jigTypeTerms.jigTypeDescription();
     }
 
     public JigMethods instanceMethods() {
@@ -126,7 +131,7 @@ public class JigType {
     }
 
     public boolean markedCore() {
-        return jigTypeAttribute.classcomment().asText().startsWith("*");
+        return jigTypeTerms.markedCore();
     }
 
     public boolean isDeprecated() {
@@ -176,7 +181,14 @@ public class JigType {
     }
 
     public ClassComment classComment() {
-        return jigTypeAttribute.classcomment();
+        // ClassCommentはなくしたいが一旦Termから再構築する
+        Optional<Term> typeTerm = jigTypeTerms.typeTerm();
+
+        return new ClassComment(
+                jigTypeHeader.id(),
+                typeTerm.map(term -> Comment.fromCodeComment(term.title() + "\n" + term.description()))
+                        .orElse(Comment.empty())
+        );
     }
 
     public String nodeLabel() {

@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
@@ -19,4 +20,6 @@ public interface GlossaryRepository {
     void register(ClassComment classComment);
 
     void register(PackageComment packageComment);
+
+    JigTypeTerms collectJigTypeTerms(TypeIdentifier typeIdentifier);
 }

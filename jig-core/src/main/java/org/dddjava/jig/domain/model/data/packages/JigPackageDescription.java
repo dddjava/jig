@@ -7,7 +7,7 @@ public class JigPackageDescription {
     String subject;
     String content;
 
-    private JigPackageDescription(String subject, String content) {
+    public JigPackageDescription(String subject, String content) {
         this.subject = subject;
         this.content = content;
     }

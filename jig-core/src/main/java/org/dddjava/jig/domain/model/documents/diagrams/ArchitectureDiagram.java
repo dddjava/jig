@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -27,10 +26,8 @@ public class ArchitectureDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        Function<PackageIdentifier, String> architectureLabel = packageIdentifier -> {
-            PackageComment packageComment = jigDocumentContext.packageComment(packageIdentifier);
-            return packageComment.exists() ? packageComment.asText() : packageIdentifier.simpleName();
-        };
+        Function<PackageIdentifier, String> architectureLabel =
+                packageIdentifier -> jigDocumentContext.packageTerm(packageIdentifier).title();
 
         DocumentName documentName = DocumentName.of(JigDocument.ArchitectureDiagram);
 

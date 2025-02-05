@@ -3,12 +3,12 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -103,7 +103,7 @@ class PackageRelationDiagramTest {
                 .applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
-        when(jigDocumentContext.packageComment(any())).thenReturn(PackageComment.empty(null));
+        when(jigDocumentContext.packageTerm(any())).thenAnswer(invocationOnMock -> Term.fromPackage(invocationOnMock.getArgument(0), "dummy"));
         var actual = sut.dependencyDotText(jigDocumentContext);
 
         for (String expectedContains : expectedContainsTexts) {

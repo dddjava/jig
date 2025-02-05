@@ -36,7 +36,7 @@ class ReadableLabelTest {
 
     @Test
     void パッケージ別名取得() {
-        assertEquals("テストでJIGに読み取らせる実装", sut.packageComment(PackageIdentifier.valueOf("stub")).asText());
+        assertEquals("テストでJIGに読み取らせる実装", sut.packageTerm(PackageIdentifier.valueOf("stub")).title());
     }
 
     @ParameterizedTest

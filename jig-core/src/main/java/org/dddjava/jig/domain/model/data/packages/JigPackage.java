@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.data.packages;
 
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
+import org.dddjava.jig.domain.model.data.term.Term;
 
 public class JigPackage {
     PackageIdentifier packageIdentifier;
-    PackageComment packageComment;
+    private final Term term;
 
-    public JigPackage(PackageIdentifier packageIdentifier, PackageComment packageComment) {
+    public JigPackage(PackageIdentifier packageIdentifier, Term term) {
         this.packageIdentifier = packageIdentifier;
-        this.packageComment = packageComment;
+        this.term = term;
     }
 
     public PackageIdentifier packageIdentifier() {
@@ -27,10 +27,10 @@ public class JigPackage {
     }
 
     public String label() {
-        return packageComment.summaryOrSimpleName();
+        return term.title();
     }
 
     public JigPackageDescription description() {
-        return JigPackageDescription.from(packageComment.descriptionComment());
+        return new JigPackageDescription(term.title(), term.description());
     }
 }

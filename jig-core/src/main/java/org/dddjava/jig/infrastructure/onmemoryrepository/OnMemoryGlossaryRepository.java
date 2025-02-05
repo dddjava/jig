@@ -5,9 +5,9 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 
 import java.util.*;
 
@@ -17,7 +17,6 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     private final Collection<Term> terms = new ArrayList<>();
 
     final Map<TypeIdentifier, ClassComment> map = new HashMap<>();
-    final Map<PackageIdentifier, PackageComment> packageMap = new HashMap<>();
 
     @Override
     public ClassComment get(TypeIdentifier typeIdentifier) {
@@ -25,23 +24,17 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public boolean exists(PackageIdentifier packageIdentifier) {
-        return packageMap.containsKey(packageIdentifier);
-    }
-
-    @Override
-    public PackageComment get(PackageIdentifier packageIdentifier) {
-        return packageMap.getOrDefault(packageIdentifier, PackageComment.empty(packageIdentifier));
+    public Term get(PackageIdentifier packageIdentifier) {
+        return terms.stream()
+                .filter(term -> term.termKind() == TermKind.パッケージ)
+                .filter(term -> term.identifier().asText().equals(packageIdentifier.asText()))
+                .findAny()
+                .orElseGet(() -> Term.fromPackage(packageIdentifier, packageIdentifier.simpleName()));
     }
 
     @Override
     public void register(ClassComment classComment) {
         map.put(classComment.typeIdentifier(), classComment);
-    }
-
-    @Override
-    public void register(PackageComment packageComment) {
-        packageMap.put(packageComment.packageIdentifier(), packageComment);
     }
 
     @Override

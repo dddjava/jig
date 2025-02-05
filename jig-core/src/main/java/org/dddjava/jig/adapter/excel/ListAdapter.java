@@ -50,7 +50,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
-                        Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
+                        Map.entry("パッケージ別名", item -> jigDocumentContext.packageTerm(item.packageIdentifier()).title()),
                         Map.entry("クラス数", item -> item.jigTypes().size())
                 ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(

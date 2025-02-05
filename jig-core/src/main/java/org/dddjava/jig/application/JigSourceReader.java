@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +71,6 @@ public class JigSourceReader {
         JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(javaSources);
         for (ClassComment classComment : javaSourceModel.classCommentList()) {
             glossaryRepository.register(classComment);
-        }
-        for (PackageComment packageComment : javaSourceModel.packageComments()) {
-            glossaryRepository.register(packageComment);
         }
 
         ClassSources classSources = sources.classSources();

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.sources.javasources.comment.PackageComment;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,11 +41,11 @@ public class Labeler {
     }
 
     private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText) {
-        PackageComment packageComment = jigDocumentContext.packageComment(packageIdentifier);
-        if (packageComment.exists()) {
-            return packageComment.asText() + "\\n" + labelText;
+        var term = jigDocumentContext.packageTerm(packageIdentifier);
+        if (term.title().equals(labelText)) {
+            return labelText;
         }
-        return labelText;
+        return term.title() + "\\n" + labelText;
     }
 
     public void applyContext(Collection<PackageIdentifier> groupingPackages, List<PackageIdentifier> allStandalonePackageIdentifiers) {

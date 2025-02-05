@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.documents.stationery.NodeRole;
 import org.dddjava.jig.domain.model.documents.stationery.Nodes;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngle;
 import org.dddjava.jig.domain.model.knowledge.core.Usecase;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -55,10 +54,10 @@ class CompositeUsecases {
 
         // Usecaseが使用しているクラスのNode
         for (TypeIdentifier otherType : otherTypes) {
-            ClassComment classComment = jigDocumentContext.classComment(otherType);
+            var term = jigDocumentContext.typeTerm(otherType);
             sb.append(
                     new Node(otherType.fullQualifiedName())
-                            .label(classComment.asTextOrIdentifierSimpleText())
+                            .label(term.title())
                             .tooltip(otherType.asSimpleText())
                             .as(NodeRole.脇役)
                             .asText()
@@ -67,10 +66,9 @@ class CompositeUsecases {
 
         // controllerのNodeおよびedge
         for (TypeIdentifier controllerType : controllerTypes) {
-            ClassComment classComment = jigDocumentContext.classComment(controllerType);
             sb.append(
                     new Node(controllerType.fullQualifiedName())
-                            .label(classComment.asTextOrIdentifierSimpleText())
+                            .label(jigDocumentContext.typeTerm(controllerType).title())
                             .tooltip(controllerType.asSimpleText())
                             .as(NodeRole.モブ)
                             .asText()

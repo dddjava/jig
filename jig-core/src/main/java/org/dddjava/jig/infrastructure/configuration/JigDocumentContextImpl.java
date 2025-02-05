@@ -7,8 +7,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
-import org.dddjava.jig.domain.model.sources.javasources.comment.Comment;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -31,12 +29,6 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     @Override
     public Term typeTerm(TypeIdentifier typeIdentifier) {
         return glossaryRepository.get(typeIdentifier);
-    }
-
-    @Override
-    public ClassComment classComment(TypeIdentifier typeIdentifier) {
-        var term = typeTerm(typeIdentifier);
-        return new ClassComment(typeIdentifier, Comment.from(term.title(), term.description()));
     }
 
     @Override

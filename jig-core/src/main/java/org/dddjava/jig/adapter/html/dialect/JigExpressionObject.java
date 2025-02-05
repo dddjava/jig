@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,8 +22,7 @@ class JigExpressionObject {
     }
 
     public String labelText(TypeIdentifier typeIdentifier) {
-        ClassComment classComment = jigDocumentContext.classComment(typeIdentifier);
-        return classComment.asTextOrIdentifierSimpleText();
+        return jigDocumentContext.typeTerm(typeIdentifier).title();
     }
 
     public String fieldLinkType(FieldDeclaration fieldDeclaration) {

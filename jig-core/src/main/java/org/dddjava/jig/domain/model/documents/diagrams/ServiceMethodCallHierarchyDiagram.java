@@ -71,7 +71,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                 + "{"
                                 + "style=solid;"
-                                + "label=\"" + jigDocumentContext.classComment(entry.getKey()).nodeLabel() + "\";"
+                                + "label=\"" + jigDocumentContext.typeTerm(entry.getKey()).title() + "\";"
                                 + entry.getValue().stream()
                                 .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")

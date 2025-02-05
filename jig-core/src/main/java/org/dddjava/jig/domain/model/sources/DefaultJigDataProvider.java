@@ -47,9 +47,6 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
     private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, GlossaryRepository glossaryRepository) {
         return classSourceModel.classDeclarations().stream()
                 .map(classDeclaration -> {
-                    // クラスのコメント
-                    javaSourceModel.optClassComment(classDeclaration.jigTypeHeader().id())
-                            .ifPresent(classComment -> classDeclaration.jigMemberBuilder().registerClassComment(classComment));
                     // メソッドのコメント登録
                     for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigMemberBuilder().allMethodFacts()) {
                         javaSourceModel.methodImplementations.stream()

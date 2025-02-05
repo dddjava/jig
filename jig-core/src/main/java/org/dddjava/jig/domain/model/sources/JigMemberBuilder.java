@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.data.classes.type.JigInstanceMember;
 import org.dddjava.jig.domain.model.data.classes.type.JigStaticMember;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.RecordComponentDefinition;
-import org.dddjava.jig.domain.model.sources.javasources.comment.ClassComment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +24,6 @@ public class JigMemberBuilder {
     final List<JigMethodBuilder> instanceJigMethodBuilders;
     final List<JigMethodBuilder> staticJigMethodBuilders;
     final List<JigMethodBuilder> constructorBuilders;
-
-    ClassComment classComment;
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
@@ -47,10 +44,6 @@ public class JigMemberBuilder {
         list.addAll(staticJigMethodBuilders);
         list.addAll(constructorBuilders);
         return list;
-    }
-
-    public void registerClassComment(ClassComment classComment) {
-        this.classComment = classComment;
     }
 
     public JigInstanceMember buildInstanceMember() {

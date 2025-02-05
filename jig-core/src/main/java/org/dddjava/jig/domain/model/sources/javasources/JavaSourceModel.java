@@ -60,10 +60,6 @@ public class JavaSourceModel {
         return classComments;
     }
 
-    public void addPackageComment(List<PackageComment> list) {
-        this.packageComments = list;
-    }
-
     public List<PackageComment> packageComments() {
         return packageComments;
     }

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.adapter.html.dialect;
 
 // htmlで使用しているので移動したい
 public class JigTypeDescription {

@@ -11,4 +11,9 @@ public record Term(TermIdentifier identifier,
     public Term(TermIdentifier identifier, String title, String description, TermKind termKind) {
         this(identifier, title, description.trim(), termKind, null);
     }
+
+    public String textWithDelimiter(String delimiter) {
+        if (description.isEmpty()) return title;
+        return title + delimiter + description;
+    }
 }

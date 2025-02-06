@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
+import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.*;
@@ -66,7 +69,7 @@ class JigTypesTest {
                         new JigFields(List.of()),
                         new JigMethods(List.of())
                 ),
-                new JigTypeTerms(List.of())
+                new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }
 }

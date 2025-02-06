@@ -1,5 +1,8 @@
 package testing;
 
+import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
@@ -97,7 +100,7 @@ public class TestSupport {
                 classDeclaration.jigTypeHeader(),
                 classDeclaration.jigMemberBuilder().buildStaticMember(),
                 classDeclaration.jigMemberBuilder().buildInstanceMember(),
-                new JigTypeTerms(List.of())
+                new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }
 }

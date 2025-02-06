@@ -1,10 +1,11 @@
 package org.dddjava.jig.domain.model.information.type;
 
+import org.dddjava.jig.adapter.html.dialect.JigTypeDescription;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
-import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -95,11 +96,15 @@ public class JigType {
     }
 
     public String label() {
-        return jigTypeTerms.typeTerm().map(Term::title).orElseGet(this::simpleName);
+        return jigTypeTerms.typeTerm().title();
     }
 
     public JigTypeDescription description() {
         return jigTypeTerms.jigTypeDescription();
+    }
+
+    public Term term() {
+        return jigTypeTerms.typeTerm();
     }
 
     public JigMethods instanceMethods() {
@@ -184,9 +189,6 @@ public class JigType {
     }
 
     public String nodeLabel(String delimiter) {
-        return jigTypeTerms.typeTerm()
-                .filter(term -> !term.title().isBlank())
-                .map(term -> term.title() + delimiter + term.description())
-                .orElseGet(() -> simpleName());
+        return jigTypeTerms.typeTerm().textWithDelimiter(delimiter);
     }
 }

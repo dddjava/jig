@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * @param typeArgumentList 参照した型が型パラメタを持つ場合に指定される型引数
  */
 public record JigTypeReference(TypeIdentifier id,
-                               Collection<JigAnnotationInstance> typeAnnotations,
+                               Collection<JigAnnotationReference> typeAnnotations,
                                List<JigTypeArgument> typeArgumentList) {
     public static JigTypeReference fromId(TypeIdentifier id) {
         return new JigTypeReference(id, List.of(), List.of());

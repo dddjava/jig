@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
                                    Collection<JigTypeModifier> jigTypeModifiers,
-                                   Collection<JigAnnotationInstance> declarationAnnotationInstances,
+                                   Collection<JigAnnotationReference> declarationAnnotationInstances,
                                    List<JigTypeParameter> typeParameters) {
 
     public static JigTypeAttributeData simple() {
@@ -21,7 +21,7 @@ public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 
-    public List<JigAnnotationInstance> declarationAnnotationList() {
+    public List<JigAnnotationReference> declarationAnnotationList() {
         return declarationAnnotationInstances.stream()
                 .sorted(Comparator.comparing(jigAnnotationData -> jigAnnotationData.id()))
                 .toList();
@@ -36,7 +36,7 @@ public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
         // アノテーションのelementの型がまだはいっていない
         // 型パラメタ（の境界型）がまだはいっていない
         return declarationAnnotationInstances.stream()
-                .map(JigAnnotationInstance::id)
+                .map(JigAnnotationReference::id)
                 .collect(Collectors.toSet());
     }
 }

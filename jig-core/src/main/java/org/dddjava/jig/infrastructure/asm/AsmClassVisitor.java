@@ -97,7 +97,7 @@ class AsmClassVisitor extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
             jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances()
-                    .add(new JigAnnotationInstance(annotation.typeIdentifier(),
+                    .add(new JigAnnotationReference(annotation.typeIdentifier(),
                             annotation.description().entryStream()
                                     .map(entry -> new JigAnnotationInstanceElement(entry.getKey(), entry.getValue()))
                                     .toList()

@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.types.JigAnnotationInstance;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -33,7 +33,7 @@ class AsmClassVisitorTest {
 
         // MyDeclarationAnnotationForSourceは含まれない
         assertEquals(List.of("MyDeclarationAnnotationForClass", "MyDeclarationAnnotationForRuntime"), typeData.jigTypeAttributeData()
-                .declarationAnnotationList().stream().map(JigAnnotationInstance::simpleTypeName).toList());
+                .declarationAnnotationList().stream().map(JigAnnotationReference::simpleTypeName).toList());
 
         assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
         assertEquals("MySuperClass<Integer, X, Long>", typeData.superType().orElseThrow().simpleNameWithGenerics());

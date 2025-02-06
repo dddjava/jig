@@ -139,7 +139,7 @@ public class JigType {
     public Optional<String> annotationValueOf(TypeIdentifier typeIdentifier, String... elementNames) {
         return jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().equals(typeIdentifier))
-                .flatMap(annotation -> annotation.elementValueData().stream())
+                .flatMap(annotation -> annotation.elements().stream())
                 .filter(element -> element.matchName(elementNames))
                 .map(element -> element.valueAsString())
                 .findFirst();

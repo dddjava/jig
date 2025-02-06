@@ -1,13 +1,13 @@
 package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.packages.JigPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
+import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

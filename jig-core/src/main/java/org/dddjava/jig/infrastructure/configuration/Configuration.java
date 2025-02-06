@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.*;
-import org.dddjava.jig.domain.model.data.Architecture;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;

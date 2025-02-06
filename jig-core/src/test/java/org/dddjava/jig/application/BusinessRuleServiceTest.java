@@ -1,10 +1,10 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.junit.jupiter.api.Test;

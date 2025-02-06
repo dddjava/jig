@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
@@ -10,6 +8,8 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.util.StringJoiner;
 

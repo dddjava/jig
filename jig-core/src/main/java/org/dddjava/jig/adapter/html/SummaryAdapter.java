@@ -5,11 +5,11 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.html.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.nio.file.Path;
 import java.util.List;

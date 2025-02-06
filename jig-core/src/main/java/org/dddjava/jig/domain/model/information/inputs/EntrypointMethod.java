@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.information.inputs;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.type.JigType;
 
 /**
  * ハンドラ

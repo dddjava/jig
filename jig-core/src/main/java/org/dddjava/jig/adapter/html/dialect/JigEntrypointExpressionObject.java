@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.html.dialect;
 
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.type.JigType;
 
 /**
  * entrypoint向けのExpressionObject

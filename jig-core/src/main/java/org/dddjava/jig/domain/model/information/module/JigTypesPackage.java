@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.module;
 
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.util.Comparator;
 import java.util.List;

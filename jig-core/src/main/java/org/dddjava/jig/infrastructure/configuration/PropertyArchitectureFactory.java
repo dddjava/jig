@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.data.Architecture;
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.information.Architecture;
+import org.dddjava.jig.domain.model.information.type.JigType;
 
 import java.util.regex.Pattern;
 

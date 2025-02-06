@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.domain.model.information.type;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;

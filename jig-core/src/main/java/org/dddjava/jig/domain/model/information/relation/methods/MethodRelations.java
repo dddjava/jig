@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.relation.methods;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

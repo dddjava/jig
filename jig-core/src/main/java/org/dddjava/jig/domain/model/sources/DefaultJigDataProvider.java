@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.sources;
 
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
-import org.dddjava.jig.domain.model.data.classes.type.JigInstanceMember;
-import org.dddjava.jig.domain.model.data.classes.type.JigStaticMember;
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
+import org.dddjava.jig.domain.model.information.type.JigStaticMember;
+import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;

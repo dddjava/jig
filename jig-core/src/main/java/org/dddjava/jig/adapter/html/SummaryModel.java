@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html;
 
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.util.Map;
 

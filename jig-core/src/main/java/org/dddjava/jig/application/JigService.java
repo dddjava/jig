@@ -1,22 +1,22 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
-import org.dddjava.jig.domain.model.data.Architecture;
-import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.information.Architecture;
+import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
+import org.dddjava.jig.domain.model.information.type.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;

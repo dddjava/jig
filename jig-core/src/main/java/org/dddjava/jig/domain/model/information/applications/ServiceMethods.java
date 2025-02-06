@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.util.List;
 

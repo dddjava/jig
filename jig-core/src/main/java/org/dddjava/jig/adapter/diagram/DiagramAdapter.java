@@ -3,12 +3,12 @@ package org.dddjava.jig.adapter.diagram;
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
+import org.dddjava.jig.domain.model.information.JigDataProvider;
 
 import java.nio.file.Path;
 import java.util.List;

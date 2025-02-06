@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.*;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.JigInstanceMember;
-import org.dddjava.jig.domain.model.data.classes.type.JigStaticMember;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
+import org.dddjava.jig.domain.model.information.type.JigStaticMember;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.util.List;
 import java.util.StringJoiner;

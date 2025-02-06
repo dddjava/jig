@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotations;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.data.classes.type.JigInstanceMember;
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
+import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 
 import java.util.Comparator;
 import java.util.List;

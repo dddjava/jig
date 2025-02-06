@@ -1,7 +1,7 @@
 package testing;
 
-import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
+import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;

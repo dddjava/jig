@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.type;
 
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.slf4j.Logger;

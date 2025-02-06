@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.domain.model.information.type;
 
 public enum TypeCategory {
     /**

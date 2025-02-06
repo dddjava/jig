@@ -1,7 +1,6 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
-import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
@@ -17,6 +16,7 @@ import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.type.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
+import org.dddjava.jig.domain.model.information.type.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;

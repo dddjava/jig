@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.domain.model.information.type;
 
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeDescription;
 import org.dddjava.jig.domain.model.data.term.Term;
 
 import java.util.Collection;

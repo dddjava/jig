@@ -3,13 +3,9 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
-import org.dddjava.jig.domain.model.information.type.JigStaticMember;
-import org.dddjava.jig.domain.model.information.type.JigType;
-import org.dddjava.jig.domain.model.information.type.JigTypes;
+import org.dddjava.jig.domain.model.information.type.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

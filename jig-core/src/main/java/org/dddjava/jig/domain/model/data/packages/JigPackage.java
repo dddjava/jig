@@ -30,7 +30,7 @@ public class JigPackage {
         return term.title();
     }
 
-    public JigPackageDescription description() {
-        return new JigPackageDescription(term.title(), term.description());
+    public Term term() {
+        return term;
     }
 }

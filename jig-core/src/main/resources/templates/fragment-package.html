@@ -11,8 +11,7 @@
         <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
         <small class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</small>
 
-        <th:block th:with="description=${item.description()}">
-            <section class="markdown javadoc" th:if="${description.hasContent()}" th:utext="${description.content()}">
+        <section class="markdown"  th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
 package-infoのJavadocコメントが表示されます
 
 - ここではMarkdownがmarkedによりHTML出力されます。
@@ -28,8 +27,7 @@ package-infoのJavadocコメントが表示されます
     "Time spent looking for movie" : 90
     "Time spent watching it" : 10
 </pre>
-            </section>
-        </th:block>
+        </section>
 
         <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
             <section th:if="${composite.hasChild()}">

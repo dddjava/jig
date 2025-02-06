@@ -21,11 +21,9 @@
                 <p th:if="${#jigEntrypoint.tagDescription(item)}" th:text="'Description: ' + ${#jigEntrypoint.tagDescription(item)}"></p>
                 <p th:if="${#jigEntrypoint.handlePath(item)}" th:text="'Path: ' + ${#jigEntrypoint.handlePath(item)}">/hoge/fuga</p>
 
-                <th:block th:with="description=${item.description()}">
-                    <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
-                        クラスの **Javadoc** コメント
-                    </section>
-                </th:block>
+                <section class="markdown" th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
+                    クラスの **Javadoc** コメント
+                </section>
 
                 <pre class="mermaid" th:utext="${mermaidDiagram.textFor(item)}">
                     graph LR

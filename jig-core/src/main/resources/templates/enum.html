@@ -16,11 +16,9 @@
             <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
             <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
-            <th:block th:with="description=${item.description()}">
-                <section class="markdown javadoc" th:if="${description.hasContent()}" th:utext="${description.content()}">
-                    クラスのJavadocコメントが表示されます
-                </section>
-            </th:block>
+            <section class="markdown"  th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
+                クラスのJavadocコメントが表示されます
+            </section>
 
             <table class="fields" th:if="${#jig.isEnum(item)}"
                    th:with="enumModel=${enumModels.select(item.identifier())}">

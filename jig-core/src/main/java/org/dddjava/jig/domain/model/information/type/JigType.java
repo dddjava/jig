@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.type;
 
-import org.dddjava.jig.adapter.html.dialect.JigTypeDescription;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
@@ -97,10 +96,6 @@ public class JigType {
 
     public String label() {
         return jigTypeTerms.typeTerm().title();
-    }
-
-    public JigTypeDescription description() {
-        return jigTypeTerms.jigTypeDescription();
     }
 
     public Term term() {

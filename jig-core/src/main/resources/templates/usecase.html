@@ -18,11 +18,9 @@
                 <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
                 <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
-                <th:block th:with="description=${item.description()}">
-                    <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
-                        クラスの **Javadoc** コメント
-                    </section>
-                </th:block>
+                <section class="markdown"  th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
+                    クラスの **Javadoc** コメント
+                </section>
 
                 <section class="method" th:each="method : ${item.instanceMethods().listRemarkable()}">
                     <h3 th:id="${method.htmlIdText()}" th:text="${method.labelText()}">XXXメソッド</h3>
@@ -45,7 +43,7 @@
                         <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</dd>
                     </dl>
 
-                    <section class="description markdown" th:utext="${method.description().content()}">メソッドの **Javadoc**
+                    <section class="description markdown" th:utext="${method.term().description()}">メソッドの **Javadoc**
                         コメント
                     </section>
                 </section>

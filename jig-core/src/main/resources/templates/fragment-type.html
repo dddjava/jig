@@ -11,9 +11,9 @@
         <h2><a th:id="${item.fqn()}" th:text="${item.label()}" th:classappend="${item.isDeprecated()}? 'deprecated'">XXXクラス</a></h2>
         <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
-        <th:block th:with="description=${item.description()}">
-            <section class="markdown javadoc" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスのJavadocコメントが表示されます</section>
-        </th:block>
+        <section class="markdown"  th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
+            クラスのJavadocコメントが表示されます
+        </section>
 
         <section th:if="${#jig.isEnum(item)}">
             <h3>列挙値 (<a th:href="${'./enum.html#' + item.fqn()}">区分概要</a>)</h3>
@@ -65,7 +65,7 @@
                         <span class="method-argument-item" th:each="arg : ${method.argumentTypes()}" th:utext="${#jig.methodArgumentRawText(arg)}">xxx</span>
                     </td>
                     <td th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</td>
-                    <td class="markdown javadoc" th:utext="${method.description().content()}">javadoc comment</td>
+                    <td class="markdown" th:utext="${method.term().description()}">javadoc comment</td>
                 </tr>
             </table>
         </th:block>

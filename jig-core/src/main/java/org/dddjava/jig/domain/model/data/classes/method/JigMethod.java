@@ -107,8 +107,8 @@ public class JigMethod {
         return aliasTextOrBlank();
     }
 
-    public JigMethodDescription description() {
-        return JigMethodDescription.from(term);
+    public Term term() {
+        return term;
     }
 
     /**

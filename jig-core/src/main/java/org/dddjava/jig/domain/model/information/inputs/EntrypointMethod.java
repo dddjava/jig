@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.information.inputs;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigType;
 
@@ -28,5 +29,9 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
 
     public MethodDeclaration declaration() {
         return jigMethod.declaration();
+    }
+
+    public PackageIdentifier packageIdentifier() {
+        return jigType.packageIdentifier();
     }
 }

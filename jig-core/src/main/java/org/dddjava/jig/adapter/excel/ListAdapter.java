@@ -54,7 +54,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス数", item -> item.jigTypes().size())
                 ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(
-                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
@@ -126,7 +126,7 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(
-                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("メソッドシグネチャ", item -> item.jigMethod().declaration().asSignatureSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.jigMethod().declaration().methodReturn().asSimpleText()),

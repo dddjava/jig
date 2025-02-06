@@ -64,12 +64,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("非PUBLIC", item -> item.visibility() != JigTypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {
                             var list = allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).packageIdentifiers().list();
-                            return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
+                            return list.size() == 1 && list.get(0).equals(item.packageIdentifier()) ? "◯" : "";
                         }),
                         Map.entry("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText())
                 ), coreDomainJigTypes.list()),
                 new ReportSheet<>("ENUM", List.of(
-                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("定数宣言", item -> item.staticMember().staticFieldDeclarations().selfDefineOnly().toNameText()),
@@ -83,7 +83,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("多態", item -> item.typeKind() == TypeKind.抽象列挙型 ? "◯" : "")
                 ), categoryTypes.list()),
                 new ReportSheet<>("COLLECTION", List.of(
-                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("フィールドの型", item -> item.instanceMember().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。

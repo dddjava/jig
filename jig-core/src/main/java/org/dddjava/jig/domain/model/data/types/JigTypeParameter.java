@@ -4,6 +4,11 @@ import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
+/**
+ * 型パラメタ
+ * @param name パラメタ名。 `T` などが慣習的に使用されるが、慣習。
+ * @param bounds
+ */
 public record JigTypeParameter(String name, List<JigTypeArgument> bounds) {
     public JigTypeParameter(String name) {
         this(name, List.of());

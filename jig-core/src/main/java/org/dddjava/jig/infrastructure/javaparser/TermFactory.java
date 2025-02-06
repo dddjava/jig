@@ -10,6 +10,15 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+/**
+ * 用語生成の共通処理
+ *
+ * Termはピュアに保ちたいので分けているが、infrastructureにあるのは違和感がある。
+ * Javadoc都合はjavaparserにあるのが相応しいのだが、IDの関連は違いそう。
+ *
+ * TermのID生成のために各IDは受け取りたいが、生成したTermはJigTypeなどに保持させたい。
+ * IDの変換はGlossaryRepositoryでも行っており、重複している。
+ */
 public class TermFactory {
 
     public static Term fromPackage(PackageIdentifier packageIdentifier, String javadocDescriptionText) {

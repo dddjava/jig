@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.data.packages;
+package org.dddjava.jig.domain.model.information.module;
 
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 
 public class JigPackage {

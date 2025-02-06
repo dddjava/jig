@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
 /**
  * 使用フィールド一覧

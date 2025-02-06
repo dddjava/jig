@@ -30,6 +30,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.termKind() == TermKind.クラス)
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
+                // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> TermFactory.fromClass(termIdentifier, typeIdentifier.asSimpleText()));
     }
 
@@ -40,6 +41,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.termKind() == TermKind.パッケージ)
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
+                // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> TermFactory.fromPackage(termIdentifier, packageIdentifier.simpleName()));
     }
 

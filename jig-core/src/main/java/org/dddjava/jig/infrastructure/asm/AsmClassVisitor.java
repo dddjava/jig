@@ -132,49 +132,44 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-
-        if ((access & Opcodes.ACC_STATIC) == 0) {
-            // インスタンスフィールド
-            FieldType result;
-            if (signature == null) {
-                TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
-                result = new FieldType(typeIdentifier);
-            } else {
-                ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
-                new SignatureReader(signature).accept(
-                        new SignatureVisitor(AsmClassVisitor.this.api) {
-                            @Override
-                            public SignatureVisitor visitTypeArgument(char wildcard) {
-                                if (wildcard == '=') {
-                                    return new SignatureVisitor(this.api) {
-                                        @Override
-                                        public void visitClassType(String name1) {
-                                            typeParameters.add(TypeIdentifier.valueOf(name1));
-                                        }
-                                    };
-                                }
-                                return super.visitTypeArgument(wildcard);
+        // インスタンスフィールド
+        FieldType fieldType;
+        TypeIdentifier fieldTypeIdentifier = typeDescriptorToIdentifier(descriptor);
+        if (signature == null) {
+            fieldType = new FieldType(fieldTypeIdentifier);
+        } else {
+            ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(AsmClassVisitor.this.api) {
+                        @Override
+                        public SignatureVisitor visitTypeArgument(char wildcard) {
+                            if (wildcard == '=') {
+                                return new SignatureVisitor(this.api) {
+                                    @Override
+                                    public void visitClassType(String name1) {
+                                        typeParameters.add(TypeIdentifier.valueOf(name1));
+                                    }
+                                };
                             }
+                            return super.visitTypeArgument(wildcard);
                         }
-                );
-                TypeIdentifiers typeIdentifiers = new TypeIdentifiers(typeParameters);
-                result = new FieldType(typeDescriptorToIdentifier(descriptor), typeIdentifiers);
-            }
+                    }
+            );
+            TypeIdentifiers typeIdentifiers = new TypeIdentifiers(typeParameters);
+            fieldType = new FieldType(fieldTypeIdentifier, typeIdentifiers);
+        }
 
-            FieldType fieldType = result;
-
-            return new AsmFieldVisitor(this.api, it -> {
+        return new AsmFieldVisitor(this.api, it -> {
+            if ((access & Opcodes.ACC_STATIC) == 0) {
                 FieldDeclaration fieldDeclaration = jigMemberBuilder.addInstanceField(typeIdentifier, fieldType, name);
                 it.annotations.forEach(annotation -> {
                     jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
-            });
-        } else if (!name.equals("$VALUES")) {
-            // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
-            jigMemberBuilder.addStaticField(typeIdentifier, typeDescriptorToIdentifier(descriptor), name);
-        }
-
-        return super.visitField(access, name, descriptor, signature, value);
+            } else if (!name.equals("$VALUES")) {
+                // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
+                jigMemberBuilder.addStaticField(typeIdentifier, fieldTypeIdentifier, name);
+            }
+        });
     }
 
     @Override

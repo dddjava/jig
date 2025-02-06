@@ -84,8 +84,8 @@ class AsmClassVisitor extends ClassVisitor {
                             List.of()
                     ),
                     new JigBaseTypeDataBundle(
-                            Optional.of(JigBaseTypeData.fromJvmBinaryName(superName)),
-                            Arrays.stream(interfaces).map(JigBaseTypeData::fromJvmBinaryName).toList()
+                            Optional.of(JigTypeReference.fromJvmBinaryName(superName)),
+                            Arrays.stream(interfaces).map(JigTypeReference::fromJvmBinaryName).toList()
                     )
             );
         }

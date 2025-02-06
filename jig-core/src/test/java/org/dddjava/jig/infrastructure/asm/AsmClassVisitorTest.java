@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationInstance;
-import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.infrastructure.asm.ut.MyClass;
 import org.dddjava.jig.infrastructure.asm.ut.MyGenericsMadnessInterface;
 import org.dddjava.jig.infrastructure.asm.ut.MyTypeModifierClass;
@@ -38,9 +38,9 @@ class AsmClassVisitorTest {
         assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
         assertEquals("MySuperClass<Integer, X, Long>", typeData.superType().orElseThrow().simpleNameWithGenerics());
         assertEquals("org.dddjava.jig.infrastructure.asm.ut.MySuperClass<java.lang.Integer, X, java.lang.Long>", typeData.superType().orElseThrow().fqnWithGenerics());
-        assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleName).toList());
+        assertEquals(List.of("MyInterface", "MyInterface2"), typeData.interfaceTypeList().stream().map(JigTypeReference::simpleName).toList());
         assertEquals(List.of("MyInterface<Y, String>", "MyInterface2<String, Y>"),
-                typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleNameWithGenerics).toList());
+                typeData.interfaceTypeList().stream().map(JigTypeReference::simpleNameWithGenerics).toList());
     }
 
     @Test
@@ -59,7 +59,7 @@ class AsmClassVisitorTest {
 
         // interfaceのextendsはinterfaceで取れる模様
         assertEquals(List.of("Consumer<Consumer>"),
-                typeData.interfaceTypeList().stream().map(JigBaseTypeData::simpleNameWithGenerics).toList());
+                typeData.interfaceTypeList().stream().map(JigTypeReference::simpleNameWithGenerics).toList());
     }
 
 

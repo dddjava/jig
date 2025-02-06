@@ -5,16 +5,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * extendsおよびimplements
+ * 型の参照。
+ * extendsやimplements、フィールドやメソッドなどで使用される。
+ *
+ * @param id 型ID
+ * @param typeAnnotations 参照時に指定された型アノテーション
+ * @param typeArgumentList 参照した型が型パラメタを持つ場合に指定される型引数
  */
-public record JigBaseTypeData(TypeIdentifier id,
-                              Collection<JigAnnotationInstance> typeAnnotations, // typeAnnotationの収集未実装
-                              List<JigTypeArgument> typeArgumentList) {
-    public static JigBaseTypeData fromId(TypeIdentifier id) {
-        return new JigBaseTypeData(id, List.of(), List.of());
+public record JigTypeReference(TypeIdentifier id,
+                               Collection<JigAnnotationInstance> typeAnnotations,
+                               List<JigTypeArgument> typeArgumentList) {
+    public static JigTypeReference fromId(TypeIdentifier id) {
+        return new JigTypeReference(id, List.of(), List.of());
     }
 
-    public static JigBaseTypeData fromJvmBinaryName(String jvmBinaryName) {
+    public static JigTypeReference fromJvmBinaryName(String jvmBinaryName) {
         return fromId(TypeIdentifier.fromJvmBinaryName(jvmBinaryName));
     }
 

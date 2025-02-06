@@ -12,10 +12,10 @@ import java.util.stream.Stream;
  * @param interfaceTypes 実装インタフェースの完全修飾クラス名
  */
 public record JigBaseTypeDataBundle(
-        Optional<JigBaseTypeData> superType,
-        Collection<JigBaseTypeData> interfaceTypes) {
+        Optional<JigTypeReference> superType,
+        Collection<JigTypeReference> interfaceTypes) {
     public static JigBaseTypeDataBundle simple() {
-        return new JigBaseTypeDataBundle(Optional.of(JigBaseTypeData.fromId(TypeIdentifier.from(Object.class))), List.of());
+        return new JigBaseTypeDataBundle(Optional.of(JigTypeReference.fromId(TypeIdentifier.from(Object.class))), List.of());
     }
 
     public Set<TypeIdentifier> typeIdSet() {

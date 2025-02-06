@@ -43,11 +43,11 @@ public record JigTypeHeader(TypeIdentifier id,
         return simpleName() + jigTypeAttributeData.typeParametersSimpleName();
     }
 
-    public Optional<JigBaseTypeData> superType() {
+    public Optional<JigTypeReference> superType() {
         return baseTypeDataBundle.superType();
     }
 
-    public List<JigBaseTypeData> interfaceTypeList() {
+    public List<JigTypeReference> interfaceTypeList() {
         return baseTypeDataBundle.interfaceTypes().stream()
                 .sorted(Comparator.comparing(jigBaseTypeData -> jigBaseTypeData.id()))
                 .toList();

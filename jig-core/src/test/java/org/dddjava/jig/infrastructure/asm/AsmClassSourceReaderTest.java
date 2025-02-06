@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.classes.type.TypeKind;
-import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,7 @@ public class AsmClassSourceReaderTest {
                             TypeIdentifier.from(GenericsParameter.class)
                     );
 
-            JigBaseTypeData superTypeData = actual.jigTypeHeader().baseTypeDataBundle().superType().orElseThrow();
+            JigTypeReference superTypeData = actual.jigTypeHeader().baseTypeDataBundle().superType().orElseThrow();
             assertEquals("SuperClass<Integer, Long>", superTypeData.simpleNameWithGenerics());
             assertEquals(SuperClass.class.getName(), superTypeData.fqn());
         }
@@ -86,7 +86,7 @@ public class AsmClassSourceReaderTest {
                     );
 
             String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
-                    .map(JigBaseTypeData::fqnWithGenerics)
+                    .map(JigTypeReference::fqnWithGenerics)
                     .collect(Collectors.joining());
             assertEquals("java.lang.Comparable<stub.domain.model.relation.clz.GenericsParameter>", actualText);
         }

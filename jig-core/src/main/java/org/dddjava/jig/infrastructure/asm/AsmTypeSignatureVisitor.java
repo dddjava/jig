@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.types.JigBaseTypeAttributeData;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeData;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -184,11 +183,10 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     public JigBaseTypeData jigBaseTypeData() {
         return new JigBaseTypeData(
                 TypeIdentifier.fromJvmBinaryName(classType.name()),
-                new JigBaseTypeAttributeData(
-                        List.of(), // 型アノテーション未対応
-                        classType.arguments().stream()
-                                .flatMap(visitor -> visitor.typeArgument().stream())
-                                .toList())
+                List.of(), // 型アノテーション未対応
+                classType.arguments().stream()
+                        .flatMap(visitor -> visitor.typeArgument().stream())
+                        .toList()
         );
     }
 }

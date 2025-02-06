@@ -22,7 +22,7 @@ public record JigBaseTypeDataBundle(
         return Stream.concat(superType.stream(), interfaceTypes.stream())
                 .flatMap(jigBaseTypeData -> Stream.concat(
                         Stream.of(jigBaseTypeData.id()),
-                        jigBaseTypeData.attributeData().typeArgumentList().stream()
+                        jigBaseTypeData.typeArgumentList().stream()
                                 .map(JigTypeArgument::value)
                                 .map(value -> TypeIdentifier.valueOf(value))
                 ))

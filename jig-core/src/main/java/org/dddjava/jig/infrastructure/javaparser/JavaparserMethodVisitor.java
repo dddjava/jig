@@ -2,13 +2,11 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
-import java.util.function.Consumer;
-
-class JavaparserMethodVisitor extends VoidVisitorAdapter<Consumer<Term>> {
+class JavaparserMethodVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     private final TypeIdentifier typeIdentifier;
 
     public JavaparserMethodVisitor(TypeIdentifier typeIdentifier) {
@@ -16,7 +14,7 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     }
 
     @Override
-    public void visit(MethodDeclaration n, Consumer<Term> termCollector) {
+    public void visit(MethodDeclaration n, GlossaryRepository glossaryRepository) {
         var methodImplementationDeclarator = new JavaMethodDeclarator(
                 typeIdentifier,
                 n.getNameAsString(),
@@ -33,7 +31,7 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<Consumer<Term>> {
         );
 
         n.getJavadoc().ifPresent(javadoc ->
-                termCollector.accept(TermFactory.fromMethod(typeIdentifier, methodImplementationDeclarator, javadoc.getDescription().toText()))
+                glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeIdentifier, methodImplementationDeclarator), methodImplementationDeclarator, javadoc.getDescription().toText()))
         );
     }
 }

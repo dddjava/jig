@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
@@ -103,7 +104,9 @@ class PackageRelationDiagramTest {
                 .applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
-        when(jigDocumentContext.packageTerm(any())).thenAnswer(invocationOnMock -> TermFactory.fromPackage(invocationOnMock.getArgument(0), "dummy"));
+        when(jigDocumentContext.packageTerm(any()))
+                .thenAnswer(invocationOnMock ->
+                        TermFactory.fromPackage(new TermIdentifier("dummy"), "dummy"));
         var actual = sut.dependencyDotText(jigDocumentContext);
 
         for (String expectedContains : expectedContainsTexts) {

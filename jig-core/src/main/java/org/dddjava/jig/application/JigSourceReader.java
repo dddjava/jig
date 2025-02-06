@@ -62,12 +62,11 @@ public class JigSourceReader {
     public DefaultJigDataProvider generateJigDataProvider(Sources sources) {
         JavaSources javaSources = sources.javaSources();
 
-        javaSources.packageInfoPaths().forEach(path -> {
-            javaSourceReader.parsePackageInfoJavaFile(path).ifPresent(glossaryRepository::register);
-        });
+        javaSources.packageInfoPaths().forEach(
+                path -> javaSourceReader.loadPackageInfoJavaFile(path, glossaryRepository));
 
         JavaSourceModel javaSourceModel = javaSources.javaPaths().stream()
-                .map(path -> javaSourceReader.parseJavaFile(path, glossaryRepository::register))
+                .map(path -> javaSourceReader.parseJavaFile(path, glossaryRepository))
                 .reduce(JavaSourceModel::merge)
                 .orElseGet(JavaSourceModel::empty);
 

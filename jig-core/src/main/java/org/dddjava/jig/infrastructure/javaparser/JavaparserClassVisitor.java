@@ -12,19 +12,18 @@ import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
+class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
@@ -36,20 +35,20 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     }
 
     @Override
-    public void visit(PackageDeclaration packageDeclaration, Consumer<Term> arg) {
+    public void visit(PackageDeclaration packageDeclaration, GlossaryRepository arg) {
     }
 
     @Override
-    public void visit(ImportDeclaration importDeclaration, Consumer<Term> arg) {
+    public void visit(ImportDeclaration importDeclaration, GlossaryRepository arg) {
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration node, Consumer<Term> arg) {
+    public void visit(ClassOrInterfaceDeclaration node, GlossaryRepository arg) {
         visitClassOrInterfaceOrEnumOrRecord(node, arg);
     }
 
     @Override
-    public void visit(EnumDeclaration node, Consumer<Term> arg) {
+    public void visit(EnumDeclaration node, GlossaryRepository arg) {
         TypeIdentifier typeIdentifier = visitClassOrInterfaceOrEnumOrRecord(node, arg);
 
         List<EnumConstant> constants = node.getEntries().stream()
@@ -60,7 +59,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     }
 
     @Override
-    public void visit(ConstructorDeclaration n, Consumer<Term> arg) {
+    public void visit(ConstructorDeclaration n, GlossaryRepository arg) {
         // enumの時だけコンストラクタの引数名を取る
         if (enumModel != null) {
             enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).collect(Collectors.toList()));
@@ -69,23 +68,23 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
     }
 
     @Override
-    public void visit(RecordDeclaration n, Consumer<Term> arg) {
+    public void visit(RecordDeclaration n, GlossaryRepository arg) {
         visitClassOrInterfaceOrEnumOrRecord(n, arg);
     }
 
     @Override
-    public void visit(LocalRecordDeclarationStmt n, Consumer<Term> arg) {
+    public void visit(LocalRecordDeclarationStmt n, GlossaryRepository arg) {
         // メソッド内のRecordに対応する必要がある場合
         super.visit(n, arg);
     }
 
     @Override
-    public void visit(LocalClassDeclarationStmt n, Consumer<Term> arg) {
+    public void visit(LocalClassDeclarationStmt n, GlossaryRepository arg) {
         // メソッド内のclassに対応する必要がある場合
         super.visit(n, arg);
     }
 
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, Consumer<Term> termCollector) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
         if (typeIdentifier != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum には現在対応していません。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。");
             return typeIdentifier;
@@ -95,9 +94,9 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<Consumer<Term>> {
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            termCollector.accept(TermFactory.fromClass(typeIdentifier, javadocText));
+            glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeIdentifier(typeIdentifier), javadocText));
         });
-        node.accept(new JavaparserMethodVisitor(typeIdentifier), termCollector);
+        node.accept(new JavaparserMethodVisitor(typeIdentifier), glossaryRepository);
 
         return typeIdentifier;
     }

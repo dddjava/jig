@@ -2,19 +2,19 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.application.GlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class JavaparserReaderTest {
 
@@ -50,21 +50,24 @@ class JavaparserReaderTest {
     })
     @ParameterizedTest
     void JavadocコメントのないものはエラーにならずPackageCommentも生成されない(String code) {
+        GlossaryRepository mock = mock(GlossaryRepository.class);
         CompilationUnit cu = StaticJavaParser.parse(code);
-        Optional<Term> packageComment = sut.parsePackageInfoJavaFile(cu);
-        assertTrue(packageComment.isEmpty());
+
+        sut.loadPackageInfoJavaFile(cu, mock);
+
+        verify(mock, never()).register(any());
     }
 
     @MethodSource
     @ParameterizedTest
     void コメントが取得できる(String code, String expectedTitle, String expectedBody) {
+        GlossaryRepository mock = mock(GlossaryRepository.class);
         CompilationUnit cu = StaticJavaParser.parse(code);
 
-        Optional<Term> packageComment = sut.parsePackageInfoJavaFile(cu);
+        sut.loadPackageInfoJavaFile(cu, mock);
 
-        Term actual = packageComment.orElseThrow();
-        assertEquals(expectedTitle, actual.title());
-        assertEquals(expectedBody, actual.description());
+        verify(mock).register(Mockito.argThat(term ->
+                term.title().equals(expectedTitle) && term.description().equals(expectedBody)));
     }
 
     static Stream<Arguments> コメントが取得できる() {

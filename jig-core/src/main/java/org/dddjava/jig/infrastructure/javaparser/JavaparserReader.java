@@ -8,8 +8,9 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
+import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Javaparserで読み取る
@@ -40,7 +40,7 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     @Override
-    public JavaSourceModel parseJavaFile(Path path, Consumer<Term> termCollector) {
+    public JavaSourceModel parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
@@ -50,7 +50,7 @@ public class JavaparserReader implements JavaSourceReader {
                     .map(name -> name + ".")
                     .orElse("");
             JavaparserClassVisitor classVisitor = new JavaparserClassVisitor(packageName);
-            cu.accept(classVisitor, termCollector);
+            cu.accept(classVisitor, glossaryRepository);
             return classVisitor.javaSourceModel();
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
@@ -59,30 +59,31 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     @Override
-    public Optional<Term> parsePackageInfoJavaFile(Path path) {
+    public void loadPackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
             CompilationUnit cu = StaticJavaParser.parse(path);
 
-            return parsePackageInfoJavaFile(cu);
+            loadPackageInfoJavaFile(cu, glossaryRepository);
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
-            return Optional.empty();
         }
     }
 
-    Optional<Term> parsePackageInfoJavaFile(CompilationUnit cu) {
-        return cu.getPackageDeclaration()
+    void loadPackageInfoJavaFile(CompilationUnit cu, GlossaryRepository glossaryRepository) {
+        // packageIdentifierがPackageCommentで必要になるのでここはネストにしておく
+        cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::valueOf)
-                // packageIdentifierがPackageCommentで必要になるのでここはネストにしておく
-                .flatMap(packageIdentifier -> getJavadoc(cu)
-                        .map(Javadoc::getDescription)
-                        .map(JavadocDescription::toText)
-                        .filter(text -> !text.isBlank())
-                        .map(javadocDescriptionText -> {
-                            return TermFactory.fromPackage(packageIdentifier, javadocDescriptionText);
-                        }));
+                .flatMap(packageIdentifier -> {
+                    TermIdentifier termIdentifier = glossaryRepository.fromPackageIdentifier(packageIdentifier);
+                    return getJavadoc(cu)
+                            .map(Javadoc::getDescription)
+                            .map(JavadocDescription::toText)
+                            .filter(text -> !text.isBlank())
+                            .map(javadocText -> TermFactory.fromPackage(termIdentifier, javadocText));
+                })
+                .ifPresent(glossaryRepository::register);
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

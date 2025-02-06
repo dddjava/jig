@@ -1,11 +1,9 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -13,31 +11,28 @@ import java.util.stream.Stream;
 /**
  * 用語生成の共通処理
  *
- * Termはピュアに保ちたいので分けているが、infrastructureにあるのは違和感がある。
- * Javadoc都合はjavaparserにあるのが相応しいのだが、IDの関連は違いそう。
- *
- * TermのID生成のために各IDは受け取りたいが、生成したTermはJigTypeなどに保持させたい。
- * IDの変換はGlossaryRepositoryでも行っており、重複している。
+ * Termを生成する過程をTermに持つと、TermがPackageIdentifierなどに依存してしまう。
+ * Term自体は取り回し良くしておきたいので、Termには持たないことにした。
+ * しかし生成過程はそれぞれに配置するには冗長なので、このクラスに分離しておく。
  */
 public class TermFactory {
 
-    public static Term fromPackage(PackageIdentifier packageIdentifier, String javadocDescriptionText) {
+    public static Term fromPackage(TermIdentifier identifier, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(new TermIdentifier(packageIdentifier.asText()), title, bodyText(title, text), TermKind.パッケージ);
+        return new Term(identifier, title, bodyText(title, text), TermKind.パッケージ);
     }
 
-    public static Term fromClass(TypeIdentifier typeIdentifier, String javadocDescriptionText) {
+    public static Term fromClass(TermIdentifier identifier, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(new TermIdentifier(typeIdentifier.fullQualifiedName()), title, bodyText(title, text), TermKind.クラス);
+        return new Term(identifier, title, bodyText(title, text), TermKind.クラス);
     }
 
-    public static Term fromMethod(TypeIdentifier typeIdentifier, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
+    public static Term fromMethod(TermIdentifier identifier, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(new TermIdentifier(typeIdentifier.fullQualifiedName() + "#" + javaMethodDeclarator.asText()),
-                title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
+        return new Term(identifier, title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
     }
 
     /**

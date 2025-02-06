@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.classes.type.JigTypeTerms;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.infrastructure.javaparser.TermFactory;
@@ -24,20 +25,22 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     @Override
     public Term get(TypeIdentifier typeIdentifier) {
+        TermIdentifier termIdentifier = fromTypeIdentifier(typeIdentifier);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)
-                .filter(term -> term.identifier().asText().equals(typeIdentifier.fullQualifiedName()))
+                .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
-                .orElseGet(() -> TermFactory.fromClass(typeIdentifier, typeIdentifier.asSimpleText()));
+                .orElseGet(() -> TermFactory.fromClass(termIdentifier, typeIdentifier.asSimpleText()));
     }
 
     @Override
     public Term get(PackageIdentifier packageIdentifier) {
+        TermIdentifier termIdentifier = fromPackageIdentifier(packageIdentifier);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
-                .filter(term -> term.identifier().asText().equals(packageIdentifier.asText()))
+                .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
-                .orElseGet(() -> TermFactory.fromPackage(packageIdentifier, packageIdentifier.simpleName()));
+                .orElseGet(() -> TermFactory.fromPackage(termIdentifier, packageIdentifier.simpleName()));
     }
 
     @Override
@@ -71,5 +74,25 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                     }
                 })
                 .findAny();
+    }
+
+    @Override
+    public TermIdentifier fromPackageIdentifier(PackageIdentifier packageIdentifier) {
+        return new TermIdentifier(packageIdentifier.asText());
+    }
+
+    @Override
+    public TermIdentifier fromTypeIdentifier(TypeIdentifier typeIdentifier) {
+        return new TermIdentifier(typeIdentifier.fullQualifiedName());
+    }
+
+    @Override
+    public TermIdentifier fromMethodIdentifier(MethodIdentifier methodIdentifier) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TermIdentifier fromMethodImplementationDeclarator(TypeIdentifier typeIdentifier, JavaMethodDeclarator methodImplementationDeclarator) {
+        return new TermIdentifier(typeIdentifier.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
     }
 }

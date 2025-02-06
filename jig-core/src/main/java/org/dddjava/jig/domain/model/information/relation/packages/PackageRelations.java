@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.relation.packages;
 
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
-import org.dddjava.jig.domain.model.data.packages.RelationNumber;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 
 import java.util.ArrayList;

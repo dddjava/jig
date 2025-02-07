@@ -98,8 +98,7 @@ public class TestSupport {
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
         return JigType.from(
                 classDeclaration.jigTypeHeader(),
-                classDeclaration.jigMemberBuilder().buildStaticMember(),
-                classDeclaration.jigMemberBuilder().buildInstanceMember(),
+                classDeclaration.jigMemberBuilder().buildMember(),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }

@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.sources.classsources.JigTypeMembers;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,19 +21,21 @@ import java.util.stream.Stream;
 public class JigType {
     private final JigTypeHeader jigTypeHeader;
     private final JigTypeTerms jigTypeTerms;
+    private final JigTypeMembers jigTypeMembers;
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    public JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigTypeMembers jigTypeMembers) {
         this.jigTypeHeader = jigTypeHeader;
         this.jigTypeTerms = jigTypeTerms;
-        this.jigStaticMember = jigStaticMember;
-        this.jigInstanceMember = jigInstanceMember;
+        this.jigTypeMembers = jigTypeMembers;
+        this.jigStaticMember = jigTypeMembers.jigStaticMember();
+        this.jigInstanceMember = jigTypeMembers.jigInstanceMember();
     }
 
-    public static JigType from(JigTypeHeader jigTypeHeader, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember, JigTypeTerms jigTypeTerms) {
-        return new JigType(jigTypeHeader, jigTypeTerms, jigStaticMember, jigInstanceMember);
+    public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
+        return new JigType(jigTypeHeader, jigTypeTerms, jigTypeMembers);
     }
 
     public TypeIdentifier identifier() {

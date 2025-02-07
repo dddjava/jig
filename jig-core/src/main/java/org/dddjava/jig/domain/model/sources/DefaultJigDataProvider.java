@@ -6,13 +6,12 @@ import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
-import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
-import org.dddjava.jig.domain.model.information.type.JigStaticMember;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
+import org.dddjava.jig.domain.model.sources.classsources.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 import java.util.stream.Collectors;
@@ -56,19 +55,17 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                     }
 
                     JigMemberBuilder jigMemberBuilder = classDeclaration.jigMemberBuilder();
-                    JigStaticMember jigStaticMember = jigMemberBuilder.buildStaticMember();
-                    JigInstanceMember jigInstanceMember = jigMemberBuilder.buildInstanceMember();
+                    JigTypeMembers jigTypeMembers = jigMemberBuilder.buildMember();
 
-                    return buildJigType(classDeclaration.jigTypeHeader(), jigStaticMember, jigInstanceMember, glossaryRepository);
+                    return buildJigType(classDeclaration.jigTypeHeader(), jigTypeMembers, glossaryRepository);
                 })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
-    private static JigType buildJigType(JigTypeHeader jigTypeHeader, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember, GlossaryRepository glossaryRepository) {
+    private static JigType buildJigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, GlossaryRepository glossaryRepository) {
         return JigType.from(
                 jigTypeHeader,
-                jigStaticMember,
-                jigInstanceMember,
+                jigTypeMembers,
                 glossaryRepository.collectJigTypeTerms(jigTypeHeader.id())
         );
     }

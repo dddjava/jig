@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.information.jigobject.class_;
 
-import org.dddjava.jig.domain.model.data.classes.field.JigFields;
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.type.*;
+import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypeTerms;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
+import org.dddjava.jig.domain.model.sources.classsources.JigTypeMembers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -60,15 +60,7 @@ class JigTypesTest {
     private static JigType callerMethodsOfJigType(String fqn) {
         return JigType.from(
                 JigTypeHeader.simple(fqn),
-                new JigStaticMember(
-                        new JigMethods(List.of()),
-                        new JigMethods(List.of()),
-                        new StaticFieldDeclarations(List.of())
-                ),
-                new JigInstanceMember(
-                        new JigFields(List.of()),
-                        new JigMethods(List.of())
-                ),
+                new JigTypeMembers(List.of(), List.of(), null, null),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }

@@ -112,4 +112,13 @@ public class JigMemberBuilder {
     public void addJigFieldHeader(JigFieldHeader jigFieldHeader) {
         fieldHeaders.add(jigFieldHeader);
     }
+
+    public JigTypeMembers buildMember() {
+        return new JigTypeMembers(
+                fieldHeaders,
+                List.of(), // メソッドはまだ
+                buildStaticMember(),
+                buildInstanceMember()
+        );
+    }
 }

@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
@@ -159,8 +158,7 @@ public class AsmClassSourceReaderTest {
         void フィールド定義に使用している型が取得できる() throws Exception {
             JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
 
-            FieldDeclarations fieldDeclarations = jigType.instanceMember().fieldDeclarations();
-            String fieldsText = fieldDeclarations.toSignatureText();
+            String fieldsText = jigType.jigTypeMembers().instanceFieldsSimpleText();
             assertEquals("[InstanceField instanceField, List genericFields, ArrayField[] arrayFields, Object obj]", fieldsText);
 
             TypeIdentifiers identifiers = jigType.usingTypes();

@@ -9,4 +9,7 @@ package org.dddjava.jig.domain.model.data.members;
 public record JigFieldHeader(JigFieldIdentifier id,
                              JigMemberOwnership ownership,
                              JigFieldAttribute jigFieldAttribute) {
+    public String simpleText() {
+        return jigFieldAttribute.typeReference().simpleName() + ' ' + id.name();
+    }
 }

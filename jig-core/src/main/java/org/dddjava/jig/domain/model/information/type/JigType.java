@@ -100,6 +100,10 @@ public class JigType {
         return jigTypeTerms.typeTerm();
     }
 
+    public JigTypeMembers jigTypeMembers() {
+        return jigTypeMembers;
+    }
+
     public JigMethods instanceMethods() {
         return instanceMember().instanceMethods()
                 .filterProgrammerDefined()

@@ -6,10 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.members.JigFieldAttribute;
-import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
-import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -19,6 +16,7 @@ import org.objectweb.asm.signature.SignatureReader;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -69,8 +67,18 @@ class AsmFieldVisitor extends FieldVisitor {
             }
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(typeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
-                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigTypeReference)));
+                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access), jigTypeReference)));
         });
+    }
+
+    private static EnumSet<JigFieldFlag> jigFieldFlags(int access) {
+        EnumSet<JigFieldFlag> set = EnumSet.noneOf(JigFieldFlag.class);
+        if ((access & Opcodes.ACC_FINAL) != 0) set.add(JigFieldFlag.FINAL);
+        if ((access & Opcodes.ACC_TRANSIENT) != 0) set.add(JigFieldFlag.TRANSIENT);
+        if ((access & Opcodes.ACC_VOLATILE) != 0) set.add(JigFieldFlag.VOLATILE);
+        if ((access & Opcodes.ACC_SYNTHETIC) != 0) set.add(JigFieldFlag.SYNTHETIC);
+        if ((access & Opcodes.ACC_ENUM) != 0) set.add(JigFieldFlag.ENUM);
+        return set;
     }
 
     // methodと重複コード

@@ -4,7 +4,13 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
+import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.members.JigFieldAttribute;
+import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
@@ -28,16 +34,22 @@ class AsmFieldVisitor extends FieldVisitor {
         this.annotations = new ArrayList<>();
     }
 
+    /**
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.5">...</a>
+     */
     static AsmFieldVisitor from(final int api, int access, String name, String descriptor, String signature, TypeIdentifier typeIdentifier, JigMemberBuilder jigMemberBuilder) {
         FieldType fieldType;
         TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
+        JigTypeReference jigTypeReference;
         if (signature == null) {
             fieldType = new FieldType(fieldTypeIdentifier);
+            jigTypeReference = JigTypeReference.fromId(fieldTypeIdentifier);
         } else {
             AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
             new SignatureReader(signature).accept(typeSignatureVisitor);
             ParameterizedType parameterizedType = typeSignatureVisitor.generateParameterizedType();
             fieldType = new FieldType(parameterizedType);
+            jigTypeReference = typeSignatureVisitor.jigBaseTypeData();
         }
 
         return new AsmFieldVisitor(api, it -> {
@@ -46,11 +58,28 @@ class AsmFieldVisitor extends FieldVisitor {
                 it.annotations.forEach(annotation -> {
                     jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
+                // とりあえず作るだけ
+                new JigFieldHeader(JigFieldIdentifier.from(typeIdentifier, name),
+                        JigMemberOwnership.INSTANCE,
+                        new JigFieldAttribute(
+                                resolveMethodVisibility(access),
+                                List.of(),
+                                jigTypeReference,
+                                List.of()
+                        ));
             } else if (!name.equals("$VALUES")) {
                 // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
                 jigMemberBuilder.addStaticField(typeIdentifier, fieldTypeIdentifier, name);
             }
         });
+    }
+
+    // methodと重複コード
+    private static Visibility resolveMethodVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
+        if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
+        if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
+        return Visibility.PACKAGE;
     }
 
     @Override

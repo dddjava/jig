@@ -22,7 +22,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * ( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd
+ * FieldVisitor
+ *
+ * {@code ( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd}
+ * シンプルなフィールドは visitEnd 以外呼ばれない。
+ *
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.5">...</a>
  */
 class AsmFieldVisitor extends FieldVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);
@@ -37,9 +42,6 @@ class AsmFieldVisitor extends FieldVisitor {
         this.annotations = new ArrayList<>();
     }
 
-    /**
-     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.5">...</a>
-     */
     static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
         logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
         FieldType fieldType;

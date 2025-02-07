@@ -1,7 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationInstanceElement;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.AnnotationVisitor;
 
@@ -14,10 +15,10 @@ import java.util.function.Consumer;
  */
 class AsmAnnotationVisitor extends AnnotationVisitor {
     final AnnotationDescription annotationDescription = new AnnotationDescription();
-    private final TypeIdentifier annotationType;
-    final Consumer<Annotation> finisher;
+    final TypeIdentifier annotationType;
+    final Consumer<AsmAnnotationVisitor> finisher;
 
-    public AsmAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<Annotation> finisher) {
+    public AsmAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<AsmAnnotationVisitor> finisher) {
         super(api);
         this.annotationType = annotationType;
         this.finisher = finisher;
@@ -61,6 +62,14 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
 
     @Override
     public void visitEnd() {
-        finisher.accept(new Annotation(annotationType, annotationDescription));
+        finisher.accept(this);
+    }
+
+    public JigAnnotationReference annotationReference() {
+        return new JigAnnotationReference(annotationType,
+                annotationDescription.entryStream()
+                        .map(entry -> new JigAnnotationInstanceElement(entry.getKey(), entry.getValue()))
+                        .toList()
+        );
     }
 }

@@ -90,13 +90,8 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation -> {
-            jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances()
-                    .add(new JigAnnotationReference(annotation.typeIdentifier(),
-                            annotation.description().entryStream()
-                                    .map(entry -> new JigAnnotationInstanceElement(entry.getKey(), entry.getValue()))
-                                    .toList()
-                    ));
+        return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), it -> {
+            jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().add(it.annotationReference());
         });
     }
 

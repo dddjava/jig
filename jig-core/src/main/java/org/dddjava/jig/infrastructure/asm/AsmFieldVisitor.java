@@ -85,7 +85,9 @@ class AsmFieldVisitor extends FieldVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         TypeIdentifier annotationTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
-        return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, annotation -> annotations.add(annotation));
+        return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, it -> {
+            annotations.add(new Annotation(it.annotationType, it.annotationDescription));
+        });
     }
 
     @Override

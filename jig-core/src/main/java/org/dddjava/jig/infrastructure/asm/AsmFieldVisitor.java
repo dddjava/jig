@@ -39,9 +39,9 @@ class AsmFieldVisitor extends FieldVisitor {
      */
     static AsmFieldVisitor from(final int api, int access, String name, String descriptor, String signature, TypeIdentifier typeIdentifier, JigMemberBuilder jigMemberBuilder) {
         FieldType fieldType;
-        TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
         JigTypeReference jigTypeReference;
         if (signature == null) {
+            TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
             fieldType = new FieldType(fieldTypeIdentifier);
             jigTypeReference = JigTypeReference.fromId(fieldTypeIdentifier);
         } else {
@@ -69,7 +69,7 @@ class AsmFieldVisitor extends FieldVisitor {
                         ));
             } else if (!name.equals("$VALUES")) {
                 // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
-                jigMemberBuilder.addStaticField(typeIdentifier, fieldTypeIdentifier, name);
+                jigMemberBuilder.addStaticField(typeIdentifier, jigTypeReference.id(), name);
             }
         });
     }

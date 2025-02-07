@@ -47,6 +47,9 @@ public class ConstructorInstruction {
         // ネストクラスのコンストラクタ呼び出し
         new EnclosedClass.NestedClass();
 
+        // 同じテストを通したいので使用するクラスに挙がるようにここに記述しておく
+        Object classReference = MethodReturn.class;
+
         // 例外のスロー
         throw new UncheckedExceptionA();
 
@@ -55,6 +58,4 @@ public class ConstructorInstruction {
     ConstructorInstruction(List<ArgumentGenericsParameter> list) throws CheckedException {
     }
 
-    // 同じテストを通したいので使用するクラスに挙がるようにここに記述しておく
-    MethodReturn dummy;
 }

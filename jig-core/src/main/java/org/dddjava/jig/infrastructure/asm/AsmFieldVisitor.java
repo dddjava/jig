@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.members.JigFieldAttribute;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
@@ -17,6 +18,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -27,6 +29,7 @@ class AsmFieldVisitor extends FieldVisitor {
 
     private final Consumer<AsmFieldVisitor> finisher;
     final List<Annotation> annotations;
+    private final Collection<JigAnnotationReference> annotationReferences = new ArrayList<>();
 
     public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
         super(api);
@@ -63,7 +66,7 @@ class AsmFieldVisitor extends FieldVisitor {
                         JigMemberOwnership.INSTANCE,
                         new JigFieldAttribute(
                                 resolveMethodVisibility(access),
-                                List.of(),
+                                it.annotationReferences,
                                 jigTypeReference,
                                 List.of()
                         ));
@@ -87,6 +90,7 @@ class AsmFieldVisitor extends FieldVisitor {
         TypeIdentifier annotationTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
         return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, it -> {
             annotations.add(new Annotation(it.annotationType, it.annotationDescription));
+            annotationReferences.add(it.annotationReference());
         });
     }
 

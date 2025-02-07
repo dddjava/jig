@@ -73,7 +73,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("定数宣言", item -> item.staticMember().staticFieldDeclarations().selfDefineOnly().toNameText()),
-                        Map.entry("フィールド", item -> item.instanceMember().fieldDeclarations().toSignatureText()),
+                        Map.entry("フィールド", item -> item.jigTypeMembers().instanceFieldsSimpleText()),
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない

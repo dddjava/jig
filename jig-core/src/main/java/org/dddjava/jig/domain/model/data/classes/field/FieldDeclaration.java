@@ -25,10 +25,6 @@ public class FieldDeclaration {
         return name;
     }
 
-    public String signatureText() {
-        return String.format("%s %s", typeIdentifier().asSimpleText(), name);
-    }
-
     public TypeIdentifier declaringType() {
         return declaringType;
     }

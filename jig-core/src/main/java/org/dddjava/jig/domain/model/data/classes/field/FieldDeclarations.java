@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * フィールド定義一覧
@@ -16,12 +15,6 @@ public class FieldDeclarations {
 
     public FieldDeclarations(List<FieldDeclaration> list) {
         this.list = list;
-    }
-
-    public String toSignatureText() {
-        return list.stream()
-                .map(FieldDeclaration::signatureText)
-                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public List<FieldDeclaration> list() {

@@ -59,8 +59,6 @@ class AsmFieldVisitor extends FieldVisitor {
                 it.annotations.forEach(annotation -> {
                     jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
-                // とりあえず作るだけ
-
             } else if (!name.equals("$VALUES")) {
                 // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
                 jigMemberBuilder.addStaticField(typeIdentifier, jigTypeReference.id(), name);

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.members;
 
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.stream.Stream;
@@ -23,6 +24,10 @@ public record JigFieldHeader(JigFieldIdentifier id,
 
     public String simpleNameWithGenerics() {
         return jigFieldAttribute.typeReference().simpleNameWithGenerics() + ' ' + id.name();
+    }
+
+    public JigTypeReference jigTypeReference() {
+        return jigFieldAttribute.typeReference();
     }
 
     public String name() {

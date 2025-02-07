@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
+import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.type.JigType;
@@ -54,7 +56,7 @@ class JigExpressionObject {
     }
 
     public String fieldRawText(JigField jigField) {
-        return parameterizedTypeLinkText(jigField.fieldDeclaration().fieldType().parameterizedType());
+        return parameterizedTypeLinkText(jigField.jigTypeReference());
     }
 
     public String fieldRawText(FieldDeclaration fieldDeclaration) {
@@ -63,6 +65,33 @@ class JigExpressionObject {
 
     public String methodArgumentRawText(ParameterizedType parameterizedType) {
         return parameterizedTypeLinkText(parameterizedType);
+    }
+
+    private String parameterizedTypeLinkText(JigTypeReference jigTypeReference) {
+        TypeIdentifier typeIdentifier = jigTypeReference.id();
+        var typeArgumentList = jigTypeReference.typeArgumentList();
+        if (typeArgumentList.isEmpty()) {
+            if (typeIdentifier.isJavaLanguageType()) {
+                return unlinkText(typeIdentifier);
+            }
+            return linkTypeText(typeIdentifier);
+        }
+
+        // 型パラメータあり
+        String typeParameterText = typeArgumentList.stream()
+                .map(JigTypeArgument::typeIdentifier)
+                .map(argumentTypeIdentifier -> {
+                    if (argumentTypeIdentifier.isJavaLanguageType()) {
+                        return unlinkText(argumentTypeIdentifier);
+                    }
+                    return linkTypeText(argumentTypeIdentifier);
+                })
+                .collect(Collectors.joining(", ", "&lt;", "&gt;"));
+
+        if (typeIdentifier.isJavaLanguageType()) {
+            return unlinkText(typeIdentifier) + typeParameterText;
+        }
+        return linkTypeText(typeIdentifier) + typeParameterText;
     }
 
     private String parameterizedTypeLinkText(ParameterizedType parameterizedType) {

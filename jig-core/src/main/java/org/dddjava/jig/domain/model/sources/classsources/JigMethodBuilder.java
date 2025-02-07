@@ -23,7 +23,7 @@ public class JigMethodBuilder {
     private static final Logger logger = LoggerFactory.getLogger(JigMethodBuilder.class);
 
     private final MethodDeclaration methodDeclaration;
-    private final Visibility visibility;
+    private final JigMemberVisibility jigMemberVisibility;
     private final MethodDerivation methodDerivation;
     private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
@@ -31,9 +31,9 @@ public class JigMethodBuilder {
     private final Instructions instructions;
     private Term term = null;
 
-    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, List<Annotation> annotationList, Instructions methodInstructions) {
+    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, List<Annotation> annotationList, Instructions methodInstructions) {
         this.methodDeclaration = methodDeclaration;
-        this.visibility = visibility;
+        this.jigMemberVisibility = jigMemberVisibility;
         this.methodDerivation = methodDerivation;
         this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
@@ -71,14 +71,14 @@ public class JigMethodBuilder {
     }
 
     public static JigMethodBuilder builder(int access,
-                                           Visibility visibility,
+                                           JigMemberVisibility jigMemberVisibility,
                                            List<TypeIdentifier> signatureContainedTypes,
                                            List<TypeIdentifier> throwsTypes,
                                            MethodDeclaration methodDeclaration,
                                            List<Annotation> annotationList,
                                            Instructions methodInstructions, boolean isEnum, boolean isRecordComponent) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
+        return new JigMethodBuilder(methodDeclaration, signatureContainedTypes, jigMemberVisibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
     }
 
     public JigMethod build() {
@@ -91,7 +91,7 @@ public class JigMethodBuilder {
         MethodIdentifier identifier = methodDeclaration.identifier();
         return new JigMethod(
                 methodDeclaration,
-                annotatedMethods(), visibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes,
+                annotatedMethods(), jigMemberVisibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes,
                 term != null ? term : new Term(new TermIdentifier(identifier.asText()), identifier.asSimpleText(), "", TermKind.メソッド)
         );
     }

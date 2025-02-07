@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 /**
- * メソッドの可視性
+ * メンバの可視性
  */
-public enum Visibility {
+public enum JigMemberVisibility {
     PUBLIC("+"),
     PROTECTED("#"),
     PACKAGE("~"),
@@ -11,7 +11,7 @@ public enum Visibility {
 
     final String symbol;
 
-    Visibility(String symbol) {
+    JigMemberVisibility(String symbol) {
         this.symbol = symbol;
     }
 

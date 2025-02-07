@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
+import org.dddjava.jig.domain.model.data.classes.method.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
@@ -80,11 +80,11 @@ class AsmFieldVisitor extends FieldVisitor {
     }
 
     // methodと重複コード
-    private static Visibility resolveMethodVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
-        if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
-        if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
-        return Visibility.PACKAGE;
+    private static JigMemberVisibility resolveMethodVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return JigMemberVisibility.PUBLIC;
+        if ((access & Opcodes.ACC_PROTECTED) != 0) return JigMemberVisibility.PROTECTED;
+        if ((access & Opcodes.ACC_PRIVATE) != 0) return JigMemberVisibility.PRIVATE;
+        return JigMemberVisibility.PACKAGE;
     }
 
     @Override

@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.data.classes.method.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
@@ -39,16 +39,16 @@ class AsmMethodVisitor extends MethodVisitor {
 
     // visitMethod由来の情報
     final MethodDeclaration methodDeclaration;
-    final Visibility visibility;
+    final JigMemberVisibility jigMemberVisibility;
     final List<TypeIdentifier> throwsTypes;
     // このVisitorで収集した情報
     final Instructions methodInstructions;
     final List<Annotation> annotationList;
     final List<TypeIdentifier> signatureContainedTypes;
 
-    public AsmMethodVisitor(int api, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
+    public AsmMethodVisitor(int api, JigMemberVisibility jigMemberVisibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
         super(api);
-        this.visibility = visibility;
+        this.jigMemberVisibility = jigMemberVisibility;
         this.throwsTypes = throwsTypes;
         this.methodDeclaration = methodDeclaration;
         this.signatureContainedTypes = signatureContainedTypes;
@@ -109,11 +109,11 @@ class AsmMethodVisitor extends MethodVisitor {
                 signatureContainedTypes);
     }
 
-    private static Visibility resolveMethodVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
-        if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
-        if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
-        return Visibility.PACKAGE;
+    private static JigMemberVisibility resolveMethodVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return JigMemberVisibility.PUBLIC;
+        if ((access & Opcodes.ACC_PROTECTED) != 0) return JigMemberVisibility.PROTECTED;
+        if ((access & Opcodes.ACC_PRIVATE) != 0) return JigMemberVisibility.PRIVATE;
+        return JigMemberVisibility.PACKAGE;
     }
 
     private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

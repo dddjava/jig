@@ -134,7 +134,7 @@ class AsmClassVisitor extends ClassVisitor {
                 data -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             access,
-                            data.visibility,
+                            data.jigMemberVisibility,
                             data.signatureContainedTypes,
                             data.throwsTypes,
                             data.methodDeclaration,

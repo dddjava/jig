@@ -20,7 +20,7 @@ public class JigMethod {
     MethodDeclaration methodDeclaration;
 
     MethodAnnotations methodAnnotations;
-    Visibility visibility;
+    JigMemberVisibility jigMemberVisibility;
 
     MethodDerivation methodDerivation;
     private final Instructions instructions;
@@ -28,10 +28,10 @@ public class JigMethod {
     private final List<TypeIdentifier> signatureContainedTypes;
     private final Term term;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, Term term) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, Term term) {
         this.methodDeclaration = methodDeclaration;
         this.methodAnnotations = methodAnnotations;
-        this.visibility = visibility;
+        this.jigMemberVisibility = jigMemberVisibility;
         this.methodDerivation = methodDerivation;
         this.instructions = instructions;
         this.throwsTypes = throwsTypes;
@@ -51,12 +51,12 @@ public class JigMethod {
         return methodAnnotations;
     }
 
-    public Visibility visibility() {
-        return visibility;
+    public JigMemberVisibility visibility() {
+        return jigMemberVisibility;
     }
 
     public boolean isPublic() {
-        return visibility.isPublic();
+        return jigMemberVisibility.isPublic();
     }
 
     public UsingFields usingFields() {
@@ -115,7 +115,7 @@ public class JigMethod {
      * 出力時に使用する名称
      */
     public String labelTextWithSymbol() {
-        return visibility.symbol() + ' ' + labelText();
+        return jigMemberVisibility.symbol() + ' ' + labelText();
     }
 
     public String labelText() {
@@ -160,7 +160,7 @@ public class JigMethod {
      * privateでもドキュメントコメントが書かれているものは注目する。
      */
     public boolean remarkable() {
-        return visibility == Visibility.PUBLIC || documented();
+        return jigMemberVisibility == JigMemberVisibility.PUBLIC || documented();
     }
 
     public List<MethodDeclaration> methodInstructions() {

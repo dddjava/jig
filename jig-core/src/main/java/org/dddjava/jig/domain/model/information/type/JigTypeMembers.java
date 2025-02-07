@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,5 +43,11 @@ public record JigTypeMembers(
         return new JigFields(instanceJigFieldHeaderStream()
                 .map(jigFieldHeader -> JigField.from(jigFieldHeader))
                 .toList());
+    }
+
+    public Optional<JigFieldHeader> findFieldByName(String name) {
+        return jigFieldHeaders.stream()
+                .filter(jigFieldHeader -> jigFieldHeader.name().equals(name))
+                .findAny();
     }
 }

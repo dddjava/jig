@@ -178,26 +178,42 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     }
 
     Optional<JigTypeArgument> typeArgument() {
-        if (typeVariableIdentifier != null) {
+        logger.debug("typeArgument");
+        if (baseTypeIdentifier != null) {
+            return Optional.of(new JigTypeArgument(typeVariableIdentifier));
+        } else if (typeVariableIdentifier != null) {
             // 型引数に型パラメタが渡されているもの
             return Optional.of(new JigTypeArgument(typeVariableIdentifier));
+        } else if (arrayAsmTypeSignatureVisitor != null) {
+            var jigTypeReference = arrayAsmTypeSignatureVisitor.jigTypeReference();
+            return Optional.of(new JigTypeArgument(jigTypeReference.id().convertArray().fullQualifiedName()));
         } else if (classType != null) {
             // 型引数がクラスの素直なもの
             // TODO これがさらに型引数を持っているパターンは未対応
             // こっちはInnerClassはありえる？
             return Optional.of(new JigTypeArgument(classType.name.replace('/', '.')));
         }
-        // TODO ほかのぱたん
-        return Optional.empty();
+
+        throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");
     }
 
     public JigTypeReference jigTypeReference() {
-        return new JigTypeReference(
-                TypeIdentifier.fromJvmBinaryName(classType.name()),
-                List.of(), // 型アノテーション未対応
-                classType.arguments().stream()
-                        .flatMap(visitor -> visitor.typeArgument().stream())
-                        .toList()
-        );
+        if (baseTypeIdentifier != null) {
+            return JigTypeReference.fromId(TypeIdentifier.valueOf(baseTypeIdentifier));
+        } else if (typeVariableIdentifier != null) {
+            return JigTypeReference.fromId(TypeIdentifier.valueOf(typeVariableIdentifier));
+        } else if (arrayAsmTypeSignatureVisitor != null) {
+            return arrayAsmTypeSignatureVisitor.jigTypeReference().convertArray();
+        } else if (classType != null) {
+            return new JigTypeReference(
+                    TypeIdentifier.fromJvmBinaryName(classType.name()),
+                    List.of(), // 型アノテーション未対応
+                    classType.arguments().stream()
+                            .flatMap(visitor -> visitor.typeArgument().stream())
+                            .toList()
+            );
+        }
+
+        throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");
     }
 }

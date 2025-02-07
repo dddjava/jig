@@ -62,4 +62,8 @@ public record JigTypeReference(TypeIdentifier id,
                 typeArgumentList.stream().map(jigTypeArgument -> jigTypeArgument.typeIdentifier())
         ).flatMap(identity -> identity);
     }
+
+    public JigTypeReference convertArray() {
+        return new JigTypeReference(id.convertArray(), typeAnnotations, typeArgumentList);
+    }
 }

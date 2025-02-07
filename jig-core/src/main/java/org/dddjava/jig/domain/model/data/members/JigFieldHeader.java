@@ -20,4 +20,12 @@ public record JigFieldHeader(JigFieldIdentifier id,
     public Stream<TypeIdentifier> allTypeIdentifierStream() {
         return jigFieldAttribute.allTypeIdentifierStream();
     }
+
+    public String simpleNameWithGenerics() {
+        return jigFieldAttribute.typeReference().simpleNameWithGenerics() + ' ' + id.name();
+    }
+
+    public String name() {
+        return id.name();
+    }
 }

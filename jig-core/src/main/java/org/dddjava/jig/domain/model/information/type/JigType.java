@@ -111,7 +111,7 @@ public class JigType {
     }
 
     public JigFields instanceJigFields() {
-        return instanceMember().instanceFields();
+        return jigTypeMembers().instanceFields();
     }
 
     public JigMethods staticMethods() {

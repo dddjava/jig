@@ -11,4 +11,8 @@ public record JigFieldIdentifier(String value) {
     public String name() {
         return value.split("#")[1];
     }
+
+    public TypeIdentifier declaringTypeIdentifier() {
+        return TypeIdentifier.valueOf(value.split("#")[0]);
+    }
 }

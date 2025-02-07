@@ -1,7 +1,10 @@
 package org.dddjava.jig.domain.model.data.classes.field;
 
+import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -17,6 +20,30 @@ public class JigField {
 
     public JigField(FieldDeclaration fieldDeclaration) {
         this(fieldDeclaration, FieldAnnotations.none());
+    }
+
+    public static JigField from(JigFieldHeader jigFieldHeader) {
+        var fieldDeclaration = new FieldDeclaration(
+                jigFieldHeader.id().declaringTypeIdentifier(),
+                new FieldType(jigFieldHeader.jigFieldAttribute().typeReference().id()),
+                jigFieldHeader.id().name()
+        );
+        return new JigField(
+                fieldDeclaration,
+                new FieldAnnotations(
+                        jigFieldHeader.jigFieldAttribute().declarationAnnotations().stream()
+                                .map(jigAnnotationReference -> {
+                                    var description = new AnnotationDescription();
+                                    jigAnnotationReference.elements().forEach(element -> description.addParam(element.name(), element.value()));
+                                    return new FieldAnnotation(
+                                            new Annotation(
+                                                    jigAnnotationReference.id(),
+                                                    description
+                                            ),
+                                            fieldDeclaration
+                                    );
+                                })
+                                .toList()));
     }
 
     public boolean matches(FieldDeclaration fieldDeclaration) {

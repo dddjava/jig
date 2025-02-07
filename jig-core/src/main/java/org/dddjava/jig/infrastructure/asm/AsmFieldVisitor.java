@@ -4,12 +4,11 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
-import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,25 +34,10 @@ class AsmFieldVisitor extends FieldVisitor {
         if (signature == null) {
             fieldType = new FieldType(fieldTypeIdentifier);
         } else {
-            ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(api) {
-                        @Override
-                        public SignatureVisitor visitTypeArgument(char wildcard) {
-                            if (wildcard == '=') {
-                                return new SignatureVisitor(this.api) {
-                                    @Override
-                                    public void visitClassType(String name1) {
-                                        typeParameters.add(TypeIdentifier.valueOf(name1));
-                                    }
-                                };
-                            }
-                            return super.visitTypeArgument(wildcard);
-                        }
-                    }
-            );
-            TypeIdentifiers typeIdentifiers = new TypeIdentifiers(typeParameters);
-            fieldType = new FieldType(fieldTypeIdentifier, typeIdentifiers);
+            AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
+            new SignatureReader(signature).accept(typeSignatureVisitor);
+            ParameterizedType parameterizedType = typeSignatureVisitor.generateParameterizedType();
+            fieldType = new FieldType(parameterizedType);
         }
 
         return new AsmFieldVisitor(api, it -> {

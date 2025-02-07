@@ -179,8 +179,11 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
 
     Optional<JigTypeArgument> typeArgument() {
         if (typeVariableIdentifier != null) {
+            // 型引数に型パラメタが渡されているもの
             return Optional.of(new JigTypeArgument(typeVariableIdentifier));
         } else if (classType != null) {
+            // 型引数がクラスの素直なもの
+            // TODO これがさらに型引数を持っているパターンは未対応
             // こっちはInnerClassはありえる？
             return Optional.of(new JigTypeArgument(classType.name.replace('/', '.')));
         }

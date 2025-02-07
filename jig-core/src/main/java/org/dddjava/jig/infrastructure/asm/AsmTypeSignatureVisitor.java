@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -177,21 +176,21 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         throw new IllegalStateException("想定していたシグネチャではありませんでした。TypeSignatureでないところにAsmTypeSignatureVisitorが使用された？");
     }
 
-    Optional<JigTypeArgument> typeArgument() {
+    JigTypeArgument typeArgument() {
         logger.debug("typeArgument");
         if (baseTypeIdentifier != null) {
-            return Optional.of(new JigTypeArgument(typeVariableIdentifier));
+            return new JigTypeArgument(typeVariableIdentifier);
         } else if (typeVariableIdentifier != null) {
             // 型引数に型パラメタが渡されているもの
-            return Optional.of(new JigTypeArgument(typeVariableIdentifier));
+            return new JigTypeArgument(typeVariableIdentifier);
         } else if (arrayAsmTypeSignatureVisitor != null) {
             var jigTypeReference = arrayAsmTypeSignatureVisitor.jigTypeReference();
-            return Optional.of(new JigTypeArgument(jigTypeReference.id().convertArray().fullQualifiedName()));
+            return new JigTypeArgument(jigTypeReference.id().convertArray().fullQualifiedName());
         } else if (classType != null) {
             // 型引数がクラスの素直なもの
             // TODO これがさらに型引数を持っているパターンは未対応
             // こっちはInnerClassはありえる？
-            return Optional.of(new JigTypeArgument(classType.name.replace('/', '.')));
+            return new JigTypeArgument(classType.name.replace('/', '.'));
         }
 
         throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");
@@ -209,7 +208,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
                     TypeIdentifier.fromJvmBinaryName(classType.name()),
                     List.of(), // 型アノテーション未対応
                     classType.arguments().stream()
-                            .flatMap(visitor -> visitor.typeArgument().stream())
+                            .map(visitor -> visitor.typeArgument())
                             .toList()
             );
         }

@@ -38,7 +38,6 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
         JigTypeParameter build() {
             List<JigTypeArgument> bounds = Stream.concat(classBound.stream(), interfaceBounds.stream())
                     .map(AsmTypeSignatureVisitor::typeArgument)
-                    .flatMap(Optional::stream)
                     .toList();
 
             return new JigTypeParameter(name, bounds);

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 class AsmFieldVisitor extends FieldVisitor {
 
     private final Consumer<AsmFieldVisitor> finisher;
-    final List<Annotation> annotations;
+    private final List<Annotation> annotations;
     private final Collection<JigAnnotationReference> annotationReferences = new ArrayList<>();
 
     public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {

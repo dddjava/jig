@@ -62,16 +62,14 @@ class AsmFieldVisitor extends FieldVisitor {
                     jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
                 // とりあえず作るだけ
-                new JigFieldHeader(JigFieldIdentifier.from(typeIdentifier, name),
-                        JigMemberOwnership.INSTANCE,
-                        new JigFieldAttribute(
-                                resolveMethodVisibility(access),
-                                it.annotationReferences,
-                                jigTypeReference));
+
             } else if (!name.equals("$VALUES")) {
                 // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
                 jigMemberBuilder.addStaticField(typeIdentifier, jigTypeReference.id(), name);
             }
+            jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(typeIdentifier, name),
+                    ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
+                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigTypeReference)));
         });
     }
 

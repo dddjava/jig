@@ -4,11 +4,13 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.*;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
 import org.dddjava.jig.domain.model.information.type.JigStaticMember;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -23,6 +25,7 @@ public class JigMemberBuilder {
 
     final List<JigMethodBuilder> constructorBuilders;
 
+    private final Collection<JigFieldHeader> fieldHeaders;
     final List<JigField> instanceFields;
     final List<JigMethodBuilder> instanceJigMethodBuilders;
 
@@ -35,6 +38,7 @@ public class JigMemberBuilder {
         this.instanceFields = new ArrayList<>();
         this.staticFieldDeclarations = new ArrayList<>();
         this.recordComponentDefinitions = new ArrayList<>();
+        this.fieldHeaders = new ArrayList<>();
     }
 
     public List<JigMethodBuilder> allMethodBuilders() {
@@ -103,5 +107,9 @@ public class JigMemberBuilder {
                                 && methodDeclaration.methodReturn().typeIdentifier().equals(recordComponentDefinition.typeIdentifier())
                 );
 
+    }
+
+    public void addJigFieldHeader(JigFieldHeader jigFieldHeader) {
+        fieldHeaders.add(jigFieldHeader);
     }
 }

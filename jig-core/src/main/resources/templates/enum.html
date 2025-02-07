@@ -36,7 +36,7 @@
                 </tr>
             </table>
 
-            <table th:unless="${item.instanceFields().empty()}">
+            <table th:unless="${item.instanceJigFields().empty()}">
                 <thead class="enum">
                 <tr>
                     <th width="20%">フィールド</th>
@@ -44,9 +44,9 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="field: ${item.instanceFields().list()}" th:with="it=${field.typeIdentifier()}">
+                <tr th:each="field: ${item.instanceJigFields().list()}" th:with="it=${field.typeIdentifier()}">
                     <td th:text="${field.nameText()}">xxx</td>
-                    <td th:switch="${#jig.fieldLinkType(field)}">
+                    <td th:switch="${#jig.fieldLinkType(it)}">
                         <span th:case="none" class="weak" th:text="${it.fullQualifiedName()}">long</span>
                         <a th:case="*" th:href="${'./domain.html#' + it.fullQualifiedName()}"
                            th:text="${#jig.labelText(it)}">xxx</a>

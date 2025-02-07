@@ -25,8 +25,7 @@ class JigExpressionObject {
         return jigDocumentContext.typeTerm(typeIdentifier).title();
     }
 
-    public String fieldLinkType(FieldDeclaration fieldDeclaration) {
-        TypeIdentifier typeIdentifier = fieldDeclaration.typeIdentifier();
+    public String fieldLinkType(TypeIdentifier typeIdentifier) {
         if (typeIdentifier.isJavaLanguageType()) {
             return "none";
         }

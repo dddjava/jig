@@ -29,6 +29,10 @@ public class JigField {
         return new JigField(fieldDeclaration, new FieldAnnotations(fieldAnnotations));
     }
 
+    public TypeIdentifier typeIdentifier() {
+        return fieldDeclaration.typeIdentifier();
+    }
+
     public FieldDeclaration fieldDeclaration() {
         return fieldDeclaration;
     }

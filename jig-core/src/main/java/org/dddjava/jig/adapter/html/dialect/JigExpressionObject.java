@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.html.dialect;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
@@ -57,10 +56,6 @@ class JigExpressionObject {
 
     public String fieldRawText(JigField jigField) {
         return parameterizedTypeLinkText(jigField.jigTypeReference());
-    }
-
-    public String fieldRawText(FieldDeclaration fieldDeclaration) {
-        return parameterizedTypeLinkText(fieldDeclaration.fieldType().parameterizedType());
     }
 
     public String methodArgumentRawText(ParameterizedType parameterizedType) {

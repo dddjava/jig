@@ -20,7 +20,9 @@ import java.util.stream.Collectors;
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
  *
- * 例: {@code Ljava/util/List<Ljava/lang/String;>;}
+ * 例:
+ * - {@code List<String>}: {@code Ljava/util/List<Ljava/lang/String;>;}
+ * - {@code List<?>}: {@code Ljava/util/List<*>;}
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-600">JVMS 4.7.9.1-600 FieldSignature</a>
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.9.1-300-B">JVMS 4.7.9.1-300-B ReferenceTypeSignature</a>
@@ -32,12 +34,18 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         super(api);
     }
 
+    /**
+     *
+     * @param name
+     * @param arguments visitTypeArgumentのsignatureを処理するAsmTypeSignatureVisitorを出てきた順に保持するためのリスト
+     * @param innerClasses visitInnerClassのsignatureを処理するAsmTypeSignatureVisitor
+     */
     record ClassType(String name, List<AsmTypeSignatureVisitor> arguments, List<ClassType> innerClasses) {
         ClassType(String name) {
             this(name, new ArrayList<>(), new ArrayList<>());
         }
 
-        void addCurrentArguments(AsmTypeSignatureVisitor typeSignatureVisitor) {
+        void addCurrentTypeArgumentSignatureVisitor(AsmTypeSignatureVisitor typeSignatureVisitor) {
             if (innerClasses.isEmpty()) {
                 arguments.add(typeSignatureVisitor);
             } else {
@@ -123,7 +131,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
 
         var typeSignatureVisitor = new AsmTypeSignatureVisitor(this.api);
         // この時点でClassTypeがnullの場合は落ちて良い。
-        classType.addCurrentArguments(typeSignatureVisitor);
+        classType.addCurrentTypeArgumentSignatureVisitor(typeSignatureVisitor);
         return typeSignatureVisitor;
     }
 

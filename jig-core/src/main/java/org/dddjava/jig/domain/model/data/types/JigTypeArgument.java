@@ -13,4 +13,8 @@ public record JigTypeArgument(String value) {
     public boolean notObject() {
         return !"java.lang.Object".equals(value);
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return TypeIdentifier.valueOf(value);
+    }
 }

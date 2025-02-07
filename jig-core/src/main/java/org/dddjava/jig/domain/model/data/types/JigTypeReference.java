@@ -3,13 +3,14 @@ package org.dddjava.jig.domain.model.data.types;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 型の参照。
  * extendsやimplements、フィールドやメソッドなどで使用される。
  *
- * @param id 型ID
- * @param typeAnnotations 参照時に指定された型アノテーション
+ * @param id               型ID
+ * @param typeAnnotations  参照時に指定された型アノテーション
  * @param typeArgumentList 参照した型が型パラメタを持つ場合に指定される型引数
  */
 public record JigTypeReference(TypeIdentifier id,
@@ -51,5 +52,14 @@ public record JigTypeReference(TypeIdentifier id,
         return typeArgumentList.stream()
                 .map(typeArgument -> typeArgument.value())
                 .collect(Collectors.joining(", ", "<", ">"));
+    }
+
+    public Stream<TypeIdentifier> allTypeIentifierStream() {
+        return Stream.of(
+                // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
+                id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
+                typeAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
+                typeArgumentList.stream().map(jigTypeArgument -> jigTypeArgument.typeIdentifier())
+        ).flatMap(identity -> identity);
     }
 }

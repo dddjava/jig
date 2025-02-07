@@ -77,6 +77,7 @@ public class JigType {
         set.addAll(jigTypeHeader.containedIds());
         set.addAll(jigStaticMember.listUsingTypes());
         set.addAll(jigInstanceMember.listUsingTypes());
+        set.addAll(jigTypeMembers.allTypeIdentifierSet());
         return new TypeIdentifiers(new ArrayList<>(set));
     }
 

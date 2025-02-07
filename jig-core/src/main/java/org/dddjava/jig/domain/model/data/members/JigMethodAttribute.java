@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 

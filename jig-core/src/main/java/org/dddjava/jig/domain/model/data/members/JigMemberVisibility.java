@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.method;
+package org.dddjava.jig.domain.model.data.members;
 
 /**
  * メンバの可視性

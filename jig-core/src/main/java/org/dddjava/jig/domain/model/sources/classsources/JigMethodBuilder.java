@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;

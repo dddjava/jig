@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.method.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;

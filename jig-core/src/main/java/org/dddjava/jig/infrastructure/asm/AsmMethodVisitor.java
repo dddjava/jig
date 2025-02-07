@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
-import org.dddjava.jig.domain.model.data.classes.method.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
@@ -10,6 +9,7 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynami
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;

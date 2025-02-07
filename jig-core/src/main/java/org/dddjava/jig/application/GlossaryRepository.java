@@ -9,8 +9,6 @@ import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigTypeTerms;
 
-import java.util.Optional;
-
 /**
  * 別名リポジトリ
  */
@@ -26,7 +24,7 @@ public interface GlossaryRepository {
 
     Glossary all();
 
-    Optional<Term> findMethodPossiblyMatches(MethodIdentifier methodIdentifier);
+    Term getMethodTermPossiblyMatches(MethodIdentifier methodIdentifier);
 
     TermIdentifier fromPackageIdentifier(PackageIdentifier packageIdentifier);
 

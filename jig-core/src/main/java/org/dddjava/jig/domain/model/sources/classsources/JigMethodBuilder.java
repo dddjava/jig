@@ -7,8 +7,6 @@ import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
-import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
@@ -89,12 +87,7 @@ public class JigMethodBuilder {
         if (annotations == null) {
             logger.warn("{}のannotationsが設定されていません。メソッド実装に伴うアノテーションの情報は出力されません。", methodDeclaration.identifier());
         }
-        MethodIdentifier identifier = methodDeclaration.identifier();
-        return new JigMethod(
-                methodDeclaration,
-                annotatedMethods(), jigMemberVisibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes,
-                term != null ? term : new Term(new TermIdentifier(identifier.asText()), identifier.asSimpleText(), "", TermKind.メソッド)
-        );
+        return new JigMethod(methodDeclaration, annotatedMethods(), jigMemberVisibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes, term);
     }
 
     private MethodAnnotations annotatedMethods() {

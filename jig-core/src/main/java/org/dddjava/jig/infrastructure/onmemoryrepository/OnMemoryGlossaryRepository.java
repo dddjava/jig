@@ -16,7 +16,6 @@ import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class OnMemoryGlossaryRepository implements GlossaryRepository {
@@ -64,7 +63,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public Optional<Term> findMethodPossiblyMatches(MethodIdentifier methodIdentifier) {
+    public Term getMethodTermPossiblyMatches(MethodIdentifier methodIdentifier) {
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.メソッド)
                 .filter(term -> {
@@ -75,7 +74,8 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                         return false;
                     }
                 })
-                .findAny();
+                .findAny()
+                .orElseGet(() -> new Term(new TermIdentifier(methodIdentifier.asText()), methodIdentifier.methodSignature().methodName(), "", TermKind.メソッド));
     }
 
     @Override

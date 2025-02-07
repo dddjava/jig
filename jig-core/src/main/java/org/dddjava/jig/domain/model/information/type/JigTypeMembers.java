@@ -1,9 +1,7 @@
-package org.dddjava.jig.domain.model.sources.classsources;
+package org.dddjava.jig.domain.model.information.type;
 
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
-import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
-import org.dddjava.jig.domain.model.information.type.JigStaticMember;
 
 import java.util.Collection;
 

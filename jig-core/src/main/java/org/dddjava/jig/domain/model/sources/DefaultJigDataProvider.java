@@ -7,11 +7,11 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
-import org.dddjava.jig.domain.model.sources.classsources.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 import java.util.stream.Collectors;

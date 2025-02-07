@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
 import org.dddjava.jig.domain.model.information.type.JigStaticMember;
+import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 
 import java.util.ArrayList;
 import java.util.Collection;

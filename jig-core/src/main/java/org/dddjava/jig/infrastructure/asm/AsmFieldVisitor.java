@@ -52,7 +52,7 @@ class AsmFieldVisitor extends FieldVisitor {
             new SignatureReader(signature).accept(typeSignatureVisitor);
             ParameterizedType parameterizedType = typeSignatureVisitor.generateParameterizedType();
             fieldType = new FieldType(parameterizedType);
-            jigTypeReference = typeSignatureVisitor.jigBaseTypeData();
+            jigTypeReference = typeSignatureVisitor.jigTypeReference();
         }
 
         return new AsmFieldVisitor(api, it -> {

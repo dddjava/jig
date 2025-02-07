@@ -180,7 +180,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         return Optional.empty();
     }
 
-    public JigTypeReference jigBaseTypeData() {
+    public JigTypeReference jigTypeReference() {
         return new JigTypeReference(
                 TypeIdentifier.fromJvmBinaryName(classType.name()),
                 List.of(), // 型アノテーション未対応

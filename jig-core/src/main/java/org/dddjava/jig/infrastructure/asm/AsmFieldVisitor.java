@@ -12,6 +12,8 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +25,7 @@ import java.util.function.Consumer;
  * ( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd
  */
 class AsmFieldVisitor extends FieldVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);
 
     private final Consumer<AsmFieldVisitor> finisher;
     private final List<Annotation> annotations;
@@ -37,7 +40,8 @@ class AsmFieldVisitor extends FieldVisitor {
     /**
      * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.5">...</a>
      */
-    static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier typeIdentifier, JigMemberBuilder jigMemberBuilder) {
+    static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
+        logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
         FieldType fieldType;
         JigTypeReference jigTypeReference;
         if (signature == null) {
@@ -54,15 +58,15 @@ class AsmFieldVisitor extends FieldVisitor {
 
         return new AsmFieldVisitor(api, it -> {
             if ((access & Opcodes.ACC_STATIC) == 0) {
-                FieldDeclaration fieldDeclaration = jigMemberBuilder.addInstanceField(typeIdentifier, fieldType, name);
+                FieldDeclaration fieldDeclaration = jigMemberBuilder.addInstanceField(declaringTypeIdentifier, fieldType, name);
                 it.annotations.forEach(annotation -> {
                     jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
                 });
             } else if (!name.equals("$VALUES")) {
                 // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
-                jigMemberBuilder.addStaticField(typeIdentifier, jigTypeReference.id(), name);
+                jigMemberBuilder.addStaticField(declaringTypeIdentifier, jigTypeReference.id(), name);
             }
-            jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(typeIdentifier, name),
+            jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
                     new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access), jigTypeReference)));
         });
@@ -88,6 +92,7 @@ class AsmFieldVisitor extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        logger.debug("visitAnnotation: {}, {}", descriptor, visible);
         TypeIdentifier annotationTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
         return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, it -> {
             annotations.add(new Annotation(it.annotationType, it.annotationDescription));
@@ -97,18 +102,21 @@ class AsmFieldVisitor extends FieldVisitor {
 
     @Override
     public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible) {
+        logger.debug("visitTypeAnnotation: {}, {}, {}, {}", typeRef, typePath, descriptor, visible);
         // いまはなにもしていない
         return super.visitTypeAnnotation(typeRef, typePath, descriptor, visible);
     }
 
     @Override
     public void visitAttribute(Attribute attribute) {
+        logger.debug("visitAttribute: {}", attribute);
         // いまはなにもしていない
         super.visitAttribute(attribute);
     }
 
     @Override
     public void visitEnd() {
+        logger.debug("visitEnd");
         finisher.accept(this);
         super.visitEnd();
     }

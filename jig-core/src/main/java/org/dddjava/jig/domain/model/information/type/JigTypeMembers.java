@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.type;
 
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.members.JigFieldFlag;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
@@ -65,5 +66,9 @@ public record JigTypeMembers(
                 // TODO enumの順でソートしないと狂う可能性がある
                 .map(jigFieldHeader -> jigFieldHeader.name())
                 .toList();
+    }
+
+    public Stream<JigMethod> jigMethodStream() {
+        return jigInstanceMember.jigMethodStream();
     }
 }

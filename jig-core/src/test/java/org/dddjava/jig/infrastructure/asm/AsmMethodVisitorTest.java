@@ -90,7 +90,7 @@ class AsmMethodVisitorTest {
 
     private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
         JigTypeMembers members = 準備(sutClass).buildJigTypeMembers();
-        return members.jigInstanceMember().jigMethodStream()
+        return members.jigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
                 .findFirst()
                 .orElseThrow();

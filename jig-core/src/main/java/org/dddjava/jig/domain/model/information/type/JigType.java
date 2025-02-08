@@ -22,14 +22,12 @@ public class JigType {
     private final JigTypeMembers jigTypeMembers;
 
     private final JigStaticMember jigStaticMember;
-    private final JigInstanceMember jigInstanceMember;
 
     private JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigTypeMembers jigTypeMembers) {
         this.jigTypeHeader = jigTypeHeader;
         this.jigTypeTerms = jigTypeTerms;
         this.jigTypeMembers = jigTypeMembers;
         this.jigStaticMember = jigTypeMembers.jigStaticMember();
-        this.jigInstanceMember = jigTypeMembers.jigInstanceMember();
     }
 
     public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
@@ -71,7 +69,7 @@ public class JigType {
         Set<TypeIdentifier> set = new HashSet<>();
         set.addAll(jigTypeHeader.containedIds());
         set.addAll(jigStaticMember.listUsingTypes());
-        set.addAll(jigInstanceMember.listUsingTypes());
+        set.addAll(jigTypeMembers.jigInstanceMember().listUsingTypes());
         set.addAll(jigTypeMembers.allTypeIdentifierSet());
         return new TypeIdentifiers(new ArrayList<>(set));
     }
@@ -101,7 +99,7 @@ public class JigType {
     }
 
     public JigFields instanceJigFields() {
-        return jigTypeMembers().instanceFields();
+        return jigTypeMembers.instanceFields();
     }
 
     public JigMethods staticMethods() {
@@ -175,18 +173,18 @@ public class JigType {
     }
 
     public boolean hasInstanceField() {
-        return jigTypeMembers().instanceFields().empty() == false;
+        return jigTypeMembers.instanceFields().empty() == false;
     }
 
     public boolean hasInstanceMethod() {
-        return jigTypeMembers().jigInstanceMember().hasMethod();
+        return jigTypeMembers.jigInstanceMember().hasMethod();
     }
 
     public Stream<JigMethod> instanceJigMethodStream() {
-        return jigInstanceMember.jigMethodStream();
+        return jigTypeMembers.jigInstanceMember().jigMethodStream();
     }
 
     public JigMethods instanceJigMethods() {
-        return jigInstanceMember.instanceMethods();
+        return jigTypeMembers.jigInstanceMember().instanceMethods();
     }
 }

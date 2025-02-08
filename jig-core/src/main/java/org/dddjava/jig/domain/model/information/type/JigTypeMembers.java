@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.type;
 
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
+import org.dddjava.jig.domain.model.data.members.JigFieldFlag;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
@@ -23,14 +24,14 @@ public record JigTypeMembers(
 ) {
 
     public String instanceFieldsSimpleText() {
-        return instanceJigFieldHeaderStream()
+        return jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
                 .map(jigFieldHeader -> jigFieldHeader.simpleText())
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    private Stream<JigFieldHeader> instanceJigFieldHeaderStream() {
+    private Stream<JigFieldHeader> jigFieldHeaderStream(JigMemberOwnership jigMemberOwnership) {
         return jigFieldHeaders().stream()
-                .filter(jigFieldHeader -> jigFieldHeader.ownership() == JigMemberOwnership.INSTANCE);
+                .filter(jigFieldHeader -> jigFieldHeader.ownership() == jigMemberOwnership);
     }
 
     public Set<TypeIdentifier> allTypeIdentifierSet() {
@@ -40,7 +41,7 @@ public record JigTypeMembers(
     }
 
     public JigFields instanceFields() {
-        return new JigFields(instanceJigFieldHeaderStream()
+        return new JigFields(jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
                 .map(jigFieldHeader -> JigField.from(jigFieldHeader))
                 .toList());
     }
@@ -49,5 +50,12 @@ public record JigTypeMembers(
         return jigFieldHeaders.stream()
                 .filter(jigFieldHeader -> jigFieldHeader.name().equals(name))
                 .findAny();
+    }
+
+    public String enumConstantNames() {
+        return jigFieldHeaderStream(JigMemberOwnership.CLASS)
+                .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))
+                .map(jigFieldHeader -> jigFieldHeader.name())
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

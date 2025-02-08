@@ -89,8 +89,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("フィールドの型", item -> item.instanceJigFields().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
-                        Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
-                        Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
+                        Map.entry("メソッド数", item -> item.instanceJigMethods().list().size()),
+                        Map.entry("メソッド一覧", item -> item.instanceJigMethods().declarations().asSignatureAndReturnTypeSimpleText())
                 ), coreDomainJigTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),

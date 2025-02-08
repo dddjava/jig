@@ -145,7 +145,7 @@ public class JigType {
 
     public Stream<JigMethod> allJigMethodStream() {
         return Stream.concat(
-                instanceMember().jigMethodStream(),
+                instanceJigMethodStream(),
                 staticMember().jigMethodStream());
     }
 
@@ -193,6 +193,10 @@ public class JigType {
     }
 
     public Stream<JigMethod> instanceJigMethodStream() {
-        return instanceMember().instanceMethods().stream();
+        return instanceMember().jigMethodStream();
+    }
+
+    public JigMethods instanceJigMethods() {
+        return instanceMember().instanceMethods();
     }
 }

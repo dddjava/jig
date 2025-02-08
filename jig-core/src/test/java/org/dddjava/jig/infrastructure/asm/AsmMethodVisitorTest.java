@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
-import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ import stub.misc.DecisionClass;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -73,13 +71,6 @@ class AsmMethodVisitorTest {
     void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
         JigMethod actual = JigMethod準備(DecisionClass.class, name);
         assertEquals(number, actual.decisionNumber().intValue());
-    }
-
-    private JigMethod resolveMethodByName(JigType jigType, String name) {
-        return jigType.allJigMethodStream()
-                .filter(jigMethod -> jigMethod.name().equals(name))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
     }
 
     static class ResolveArgumentGenerics {

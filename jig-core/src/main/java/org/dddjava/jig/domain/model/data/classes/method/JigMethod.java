@@ -175,4 +175,9 @@ public class JigMethod {
     public Instructions instructions() {
         return instructions;
     }
+
+    public boolean isAbstract() {
+        // 抽象メソッドを判定したい
+        return false;
+    }
 }

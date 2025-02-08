@@ -11,6 +11,9 @@ public enum MethodWorry {
     メンバを使用していない {
         @Override
         boolean judge(JigMethod jigMethod, JigType contextJigType) {
+            if (jigMethod.isAbstract()) {
+                return false;
+            }
             var instructions = jigMethod.instructions();
             return instructions.values().stream()
                     .noneMatch(instruction -> instruction.instructMethodOrFieldOwnerIs(contextJigType.typeIdentifier()));

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 /**
  * メソッドで実施されている命令
- * <p>
+ *
  * バイトコード上の順番を維持する
  */
 public record Instructions(List<Instruction> values) {

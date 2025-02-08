@@ -54,7 +54,7 @@ public class JigField {
     }
 
     public TypeIdentifier typeIdentifier() {
-        return fieldDeclaration.typeIdentifier();
+        return jigFieldHeader.jigTypeReference().id();
     }
 
     public FieldDeclaration fieldDeclaration() {
@@ -66,7 +66,7 @@ public class JigField {
     }
 
     public String nameText() {
-        return fieldDeclaration.nameText();
+        return jigFieldHeader.name();
     }
 
     public boolean isDeprecated() {

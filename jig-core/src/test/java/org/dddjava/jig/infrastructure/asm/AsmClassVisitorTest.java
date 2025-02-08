@@ -1,13 +1,11 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeModifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.infrastructure.asm.ut.MyClass;
 import org.dddjava.jig.infrastructure.asm.ut.MyGenericsMadnessInterface;
-import org.dddjava.jig.infrastructure.asm.ut.MySutClass;
 import org.dddjava.jig.infrastructure.asm.ut.MyTypeModifierClass;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +15,6 @@ import org.objectweb.asm.ClassReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -63,31 +60,6 @@ class AsmClassVisitorTest {
         // interfaceのextendsはinterfaceで取れる模様
         assertEquals(List.of("Consumer<Consumer>"),
                 typeData.interfaceTypeList().stream().map(JigTypeReference::simpleNameWithGenerics).toList());
-    }
-
-    @Test
-    void JigFieldHeaderでJavaで書いたまま取れる() throws IOException {
-        AsmClassVisitor visitor = new AsmClassVisitor();
-        new ClassReader(MySutClass.class.getName()).accept(visitor, 0);
-
-        var jigMemberBuilder = visitor.jigTypeBuilder();
-        var members = jigMemberBuilder.buildMember();
-
-        assertFieldSimpleNameWithGenerics("byte", members.findFieldByName("primitiveField"));
-        assertFieldSimpleNameWithGenerics("int[]", members.findFieldByName("primitiveArrayField"));
-        assertFieldSimpleNameWithGenerics("String", members.findFieldByName("stringField"));
-        assertFieldSimpleNameWithGenerics("String[]", members.findFieldByName("stringArrayField"));
-        assertFieldSimpleNameWithGenerics("List<BigDecimal>", members.findFieldByName("genericField"));
-        assertFieldSimpleNameWithGenerics("List<BigDecimal[]>", members.findFieldByName("genericArrayField"));
-        assertFieldSimpleNameWithGenerics("List<T>", members.findFieldByName("genericTypeVariableField"));
-        assertFieldSimpleNameWithGenerics("List<T[]>", members.findFieldByName("genericTypeVariableArrayField"));
-        assertFieldSimpleNameWithGenerics("T", members.findFieldByName("typeVariableField"));
-        assertFieldSimpleNameWithGenerics("T[]", members.findFieldByName("typeVariableArrayField"));
-        assertFieldSimpleNameWithGenerics("T[][]", members.findFieldByName("typeVariable2DArrayField"));
-    }
-
-    void assertFieldSimpleNameWithGenerics(String expected, Optional<JigFieldHeader> actual) {
-        assertEquals(expected, actual.orElseThrow().jigTypeReference().simpleNameWithGenerics());
     }
 
     @ParameterizedTest

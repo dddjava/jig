@@ -44,13 +44,11 @@ class AsmMethodVisitor extends MethodVisitor {
     // このVisitorで収集した情報
     final Instructions methodInstructions;
     final List<Annotation> annotationList;
-    final List<TypeIdentifier> signatureContainedTypes;
 
-    public AsmMethodVisitor(int api, JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
+    public AsmMethodVisitor(int api, JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);
         this.jigMethodHeader = jigMethodHeader;
         this.methodDeclaration = methodDeclaration;
-        this.signatureContainedTypes = signatureContainedTypes;
         this.methodInstructions = Instructions.newInstance();
         this.annotationList = new ArrayList<>();
         this.endConsumer = endConsumer;
@@ -112,7 +110,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             it.jigMethodHeader,
                             access,
-                            it.signatureContainedTypes,
+                            signatureContainedTypes,
                             it.methodDeclaration,
                             it.annotationList,
                             it.methodInstructions,
@@ -129,8 +127,8 @@ class AsmMethodVisitor extends MethodVisitor {
                         // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
                         jigMemberBuilder.addInstanceMethod(jigMethodBuilder);
                     }
-                },
-                signatureContainedTypes);
+                }
+        );
     }
 
     private static JigMethodHeader jigMethodHeader(int access, String signature, MethodDeclaration methodDeclaration, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {

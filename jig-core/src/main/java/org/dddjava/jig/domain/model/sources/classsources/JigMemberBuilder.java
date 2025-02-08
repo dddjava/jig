@@ -14,9 +14,6 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- * 型の実装から読み取れること
- */
 public class JigMemberBuilder {
 
     final List<JigMethodBuilder> staticJigMethodBuilders;

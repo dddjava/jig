@@ -39,23 +39,24 @@ class AsmFieldVisitor extends FieldVisitor {
     static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
         logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
         FieldType fieldType;
-        JigTypeReference jigTypeReference;
+        JigTypeReference fieldTypeReference;
         if (signature == null) {
             TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
             fieldType = new FieldType(fieldTypeIdentifier);
-            jigTypeReference = JigTypeReference.fromId(fieldTypeIdentifier);
+            fieldTypeReference = JigTypeReference.fromId(fieldTypeIdentifier);
         } else {
             AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
             new SignatureReader(signature).accept(typeSignatureVisitor);
             ParameterizedType parameterizedType = typeSignatureVisitor.generateParameterizedType();
             fieldType = new FieldType(parameterizedType);
-            jigTypeReference = typeSignatureVisitor.jigTypeReference();
+            fieldTypeReference = typeSignatureVisitor.jigTypeReference();
         }
 
         return new AsmFieldVisitor(api, it -> {
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
-                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access), jigTypeReference)));
+                    fieldTypeReference,
+                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access))));
         });
     }
 

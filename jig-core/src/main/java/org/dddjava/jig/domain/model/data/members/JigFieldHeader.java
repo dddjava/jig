@@ -13,21 +13,18 @@ import java.util.stream.Stream;
  */
 public record JigFieldHeader(JigFieldIdentifier id,
                              JigMemberOwnership ownership,
+                             JigTypeReference jigTypeReference,
                              JigFieldAttribute jigFieldAttribute) {
     public String simpleText() {
         return jigTypeReference().simpleName() + ' ' + id.name();
     }
 
     public Stream<TypeIdentifier> allTypeIdentifierStream() {
-        return jigFieldAttribute.allTypeIdentifierStream();
+        return Stream.concat(jigTypeReference.allTypeIentifierStream(), jigFieldAttribute.allTypeIdentifierStream());
     }
 
     public String simpleNameWithGenerics() {
         return jigTypeReference().simpleNameWithGenerics() + ' ' + id.name();
-    }
-
-    public JigTypeReference jigTypeReference() {
-        return jigFieldAttribute.typeReference();
     }
 
     public String name() {

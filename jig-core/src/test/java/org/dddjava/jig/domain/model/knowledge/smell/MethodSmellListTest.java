@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import stub.domain.model.smell.SmelledClass;
 import stub.domain.model.smell.SmelledRecord;
 import testing.JigServiceTest;
@@ -23,6 +26,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @JigServiceTest
 class MethodSmellListTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodSmellListTest.class);
 
     @Test
     void 注意メソッドの抽出(JigService jigService, JigDataProvider jigDataProvider) {
@@ -53,29 +57,43 @@ class MethodSmellListTest {
 
 
     @MethodSource
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} {1} :: {0}")
     void メンバ未使用の判定(Class<?> clz, String name, boolean expected) {
         var jigType = TestSupport.buildJigType(clz);
+        logger.info("{}", jigType.instanceMember().instanceMethods().list().stream().map(JigMethod::name).toList());
         MethodSmellList methodSmellList = new MethodSmellList(new JigTypes(List.of(jigType)));
 
-        var smell = methodSmellList.list().stream().filter(methodSmell -> methodSmell.method().name().equals(name)).findAny().orElseThrow();
-        assertEquals(expected, smell.methodWorries().contains(MethodWorry.メンバを使用していない));
+        // smellListに入っていないものは警告なしの判定になるのでfilterとanyMatchで検証
+        assertEquals(expected, methodSmellList.list().stream()
+                .filter(methodSmell -> methodSmell.method().name().equals(name))
+                .anyMatch(MethodSmell::notUseMember)
+        );
     }
 
     static Stream<Arguments> メンバ未使用の判定() {
         return Stream.of(
-                arguments(MySut.class, "インスタンスフィールドを使用しているインスタンスメソッド", false),
-                arguments(MySut.class, "staticフィールドを使用しているインスタンスメソッド", false),
-                arguments(MySut.class, "何も使用していないインスタンスメソッド", true),
-                arguments(MySut.class, "他クラスのメソッドを使用しているがメンバを使用していないメソッド", true),
-                arguments(MySut.class, "インスタンスメソッドを使用しているインスタンスメソッド", false),
-                arguments(MySut.class, "staticメソッドを使用しているインスタンスメソッド", false),
+                arguments(MemberUsageCheckNormalClass.class, "インスタンスフィールドを使用しているインスタンスメソッド", false),
+                arguments(MemberUsageCheckNormalClass.class, "staticフィールドを使用しているインスタンスメソッド", false),
+                arguments(MemberUsageCheckNormalClass.class, "何も使用していないインスタンスメソッド", true),
+                arguments(MemberUsageCheckNormalClass.class, "他クラスのメソッドを使用しているがメンバを使用していないメソッド", true),
+                arguments(MemberUsageCheckNormalClass.class, "インスタンスメソッドを使用しているインスタンスメソッド", false),
+                arguments(MemberUsageCheckNormalClass.class, "staticメソッドを使用しているインスタンスメソッド", false),
                 // staticメソッドは現在対象にしていない
                 //arguments(MySut.class, "staticフィールドを使用しているstaticメソッド", true),
                 //arguments(MySut.class, "何も使用していないstaticメソッド", true)
-                arguments(MySutInterface.class, "インタフェースのメソッド", false),
-                arguments(MySutInterface.class, "インタフェースのdefaultメソッドでメンバを使用していない", true),
-                arguments(MySutInterface.class, "インタフェースのdefaultメソッドでインタフェースのメソッドを使用している", false)
+                // -- interface
+                arguments(MemberUsageCheckInterface.class, "インタフェースのメソッド", false),
+                arguments(MemberUsageCheckInterface.class, "インタフェースのdefaultメソッドでメンバを使用していない", true),
+                arguments(MemberUsageCheckInterface.class, "インタフェースのdefaultメソッドでインタフェースのメソッドを使用している", false),
+                // -- enum
+                arguments(MemberUsageCheckEnum.class, "何も使用していないメソッド", true),
+                arguments(MemberUsageCheckEnum.class, "列挙定数を使用しているメソッド", false),
+                // -- record
+                arguments(MemberUsageCheckRecord.class, "componentA", false),
+                arguments(MemberUsageCheckRecord.class, "何も使用していないメソッド", true),
+                arguments(MemberUsageCheckRecord.class, "コンポーネントフィールドを呼び出しているメソッド", false),
+                arguments(MemberUsageCheckRecord.class, "コンポーネントメソッドを呼び出しているメソッド", false),
+                arguments(MemberUsageCheckRecord.class, "componentB", true)
         );
     }
 

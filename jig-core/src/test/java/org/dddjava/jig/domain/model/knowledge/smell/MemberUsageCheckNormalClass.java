@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 
 import java.util.UUID;
 
-class MySut {
+class MemberUsageCheckNormalClass {
     static int staticField = 0;
     int instanceField = 0;
 
@@ -38,7 +38,7 @@ class MySut {
     }
 }
 
-interface MySutInterface {
+interface MemberUsageCheckInterface {
     void インタフェースのメソッド();
 
     default void インタフェースのdefaultメソッドでメンバを使用していない() {
@@ -46,5 +46,36 @@ interface MySutInterface {
 
     default void インタフェースのdefaultメソッドでインタフェースのメソッドを使用している() {
         インタフェースのメソッド();
+    }
+}
+
+enum MemberUsageCheckEnum {
+    ENUM_CONSTANT_1,
+    ENUM_CONSTANT_2;
+
+    void 何も使用していないメソッド() {
+    }
+
+    void 列挙定数を使用しているメソッド() {
+        var name = ENUM_CONSTANT_2.name();
+    }
+}
+
+record MemberUsageCheckRecord(String componentA, String componentB) {
+
+    void 何も使用していないメソッド() {
+    }
+
+    String コンポーネントフィールドを呼び出しているメソッド() {
+        return componentA;
+    }
+
+    String コンポーネントメソッドを呼び出しているメソッド() {
+        return componentA();
+    }
+
+    public String componentB() {
+        // コンポーネントメソッドをオーバーライドしつつ何にもアクセスしなくなったもの
+        return null;
     }
 }

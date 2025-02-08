@@ -15,7 +15,7 @@ public record JigFieldHeader(JigFieldIdentifier id,
                              JigMemberOwnership ownership,
                              JigFieldAttribute jigFieldAttribute) {
     public String simpleText() {
-        return jigFieldAttribute.typeReference().simpleName() + ' ' + id.name();
+        return jigTypeReference().simpleName() + ' ' + id.name();
     }
 
     public Stream<TypeIdentifier> allTypeIdentifierStream() {
@@ -23,7 +23,7 @@ public record JigFieldHeader(JigFieldIdentifier id,
     }
 
     public String simpleNameWithGenerics() {
-        return jigFieldAttribute.typeReference().simpleNameWithGenerics() + ' ' + id.name();
+        return jigTypeReference().simpleNameWithGenerics() + ' ' + id.name();
     }
 
     public JigTypeReference jigTypeReference() {

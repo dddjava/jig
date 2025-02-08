@@ -32,7 +32,7 @@ public class JigField {
     public static JigField from(JigFieldHeader jigFieldHeader) {
         var fieldDeclaration = new FieldDeclaration(
                 jigFieldHeader.id().declaringTypeIdentifier(),
-                new FieldType(jigFieldHeader.jigFieldAttribute().typeReference().id()),
+                new FieldType(jigFieldHeader.jigTypeReference().id()),
                 jigFieldHeader.id().name()
         );
         return new JigField(

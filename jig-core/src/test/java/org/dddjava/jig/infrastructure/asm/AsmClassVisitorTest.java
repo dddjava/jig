@@ -87,7 +87,7 @@ class AsmClassVisitorTest {
     }
 
     void assertFieldSimpleNameWithGenerics(String expected, Optional<JigFieldHeader> actual) {
-        assertEquals(expected, actual.orElseThrow().jigFieldAttribute().typeReference().simpleNameWithGenerics());
+        assertEquals(expected, actual.orElseThrow().jigTypeReference().simpleNameWithGenerics());
     }
 
     @ParameterizedTest

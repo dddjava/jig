@@ -90,7 +90,7 @@ class AsmFieldVisitorTest {
         JigFields jigFields = actual.instanceJigFields();
 
         FieldAnnotation fieldAnnotation = jigFields.list().stream()
-                .filter(e -> e.fieldDeclaration().nameText().equals("field"))
+                .filter(e -> e.nameText().equals("field"))
                 .findFirst()
                 .flatMap(jigField -> jigField.fieldAnnotations().list().stream().findFirst())
                 .orElseThrow(AssertionError::new);

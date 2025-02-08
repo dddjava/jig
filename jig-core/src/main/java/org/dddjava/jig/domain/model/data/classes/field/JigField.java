@@ -57,10 +57,6 @@ public class JigField {
         return jigFieldHeader.jigTypeReference().id();
     }
 
-    public FieldDeclaration fieldDeclaration() {
-        return fieldDeclaration;
-    }
-
     public FieldAnnotations fieldAnnotations() {
         return fieldAnnotations;
     }

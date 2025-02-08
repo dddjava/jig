@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class JigMethodBuilder {
     private static final Logger logger = LoggerFactory.getLogger(JigMethodBuilder.class);
 
+    private final JigMethodHeader jigMethodHeader;
     private final MethodDeclaration methodDeclaration;
     private final JigMemberVisibility jigMemberVisibility;
     private final MethodDerivation methodDerivation;
@@ -30,7 +32,8 @@ public class JigMethodBuilder {
     private final Instructions instructions;
     private Term term = null;
 
-    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, List<Annotation> annotationList, Instructions methodInstructions) {
+    public JigMethodBuilder(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, List<Annotation> annotationList, Instructions methodInstructions) {
+        this.jigMethodHeader = jigMethodHeader;
         this.methodDeclaration = methodDeclaration;
         this.jigMemberVisibility = jigMemberVisibility;
         this.methodDerivation = methodDerivation;
@@ -69,7 +72,8 @@ public class JigMethodBuilder {
         return MethodDerivation.PROGRAMMER;
     }
 
-    public static JigMethodBuilder builder(int access,
+    public static JigMethodBuilder builder(JigMethodHeader jigMethodHeader,
+                                           int access,
                                            JigMemberVisibility jigMemberVisibility,
                                            List<TypeIdentifier> signatureContainedTypes,
                                            List<TypeIdentifier> throwsTypes,
@@ -77,7 +81,7 @@ public class JigMethodBuilder {
                                            List<Annotation> annotationList,
                                            Instructions methodInstructions, boolean isEnum, boolean isRecordComponent) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(methodDeclaration, signatureContainedTypes, jigMemberVisibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
+        return new JigMethodBuilder(jigMethodHeader, methodDeclaration, signatureContainedTypes, jigMemberVisibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
     }
 
     public JigMethod build() {
@@ -87,7 +91,7 @@ public class JigMethodBuilder {
         if (annotations == null) {
             logger.warn("{}のannotationsが設定されていません。メソッド実装に伴うアノテーションの情報は出力されません。", methodDeclaration.identifier());
         }
-        return new JigMethod(methodDeclaration, annotatedMethods(), jigMemberVisibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes, term);
+        return new JigMethod(jigMethodHeader, methodDeclaration, annotatedMethods(), jigMemberVisibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes, term);
     }
 
     private MethodAnnotations annotatedMethods() {

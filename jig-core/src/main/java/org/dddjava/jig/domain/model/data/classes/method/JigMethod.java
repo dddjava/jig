@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
  */
 public class JigMethod {
 
+    private final JigMethodHeader jigMethodHeader;
     MethodDeclaration methodDeclaration;
 
     MethodAnnotations methodAnnotations;
@@ -29,7 +31,8 @@ public class JigMethod {
     private final List<TypeIdentifier> signatureContainedTypes;
     private final Term term;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, Term term) {
+    public JigMethod(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, Term term) {
+        this.jigMethodHeader = jigMethodHeader;
         this.methodDeclaration = methodDeclaration;
         this.methodAnnotations = methodAnnotations;
         this.jigMemberVisibility = jigMemberVisibility;

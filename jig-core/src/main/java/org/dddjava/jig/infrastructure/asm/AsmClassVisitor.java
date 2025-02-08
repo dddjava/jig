@@ -133,6 +133,7 @@ class AsmClassVisitor extends ClassVisitor {
                 typeIdentifier,
                 it -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
+                            it.jigMethodHeader,
                             access,
                             it.jigMemberVisibility,
                             it.signatureContainedTypes,

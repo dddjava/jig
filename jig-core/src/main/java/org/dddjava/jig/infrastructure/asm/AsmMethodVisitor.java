@@ -9,7 +9,9 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynami
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.members.*;
+import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -27,9 +29,9 @@ import java.util.stream.Collectors;
  * [ visitAnnotationDefault ]
  * ( visitAnnotation | visitAnnotableParameterCount | visitParameterAnnotation | visitTypeAnnotation | visitAttribute )*
  * [
- *   visitCode
- *   ( visitFrame | visit<i>X</i>Insn | visitLabel | visitInsnAnnotation | visitTryCatchBlock | visitTryCatchAnnotation | visitLocalVariable | visitLocalVariableAnnotation | visitLineNumber | visitAttribute )*
- *   visitMaxs
+ * visitCode
+ * ( visitFrame | visit<i>X</i>Insn | visitLabel | visitInsnAnnotation | visitTryCatchBlock | visitTryCatchAnnotation | visitLocalVariable | visitLocalVariableAnnotation | visitLineNumber | visitAttribute )*
+ * visitMaxs
  * ]
  * visitEnd
  */
@@ -38,6 +40,7 @@ class AsmMethodVisitor extends MethodVisitor {
     private final Consumer<AsmMethodVisitor> endConsumer;
 
     // visitMethod由来の情報
+    final JigMethodHeader jigMethodHeader;
     final MethodDeclaration methodDeclaration;
     final JigMemberVisibility jigMemberVisibility;
     final List<TypeIdentifier> throwsTypes;
@@ -46,8 +49,9 @@ class AsmMethodVisitor extends MethodVisitor {
     final List<Annotation> annotationList;
     final List<TypeIdentifier> signatureContainedTypes;
 
-    public AsmMethodVisitor(int api, JigMemberVisibility jigMemberVisibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
+    public AsmMethodVisitor(int api, JigMethodHeader jigMethodHeader, JigMemberVisibility jigMemberVisibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
         super(api);
+        this.jigMethodHeader = jigMethodHeader;
         this.jigMemberVisibility = jigMemberVisibility;
         this.throwsTypes = throwsTypes;
         this.methodDeclaration = methodDeclaration;
@@ -101,12 +105,42 @@ class AsmMethodVisitor extends MethodVisitor {
                 .map(TypeIdentifier::valueOf)
                 .toList();
 
+        var methodType = Type.getMethodType(descriptor);
+        var jigMethodIdentifier = JigMethodIdentifier.from(typeIdentifier, name, Arrays.stream(methodType.getArgumentTypes()).map(type -> TypeIdentifier.valueOf(type.getClassName())).toList());
+        var methodReturn = methodDeclaration.methodReturn().parameterizedType();
+        var argumentList = methodDeclaration.methodSignature().arguments().stream()
+                .map(it -> parameterizedTypeToTypeReference(it))
+                .toList();
+        var jigMethodHeader = new JigMethodHeader(
+                jigMethodIdentifier,
+                // fieldと同じ判定をしているので共通化したい
+                ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
+                new JigMethodAttribute(
+                        resolveMethodVisibility(access),
+                        List.of(), // あのてーしょん未対応
+                        parameterizedTypeToTypeReference(methodReturn),
+                        argumentList,
+                        throwsTypes.stream().map(JigTypeReference::fromId).toList()
+                )
+        );
+
         return new AsmMethodVisitor(api,
+                jigMethodHeader,
                 resolveMethodVisibility(access),
                 throwsTypes,
                 methodDeclaration,
                 endConsumer,
                 signatureContainedTypes);
+    }
+
+    private static JigTypeReference parameterizedTypeToTypeReference(ParameterizedType parameterizedType) {
+        return new JigTypeReference(
+                parameterizedType.typeIdentifier(),
+                List.of(), // type annotation未対応
+                parameterizedType.typeParameters().list().stream()
+                        .map(typeParameter -> new JigTypeArgument(typeParameter.value()))
+                        .toList()
+        );
     }
 
     private static JigMemberVisibility resolveMethodVisibility(int access) {

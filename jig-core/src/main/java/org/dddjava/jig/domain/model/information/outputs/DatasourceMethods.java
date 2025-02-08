@@ -44,7 +44,7 @@ public class DatasourceMethods {
             for (JigType interfaceJigType : jigTypes
                     .listMatches(item -> implJigType.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
                             .anyMatch(jigBaseTypeData -> jigBaseTypeData.id().equals(item.id())))) {
-                for (JigMethod interfaceJigMethod : interfaceJigType.instanceMember().instanceMethods().list()) {
+                for (JigMethod interfaceJigMethod : interfaceJigType.instanceJigMethods().list()) {
                     implJigType.instanceMember().instanceMethods().stream()
                             // シグネチャが一致するもの
                             .filter(implJigMethod -> interfaceJigMethod.declaration().methodSignature().isSame(implJigMethod.declaration().methodSignature()))

@@ -1,7 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -38,26 +36,23 @@ class AsmFieldVisitor extends FieldVisitor {
 
     static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
         logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
-        FieldType fieldType;
-        JigTypeReference fieldTypeReference;
-        if (signature == null) {
-            TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
-            fieldType = new FieldType(fieldTypeIdentifier);
-            fieldTypeReference = JigTypeReference.fromId(fieldTypeIdentifier);
-        } else {
-            AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
-            new SignatureReader(signature).accept(typeSignatureVisitor);
-            ParameterizedType parameterizedType = typeSignatureVisitor.generateParameterizedType();
-            fieldType = new FieldType(parameterizedType);
-            fieldTypeReference = typeSignatureVisitor.jigTypeReference();
-        }
 
         return new AsmFieldVisitor(api, it -> {
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
-                    fieldTypeReference,
+                    resolveFieldTypeReference(api, descriptor, signature),
                     new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access))));
         });
+    }
+
+    private static JigTypeReference resolveFieldTypeReference(int api, String descriptor, String signature) {
+        if (signature == null) {
+            TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
+            return JigTypeReference.fromId(fieldTypeIdentifier);
+        }
+        AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
+        new SignatureReader(signature).accept(typeSignatureVisitor);
+        return typeSignatureVisitor.jigTypeReference();
     }
 
     private static EnumSet<JigFieldFlag> jigFieldFlags(int access) {

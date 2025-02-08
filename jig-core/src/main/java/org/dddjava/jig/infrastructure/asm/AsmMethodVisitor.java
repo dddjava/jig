@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMetho
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -39,18 +40,15 @@ class AsmMethodVisitor extends MethodVisitor {
     private final Consumer<AsmMethodVisitor> endConsumer;
 
     // visitMethod由来の情報
-    final JigMethodHeader jigMethodHeader;
     final MethodDeclaration methodDeclaration;
     // このVisitorで収集した情報
-    final Instructions methodInstructions;
-    final List<Annotation> annotationList;
+    final Instructions methodInstructions = Instructions.newInstance();
+    final List<Annotation> annotationList = new ArrayList<>();
+    private final Collection<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
 
-    public AsmMethodVisitor(int api, JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer) {
+    public AsmMethodVisitor(int api, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);
-        this.jigMethodHeader = jigMethodHeader;
         this.methodDeclaration = methodDeclaration;
-        this.methodInstructions = Instructions.newInstance();
-        this.annotationList = new ArrayList<>();
         this.endConsumer = endConsumer;
     }
 
@@ -104,11 +102,10 @@ class AsmMethodVisitor extends MethodVisitor {
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeIdentifier(type)).toList());
 
         return new AsmMethodVisitor(api,
-                jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType),
                 methodDeclaration,
                 it -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
-                            it.jigMethodHeader,
+                            it.jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType),
                             access,
                             signatureContainedTypes,
                             it.methodDeclaration,
@@ -131,7 +128,7 @@ class AsmMethodVisitor extends MethodVisitor {
         );
     }
 
-    private static JigMethodHeader jigMethodHeader(int access, String signature, MethodDeclaration methodDeclaration, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
+    private JigMethodHeader jigMethodHeader(int access, String signature, MethodDeclaration methodDeclaration, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
         if (signature != null) {
             var methodReturn = methodDeclaration.methodReturn().parameterizedType();
             var argumentList = methodDeclaration.methodSignature().arguments().stream()
@@ -140,7 +137,7 @@ class AsmMethodVisitor extends MethodVisitor {
             return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
                     new JigMethodAttribute(
                             resolveMethodVisibility(access),
-                            List.of(), // あのてーしょん未対応
+                            declarationAnnotationCollector,
                             parameterizedTypeToTypeReference(methodReturn),
                             argumentList,
                             throwsTypes.stream().map(JigTypeReference::fromId).toList(),
@@ -151,7 +148,7 @@ class AsmMethodVisitor extends MethodVisitor {
         return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
                 new JigMethodAttribute(
                         resolveMethodVisibility(access),
-                        List.of(), // あのてーしょん未対応
+                        declarationAnnotationCollector,
                         JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())),
                         Arrays.stream(methodType.getArgumentTypes())
                                 .map(AsmMethodVisitor::asmType2TypeIdentifier)
@@ -214,7 +211,10 @@ class AsmMethodVisitor extends MethodVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api,
                 AsmClassVisitor.typeDescriptorToIdentifier(descriptor),
-                it -> annotationList.add(new Annotation(it.annotationType, it.annotationDescription)));
+                it -> {
+                    annotationList.add(new Annotation(it.annotationType, it.annotationDescription));
+                    declarationAnnotationCollector.add(it.annotationReference());
+                });
     }
 
     @Override

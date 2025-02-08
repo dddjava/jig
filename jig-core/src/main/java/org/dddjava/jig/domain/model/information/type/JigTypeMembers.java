@@ -40,7 +40,7 @@ public record JigTypeMembers(
     public Set<TypeIdentifier> allTypeIdentifierSet() {
         return Stream.concat(
                 jigFieldHeaders.stream().flatMap(JigFieldHeader::allTypeIdentifierStream),
-                instanceMethods.listUsingTypes().stream()
+                instanceMethods().listUsingTypes().stream()
         ).collect(Collectors.toSet());
     }
 
@@ -78,5 +78,9 @@ public record JigTypeMembers(
 //                        jigMethodHeader,
 //                        null, null, null, null, null, null
 //                ));
+    }
+
+    public JigMethods instanceMethods() {
+        return instanceMethods;
     }
 }

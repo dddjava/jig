@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotations;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 
@@ -33,8 +32,7 @@ public class Validations {
     }
 
     static Stream<ValidationAnnotatedMember> validationAnnotatedMembers(JigType jigType) {
-        JigInstanceMember instanceMember = jigType.instanceMember();
-        Stream<ValidationAnnotatedMember> methodStream = instanceMember.instanceMethods().stream()
+        Stream<ValidationAnnotatedMember> methodStream = jigType.instanceJigMethodStream()
                 .map(JigMethod::methodAnnotations)
                 .map(MethodAnnotations::list)
                 .flatMap(List::stream)

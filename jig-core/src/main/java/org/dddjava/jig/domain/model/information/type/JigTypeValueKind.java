@@ -1,10 +1,11 @@
 package org.dddjava.jig.domain.model.information.type;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -26,28 +27,31 @@ public enum JigTypeValueKind {
             return 区分;
         }
 
-        JigInstanceMember jigInstanceMember = jigType.instanceMember();
-        FieldDeclarations fieldDeclarations = jigInstanceMember.fieldDeclarations();
-        if (fieldDeclarations.matches(TypeIdentifier.from(List.class))) return コレクション;
-        if ((fieldDeclarations.matches(TypeIdentifier.from(Set.class)))) {
+        JigFields instanceJigFields = jigType.instanceJigFields();
+        if (matchFieldType(instanceJigFields, List.class) || matchFieldType(instanceJigFields, Set.class)) {
             return コレクション;
         }
-        if (fieldDeclarations.matches((TypeIdentifier.from(String.class)))) {
+        if (matchFieldType(instanceJigFields, String.class)) {
             return 文字列;
         }
-        if (fieldDeclarations.matches(TypeIdentifier.from(BigDecimal.class))
-                || fieldDeclarations.matches(TypeIdentifier.from(Long.class))
-                || fieldDeclarations.matches(TypeIdentifier.from(Integer.class))
-                || fieldDeclarations.matches(TypeIdentifier.from(long.class))
-                || fieldDeclarations.matches(TypeIdentifier.from(int.class))) {
+        if (matchFieldType(instanceJigFields, BigDecimal.class)
+                || matchFieldType(instanceJigFields, Integer.class)
+                || matchFieldType(instanceJigFields, Long.class)
+                || matchFieldType(instanceJigFields, int.class)
+                || matchFieldType(instanceJigFields, long.class)) {
             return 数値;
         }
-        if (fieldDeclarations.matches(TypeIdentifier.from(LocalDate.class))) {
+        if (matchFieldType(instanceJigFields, LocalDate.class)) {
             return 日付;
         }
-        if (fieldDeclarations.matches(TypeIdentifier.from(LocalDate.class), TypeIdentifier.from(LocalDate.class))) {
+        if (matchFieldType(instanceJigFields, LocalDate.class, LocalDate.class)) {
             return 期間;
         }
         return 不明;
+    }
+
+    private static boolean matchFieldType(JigFields jigFields, Class<?>... classes) {
+        return jigFields.fieldDeclarations()
+                .matches(Arrays.stream(classes).map(TypeIdentifier::from).toArray(TypeIdentifier[]::new));
     }
 }

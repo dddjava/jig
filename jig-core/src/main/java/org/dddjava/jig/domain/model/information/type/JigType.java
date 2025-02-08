@@ -63,10 +63,6 @@ public class JigType {
         return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
     }
 
-    public JigInstanceMember instanceMember() {
-        return jigInstanceMember;
-    }
-
     public JigStaticMember staticMember() {
         return jigStaticMember;
     }
@@ -187,10 +183,10 @@ public class JigType {
     }
 
     public Stream<JigMethod> instanceJigMethodStream() {
-        return instanceMember().jigMethodStream();
+        return jigInstanceMember.jigMethodStream();
     }
 
     public JigMethods instanceJigMethods() {
-        return instanceMember().instanceMethods();
+        return jigInstanceMember.instanceMethods();
     }
 }

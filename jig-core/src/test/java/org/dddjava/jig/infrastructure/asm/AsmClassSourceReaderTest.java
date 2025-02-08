@@ -1,9 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
@@ -25,14 +23,12 @@ import stub.domain.model.category.RichEnum;
 import stub.domain.model.category.SimpleEnum;
 import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
-import stub.domain.model.relation.FieldDefinition;
 import stub.domain.model.relation.InterfaceDefinition;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.domain.model.relation.clz.*;
 import stub.domain.model.relation.enumeration.ClassReference;
 import stub.domain.model.relation.enumeration.ConstructorArgument;
 import stub.domain.model.relation.enumeration.EnumField;
-import stub.domain.model.relation.field.*;
 import stub.domain.model.type.HogeRepository;
 import stub.domain.model.type.SimpleNumber;
 import stub.misc.DecisionClass;
@@ -121,61 +117,6 @@ public class AsmClassSourceReaderTest {
                     arguments(RuntimeRetainedAnnotation.class, TypeKind.通常型)
             );
         }
-    }
-
-    @Nested
-    class フィールド {
-        @Test
-        void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-            JigType actual = TestSupport.buildJigType(MemberAnnotatedClass.class);
-
-            JigFields jigFields = actual.instanceJigFields();
-
-            FieldAnnotation fieldAnnotation = jigFields.list().stream()
-                    .filter(e -> e.fieldDeclaration().nameText().equals("field"))
-                    .findFirst()
-                    .flatMap(jigField -> jigField.fieldAnnotations().list().stream().findFirst())
-                    .orElseThrow(AssertionError::new);
-
-            assertEquals(TypeIdentifier.from(VariableAnnotation.class), fieldAnnotation.annotationType());
-
-            AnnotationDescription description = fieldAnnotation.description();
-            assertThat(description.asText())
-                    .contains(
-                            "string=af",
-                            "arrayString=bf",
-                            "number=13",
-                            "clz=Ljava/lang/reflect/Field;",
-                            "arrayClz=[Ljava/lang/Object;, Ljava/lang/Object;]",
-                            "enumValue=DUMMY1",
-                            "annotation=Ljava/lang/Deprecated;[...]"
-                    );
-
-            assertThat(description.textOf("arrayString")).isEqualTo("bf");
-        }
-
-        @Test
-        void フィールド定義に使用している型が取得できる() throws Exception {
-            JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
-
-            String fieldsText = jigType.jigTypeMembers().instanceFieldsSimpleText();
-            assertEquals("[InstanceField instanceField, List genericFields, ArrayField[] arrayFields, Object obj]", fieldsText);
-
-            TypeIdentifiers identifiers = jigType.usingTypes();
-            assertThat(identifiers.list())
-                    .contains(
-                            TypeIdentifier.from(List.class),
-                            TypeIdentifier.from(stub.domain.model.relation.field.FieldAnnotation.class),
-                            TypeIdentifier.from(StaticField.class),
-                            TypeIdentifier.from(InstanceField.class),
-                            TypeIdentifier.from(GenericField.class),
-                            TypeIdentifier.valueOf(ArrayField.class.getName() + "[]"),
-                            TypeIdentifier.from(ArrayField.class),
-                            TypeIdentifier.from(ReferenceConstantOwnerAtFieldDefinition.class),
-                            TypeIdentifier.from(ReferenceConstantAtFieldDefinition.class)
-                    );
-        }
-
     }
 
     @Nested

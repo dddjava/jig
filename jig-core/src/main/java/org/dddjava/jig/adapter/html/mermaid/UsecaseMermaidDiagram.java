@@ -16,15 +16,12 @@ import java.util.function.Function;
 
 public record UsecaseMermaidDiagram(
         JigTypes contextJigTypes,
-        MethodRelations simpleMethodRelations
+        MethodRelations methodRelations
 ) {
 
     public String textFor(JigMethod jigMethod) {
         JigMethodFinder jigMethodFinder = methodIdentifier -> contextJigTypes.resolveJigMethod(methodIdentifier);
-        return usecaseMermaidText(jigMethod, jigMethodFinder, simpleMethodRelations);
-    }
 
-    private String usecaseMermaidText(JigMethod jigMethod, JigMethodFinder jigMethodFinder, MethodRelations methodRelations) {
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
 

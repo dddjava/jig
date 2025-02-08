@@ -55,7 +55,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                     }
 
                     JigMemberBuilder jigMemberBuilder = classDeclaration.jigMemberBuilder();
-                    JigTypeMembers jigTypeMembers = jigMemberBuilder.buildMember();
+                    JigTypeMembers jigTypeMembers = jigMemberBuilder.buildJigTypeMembers();
 
                     return buildJigType(classDeclaration.jigTypeHeader(), jigTypeMembers, glossaryRepository);
                 })

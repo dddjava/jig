@@ -34,7 +34,7 @@ class AsmFieldVisitorTest {
     @Test
     void JigFieldHeaderでJavaで書いたまま取れる() {
         var jigMemberBuilder = 準備(MySutClass.class);
-        var members = jigMemberBuilder.buildMember();
+        var members = jigMemberBuilder.buildJigTypeMembers();
 
         assertFieldSimpleNameWithGenerics("byte", members.findFieldByName("primitiveField"));
         assertFieldSimpleNameWithGenerics("int[]", members.findFieldByName("primitiveArrayField"));
@@ -66,7 +66,7 @@ class AsmFieldVisitorTest {
     @Test
     void enumフィールドのテスト() {
         var jigMemberBuilder = 準備(MyEnumFieldSut.class);
-        var members = jigMemberBuilder.buildMember();
+        var members = jigMemberBuilder.buildJigTypeMembers();
 
         List<String> enumConstantNames = members.enumConstantNames();
         assertEquals(List.of("通常の列挙値1", "通常の列挙値2", "Deprecatedな列挙値"), enumConstantNames,

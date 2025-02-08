@@ -85,7 +85,7 @@ public class JigMemberBuilder {
         fieldHeaders.add(jigFieldHeader);
     }
 
-    public JigTypeMembers buildMember() {
+    public JigTypeMembers buildJigTypeMembers() {
         return new JigTypeMembers(
                 fieldHeaders,
                 List.of(), // メソッドはまだ

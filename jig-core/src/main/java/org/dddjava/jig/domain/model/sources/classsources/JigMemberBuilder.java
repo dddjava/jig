@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,14 +32,6 @@ public class JigMemberBuilder {
         this.constructorBuilders = new ArrayList<>();
         this.recordComponentDefinitions = new ArrayList<>();
         this.fieldHeaders = new ArrayList<>();
-    }
-
-    public List<JigMethodBuilder> allMethodBuilders() {
-        ArrayList<JigMethodBuilder> list = new ArrayList<>();
-        list.addAll(instanceJigMethodBuilders);
-        list.addAll(staticJigMethodBuilders);
-        list.addAll(constructorBuilders);
-        return list;
     }
 
     public void addInstanceMethod(JigMethodBuilder jigMethodBuilder) {
@@ -82,5 +75,11 @@ public class JigMemberBuilder {
                 new JigInstanceMember(
                         new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())))
         );
+    }
+
+    public void applyAllMethodBuilders(Consumer<JigMethodBuilder> consumer) {
+        instanceJigMethodBuilders.forEach(consumer);
+        staticJigMethodBuilders.forEach(consumer);
+        constructorBuilders.forEach(consumer);
     }
 }

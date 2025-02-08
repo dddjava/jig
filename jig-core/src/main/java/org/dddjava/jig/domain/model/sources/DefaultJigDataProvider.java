@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
-import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 import java.util.stream.Collectors;
@@ -49,10 +48,10 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
         return classSourceModel.classDeclarations().stream()
                 .map(classDeclaration -> {
                     // メソッドのコメント登録
-                    for (JigMethodBuilder jigMethodBuilder : classDeclaration.jigMemberBuilder().allMethodBuilders()) {
+                    classDeclaration.jigMemberBuilder().applyAllMethodBuilders(jigMethodBuilder -> {
                         var term = glossaryRepository.getMethodTermPossiblyMatches(jigMethodBuilder.methodIdentifier());
                         jigMethodBuilder.registerMethodTerm(term);
-                    }
+                    });
 
                     JigMemberBuilder jigMemberBuilder = classDeclaration.jigMemberBuilder();
                     JigTypeMembers jigTypeMembers = jigMemberBuilder.buildJigTypeMembers();

@@ -12,7 +12,7 @@ public record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                                 Collection<JigAnnotationReference> declarationAnnotations,
                                 EnumSet<JigFieldFlag> flags,
                                 JigTypeReference typeReference) {
-    public Stream<TypeIdentifier> allTypeIdentifierStream() {
+    Stream<TypeIdentifier> allTypeIdentifierStream() {
         return Stream.concat(
                 declarationAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
                 typeReference.allTypeIentifierStream()

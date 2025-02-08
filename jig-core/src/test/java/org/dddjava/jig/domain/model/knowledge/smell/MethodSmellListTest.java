@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
@@ -9,8 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import stub.domain.model.smell.SmelledClass;
 import stub.domain.model.smell.SmelledRecord;
 import testing.JigServiceTest;
@@ -26,7 +23,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @JigServiceTest
 class MethodSmellListTest {
-    private static final Logger logger = LoggerFactory.getLogger(MethodSmellListTest.class);
 
     @Test
     void 注意メソッドの抽出(JigService jigService, JigDataProvider jigDataProvider) {
@@ -60,7 +56,6 @@ class MethodSmellListTest {
     @ParameterizedTest(name = "{index} {1} :: {0}")
     void メンバ未使用の判定(Class<?> clz, String name, boolean expected) {
         var jigType = TestSupport.buildJigType(clz);
-        logger.info("{}", jigType.instanceMember().instanceMethods().list().stream().map(JigMethod::name).toList());
         MethodSmellList methodSmellList = new MethodSmellList(new JigTypes(List.of(jigType)));
 
         // smellListに入っていないものは警告なしの判定になるのでfilterとanyMatchで検証

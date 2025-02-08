@@ -23,4 +23,8 @@ public record MethodWorries(List<MethodWorry> list) {
         }
         return false;
     }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
 }

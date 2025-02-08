@@ -16,8 +16,10 @@ public record MethodSmell(JigMethod method, boolean hasFieldClass, MethodWorries
         if (method.objectMethod()) {
             return Optional.empty();
         }
+        var methodWorries = MethodWorries.from(method);
+        if (methodWorries.empty()) return Optional.empty();
 
-        var instance = new MethodSmell(method, hasFieldClass, MethodWorries.from(method));
+        var instance = new MethodSmell(method, hasFieldClass, methodWorries);
         if (!instance.hasSmell()) return Optional.empty();
         return Optional.of(instance);
     }

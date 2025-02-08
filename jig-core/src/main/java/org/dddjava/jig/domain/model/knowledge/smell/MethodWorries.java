@@ -9,13 +9,12 @@ import java.util.stream.Collectors;
 /**
  * メソッドの気になるところ
  */
-public class MethodWorries {
-    List<MethodWorry> list;
+public record MethodWorries(List<MethodWorry> list) {
 
-    public MethodWorries(JigMethod method) {
-        this.list = Arrays.stream(MethodWorry.values())
+    public static MethodWorries from(JigMethod method) {
+        return new MethodWorries(Arrays.stream(MethodWorry.values())
                 .filter(methodWorry -> methodWorry.judge(method))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     public boolean contains(MethodWorry... methodWorries) {

@@ -9,10 +9,15 @@ import java.util.Optional;
 /**
  * メソッドの不吉なにおい
  */
-public record MethodSmell(JigMethod method, boolean hasFieldClass) {
+public record MethodSmell(JigMethod method, boolean hasFieldClass, MethodWorries methodWorries) {
 
     public static Optional<MethodSmell> createMethodSmell(JigMethod method, boolean hasFieldClass) {
-        var instance = new MethodSmell(method, hasFieldClass);
+        // java.lang.Object由来は除外する
+        if (method.objectMethod()) {
+            return Optional.empty();
+        }
+
+        var instance = new MethodSmell(method, hasFieldClass, MethodWorries.from(method));
         if (!instance.hasSmell()) return Optional.empty();
         return Optional.of(instance);
     }
@@ -24,7 +29,7 @@ public record MethodSmell(JigMethod method, boolean hasFieldClass) {
     public boolean notUseMember() {
         // フィールド無しはクラスのスメル？
         if (!hasFieldClass) {
-            return new MethodWorries(method).contains(MethodWorry.メンバを使用していない);
+            return methodWorries.contains(MethodWorry.メンバを使用していない);
         }
         return false;
     }
@@ -35,18 +40,14 @@ public record MethodSmell(JigMethod method, boolean hasFieldClass) {
             return false;
         }
 
-        return new MethodWorries(method).contains(MethodWorry.基本型の授受を行なっている);
+        return methodWorries.contains(MethodWorry.基本型の授受を行なっている);
     }
 
     public boolean returnsBoolean() {
-        return new MethodWorries(method).contains(MethodWorry.真偽値を返している);
+        return methodWorries.contains(MethodWorry.真偽値を返している);
     }
 
     private boolean hasSmell() {
-        if (method.objectMethod()) {
-            // java.lang.Object由来は除外する
-            return false;
-        }
 
         // TODO このメソッドの並びと各実装がダメな感じなのでなんとかする。
         // 現状はここにメソッド追加するのと、列挙に追加するのと、判定メソッド作るのと、やってる。
@@ -54,14 +55,14 @@ public record MethodSmell(JigMethod method, boolean hasFieldClass) {
     }
 
     public boolean referenceNull() {
-        return new MethodWorries(method).contains(MethodWorry.NULLリテラルを使用している);
+        return methodWorries.contains(MethodWorry.NULLリテラルを使用している);
     }
 
     public boolean nullDecision() {
-        return new MethodWorries(method).contains(MethodWorry.NULL判定をしている);
+        return methodWorries.contains(MethodWorry.NULL判定をしている);
     }
 
     public boolean returnsVoid() {
-        return new MethodWorries(method).contains(MethodWorry.voidを返している);
+        return methodWorries.contains(MethodWorry.voidを返している);
     }
 }

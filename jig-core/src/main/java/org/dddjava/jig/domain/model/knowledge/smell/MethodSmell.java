@@ -31,7 +31,7 @@ public class MethodSmell {
 
     public boolean notUseMember() {
         // フィールド無しはクラスのスメル？
-        if (hasFieldClass) {
+        if (!hasFieldClass) {
             return new MethodWorries(method).contains(MethodWorry.メンバを使用していない);
         }
         return false;

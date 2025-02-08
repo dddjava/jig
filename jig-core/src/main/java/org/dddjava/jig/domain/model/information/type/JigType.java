@@ -24,7 +24,7 @@ public class JigType {
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigTypeMembers jigTypeMembers) {
+    private JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigTypeMembers jigTypeMembers) {
         this.jigTypeHeader = jigTypeHeader;
         this.jigTypeTerms = jigTypeTerms;
         this.jigTypeMembers = jigTypeMembers;

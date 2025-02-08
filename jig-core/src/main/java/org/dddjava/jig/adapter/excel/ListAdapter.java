@@ -77,8 +77,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない
-                        Map.entry("パラメーター有り", item -> item.instanceMember().hasField() ? "◯" : ""),
-                        Map.entry("振る舞い有り", item -> item.instanceMember().hasMethod() ? "◯" : ""),
+                        Map.entry("パラメーター有り", item -> item.hasInstanceField() ? "◯" : ""),
+                        Map.entry("振る舞い有り", item -> item.hasInstanceMethod() ? "◯" : ""),
                         // 抽象列挙型は継承クラスがコンパイラに作成されているもので、多態とみなすことにする
                         Map.entry("多態", item -> item.typeKind() == TypeKind.抽象列挙型 ? "◯" : "")
                 ), categoryTypes.list()),

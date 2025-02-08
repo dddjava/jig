@@ -41,7 +41,7 @@ public class Validations {
                 // TODO 正規表現の絞り込みをやめる
                 .filter(annotation -> annotation.annotationType().fullQualifiedName().matches("((javax|jakarta).validation|org.hibernate.validator).+"))
                 .map(ValidationAnnotatedMember::new);
-        Stream<ValidationAnnotatedMember> fieldStream = instanceMember.instanceFields().list().stream()
+        Stream<ValidationAnnotatedMember> fieldStream = jigType.instanceJigFields().list().stream()
                 .map(JigField::fieldAnnotations)
                 .map(FieldAnnotations::list)
                 .flatMap(List::stream)

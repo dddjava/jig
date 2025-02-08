@@ -21,10 +21,6 @@ public class JigInstanceMember {
         this.instanceMethods = instanceMethods;
     }
 
-    public boolean hasField() {
-        return !instanceFields.empty();
-    }
-
     public FieldDeclarations fieldDeclarations() {
         return instanceFields.fieldDeclarations();
     }

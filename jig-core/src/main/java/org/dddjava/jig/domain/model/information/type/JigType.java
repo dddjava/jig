@@ -183,4 +183,12 @@ public class JigType {
     public String nodeLabel(String delimiter) {
         return jigTypeTerms.typeTerm().textWithDelimiter(delimiter);
     }
+
+    public boolean hasInstanceField() {
+        return jigTypeMembers().instanceFields().empty() == false;
+    }
+
+    public boolean hasInstanceMethod() {
+        return jigTypeMembers().jigInstanceMember().hasMethod();
+    }
 }

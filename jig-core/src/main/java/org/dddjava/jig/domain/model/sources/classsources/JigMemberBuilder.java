@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.sources.classsources;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
 import org.dddjava.jig.domain.model.information.type.JigStaticMember;
@@ -17,22 +18,14 @@ import static java.util.stream.Collectors.toList;
 
 public class JigMemberBuilder {
 
-    final List<JigMethodBuilder> staticJigMethodBuilders;
+    final List<JigMethodBuilder> staticJigMethodBuilders = new ArrayList<>();
+    final List<JigMethodBuilder> constructorBuilders = new ArrayList<>();
+    final List<JigMethodBuilder> instanceJigMethodBuilders = new ArrayList<>();
 
-    final List<JigMethodBuilder> constructorBuilders;
+    private final Collection<JigFieldHeader> fieldHeaders = new ArrayList<>();
+    private final Collection<JigMethodHeader> methodHeaders = new ArrayList<>();
 
-    private final Collection<JigFieldHeader> fieldHeaders;
-    final List<JigMethodBuilder> instanceJigMethodBuilders;
-
-    private final List<RecordComponentDefinition> recordComponentDefinitions;
-
-    public JigMemberBuilder() {
-        this.instanceJigMethodBuilders = new ArrayList<>();
-        this.staticJigMethodBuilders = new ArrayList<>();
-        this.constructorBuilders = new ArrayList<>();
-        this.recordComponentDefinitions = new ArrayList<>();
-        this.fieldHeaders = new ArrayList<>();
-    }
+    private final List<RecordComponentDefinition> recordComponentDefinitions = new ArrayList<>();
 
     public void addInstanceMethod(JigMethodBuilder jigMethodBuilder) {
         instanceJigMethodBuilders.add(jigMethodBuilder);
@@ -63,10 +56,14 @@ public class JigMemberBuilder {
         fieldHeaders.add(jigFieldHeader);
     }
 
+    public void addJigMethodHeader(JigMethodHeader jigMethodHeader) {
+        methodHeaders.add(jigMethodHeader);
+    }
+
     public JigTypeMembers buildJigTypeMembers() {
         return new JigTypeMembers(
                 fieldHeaders,
-                List.of(), // メソッドはまだ
+                methodHeaders,
                 // 以下は互換のため。メソッドの実装をおえたら不要になる想定
                 new JigStaticMember(
                         new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),

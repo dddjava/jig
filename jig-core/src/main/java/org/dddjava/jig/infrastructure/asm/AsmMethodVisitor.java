@@ -103,8 +103,10 @@ class AsmMethodVisitor extends MethodVisitor {
 
         return new AsmMethodVisitor(api,
                 it -> {
+                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType);
+                    jigMemberBuilder.addJigMethodHeader(jigMethodHeader);
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
-                            it.jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType),
+                            jigMethodHeader,
                             access,
                             signatureContainedTypes,
                             methodDeclaration,

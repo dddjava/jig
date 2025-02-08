@@ -78,12 +78,6 @@ public class JigMethodBuilder {
     }
 
     public JigMethod build() {
-        if (instructions == null) {
-            logger.warn("{}のinstructionsが設定されていません。メソッド実装に伴う情報は出力されません。", methodDeclaration.identifier());
-        }
-        if (annotations == null) {
-            logger.warn("{}のannotationsが設定されていません。メソッド実装に伴うアノテーションの情報は出力されません。", methodDeclaration.identifier());
-        }
         return new JigMethod(jigMethodHeader, methodDeclaration, annotatedMethods(), methodDerivation, instructions, signatureContainedTypes, term);
     }
 

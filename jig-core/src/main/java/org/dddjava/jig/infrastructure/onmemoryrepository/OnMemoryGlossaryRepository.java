@@ -15,7 +15,6 @@ import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @Repository
 public class OnMemoryGlossaryRepository implements GlossaryRepository {
@@ -46,10 +45,11 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     @Override
     public JigTypeTerms collectJigTypeTerms(TypeIdentifier typeIdentifier) {
-        // 型に紐づくTermを収集する。
-        // 現在本クラスは扱っていないが、フィールドおよびメソッドのコメントも含むようにしたい。
-        // そうしたらJigTypeでこれをもって、JigMethodはJigTypeから取得する際にここに入ってるコメントを付与して生成する形になる
-        return new JigTypeTerms(get(typeIdentifier), List.of());
+        return new JigTypeTerms(get(typeIdentifier),
+                terms.stream()
+                        .filter(term -> term.termKind() == TermKind.メソッド || term.termKind() == TermKind.フィールド)
+                        .filter(term -> term.relatesTo(typeIdentifier.fullQualifiedName()))
+                        .toList());
     }
 
     @Override

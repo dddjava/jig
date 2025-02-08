@@ -16,4 +16,8 @@ public record Term(TermIdentifier identifier,
         if (description.isEmpty()) return title;
         return title + delimiter + description;
     }
+
+    public boolean relatesTo(String otherIdentifier) {
+        return identifier().asText().startsWith(otherIdentifier);
+    }
 }

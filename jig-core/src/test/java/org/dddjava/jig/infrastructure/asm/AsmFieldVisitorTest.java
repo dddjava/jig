@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
+import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
@@ -17,10 +18,7 @@ class AsmFieldVisitorTest {
 
     @Test
     void JigFieldHeaderでJavaで書いたまま取れる() throws IOException {
-        AsmClassVisitor visitor = new AsmClassVisitor();
-        new ClassReader(MySutClass.class.getName()).accept(visitor, 0);
-
-        var jigMemberBuilder = visitor.jigTypeBuilder();
+        var jigMemberBuilder = 準備(MySutClass.class);
         var members = jigMemberBuilder.buildMember();
 
         assertFieldSimpleNameWithGenerics("byte", members.findFieldByName("primitiveField"));
@@ -34,6 +32,12 @@ class AsmFieldVisitorTest {
         assertFieldSimpleNameWithGenerics("T", members.findFieldByName("typeVariableField"));
         assertFieldSimpleNameWithGenerics("T[]", members.findFieldByName("typeVariableArrayField"));
         assertFieldSimpleNameWithGenerics("T[][]", members.findFieldByName("typeVariable2DArrayField"));
+    }
+
+    private static JigMemberBuilder 準備(Class<?> sutClass) throws IOException {
+        AsmClassVisitor visitor = new AsmClassVisitor();
+        new ClassReader(sutClass.getName()).accept(visitor, 0);
+        return visitor.jigTypeBuilder();
     }
 
     void assertFieldSimpleNameWithGenerics(String expected, Optional<JigFieldHeader> actual) {

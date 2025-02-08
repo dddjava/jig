@@ -16,7 +16,7 @@ public class MethodSmellList {
     public MethodSmellList(JigTypes jigTypes) {
         this.list = jigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream()
-                        .flatMap(method -> MethodSmell.createMethodSmell(method, jigType.instanceMember().fieldDeclarations()).stream())
+                        .flatMap(method -> MethodSmell.createMethodSmell(method, jigType.instanceJigFields().fieldDeclarations()).stream())
                 )
                 .collect(Collectors.toList());
     }

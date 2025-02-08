@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
@@ -45,9 +44,7 @@ class JigExpressionObject {
             return List.of();
         }
 
-        return jigType.staticMember().staticFieldDeclarations().list().stream()
-                .map(StaticFieldDeclaration::nameText)
-                .toList();
+        return jigType.jigTypeMembers().enumConstantNames();
     }
 
     public String methodReturnRawText(MethodReturn methodReturn) {

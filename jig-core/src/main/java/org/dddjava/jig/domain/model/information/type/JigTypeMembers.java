@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,10 +53,10 @@ public record JigTypeMembers(
                 .findAny();
     }
 
-    public String enumConstantNames() {
+    public List<String> enumConstantNames() {
         return jigFieldHeaderStream(JigMemberOwnership.CLASS)
                 .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))
                 .map(jigFieldHeader -> jigFieldHeader.name())
-                .collect(Collectors.joining(", ", "[", "]"));
+                .toList();
     }
 }

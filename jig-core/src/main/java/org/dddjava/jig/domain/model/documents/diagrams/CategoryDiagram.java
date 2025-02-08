@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -35,13 +34,13 @@ public class CategoryDiagram implements DiagramSourceWriter {
                 .map(categoryType -> {
                     StringJoiner categoryValues = new StringJoiner("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>");
 
-                    List<StaticFieldDeclaration> list = categoryType.staticMember().staticFieldDeclarations().list();
+                    List<String> list = categoryType.jigTypeMembers().enumConstantNames();
                     for (int i = 0; i < list.size(); i++) {
                         if (i > 20) {
                             categoryValues.add("... more");
                             break;
                         }
-                        String nameText = list.get(i).nameText();
+                        String nameText = list.get(i);
                         categoryValues.add(nameText);
                     }
                     String categoryName = categoryType.nodeLabel("<br/>");

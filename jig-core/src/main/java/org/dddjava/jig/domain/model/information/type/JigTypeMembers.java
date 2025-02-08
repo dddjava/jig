@@ -38,9 +38,10 @@ public record JigTypeMembers(
     }
 
     public Set<TypeIdentifier> allTypeIdentifierSet() {
-        return jigFieldHeaders.stream()
-                .flatMap(JigFieldHeader::allTypeIdentifierStream)
-                .collect(Collectors.toSet());
+        return Stream.concat(
+                jigFieldHeaders.stream().flatMap(JigFieldHeader::allTypeIdentifierStream),
+                instanceMethods.listUsingTypes().stream()
+        ).collect(Collectors.toSet());
     }
 
     public JigFields instanceFields() {

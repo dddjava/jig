@@ -13,7 +13,7 @@ public record ServiceMethods(List<ServiceMethod> list) {
 
     public static ServiceMethods from(JigTypes serviceJigTypes, CallerMethodsFactory callerMethodsFactory) {
         var list = serviceJigTypes.stream()
-                .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
+                .flatMap(jigType -> jigType.instanceJigMethodStream())
                 .map(method -> ServiceMethod.from(method, callerMethodsFactory))
                 .toList();
         return new ServiceMethods(list);

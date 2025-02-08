@@ -191,4 +191,8 @@ public class JigType {
     public boolean hasInstanceMethod() {
         return jigTypeMembers().jigInstanceMember().hasMethod();
     }
+
+    public Stream<JigMethod> instanceJigMethodStream() {
+        return instanceMember().instanceMethods().stream();
+    }
 }

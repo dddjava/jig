@@ -82,15 +82,6 @@ public class JigField {
     }
 
     public boolean isDeprecated() {
-        return hasAnnotation(TypeIdentifier.from(Deprecated.class));
-    }
-
-    private boolean hasAnnotation(TypeIdentifier typeIdentifier) {
-        for (FieldAnnotation annotation : fieldAnnotations.list()) {
-            if (annotation.annotationType().equals(typeIdentifier)) {
-                return true;
-            }
-        }
-        return false;
+        return jigFieldHeader.isDeprecated();
     }
 }

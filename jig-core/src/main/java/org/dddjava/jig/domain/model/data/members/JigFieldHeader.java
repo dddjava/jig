@@ -30,4 +30,8 @@ public record JigFieldHeader(JigFieldIdentifier id,
     public String name() {
         return id.name();
     }
+
+    public boolean isDeprecated() {
+        return jigFieldAttribute.isDeprecated();
+    }
 }

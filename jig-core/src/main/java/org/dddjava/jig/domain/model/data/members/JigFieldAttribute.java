@@ -13,4 +13,9 @@ public record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
     Stream<TypeIdentifier> allTypeIdentifierStream() {
         return declarationAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id());
     }
+
+    public boolean isDeprecated() {
+        return declarationAnnotations.stream()
+                .anyMatch(annotation -> annotation.id().equals(TypeIdentifier.from(Deprecated.class)));
+    }
 }

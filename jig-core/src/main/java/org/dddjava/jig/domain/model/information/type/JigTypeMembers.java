@@ -56,6 +56,7 @@ public record JigTypeMembers(
     public List<String> enumConstantNames() {
         return jigFieldHeaderStream(JigMemberOwnership.CLASS)
                 .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))
+                // TODO enumの順でソートしないと狂う可能性がある
                 .map(jigFieldHeader -> jigFieldHeader.name())
                 .toList();
     }

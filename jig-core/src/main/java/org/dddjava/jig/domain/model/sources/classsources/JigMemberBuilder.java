@@ -41,18 +41,6 @@ public class JigMemberBuilder {
         return list;
     }
 
-    public JigInstanceMember buildInstanceMember() {
-        return new JigInstanceMember(
-                new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
-    }
-
-    public JigStaticMember buildStaticMember() {
-        return new JigStaticMember(
-                new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
-                new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()))
-        );
-    }
-
     public void addInstanceMethod(JigMethodBuilder jigMethodBuilder) {
         instanceJigMethodBuilders.add(jigMethodBuilder);
     }
@@ -86,8 +74,13 @@ public class JigMemberBuilder {
         return new JigTypeMembers(
                 fieldHeaders,
                 List.of(), // メソッドはまだ
-                buildStaticMember(),
-                buildInstanceMember()
+                // 以下は互換のため。メソッドの実装をおえたら不要になる想定
+                new JigStaticMember(
+                        new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
+                        new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()))
+                ),
+                new JigInstanceMember(
+                        new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())))
         );
     }
 }

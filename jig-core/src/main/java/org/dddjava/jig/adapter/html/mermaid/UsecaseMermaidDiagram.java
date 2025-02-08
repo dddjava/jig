@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethodFinder;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -20,8 +19,6 @@ public record UsecaseMermaidDiagram(
 ) {
 
     public String textFor(JigMethod jigMethod) {
-        JigMethodFinder jigMethodFinder = methodIdentifier -> contextJigTypes.resolveJigMethod(methodIdentifier);
-
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
 
@@ -39,7 +36,7 @@ public record UsecaseMermaidDiagram(
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
                 mermaidText.add("style %s font-weight:bold".formatted(jigMethod.htmlIdText()));
             } else {
-                jigMethodFinder.find(methodIdentifier)
+                contextJigTypes.resolveJigMethod(methodIdentifier)
                         .ifPresent(method -> {
                             resolved.add(methodIdentifier);
                             if (method.remarkable()) {

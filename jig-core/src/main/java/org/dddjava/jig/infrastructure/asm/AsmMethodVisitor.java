@@ -59,7 +59,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public static MethodVisitor from(int api,
                                      // visitMethodの引数
                                      int access, String name, String descriptor, String signature, String[] exceptions,
-                                     TypeIdentifier typeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
+                                     TypeIdentifier declaringTypeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
         List<TypeIdentifier> signatureContainedTypes = new ArrayList<>();
         if (signature != null) {
             // シグネチャに登場する型を全部取り出す
@@ -78,7 +78,7 @@ class AsmMethodVisitor extends MethodVisitor {
                         // signatureがあればこちらから構築する
                         // TODO MethodDeclarationだけ取得しているがsignatureから取得できる型の収集を別でやっているため、
                         //  methodSignatureを2回読み取るようになっている。この１か所だけで読むように寄せる。（useTypesもやめたい）
-                        AsmMethodSignatureVisitor.buildMethodDeclaration(api, name, typeIdentifier, nonNullSignature)
+                        AsmMethodSignatureVisitor.buildMethodDeclaration(api, name, declaringTypeIdentifier, nonNullSignature)
                 ).orElseGet(() -> {
                     // signatureがないもしくは失敗した場合はdescriptorから構築する
                     // signatureの解析失敗はともかく、descriptorしかない場合はこの生成で適切なMethodSignatureができる
@@ -91,7 +91,7 @@ class AsmMethodVisitor extends MethodVisitor {
                             .map(ParameterizedType::noneGenerics)
                             .collect(Collectors.toList());
                     var methodSignature = MethodSignature.from(name, argumentTypes);
-                    return new MethodDeclaration(typeIdentifier, methodSignature, methodReturn);
+                    return new MethodDeclaration(declaringTypeIdentifier, methodSignature, methodReturn);
                 });
 
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
@@ -101,24 +101,43 @@ class AsmMethodVisitor extends MethodVisitor {
                 .toList();
 
         var methodType = Type.getMethodType(descriptor);
-        var jigMethodIdentifier = JigMethodIdentifier.from(typeIdentifier, name, Arrays.stream(methodType.getArgumentTypes()).map(type -> TypeIdentifier.valueOf(type.getClassName())).toList());
+        // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
+        var jigMethodIdentifier = JigMethodIdentifier.from(declaringTypeIdentifier, name,
+                Arrays.stream(methodType.getArgumentTypes()).map(type -> TypeIdentifier.valueOf(type.getClassName())).toList());
         var methodReturn = methodDeclaration.methodReturn().parameterizedType();
         var argumentList = methodDeclaration.methodSignature().arguments().stream()
                 .map(it -> parameterizedTypeToTypeReference(it))
                 .toList();
-        var jigMethodHeader = new JigMethodHeader(
-                jigMethodIdentifier,
-                // fieldと同じ判定をしているので共通化したい
-                ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
-                new JigMethodAttribute(
-                        resolveMethodVisibility(access),
-                        List.of(), // あのてーしょん未対応
-                        parameterizedTypeToTypeReference(methodReturn),
-                        argumentList,
-                        throwsTypes.stream().map(JigTypeReference::fromId).toList(),
-                        jigMethodFlags(access)
-                )
-        );
+        JigMethodHeader jigMethodHeader;
+        if (signature != null) {
+            jigMethodHeader = new JigMethodHeader(
+                    jigMethodIdentifier,
+                    // fieldと同じ判定をしているので共通化したい
+                    jigMemberOwnership(access),
+                    new JigMethodAttribute(
+                            resolveMethodVisibility(access),
+                            List.of(), // あのてーしょん未対応
+                            parameterizedTypeToTypeReference(methodReturn),
+                            argumentList,
+                            throwsTypes.stream().map(JigTypeReference::fromId).toList(),
+                            jigMethodFlags(access)
+                    )
+            );
+        } else {
+            jigMethodHeader = new JigMethodHeader(
+                    jigMethodIdentifier,
+                    // fieldと同じ判定をしているので共通化したい
+                    jigMemberOwnership(access),
+                    new JigMethodAttribute(
+                            resolveMethodVisibility(access),
+                            List.of(), // あのてーしょん未対応
+                            parameterizedTypeToTypeReference(methodReturn),
+                            argumentList,
+                            throwsTypes.stream().map(JigTypeReference::fromId).toList(),
+                            jigMethodFlags(access)
+                    )
+            );
+        }
 
         return new AsmMethodVisitor(api,
                 jigMethodHeader,
@@ -146,6 +165,10 @@ class AsmMethodVisitor extends MethodVisitor {
                     }
                 },
                 signatureContainedTypes);
+    }
+
+    private static JigMemberOwnership jigMemberOwnership(int access) {
+        return ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS;
     }
 
     private static EnumSet<JigMethodFlag> jigMethodFlags(int access) {

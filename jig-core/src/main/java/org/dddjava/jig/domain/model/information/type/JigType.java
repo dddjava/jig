@@ -193,11 +193,4 @@ public class JigType {
     public JigMethods instanceJigMethods() {
         return instanceMember().instanceMethods();
     }
-
-    // htmlでの出力のためにフィルタリングしている
-    public JigMethods instanceMethods() {
-        return instanceMember().instanceMethods()
-                .filterProgrammerDefined()
-                .excludeNotNoteworthyObjectMethod();
-    }
 }

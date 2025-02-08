@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
@@ -13,15 +12,15 @@ import java.util.Optional;
 public class MethodSmell {
 
     JigMethod method;
-    FieldDeclarations fieldDeclarations;
+    boolean hasFieldClass;
 
-    private MethodSmell(JigMethod method, FieldDeclarations fieldDeclarations) {
+    private MethodSmell(JigMethod method, boolean hasFieldClass) {
         this.method = method;
-        this.fieldDeclarations = fieldDeclarations;
+        this.hasFieldClass = hasFieldClass;
     }
 
-    public static Optional<MethodSmell> createMethodSmell(JigMethod method, FieldDeclarations fieldDeclarations) {
-        var instance = new MethodSmell(method, fieldDeclarations);
+    public static Optional<MethodSmell> createMethodSmell(JigMethod method, boolean hasFieldClass) {
+        var instance = new MethodSmell(method, hasFieldClass);
         if (!instance.hasSmell()) return Optional.empty();
         return Optional.of(instance);
     }
@@ -32,10 +31,10 @@ public class MethodSmell {
 
     public boolean notUseMember() {
         // フィールド無しはクラスのスメル？
-        if (!fieldDeclarations.empty()) {
-            return false;
+        if (hasFieldClass) {
+            return new MethodWorries(method).contains(MethodWorry.メンバを使用していない);
         }
-        return new MethodWorries(method).contains(MethodWorry.メンバを使用していない);
+        return false;
     }
 
     public boolean primitiveInterface() {

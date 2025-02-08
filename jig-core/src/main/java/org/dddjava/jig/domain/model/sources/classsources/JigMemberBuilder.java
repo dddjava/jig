@@ -52,7 +52,6 @@ public class JigMemberBuilder {
 
     public JigInstanceMember buildInstanceMember() {
         return new JigInstanceMember(
-                new JigFields(instanceFields),
                 new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
     }
 

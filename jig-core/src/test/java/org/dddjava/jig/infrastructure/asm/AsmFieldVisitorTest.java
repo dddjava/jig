@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
-import org.dddjava.jig.infrastructure.asm.ut.MySutClass;
+import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 

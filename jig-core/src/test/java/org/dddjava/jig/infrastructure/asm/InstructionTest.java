@@ -76,9 +76,8 @@ public class InstructionTest {
     @Test
     void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() throws Exception {
         var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
-        var jigMethods = jigType.instanceMethods();
 
-        var list = jigMethods.stream()
+        var list = jigType.instanceJigMethodStream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("method(MethodArgument)"))
                 .toList();
         assertEquals(
@@ -90,9 +89,8 @@ public class InstructionTest {
     @Test
     void メソッドの使用しているメソッドが取得できる_メソッド参照() throws Exception {
         var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
-        var jigMethods = jigType.instanceMethods();
 
-        var method3 = jigMethods.stream()
+        var method3 = jigType.instanceJigMethodStream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("methodRef()"))
                 .toList();
         assertEquals(
@@ -104,9 +102,8 @@ public class InstructionTest {
     @Test
     void メソッドの使用しているメソッドが取得できる_lambda式() throws Exception {
         var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
-        var jigMethods = jigType.instanceMethods();
 
-        var method2 = jigMethods.stream()
+        var method2 = jigType.instanceJigMethodStream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))
                 .toList();
         assertEquals(

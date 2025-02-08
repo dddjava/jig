@@ -1,6 +1,7 @@
 package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
@@ -118,5 +119,12 @@ class JigExpressionObject {
 
     private String linkTypeText(TypeIdentifier typeIdentifier) {
         return String.format("<a href=\"./domain.html#%s\">%s</a>", typeIdentifier.fullQualifiedName(), labelText(typeIdentifier));
+    }
+
+    public List<JigMethod> listRemarkableInstanceMethods(JigType jigType) {
+        return jigType.instanceJigMethods()
+                .filterProgrammerDefined()
+                .excludeNotNoteworthyObjectMethod()
+                .listRemarkable();
     }
 }

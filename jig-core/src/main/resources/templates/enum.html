@@ -56,7 +56,7 @@
             </table>
 
             <th:block
-                    th:replace="~{fragment-type :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})}">
+                    th:replace="~{fragment-type :: methodTable(kind='メソッド', list=${#jig.listRemarkableInstanceMethods(item)})}">
                 メソッドテーブル
             </th:block>
             <th:block

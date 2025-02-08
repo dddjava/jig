@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.information.type;
 
+import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -51,7 +51,13 @@ public enum JigTypeValueKind {
     }
 
     private static boolean matchFieldType(JigFields jigFields, Class<?>... classes) {
-        return jigFields.fieldDeclarations()
-                .matches(Arrays.stream(classes).map(TypeIdentifier::from).toArray(TypeIdentifier[]::new));
+        List<JigField> list = jigFields.list();
+        if (list.size() != classes.length) return false;
+        for (int i = 0; i < list.size(); i++) {
+            if (!list.get(i).typeIdentifier().equals(TypeIdentifier.from(classes[i]))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

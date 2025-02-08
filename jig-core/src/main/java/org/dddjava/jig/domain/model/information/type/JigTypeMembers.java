@@ -70,5 +70,11 @@ public record JigTypeMembers(
 
     public Stream<JigMethod> jigMethodStream() {
         return jigInstanceMember.jigMethodStream();
+
+//        return jigMethodHeaders.stream()
+//                .map(jigMethodHeader -> new JigMethod(
+//                        jigMethodHeader,
+//                        null, null, null, null, null, null
+//                ));
     }
 }

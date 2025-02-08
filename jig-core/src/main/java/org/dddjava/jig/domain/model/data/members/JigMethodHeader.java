@@ -6,7 +6,7 @@ package org.dddjava.jig.domain.model.data.members;
 public record JigMethodHeader(JigMethodIdentifier id,
                               JigMemberOwnership ownership,
                               JigMethodAttribute jigMethodAttribute) {
-    public Object name() {
+    public String name() {
         return id.name();
     }
 }

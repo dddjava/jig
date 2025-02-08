@@ -1,7 +1,10 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.data.classes.field.*;
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.data.classes.field.FieldType;
+import org.dddjava.jig.domain.model.data.classes.field.JigField;
+import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
@@ -58,8 +61,8 @@ public class JigMemberBuilder {
     public JigStaticMember buildStaticMember() {
         return new JigStaticMember(
                 new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
-                new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
-                new StaticFieldDeclarations(this.staticFieldDeclarations));
+                new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()))
+        );
     }
 
     public FieldDeclaration addInstanceField(TypeIdentifier owner, FieldType fieldType, String name) {

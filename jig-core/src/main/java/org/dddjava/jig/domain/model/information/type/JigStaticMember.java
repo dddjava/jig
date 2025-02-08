@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.type;
 
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -17,16 +16,10 @@ import java.util.stream.Stream;
 public class JigStaticMember {
     private final JigMethods constructors;
     private final JigMethods staticMethods;
-    private final StaticFieldDeclarations staticFieldDeclarations;
 
-    public JigStaticMember(JigMethods constructors, JigMethods staticMethods, StaticFieldDeclarations staticFieldDeclarations) {
+    public JigStaticMember(JigMethods constructors, JigMethods staticMethods) {
         this.constructors = constructors;
         this.staticMethods = staticMethods;
-        this.staticFieldDeclarations = staticFieldDeclarations;
-    }
-
-    public StaticFieldDeclarations staticFieldDeclarations() {
-        return staticFieldDeclarations.selfDefineOnly();
     }
 
     List<TypeIdentifier> listUsingTypes() {

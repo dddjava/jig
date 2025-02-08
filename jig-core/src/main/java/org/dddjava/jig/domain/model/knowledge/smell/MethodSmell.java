@@ -9,15 +9,7 @@ import java.util.Optional;
 /**
  * メソッドの不吉なにおい
  */
-public class MethodSmell {
-
-    JigMethod method;
-    boolean hasFieldClass;
-
-    private MethodSmell(JigMethod method, boolean hasFieldClass) {
-        this.method = method;
-        this.hasFieldClass = hasFieldClass;
-    }
+public record MethodSmell(JigMethod method, boolean hasFieldClass) {
 
     public static Optional<MethodSmell> createMethodSmell(JigMethod method, boolean hasFieldClass) {
         var instance = new MethodSmell(method, hasFieldClass);

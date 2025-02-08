@@ -18,4 +18,8 @@ public record JigMethodIdentifier(String value) {
         return new JigMethodIdentifier("%s#%s(%s)".formatted(declaringType.fullQualifiedName(), methodName,
                 parameterTypeIdentifiers.stream().map(TypeIdentifier::fullQualifiedName).collect(Collectors.joining(","))));
     }
+
+    public String name() {
+        return value.split("[#()]")[1];
+    }
 }

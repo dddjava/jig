@@ -53,6 +53,12 @@ public record JigTypeMembers(
                 .findAny();
     }
 
+    public Collection<JigMethodHeader> findMethodByName(String name) {
+        return jigMethodHeaders.stream()
+                .filter(jigMethodHeader -> jigMethodHeader.name().equals(name))
+                .toList();
+    }
+
     public List<String> enumConstantNames() {
         return jigFieldHeaderStream(JigMemberOwnership.CLASS)
                 .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))

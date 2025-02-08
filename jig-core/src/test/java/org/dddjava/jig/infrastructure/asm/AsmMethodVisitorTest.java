@@ -3,25 +3,27 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
+import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.objectweb.asm.ClassReader;
 import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.relation.InterfaceDefinition;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.misc.DecisionClass;
-import testing.TestSupport;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * MethodVisitorはClassVisitor経由でテストする
@@ -29,9 +31,7 @@ import static org.assertj.core.api.Assertions.tuple;
 class AsmMethodVisitorTest {
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-        JigType actual = TestSupport.buildJigType(MemberAnnotatedClass.class);
-
-        JigMethod method = resolveMethodBySignature(actual, new MethodSignature("method"));
+        JigMethod method = JigMethod準備(MemberAnnotatedClass.class, "method");
         MethodAnnotation methodAnnotation = method.methodAnnotations().list().get(0);
 
         assertThat(methodAnnotation.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
@@ -49,55 +49,30 @@ class AsmMethodVisitorTest {
 
     @Test
     void 戻り値のジェネリクスが取得できる() throws Exception {
-        JigType actual = TestSupport.buildJigType(InterfaceDefinition.class);
-
-        TypeIdentifiers identifiers = actual.usingTypes();
-        assertThat(identifiers.list())
-                .contains(
-                        TypeIdentifier.from(List.class),
-                        TypeIdentifier.from(String.class)
-                );
-
-        MethodReturn methodReturn = resolveMethodBySignature(actual, new MethodSignature("parameterizedListMethod"))
+        MethodReturn methodReturn = JigMethod準備(InterfaceDefinition.class, "parameterizedListMethod")
                 .declaration().methodReturn();
-        ParameterizedType parameterizedType = methodReturn.parameterizedType();
 
-        assertThat(parameterizedType.asSimpleText()).isEqualTo("List<String>");
+        assertEquals("List<String>", methodReturn.parameterizedType().asSimpleText());
     }
 
     @Test
     void resolveArgumentGenerics() {
-        JigType jigType = TestSupport.buildJigType(ResolveArgumentGenerics.class);
+        JigMethod actual = JigMethod準備(ResolveArgumentGenerics.class, "method");
 
-        JigMethod actual = resolveMethodByName(jigType, "method");
-
-        assertThat(actual.declaration().methodSignature().asText())
-                .isEqualTo("method(java.util.List<java.lang.String>)");
+        assertEquals("method(java.util.List<java.lang.String>)", actual.declaration().methodSignature().asText());
     }
 
-    @Test
-    void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        JigType actual = TestSupport.buildJigType(DecisionClass.class);
-
-        JigMethods jigMethods = actual.instanceMethods();
-        assertThat(jigMethods.list())
-                .extracting(
-                        method -> method.declaration().methodSignature().asSimpleText(),
-                        method -> method.decisionNumber().asText())
-                .containsExactlyInAnyOrder(
-                        tuple("分岐なしメソッド()", "0"),
-                        tuple("ifがあるメソッド()", "1"),
-                        tuple("switchがあるメソッド()", "1"),
-                        // forは ifeq と goto で構成されるある意味での分岐
-                        tuple("forがあるメソッド()", "1")
-                );
-    }
-
-    JigMethod resolveMethodBySignature(JigType jigType, MethodSignature methodSignature) {
-        return jigType.allJigMethodStream()
-                .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+    @CsvSource({
+            "分岐なしメソッド, 0",
+            "ifがあるメソッド, 1",
+            "switchがあるメソッド, 1",
+            // forは ifeq と goto で構成されるある意味での分岐
+            "forがあるメソッド, 1",
+    })
+    @ParameterizedTest
+    void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
+        JigMethod actual = JigMethod準備(DecisionClass.class, name);
+        assertEquals(number, actual.decisionNumber().intValue());
     }
 
     private JigMethod resolveMethodByName(JigType jigType, String name) {
@@ -109,6 +84,30 @@ class AsmMethodVisitorTest {
 
     static class ResolveArgumentGenerics {
         public void method(List<String> list) {
+        }
+    }
+
+    private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
+        JigTypeMembers members = 準備(sutClass).buildJigTypeMembers();
+        return members.jigInstanceMember().jigMethodStream()
+                .filter(jigMethod -> jigMethod.name().equals(methodName))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private static JigMethodHeader JigMethodHeader準備(Class<?> sutClass, String methodName) {
+        var members = 準備(sutClass).buildJigTypeMembers();
+        Collection<JigMethodHeader> methodByName = members.findMethodByName(methodName);
+        return methodByName.stream().findFirst().orElseThrow();
+    }
+
+    private static JigMemberBuilder 準備(Class<?> sutClass) {
+        try {
+            AsmClassVisitor visitor = new AsmClassVisitor();
+            new ClassReader(sutClass.getName()).accept(visitor, 0);
+            return visitor.jigMemberBuilder();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

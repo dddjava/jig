@@ -19,6 +19,8 @@ import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -36,19 +38,17 @@ import java.util.stream.Collectors;
  * visitEnd
  */
 class AsmMethodVisitor extends MethodVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(AsmMethodVisitor.class);
 
     private final Consumer<AsmMethodVisitor> endConsumer;
 
-    // visitMethod由来の情報
-    final MethodDeclaration methodDeclaration;
     // このVisitorで収集した情報
     final Instructions methodInstructions = Instructions.newInstance();
     final List<Annotation> annotationList = new ArrayList<>();
     private final Collection<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
 
-    public AsmMethodVisitor(int api, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer) {
+    public AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);
-        this.methodDeclaration = methodDeclaration;
         this.endConsumer = endConsumer;
     }
 
@@ -102,17 +102,16 @@ class AsmMethodVisitor extends MethodVisitor {
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeIdentifier(type)).toList());
 
         return new AsmMethodVisitor(api,
-                methodDeclaration,
                 it -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             it.jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType),
                             access,
                             signatureContainedTypes,
-                            it.methodDeclaration,
+                            methodDeclaration,
                             it.annotationList,
                             it.methodInstructions,
                             isEnum,
-                            jigMemberBuilder.isRecordComponent(it.methodDeclaration));
+                            jigMemberBuilder.isRecordComponent(methodDeclaration));
 
                     if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
                         // コンストラクタ
@@ -274,7 +273,7 @@ class AsmMethodVisitor extends MethodVisitor {
         if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())
                 && "metafactory".equals(bootstrapMethodHandle.getName())) {
             if (bootstrapMethodArguments.length != 3) {
-                AsmClassVisitor.logger.warn("想定外のInvokeDynamicが {} で検出されました。読み飛ばします。", methodDeclaration);
+                logger.warn("想定外のInvokeDynamicが検出されました。読み飛ばします。 {} {}", name, descriptor);
             } else {
                 // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
                 // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ
@@ -317,7 +316,7 @@ class AsmMethodVisitor extends MethodVisitor {
             default -> {
                 // JVMとASMの仕様上ここには来ないはずだが、来た場合に続行不能にしたいためにログ出力しておく。
                 // 将来のJavaバージョンアップで追加された場合に
-                AsmClassVisitor.logger.warn("予期しないHandler {} が検出されました。解析が部分的にスキップされます。このログが出力される場合、lambdaによるメソッド呼び出しが欠落する可能性があります。issueなどで再現コードをいただけると助かります。", handle);
+                logger.warn("予期しないHandler {} が検出されました。解析が部分的にスキップされます。このログが出力される場合、lambdaによるメソッド呼び出しが欠落する可能性があります。issueなどで再現コードをいただけると助かります。", handle);
                 yield false;
             }
         };

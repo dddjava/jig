@@ -131,17 +131,17 @@ class AsmClassVisitor extends ClassVisitor {
         return AsmMethodVisitor.from(this.api,
                 access, name, descriptor, signature, exceptions,
                 typeIdentifier,
-                data -> {
+                it -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             access,
-                            data.jigMemberVisibility,
-                            data.signatureContainedTypes,
-                            data.throwsTypes,
-                            data.methodDeclaration,
-                            data.annotationList,
-                            data.methodInstructions,
+                            it.jigMemberVisibility,
+                            it.signatureContainedTypes,
+                            it.throwsTypes,
+                            it.methodDeclaration,
+                            it.annotationList,
+                            it.methodInstructions,
                             jigTypeHeader.jigTypeKind() == JigTypeKind.ENUM,
-                            jigMemberBuilder.isRecordComponent(data.methodDeclaration));
+                            jigMemberBuilder.isRecordComponent(it.methodDeclaration));
 
                     if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
                         // コンストラクタ

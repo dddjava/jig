@@ -21,7 +21,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                                      Glossary glossary) implements JigDataProvider {
 
     public static DefaultJigDataProvider from(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, MyBatisStatements myBatisStatements, GlossaryRepository glossaryRepository) {
-        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, javaSourceModel, glossaryRepository), myBatisStatements, glossaryRepository.all());
+        return new DefaultJigDataProvider(javaSourceModel, initializeJigTypes(classSourceModel, glossaryRepository), myBatisStatements, glossaryRepository.all());
     }
 
     @Override
@@ -44,7 +44,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
         return glossary;
     }
 
-    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel, GlossaryRepository glossaryRepository) {
+    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, GlossaryRepository glossaryRepository) {
         return classSourceModel.classDeclarations().stream()
                 .map(classDeclaration -> {
                     // メソッドのコメント登録

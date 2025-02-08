@@ -35,7 +35,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
                 .map(categoryType -> {
                     StringJoiner categoryValues = new StringJoiner("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>");
 
-                    List<StaticFieldDeclaration> list = categoryType.staticMember().staticFieldDeclarations().selfDefineOnly().list();
+                    List<StaticFieldDeclaration> list = categoryType.staticMember().staticFieldDeclarations().list();
                     for (int i = 0; i < list.size(); i++) {
                         if (i > 20) {
                             categoryValues.add("... more");

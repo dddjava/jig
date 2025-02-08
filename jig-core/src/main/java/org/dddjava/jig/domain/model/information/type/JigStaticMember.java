@@ -26,7 +26,7 @@ public class JigStaticMember {
     }
 
     public StaticFieldDeclarations staticFieldDeclarations() {
-        return staticFieldDeclarations;
+        return staticFieldDeclarations.selfDefineOnly();
     }
 
     List<TypeIdentifier> listUsingTypes() {

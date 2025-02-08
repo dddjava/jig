@@ -45,7 +45,7 @@ class JigExpressionObject {
             return List.of();
         }
 
-        return jigType.staticMember().staticFieldDeclarations().selfDefineOnly().list().stream()
+        return jigType.staticMember().staticFieldDeclarations().list().stream()
                 .map(StaticFieldDeclaration::nameText)
                 .toList();
     }

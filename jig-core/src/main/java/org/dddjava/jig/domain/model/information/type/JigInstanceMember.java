@@ -1,11 +1,6 @@
 package org.dddjava.jig.domain.model.information.type;
 
-import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * インスタンスに属するもの
@@ -17,19 +12,7 @@ public class JigInstanceMember {
         this.instanceMethods = instanceMethods;
     }
 
-    public boolean hasMethod() {
-        return !instanceMethods.empty();
-    }
-
     public JigMethods instanceMethods() {
         return instanceMethods;
-    }
-
-    List<TypeIdentifier> listUsingTypes() {
-        return instanceMethods.listUsingTypes();
-    }
-
-    public Stream<JigMethod> jigMethodStream() {
-        return instanceMethods.stream();
     }
 }

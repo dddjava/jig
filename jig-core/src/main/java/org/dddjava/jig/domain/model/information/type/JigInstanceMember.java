@@ -37,10 +37,6 @@ public class JigInstanceMember {
         return instanceMethods.listUsingTypes();
     }
 
-    public JigFields instanceFields() {
-        return instanceFields;
-    }
-
     public Stream<JigMethod> jigMethodStream() {
         return instanceMethods.stream();
     }

@@ -129,7 +129,7 @@ public class AsmClassSourceReaderTest {
         void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
             JigType actual = TestSupport.buildJigType(MemberAnnotatedClass.class);
 
-            JigFields jigFields = actual.instanceMember().instanceFields();
+            JigFields jigFields = actual.instanceJigFields();
 
             FieldAnnotation fieldAnnotation = jigFields.list().stream()
                     .filter(e -> e.fieldDeclaration().nameText().equals("field"))

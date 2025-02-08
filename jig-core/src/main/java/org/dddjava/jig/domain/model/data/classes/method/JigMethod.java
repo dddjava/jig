@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
@@ -23,22 +24,18 @@ public class JigMethod {
     MethodDeclaration methodDeclaration;
 
     MethodAnnotations methodAnnotations;
-    JigMemberVisibility jigMemberVisibility;
 
     MethodDerivation methodDerivation;
     private final Instructions instructions;
-    private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
     private final Term term;
 
-    public JigMethod(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, Term term) {
+    public JigMethod(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> signatureContainedTypes, Term term) {
         this.jigMethodHeader = jigMethodHeader;
         this.methodDeclaration = methodDeclaration;
         this.methodAnnotations = methodAnnotations;
-        this.jigMemberVisibility = jigMemberVisibility;
         this.methodDerivation = methodDerivation;
         this.instructions = instructions;
-        this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
         this.term = term;
     }
@@ -56,11 +53,11 @@ public class JigMethod {
     }
 
     public JigMemberVisibility visibility() {
-        return jigMemberVisibility;
+        return jigMethodHeader.jigMethodAttribute().jigMemberVisibility();
     }
 
     public boolean isPublic() {
-        return jigMemberVisibility.isPublic();
+        return visibility().isPublic();
     }
 
     public UsingFields usingFields() {
@@ -88,7 +85,7 @@ public class JigMethod {
                         instructions.usingTypes(),
                         methodDeclaration.relateTypes(),
                         methodAnnotations.list().stream().map(MethodAnnotation::annotationType).toList(),
-                        throwsTypes,
+                        jigMethodHeader.jigMethodAttribute().throwTypes().stream().map(JigTypeReference::id).toList(),
                         signatureContainedTypes)
                 .flatMap(Collection::stream)
                 .toList();
@@ -115,7 +112,7 @@ public class JigMethod {
      * 出力時に使用する名称
      */
     public String labelTextWithSymbol() {
-        return jigMemberVisibility.symbol() + ' ' + labelText();
+        return visibility().symbol() + ' ' + labelText();
     }
 
     public String labelText() {
@@ -160,7 +157,7 @@ public class JigMethod {
      * privateでもドキュメントコメントが書かれているものは注目する。
      */
     public boolean remarkable() {
-        return jigMemberVisibility == JigMemberVisibility.PUBLIC || documented();
+        return isPublic() || documented();
     }
 
     public List<MethodDeclaration> methodInstructions() {

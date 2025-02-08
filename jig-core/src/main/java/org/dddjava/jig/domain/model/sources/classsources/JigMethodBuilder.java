@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
-import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -24,20 +23,16 @@ public class JigMethodBuilder {
 
     private final JigMethodHeader jigMethodHeader;
     private final MethodDeclaration methodDeclaration;
-    private final JigMemberVisibility jigMemberVisibility;
     private final MethodDerivation methodDerivation;
-    private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
     private final List<Annotation> annotations;
     private final Instructions instructions;
     private Term term = null;
 
-    public JigMethodBuilder(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, JigMemberVisibility jigMemberVisibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, List<Annotation> annotationList, Instructions methodInstructions) {
+    public JigMethodBuilder(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, MethodDerivation methodDerivation, List<Annotation> annotationList, Instructions methodInstructions) {
         this.jigMethodHeader = jigMethodHeader;
         this.methodDeclaration = methodDeclaration;
-        this.jigMemberVisibility = jigMemberVisibility;
         this.methodDerivation = methodDerivation;
-        this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
         this.annotations = annotationList;
         this.instructions = methodInstructions;
@@ -74,14 +69,12 @@ public class JigMethodBuilder {
 
     public static JigMethodBuilder builder(JigMethodHeader jigMethodHeader,
                                            int access,
-                                           JigMemberVisibility jigMemberVisibility,
                                            List<TypeIdentifier> signatureContainedTypes,
-                                           List<TypeIdentifier> throwsTypes,
                                            MethodDeclaration methodDeclaration,
                                            List<Annotation> annotationList,
                                            Instructions methodInstructions, boolean isEnum, boolean isRecordComponent) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(jigMethodHeader, methodDeclaration, signatureContainedTypes, jigMemberVisibility, methodDerivation, throwsTypes, annotationList, methodInstructions);
+        return new JigMethodBuilder(jigMethodHeader, methodDeclaration, signatureContainedTypes, methodDerivation, annotationList, methodInstructions);
     }
 
     public JigMethod build() {
@@ -91,7 +84,7 @@ public class JigMethodBuilder {
         if (annotations == null) {
             logger.warn("{}のannotationsが設定されていません。メソッド実装に伴うアノテーションの情報は出力されません。", methodDeclaration.identifier());
         }
-        return new JigMethod(jigMethodHeader, methodDeclaration, annotatedMethods(), jigMemberVisibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes, term);
+        return new JigMethod(jigMethodHeader, methodDeclaration, annotatedMethods(), methodDerivation, instructions, signatureContainedTypes, term);
     }
 
     private MethodAnnotations annotatedMethods() {

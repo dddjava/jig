@@ -39,18 +39,14 @@ class AsmMethodVisitor extends MethodVisitor {
     // visitMethod由来の情報
     final JigMethodHeader jigMethodHeader;
     final MethodDeclaration methodDeclaration;
-    final JigMemberVisibility jigMemberVisibility;
-    final List<TypeIdentifier> throwsTypes;
     // このVisitorで収集した情報
     final Instructions methodInstructions;
     final List<Annotation> annotationList;
     final List<TypeIdentifier> signatureContainedTypes;
 
-    public AsmMethodVisitor(int api, JigMethodHeader jigMethodHeader, JigMemberVisibility jigMemberVisibility, List<TypeIdentifier> throwsTypes, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
+    public AsmMethodVisitor(int api, JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, Consumer<AsmMethodVisitor> endConsumer, List<TypeIdentifier> signatureContainedTypes) {
         super(api);
         this.jigMethodHeader = jigMethodHeader;
-        this.jigMemberVisibility = jigMemberVisibility;
-        this.throwsTypes = throwsTypes;
         this.methodDeclaration = methodDeclaration;
         this.signatureContainedTypes = signatureContainedTypes;
         this.methodInstructions = Instructions.newInstance();
@@ -124,8 +120,6 @@ class AsmMethodVisitor extends MethodVisitor {
 
         return new AsmMethodVisitor(api,
                 jigMethodHeader,
-                resolveMethodVisibility(access),
-                throwsTypes,
                 methodDeclaration,
                 endConsumer,
                 signatureContainedTypes);

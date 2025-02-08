@@ -33,7 +33,6 @@ public class JigStaticMember {
         List<TypeIdentifier> list = new ArrayList<>();
         list.addAll(constructors.listUsingTypes());
         list.addAll(staticMethods.listUsingTypes());
-        list.addAll(staticFieldDeclarations.listTypeIdentifiers());
         return list;
     }
 

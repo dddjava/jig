@@ -3,15 +3,22 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.smell.SmelledClass;
 import stub.domain.model.smell.SmelledRecord;
 import testing.JigServiceTest;
+import testing.TestSupport;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 @JigServiceTest
@@ -42,6 +49,34 @@ class MethodSmellListTest {
 
     private static MethodSmell extractMethod(List<MethodSmell> detectedSmells, String methodName) {
         return detectedSmells.stream().filter(methodSmell -> methodSmell.methodDeclaration().identifier().methodSignature().methodName().equals(methodName)).findAny().orElseThrow();
+    }
+
+
+    @MethodSource
+    @ParameterizedTest
+    void メンバ未使用の判定(Class<?> clz, String name, boolean expected) {
+        var jigType = TestSupport.buildJigType(clz);
+        MethodSmellList methodSmellList = new MethodSmellList(new JigTypes(List.of(jigType)));
+
+        var smell = methodSmellList.list().stream().filter(methodSmell -> methodSmell.method().name().equals(name)).findAny().orElseThrow();
+        assertEquals(expected, smell.methodWorries().contains(MethodWorry.メンバを使用していない));
+    }
+
+    static Stream<Arguments> メンバ未使用の判定() {
+        return Stream.of(
+                arguments(MySut.class, "インスタンスフィールドを使用しているインスタンスメソッド", false),
+                arguments(MySut.class, "staticフィールドを使用しているインスタンスメソッド", false),
+                arguments(MySut.class, "何も使用していないインスタンスメソッド", true),
+                arguments(MySut.class, "他クラスのメソッドを使用しているがメンバを使用していないメソッド", true),
+                arguments(MySut.class, "インスタンスメソッドを使用しているインスタンスメソッド", false),
+                arguments(MySut.class, "staticメソッドを使用しているインスタンスメソッド", false),
+                // staticメソッドは現在対象にしていない
+                //arguments(MySut.class, "staticフィールドを使用しているstaticメソッド", true),
+                //arguments(MySut.class, "何も使用していないstaticメソッド", true)
+                arguments(MySutInterface.class, "インタフェースのメソッド", false),
+                arguments(MySutInterface.class, "インタフェースのdefaultメソッドでメンバを使用していない", true),
+                arguments(MySutInterface.class, "インタフェースのdefaultメソッドでインタフェースのメソッドを使用している", false)
+        );
     }
 
     /**

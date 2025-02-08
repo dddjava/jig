@@ -53,7 +53,7 @@ class AsmFieldVisitorTest {
         try {
             AsmClassVisitor visitor = new AsmClassVisitor();
             new ClassReader(sutClass.getName()).accept(visitor, 0);
-            return visitor.jigTypeBuilder();
+            return visitor.jigMemberBuilder();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

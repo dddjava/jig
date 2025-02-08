@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
-import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 import java.util.stream.Collectors;
@@ -53,10 +52,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                         jigMethodBuilder.registerMethodTerm(term);
                     });
 
-                    JigMemberBuilder jigMemberBuilder = classDeclaration.jigMemberBuilder();
-                    JigTypeMembers jigTypeMembers = jigMemberBuilder.buildJigTypeMembers();
-
-                    return buildJigType(classDeclaration.jigTypeHeader(), jigTypeMembers, glossaryRepository);
+                    return buildJigType(classDeclaration.jigTypeHeader(), classDeclaration.jigTypeMembers(), glossaryRepository);
                 })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }

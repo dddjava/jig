@@ -30,7 +30,7 @@ public class AsmClassSourceReader implements ClassSourceReader {
             classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
 
             return Optional.of(new ClassDeclaration(
-                    asmClassVisitor.jigTypeBuilder(),
+                    asmClassVisitor.jigMemberBuilder(),
                     asmClassVisitor.jigTypeHeader()
             ));
         } catch (Exception e) {

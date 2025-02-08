@@ -212,7 +212,7 @@ class AsmClassVisitor extends ClassVisitor {
         return TypeIdentifier.valueOf(type.getClassName());
     }
 
-    public JigMemberBuilder jigTypeBuilder() {
+    public JigMemberBuilder jigMemberBuilder() {
         // visitEnd後にしか呼んではいけない
         return Objects.requireNonNull(jigMemberBuilder);
     }

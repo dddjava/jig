@@ -17,10 +17,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -120,7 +117,8 @@ class AsmMethodVisitor extends MethodVisitor {
                         List.of(), // あのてーしょん未対応
                         parameterizedTypeToTypeReference(methodReturn),
                         argumentList,
-                        throwsTypes.stream().map(JigTypeReference::fromId).toList()
+                        throwsTypes.stream().map(JigTypeReference::fromId).toList(),
+                        jigMethodFlags(access)
                 )
         );
 
@@ -131,6 +129,19 @@ class AsmMethodVisitor extends MethodVisitor {
                 methodDeclaration,
                 endConsumer,
                 signatureContainedTypes);
+    }
+
+    private static EnumSet<JigMethodFlag> jigMethodFlags(int access) {
+        EnumSet<JigMethodFlag> set = EnumSet.noneOf(JigMethodFlag.class);
+        if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) set.add(JigMethodFlag.SYNCHRONIZED);
+        if ((access & Opcodes.ACC_BRIDGE) != 0) set.add(JigMethodFlag.BRIDGE);
+        if ((access & Opcodes.ACC_VARARGS) != 0) set.add(JigMethodFlag.VARARGS);
+        if ((access & Opcodes.ACC_NATIVE) != 0) set.add(JigMethodFlag.NATIVE);
+        if ((access & Opcodes.ACC_ABSTRACT) != 0) set.add(JigMethodFlag.ABSTRACT);
+        if ((access & Opcodes.ACC_STRICT) != 0) set.add(JigMethodFlag.STRICT);
+        if ((access & Opcodes.ACC_SYNTHETIC) != 0) set.add(JigMethodFlag.SYNTHETIC);
+
+        return set;
     }
 
     private static JigTypeReference parameterizedTypeToTypeReference(ParameterizedType parameterizedType) {

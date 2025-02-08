@@ -180,7 +180,6 @@ public class JigMethod {
     }
 
     public boolean isAbstract() {
-        // 抽象メソッドを判定したい
-        return false;
+        return jigMethodHeader.jigMethodAttribute().isAbstract();
     }
 }

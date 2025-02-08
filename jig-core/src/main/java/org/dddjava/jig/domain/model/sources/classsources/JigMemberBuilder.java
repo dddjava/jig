@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
@@ -24,7 +23,6 @@ import static java.util.stream.Collectors.toList;
  */
 public class JigMemberBuilder {
 
-    final List<StaticFieldDeclaration> staticFieldDeclarations;
     final List<JigMethodBuilder> staticJigMethodBuilders;
 
     final List<JigMethodBuilder> constructorBuilders;
@@ -40,7 +38,6 @@ public class JigMemberBuilder {
         this.staticJigMethodBuilders = new ArrayList<>();
         this.constructorBuilders = new ArrayList<>();
         this.instanceFields = new ArrayList<>();
-        this.staticFieldDeclarations = new ArrayList<>();
         this.recordComponentDefinitions = new ArrayList<>();
         this.fieldHeaders = new ArrayList<>();
     }
@@ -80,11 +77,6 @@ public class JigMemberBuilder {
             }
             return jigField;
         });
-    }
-
-    public void addStaticField(TypeIdentifier owner, TypeIdentifier fieldTypeIdentifier, String name) {
-        // instanceフィールドはFieldTypeを使っているが、staticフィールドのジェネリクスは扱えていなさそう
-        staticFieldDeclarations.add(new StaticFieldDeclaration(owner, name, fieldTypeIdentifier));
     }
 
     public void addInstanceMethod(JigMethodBuilder jigMethodBuilder) {

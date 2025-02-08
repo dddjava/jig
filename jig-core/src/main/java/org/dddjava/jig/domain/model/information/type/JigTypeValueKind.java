@@ -28,7 +28,8 @@ public enum JigTypeValueKind {
 
         JigInstanceMember jigInstanceMember = jigType.instanceMember();
         FieldDeclarations fieldDeclarations = jigInstanceMember.fieldDeclarations();
-        if (isCollectionField(fieldDeclarations)) {
+        if (fieldDeclarations.matches(TypeIdentifier.from(List.class))) return コレクション;
+        if ((fieldDeclarations.matches(TypeIdentifier.from(Set.class)))) {
             return コレクション;
         }
         if (fieldDeclarations.matches((TypeIdentifier.from(String.class)))) {
@@ -48,10 +49,5 @@ public enum JigTypeValueKind {
             return 期間;
         }
         return 不明;
-    }
-
-    private static boolean isCollectionField(FieldDeclarations fieldDeclarations) {
-        if (fieldDeclarations.matches(TypeIdentifier.from(List.class))) return true;
-        return (fieldDeclarations.matches(TypeIdentifier.from(Set.class)));
     }
 }

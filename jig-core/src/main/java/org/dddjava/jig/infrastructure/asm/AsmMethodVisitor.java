@@ -13,6 +13,8 @@ import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
+import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -57,7 +59,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public static MethodVisitor from(int api,
                                      // visitMethodの引数
                                      int access, String name, String descriptor, String signature, String[] exceptions,
-                                     TypeIdentifier typeIdentifier, Consumer<AsmMethodVisitor> endConsumer) {
+                                     TypeIdentifier typeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
         List<TypeIdentifier> signatureContainedTypes = new ArrayList<>();
         if (signature != null) {
             // シグネチャに登場する型を全部取り出す
@@ -121,7 +123,28 @@ class AsmMethodVisitor extends MethodVisitor {
         return new AsmMethodVisitor(api,
                 jigMethodHeader,
                 methodDeclaration,
-                endConsumer,
+                it -> {
+                    JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
+                            it.jigMethodHeader,
+                            access,
+                            it.signatureContainedTypes,
+                            it.methodDeclaration,
+                            it.annotationList,
+                            it.methodInstructions,
+                            isEnum,
+                            jigMemberBuilder.isRecordComponent(it.methodDeclaration));
+
+                    if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
+                        // コンストラクタ
+                        jigMemberBuilder.addConstructor(jigMethodBuilder);
+                    } else if ((access & Opcodes.ACC_STATIC) != 0) {
+                        // staticメソッド
+                        jigMemberBuilder.addStaticMethod(jigMethodBuilder);
+                    } else {
+                        // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
+                        jigMemberBuilder.addInstanceMethod(jigMethodBuilder);
+                    }
+                },
                 signatureContainedTypes);
     }
 

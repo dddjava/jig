@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
-import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;
@@ -128,31 +127,8 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        return AsmMethodVisitor.from(this.api,
-                access, name, descriptor, signature, exceptions,
-                typeIdentifier,
-                it -> {
-                    JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
-                            it.jigMethodHeader,
-                            access,
-                            it.signatureContainedTypes,
-                            it.methodDeclaration,
-                            it.annotationList,
-                            it.methodInstructions,
-                            jigTypeHeader.jigTypeKind() == JigTypeKind.ENUM,
-                            jigMemberBuilder.isRecordComponent(it.methodDeclaration));
-
-                    if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
-                        // コンストラクタ
-                        jigMemberBuilder.addConstructor(jigMethodBuilder);
-                    } else if ((access & Opcodes.ACC_STATIC) != 0) {
-                        // staticメソッド
-                        jigMemberBuilder.addStaticMethod(jigMethodBuilder);
-                    } else {
-                        // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
-                        jigMemberBuilder.addInstanceMethod(jigMethodBuilder);
-                    }
-                });
+        boolean isEnum = jigTypeHeader.jigTypeKind() == JigTypeKind.ENUM;
+        return AsmMethodVisitor.from(this.api, access, name, descriptor, signature, exceptions, typeIdentifier, isEnum, jigMemberBuilder);
     }
 
     @Override

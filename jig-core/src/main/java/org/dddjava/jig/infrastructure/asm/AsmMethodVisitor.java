@@ -105,46 +105,8 @@ class AsmMethodVisitor extends MethodVisitor {
         var jigMethodIdentifier = JigMethodIdentifier.from(declaringTypeIdentifier, name,
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeIdentifier(type)).toList());
 
-        JigMethodHeader jigMethodHeader;
-        if (signature != null) {
-            var methodReturn = methodDeclaration.methodReturn().parameterizedType();
-            var argumentList = methodDeclaration.methodSignature().arguments().stream()
-                    .map(it -> parameterizedTypeToTypeReference(it))
-                    .toList();
-            jigMethodHeader = new JigMethodHeader(
-                    jigMethodIdentifier,
-                    // fieldと同じ判定をしているので共通化したい
-                    jigMemberOwnership(access),
-                    new JigMethodAttribute(
-                            resolveMethodVisibility(access),
-                            List.of(), // あのてーしょん未対応
-                            parameterizedTypeToTypeReference(methodReturn),
-                            argumentList,
-                            throwsTypes.stream().map(JigTypeReference::fromId).toList(),
-                            jigMethodFlags(access)
-                    )
-            );
-        } else {
-            jigMethodHeader = new JigMethodHeader(
-                    jigMethodIdentifier,
-                    // fieldと同じ判定をしているので共通化したい
-                    jigMemberOwnership(access),
-                    new JigMethodAttribute(
-                            resolveMethodVisibility(access),
-                            List.of(), // あのてーしょん未対応
-                            JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())),
-                            Arrays.stream(methodType.getArgumentTypes())
-                                    .map(AsmMethodVisitor::asmType2TypeIdentifier)
-                                    .map(JigTypeReference::fromId)
-                                    .toList(),
-                            throwsTypes.stream().map(JigTypeReference::fromId).toList(),
-                            jigMethodFlags(access)
-                    )
-            );
-        }
-
         return new AsmMethodVisitor(api,
-                jigMethodHeader,
+                jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType),
                 methodDeclaration,
                 it -> {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
@@ -171,7 +133,40 @@ class AsmMethodVisitor extends MethodVisitor {
                 signatureContainedTypes);
     }
 
+    private static JigMethodHeader jigMethodHeader(int access, String signature, MethodDeclaration methodDeclaration, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
+        if (signature != null) {
+            var methodReturn = methodDeclaration.methodReturn().parameterizedType();
+            var argumentList = methodDeclaration.methodSignature().arguments().stream()
+                    .map(it -> parameterizedTypeToTypeReference(it))
+                    .toList();
+            return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
+                    new JigMethodAttribute(
+                            resolveMethodVisibility(access),
+                            List.of(), // あのてーしょん未対応
+                            parameterizedTypeToTypeReference(methodReturn),
+                            argumentList,
+                            throwsTypes.stream().map(JigTypeReference::fromId).toList(),
+                            jigMethodFlags(access)
+                    )
+            );
+        }
+        return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
+                new JigMethodAttribute(
+                        resolveMethodVisibility(access),
+                        List.of(), // あのてーしょん未対応
+                        JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())),
+                        Arrays.stream(methodType.getArgumentTypes())
+                                .map(AsmMethodVisitor::asmType2TypeIdentifier)
+                                .map(JigTypeReference::fromId)
+                                .toList(),
+                        throwsTypes.stream().map(JigTypeReference::fromId).toList(),
+                        jigMethodFlags(access)
+                )
+        );
+    }
+
     private static JigMemberOwnership jigMemberOwnership(int access) {
+        // fieldと同じ判定をしているので共通化したい
         return ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS;
     }
 

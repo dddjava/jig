@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
-import java.util.ArrayList;
-
 public class JigField {
     private final JigFieldHeader jigFieldHeader;
     FieldDeclaration fieldDeclaration;
@@ -53,16 +51,6 @@ public class JigField {
                                     );
                                 })
                                 .toList()));
-    }
-
-    public boolean matches(FieldDeclaration fieldDeclaration) {
-        return this.fieldDeclaration.matches(fieldDeclaration);
-    }
-
-    public JigField newInstanceWith(FieldAnnotation fieldAnnotation) {
-        ArrayList<FieldAnnotation> fieldAnnotations = new ArrayList<>(this.fieldAnnotations.list());
-        fieldAnnotations.add(fieldAnnotation);
-        return new JigField(null, fieldDeclaration, new FieldAnnotations(fieldAnnotations));
     }
 
     public TypeIdentifier typeIdentifier() {

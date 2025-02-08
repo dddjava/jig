@@ -1,8 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
-import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
@@ -18,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -33,13 +29,11 @@ class AsmFieldVisitor extends FieldVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);
 
     private final Consumer<AsmFieldVisitor> finisher;
-    private final List<Annotation> annotations;
     private final Collection<JigAnnotationReference> annotationReferences = new ArrayList<>();
 
     public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
         super(api);
         this.finisher = finisher;
-        this.annotations = new ArrayList<>();
     }
 
     static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
@@ -59,12 +53,6 @@ class AsmFieldVisitor extends FieldVisitor {
         }
 
         return new AsmFieldVisitor(api, it -> {
-            if ((access & Opcodes.ACC_STATIC) == 0) {
-                FieldDeclaration fieldDeclaration = jigMemberBuilder.addInstanceField(declaringTypeIdentifier, fieldType, name);
-                it.annotations.forEach(annotation -> {
-                    jigMemberBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration));
-                });
-            }
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
                     new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access), jigTypeReference)));
@@ -94,7 +82,6 @@ class AsmFieldVisitor extends FieldVisitor {
         logger.debug("visitAnnotation: {}, {}", descriptor, visible);
         TypeIdentifier annotationTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
         return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, it -> {
-            annotations.add(new Annotation(it.annotationType, it.annotationDescription));
             annotationReferences.add(it.annotationReference());
         });
     }

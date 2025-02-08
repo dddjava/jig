@@ -64,13 +64,6 @@ public record Instructions(List<Instruction> values) {
                 .collect(MethodDeclarations.collector());
     }
 
-    public boolean hasMemberInstruction() {
-        // dataじゃなくinformationかknowledgeに持っていきたい
-        // FIXME 「自身のメンバアクセス」の条件になっていない。
-        return values.stream().anyMatch(instruction ->
-                instruction.type() == MethodInstructionType.METHOD || instruction.type() == MethodInstructionType.FIELD);
-    }
-
     public boolean hasNullDecision() {
         return values.stream().anyMatch(instruction -> instruction.type() == MethodInstructionType.NULL判定);
     }

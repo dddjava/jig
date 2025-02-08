@@ -80,10 +80,6 @@ public class JigMethod {
         return referenceNull() || conditionalNull();
     }
 
-    public boolean notUseMember() {
-        return instructions.hasMemberInstruction();
-    }
-
     public TypeIdentifiers usingTypes() {
         var list = Stream.of(
                         instructions.usingTypes(),
@@ -174,5 +170,9 @@ public class JigMethod {
 
     public boolean hasAnnotation(TypeIdentifier annotation) {
         return methodAnnotations().contains(annotation);
+    }
+
+    public Instructions instructions() {
+        return instructions;
     }
 }

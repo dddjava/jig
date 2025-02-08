@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.information.type.JigType;
 
@@ -13,9 +12,8 @@ public enum MethodWorry {
         @Override
         boolean judge(JigMethod jigMethod, JigType contextJigType) {
             var instructions = jigMethod.instructions();
-            // FIXME 「自身のメンバアクセス」の条件になっていない。
-            return instructions.values().stream().anyMatch(instruction ->
-                    instruction.type() == MethodInstructionType.METHOD || instruction.type() == MethodInstructionType.FIELD);
+            return instructions.values().stream()
+                    .noneMatch(instruction -> instruction.instructMethodOrFieldOwnerIs(contextJigType.typeIdentifier()));
         }
     },
     基本型の授受を行なっている {

@@ -30,6 +30,7 @@ public class JigField {
     }
 
     public static JigField from(JigFieldHeader jigFieldHeader) {
+        // 互換のため無理矢理JigFieldHeaderから生成している状態。FieldDeclarationやFieldAnnotationsの使用箇所を直せばもっと素直にできるはず
         var fieldDeclaration = new FieldDeclaration(
                 jigFieldHeader.id().declaringTypeIdentifier(),
                 new FieldType(jigFieldHeader.jigTypeReference().id()),

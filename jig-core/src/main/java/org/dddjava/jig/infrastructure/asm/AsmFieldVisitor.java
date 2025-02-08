@@ -27,7 +27,7 @@ class AsmFieldVisitor extends FieldVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);
 
     private final Consumer<AsmFieldVisitor> finisher;
-    private final Collection<JigAnnotationReference> annotationReferences = new ArrayList<>();
+    private final Collection<JigAnnotationReference> annotationReferenceCollector = new ArrayList<>();
 
     public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
         super(api);
@@ -41,7 +41,7 @@ class AsmFieldVisitor extends FieldVisitor {
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
                     resolveFieldTypeReference(api, descriptor, signature),
-                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferences, jigFieldFlags(access))));
+                    new JigFieldAttribute(resolveMethodVisibility(access), it.annotationReferenceCollector, jigFieldFlags(access))));
         });
     }
 
@@ -78,7 +78,7 @@ class AsmFieldVisitor extends FieldVisitor {
         logger.debug("visitAnnotation: {}, {}", descriptor, visible);
         TypeIdentifier annotationTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
         return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, it -> {
-            annotationReferences.add(it.annotationReference());
+            annotationReferenceCollector.add(it.annotationReference());
         });
     }
 

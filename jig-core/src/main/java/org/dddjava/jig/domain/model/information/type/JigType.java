@@ -69,7 +69,7 @@ public class JigType {
         Set<TypeIdentifier> set = new HashSet<>();
         set.addAll(jigTypeHeader.containedIds());
         set.addAll(jigStaticMember.listUsingTypes());
-        set.addAll(jigTypeMembers.jigInstanceMember().instanceMethods().listUsingTypes());
+        set.addAll(jigTypeMembers.instanceMethods().listUsingTypes());
         set.addAll(jigTypeMembers.allTypeIdentifierSet());
         return new TypeIdentifiers(new ArrayList<>(set));
     }
@@ -185,6 +185,6 @@ public class JigType {
     }
 
     public JigMethods instanceJigMethods() {
-        return jigTypeMembers.jigInstanceMember().instanceMethods();
+        return jigTypeMembers.instanceMethods();
     }
 }

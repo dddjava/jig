@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.information.type;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.members.JigFieldFlag;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
@@ -22,7 +23,7 @@ public record JigTypeMembers(
         // 互換のため
         JigStaticMember jigStaticMember,
         // 互換のため
-        JigInstanceMember jigInstanceMember
+        JigMethods instanceMethods
 ) {
 
     public String instanceFieldsSimpleText() {
@@ -69,7 +70,7 @@ public record JigTypeMembers(
     }
 
     public Stream<JigMethod> jigMethodStream() {
-        return jigInstanceMember.instanceMethods().stream();
+        return instanceMethods().stream();
 
 //        return jigMethodHeaders.stream()
 //                .map(jigMethodHeader -> new JigMethod(

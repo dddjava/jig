@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.type.JigInstanceMember;
 import org.dddjava.jig.domain.model.information.type.JigStaticMember;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 
@@ -69,8 +68,7 @@ public class JigMemberBuilder {
                         new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
                         new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()))
                 ),
-                new JigInstanceMember(
-                        new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())))
+                new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()))
         );
     }
 

@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -28,14 +26,11 @@ import java.util.*;
  * visitEnd
  */
 class AsmClassVisitor extends ClassVisitor {
-    static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
-
     private final JigMemberBuilder jigMemberBuilder = new JigMemberBuilder();
 
     private TypeIdentifier typeIdentifier;
-
     private JigTypeHeader jigTypeHeader;
-    private ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
 
     AsmClassVisitor() {

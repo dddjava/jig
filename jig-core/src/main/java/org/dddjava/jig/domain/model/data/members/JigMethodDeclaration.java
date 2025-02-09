@@ -13,4 +13,12 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     public String name() {
         return header.name();
     }
+
+    public JigMemberVisibility jigMemberVisibility() {
+        return header.jigMethodAttribute().jigMemberVisibility();
+    }
+
+    public boolean isAbstract() {
+        return header.jigMethodAttribute().isAbstract();
+    }
 }

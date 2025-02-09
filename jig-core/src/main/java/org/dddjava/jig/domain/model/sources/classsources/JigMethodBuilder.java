@@ -4,8 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
-import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
@@ -21,21 +20,19 @@ import java.util.stream.Collectors;
 public class JigMethodBuilder {
     private static final Logger logger = LoggerFactory.getLogger(JigMethodBuilder.class);
 
-    private final JigMethodHeader jigMethodHeader;
+    private final JigMethodDeclaration jigMethodDeclaration;
     private final MethodDeclaration methodDeclaration;
     private final MethodDerivation methodDerivation;
     private final List<TypeIdentifier> signatureContainedTypes;
     private final List<Annotation> annotations;
-    private final Instructions instructions;
     private Term term = null;
 
-    public JigMethodBuilder(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, MethodDerivation methodDerivation, List<Annotation> annotationList, Instructions methodInstructions) {
-        this.jigMethodHeader = jigMethodHeader;
+    public JigMethodBuilder(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, MethodDerivation methodDerivation, List<Annotation> annotationList) {
+        this.jigMethodDeclaration = jigMethodDeclaration;
         this.methodDeclaration = methodDeclaration;
         this.methodDerivation = methodDerivation;
         this.signatureContainedTypes = signatureContainedTypes;
         this.annotations = annotationList;
-        this.instructions = methodInstructions;
     }
 
     public static MethodDerivation resolveMethodDerivation(MethodDeclaration methodDeclaration, int access, boolean isEnum, boolean isRecordComponent) {
@@ -67,18 +64,18 @@ public class JigMethodBuilder {
         return MethodDerivation.PROGRAMMER;
     }
 
-    public static JigMethodBuilder builder(JigMethodHeader jigMethodHeader,
+    public static JigMethodBuilder builder(JigMethodDeclaration jigMethodDeclaration,
                                            int access,
                                            List<TypeIdentifier> signatureContainedTypes,
                                            MethodDeclaration methodDeclaration,
                                            List<Annotation> annotationList,
-                                           Instructions methodInstructions, boolean isEnum, boolean isRecordComponent) {
+                                           boolean isEnum, boolean isRecordComponent) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(jigMethodHeader, methodDeclaration, signatureContainedTypes, methodDerivation, annotationList, methodInstructions);
+        return new JigMethodBuilder(jigMethodDeclaration, methodDeclaration, signatureContainedTypes, methodDerivation, annotationList);
     }
 
     public JigMethod build() {
-        return new JigMethod(jigMethodHeader, methodDeclaration, annotatedMethods(), methodDerivation, instructions, signatureContainedTypes, term);
+        return new JigMethod(jigMethodDeclaration, methodDeclaration, annotatedMethods(), methodDerivation, signatureContainedTypes, term);
     }
 
     private MethodAnnotations annotatedMethods() {

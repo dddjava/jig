@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
-import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -20,22 +20,20 @@ import java.util.stream.Stream;
  */
 public class JigMethod {
 
-    private final JigMethodHeader jigMethodHeader;
+    private final JigMethodDeclaration jigMethodDeclaration;
     MethodDeclaration methodDeclaration;
 
     MethodAnnotations methodAnnotations;
 
     MethodDerivation methodDerivation;
-    private final Instructions instructions;
     private final List<TypeIdentifier> signatureContainedTypes;
     private final Term term;
 
-    public JigMethod(JigMethodHeader jigMethodHeader, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> signatureContainedTypes, Term term) {
-        this.jigMethodHeader = jigMethodHeader;
+    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, MethodDerivation methodDerivation, List<TypeIdentifier> signatureContainedTypes, Term term) {
+        this.jigMethodDeclaration = jigMethodDeclaration;
         this.methodDeclaration = methodDeclaration;
         this.methodAnnotations = methodAnnotations;
         this.methodDerivation = methodDerivation;
-        this.instructions = instructions;
         this.signatureContainedTypes = signatureContainedTypes;
         this.term = term;
     }
@@ -45,7 +43,7 @@ public class JigMethod {
     }
 
     public DecisionNumber decisionNumber() {
-        return instructions.decisionNumber();
+        return instructions().decisionNumber();
     }
 
     public MethodAnnotations methodAnnotations() {
@@ -53,7 +51,7 @@ public class JigMethod {
     }
 
     public JigMemberVisibility visibility() {
-        return jigMethodHeader.jigMethodAttribute().jigMemberVisibility();
+        return jigMethodDeclaration.jigMemberVisibility();
     }
 
     public boolean isPublic() {
@@ -61,19 +59,19 @@ public class JigMethod {
     }
 
     public UsingFields usingFields() {
-        return new UsingFields(instructions.fieldReferences());
+        return new UsingFields(instructions().fieldReferences());
     }
 
     public UsingMethods usingMethods() {
-        return new UsingMethods(instructions.instructMethods());
+        return new UsingMethods(instructions().instructMethods());
     }
 
     public boolean conditionalNull() {
-        return instructions.hasNullDecision();
+        return instructions().hasNullDecision();
     }
 
     public boolean referenceNull() {
-        return instructions.hasNullReference();
+        return instructions().hasNullReference();
     }
 
     public boolean useNull() {
@@ -82,10 +80,10 @@ public class JigMethod {
 
     public TypeIdentifiers usingTypes() {
         var list = Stream.of(
-                        instructions.usingTypes(),
+                        instructions().usingTypes(),
                         methodDeclaration.relateTypes(),
                         methodAnnotations.list().stream().map(MethodAnnotation::annotationType).toList(),
-                        jigMethodHeader.jigMethodAttribute().throwTypes().stream().map(JigTypeReference::id).toList(),
+                        jigMethodDeclaration.header().jigMethodAttribute().throwTypes().stream().map(JigTypeReference::id).toList(),
                         signatureContainedTypes)
                 .flatMap(Collection::stream)
                 .toList();
@@ -161,11 +159,11 @@ public class JigMethod {
     }
 
     public List<MethodDeclaration> methodInstructions() {
-        return instructions.instructMethods().list();
+        return instructions().instructMethods().list();
     }
 
     public String name() {
-        return jigMethodHeader.name();
+        return jigMethodDeclaration.name();
     }
 
     public boolean hasAnnotation(TypeIdentifier annotation) {
@@ -173,10 +171,10 @@ public class JigMethod {
     }
 
     public Instructions instructions() {
-        return instructions;
+        return jigMethodDeclaration.instructions();
     }
 
     public boolean isAbstract() {
-        return jigMethodHeader.jigMethodAttribute().isAbstract();
+        return jigMethodDeclaration.isAbstract();
     }
 }

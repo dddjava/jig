@@ -23,8 +23,7 @@ public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard
     }
 
     public String simpleName() {
-        int lastDotIndex = value().lastIndexOf('.');
-        return (lastDotIndex != -1) ? value().substring(lastDotIndex + 1) : value();
+        return jigTypeReference.simpleNameWithGenerics();
     }
 
     public boolean notObject() {
@@ -37,5 +36,9 @@ public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard
 
     public String value() {
         return jigTypeReference.id().value();
+    }
+
+    public String fqn() {
+        return jigTypeReference.fqnWithGenerics();
     }
 }

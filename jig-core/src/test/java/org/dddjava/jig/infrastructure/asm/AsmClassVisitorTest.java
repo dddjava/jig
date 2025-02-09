@@ -50,15 +50,13 @@ class AsmClassVisitorTest {
 
         var typeData = visitor.jigTypeHeader();
         assertEquals("MyGenericsMadnessInterface", typeData.simpleName());
-        assertEquals("MyGenericsMadnessInterface<T extends List>", typeData.simpleNameWithGenerics());
-        // とれるようにしたいけどとりあえずはいいかなと
-        //assertEquals("MyGenericsMadnessInterface<T extends List<Predicate<T>>", typeData.simpleNameWithGenerics());
+        assertEquals("MyGenericsMadnessInterface<T extends List<Predicate<T>>>", typeData.simpleNameWithGenerics());
 
         // interfaceのsuperは入ってないとおもってたけどObjectが入っている
         assertEquals("Object", typeData.superType().orElseThrow().simpleName());
 
         // interfaceのextendsはinterfaceで取れる模様
-        assertEquals(List.of("Consumer<Consumer>"),
+        assertEquals(List.of("Consumer<Consumer<Function<T, Consumer<Integer>>>>"),
                 typeData.interfaceTypeList().stream().map(JigTypeReference::simpleNameWithGenerics).toList());
     }
 

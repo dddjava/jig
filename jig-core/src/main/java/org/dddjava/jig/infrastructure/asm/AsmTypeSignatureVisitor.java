@@ -34,9 +34,8 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     }
 
     /**
-     *
      * @param name
-     * @param arguments visitTypeArgumentのsignatureを処理するAsmTypeSignatureVisitorを出てきた順に保持するためのリスト
+     * @param arguments    visitTypeArgumentのsignatureを処理するAsmTypeSignatureVisitorを出てきた順に保持するためのリスト
      * @param innerClasses visitInnerClassのsignatureを処理するAsmTypeSignatureVisitor
      */
     record ClassType(String name, List<AsmTypeSignatureVisitor> arguments, List<ClassType> innerClasses) {
@@ -185,12 +184,18 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
             return JigTypeArgument.just(typeVariableIdentifier);
         } else if (arrayAsmTypeSignatureVisitor != null) {
             var jigTypeReference = arrayAsmTypeSignatureVisitor.jigTypeReference();
+            // TODO 配列のジェネリクス未対応
             return JigTypeArgument.just(jigTypeReference.id().convertArray().fullQualifiedName());
         } else if (classType != null) {
             // 型引数がクラスの素直なもの
             // TODO これがさらに型引数を持っているパターンは未対応
             // こっちはInnerClassはありえる？
-            return JigTypeArgument.just(classType.name.replace('/', '.'));
+            return JigTypeArgument.just(new JigTypeReference(
+                    TypeIdentifier.fromJvmBinaryName(classType.name()),
+                    List.of(), // 型アノテーション未対応
+                    classType.arguments().stream()
+                            .map(visitor -> visitor.typeArgument())
+                            .toList()));
         }
 
         throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");

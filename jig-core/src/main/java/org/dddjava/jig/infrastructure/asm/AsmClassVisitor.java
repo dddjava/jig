@@ -56,36 +56,29 @@ class AsmClassVisitor extends ClassVisitor {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
 
-            jigTypeHeader = new JigTypeHeader(
-                    this.typeIdentifier,
-                    jigTypeKind,
-                    new JigTypeAttributeData(
-                            jigTypeVisibility,
-                            jigTypeModifiers,
-                            new ArrayList<>(), // アノテーションは後で追加する
-                            asmClassSignatureVisitor.jigTypeParameters()
-                    ),
-                    asmClassSignatureVisitor.jigBaseTypeDataBundle()
-            );
+            jigTypeHeader = jigTypeHeader(jigTypeKind, jigTypeVisibility, jigTypeModifiers, asmClassSignatureVisitor.jigTypeParameters(), asmClassSignatureVisitor.jigBaseTypeDataBundle());
         } else {
             // 非総称型で作成
-            jigTypeHeader = new JigTypeHeader(
-                    this.typeIdentifier,
-                    jigTypeKind,
-                    new JigTypeAttributeData(
-                            jigTypeVisibility,
-                            jigTypeModifiers,
-                            new ArrayList<>(), // アノテーションは後で追加する
-                            List.of()
-                    ),
+            jigTypeHeader = jigTypeHeader(jigTypeKind, jigTypeVisibility, jigTypeModifiers, List.of(),
                     new JigBaseTypeDataBundle(
                             Optional.of(JigTypeReference.fromJvmBinaryName(superName)),
                             Arrays.stream(interfaces).map(JigTypeReference::fromJvmBinaryName).toList()
-                    )
-            );
+                    ));
         }
 
         super.visit(version, access, classInternalName, signature, superName, interfaces);
+    }
+
+    private JigTypeHeader jigTypeHeader(JigTypeKind jigTypeKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
+        return new JigTypeHeader(this.typeIdentifier, jigTypeKind,
+                new JigTypeAttributeData(
+                        jigTypeVisibility,
+                        jigTypeModifiers,
+                        new ArrayList<>(), // アノテーションは後で追加する
+                        jigTypeParameters
+                ),
+                jigBaseTypeDataBundle
+        );
     }
 
     @Override

@@ -22,7 +22,7 @@ public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard
         return new JigTypeArgument(jigTypeReference, "=");
     }
 
-    public String simpleName() {
+    public String simpleNameWithGenerics() {
         return jigTypeReference.simpleNameWithGenerics();
     }
 

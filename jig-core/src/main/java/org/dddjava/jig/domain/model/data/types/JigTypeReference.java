@@ -47,7 +47,7 @@ public record JigTypeReference(TypeIdentifier id,
     String typeArgumentSimpleName() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
-                .map(jigTypeParameter -> jigTypeParameter.simpleName())
+                .map(jigTypeParameter -> jigTypeParameter.simpleNameWithGenerics())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 

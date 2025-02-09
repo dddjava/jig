@@ -21,7 +21,7 @@ public record JigTypeParameter(String name, List<JigTypeArgument> bounds) {
         return outputBounds.isEmpty()
                 ? name()
                 : name() + outputBounds.stream()
-                .map(jigTypeArgument -> jigTypeArgument.simpleName())
+                .map(jigTypeArgument -> jigTypeArgument.simpleNameWithGenerics())
                 .collect(joining(" & ", " extends ", ""));
     }
 }

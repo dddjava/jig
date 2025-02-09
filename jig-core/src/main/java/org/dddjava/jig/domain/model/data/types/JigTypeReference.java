@@ -20,6 +20,10 @@ public record JigTypeReference(TypeIdentifier id,
         return new JigTypeReference(id, List.of(), List.of());
     }
 
+    public static JigTypeReference fromId(String id) {
+        return fromId(TypeIdentifier.valueOf(id));
+    }
+
     public static JigTypeReference fromJvmBinaryName(String jvmBinaryName) {
         return fromId(TypeIdentifier.fromJvmBinaryName(jvmBinaryName));
     }

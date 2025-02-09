@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -189,5 +190,9 @@ class AsmClassVisitor extends ClassVisitor {
 
     public JigTypeHeader jigTypeHeader() {
         return jigTypeHeader;
+    }
+
+    ClassDeclaration classDeclaration() {
+        return new ClassDeclaration(jigMemberBuilder(), jigTypeHeader());
     }
 }

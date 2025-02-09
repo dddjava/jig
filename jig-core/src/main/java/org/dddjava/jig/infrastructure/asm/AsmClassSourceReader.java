@@ -29,10 +29,7 @@ public class AsmClassSourceReader implements ClassSourceReader {
             ClassReader classReader = new ClassReader(classSource.value());
             classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
 
-            return Optional.of(new ClassDeclaration(
-                    asmClassVisitor.jigMemberBuilder(),
-                    asmClassVisitor.jigTypeHeader()
-            ));
+            return Optional.of(asmClassVisitor.classDeclaration());
         } catch (Exception e) {
             logger.warn("クラスの読み取りに失敗しました。スキップして続行します。 {}", classSource, e);
             return Optional.empty();

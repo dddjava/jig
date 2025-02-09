@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.objectweb.asm.ClassReader;
 import stub.domain.model.relation.annotation.UseInAnnotation;
@@ -24,11 +23,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
  * MethodVisitorはClassVisitor経由でテストする
@@ -201,27 +198,6 @@ class AsmMethodVisitorTest {
     void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
         JigMethod actual = JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
         assertEquals(expectedText, actual.asNameArgumentsReturnText());
-    }
-
-
-    static Stream<Arguments> 引数と戻り値のテスト() throws IOException {
-        return Stream.of(
-                arguments("returnsGenericMethod",
-                        "<T:Ljava/lang/Object;>()TT;",
-                        "returnsGenericMethod():T"),
-                arguments("returnsGenericMethodWithArguments",
-                        "<T1:Ljava/lang/Object;T2:Ljava/lang/Object;>(TT1;TT2;)TT2;",
-                        "returnsGenericMethodWithArguments(T1, T2):T2"),
-                arguments("genericArgumentMethod",
-                        "(Ljava/util/List<Ljava/lang/String;>;)V",
-                        "genericArgumentMethod(List<String>):void"),
-                arguments("bindMethod",
-                        "(Ljava/util/Optional<Ljava/lang/Long;>;)Ljava/util/Optional<Ljava/lang/Integer;>;",
-                        "bindMethod(Optional<Long>):Optional<Integer>"),
-                arguments("nestedBindMethod",
-                        "(Ljava/util/Optional<Ljava/util/Optional<Ljava/lang/Long;>;>;)Ljava/util/Optional<Ljava/util/Optional<Ljava/lang/Integer;>;>;",
-                        "nestedBindMethod(Optional<Optional<Long>>):Optional<Optional<Integer>>")
-        );
     }
 
     private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {

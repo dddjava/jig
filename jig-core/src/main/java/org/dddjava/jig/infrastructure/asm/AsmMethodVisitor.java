@@ -135,14 +135,9 @@ class AsmMethodVisitor extends MethodVisitor {
         if ((access & Opcodes.ACC_STRICT) != 0) flags.add(JigMethodFlag.STRICT);
         if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigMethodFlag.SYNTHETIC);
 
-        return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
+        return new JigMethodHeader(jigMethodIdentifier, AsmUtils.jigMemberOwnership(access),
                 new JigMethodAttribute(jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
         );
-    }
-
-    private static JigMemberOwnership jigMemberOwnership(int access) {
-        // fieldと同じ判定をしているので共通化したい
-        return ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS;
     }
 
     @Override

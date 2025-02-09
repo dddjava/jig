@@ -165,6 +165,6 @@ public class JigMethod {
     }
 
     public String asNameArgumentsReturnText() {
-        return declaration().asSignatureAndReturnTypeSimpleText();
+        return jigMethodDeclaration.header().asSignatureAndReturnTypeSimpleText();
     }
 }

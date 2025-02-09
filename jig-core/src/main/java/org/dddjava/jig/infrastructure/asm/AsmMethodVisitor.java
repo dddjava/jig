@@ -116,49 +116,36 @@ class AsmMethodVisitor extends MethodVisitor {
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
             var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();
             var parameters = methodSignatureVisitor.parameterVisitors.stream().map(visitor -> visitor.jigTypeReference()).toList();
-
-            return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
-                    new JigMethodAttribute(
-                            resolveMethodVisibility(access),
-                            declarationAnnotationCollector,
-                            jigTypeReference,
-                            parameters,
-                            throwsTypes.stream().map(JigTypeReference::fromId).toList(),
-                            jigMethodFlags(access)
-                    )
-            );
+            return jigMethodHeader(access, jigMethodIdentifier, throwsTypes, jigTypeReference, parameters);
         }
+
+        return jigMethodHeader(access, jigMethodIdentifier, throwsTypes, JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
+                .map(AsmMethodVisitor::asmType2TypeIdentifier)
+                .map(JigTypeReference::fromId)
+                .toList());
+    }
+
+    private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, JigTypeReference returnType, List<JigTypeReference> parameterList) {
+        var jigMemberVisibility = resolveMethodVisibility(access);
+        var throwsList = throwsTypes.stream().map(JigTypeReference::fromId).toList();
+
+        EnumSet<JigMethodFlag> flags = EnumSet.noneOf(JigMethodFlag.class);
+        if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) flags.add(JigMethodFlag.SYNCHRONIZED);
+        if ((access & Opcodes.ACC_BRIDGE) != 0) flags.add(JigMethodFlag.BRIDGE);
+        if ((access & Opcodes.ACC_VARARGS) != 0) flags.add(JigMethodFlag.VARARGS);
+        if ((access & Opcodes.ACC_NATIVE) != 0) flags.add(JigMethodFlag.NATIVE);
+        if ((access & Opcodes.ACC_ABSTRACT) != 0) flags.add(JigMethodFlag.ABSTRACT);
+        if ((access & Opcodes.ACC_STRICT) != 0) flags.add(JigMethodFlag.STRICT);
+        if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigMethodFlag.SYNTHETIC);
+
         return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
-                new JigMethodAttribute(
-                        resolveMethodVisibility(access),
-                        declarationAnnotationCollector,
-                        JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())),
-                        Arrays.stream(methodType.getArgumentTypes())
-                                .map(AsmMethodVisitor::asmType2TypeIdentifier)
-                                .map(JigTypeReference::fromId)
-                                .toList(),
-                        throwsTypes.stream().map(JigTypeReference::fromId).toList(),
-                        jigMethodFlags(access)
-                )
+                new JigMethodAttribute(jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
         );
     }
 
     private static JigMemberOwnership jigMemberOwnership(int access) {
         // fieldと同じ判定をしているので共通化したい
         return ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS;
-    }
-
-    private static EnumSet<JigMethodFlag> jigMethodFlags(int access) {
-        EnumSet<JigMethodFlag> set = EnumSet.noneOf(JigMethodFlag.class);
-        if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) set.add(JigMethodFlag.SYNCHRONIZED);
-        if ((access & Opcodes.ACC_BRIDGE) != 0) set.add(JigMethodFlag.BRIDGE);
-        if ((access & Opcodes.ACC_VARARGS) != 0) set.add(JigMethodFlag.VARARGS);
-        if ((access & Opcodes.ACC_NATIVE) != 0) set.add(JigMethodFlag.NATIVE);
-        if ((access & Opcodes.ACC_ABSTRACT) != 0) set.add(JigMethodFlag.ABSTRACT);
-        if ((access & Opcodes.ACC_STRICT) != 0) set.add(JigMethodFlag.STRICT);
-        if ((access & Opcodes.ACC_SYNTHETIC) != 0) set.add(JigMethodFlag.SYNTHETIC);
-
-        return set;
     }
 
     private static JigMemberVisibility resolveMethodVisibility(int access) {

@@ -86,7 +86,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
         return new AsmMethodVisitor(api,
                 it -> {
-                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, methodDeclaration, jigMethodIdentifier, throwsTypes, methodType);
+                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, throwsTypes, methodType);
                     JigMethodDeclaration jigMethodDeclaration = new JigMethodDeclaration(jigMethodHeader, it.methodInstructions);
                     jigMemberBuilder.addJigMethodDeclaration(jigMethodDeclaration);
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
@@ -111,7 +111,7 @@ class AsmMethodVisitor extends MethodVisitor {
         );
     }
 
-    private JigMethodHeader jigMethodHeader(int access, String signature, MethodDeclaration methodDeclaration, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
+    private JigMethodHeader jigMethodHeader(int access, String signature, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
         if (signature != null) {
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
             var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();

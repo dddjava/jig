@@ -74,10 +74,9 @@ class AsmMethodVisitor extends MethodVisitor {
                 });
 
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
-        List<TypeIdentifier> throwsTypes = Optional.ofNullable(exceptions).stream()
-                .flatMap(Arrays::stream)
-                .map(TypeIdentifier::valueOf)
-                .toList();
+        // throwsのアノテーションが必要になったら別途考える
+        var throwsList = Optional.ofNullable(exceptions).stream().flatMap(Arrays::stream)
+                .map(JigTypeReference::fromJvmBinaryName).toList();
 
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
@@ -86,7 +85,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
         return new AsmMethodVisitor(api,
                 it -> {
-                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, throwsTypes, methodType);
+                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, methodType, throwsList);
                     JigMethodDeclaration jigMethodDeclaration = new JigMethodDeclaration(jigMethodHeader, it.methodInstructions);
                     jigMemberBuilder.addJigMethodDeclaration(jigMethodDeclaration);
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
@@ -111,23 +110,22 @@ class AsmMethodVisitor extends MethodVisitor {
         );
     }
 
-    private JigMethodHeader jigMethodHeader(int access, String signature, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
+    private JigMethodHeader jigMethodHeader(int access, String signature, JigMethodIdentifier jigMethodIdentifier, Type methodType, List<JigTypeReference> throwsList) {
         if (signature != null) {
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
             var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();
             var parameters = methodSignatureVisitor.parameterVisitors.stream().map(visitor -> visitor.jigTypeReference()).toList();
-            return jigMethodHeader(access, jigMethodIdentifier, throwsTypes, jigTypeReference, parameters);
+            return jigMethodHeader(access, jigMethodIdentifier, jigTypeReference, parameters, throwsList);
         }
 
-        return jigMethodHeader(access, jigMethodIdentifier, throwsTypes, JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
+        return jigMethodHeader(access, jigMethodIdentifier, JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
                 .map(AsmMethodVisitor::asmType2TypeIdentifier)
                 .map(JigTypeReference::fromId)
-                .toList());
+                .toList(), throwsList);
     }
 
-    private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, JigTypeReference returnType, List<JigTypeReference> parameterList) {
+    private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
         var jigMemberVisibility = resolveMethodVisibility(access);
-        var throwsList = throwsTypes.stream().map(JigTypeReference::fromId).toList();
 
         EnumSet<JigMethodFlag> flags = EnumSet.noneOf(JigMethodFlag.class);
         if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) flags.add(JigMethodFlag.SYNCHRONIZED);

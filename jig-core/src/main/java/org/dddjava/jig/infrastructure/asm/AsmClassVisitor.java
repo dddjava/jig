@@ -44,18 +44,13 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
         this.typeIdentifier = TypeIdentifier.fromJvmBinaryName(classInternalName);
-
-        // access: https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
         var jigTypeModifiers = resolveTypeModifiers(access);
         var jigTypeKind = resolveTypeKind(access);
         var jigTypeVisibility = resolveVisibility(access);
 
-        // ジェネリクスを使用している場合だけsignatureが入る
         if (signature != null) {
-            logger.debug(signature);
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
-
             jigTypeHeader = jigTypeHeader(jigTypeKind, jigTypeVisibility, jigTypeModifiers, asmClassSignatureVisitor.jigTypeParameters(), asmClassSignatureVisitor.jigBaseTypeDataBundle());
         } else {
             // 非総称型で作成
@@ -100,7 +95,6 @@ class AsmClassVisitor extends ClassVisitor {
                 isStaticNestedClass = true;
             }
         }
-
         super.visitInnerClass(name, outerName, innerName, access);
     }
 
@@ -127,7 +121,6 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-
         if (isStaticNestedClass) {
             jigTypeHeader = jigTypeHeader.withStatic();
         }

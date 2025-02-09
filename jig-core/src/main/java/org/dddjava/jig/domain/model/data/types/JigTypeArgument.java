@@ -15,7 +15,11 @@ public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard
      * ワイルドカードなし
      */
     public static JigTypeArgument just(String value) {
-        return new JigTypeArgument(JigTypeReference.fromId(value), "=");
+        return just(JigTypeReference.fromId(value));
+    }
+
+    public static JigTypeArgument just(JigTypeReference jigTypeReference) {
+        return new JigTypeArgument(jigTypeReference, "=");
     }
 
     public String simpleName() {

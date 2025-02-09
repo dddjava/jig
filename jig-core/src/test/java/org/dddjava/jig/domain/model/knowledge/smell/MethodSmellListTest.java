@@ -83,6 +83,10 @@ class MethodSmellListTest {
                 // -- enum
                 arguments(MemberUsageCheckEnum.class, "何も使用していないメソッド", true),
                 arguments(MemberUsageCheckEnum.class, "列挙定数を使用しているメソッド", false),
+                arguments(MemberUsageCheckEnum.class, "インスタンスフィールドを参照しているメソッド", false),
+                // staticメソッドは現在対象にしていない
+                //arguments(MemberUsageCheckEnum.class, "ファクトリメソッド1", false),
+                //arguments(MemberUsageCheckEnum.class, "ファクトリメソッド2", false),
                 // -- record
                 arguments(MemberUsageCheckRecord.class, "componentA", false),
                 arguments(MemberUsageCheckRecord.class, "何も使用していないメソッド", true),

@@ -53,11 +53,25 @@ enum MemberUsageCheckEnum {
     ENUM_CONSTANT_1,
     ENUM_CONSTANT_2;
 
+    int field;
+
     void 何も使用していないメソッド() {
     }
 
     void 列挙定数を使用しているメソッド() {
         var name = ENUM_CONSTANT_2.name();
+    }
+
+    int インスタンスフィールドを参照しているメソッド() {
+        return field;
+    }
+
+    static MemberUsageCheckEnum ファクトリメソッド1(String name) {
+        return ENUM_CONSTANT_1;
+    }
+
+    static MemberUsageCheckEnum ファクトリメソッド2(String name) {
+        return valueOf(name);
     }
 }
 

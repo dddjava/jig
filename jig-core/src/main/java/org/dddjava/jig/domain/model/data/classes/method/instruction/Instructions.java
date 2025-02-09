@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -78,7 +77,7 @@ public record Instructions(List<Instruction> values) {
         return values.stream().anyMatch(instruction -> instruction.type() == MethodInstructionType.NULL参照);
     }
 
-    public Set<TypeIdentifier> usingTypes() {
+    public Stream<TypeIdentifier> associatedTypeStream() {
         return values.stream()
                 .flatMap(instruction ->
                         switch (instruction.type()) {
@@ -91,8 +90,7 @@ public record Instructions(List<Instruction> values) {
                             case InvokeDynamic -> ((InvokeDynamicInstruction) instruction.detail()).usingTypes();
                             default -> Stream.empty();
                         }
-                )
-                .collect(Collectors.toSet());
+                );
     }
 
     public FieldDeclarations fieldReferences() {

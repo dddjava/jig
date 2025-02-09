@@ -15,14 +15,10 @@ import java.util.stream.Collectors;
  */
 public class TypeIdentifiers {
 
-    List<TypeIdentifier> identifiers;
+    Collection<TypeIdentifier> identifiers;
 
-    public TypeIdentifiers(List<TypeIdentifier> identifiers) {
+    public TypeIdentifiers(Collection<TypeIdentifier> identifiers) {
         this.identifiers = identifiers;
-    }
-
-    public static TypeIdentifiers from(Collection<TypeIdentifier> typeIdentifiers) {
-        return new TypeIdentifiers(new ArrayList<>(typeIdentifiers));
     }
 
     public List<TypeIdentifier> list() {

@@ -1,19 +1,15 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * メソッド
@@ -79,15 +75,7 @@ public class JigMethod {
     }
 
     public TypeIdentifiers usingTypes() {
-        var list = Stream.of(
-                        instructions().usingTypes(),
-                        methodDeclaration.relateTypes(),
-                        methodAnnotations.list().stream().map(MethodAnnotation::annotationType).toList(),
-                        jigMethodDeclaration.header().jigMethodAttribute().throwTypes().stream().map(JigTypeReference::id).toList(),
-                        signatureContainedTypes)
-                .flatMap(Collection::stream)
-                .toList();
-        return new TypeIdentifiers(list);
+        return new TypeIdentifiers(jigMethodDeclaration.associatedTypes());
     }
 
     public String aliasTextOrBlank() {

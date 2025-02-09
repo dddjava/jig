@@ -1,6 +1,11 @@
 package org.dddjava.jig.domain.model.data.members;
 
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * メソッド定義
@@ -20,5 +25,12 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
 
     public boolean isAbstract() {
         return header.jigMethodAttribute().isAbstract();
+    }
+
+    public Set<TypeIdentifier> associatedTypes() {
+        return Stream.concat(
+                instructions.associatedTypeStream(),
+                header.jigMethodAttribute().associatedTypeStream()
+        ).collect(Collectors.toSet());
     }
 }

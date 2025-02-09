@@ -89,7 +89,7 @@ public class JigTypes {
     }
 
     public TypeIdentifiers typeIdentifiers() {
-        return TypeIdentifiers.from(map.keySet());
+        return new TypeIdentifiers(map.keySet());
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {

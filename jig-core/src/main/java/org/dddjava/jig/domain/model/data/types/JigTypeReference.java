@@ -63,7 +63,7 @@ public record JigTypeReference(TypeIdentifier id,
                 // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
                 id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
                 typeAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
-                typeArgumentList.stream().map(jigTypeArgument -> jigTypeArgument.typeIdentifier())
+                typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().allTypeIentifierStream())
         ).flatMap(identity -> identity);
     }
 

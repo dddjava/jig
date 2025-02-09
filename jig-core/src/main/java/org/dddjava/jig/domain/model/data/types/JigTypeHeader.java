@@ -52,19 +52,4 @@ public record JigTypeHeader(TypeIdentifier id,
                 .sorted(Comparator.comparing(jigBaseTypeData -> jigBaseTypeData.id()))
                 .toList();
     }
-
-    public JigTypeHeader withStatic() {
-        EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
-        jigTypeModifiers.addAll(jigTypeAttributeData.jigTypeModifiers());
-        jigTypeModifiers.add(JigTypeModifier.STATIC);
-        return new JigTypeHeader(id, jigTypeKind,
-                new JigTypeAttributeData(
-                        jigTypeAttributeData.jigTypeVisibility(),
-                        jigTypeModifiers,
-                        jigTypeAttributeData.declarationAnnotationInstances(),
-                        jigTypeAttributeData.typeParameters()
-                ),
-                baseTypeDataBundle
-        );
-    }
 }

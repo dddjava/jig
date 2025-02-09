@@ -35,6 +35,7 @@ class AsmClassVisitor extends ClassVisitor {
     private TypeIdentifier typeIdentifier;
 
     private JigTypeHeader jigTypeHeader;
+    private ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
 
     AsmClassVisitor() {
@@ -60,26 +61,18 @@ class AsmClassVisitor extends ClassVisitor {
                             Arrays.stream(interfaces).map(JigTypeReference::fromJvmBinaryName).toList()
                     ));
         }
-
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }
 
     private JigTypeHeader jigTypeHeader(JigTypeKind jigTypeKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
-        return new JigTypeHeader(this.typeIdentifier, jigTypeKind,
-                new JigTypeAttributeData(
-                        jigTypeVisibility,
-                        jigTypeModifiers,
-                        new ArrayList<>(), // アノテーションは後で追加する
-                        jigTypeParameters
-                ),
-                jigBaseTypeDataBundle
-        );
+        // アノテーションはまだ取得していないので空で作る
+        return new JigTypeHeader(this.typeIdentifier, jigTypeKind, new JigTypeAttributeData(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new AsmAnnotationVisitor(this.api, AsmUtils.typeDescriptorToIdentifier(descriptor), it -> {
-            jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().add(it.annotationReference());
+            declarationAnnotationCollector.add(it.annotationReference());
         });
     }
 
@@ -121,8 +114,22 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-        if (isStaticNestedClass) {
-            jigTypeHeader = jigTypeHeader.withStatic();
+        // 変更要因があったら作り直す
+        if (isStaticNestedClass || !declarationAnnotationCollector.isEmpty()) {
+            EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
+            jigTypeModifiers.addAll(jigTypeHeader.jigTypeAttributeData().jigTypeModifiers());
+            if (isStaticNestedClass) {
+                jigTypeModifiers.add(JigTypeModifier.STATIC);
+            }
+            jigTypeHeader = new JigTypeHeader(jigTypeHeader.id(), jigTypeHeader.jigTypeKind(),
+                    new JigTypeAttributeData(
+                            jigTypeHeader.jigTypeAttributeData().jigTypeVisibility(),
+                            jigTypeModifiers,
+                            List.copyOf(declarationAnnotationCollector),
+                            jigTypeHeader.jigTypeAttributeData().typeParameters()
+                    ),
+                    jigTypeHeader.baseTypeDataBundle()
+            );
         }
         super.visitEnd();
     }

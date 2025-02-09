@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.members.JigFieldFlag;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
-import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;
@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 public record JigTypeMembers(
         Collection<JigFieldHeader> jigFieldHeaders,
-        Collection<JigMethodHeader> jigMethodHeaders,
+        Collection<JigMethodDeclaration> jigMethodDeclarations,
         // 互換のため
         JigStaticMember jigStaticMember,
         // 互換のため
@@ -56,9 +56,9 @@ public record JigTypeMembers(
                 .findAny();
     }
 
-    public Collection<JigMethodHeader> findMethodByName(String name) {
-        return jigMethodHeaders.stream()
-                .filter(jigMethodHeader -> jigMethodHeader.name().equals(name))
+    public Collection<JigMethodDeclaration> findMethodByName(String name) {
+        return jigMethodDeclarations.stream()
+                .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(name))
                 .toList();
     }
 
@@ -73,7 +73,7 @@ public record JigTypeMembers(
     public Stream<JigMethod> jigMethodStream() {
         return instanceMethods().stream();
 
-//        return jigMethodHeaders.stream()
+//        return jigMethodDeclarations.stream()
 //                .map(jigMethodHeader -> new JigMethod(
 //                        jigMethodHeader,
 //                        null, null, null, null, null, null

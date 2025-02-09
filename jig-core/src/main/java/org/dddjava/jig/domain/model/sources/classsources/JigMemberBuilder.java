@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.sources.classsources;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigStaticMember;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
@@ -22,7 +22,7 @@ public class JigMemberBuilder {
     final List<JigMethodBuilder> instanceJigMethodBuilders = new ArrayList<>();
 
     private final Collection<JigFieldHeader> fieldHeaders = new ArrayList<>();
-    private final Collection<JigMethodHeader> methodHeaders = new ArrayList<>();
+    private final Collection<JigMethodDeclaration> methodDeclarations = new ArrayList<>();
 
     private final List<RecordComponentDefinition> recordComponentDefinitions = new ArrayList<>();
 
@@ -55,14 +55,14 @@ public class JigMemberBuilder {
         fieldHeaders.add(jigFieldHeader);
     }
 
-    public void addJigMethodHeader(JigMethodHeader jigMethodHeader) {
-        methodHeaders.add(jigMethodHeader);
+    public void addJigMethodDeclaration(JigMethodDeclaration jigMethodDeclaration) {
+        methodDeclarations.add(jigMethodDeclaration);
     }
 
     public JigTypeMembers buildJigTypeMembers() {
         return new JigTypeMembers(
                 fieldHeaders,
-                methodHeaders,
+                methodDeclarations,
                 // 以下は互換のため。メソッドの実装をおえたら不要になる想定
                 new JigStaticMember(
                         new JigMethods(constructorBuilders.stream().map(JigMethodBuilder::build).collect(toList())),

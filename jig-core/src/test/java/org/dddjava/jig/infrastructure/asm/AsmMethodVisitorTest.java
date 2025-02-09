@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
@@ -96,9 +96,9 @@ class AsmMethodVisitorTest {
                 .orElseThrow();
     }
 
-    private static JigMethodHeader JigMethodHeader準備(Class<?> sutClass, String methodName) {
+    private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
         var members = 準備(sutClass).buildJigTypeMembers();
-        Collection<JigMethodHeader> methodByName = members.findMethodByName(methodName);
+        Collection<JigMethodDeclaration> methodByName = members.findMethodByName(methodName);
         return methodByName.stream().findFirst().orElseThrow();
     }
 

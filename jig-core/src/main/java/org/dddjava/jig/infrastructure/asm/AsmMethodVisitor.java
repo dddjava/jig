@@ -45,7 +45,7 @@ class AsmMethodVisitor extends MethodVisitor {
     final List<Annotation> annotationList = new ArrayList<>();
     private final Collection<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
 
-    public AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> endConsumer) {
+    private AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);
         this.endConsumer = endConsumer;
     }
@@ -161,16 +161,6 @@ class AsmMethodVisitor extends MethodVisitor {
         return set;
     }
 
-    private static JigTypeReference parameterizedTypeToTypeReference(ParameterizedType parameterizedType) {
-        return new JigTypeReference(
-                parameterizedType.typeIdentifier(),
-                List.of(), // type annotation未対応
-                parameterizedType.typeParameters().list().stream()
-                        .map(typeParameter -> new JigTypeArgument(typeParameter.value()))
-                        .toList()
-        );
-    }
-
     private static JigMemberVisibility resolveMethodVisibility(int access) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) return JigMemberVisibility.PUBLIC;
         if ((access & Opcodes.ACC_PROTECTED) != 0) return JigMemberVisibility.PROTECTED;
@@ -178,20 +168,9 @@ class AsmMethodVisitor extends MethodVisitor {
         return JigMemberVisibility.PACKAGE;
     }
 
-    private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
-        return asmType2TypeIdentifier(Type.getReturnType(descriptor));
-    }
-
-    @Override
-    public void visitInsn(int opcode) {
-        if (opcode == Opcodes.ACONST_NULL) {
-            methodInstructions.register(MethodInstructionType.NULL参照);
-        }
-        super.visitInsn(opcode);
-    }
-
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        logger.debug("visitAnnotation {} {}", descriptor, visible);
         return new AsmAnnotationVisitor(this.api,
                 AsmClassVisitor.typeDescriptorToIdentifier(descriptor),
                 it -> {
@@ -201,7 +180,17 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     @Override
+    public void visitInsn(int opcode) {
+        logger.debug("visitInsn {}", opcode);
+        if (opcode == Opcodes.ACONST_NULL) {
+            methodInstructions.register(MethodInstructionType.NULL参照);
+        }
+        super.visitInsn(opcode);
+    }
+
+    @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
         TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
         TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
 
@@ -211,6 +200,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+        logger.debug("visitMethodInsn {} {} {} {}", opcode, owner, name, descriptor);
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(type -> asmType2TypeIdentifier(type))
                 .toList();
@@ -221,12 +211,9 @@ class AsmMethodVisitor extends MethodVisitor {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
 
-    private static TypeIdentifier asmType2TypeIdentifier(Type type) {
-        return TypeIdentifier.valueOf(type.getClassName());
-    }
-
     @Override
     public void visitLdcInsn(Object value) {
+        logger.debug("visitLdcInsn {}", value);
         if (value instanceof Type typeValue) {
             // `Xxx.class` などのクラス参照を読み込む
             var typeIdentifier = asmType2TypeIdentifier(typeValue);
@@ -243,6 +230,7 @@ class AsmMethodVisitor extends MethodVisitor {
      */
     @Override
     public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+        logger.debug("visitInvokeDynamicInsn {} {} {} {}", name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         // name, descriptorにはLambdaやメソッド参照を受ける型の情報。
         // たとえばFunctionで受けるなら name=apply descriptor=()Ljava/util/function/Function; となる。
         // invokeDynamic実行時点でのこの情報あまり意味がないので使用しない。（必要であれば他のメソッド呼び出し時の引数として登場するはず。）
@@ -284,6 +272,35 @@ class AsmMethodVisitor extends MethodVisitor {
         super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
     }
 
+    @Override
+    public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+        logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
+        // switchがある
+        methodInstructions.register(MethodInstructionType.SWITCH);
+        super.visitLookupSwitchInsn(dflt, keys, labels);
+    }
+
+    @Override
+    public void visitJumpInsn(int opcode, Label label) {
+        logger.debug("visitJumpInsn {} {}", opcode, label);
+        // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
+        if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
+            // 何かしらの分岐がある
+            methodInstructions.register(MethodInstructionType.JUMP);
+        }
+
+        if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
+            methodInstructions.register(MethodInstructionType.NULL判定);
+        }
+        super.visitJumpInsn(opcode, label);
+    }
+
+    @Override
+    public void visitEnd() {
+        logger.debug("visitEnd {}", this);
+        endConsumer.accept(this);
+    }
+
     private boolean isMethodRef(Handle handle) {
         return switch (handle.getTag()) {
             // フィールドに対する操作なので無視
@@ -306,29 +323,22 @@ class AsmMethodVisitor extends MethodVisitor {
         };
     }
 
-    @Override
-    public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
-        // switchがある
-        methodInstructions.register(MethodInstructionType.SWITCH);
-        super.visitLookupSwitchInsn(dflt, keys, labels);
+    private static TypeIdentifier asmType2TypeIdentifier(Type type) {
+        return TypeIdentifier.valueOf(type.getClassName());
     }
 
-    @Override
-    public void visitJumpInsn(int opcode, Label label) {
-        // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
-        if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
-            // 何かしらの分岐がある
-            methodInstructions.register(MethodInstructionType.JUMP);
-        }
-
-        if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-            methodInstructions.register(MethodInstructionType.NULL判定);
-        }
-        super.visitJumpInsn(opcode, label);
+    private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+        return asmType2TypeIdentifier(Type.getReturnType(descriptor));
     }
 
-    @Override
-    public void visitEnd() {
-        endConsumer.accept(this);
+    // parameterized typeを経由せずに直接つくるようにするまでの繋ぎ
+    private static JigTypeReference parameterizedTypeToTypeReference(ParameterizedType parameterizedType) {
+        return new JigTypeReference(
+                parameterizedType.typeIdentifier(),
+                List.of(), // type annotation未対応
+                parameterizedType.typeParameters().list().stream()
+                        .map(typeParameter -> new JigTypeArgument(typeParameter.value()))
+                        .toList()
+        );
     }
 }

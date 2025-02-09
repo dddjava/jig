@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -27,11 +28,18 @@ public class JigField {
         return jigFieldHeader.jigTypeReference();
     }
 
+    static ParameterizedType jigReferenceToParameterizedType(JigTypeReference jigTypeReference) {
+        return new ParameterizedType(jigTypeReference.id(),
+                jigTypeReference.typeArgumentList().stream()
+                        .map(jigTypeArgument -> jigReferenceToParameterizedType(jigTypeArgument.jigTypeReference()))
+                        .toList());
+    }
+
     public static JigField from(JigFieldHeader jigFieldHeader) {
         // 互換のため無理矢理JigFieldHeaderから生成している状態。FieldDeclarationやFieldAnnotationsの使用箇所を直せばもっと素直にできるはず
         var fieldDeclaration = new FieldDeclaration(
                 jigFieldHeader.id().declaringTypeIdentifier(),
-                new FieldType(jigFieldHeader.jigTypeReference().id()),
+                new FieldType(jigReferenceToParameterizedType(jigFieldHeader.jigTypeReference())),
                 jigFieldHeader.id().name()
         );
         return new JigField(

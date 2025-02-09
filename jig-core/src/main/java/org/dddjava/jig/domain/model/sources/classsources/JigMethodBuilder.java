@@ -23,15 +23,13 @@ public class JigMethodBuilder {
     private final JigMethodDeclaration jigMethodDeclaration;
     private final MethodDeclaration methodDeclaration;
     private final MethodDerivation methodDerivation;
-    private final List<TypeIdentifier> signatureContainedTypes;
     private final List<Annotation> annotations;
     private Term term = null;
 
-    public JigMethodBuilder(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, MethodDerivation methodDerivation, List<Annotation> annotationList) {
+    public JigMethodBuilder(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodDerivation methodDerivation, List<Annotation> annotationList) {
         this.jigMethodDeclaration = jigMethodDeclaration;
         this.methodDeclaration = methodDeclaration;
         this.methodDerivation = methodDerivation;
-        this.signatureContainedTypes = signatureContainedTypes;
         this.annotations = annotationList;
     }
 
@@ -66,16 +64,15 @@ public class JigMethodBuilder {
 
     public static JigMethodBuilder builder(JigMethodDeclaration jigMethodDeclaration,
                                            int access,
-                                           List<TypeIdentifier> signatureContainedTypes,
                                            MethodDeclaration methodDeclaration,
                                            List<Annotation> annotationList,
                                            boolean isEnum, boolean isRecordComponent) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(jigMethodDeclaration, methodDeclaration, signatureContainedTypes, methodDerivation, annotationList);
+        return new JigMethodBuilder(jigMethodDeclaration, methodDeclaration, methodDerivation, annotationList);
     }
 
     public JigMethod build() {
-        return new JigMethod(jigMethodDeclaration, methodDeclaration, annotatedMethods(), methodDerivation, signatureContainedTypes, term);
+        return new JigMethod(jigMethodDeclaration, methodDeclaration, annotatedMethods(), methodDerivation, term);
     }
 
     private MethodAnnotations annotatedMethods() {

@@ -17,8 +17,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
 import org.objectweb.asm.*;
-import org.objectweb.asm.signature.SignatureReader;
-import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,24 +54,9 @@ class AsmMethodVisitor extends MethodVisitor {
                                      // visitMethodの引数
                                      int access, String name, String descriptor, String signature, String[] exceptions,
                                      TypeIdentifier declaringTypeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
-        List<TypeIdentifier> signatureContainedTypes = new ArrayList<>();
-        if (signature != null) {
-            // シグネチャに登場する型を全部取り出す
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(api) {
-                        @Override
-                        public void visitClassType(String name1) {
-                            signatureContainedTypes.add(TypeIdentifier.valueOf(name1));
-                        }
-                    }
-            );
-        }
-
         MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
                 .flatMap(nonNullSignature ->
                         // signatureがあればこちらから構築する
-                        // TODO MethodDeclarationだけ取得しているがsignatureから取得できる型の収集を別でやっているため、
-                        //  methodSignatureを2回読み取るようになっている。この１か所だけで読むように寄せる。（useTypesもやめたい）
                         AsmMethodSignatureVisitor.buildMethodDeclaration(api, name, declaringTypeIdentifier, nonNullSignature)
                 ).orElseGet(() -> {
                     // signatureがないもしくは失敗した場合はdescriptorから構築する
@@ -109,7 +92,6 @@ class AsmMethodVisitor extends MethodVisitor {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             jigMethodDeclaration,
                             access,
-                            signatureContainedTypes,
                             methodDeclaration,
                             it.annotationList,
                             isEnum,

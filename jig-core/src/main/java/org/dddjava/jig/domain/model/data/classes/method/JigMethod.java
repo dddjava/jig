@@ -22,15 +22,13 @@ public class JigMethod {
     MethodAnnotations methodAnnotations;
 
     MethodDerivation methodDerivation;
-    private final List<TypeIdentifier> signatureContainedTypes;
     private final Term term;
 
-    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, MethodDerivation methodDerivation, List<TypeIdentifier> signatureContainedTypes, Term term) {
+    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, MethodDerivation methodDerivation, Term term) {
         this.jigMethodDeclaration = jigMethodDeclaration;
         this.methodDeclaration = methodDeclaration;
         this.methodAnnotations = methodAnnotations;
         this.methodDerivation = methodDerivation;
-        this.signatureContainedTypes = signatureContainedTypes;
         this.term = term;
     }
 

@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstru
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
@@ -314,16 +313,5 @@ class AsmMethodVisitor extends MethodVisitor {
 
     private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
         return asmType2TypeIdentifier(Type.getReturnType(descriptor));
-    }
-
-    // parameterized typeを経由せずに直接つくるようにするまでの繋ぎ
-    private static JigTypeReference parameterizedTypeToTypeReference(ParameterizedType parameterizedType) {
-        return new JigTypeReference(
-                parameterizedType.typeIdentifier(),
-                List.of(), // type annotation未対応
-                parameterizedType.typeParameters().list().stream()
-                        .map(typeParameter -> JigTypeArgument.just(typeParameter.value()))
-                        .toList()
-        );
     }
 }

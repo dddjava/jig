@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescriptio
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
@@ -15,9 +16,15 @@ import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.misc.DecisionClass;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,6 +38,14 @@ class AsmMethodVisitorTest {
      * テストで読み取るメソッドを定義したクラス
      */
     private static class MethodVisitorSut {
+
+        @SutAnnotations.A1
+        Object メソッドで使用している基本的な型が取得できる(boolean b1, @SutAnnotations.B Boolean b2) throws @SutAnnotations.C NoSuchElementException {
+            @SutAnnotations.D1 @SutAnnotations.D2 String str = String.valueOf('a');
+            int exact = Math.toIntExact(BigDecimal.ZERO.longValueExact());
+            return Void.class;
+        }
+
         void 引数型のジェネリクスが取得できる(List<String> list) {
         }
 
@@ -38,9 +53,57 @@ class AsmMethodVisitorTest {
             return null;
         }
 
-        @VariableAnnotation(string = "am", arrayString = {"bm1", "bm2" }, number = 23, clz = Method.class, enumValue = UseInAnnotation.DUMMY2)
+        @VariableAnnotation(string = "am", arrayString = {"bm1", "bm2"}, number = 23, clz = Method.class, enumValue = UseInAnnotation.DUMMY2)
         void メソッドに付与されているアノテーションと記述が取得できる() {
         }
+    }
+
+    static class SutAnnotations {
+        @Target({ElementType.METHOD, ElementType.TYPE_USE})
+        @interface A1 {
+        }
+
+        @Target(ElementType.TYPE_USE)
+        @interface A2 {
+        }
+
+        @Target(ElementType.TYPE_USE)
+        @interface B {
+        }
+
+        @Target(ElementType.TYPE_USE)
+        @interface C {
+        }
+
+        @Target(ElementType.LOCAL_VARIABLE)
+        @interface D1 {
+        }
+
+        @Target(ElementType.TYPE_USE)
+        @interface D2 {
+        }
+    }
+
+    @Test
+    void メソッドで使用している型が取得できる() {
+        JigMethod method = JigMethod準備(MethodVisitorSut.class, "メソッドで使用している基本的な型が取得できる");
+
+        Set<String> actual = method.usingTypes().list()
+                // アサーションのための名前でsetで収集する
+                .stream().map(TypeIdentifier::asSimpleName).collect(Collectors.toSet());
+
+        // "A2", "B", "C" などのTypeAnnotationは取得できていない
+        // メソッド内のアノテーションは取得できていない
+        Set<String> expected = Set.of(
+                "A1", // メソッドアノテーション
+                "Object", // 戻り値
+                "boolean", "Boolean", // 引数
+                "NoSuchElementException", // throws
+                "String", "char", // 1行目
+                "Math", "BigDecimal", "long", "int", // 2行目
+                "Void" // return
+        );
+        assertEquals(expected, actual);
     }
 
     @Test

@@ -57,6 +57,15 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return (lastDotIndex != -1) ? value.substring(lastDotIndex + 1) : value;
     }
 
+    /**
+     * ネストしている場合も考慮した単純名
+     */
+    public String asSimpleName() {
+        String text = asSimpleText();
+        int lastDollarIndex = text.lastIndexOf('$');
+        return (lastDollarIndex != -1) ? text.substring(lastDollarIndex + 1) : text;
+    }
+
     private boolean hasPackage() {
         return value.contains(".");
     }

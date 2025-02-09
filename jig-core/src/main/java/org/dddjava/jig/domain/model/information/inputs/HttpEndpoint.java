@@ -42,7 +42,6 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
         }
         methodPath = requestMappingForMethod.descriptionTextOf("value");
         if (methodPath == null) methodPath = requestMappingForMethod.descriptionTextOf("path");
-        if (methodPath == null) methodPath = "";
         var simpleText = requestMappingForMethod.typeIdentifier().asSimpleText();
         // アノテーション名からHTTPメソッド名を作る。RequestMappingは一旦対応しない。
         var method = "RequestMapping".equals(simpleText) ? "???" : simpleText.replace("Mapping", "").toUpperCase(Locale.ROOT);
@@ -54,6 +53,7 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
                 .findAny();
         String interfaceLabel = optOperationSummary.orElseGet(jigMethod::labelText);
 
+        if (methodPath == null || methodPath.isEmpty()) methodPath = "/";
         return new HttpEndpoint(method, interfaceLabel, classPath, methodPath);
     }
 

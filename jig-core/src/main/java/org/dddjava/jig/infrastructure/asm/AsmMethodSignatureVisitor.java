@@ -90,12 +90,17 @@ class AsmMethodSignatureVisitor extends SignatureVisitor {
 
     static Optional<MethodDeclaration> buildMethodDeclaration(int api, String name, TypeIdentifier declaringType, String signature) {
         try {
-            AsmMethodSignatureVisitor methodSignatureVisitor = new AsmMethodSignatureVisitor(api);
-            new SignatureReader(signature).accept(methodSignatureVisitor);
+            AsmMethodSignatureVisitor methodSignatureVisitor = buildMethodSignatureVisitor(api, signature);
             return Optional.of(methodSignatureVisitor.buildMethodDeclaration(declaringType, name));
         } catch (Exception e) {
             logger.warn("exception occurred reading method signature {} for {} {}", signature, declaringType, name, e);
             return Optional.empty();
         }
+    }
+
+    static AsmMethodSignatureVisitor buildMethodSignatureVisitor(int api, String signature) {
+        AsmMethodSignatureVisitor methodSignatureVisitor = new AsmMethodSignatureVisitor(api);
+        new SignatureReader(signature).accept(methodSignatureVisitor);
+        return methodSignatureVisitor;
     }
 }

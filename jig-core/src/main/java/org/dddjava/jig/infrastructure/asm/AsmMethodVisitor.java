@@ -113,16 +113,16 @@ class AsmMethodVisitor extends MethodVisitor {
 
     private JigMethodHeader jigMethodHeader(int access, String signature, MethodDeclaration methodDeclaration, JigMethodIdentifier jigMethodIdentifier, List<TypeIdentifier> throwsTypes, Type methodType) {
         if (signature != null) {
-            var methodReturn = methodDeclaration.methodReturn().parameterizedType();
-            var argumentList = methodDeclaration.methodSignature().arguments().stream()
-                    .map(it -> parameterizedTypeToTypeReference(it))
-                    .toList();
+            var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
+            var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();
+            var parameters = methodSignatureVisitor.parameterVisitors.stream().map(visitor -> visitor.jigTypeReference()).toList();
+
             return new JigMethodHeader(jigMethodIdentifier, jigMemberOwnership(access),
                     new JigMethodAttribute(
                             resolveMethodVisibility(access),
                             declarationAnnotationCollector,
-                            parameterizedTypeToTypeReference(methodReturn),
-                            argumentList,
+                            jigTypeReference,
+                            parameters,
                             throwsTypes.stream().map(JigTypeReference::fromId).toList(),
                             jigMethodFlags(access)
                     )
@@ -337,7 +337,7 @@ class AsmMethodVisitor extends MethodVisitor {
                 parameterizedType.typeIdentifier(),
                 List.of(), // type annotation未対応
                 parameterizedType.typeParameters().list().stream()
-                        .map(typeParameter -> new JigTypeArgument(typeParameter.value()))
+                        .map(typeParameter -> JigTypeArgument.just(typeParameter.value()))
                         .toList()
         );
     }

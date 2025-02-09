@@ -54,8 +54,17 @@ public record JigTypeHeader(TypeIdentifier id,
     }
 
     public JigTypeHeader withStatic() {
-        // JigTypeModifiersが変更可能なのでひとまずこうしておく
-        jigTypeAttributeData.jigTypeModifiers().add(JigTypeModifier.STATIC);
-        return this;
+        EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
+        jigTypeModifiers.addAll(jigTypeAttributeData.jigTypeModifiers());
+        jigTypeModifiers.add(JigTypeModifier.STATIC);
+        return new JigTypeHeader(id, jigTypeKind,
+                new JigTypeAttributeData(
+                        jigTypeAttributeData.jigTypeVisibility(),
+                        jigTypeModifiers,
+                        jigTypeAttributeData.declarationAnnotationInstances(),
+                        jigTypeAttributeData.typeParameters()
+                ),
+                baseTypeDataBundle
+        );
     }
 }

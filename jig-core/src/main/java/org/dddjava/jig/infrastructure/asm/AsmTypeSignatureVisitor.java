@@ -179,18 +179,18 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     JigTypeArgument typeArgument() {
         logger.debug("typeArgument");
         if (baseTypeIdentifier != null) {
-            return new JigTypeArgument(typeVariableIdentifier);
+            return JigTypeArgument.primitive(typeVariableIdentifier);
         } else if (typeVariableIdentifier != null) {
             // 型引数に型パラメタが渡されているもの
-            return new JigTypeArgument(typeVariableIdentifier);
+            return JigTypeArgument.just(typeVariableIdentifier);
         } else if (arrayAsmTypeSignatureVisitor != null) {
             var jigTypeReference = arrayAsmTypeSignatureVisitor.jigTypeReference();
-            return new JigTypeArgument(jigTypeReference.id().convertArray().fullQualifiedName());
+            return JigTypeArgument.just(jigTypeReference.id().convertArray().fullQualifiedName());
         } else if (classType != null) {
             // 型引数がクラスの素直なもの
             // TODO これがさらに型引数を持っているパターンは未対応
             // こっちはInnerClassはありえる？
-            return new JigTypeArgument(classType.name.replace('/', '.'));
+            return JigTypeArgument.just(classType.name.replace('/', '.'));
         }
 
         throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");

@@ -41,7 +41,7 @@ class AsmFieldVisitor extends FieldVisitor {
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS,
                     resolveFieldTypeReference(api, descriptor, signature),
-                    new JigFieldAttribute(resolveMethodVisibility(access), it.declarationAnnotationCollector, jigFieldFlags(access))));
+                    new JigFieldAttribute(AsmUtils.resolveMethodVisibility(access), it.declarationAnnotationCollector, jigFieldFlags(access))));
         });
     }
 
@@ -63,14 +63,6 @@ class AsmFieldVisitor extends FieldVisitor {
         if ((access & Opcodes.ACC_SYNTHETIC) != 0) set.add(JigFieldFlag.SYNTHETIC);
         if ((access & Opcodes.ACC_ENUM) != 0) set.add(JigFieldFlag.ENUM);
         return set;
-    }
-
-    // methodと重複コード
-    private static JigMemberVisibility resolveMethodVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return JigMemberVisibility.PUBLIC;
-        if ((access & Opcodes.ACC_PROTECTED) != 0) return JigMemberVisibility.PROTECTED;
-        if ((access & Opcodes.ACC_PRIVATE) != 0) return JigMemberVisibility.PRIVATE;
-        return JigMemberVisibility.PACKAGE;
     }
 
     @Override

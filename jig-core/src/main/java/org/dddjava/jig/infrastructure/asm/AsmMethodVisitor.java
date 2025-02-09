@@ -124,7 +124,7 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
-        var jigMemberVisibility = resolveMethodVisibility(access);
+        var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
 
         EnumSet<JigMethodFlag> flags = EnumSet.noneOf(JigMethodFlag.class);
         if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) flags.add(JigMethodFlag.SYNCHRONIZED);
@@ -143,13 +143,6 @@ class AsmMethodVisitor extends MethodVisitor {
     private static JigMemberOwnership jigMemberOwnership(int access) {
         // fieldと同じ判定をしているので共通化したい
         return ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS;
-    }
-
-    private static JigMemberVisibility resolveMethodVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return JigMemberVisibility.PUBLIC;
-        if ((access & Opcodes.ACC_PROTECTED) != 0) return JigMemberVisibility.PROTECTED;
-        if ((access & Opcodes.ACC_PRIVATE) != 0) return JigMemberVisibility.PRIVATE;
-        return JigMemberVisibility.PACKAGE;
     }
 
     @Override

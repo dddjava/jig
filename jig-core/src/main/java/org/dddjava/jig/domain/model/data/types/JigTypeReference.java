@@ -54,7 +54,7 @@ public record JigTypeReference(TypeIdentifier id,
     String typeArgumentsFqn() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
-                .map(typeArgument -> typeArgument.fqn())
+                .map(typeArgument -> typeArgument.fqnWithGenerics())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 

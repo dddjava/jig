@@ -38,7 +38,7 @@ public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard
         return jigTypeReference.id().value();
     }
 
-    public String fqn() {
+    public String fqnWithGenerics() {
         return jigTypeReference.fqnWithGenerics();
     }
 }

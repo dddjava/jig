@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.information.type.JigTypes;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,13 +34,19 @@ public class ClassRelations {
                 .toList());
     }
 
+    private static final ConcurrentHashMap<JigTypes, ClassRelations> cache = new ConcurrentHashMap<>();
+
     public static ClassRelations internalRelation(JigTypes jigTypes) {
-        return jigTypes.stream()
-                .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .filter(typeIdentifier -> jigTypes.contains(typeIdentifier))
-                        .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
-                .filter(classRelation -> !classRelation.selfRelation())
-                .collect(collectingAndThen(toList(), ClassRelations::new));
+        synchronized (jigTypes) {
+            return cache.computeIfAbsent(jigTypes, keyJigTypes -> {
+                return keyJigTypes.stream()
+                        .flatMap(jigType -> jigType.usingTypes().list().stream()
+                                .filter(typeIdentifier -> keyJigTypes.contains(typeIdentifier))
+                                .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
+                        .filter(classRelation -> !classRelation.selfRelation())
+                        .collect(collectingAndThen(toList(), ClassRelations::new));
+            });
+        }
     }
 
     public static ClassRelations internalTypeRelationsFrom(JigTypes jigTypes, JigType targetJigType) {

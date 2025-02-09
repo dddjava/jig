@@ -89,7 +89,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        return new AsmAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), it -> {
+        return new AsmAnnotationVisitor(this.api, AsmUtils.typeDescriptorToIdentifier(descriptor), it -> {
             jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().add(it.annotationReference());
         });
     }
@@ -116,7 +116,7 @@ class AsmClassVisitor extends ClassVisitor {
      */
     @Override
     public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
-        jigMemberBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
+        jigMemberBuilder.addRecordComponent(name, AsmUtils.typeDescriptorToIdentifier(descriptor));
         return super.visitRecordComponent(name, descriptor, signature);
     }
 
@@ -180,11 +180,6 @@ class AsmClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
         // 不明なものはCLASSにしておく
         return JigTypeKind.CLASS;
-    }
-
-    static TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
-        Type type = Type.getType(descriptor);
-        return TypeIdentifier.valueOf(type.getClassName());
     }
 
     public JigMemberBuilder jigMemberBuilder() {

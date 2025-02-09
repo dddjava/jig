@@ -50,7 +50,7 @@ class AsmFieldVisitor extends FieldVisitor {
 
     private static JigTypeReference resolveFieldTypeReference(int api, String descriptor, String signature) {
         if (signature == null) {
-            TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
+            TypeIdentifier fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
             return JigTypeReference.fromId(fieldTypeIdentifier);
         }
         AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
@@ -71,7 +71,7 @@ class AsmFieldVisitor extends FieldVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         logger.debug("visitAnnotation: {}, {}", descriptor, visible);
-        TypeIdentifier annotationTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
+        TypeIdentifier annotationTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
         return new AsmAnnotationVisitor(this.api, annotationTypeIdentifier, it -> {
             declarationAnnotationCollector.add(it.annotationReference());
         });

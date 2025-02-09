@@ -144,7 +144,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         logger.debug("visitAnnotation {} {}", descriptor, visible);
         return new AsmAnnotationVisitor(this.api,
-                AsmClassVisitor.typeDescriptorToIdentifier(descriptor),
+                AsmUtils.typeDescriptorToIdentifier(descriptor),
                 it -> {
                     annotationList.add(new Annotation(it.annotationType, it.annotationDescription));
                     declarationAnnotationCollector.add(it.annotationReference());
@@ -164,7 +164,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
         TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
-        TypeIdentifier fieldTypeIdentifier = AsmClassVisitor.typeDescriptorToIdentifier(descriptor);
+        TypeIdentifier fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
 
         methodInstructions.registerField(declaringType, fieldTypeIdentifier, name);
         super.visitFieldInsn(opcode, owner, name, descriptor);

@@ -163,4 +163,8 @@ public class JigMethod {
     public boolean isAbstract() {
         return jigMethodDeclaration.isAbstract();
     }
+
+    public String asNameArgumentsReturnText() {
+        return declaration().asSignatureAndReturnTypeSimpleText();
+    }
 }

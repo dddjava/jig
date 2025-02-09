@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.objectweb.asm.ClassReader;
 import stub.domain.model.relation.annotation.UseInAnnotation;
@@ -20,23 +21,20 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 /**
  * MethodVisitorはClassVisitor経由でテストする
  */
 class AsmMethodVisitorTest {
 
-    /**
-     * テストで読み取るメソッドを定義したクラス
-     */
     private static class MethodVisitorSut {
 
         @SutAnnotations.A1
@@ -81,6 +79,43 @@ class AsmMethodVisitorTest {
 
         @Target(ElementType.TYPE_USE)
         @interface D2 {
+        }
+    }
+
+    private static class MethodReturnAndArgumentsSut {
+
+        void returnsVoidMethod() {
+        }
+
+        int primitiveMethod(float f) {
+            return 0;
+        }
+
+        String normalMethod(BigDecimal bigDecimal) {
+            return "";
+        }
+
+        <T> T genericMethod1() {
+            return null;
+        }
+
+        <T1, T2> T2 genericMethod2(T1 t1, T2 t2) {
+            return null;
+        }
+
+        Optional<Integer> genericArgumentMethod1(List<String> list) {
+            return Optional.empty();
+        }
+
+        <T, U, V> T genericArgumentMethod2(Map<U, String> map, V v) {
+            return null;
+        }
+
+        Optional<Optional<Integer>> genericArgumentMethod3(Optional<Optional<Long>> optional) {
+            return Optional.empty();
+        }
+
+        void varargsMethod(LocalDate... localDates) {
         }
     }
 
@@ -149,6 +184,44 @@ class AsmMethodVisitorTest {
     void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
         JigMethod actual = JigMethod準備(DecisionClass.class, name);
         assertEquals(number, actual.decisionNumber().intValue());
+    }
+
+    @CsvSource({
+            "returnsVoidMethod,       returnsVoidMethod():void",
+            "primitiveMethod,         primitiveMethod(float):int",
+            "normalMethod,            normalMethod(BigDecimal):String",
+            "genericMethod1,          genericMethod1():T",
+            "genericMethod2,          'genericMethod2(T1, T2):T2'",
+            "genericArgumentMethod1,  genericArgumentMethod1(List<String>):Optional<Integer>",
+            "genericArgumentMethod2,  'genericArgumentMethod2(Map<U, String>, V):T'",
+            "genericArgumentMethod3,  genericArgumentMethod3(Optional<Optional<Long>>):Optional<Optional<Integer>>",
+            "varargsMethod,           varargsMethod(LocalDate[]):void",
+    })
+    @ParameterizedTest
+    void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
+        JigMethod actual = JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
+        assertEquals(expectedText, actual.asNameArgumentsReturnText());
+    }
+
+
+    static Stream<Arguments> 引数と戻り値のテスト() throws IOException {
+        return Stream.of(
+                arguments("returnsGenericMethod",
+                        "<T:Ljava/lang/Object;>()TT;",
+                        "returnsGenericMethod():T"),
+                arguments("returnsGenericMethodWithArguments",
+                        "<T1:Ljava/lang/Object;T2:Ljava/lang/Object;>(TT1;TT2;)TT2;",
+                        "returnsGenericMethodWithArguments(T1, T2):T2"),
+                arguments("genericArgumentMethod",
+                        "(Ljava/util/List<Ljava/lang/String;>;)V",
+                        "genericArgumentMethod(List<String>):void"),
+                arguments("bindMethod",
+                        "(Ljava/util/Optional<Ljava/lang/Long;>;)Ljava/util/Optional<Ljava/lang/Integer;>;",
+                        "bindMethod(Optional<Long>):Optional<Integer>"),
+                arguments("nestedBindMethod",
+                        "(Ljava/util/Optional<Ljava/util/Optional<Ljava/lang/Long;>;>;)Ljava/util/Optional<Ljava/util/Optional<Ljava/lang/Integer;>;>;",
+                        "nestedBindMethod(Optional<Optional<Long>>):Optional<Optional<Integer>>")
+        );
     }
 
     private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {

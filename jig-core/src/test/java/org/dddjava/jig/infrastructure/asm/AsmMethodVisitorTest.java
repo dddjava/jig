@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +40,10 @@ class AsmMethodVisitorTest {
             @SutAnnotations.D1 @SutAnnotations.D2 String str = String.valueOf('a');
             int exact = Math.toIntExact(BigDecimal.ZERO.longValueExact());
             return Void.class;
+        }
+
+        Optional<Predicate<Function<Integer, Character>>> メソッドで使用しているジェネリクスが取得できる(Supplier<UnaryOperator<Consumer<Long>>> parameter) {
+            return null;
         }
 
         void 引数型のジェネリクスが取得できる(List<String> list) {
@@ -134,6 +139,21 @@ class AsmMethodVisitorTest {
                 "String", "char", // 1行目
                 "Math", "BigDecimal", "long", "int", // 2行目
                 "Void" // return
+        );
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void メソッドで使用しているジェネリクスが取得できる() {
+        JigMethod method = JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているジェネリクスが取得できる");
+
+        var actual = method.usingTypes().list()
+                // アサーションのための名前でsetで収集する
+                .stream().map(TypeIdentifier::asSimpleName).collect(Collectors.toSet());
+
+        var expected = Set.of(
+                "Optional", "Predicate", "Function", "Integer", "Character", // 戻り値
+                "Supplier", "UnaryOperator", "Consumer", "Long" // 引数
         );
         assertEquals(expected, actual);
     }

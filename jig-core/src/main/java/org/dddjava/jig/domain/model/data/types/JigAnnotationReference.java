@@ -27,7 +27,7 @@ public record JigAnnotationReference(TypeIdentifier id,
         return Stream.of(id);
     }
 
-    public <T> Optional<T> elementOf(String name) {
+    public <T> Optional<T> elementTextOf(String name) {
         return elements.stream()
                 .filter(element -> element.name().equals(name))
                 .map(element -> (T) element.value())

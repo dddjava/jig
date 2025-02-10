@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AsmAnnotationVisitorTest {
@@ -55,16 +53,16 @@ class AsmAnnotationVisitorTest {
         assertEquals("MyAnnotation", myAnnotation.id().asSimpleName());
 
         assertEquals(6, myAnnotation.elements().size());
-        assertEquals("hoge", myAnnotation.elementOf("string").orElseThrow());
-        assertEquals(List.of("fuga", "piyo").toString(), myAnnotation.elementOf("arrayString").orElseThrow());
-        assertEquals("9", myAnnotation.elementOf("number").orElseThrow());
-        assertEquals("Ljava/lang/String;", myAnnotation.elementOf("clz").orElseThrow());
-        assertEquals("Ljava/lang/Integer;", myAnnotation.elementOf("arrayClz").orElseThrow());
-        assertEquals("BBB", myAnnotation.elementOf("enumValue").orElseThrow());
+        assertEquals("hoge", myAnnotation.elementTextOf("string").orElseThrow());
+        assertEquals("{fuga, piyo}", myAnnotation.elementTextOf("arrayString").orElseThrow());
+        assertEquals("9", myAnnotation.elementTextOf("number").orElseThrow());
+        assertEquals("String", myAnnotation.elementTextOf("clz").orElseThrow());
+        assertEquals("{Integer}", myAnnotation.elementTextOf("arrayClz").orElseThrow());
+        assertEquals("BBB", myAnnotation.elementTextOf("enumValue").orElseThrow());
 
         JigAnnotationReference myAnnotation1 = sut.get(1);
         assertEquals("MyAnnotation2", myAnnotation1.id().asSimpleName());
         assertEquals(1, myAnnotation1.elements().size());
-        assertEquals("Lorg/dddjava/jig/infrastructure/asm/AsmAnnotationVisitorTest$MyAnnotation;[...]", myAnnotation1.elementOf("annotation").orElseThrow());
+        assertEquals("@MyAnnotation(...)", myAnnotation1.elementTextOf("annotation").orElseThrow());
     }
 }

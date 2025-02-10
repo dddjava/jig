@@ -11,12 +11,12 @@ public class JigField {
         this.jigFieldHeader = jigFieldHeader;
     }
 
-    public JigTypeReference jigTypeReference() {
-        return jigFieldHeader.jigTypeReference();
-    }
-
     public static JigField from(JigFieldHeader jigFieldHeader) {
         return new JigField(jigFieldHeader);
+    }
+
+    public JigTypeReference jigTypeReference() {
+        return jigFieldHeader.jigTypeReference();
     }
 
     public TypeIdentifier typeIdentifier() {

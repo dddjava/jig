@@ -121,7 +121,6 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
-        var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
 
         EnumSet<JigMethodFlag> flags = EnumSet.noneOf(JigMethodFlag.class);
         if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) flags.add(JigMethodFlag.SYNCHRONIZED);
@@ -133,7 +132,7 @@ class AsmMethodVisitor extends MethodVisitor {
         if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigMethodFlag.SYNTHETIC);
 
         return new JigMethodHeader(jigMethodIdentifier, AsmUtils.jigMemberOwnership(access),
-                new JigMethodAttribute(jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
+                new JigMethodAttribute(AsmUtils.resolveMethodVisibility(access), declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
         );
     }
 

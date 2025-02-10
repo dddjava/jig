@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -14,13 +13,6 @@ public class JigField {
 
     public JigTypeReference jigTypeReference() {
         return jigFieldHeader.jigTypeReference();
-    }
-
-    static ParameterizedType jigReferenceToParameterizedType(JigTypeReference jigTypeReference) {
-        return new ParameterizedType(jigTypeReference.id(),
-                jigTypeReference.typeArgumentList().stream()
-                        .map(jigTypeArgument -> jigReferenceToParameterizedType(jigTypeArgument.jigTypeReference()))
-                        .toList());
     }
 
     public static JigField from(JigFieldHeader jigFieldHeader) {

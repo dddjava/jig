@@ -5,31 +5,14 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 /**
  * バリデーション
  */
-public class Validation {
-
-    ValidationAnnotatedMember validationAnnotatedMember;
+public record Validation(TypeIdentifier typeIdentifier, String memberName, TypeIdentifier memberType,
+                         TypeIdentifier annotationType, String annotationDescription) {
 
     public Validation(ValidationAnnotatedMember validationAnnotatedMember) {
-        this.validationAnnotatedMember = validationAnnotatedMember;
-    }
-
-    public TypeIdentifier typeIdentifier() {
-        return validationAnnotatedMember.declaringType();
-    }
-
-    public String memberName() {
-        return validationAnnotatedMember.asSimpleNameText();
-    }
-
-    public TypeIdentifier memberType() {
-        return validationAnnotatedMember.type();
-    }
-
-    public TypeIdentifier annotationType() {
-        return validationAnnotatedMember.annotationType();
-    }
-
-    public String annotationDescription() {
-        return validationAnnotatedMember.annotationDescription().asText();
+        this(validationAnnotatedMember.declaringType(),
+                validationAnnotatedMember.asSimpleNameText(),
+                validationAnnotatedMember.type(),
+                validationAnnotatedMember.annotationType(),
+                validationAnnotatedMember.annotationDescription().asText());
     }
 }

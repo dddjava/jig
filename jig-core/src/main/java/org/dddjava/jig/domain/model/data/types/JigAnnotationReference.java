@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.data.types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -32,5 +33,11 @@ public record JigAnnotationReference(TypeIdentifier id,
                 .filter(element -> element.name().equals(name))
                 .map(element -> element.valueAsString())
                 .findAny();
+    }
+
+    public String asText() {
+        return elements.stream()
+                .map(element -> "%s=%s".formatted(element.name(), element.valueAsString()))
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

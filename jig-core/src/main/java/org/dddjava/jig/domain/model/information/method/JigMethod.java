@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.DecisionNumber;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.data.classes.method.UsingMethods;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
@@ -71,7 +70,7 @@ public class JigMethod {
     }
 
     public UsingMethods usingMethods() {
-        return new UsingMethods(instructions().instructMethods());
+        return UsingMethods.from(instructions());
     }
 
     public boolean conditionalNull() {

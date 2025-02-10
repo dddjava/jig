@@ -28,15 +28,16 @@ import java.util.function.Consumer;
 class AsmFieldVisitor extends FieldVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);
 
-    private final Consumer<AsmFieldVisitor> finisher;
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final Consumer<AsmFieldVisitor> finisher;
 
     public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
         super(api);
         this.finisher = finisher;
     }
 
-    static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
+    static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature,
+                                TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
         logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
 
         EnumSet<JigFieldFlag> flags = EnumSet.noneOf(JigFieldFlag.class);

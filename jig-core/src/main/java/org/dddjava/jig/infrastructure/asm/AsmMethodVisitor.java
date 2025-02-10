@@ -36,20 +36,16 @@ import java.util.stream.Collectors;
 class AsmMethodVisitor extends MethodVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodVisitor.class);
 
-    private final Consumer<AsmMethodVisitor> endConsumer;
-
-    // このVisitorで収集した情報
-    final Instructions methodInstructions = Instructions.newInstance();
+    private final Instructions methodInstructions = Instructions.newInstance();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final Consumer<AsmMethodVisitor> finisher;
 
-    private AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> endConsumer) {
+    private AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> finisher) {
         super(api);
-        this.endConsumer = endConsumer;
+        this.finisher = finisher;
     }
 
-    public static MethodVisitor from(int api,
-                                     // visitMethodの引数
-                                     int access, String name, String descriptor, String signature, String[] exceptions,
+    public static MethodVisitor from(int api, int access, String name, String descriptor, String signature, String[] exceptions,
                                      TypeIdentifier declaringTypeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
         MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
                 .flatMap(nonNullSignature ->
@@ -263,7 +259,7 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitEnd() {
         logger.debug("visitEnd {}", this);
-        endConsumer.accept(this);
+        finisher.accept(this);
     }
 
     private boolean isMethodRef(Handle handle) {

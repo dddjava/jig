@@ -2,6 +2,11 @@ package org.dddjava.jig.domain.model.data.members;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+/**
+ * フィールドのID
+ *
+ * `{クラスの完全修飾名}#{フィールド名}`
+ */
 public record JigFieldIdentifier(String value) {
 
     public static JigFieldIdentifier from(TypeIdentifier declaringTypeIdentifier, String name) {

@@ -2,36 +2,24 @@ package org.dddjava.jig.domain.model.information.relation.classes;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 型の依存関係
  */
-public class ClassRelation {
+public record ClassRelation(TypeIdentifier from, TypeIdentifier to) {
 
-    final TypeIdentifier from;
-    final TypeIdentifier to;
-
-    public ClassRelation(TypeIdentifier from, TypeIdentifier to) {
-        this.from = from.normalize();
-        this.to = to.normalize();
+    public static Optional<ClassRelation> from(TypeIdentifier from, TypeIdentifier to) {
+        // TODO ここでnormalizeしなくてよくなってるかもしれない
+        TypeIdentifier normalizeFrom = from.normalize();
+        TypeIdentifier normalizeTo = to.normalize();
+        // 自己参照を除く
+        if (normalizeFrom.equals(normalizeTo)) return Optional.empty();
+        return Optional.of(new ClassRelation(normalizeFrom, normalizeTo));
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {
         return to.equals(typeIdentifier);
-    }
-
-    public TypeIdentifier from() {
-        return from;
-    }
-
-    public TypeIdentifier to() {
-        return to;
-    }
-
-    public boolean selfRelation() {
-        // TODO selfRelationは最初から除外する
-        return from.normalize().equals(to.normalize());
     }
 
     public boolean sameRelation(ClassRelation other) {
@@ -45,20 +33,6 @@ public class ClassRelation {
     @Override
     public String toString() {
         return from.fullQualifiedName() + " -> " + to.fullQualifiedName();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClassRelation that = (ClassRelation) o;
-        return Objects.equals(from, that.from) &&
-                Objects.equals(to, that.to);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(from, to);
     }
 
     public String formatText() {

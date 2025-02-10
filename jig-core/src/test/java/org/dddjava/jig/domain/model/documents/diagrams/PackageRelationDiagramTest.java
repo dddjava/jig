@@ -60,7 +60,7 @@ class PackageRelationDiagramTest {
                 Arguments.argumentSet("直下の関連がある",
                         List.of(PackageIdentifier.valueOf("a.aa.aaa"),
                                 PackageIdentifier.valueOf("a.aa.aab")),
-                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.Bar"))),
+                        List.of(classRelationFrom("a.aa.aaa.Foo", "a.aa.aab.Bar")),
                         3,
                         List.of("\"a.aa.aaa\" -> \"a.aa.aab\";")
                 ),
@@ -68,8 +68,8 @@ class PackageRelationDiagramTest {
                         List.of(PackageIdentifier.valueOf("a.aa.aaa"),
                                 PackageIdentifier.valueOf("a.aa.aab.aaba"),
                                 PackageIdentifier.valueOf("b")),
-                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))),
+                        List.of(classRelationFrom("a.aa.aaa.Foo", "a.aa.aab.aaba.Bar"),
+                                classRelationFrom("a.aa.aaa.Foo", "b.Bbb")),
                         3,
                         List.of("\"a.aa.aaa\" -> \"a.aa.aab\";",
                                 "\"a.aa.aaa\" -> \"b\";",
@@ -79,8 +79,8 @@ class PackageRelationDiagramTest {
                         List.of(PackageIdentifier.valueOf("a.aa.aaa"),
                                 PackageIdentifier.valueOf("a.aa.aab.aaba"),
                                 PackageIdentifier.valueOf("b")),
-                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))),
+                        List.of(classRelationFrom("a.aa.aaa.Foo", "a.aa.aab.aaba.Bar"),
+                                classRelationFrom("a.aa.aaa.Foo", "b.Bbb")),
                         2,
                         List.of("\"a.aa\" -> \"b\";")
                 ),
@@ -89,12 +89,16 @@ class PackageRelationDiagramTest {
                                 PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaab"),
                                 PackageIdentifier.defaultPackage(),
                                 PackageIdentifier.valueOf("a")),
-                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaab.Fuga")),
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("DefaultPackageClass"))),
+                        List.of(classRelationFrom("a.aa.aaa.aaaa.aaaaa.Hoge", "a.aa.aaa.aaaa.aaaab.Fuga"),
+                                classRelationFrom("a.aa.aaa.aaaa.aaaaa.Hoge", "DefaultPackageClass")),
                         4,
                         List.of("\"a.aa.aaa.aaaa\" -> \"(default)\";")
                 )
         );
+    }
+
+    private static ClassRelation classRelationFrom(String value, String value1) {
+        return ClassRelation.from(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1)).orElseThrow();
     }
 
     @MethodSource
@@ -143,8 +147,8 @@ class PackageRelationDiagramTest {
     @Test
     void ClassRelationsからPackageRelationsへの変換とapplyDepthの検証() {
         ClassRelations classRelations = new ClassRelations(List.of(
-                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.ab.aab.aaba.Bar")),
-                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
+                classRelationFrom("a.aa.aaa.Foo", "a.ab.aab.aaba.Bar"),
+                classRelationFrom("a.aa.aaa.Foo", "b.Bbb")
         ));
 
         PackageRelations sut = PackageRelations.from(classRelations);

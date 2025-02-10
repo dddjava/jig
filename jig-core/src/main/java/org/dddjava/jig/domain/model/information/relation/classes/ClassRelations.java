@@ -29,8 +29,7 @@ public class ClassRelations {
     public static ClassRelations from(JigTypes jigTypes) {
         return new ClassRelations(jigTypes.stream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .map(usingType -> new ClassRelation(jigType.typeIdentifier(), usingType)))
-                .filter(classRelation -> !classRelation.selfRelation())
+                        .flatMap(usingType -> ClassRelation.from(jigType.typeIdentifier(), usingType).stream()))
                 .toList());
     }
 
@@ -42,8 +41,7 @@ public class ClassRelations {
                 return keyJigTypes.stream()
                         .flatMap(jigType -> jigType.usingTypes().list().stream()
                                 .filter(typeIdentifier -> keyJigTypes.contains(typeIdentifier))
-                                .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
-                        .filter(classRelation -> !classRelation.selfRelation())
+                                .flatMap(typeIdentifier -> ClassRelation.from(jigType.typeIdentifier(), typeIdentifier).stream()))
                         .collect(collectingAndThen(toList(), ClassRelations::new));
             });
         }
@@ -72,7 +70,6 @@ public class ClassRelations {
     public ClassRelations filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
         List<ClassRelation> collect = list.stream()
                 .filter(classRelation -> toTypeIdentifiers.contains(classRelation.to()))
-                .filter(classRelation -> !classRelation.selfRelation())
                 .collect(Collectors.toList());
         return new ClassRelations(collect);
     }

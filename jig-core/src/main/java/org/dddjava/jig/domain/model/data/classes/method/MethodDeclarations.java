@@ -42,10 +42,6 @@ public class MethodDeclarations {
         return list.isEmpty();
     }
 
-    public MethodNumber number() {
-        return new MethodNumber(list.size());
-    }
-
     public String asSignatureAndReturnTypeSimpleText() {
         return list.stream()
                 .map(MethodDeclaration::asSignatureAndReturnTypeSimpleText)

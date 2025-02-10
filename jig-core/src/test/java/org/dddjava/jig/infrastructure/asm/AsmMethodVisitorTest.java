@@ -1,8 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.method.JigMethod;
 import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
@@ -159,12 +158,11 @@ class AsmMethodVisitorTest {
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
         JigMethod method = JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
-        MethodAnnotation methodAnnotation = method.methodAnnotations().list().get(0);
+        JigAnnotationReference sut = method.declarationAnnotationStream().findFirst().orElseThrow();
 
-        assertThat(methodAnnotation.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+        assertThat(sut.id().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
 
-        AnnotationDescription description = methodAnnotation.description();
-        assertThat(description.asText())
+        assertThat(sut.asText())
                 .contains(
                         "string=am",
                         "arrayString={bm1, bm2}",

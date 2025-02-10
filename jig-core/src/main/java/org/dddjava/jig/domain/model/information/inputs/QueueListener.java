@@ -9,14 +9,13 @@ public record QueueListener(EntrypointMethod entrypointMethod) {
     }
 
     public String queueName() {
-        return entrypointMethod.jigMethod().methodAnnotations().list().stream()
-                .filter(methodAnnotation -> methodAnnotation.annotationType().equals(TypeIdentifier.valueOf("org.springframework.amqp.rabbit.annotation.RabbitListener")))
-                .map(methodAnnotation -> {
+        return entrypointMethod.jigMethod().declarationAnnotationStream()
+                .filter(jigAnnotationReference -> jigAnnotationReference.id().equals(TypeIdentifier.valueOf("org.springframework.amqp.rabbit.annotation.RabbitListener")))
+                .map(jigAnnotationReference -> {
                     // queueは複数記述できるが、たぶんしないので一件目をとってくる
-                    var queueName = methodAnnotation.annotation().descriptionTextAnyOf("queues");
-                    return queueName.orElse("???");
+                    return jigAnnotationReference.elementTextOf("queues").orElse("???");
                 })
-                // アノテーションは複数取れないはずなのでこれで。
+                // RabbitListenerアノテーションは複数取れないはずなのでAnyでOK。
                 .findAny()
                 .orElse("???");
     }

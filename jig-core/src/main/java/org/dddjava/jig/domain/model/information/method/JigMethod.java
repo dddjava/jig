@@ -12,10 +12,12 @@ import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.instruction.DecisionNumber;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * メソッド
@@ -41,6 +43,10 @@ public class JigMethod {
 
     public DecisionNumber decisionNumber() {
         return instructions().decisionNumber();
+    }
+
+    public Stream<JigAnnotationReference> declarationAnnotationStream() {
+        return jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream();
     }
 
     public MethodAnnotations methodAnnotations() {
@@ -162,7 +168,7 @@ public class JigMethod {
     }
 
     public boolean hasAnnotation(TypeIdentifier annotation) {
-        return methodAnnotations().contains(annotation);
+        return declarationAnnotationStream().anyMatch(it -> it.id().equals(annotation));
     }
 
     public Instructions instructions() {

@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigTypesRepository;
-import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.method.CallerMethods;
 import org.dddjava.jig.domain.model.information.method.UsingMethods;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.junit.jupiter.api.Test;

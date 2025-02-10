@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
-import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
+import org.dddjava.jig.domain.model.information.method.CallerMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 

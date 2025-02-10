@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -24,5 +25,12 @@ public record JigAnnotationReference(TypeIdentifier id,
     public Stream<TypeIdentifier> allTypeIentifierStream() {
         // TODO elementがclassやannotationの場合に追加する
         return Stream.of(id);
+    }
+
+    public <T> Optional<T> elementOf(String name) {
+        return elements.stream()
+                .filter(element -> element.name().equals(name))
+                .map(element -> (T) element.value())
+                .findAny();
     }
 }

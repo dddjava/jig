@@ -12,14 +12,12 @@ import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.dddjava.jig.infrastructure.asm.ut.field.MyEnumFieldSut;
 import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
 import org.junit.jupiter.api.Test;
-import org.objectweb.asm.ClassReader;
 import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.relation.FieldDefinition;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.domain.model.relation.field.*;
 import testing.TestSupport;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,13 +48,7 @@ class AsmFieldVisitorTest {
     }
 
     private static JigMemberBuilder 準備(Class<?> sutClass) {
-        try {
-            AsmClassVisitor visitor = new AsmClassVisitor();
-            new ClassReader(sutClass.getName()).accept(visitor, 0);
-            return visitor.jigMemberBuilder();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return AsmClassVisitorTest.asmClassVisitor(sutClass).jigMemberBuilder();
     }
 
     void assertFieldSimpleNameWithGenerics(String expected, Optional<JigFieldHeader> actual) {

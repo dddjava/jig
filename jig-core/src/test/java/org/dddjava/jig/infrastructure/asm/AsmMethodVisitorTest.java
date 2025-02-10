@@ -10,12 +10,10 @@ import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.objectweb.asm.ClassReader;
 import stub.domain.model.relation.annotation.UseInAnnotation;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.misc.DecisionClass;
 
-import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
@@ -43,7 +41,7 @@ class AsmMethodVisitorTest {
         }
 
         Optional<Predicate<Function<Integer, Character>>> メソッドで使用しているジェネリクスが取得できる(Supplier<UnaryOperator<Consumer<Long>>> parameter) {
-            return null;
+            return Optional.empty();
         }
 
         void 引数型のジェネリクスが取得できる(List<String> list) {
@@ -235,12 +233,6 @@ class AsmMethodVisitorTest {
     }
 
     private static JigMemberBuilder 準備(Class<?> sutClass) {
-        try {
-            AsmClassVisitor visitor = new AsmClassVisitor();
-            new ClassReader(sutClass.getName()).accept(visitor, 0);
-            return visitor.jigMemberBuilder();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return AsmClassVisitorTest.asmClassVisitor(sutClass).jigMemberBuilder();
     }
 }

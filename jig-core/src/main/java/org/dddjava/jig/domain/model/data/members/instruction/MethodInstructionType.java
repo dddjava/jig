@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.method.instruction;
+package org.dddjava.jig.domain.model.data.members.instruction;
 
 /**
  * メソッドに対する操作

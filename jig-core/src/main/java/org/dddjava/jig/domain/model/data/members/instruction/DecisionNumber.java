@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.method;
+package org.dddjava.jig.domain.model.data.members.instruction;
 
 /**
  * 分岐数

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.method;
 
-import org.dddjava.jig.domain.model.data.classes.method.instruction.FieldReference;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.instruction.FieldReference;
+import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;

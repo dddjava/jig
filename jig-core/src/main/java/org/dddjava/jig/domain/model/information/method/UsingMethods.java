@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;

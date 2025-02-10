@@ -1,13 +1,11 @@
 package org.dddjava.jig.domain.model.data.classes.method.instruction;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -93,15 +91,10 @@ public record Instructions(List<Instruction> values) {
                 );
     }
 
-    public FieldDeclarations fieldReferences() {
-        return new FieldDeclarations(filterType(MethodInstructionType.FIELD)
+    public Collection<FieldReference> fieldReferences() {
+        return filterType(MethodInstructionType.FIELD)
                 .map(instruction -> ((FieldReference) instruction.detail()))
-                .map(fieldReference -> new FieldDeclaration(
-                        fieldReference.declaringType(),
-                        new FieldType(fieldReference.fieldTypeIdentifier()),
-                        fieldReference.name()
-                ))
-                .toList());
+                .toList();
     }
 
     private Stream<Instruction> filterType(MethodInstructionType... methodInstructionTypes) {

@@ -1,20 +1,26 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.FieldReference;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * 使用フィールド一覧
+ * メソッドが使用しているフィールド
  */
 public class UsingFields {
+    private final Collection<FieldReference> fieldReferences;
 
-    // FIXME 使用フィールドは型パラメタをもてないのでおそらくFieldDeclarationを使うのは不適切
-    FieldDeclarations fieldDeclarations;
-
-    public UsingFields(FieldDeclarations fieldDeclarations) {
-        this.fieldDeclarations = fieldDeclarations;
+    public UsingFields(Collection<FieldReference> fieldReferences) {
+        this.fieldReferences = fieldReferences;
     }
 
     public String typeNames() {
-        return fieldDeclarations.toTypeIdentifies().asSimpleText();
+        return fieldReferences.stream()
+                .map(FieldReference::fieldTypeIdentifier)
+                .map(TypeIdentifier::asSimpleText)
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

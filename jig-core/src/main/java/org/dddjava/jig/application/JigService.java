@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
@@ -34,71 +35,71 @@ public class JigService {
         this.jigEventRepository = jigEventRepository;
     }
 
-    public JigTypes jigTypes(JigDataProvider jigDataProvider) {
-        return jigDataProvider.fetchJigTypes();
+    public JigTypes jigTypes(JigTypesRepository jigTypesRepository) {
+        return jigTypesRepository.fetchJigTypes();
     }
 
     public Glossary glossary(JigDataProvider jigDataProvider) {
         return jigDataProvider.fetchGlossary();
     }
 
-    public ArchitectureDiagram architectureDiagram(JigDataProvider jigDataProvider) {
-        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigTypes(jigDataProvider));
+    public ArchitectureDiagram architectureDiagram(JigTypesRepository jigTypesRepository) {
+        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigTypes(jigTypesRepository));
         return new ArchitectureDiagram(packageBasedArchitecture);
     }
 
-    public JigTypes coreDomainJigTypes(JigDataProvider jigDataProvider) {
-        JigTypes coreDomainJigTypes = jigTypes(jigDataProvider).filter(architecture::isCoreDomain);
+    public JigTypes coreDomainJigTypes(JigTypesRepository jigTypesRepository) {
+        JigTypes coreDomainJigTypes = jigTypes(jigTypesRepository).filter(architecture::isCoreDomain);
         if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
         return coreDomainJigTypes;
     }
 
-    public PackageRelationDiagram packageDependencies(JigDataProvider jigDataProvider) {
-        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigDataProvider);
+    public PackageRelationDiagram packageDependencies(JigTypesRepository jigTypesRepository) {
+        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigTypesRepository);
         if (coreDomainJigTypes.empty()) return PackageRelationDiagram.empty();
         return new PackageRelationDiagram(coreDomainJigTypes.typeIdentifiers().packageIdentifiers(), ClassRelations.internalRelation(coreDomainJigTypes));
     }
 
-    public MethodSmellList methodSmells(JigDataProvider jigDataProvider) {
-        return new MethodSmellList(coreDomainJigTypes(jigDataProvider));
+    public MethodSmellList methodSmells(JigTypesRepository jigTypesRepository) {
+        return new MethodSmellList(coreDomainJigTypes(jigTypesRepository));
     }
 
-    public JigTypes categoryTypes(JigDataProvider jigDataProvider) {
-        return coreDomainJigTypes(jigDataProvider).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
+    public JigTypes categoryTypes(JigTypesRepository jigTypesRepository) {
+        return coreDomainJigTypes(jigTypesRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
     }
 
-    public CategoryDiagram categories(JigDataProvider jigDataProvider) {
-        return CategoryDiagram.create(categoryTypes(jigDataProvider));
+    public CategoryDiagram categories(JigTypesRepository jigTypesRepository) {
+        return CategoryDiagram.create(categoryTypes(jigTypesRepository));
     }
 
-    public JigTypes serviceTypes(JigDataProvider jigDataProvider) {
-        return jigTypes(jigDataProvider).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
+    public JigTypes serviceTypes(JigTypesRepository jigTypesRepository) {
+        return jigTypes(jigTypesRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
     }
 
-    private ServiceMethods serviceMethods(JigDataProvider jigDataProvider) {
-        JigTypes serviceJigTypes = serviceTypes(jigDataProvider);
-        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(jigTypes(jigDataProvider)));
+    private ServiceMethods serviceMethods(JigTypesRepository jigTypesRepository) {
+        JigTypes serviceJigTypes = serviceTypes(jigTypesRepository);
+        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(jigTypes(jigTypesRepository)));
         if (serviceMethods.empty()) jigEventRepository.registerサービスが見つからない();
         return serviceMethods;
     }
 
-    private DatasourceMethods repositoryMethods(JigDataProvider jigDataProvider) {
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigDataProvider));
+    private DatasourceMethods repositoryMethods(JigTypesRepository jigTypesRepository) {
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigTypesRepository));
         if (datasourceMethods.empty()) jigEventRepository.registerリポジトリが見つからない();
         return datasourceMethods;
     }
 
-    public Entrypoint entrypoint(JigDataProvider jigDataProvider) {
+    public Entrypoint entrypoint(JigTypesRepository jigTypesRepository) {
         var entrypointMethodDetector = new EntrypointMethodDetector();
-        Entrypoint from = Entrypoint.from(entrypointMethodDetector, jigTypes(jigDataProvider));
+        Entrypoint from = Entrypoint.from(entrypointMethodDetector, jigTypes(jigTypesRepository));
         if (from.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
         return from;
     }
 
-    public ServiceAngles serviceAngles(JigDataProvider jigDataProvider) {
-        ServiceMethods serviceMethods = serviceMethods(jigDataProvider);
-        DatasourceMethods datasourceMethods = repositoryMethods(jigDataProvider);
-        return ServiceAngles.from(serviceMethods, entrypoint(jigDataProvider), datasourceMethods);
+    public ServiceAngles serviceAngles(JigTypesRepository jigTypesRepository) {
+        ServiceMethods serviceMethods = serviceMethods(jigTypesRepository);
+        DatasourceMethods datasourceMethods = repositoryMethods(jigTypesRepository);
+        return ServiceAngles.from(serviceMethods, entrypoint(jigTypesRepository), datasourceMethods);
     }
 
     public DatasourceAngles datasourceAngles(JigDataProvider jigDataProvider) {
@@ -107,16 +108,16 @@ public class JigService {
         return new DatasourceAngles(datasourceMethods, jigDataProvider.fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
-    public CategoryUsageDiagram categoryUsages(JigDataProvider jigDataProvider) {
-        ServiceMethods serviceMethods = serviceMethods(jigDataProvider);
-        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigDataProvider);
+    public CategoryUsageDiagram categoryUsages(JigTypesRepository jigTypesRepository) {
+        ServiceMethods serviceMethods = serviceMethods(jigTypesRepository);
+        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigTypesRepository);
 
         return new CategoryUsageDiagram(serviceMethods, coreDomainJigTypes);
     }
 
-    public StringComparingMethodList stringComparing(JigDataProvider jigDataProvider) {
-        Entrypoint entrypoint = entrypoint(jigDataProvider);
-        ServiceMethods serviceMethods = serviceMethods(jigDataProvider);
+    public StringComparingMethodList stringComparing(JigTypesRepository jigTypesRepository) {
+        Entrypoint entrypoint = entrypoint(jigTypesRepository);
+        ServiceMethods serviceMethods = serviceMethods(jigTypesRepository);
         return StringComparingMethodList.createFrom(entrypoint, serviceMethods);
     }
 

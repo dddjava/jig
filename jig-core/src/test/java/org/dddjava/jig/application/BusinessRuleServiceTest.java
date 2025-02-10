@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusinessRuleServiceTest {
 
     @Test
-    void クラス可視性の判定(JigDataProvider jigsource) throws Exception {
-        List<JigType> jigTypes = jigsource.fetchJigTypes().list();
+    void クラス可視性の判定(JigTypesRepository jigTypesRepository) throws Exception {
+        List<JigType> jigTypes = jigTypesRepository.fetchJigTypes().list();
 
         JigType publicType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PublicType"))
@@ -45,20 +45,20 @@ class BusinessRuleServiceTest {
      * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
      */
     @Test
-    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigDataProvider jigDataProvider) {
+    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigTypesRepository jigTypesRepository) {
         var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
 
-        var jigTypes = jigService.jigTypes(jigDataProvider);
+        var jigTypes = jigService.jigTypes(jigTypesRepository);
 
         assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
 
-        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
+        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigTypesRepository);
         assertFalse(coreDomainJigTypes.contains(typeIdentifier), "domain coreには存在しない");
     }
 
     @Test
-    void 関連(JigService jigService, JigDataProvider jigDataProvider) {
-        var jigTypes = jigService.jigTypes(jigDataProvider);
+    void 関連(JigService jigService, JigTypesRepository jigTypesRepository) {
+        var jigTypes = jigService.jigTypes(jigTypesRepository);
 
         var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
         var classRelations = ClassRelations.internalTypeRelationsFrom(jigTypes, targetJigType);

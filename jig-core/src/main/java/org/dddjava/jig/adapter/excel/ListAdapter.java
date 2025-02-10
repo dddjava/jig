@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
@@ -38,14 +39,14 @@ public class ListAdapter implements Adapter<ReportBook> {
     }
 
     @HandleDocument(JigDocument.BusinessRuleList)
-    public ReportBook businessRuleReports(JigDataProvider jigDataProvider) {
+    public ReportBook businessRuleReports(JigTypesRepository jigTypesRepository) {
 
-        MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
-        JigTypes jigTypes = jigService.jigTypes(jigDataProvider);
+        MethodSmellList methodSmellList = jigService.methodSmells(jigTypesRepository);
+        JigTypes jigTypes = jigService.jigTypes(jigTypesRepository);
         var allClassRelations = ClassRelations.from(jigTypes);
 
-        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
-        JigTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
+        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigTypesRepository);
+        JigTypes categoryTypes = jigService.categoryTypes(jigTypesRepository);
         List<JigTypesPackage> jigTypePackages = JigTypesPackage.from(coreDomainJigTypes);
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(

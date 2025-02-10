@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,8 +25,8 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class MethodSmellListTest {
 
     @Test
-    void 注意メソッドの抽出(JigService jigService, JigDataProvider jigDataProvider) {
-        MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
+    void 注意メソッドの抽出(JigService jigService, JigTypesRepository jigTypesRepository) {
+        MethodSmellList methodSmellList = jigService.methodSmells(jigTypesRepository);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
 
@@ -100,8 +100,8 @@ class MethodSmellListTest {
      * record componentの判別によりrecordで生成されるaccessorが注意メソッドから除外できている。
      */
     @Test
-    void 注意メソッドの抽出_record(JigService jigService, JigDataProvider jigDataProvider) {
-        MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
+    void 注意メソッドの抽出_record(JigService jigService, JigTypesRepository jigTypesRepository) {
+        MethodSmellList methodSmellList = jigService.methodSmells(jigTypesRepository);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
 

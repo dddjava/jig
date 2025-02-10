@@ -7,6 +7,7 @@ import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
@@ -27,28 +28,28 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     }
 
     @HandleDocument(JigDocument.DomainSummary)
-    public SummaryModel summaryModel(JigDataProvider jigDataProvider) {
-        JigTypes jigTypes = jigService.coreDomainJigTypes(jigDataProvider);
+    public SummaryModel summaryModel(JigTypesRepository jigTypesRepository) {
+        JigTypes jigTypes = jigService.coreDomainJigTypes(jigTypesRepository);
         return new SummaryModel(jigTypes);
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)
-    public SummaryModel applicationSummary(JigDataProvider jigDataProvider) {
-        JigTypes jigTypes = jigService.serviceTypes(jigDataProvider);
+    public SummaryModel applicationSummary(JigTypesRepository jigTypesRepository) {
+        JigTypes jigTypes = jigService.serviceTypes(jigTypesRepository);
         return new SummaryModel(jigTypes);
     }
 
     @HandleDocument(JigDocument.UsecaseSummary)
-    public SummaryModel usecaseSummary(JigDataProvider jigDataProvider) {
-        JigTypes jigTypes = jigService.serviceTypes(jigDataProvider);
+    public SummaryModel usecaseSummary(JigTypesRepository jigTypesRepository) {
+        JigTypes jigTypes = jigService.serviceTypes(jigTypesRepository);
         var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.from(jigTypes).inlineLambda());
         return new SummaryModel(jigTypes, Map.of("mermaidDiagram", usecaseMermaidDiagram));
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)
-    public SummaryModel entrypointSummary(JigDataProvider jigDataProvider) {
-        JigTypes contextJigTypes = jigService.jigTypes(jigDataProvider);
-        Entrypoint entrypoint = jigService.entrypoint(jigDataProvider);
+    public SummaryModel entrypointSummary(JigTypesRepository jigTypesRepository) {
+        JigTypes contextJigTypes = jigService.jigTypes(jigTypesRepository);
+        Entrypoint entrypoint = jigService.entrypoint(jigTypesRepository);
         JigTypes jigTypes = entrypoint.jigTypes();
         var entrypointMermaidDiagram = new EntrypointMermaidDiagram(entrypoint, contextJigTypes);
         return new SummaryModel(jigTypes, Map.of("mermaidDiagram", entrypointMermaidDiagram));

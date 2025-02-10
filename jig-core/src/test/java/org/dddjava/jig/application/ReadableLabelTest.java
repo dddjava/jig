@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.junit.jupiter.api.Test;
@@ -40,8 +40,8 @@ class ReadableLabelTest {
 
     @ParameterizedTest
     @MethodSource
-    void クラスコメント取得(Class<?> targetClass, String expectedText, JigDataProvider jigDataProvider) {
-        var jigTypes = jigDataProvider.fetchJigTypes();
+    void クラスコメント取得(Class<?> targetClass, String expectedText, JigTypesRepository jigTypesRepository) {
+        var jigTypes = jigTypesRepository.fetchJigTypes();
         String label = jigTypes.resolveJigType(TypeIdentifier.from(targetClass))
                 .map(jigType -> jigType.label())
                 .orElseThrow(AssertionError::new);
@@ -58,8 +58,8 @@ class ReadableLabelTest {
     }
 
     @Test
-    void メソッド別名取得(JigDataProvider jigDataProvider) {
-        JigTypes jigTypes = jigDataProvider.fetchJigTypes();
+    void メソッド別名取得(JigTypesRepository jigTypesRepository) {
+        JigTypes jigTypes = jigTypesRepository.fetchJigTypes();
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
         JigType jigType = jigTypes.listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 

@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.sources.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceReader;
@@ -42,7 +42,7 @@ public class JigSourceReader {
         this.jigEventRepository = jigEventRepository;
     }
 
-    public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {
+    public Optional<JigTypesRepository> readPathSource(SourceBasePaths sourceBasePaths) {
         Sources sources = sourceCollector.collectSources(sourceBasePaths);
         if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
         if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);

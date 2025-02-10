@@ -4,7 +4,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.UsingMethods;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ServiceMethodTest {
 
     @Test
-    void name(JigService jigService, JigDataProvider jigDataProvider) {
-        JigTypes jigTypes = jigService.jigTypes(jigDataProvider);
+    void name(JigService jigService, JigTypesRepository jigTypesRepository) {
+        JigTypes jigTypes = jigService.jigTypes(jigTypesRepository);
 
         var targetType = jigTypes.resolveJigType(TypeIdentifier.from(CanonicalService.class)).orElseThrow();
         ServiceMethod sut = targetType.allJigMethodStream()

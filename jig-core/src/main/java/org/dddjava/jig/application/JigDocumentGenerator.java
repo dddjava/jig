@@ -17,6 +17,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -75,6 +76,11 @@ public class JigDocumentGenerator {
         IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramFormat);
         indexView.render(results, outputDirectory);
         copyAssets(outputDirectory);
+    }
+
+    public List<HandleResult> generateDocuments(JigTypesRepository jigTypesRepository) {
+        // TODO 継承関係はずれたら作り直す
+        return generateDocuments((JigDataProvider) jigTypesRepository);
     }
 
     public List<HandleResult> generateDocuments(JigDataProvider jigDataProvider) {

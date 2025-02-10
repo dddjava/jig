@@ -1,9 +1,5 @@
 package org.dddjava.jig.domain.model.information.method;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
-import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
@@ -47,20 +43,6 @@ public class JigMethod {
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
         return jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream();
-    }
-
-    public MethodAnnotations methodAnnotations() {
-        List<MethodAnnotation> list = jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream()
-                .map(jigAnnotationReference -> {
-                    AnnotationDescription description = new AnnotationDescription();
-                    jigAnnotationReference.elements().forEach(element -> {
-                        description.addParam(element.name(), element.valueAsString());
-                    });
-                    Annotation annotation = new Annotation(jigAnnotationReference.id(), description);
-                    return new MethodAnnotation(annotation, methodDeclaration);
-                })
-                .toList();
-        return new MethodAnnotations(list);
     }
 
     public JigMemberVisibility visibility() {

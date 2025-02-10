@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.knowledge.adapter;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.method.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 
 /**

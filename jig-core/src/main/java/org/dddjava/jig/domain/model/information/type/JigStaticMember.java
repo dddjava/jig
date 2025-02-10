@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.type;
 
-import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.method.JigMethod;
+import org.dddjava.jig.domain.model.information.method.JigMethods;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
-import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
@@ -9,6 +8,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.method.JigMethod;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypeValueKind;
 

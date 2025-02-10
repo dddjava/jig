@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
+import org.dddjava.jig.domain.model.information.method.JigMethod;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.dddjava.jig.domain.model.information.type.TypeCategory;

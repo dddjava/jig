@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
-import org.dddjava.jig.domain.model.information.type.JigTypes;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.nio.file.Path;
 import java.util.List;

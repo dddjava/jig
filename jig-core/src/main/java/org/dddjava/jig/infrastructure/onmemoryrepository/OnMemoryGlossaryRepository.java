@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.type.JigTypeTerms;
+import org.dddjava.jig.domain.model.information.types.JigTypeTerms;
 import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.ArrayList;

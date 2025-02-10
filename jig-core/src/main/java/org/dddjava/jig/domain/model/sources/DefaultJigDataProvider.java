@@ -6,9 +6,9 @@ import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
-import org.dddjava.jig.domain.model.information.type.JigType;
-import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
-import org.dddjava.jig.domain.model.information.type.JigTypes;
+import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 

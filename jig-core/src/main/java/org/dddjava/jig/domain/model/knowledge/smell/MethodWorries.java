@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.information.method.JigMethod;
-import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.Arrays;
 import java.util.List;

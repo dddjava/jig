@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.type.JigTypeTerms;
+import org.dddjava.jig.domain.model.information.types.JigTypeTerms;
 
 /**
  * 別名リポジトリ

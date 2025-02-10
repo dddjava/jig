@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
-import org.dddjava.jig.domain.model.information.type.JigTypeValueKind;
-import org.dddjava.jig.domain.model.information.type.JigTypes;
+import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.StringJoiner;
 

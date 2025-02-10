@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information;
 
 
-import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
  * アーキテクチャ

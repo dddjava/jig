@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.information.method.JigMethod;
-import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
  * メソッドの気になるところ

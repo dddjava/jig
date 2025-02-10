@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethod;
-import org.dddjava.jig.domain.model.information.method.UsingFields;
+import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;
 
 import java.util.List;

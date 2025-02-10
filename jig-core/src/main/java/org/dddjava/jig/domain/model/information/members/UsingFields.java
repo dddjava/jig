@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.method;
+package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.instruction.FieldReference;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;

@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.method.JigMethods;
-import org.dddjava.jig.domain.model.information.type.JigStaticMember;
-import org.dddjava.jig.domain.model.information.type.JigTypeMembers;
+import org.dddjava.jig.domain.model.information.members.JigMethods;
+import org.dddjava.jig.domain.model.information.types.JigStaticMember;
+import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 
 import java.util.ArrayList;
 import java.util.Collection;

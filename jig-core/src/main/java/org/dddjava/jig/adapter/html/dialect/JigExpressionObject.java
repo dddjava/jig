@@ -8,9 +8,9 @@ import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.method.JigMethod;
-import org.dddjava.jig.domain.model.information.type.JigType;
-import org.dddjava.jig.domain.model.information.type.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 
 import java.util.List;
 import java.util.stream.Collectors;

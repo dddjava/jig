@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.type;
+package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.field.JigFields;
@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.method.JigMethod;
-import org.dddjava.jig.domain.model.information.method.JigMethods;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.members.JigMethods;
 
 import java.util.Collection;
 import java.util.List;

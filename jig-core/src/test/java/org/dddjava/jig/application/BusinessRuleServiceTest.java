@@ -3,7 +3,7 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
-import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.types.JigType;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.relation.ClassDefinition;
 import testing.JigServiceTest;

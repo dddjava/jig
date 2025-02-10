@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
-import org.dddjava.jig.domain.model.information.type.JigType;
+import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.knowledge.core.Usecase;
 
 public class Nodes {

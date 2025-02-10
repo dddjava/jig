@@ -32,6 +32,13 @@ public record JigTypeMembers(
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
+    public String instanceFieldsSimpleTextWithGenerics() {
+        List<String> list = jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
+                .map(jigFieldHeader -> jigFieldHeader.jigTypeReference().simpleNameWithGenerics())
+                .toList();
+        return list.size() == 1 ? list.get(0) : list.stream().collect(Collectors.joining(", ", "[", "]"));
+    }
+
     private Stream<JigFieldHeader> jigFieldHeaderStream(JigMemberOwnership jigMemberOwnership) {
         return jigFieldHeaders().stream()
                 .filter(jigFieldHeader -> jigFieldHeader.ownership() == jigMemberOwnership);

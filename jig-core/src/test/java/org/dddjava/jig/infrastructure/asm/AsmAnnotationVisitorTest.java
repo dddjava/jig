@@ -58,7 +58,7 @@ class AsmAnnotationVisitorTest {
         assertEquals("9", myAnnotation.elementTextOf("number").orElseThrow());
         assertEquals("String", myAnnotation.elementTextOf("clz").orElseThrow());
         assertEquals("{Integer}", myAnnotation.elementTextOf("arrayClz").orElseThrow());
-        assertEquals("BBB", myAnnotation.elementTextOf("enumValue").orElseThrow());
+        assertEquals("MyEnum.BBB", myAnnotation.elementTextOf("enumValue").orElseThrow());
 
         JigAnnotationReference myAnnotation1 = sut.get(1);
         assertEquals("MyAnnotation2", myAnnotation1.id().asSimpleName());

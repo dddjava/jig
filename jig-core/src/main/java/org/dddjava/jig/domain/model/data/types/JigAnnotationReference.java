@@ -27,10 +27,10 @@ public record JigAnnotationReference(TypeIdentifier id,
         return Stream.of(id);
     }
 
-    public <T> Optional<T> elementTextOf(String name) {
+    public Optional<String> elementTextOf(String name) {
         return elements.stream()
                 .filter(element -> element.name().equals(name))
-                .map(element -> (T) element.value())
+                .map(element -> element.valueAsString())
                 .findAny();
     }
 }

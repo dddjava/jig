@@ -23,4 +23,8 @@ class AsmUtils {
         Type type = Type.getType(descriptor);
         return TypeIdentifier.valueOf(type.getClassName());
     }
+
+    public static TypeIdentifier type2TypeIdentifier(Type typeValue) {
+        return TypeIdentifier.valueOf(typeValue.getClassName());
+    }
 }

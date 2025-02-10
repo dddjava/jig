@@ -23,10 +23,14 @@ class AsmClassVisitorTest {
     /**
      * このパッケージのテストで使用するユーティリティ
      */
-    static AsmClassVisitor asmClassVisitor(Class<?> clz) throws IOException {
-        AsmClassVisitor visitor = new AsmClassVisitor();
-        new ClassReader(clz.getName()).accept(visitor, 0);
-        return visitor;
+    static AsmClassVisitor asmClassVisitor(Class<?> clz) {
+        try {
+            AsmClassVisitor visitor = new AsmClassVisitor();
+            new ClassReader(clz.getName()).accept(visitor, 0);
+            return visitor;
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Test

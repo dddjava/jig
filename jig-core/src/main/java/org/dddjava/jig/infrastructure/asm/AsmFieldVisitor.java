@@ -40,11 +40,18 @@ class AsmFieldVisitor extends FieldVisitor {
     static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature, TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
         logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
 
+        EnumSet<JigFieldFlag> flags = EnumSet.noneOf(JigFieldFlag.class);
+        if ((access & Opcodes.ACC_FINAL) != 0) flags.add(JigFieldFlag.FINAL);
+        if ((access & Opcodes.ACC_TRANSIENT) != 0) flags.add(JigFieldFlag.TRANSIENT);
+        if ((access & Opcodes.ACC_VOLATILE) != 0) flags.add(JigFieldFlag.VOLATILE);
+        if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigFieldFlag.SYNTHETIC);
+        if ((access & Opcodes.ACC_ENUM) != 0) flags.add(JigFieldFlag.ENUM);
+
         return new AsmFieldVisitor(api, it -> {
             jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
                     AsmUtils.jigMemberOwnership(access),
                     resolveFieldTypeReference(api, descriptor, signature),
-                    new JigFieldAttribute(AsmUtils.resolveMethodVisibility(access), it.declarationAnnotationCollector, jigFieldFlags(access))));
+                    new JigFieldAttribute(AsmUtils.resolveMethodVisibility(access), it.declarationAnnotationCollector, flags)));
         });
     }
 
@@ -56,16 +63,6 @@ class AsmFieldVisitor extends FieldVisitor {
         AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
         new SignatureReader(signature).accept(typeSignatureVisitor);
         return typeSignatureVisitor.jigTypeReference();
-    }
-
-    private static EnumSet<JigFieldFlag> jigFieldFlags(int access) {
-        EnumSet<JigFieldFlag> set = EnumSet.noneOf(JigFieldFlag.class);
-        if ((access & Opcodes.ACC_FINAL) != 0) set.add(JigFieldFlag.FINAL);
-        if ((access & Opcodes.ACC_TRANSIENT) != 0) set.add(JigFieldFlag.TRANSIENT);
-        if ((access & Opcodes.ACC_VOLATILE) != 0) set.add(JigFieldFlag.VOLATILE);
-        if ((access & Opcodes.ACC_SYNTHETIC) != 0) set.add(JigFieldFlag.SYNTHETIC);
-        if ((access & Opcodes.ACC_ENUM) != 0) set.add(JigFieldFlag.ENUM);
-        return set;
     }
 
     @Override

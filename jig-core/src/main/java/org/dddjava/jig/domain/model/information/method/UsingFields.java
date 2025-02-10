@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.method;
+package org.dddjava.jig.domain.model.information.method;
 
 import org.dddjava.jig.domain.model.data.classes.method.instruction.FieldReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class UsingFields {
     private final Collection<FieldReference> fieldReferences;
 
-    public UsingFields(Collection<FieldReference> fieldReferences) {
+    UsingFields(Collection<FieldReference> fieldReferences) {
         this.fieldReferences = fieldReferences;
     }
 

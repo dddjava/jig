@@ -2,12 +2,12 @@ package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.UsingFields;
 import org.dddjava.jig.domain.model.data.classes.method.UsingMethods;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.method.JigMethod;
+import org.dddjava.jig.domain.model.information.method.UsingFields;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 
 import java.util.List;

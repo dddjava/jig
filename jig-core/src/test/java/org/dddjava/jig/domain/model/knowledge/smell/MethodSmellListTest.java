@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

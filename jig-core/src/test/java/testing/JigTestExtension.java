@@ -1,8 +1,8 @@
 package testing;
 
+import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
-import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.infrastructure.configuration.Configuration;

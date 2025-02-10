@@ -2,7 +2,6 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
-import org.dddjava.jig.domain.model.information.JigTypesRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;

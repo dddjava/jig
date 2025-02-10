@@ -20,10 +20,6 @@ public class JigField {
         this.fieldAnnotations = fieldAnnotations;
     }
 
-    public JigField(FieldDeclaration fieldDeclaration) {
-        this(null, fieldDeclaration, FieldAnnotations.none());
-    }
-
     public JigTypeReference jigTypeReference() {
         return jigFieldHeader.jigTypeReference();
     }

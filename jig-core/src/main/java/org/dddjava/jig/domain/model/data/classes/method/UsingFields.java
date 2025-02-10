@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
 /**
  * 使用フィールド一覧
@@ -15,7 +14,7 @@ public class UsingFields {
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public TypeIdentifiers typeIdentifiers() {
-        return fieldDeclarations.toTypeIdentifies();
+    public String typeNames() {
+        return fieldDeclarations.toTypeIdentifies().asSimpleText();
     }
 }

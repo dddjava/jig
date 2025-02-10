@@ -132,7 +132,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("メソッドシグネチャ", item -> item.jigMethod().declaration().asSignatureSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.jigMethod().declaration().methodReturn().asSimpleText()),
                         Map.entry("クラス別名", item -> item.jigType().label()),
-                        Map.entry("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeIdentifiers().asSimpleText()),
+                        Map.entry("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeNames()),
                         Map.entry("分岐数", item -> item.jigMethod().decisionNumber().intValue()),
                         Map.entry("パス", item -> HttpEndpoint.from(item).pathText())
                 ), entrypoint.listRequestHandlerMethods()),
@@ -154,7 +154,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(Term::title)
                                         .collect(Collectors.joining(", ", "[", "]"))
                         ),
-                        Map.entry("使用しているフィールドの型", item -> item.usingFields().typeIdentifiers().asSimpleText()),
+                        Map.entry("使用しているフィールドの型", item -> item.usingFields().typeNames()),
                         Map.entry("分岐数", item -> item.serviceMethod().method().decisionNumber().intValue()),
                         Map.entry("使用しているサービスのメソッド", item -> item.usingServiceMethods().asSignatureAndReturnTypeSimpleText()),
                         Map.entry("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().asSimpleText()),

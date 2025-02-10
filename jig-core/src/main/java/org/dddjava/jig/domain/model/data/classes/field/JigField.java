@@ -7,11 +7,9 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 public class JigField {
     private final JigFieldHeader jigFieldHeader;
-    FieldDeclaration fieldDeclaration;
 
-    public JigField(JigFieldHeader jigFieldHeader, FieldDeclaration fieldDeclaration) {
+    public JigField(JigFieldHeader jigFieldHeader) {
         this.jigFieldHeader = jigFieldHeader;
-        this.fieldDeclaration = fieldDeclaration;
     }
 
     public JigTypeReference jigTypeReference() {
@@ -26,16 +24,7 @@ public class JigField {
     }
 
     public static JigField from(JigFieldHeader jigFieldHeader) {
-        // 互換のため無理矢理JigFieldHeaderから生成している状態。FieldDeclarationの使用箇所を直せばもっと素直にできるはず
-        var fieldDeclaration = new FieldDeclaration(
-                jigFieldHeader.id().declaringTypeIdentifier(),
-                new FieldType(jigReferenceToParameterizedType(jigFieldHeader.jigTypeReference())),
-                jigFieldHeader.id().name()
-        );
-        return new JigField(
-                jigFieldHeader,
-                fieldDeclaration
-        );
+        return new JigField(jigFieldHeader);
     }
 
     public TypeIdentifier typeIdentifier() {

@@ -31,7 +31,7 @@ class AsmFieldVisitor extends FieldVisitor {
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private final Consumer<AsmFieldVisitor> finisher;
 
-    public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
+    private AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
         super(api);
         this.finisher = finisher;
     }

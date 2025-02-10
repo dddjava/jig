@@ -157,10 +157,6 @@ public class JigMethod {
         return isPublic() || documented();
     }
 
-    public List<MethodDeclaration> methodInstructions() {
-        return instructions().instructMethods().list();
-    }
-
     public String name() {
         return jigMethodDeclaration.name();
     }

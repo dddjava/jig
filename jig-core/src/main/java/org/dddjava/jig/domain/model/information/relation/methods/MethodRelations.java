@@ -31,7 +31,7 @@ public class MethodRelations implements CallerMethodsFactory {
     public static MethodRelations from(JigTypes jigTypes) {
         return jigTypes.stream()
                 .flatMap(jigType -> jigType.allJigMethodStream()
-                        .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
+                        .flatMap(jigMethod -> jigMethod.usingMethods().stream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                                 .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
                                 .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod))))

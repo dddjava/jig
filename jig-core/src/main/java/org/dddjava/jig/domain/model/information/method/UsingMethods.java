@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 
+import java.util.stream.Stream;
+
 /**
  * メソッドが使用しているメソッド一覧
  */
@@ -28,5 +30,9 @@ public class UsingMethods {
 
     public MethodDeclarations methodDeclarations() {
         return list;
+    }
+
+    public Stream<MethodDeclaration> stream() {
+        return list.list().stream();
     }
 }

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.method.instruction;
 
-import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.classes.method.DecisionNumber;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public record Instructions(List<Instruction> values) {
         values.add(new Instruction(MethodInstructionType.InvokeDynamic, invokeDynamicInstruction));
     }
 
-    public MethodDeclarations instructMethods() {
+    public List<InvokedMethod> instructMethods() {
         return filterType(MethodInstructionType.METHOD, MethodInstructionType.InvokeDynamic)
                 .map(instruction -> {
                     if (instruction.detail() instanceof InvokedMethod invokedMethod) {
@@ -51,14 +50,7 @@ public record Instructions(List<Instruction> values) {
                         return invokeDynamicInstruction.invokedMethod();
                     }
                     throw new IllegalStateException();
-                })
-                .map(invokedMethod -> {
-                    // 一旦変換しておく
-                    return new MethodDeclaration(invokedMethod.methodOwner(),
-                            new MethodSignature(invokedMethod.methodName(), invokedMethod.argumentTypes().toArray(TypeIdentifier[]::new)),
-                            new MethodReturn(new ParameterizedType(invokedMethod.returnType())));
-                })
-                .collect(MethodDeclarations.collector());
+                }).toList();
     }
 
     public boolean hasNullDecision() {

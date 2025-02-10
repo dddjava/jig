@@ -49,7 +49,8 @@ public class JigField {
                         jigFieldHeader.jigFieldAttribute().declarationAnnotations().stream()
                                 .map(jigAnnotationReference -> {
                                     var description = new AnnotationDescription();
-                                    jigAnnotationReference.elements().forEach(element -> description.addParam(element.name(), element.value()));
+                                    jigAnnotationReference.elements()
+                                            .forEach(element -> description.addParam(element.name(), element.valueAsString()));
                                     return new FieldAnnotation(
                                             new Annotation(
                                                     jigAnnotationReference.id(),

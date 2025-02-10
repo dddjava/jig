@@ -93,15 +93,15 @@ class AsmFieldVisitorTest {
         assertThat(description.asText())
                 .contains(
                         "string=af",
-                        "arrayString=bf",
+                        "arrayString={bf}",
                         "number=13",
-                        "clz=Ljava/lang/reflect/Field;",
-                        "arrayClz=[Ljava/lang/Object;, Ljava/lang/Object;]",
-                        "enumValue=DUMMY1",
-                        "annotation=Ljava/lang/Deprecated;[...]"
+                        "clz=Field",
+                        "arrayClz={Object, Object}",
+                        "enumValue=UseInAnnotation.DUMMY1",
+                        "annotation=@Deprecated(...)"
                 );
 
-        assertThat(description.textOf("arrayString")).isEqualTo("bf");
+        assertThat(description.textOf("arrayString")).isEqualTo("{bf}");
     }
 
     @Test

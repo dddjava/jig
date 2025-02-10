@@ -1,8 +1,5 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -10,9 +7,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * メソッドの実装から読み取れること
@@ -23,14 +17,12 @@ public class JigMethodBuilder {
     private final JigMethodDeclaration jigMethodDeclaration;
     private final MethodDeclaration methodDeclaration;
     private final MethodDerivation methodDerivation;
-    private final List<Annotation> annotations;
     private Term term = null;
 
-    public JigMethodBuilder(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodDerivation methodDerivation, List<Annotation> annotationList) {
+    public JigMethodBuilder(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodDerivation methodDerivation) {
         this.jigMethodDeclaration = jigMethodDeclaration;
         this.methodDeclaration = methodDeclaration;
         this.methodDerivation = methodDerivation;
-        this.annotations = annotationList;
     }
 
     public static MethodDerivation resolveMethodDerivation(MethodDeclaration methodDeclaration, int access, boolean isEnum, boolean isRecordComponent) {
@@ -65,21 +57,13 @@ public class JigMethodBuilder {
     public static JigMethodBuilder builder(JigMethodDeclaration jigMethodDeclaration,
                                            int access,
                                            MethodDeclaration methodDeclaration,
-                                           List<Annotation> annotationList,
                                            boolean isEnum, boolean isRecordComponent) {
         MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(jigMethodDeclaration, methodDeclaration, methodDerivation, annotationList);
+        return new JigMethodBuilder(jigMethodDeclaration, methodDeclaration, methodDerivation);
     }
 
     public JigMethod build() {
-        return new JigMethod(jigMethodDeclaration, methodDeclaration, annotatedMethods(), methodDerivation, term);
-    }
-
-    private MethodAnnotations annotatedMethods() {
-        List<MethodAnnotation> methodAnnotations = annotations.stream()
-                .map(annotation -> new MethodAnnotation(annotation, methodDeclaration))
-                .collect(Collectors.toList());
-        return new MethodAnnotations(methodAnnotations);
+        return new JigMethod(jigMethodDeclaration, methodDeclaration, methodDerivation, term);
     }
 
     public MethodIdentifier methodIdentifier() {

@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
+import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
@@ -19,15 +22,12 @@ public class JigMethod {
     private final JigMethodDeclaration jigMethodDeclaration;
     MethodDeclaration methodDeclaration;
 
-    MethodAnnotations methodAnnotations;
-
     MethodDerivation methodDerivation;
     private final Term term;
 
-    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, MethodDerivation methodDerivation, Term term) {
+    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodDerivation methodDerivation, Term term) {
         this.jigMethodDeclaration = jigMethodDeclaration;
         this.methodDeclaration = methodDeclaration;
-        this.methodAnnotations = methodAnnotations;
         this.methodDerivation = methodDerivation;
         this.term = term;
     }
@@ -41,7 +41,17 @@ public class JigMethod {
     }
 
     public MethodAnnotations methodAnnotations() {
-        return methodAnnotations;
+        List<MethodAnnotation> list = jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream()
+                .map(jigAnnotationReference -> {
+                    AnnotationDescription description = new AnnotationDescription();
+                    jigAnnotationReference.elements().forEach(element -> {
+                        description.addParam(element.name(), element.valueAsString());
+                    });
+                    Annotation annotation = new Annotation(jigAnnotationReference.id(), description);
+                    return new MethodAnnotation(annotation, methodDeclaration);
+                })
+                .toList();
+        return new MethodAnnotations(list);
     }
 
     public JigMemberVisibility visibility() {

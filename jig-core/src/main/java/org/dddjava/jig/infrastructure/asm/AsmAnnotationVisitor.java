@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationInstanceElement;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -19,10 +17,9 @@ import java.util.function.Consumer;
 class AsmAnnotationVisitor extends AnnotationVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmAnnotationVisitor.class);
 
-    final AnnotationDescription annotationDescription = new AnnotationDescription();
-    final TypeIdentifier annotationType;
-    final List<JigAnnotationInstanceElement> elementList = new ArrayList<>();
-    final Consumer<AsmAnnotationVisitor> finisher;
+    private final TypeIdentifier annotationType;
+    private final List<JigAnnotationInstanceElement> elementList = new ArrayList<>();
+    private final Consumer<AsmAnnotationVisitor> finisher;
 
     public AsmAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<AsmAnnotationVisitor> finisher) {
         super(api);
@@ -33,7 +30,6 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visit(String name, Object value) {
         logger.debug("visit: {}, {}", name, value);
-        annotationDescription.addParam(name, value);
         if (value instanceof org.objectweb.asm.Type typeValue) {
             TypeIdentifier typeIdentifier = AsmUtils.type2TypeIdentifier(typeValue);
             elementList.add(JigAnnotationInstanceElement.classElement(name, typeIdentifier));
@@ -45,7 +41,6 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visitEnum(String name, String descriptor, String value) {
         logger.debug("visitEnum: {}, {}, {}", name, descriptor, value);
-        annotationDescription.addEnum(name, value);
         TypeIdentifier typeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
         elementList.add(JigAnnotationInstanceElement.enumElement(name, typeIdentifier, value));
     }
@@ -53,7 +48,6 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String name, String descriptor) {
         logger.debug("visitAnnotation: {}, {}", name, descriptor);
-        annotationDescription.addAnnotation(name, descriptor);
         TypeIdentifier typeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
         return new AsmAnnotationVisitor(api, typeIdentifier, it -> {
             elementList.add(JigAnnotationInstanceElement.annotationElement(name, it.annotationType, it.elementList));
@@ -64,11 +58,6 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     public AnnotationVisitor visitArray(String name) {
         logger.debug("visitArray: {}", name);
         return new AsmAnnotationVisitor(api, annotationType, it -> {
-            annotationDescription.addArray(name,
-                    it.annotationDescription.entryStream()
-                            .map(Map.Entry::getValue)
-                            .map(value -> (Object) value)
-                            .toList());
             elementList.add(JigAnnotationInstanceElement.arrayElement(name,
                     it.elementList.stream()
                             .map(JigAnnotationInstanceElement::value)

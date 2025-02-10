@@ -167,10 +167,10 @@ class AsmMethodVisitorTest {
         assertThat(description.asText())
                 .contains(
                         "string=am",
-                        "arrayString=[bm1, bm2]",
+                        "arrayString={bm1, bm2}",
                         "number=23",
-                        "clz=Ljava/lang/reflect/Method;",
-                        "enumValue=DUMMY2"
+                        "clz=Method",
+                        "enumValue=UseInAnnotation.DUMMY2"
                 );
     }
 

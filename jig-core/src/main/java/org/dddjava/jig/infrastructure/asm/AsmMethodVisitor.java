@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
@@ -41,7 +40,6 @@ class AsmMethodVisitor extends MethodVisitor {
 
     // このVisitorで収集した情報
     final Instructions methodInstructions = Instructions.newInstance();
-    final List<Annotation> annotationList = new ArrayList<>();
     private final Collection<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
 
     private AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> endConsumer) {
@@ -91,7 +89,6 @@ class AsmMethodVisitor extends MethodVisitor {
                             jigMethodDeclaration,
                             access,
                             methodDeclaration,
-                            it.annotationList,
                             isEnum,
                             jigMemberBuilder.isRecordComponent(methodDeclaration));
 
@@ -146,7 +143,6 @@ class AsmMethodVisitor extends MethodVisitor {
         return new AsmAnnotationVisitor(this.api,
                 AsmUtils.typeDescriptorToIdentifier(descriptor),
                 it -> {
-                    annotationList.add(new Annotation(it.annotationType, it.annotationDescription));
                     declarationAnnotationCollector.add(it.annotationReference());
                 });
     }

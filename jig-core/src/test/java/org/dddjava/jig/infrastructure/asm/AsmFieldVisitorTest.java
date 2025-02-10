@@ -1,10 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
-import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.type.JigType;
@@ -77,20 +75,15 @@ class AsmFieldVisitorTest {
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-        JigType actual = TestSupport.buildJigType(MemberAnnotatedClass.class);
+        var jigMemberBuilder = 準備(MemberAnnotatedClass.class);
+        var members = jigMemberBuilder.buildJigTypeMembers();
+        JigFieldHeader field = members.findFieldByName("field").orElseThrow();
 
-        JigFields jigFields = actual.instanceJigFields();
+        JigAnnotationReference sut = field.jigFieldAttribute().declarationAnnotations().stream().findFirst().orElseThrow();
 
-        FieldAnnotation fieldAnnotation = jigFields.list().stream()
-                .filter(e -> e.nameText().equals("field"))
-                .findFirst()
-                .flatMap(jigField -> jigField.fieldAnnotations().list().stream().findFirst())
-                .orElseThrow(AssertionError::new);
+        assertEquals(TypeIdentifier.from(VariableAnnotation.class), sut.id());
 
-        assertEquals(TypeIdentifier.from(VariableAnnotation.class), fieldAnnotation.annotationType());
-
-        AnnotationDescription description = fieldAnnotation.description();
-        assertThat(description.asText())
+        assertThat(sut.asText())
                 .contains(
                         "string=af",
                         "arrayString={bf}",
@@ -101,7 +94,7 @@ class AsmFieldVisitorTest {
                         "annotation=@Deprecated(...)"
                 );
 
-        assertThat(description.textOf("arrayString")).isEqualTo("{bf}");
+        assertThat(sut.elementTextOf("arrayString").orElseThrow()).isEqualTo("{bf}");
     }
 
     @Test

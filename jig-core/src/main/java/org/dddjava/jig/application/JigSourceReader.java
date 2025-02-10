@@ -10,8 +10,6 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -20,7 +18,6 @@ import java.util.Optional;
  */
 @Service
 public class JigSourceReader {
-    private static final Logger logger = LoggerFactory.getLogger(JigSourceReader.class);
 
     private final SourceCollector sourceCollector;
     private final GlossaryRepository glossaryRepository;

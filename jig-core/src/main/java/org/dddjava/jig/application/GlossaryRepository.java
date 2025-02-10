@@ -30,7 +30,5 @@ public interface GlossaryRepository {
 
     TermIdentifier fromTypeIdentifier(TypeIdentifier typeIdentifier);
 
-    TermIdentifier fromMethodIdentifier(MethodIdentifier methodIdentifier);
-
     TermIdentifier fromMethodImplementationDeclarator(TypeIdentifier typeIdentifier, JavaMethodDeclarator methodImplementationDeclarator);
 }

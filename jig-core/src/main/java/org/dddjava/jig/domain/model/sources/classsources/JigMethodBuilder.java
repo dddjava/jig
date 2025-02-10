@@ -9,14 +9,11 @@ import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.objectweb.asm.Opcodes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * メソッドの実装から読み取れること
  */
 public class JigMethodBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(JigMethodBuilder.class);
 
     private final JigMethodDeclaration jigMethodDeclaration;
     private final MethodDeclaration methodDeclaration;

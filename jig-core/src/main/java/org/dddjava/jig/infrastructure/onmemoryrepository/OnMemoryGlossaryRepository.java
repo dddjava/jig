@@ -89,11 +89,6 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public TermIdentifier fromMethodIdentifier(MethodIdentifier methodIdentifier) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public TermIdentifier fromMethodImplementationDeclarator(TypeIdentifier typeIdentifier, JavaMethodDeclarator methodImplementationDeclarator) {
         return new TermIdentifier(typeIdentifier.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
     }

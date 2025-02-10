@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.information.validations;
 
-import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.information.method.JigMethod;
 import org.dddjava.jig.domain.model.information.type.JigType;
 import org.dddjava.jig.domain.model.information.type.JigTypes;
 
@@ -31,14 +29,19 @@ public class Validations {
     }
 
     static Stream<Validation> validationAnnotatedMembers(JigType jigType) {
-        Stream<Validation> methodStream = jigType.instanceJigMethodStream()
-                .map(JigMethod::methodAnnotations)
-                .map(MethodAnnotations::list)
-                .flatMap(List::stream)
-                // TODO 正規表現の絞り込みをやめる
-                .filter(annotation -> ANNOTATION_PATTERN.matcher(annotation.annotationType().fullQualifiedName()).matches())
-                .map(ValidationAnnotatedMember::new)
-                .map(Validation::new);
+        Stream<Validation> methodStream = jigType.jigTypeMembers().jigMethodDeclarations().stream()
+                .flatMap(jigMethodDeclaration -> jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream()
+                        // TODO 正規表現の絞り込みをやめる
+                        .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
+                        .map(jigAnnotationReference -> {
+                            return new Validation(
+                                    jigType.identifier(),
+                                    jigMethodDeclaration.name(),
+                                    jigMethodDeclaration.header().jigMethodAttribute().returnType().id(),
+                                    jigAnnotationReference.id(),
+                                    jigAnnotationReference.asText()
+                            );
+                        }));
         Stream<Validation> fieldStream = jigType.jigTypeMembers().jigFieldHeaders().stream()
                 .flatMap(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().declarationAnnotations().stream()
                         // TODO 正規表現の絞り込みをやめる

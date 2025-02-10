@@ -40,7 +40,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
     // このVisitorで収集した情報
     final Instructions methodInstructions = Instructions.newInstance();
-    private final Collection<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
 
     private AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> endConsumer) {
         super(api);

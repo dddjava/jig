@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.function.Consumer;
 
@@ -30,7 +29,7 @@ class AsmFieldVisitor extends FieldVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);
 
     private final Consumer<AsmFieldVisitor> finisher;
-    private final Collection<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
 
     public AsmFieldVisitor(int api, Consumer<AsmFieldVisitor> finisher) {
         super(api);

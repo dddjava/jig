@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.field;
+package org.dddjava.jig.domain.model.information.members;
 
 import java.util.List;
 

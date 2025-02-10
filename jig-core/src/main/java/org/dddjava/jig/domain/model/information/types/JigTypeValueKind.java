@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.classes.field.JigField;
-import org.dddjava.jig.domain.model.data.classes.field.JigFields;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.members.JigField;
+import org.dddjava.jig.domain.model.information.members.JigFields;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

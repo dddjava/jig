@@ -20,10 +20,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AsmClassVisitorTest {
 
+    /**
+     * このパッケージのテストで使用するユーティリティ
+     */
+    static AsmClassVisitor asmClassVisitor(Class<?> clz) throws IOException {
+        AsmClassVisitor visitor = new AsmClassVisitor();
+        new ClassReader(clz.getName()).accept(visitor, 0);
+        return visitor;
+    }
+
     @Test
     void JigTypeDataの取得() throws IOException {
-        AsmClassVisitor visitor = new AsmClassVisitor();
-        new ClassReader(MyClass.class.getName()).accept(visitor, 0);
+        AsmClassVisitor visitor = asmClassVisitor(MyClass.class);
 
         var typeData = visitor.jigTypeHeader();
 
@@ -45,8 +53,7 @@ class AsmClassVisitorTest {
 
     @Test
     void JigTypeDataの取得_やりすぎばん() throws IOException {
-        AsmClassVisitor visitor = new AsmClassVisitor();
-        new ClassReader(MyGenericsMadnessInterface.class.getName()).accept(visitor, 0);
+        AsmClassVisitor visitor = asmClassVisitor(MyGenericsMadnessInterface.class);
 
         var typeData = visitor.jigTypeHeader();
         assertEquals("MyGenericsMadnessInterface", typeData.simpleName());
@@ -69,8 +76,7 @@ class AsmClassVisitorTest {
 //            MyTypeModifierClass.MyTypeModifierClassNON_SEALED.class
     })
     void 修飾子が取得できる(Class<?> target) throws IOException {
-        AsmClassVisitor visitor = new AsmClassVisitor();
-        new ClassReader(target.getName()).accept(visitor, 0);
+        AsmClassVisitor visitor = asmClassVisitor(target);
 
         JigTypeHeader jigTypeHeader = visitor.jigTypeHeader();
 
@@ -85,8 +91,7 @@ class AsmClassVisitorTest {
 
     @Test
     void 多重ネスト_static_inner() throws IOException {
-        AsmClassVisitor nestInnerVisitor = new AsmClassVisitor();
-        new ClassReader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class.getName()).accept(nestInnerVisitor, 0);
+        AsmClassVisitor nestInnerVisitor = asmClassVisitor(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class);
 
         var header = nestInnerVisitor.jigTypeHeader();
         assertFalse(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
@@ -94,8 +99,7 @@ class AsmClassVisitorTest {
 
     @Test
     void 多重ネスト_static_static() throws IOException {
-        AsmClassVisitor nestNestVisitor = new AsmClassVisitor();
-        new ClassReader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class.getName()).accept(nestNestVisitor, 0);
+        AsmClassVisitor nestNestVisitor = asmClassVisitor(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class);
 
         var header = nestNestVisitor.jigTypeHeader();
         assertTrue(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));

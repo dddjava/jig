@@ -15,12 +15,14 @@ public record JigMethodHeader(JigMethodIdentifier id,
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return "%s(%s):%s".formatted(
+        return nameAndArgumentSimpleText() + ':' + jigMethodAttribute.returnType().simpleNameWithGenerics();
+    }
+
+    public String nameAndArgumentSimpleText() {
+        return "%s(%s)".formatted(
                 id().name(),
                 jigMethodAttribute.argumentList().stream()
                         .map(JigTypeReference::simpleNameWithGenerics)
-                        .collect(Collectors.joining(", ")),
-                jigMethodAttribute.returnType().simpleNameWithGenerics()
-        );
+                        .collect(Collectors.joining(", ")));
     }
 }

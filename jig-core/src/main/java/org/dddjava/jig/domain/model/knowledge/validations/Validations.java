@@ -36,7 +36,7 @@ public class Validations {
                         .map(jigAnnotationReference -> {
                             return new Validation(
                                     jigType.identifier(),
-                                    jigMethodDeclaration.name(),
+                                    jigMethodDeclaration.header().nameAndArgumentSimpleText(),
                                     jigMethodDeclaration.header().jigMethodAttribute().returnType().id(),
                                     jigAnnotationReference.id(),
                                     jigAnnotationReference.asText()

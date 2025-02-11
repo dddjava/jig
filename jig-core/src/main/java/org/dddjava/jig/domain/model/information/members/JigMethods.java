@@ -1,13 +1,11 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,15 +44,6 @@ public class JigMethods {
                         .comparing(JigMethod::visibility)
                         .thenComparing(jigMethod -> jigMethod.declaration().asFullNameText()))
                 .collect(Collectors.toList());
-    }
-
-    public JigMethod get(MethodDeclaration methodDeclaration) {
-        for (JigMethod method : list) {
-            if (method.declaration().sameIdentifier(methodDeclaration)) {
-                return method;
-            }
-        }
-        throw new NoSuchElementException(methodDeclaration.asFullNameText());
     }
 
     public boolean empty() {

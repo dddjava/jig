@@ -77,13 +77,15 @@ dependencies {
     // HTML出力
     api libs.thymeleaf
 
-    testImplementation libs.spring.web
-    testImplementation "io.swagger.core.v3:swagger-annotations-jakarta:2.2.28"
     testRuntimeOnly libs.logback.classic
-
     testImplementation libs.junit
     testImplementation libs.mockito
     testImplementation libs.assertj
+
+    // テストで読み取るのに使用するアノテーションなど。
+    testImplementation libs.spring.web
+    testImplementation "io.swagger.core.v3:swagger-annotations-jakarta:2.2.28"
+    testImplementation("jakarta.validation:jakarta.validation-api:3.1.1")
 }
 
 build.dependsOn(publishToMavenLocal)

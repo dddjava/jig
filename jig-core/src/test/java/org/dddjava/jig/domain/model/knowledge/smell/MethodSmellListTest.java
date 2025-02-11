@@ -30,7 +30,7 @@ class MethodSmellListTest {
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
 
-        assertEquals(9, detectedSmells.size(), () -> detectedSmells.stream().map(methodSmell -> methodSmell.methodDeclaration().identifier()).toList().toString());
+        assertEquals(9, detectedSmells.size());
 
         assertTrue(extractMethod(detectedSmells, "returnVoid").returnsVoid());
 
@@ -48,7 +48,7 @@ class MethodSmellListTest {
     }
 
     private static MethodSmell extractMethod(List<MethodSmell> detectedSmells, String methodName) {
-        return detectedSmells.stream().filter(methodSmell -> methodSmell.methodDeclaration().identifier().methodSignature().methodName().equals(methodName)).findAny().orElseThrow();
+        return detectedSmells.stream().filter(methodSmell -> methodSmell.method().name().equals(methodName)).findAny().orElseThrow();
     }
 
 
@@ -105,7 +105,7 @@ class MethodSmellListTest {
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
 
-        assertEquals(1, detectedSmells.size(), () -> detectedSmells.stream().map(methodSmell -> methodSmell.methodDeclaration().identifier()).toList().toString());
+        assertEquals(1, detectedSmells.size());
 
         assertTrue(extractMethod(detectedSmells, "returnsVoid").returnsVoid());
     }

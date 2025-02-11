@@ -14,6 +14,7 @@ public class MethodDeclaration {
 
     private final MethodReturn methodReturn;
     private final JigMethodIdentifier jigMethodIdentifier;
+    private final TypeIdentifier declaringType;
 
     MethodIdentifier methodIdentifier;
 
@@ -21,7 +22,8 @@ public class MethodDeclaration {
         this.jigMethodIdentifier = JigMethodIdentifier.from(declaringType, methodSignature.methodName(),
                 methodSignature.arguments().stream().map(ParameterizedType::typeIdentifier).toList());
         this.methodReturn = methodReturn;
-        this.methodIdentifier = new MethodIdentifier(declaringType, methodSignature);
+        this.declaringType = declaringType;
+        this.methodIdentifier = new MethodIdentifier(this.declaringType, methodSignature);
     }
 
     /**
@@ -48,7 +50,7 @@ public class MethodDeclaration {
     }
 
     public TypeIdentifier declaringType() {
-        return methodIdentifier.declaringType();
+        return declaringType;
     }
 
     public MethodSignature methodSignature() {

@@ -94,8 +94,9 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
             values.forEach(jigMethod -> {
-                mermaidText.add("    %s([\"%s\"])".formatted(jigMethod.htmlIdText(), jigMethod.labelText()));
-                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(jigMethod.htmlIdText(), jigMethod.htmlIdText()));
+                var htmlIdText = htmlIdText(jigMethod.jigMethodIdentifier());
+                mermaidText.add("    %s([\"%s\"])".formatted(htmlIdText, jigMethod.labelText()));
+                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(htmlIdText, htmlIdText));
             });
             mermaidText.add("    end");
         });

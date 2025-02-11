@@ -48,7 +48,7 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                 .map(classDeclaration -> {
                     // メソッドのコメント登録
                     classDeclaration.jigMemberBuilder().applyAllMethodBuilders(jigMethodBuilder -> {
-                        var term = glossaryRepository.getMethodTermPossiblyMatches(jigMethodBuilder.methodIdentifier());
+                        var term = glossaryRepository.getMethodTermPossiblyMatches(jigMethodBuilder.jigMethodIdentifier());
                         jigMethodBuilder.registerMethodTerm(term);
                     });
 

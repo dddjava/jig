@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
@@ -29,33 +30,34 @@ public record JavaMethodDeclarator(
     /**
      * 一致する可能性があるかを判定する
      */
-    public boolean possiblyMatches(MethodSignature methodSignature) {
-        if (methodSignature.methodName().equals(identifier)) {
-            var parameterizedArgumentTypes = methodSignature.arguments();
-            // 引数の数が一致しない場合は不一致と判断する。
-            // TODO インナークラスではreceiverの存在により一致しない気がする。挙動を確認するテストを追加する必要がある。不一致で対応しないなら警告を出したり、どこかに制限事項として書く。
-            if (parameterizedArgumentTypes.size() != formalParameterList.size()) return false;
+    public boolean possiblyMatches(JigMethodIdentifier jigMethodIdentifier) {
+        var tuple = jigMethodIdentifier.tuple();
+        if (typeIdentifier.equals(tuple.declaringTypeIdentifier())) {
+            if (identifier.equals(tuple.name())) {
+                // 引数の数が一致しない場合は不一致と判断する。
+                // TODO インナークラスではreceiverの存在により一致しない気がする。挙動を確認するテストを追加する必要がある。不一致で対応しないなら警告を出したり、どこかに制限事項として書く。
+                if (tuple.parameterTypeIdentifiers().size() != formalParameterList.size()) return false;
 
-            for (int i = 0; i < parameterizedArgumentTypes.size(); i++) {
-                var parameterizedArgumentType = parameterizedArgumentTypes.get(i);
-                var formalParameter = formalParameterList.get(i);
-                // FQNが一致すればOK。
-                // TODO 引数型がネストクラスの場合、コードで書かれるFQNは pkg.Hoge.Fuga となるのに対し、バイトコードでは pkg.Hoge$Fuga となり一致しない可能性がある。要テスト。
-                if (formalParameter.equals(parameterizedArgumentType.typeIdentifier().fullQualifiedName())) {
-                    continue;
+                for (int i = 0; i < tuple.parameterTypeIdentifiers().size(); i++) {
+                    var parameterizedArgumentType = tuple.parameterTypeIdentifiers().get(i);
+                    var formalParameter = formalParameterList.get(i);
+                    // FQNが一致すればOK。
+                    // TODO 引数型がネストクラスの場合、コードで書かれるFQNは pkg.Hoge.Fuga となるのに対し、バイトコードでは pkg.Hoge$Fuga となり一致しない可能性がある。要テスト。
+                    if (formalParameter.equals(parameterizedArgumentType.fullQualifiedName())) {
+                        continue;
+                    }
+                    // FQNが一致せずとも単純クラス名が一致すればOKとする。このマッチは確実ではなく、異なるものと一致する可能性がある。
+                    if (formalParameter.equals(parameterizedArgumentType.asSimpleText())) {
+                        // 偶然一致してしまう可能性があるが、ほとんどの場合こちらになるので警告などは出さない。
+                        // 処理的にはこちらを優先した方がいいんだろうなぁと思いつつ、精度の高い順に評価したいのでFQN一致の後に行う。
+                        continue;
+                    }
+                    // 一致しないものが一つでもあったら不一致とみなす
+                    return false;
                 }
-                // FQNが一致せずとも単純クラス名が一致すればOKとする。このマッチは確実ではなく、異なるものと一致する可能性がある。
-                if (formalParameter.equals(parameterizedArgumentType.asSimpleText())) {
-                    // 偶然一致してしまう可能性があるが、ほとんどの場合こちらになるので警告などは出さない。
-                    // 処理的にはこちらを優先した方がいいんだろうなぁと思いつつ、精度の高い順に評価したいのでFQN一致の後に行う。
-                    continue;
-                }
-                // 一致しないものが一つでもあったら不一致とみなす
-                return false;
+                // 全パラメタのFQNもしくは単純名が一致した
+                return true;
             }
-
-            // 全パラメタのFQNもしくは単純名が一致した
-            return true;
         }
         return false;
     }

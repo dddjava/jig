@@ -2,11 +2,13 @@ package org.dddjava.jig.domain.model.data.members;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * メソッドのID
+ *
  * @param value
  */
 public record JigMethodIdentifier(String value) {
@@ -25,5 +27,23 @@ public record JigMethodIdentifier(String value) {
 
     public String namespace() {
         return value.split("[#()]")[0];
+    }
+
+    public Tuple tuple() {
+        String[] split = value.split("[#()]");
+        if (split.length == 2) {
+            return new Tuple(split[0], split[1], List.of());
+        }
+        return new Tuple(split[0], split[1], Arrays.stream(split[2].split(",")).toList());
+    }
+
+    public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNames) {
+        public TypeIdentifier declaringTypeIdentifier() {
+            return TypeIdentifier.valueOf(declaringTypeName);
+        }
+
+        public List<TypeIdentifier> parameterTypeIdentifiers() {
+            return parameterTypeNames.stream().map(TypeIdentifier::valueOf).collect(Collectors.toList());
+        }
     }
 }

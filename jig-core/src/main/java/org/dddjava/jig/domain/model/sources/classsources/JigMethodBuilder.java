@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -69,6 +70,10 @@ public class JigMethodBuilder {
 
     public MethodIdentifier methodIdentifier() {
         return methodDeclaration.identifier();
+    }
+
+    public JigMethodIdentifier jigMethodIdentifier() {
+        return jigMethodDeclaration.header().id();
     }
 
     public void registerMethodTerm(Term term) {

@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -28,19 +28,19 @@ public record UsecaseMermaidDiagram(
 
         // 解決済み（Usecaseメソッドに含まれるもの）を識別するためのコレクション
         // filteredRelationsに問い合わせればいい気もする
-        Set<MethodIdentifier> resolved = new HashSet<>();
+        Set<JigMethodIdentifier> resolved = new HashSet<>();
 
         // メソッドのスタイル
-        filteredRelations.methodIdentifiers().forEach(methodIdentifier -> {
+        filteredRelations.jigMethodIdentifierStream().forEach(jigMethodIdentifier -> {
             // 自分は太字にする
-            if (methodIdentifier.equals(jigMethod.declaration().identifier())) {
-                resolved.add(methodIdentifier);
+            if (jigMethodIdentifier.equals(jigMethod.declaration().jigMethodIdentifier())) {
+                resolved.add(jigMethodIdentifier);
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
                 mermaidText.add("style %s font-weight:bold".formatted(jigMethod.htmlIdText()));
             } else {
-                contextJigTypes.resolveJigMethod(methodIdentifier)
+                contextJigTypes.resolveJigMethod(jigMethodIdentifier)
                         .ifPresent(method -> {
-                            resolved.add(methodIdentifier);
+                            resolved.add(jigMethodIdentifier);
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 mermaidText.add(usecaseMermaidNodeText(method));
@@ -57,7 +57,7 @@ public record UsecaseMermaidDiagram(
 
         Function<MethodDeclaration, Optional<String>> converter = methodDeclaration -> {
             // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
-            if (resolved.contains(methodDeclaration.identifier())) {
+            if (resolved.contains(methodDeclaration.jigMethodIdentifier())) {
                 return Optional.of(methodDeclaration.htmlIdText());
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し

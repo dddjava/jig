@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.relation.methods;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.slf4j.Logger;
@@ -167,4 +168,10 @@ public class MethodRelations implements CallerMethodsFactory {
         return list;
     }
 
+    public Stream<JigMethodIdentifier> jigMethodIdentifierStream() {
+        return list.stream()
+                .flatMap(methodRelation -> Stream.of(methodRelation.from(), methodRelation.to()))
+                .map(methodDeclaration -> methodDeclaration.jigMethodIdentifier())
+                .distinct();
+    }
 }

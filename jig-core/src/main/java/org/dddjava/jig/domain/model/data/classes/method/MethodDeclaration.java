@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -13,12 +14,14 @@ import java.util.stream.Stream;
 public class MethodDeclaration {
 
     private final MethodReturn methodReturn;
+    private final JigMethodIdentifier jigMethodIdentifier;
 
     MethodIdentifier methodIdentifier;
 
     public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, MethodReturn methodReturn) {
+        this.jigMethodIdentifier = JigMethodIdentifier.from(declaringType, methodSignature.methodName(),
+                methodSignature.arguments().stream().map(ParameterizedType::typeIdentifier).toList());
         this.methodReturn = methodReturn;
-
         this.methodIdentifier = new MethodIdentifier(declaringType, methodSignature);
     }
 
@@ -109,5 +112,9 @@ public class MethodDeclaration {
 
     public List<TypeIdentifier> dependsTypes() {
         return Stream.concat(Stream.of(declaringType()), relateTypes().stream()).toList();
+    }
+
+    public JigMethodIdentifier jigMethodIdentifier() {
+        return jigMethodIdentifier;
     }
 }

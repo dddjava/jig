@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -52,6 +53,15 @@ public class JigTypes {
 
     public JigTypes filter(Predicate<JigType> predicate) {
         return new JigTypes(listMatches(predicate));
+    }
+
+    public Optional<JigMethod> resolveJigMethod(JigMethodIdentifier jigMethodIdentifier) {
+        // 全くラスの全メソッドを舐めるので効率化が必要かもしれないが、一旦これで
+        return list.stream()
+                .flatMap(jigType -> jigType.allJigMethodStream())
+                .filter(jigMethod -> jigMethod.declaration().jigMethodIdentifier().equals(jigMethodIdentifier))
+                // 複数件Hitすることはないが、実装上はありえるのでany
+                .findAny();
     }
 
     public Optional<JigMethod> resolveJigMethod(MethodIdentifier methodIdentifier) {

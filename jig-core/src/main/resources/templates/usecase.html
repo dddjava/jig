@@ -23,7 +23,7 @@
                 </section>
 
                 <section class="method" th:each="method : ${#jig.listRemarkableInstanceMethods(item)}">
-                    <h3 th:id="${method.htmlIdText()}" th:text="${method.labelText()}">XXXメソッド</h3>
+                    <h3 th:id="${#jig.htmlIdText(method)}" th:text="${method.labelText()}">XXXメソッド</h3>
                     <div class="fully-qualified-name"
                          th:text="${method.declaration().asSignatureAndReturnTypeSimpleText()}">
                         availableRoomList(OffsetDateTime):List

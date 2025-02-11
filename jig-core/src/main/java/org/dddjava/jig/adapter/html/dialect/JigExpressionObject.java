@@ -3,6 +3,7 @@ package org.dddjava.jig.adapter.html.dialect;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -126,5 +127,19 @@ class JigExpressionObject {
                 .filterProgrammerDefined()
                 .excludeNotNoteworthyObjectMethod()
                 .listRemarkable();
+    }
+
+    public static String htmlIdText(JigMethod jigMethod) {
+        return htmlIdText(jigMethod.jigMethodIdentifier());
+    }
+
+    public static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {
+        var tuple = jigMethodIdentifier.tuple();
+
+        var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
+        var parameterText = tuple.parameterTypeIdentifiers().stream()
+                .map(TypeIdentifier::packageAbbreviationText)
+                .collect(Collectors.joining(", ", "(", ")"));
+        return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }
 }

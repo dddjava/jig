@@ -106,7 +106,7 @@ public class JigMethod {
     }
 
     public String fqn() {
-        return declaration().identifier().asText();
+        return jigMethodDeclaration.header().id().value();
     }
 
     public String htmlIdText() {

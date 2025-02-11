@@ -23,7 +23,7 @@ public record UsecaseMermaidDiagram(
         mermaidText.add("graph LR");
 
         // 基点からの呼び出し全部 + 直近の呼び出し元
-        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.declaration(), methodIdentifier -> false)
+        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.declaration())
                 .merge(methodRelations.filterTo(jigMethod.declaration()));
 
         // 解決済み（Usecaseメソッドに含まれるもの）を識別するためのコレクション

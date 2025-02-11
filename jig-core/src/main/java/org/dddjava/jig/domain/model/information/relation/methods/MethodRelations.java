@@ -78,6 +78,18 @@ public class MethodRelations implements CallerMethodsFactory {
                 .collect(Collectors.joining("\n"));
     }
 
+    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration) {
+        var processedMethodId = new HashSet<MethodIdentifier>();
+
+        return filterFromRecursiveInternal(methodDeclaration, (methodIdentifier -> {
+            if (processedMethodId.contains(methodIdentifier)) return true;
+            processedMethodId.add(methodIdentifier);
+            return false;
+        }))
+                .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
+
+
     public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration, Predicate<MethodIdentifier> stopper) {
         var processedMethodId = new HashSet<MethodIdentifier>();
 

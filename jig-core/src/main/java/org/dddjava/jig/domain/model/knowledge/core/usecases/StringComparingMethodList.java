@@ -34,13 +34,13 @@ public class StringComparingMethodList {
         );
 
         List<JigMethod> methods = Stream.concat(
-                entrypoint.listRequestHandlerMethods().stream()
-                        .map(entrypointMethod -> entrypointMethod.jigMethod())
-                        .filter(jigMethod -> jigMethod.isCall(jigMethodIdentifier)),
-                serviceMethods.list().stream()
-                        .map(serviceMethod -> serviceMethod.method())
-                        .filter(jigMethod -> jigMethod.isCall(jigMethodIdentifier))
-        ).collect(toList());
+                        entrypoint.listRequestHandlerMethods().stream()
+                                .map(entrypointMethod -> entrypointMethod.jigMethod()),
+                        serviceMethods.list().stream()
+                                .map(serviceMethod -> serviceMethod.method())
+                )
+                .filter(jigMethod -> jigMethod.isCall(jigMethodIdentifier))
+                .collect(toList());
 
         return new StringComparingMethodList(methods);
     }

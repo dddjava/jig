@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -46,8 +47,8 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
         return method;
     }
 
-    public boolean isCall(MethodDeclaration methodDeclaration) {
-        return method.usingMethods().methodDeclarations().contains(methodDeclaration);
+    public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {
+        return method.usingMethods().contains(jigMethodIdentifier);
     }
 
     public TypeIdentifier declaringType() {

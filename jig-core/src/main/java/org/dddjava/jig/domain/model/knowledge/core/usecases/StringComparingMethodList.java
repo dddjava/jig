@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.core.usecases;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
@@ -29,18 +27,18 @@ public class StringComparingMethodList {
 
     public static StringComparingMethodList createFrom(Entrypoint entrypoint, ServiceMethods serviceMethods) {
         // String#equals(Object)
-        MethodDeclaration stringEqualsMethod = new MethodDeclaration(
+        JigMethodIdentifier jigMethodIdentifier = JigMethodIdentifier.from(
                 TypeIdentifier.from(String.class),
-                new MethodSignature("equals", TypeIdentifier.from(Object.class)),
-                MethodReturn.fromTypeOnly(TypeIdentifier.from(boolean.class))
+                "equals",
+                List.of(TypeIdentifier.from(Object.class))
         );
 
         List<JigMethod> methods = Stream.concat(
                 entrypoint.listRequestHandlerMethods().stream()
-                        .filter(entrypointMethod -> entrypointMethod.isCall(stringEqualsMethod))
+                        .filter(entrypointMethod -> entrypointMethod.isCall(jigMethodIdentifier))
                         .map(entrypointMethod -> entrypointMethod.jigMethod()),
                 serviceMethods.list().stream()
-                        .filter(serviceMethod -> serviceMethod.isCall(stringEqualsMethod))
+                        .filter(serviceMethod -> serviceMethod.isCall(jigMethodIdentifier))
                         .map(serviceMethod -> serviceMethod.method())
         ).collect(toList());
 

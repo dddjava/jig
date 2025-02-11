@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -19,5 +20,9 @@ public record InvokedMethod(TypeIdentifier methodOwner, String methodName,
         extractedTypes.add(methodOwner);
         extractedTypes.add(returnType);
         return extractedTypes;
+    }
+
+    public boolean jigMethodIdentifierIs(JigMethodIdentifier jigMethodIdentifier) {
+        return jigMethodIdentifier.equals(JigMethodIdentifier.from(methodOwner, methodName, argumentTypes));
     }
 }

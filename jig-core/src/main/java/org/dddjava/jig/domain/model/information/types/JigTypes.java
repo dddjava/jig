@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
@@ -61,17 +60,6 @@ public class JigTypes {
         return list.stream()
                 .flatMap(jigType -> jigType.allJigMethodStream())
                 .filter(jigMethod -> jigMethod.declaration().jigMethodIdentifier().equals(jigMethodIdentifier))
-                // 複数件Hitすることはないが、実装上はありえるのでany
-                .findAny();
-    }
-
-    public Optional<JigMethod> resolveJigMethod(MethodIdentifier methodIdentifier) {
-        return list.stream()
-                // 同じクラスでフィルタ
-                .filter(jigType -> jigType.identifier().equals(methodIdentifier.declaringType()))
-                // メソッドに絞り込み
-                .flatMap(jigType -> jigType.allJigMethodStream())
-                .filter(jigMethod -> jigMethod.declaration().identifier().equals(methodIdentifier))
                 // 複数件Hitすることはないが、実装上はありえるのでany
                 .findAny();
     }

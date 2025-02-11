@@ -26,6 +26,8 @@ public record UsecaseMermaidDiagram(
         var filteredRelations = methodRelations.filterFromRecursive(jigMethod.declaration(), methodIdentifier -> false)
                 .merge(methodRelations.filterTo(jigMethod.declaration()));
 
+        // 解決済み（Usecaseメソッドに含まれるもの）を識別するためのコレクション
+        // filteredRelationsに問い合わせればいい気もする
         Set<MethodIdentifier> resolved = new HashSet<>();
 
         // メソッドのスタイル

@@ -29,7 +29,7 @@ public class MethodDeclaration {
      * @return "org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration#asFullNameText()"
      */
     public String asFullNameText() {
-        return methodIdentifier.asText();
+        return jigMethodIdentifier.value();
     }
 
     /**

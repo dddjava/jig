@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -18,10 +17,6 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
 
     public boolean anyMatch(CallerMethods callerMethods) {
         return callerMethods.contains(jigMethod.declaration());
-    }
-
-    public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {
-        return jigMethod.usingMethods().contains(jigMethodIdentifier);
     }
 
     public TypeIdentifier typeIdentifier() {

@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.DecisionNumber;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -163,5 +164,9 @@ public class JigMethod {
 
     public String asNameArgumentsReturnText() {
         return jigMethodDeclaration.header().asSignatureAndReturnTypeSimpleText();
+    }
+
+    public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {
+        return usingMethods().contains(jigMethodIdentifier);
     }
 }

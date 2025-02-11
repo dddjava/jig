@@ -36,7 +36,7 @@ public record UsecaseMermaidDiagram(
             if (jigMethodIdentifier.equals(jigMethod.jigMethodIdentifier())) {
                 resolved.add(jigMethodIdentifier);
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
-                mermaidText.add("style %s font-weight:bold".formatted(jigMethod.htmlIdText()));
+                mermaidText.add("style %s font-weight:bold".formatted(htmlIdText(jigMethod.jigMethodIdentifier())));
             } else {
                 contextJigTypes.resolveJigMethod(jigMethodIdentifier)
                         .ifPresent(method -> {
@@ -44,7 +44,8 @@ public record UsecaseMermaidDiagram(
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 mermaidText.add(usecaseMermaidNodeText(method));
-                                mermaidText.add("click %s \"#%s\"".formatted(method.htmlIdText(), method.htmlIdText()));
+                                var htmlIdText = htmlIdText(method.jigMethodIdentifier());
+                                mermaidText.add("click %s \"#%s\"".formatted(htmlIdText, htmlIdText));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。　
                                 mermaidText.add(normalMermaidNodeText(method));
@@ -84,14 +85,16 @@ public record UsecaseMermaidDiagram(
     }
 
     private String normalMermaidNodeText(JigMethod jigMethod) {
-        if (jigMethod.declaration().isLambda()) {
-            return "%s[\"%s\"]:::lambda".formatted(jigMethod.htmlIdText(), "(lambda)");
+        var jigMethodIdentifier = jigMethod.jigMethodIdentifier();
+        var string = htmlIdText(jigMethodIdentifier);
+        if (jigMethodIdentifier.isLambda()) {
+            return "%s[\"%s\"]:::lambda".formatted(string, "(lambda)");
         }
-        return "%s[\"%s\"]".formatted(jigMethod.htmlIdText(), jigMethod.labelText());
+        return "%s[\"%s\"]".formatted(string, jigMethod.labelText());
     }
 
     private String usecaseMermaidNodeText(JigMethod jigMethod) {
-        return "%s([\"%s\"])".formatted(jigMethod.htmlIdText(), jigMethod.labelTextOrLambda());
+        return "%s([\"%s\"])".formatted(htmlIdText(jigMethod.jigMethodIdentifier()), jigMethod.labelTextOrLambda());
     }
 
     private static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {

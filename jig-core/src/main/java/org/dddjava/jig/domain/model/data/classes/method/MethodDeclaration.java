@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * メソッド定義
@@ -79,10 +78,6 @@ public class MethodDeclaration {
         return methodIdentifier.equals(methodDeclaration.methodIdentifier);
     }
 
-    public MethodIdentifier identifier() {
-        return methodIdentifier;
-    }
-
     public List<TypeIdentifier> relateTypes() {
         ArrayList<TypeIdentifier> types = new ArrayList<>();
         types.add(methodReturn().typeIdentifier());
@@ -92,16 +87,8 @@ public class MethodDeclaration {
         return types;
     }
 
-    public String htmlIdText() {
-        return identifier().htmlIdText();
-    }
-
     public boolean isJSL() {
         return declaringType().isJavaLanguageType();
-    }
-
-    public List<TypeIdentifier> dependsTypes() {
-        return Stream.concat(Stream.of(declaringType()), relateTypes().stream()).toList();
     }
 
     public JigMethodIdentifier jigMethodIdentifier() {

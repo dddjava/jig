@@ -109,10 +109,6 @@ public class JigMethod {
         return jigMethodDeclaration.header().id().value();
     }
 
-    public String htmlIdText() {
-        return declaration().htmlIdText();
-    }
-
     public String labelTextOrLambda() {
         if (declaration().isLambda()) {
             return "lambda";

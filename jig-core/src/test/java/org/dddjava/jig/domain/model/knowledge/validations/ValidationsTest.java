@@ -21,7 +21,7 @@ class ValidationsTest {
                 Arguments.arguments("nonNullField", List.of(
                         new TypeAndDescription("NotNull", "[]"))),
                 Arguments.arguments("minAndMax", List.of(
-                        new TypeAndDescription("Min", "[value=12]"), new TypeAndDescription("Max", "[value=34]"))),
+                        new TypeAndDescription("Min", "[value=12]"), new TypeAndDescription("Max", "[value=345]"))),
                 Arguments.arguments("email()", List.of(
                         new TypeAndDescription("Email", "[message=めっせーじ, regexp=.+@.+, flags={Flag.CANON_EQ}]")))
         );
@@ -38,9 +38,11 @@ class ValidationsTest {
 
         assertEquals(expected.size(), validations.size());
 
-        var validation = validations.get(0);
-        assertEquals(expected.get(0).type(), validation.annotationType().asSimpleName());
-        assertEquals(expected.get(0).description(), validation.annotationDescription());
+        for (var i = 0; i < validations.size(); i++) {
+            var validation = validations.get(i);
+            assertEquals(expected.get(i).type(), validation.annotationType().asSimpleName());
+            assertEquals(expected.get(i).description(), validation.annotationDescription());
+        }
     }
 
     private static class MySut {
@@ -48,7 +50,7 @@ class ValidationsTest {
         String nonNullField;
 
         @Min(12)
-        @Max(34)
+        @Max(345)
         int minAndMax;
 
         @Email(message = "めっせーじ", regexp = ".+@.+", flags = Pattern.Flag.CANON_EQ)

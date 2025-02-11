@@ -182,7 +182,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("SELECT", item -> item.selectTables()),
                         Map.entry("UPDATE", item -> item.updateTables()),
                         Map.entry("DELETE", item -> item.deleteTables()),
-                        Map.entry("関連元クラス数", item -> item.callerMethods().toDeclareTypes().size()),
+                        Map.entry("関連元クラス数", item -> item.callerMethods().typeCount()),
                         Map.entry("関連元メソッド数", item -> item.callerMethods().size())
                 ), datasourceAngles.list()),
                 new ReportSheet<>("文字列比較箇所", List.of(

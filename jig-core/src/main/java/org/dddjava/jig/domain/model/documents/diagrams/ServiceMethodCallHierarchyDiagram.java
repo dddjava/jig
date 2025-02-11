@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -39,8 +40,8 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         // メソッド間の関連
         RelationText relationText = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
-            for (MethodDeclaration methodDeclaration : serviceAngle.userServiceMethods().list()) {
-                relationText.add(methodDeclaration, serviceAngle.method());
+            for (JigMethodIdentifier jigMethodIdentifier : serviceAngle.userServiceMethods()) {
+                relationText.add(jigMethodIdentifier, serviceAngle.method().jigMethodIdentifier());
             }
         }
 

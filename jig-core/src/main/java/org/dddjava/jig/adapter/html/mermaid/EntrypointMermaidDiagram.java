@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointGroup;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
@@ -12,6 +13,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes contextJigTypes) {
 
@@ -53,34 +55,34 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
             apiMethodRelationText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
 
             // apiMethod -> others...
-            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.declaration(),
+            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodIdentifier(),
                     // @Serviceのクラスについたら終了
                     jigMethodIdentifier -> jigTypes.isService(jigMethodIdentifier)
             );
             decraleMethodRelations.list()
                     .stream()
-                    .map(methodRelation -> methodRelation.mermaidEdgeText())
+                    .map(methodRelation -> methodRelationEdgeText(methodRelation))
                     .forEach(apiMethodRelationText::add);
 
             // Service表示＆リンクのための収集
             decraleMethodRelations.list()
                     .stream()
                     .map(MethodRelation::to)
-                    .forEach(methodDeclaration -> {
-                        if (jigTypes.isService(methodDeclaration)) {
-                            jigTypes.resolveJigMethod(methodDeclaration.jigMethodIdentifier())
+                    .forEach(jigMethodIdentifier -> {
+                        var declaringTypeIdentifier = jigMethodIdentifier.tuple().declaringTypeIdentifier();
+                        if (jigTypes.isService(jigMethodIdentifier)) {
+                            jigTypes.resolveJigMethod(jigMethodIdentifier)
                                     .ifPresent(jigMethod -> {
-                                        var key = methodDeclaration.declaringType();
-                                        serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
-                                        serviceMethodMap.get(key).add(jigMethod);
+                                        serviceMethodMap.computeIfAbsent(declaringTypeIdentifier, k -> new HashSet<>());
+                                        serviceMethodMap.get(declaringTypeIdentifier).add(jigMethod);
                                     });
                         } else {
                             // controllerと同じクラスのメソッドはメソッド名だけ
-                            if (entrypointMethod.typeIdentifier().equals(methodDeclaration.declaringType())) {
-                                methodLabelMap.put(methodDeclaration.htmlIdText(), methodDeclaration.methodSignature().methodName());
+                            if (entrypointMethod.typeIdentifier().equals(declaringTypeIdentifier)) {
+                                methodLabelMap.put(htmlIdText(jigMethodIdentifier), jigMethodIdentifier.name());
                             } else {
                                 // 他はクラス名+メソッド名
-                                methodLabelMap.put(methodDeclaration.htmlIdText(), methodDeclaration.asSimpleText());
+                                methodLabelMap.put(htmlIdText(jigMethodIdentifier), declaringTypeIdentifier.asSimpleName() + '.' + jigMethodIdentifier.name());
                             }
                         }
                     });
@@ -102,5 +104,19 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         mermaidText.add(apiMethodRelationText.toString());
         return mermaidText.toString();
+    }
+
+    private static String methodRelationEdgeText(MethodRelation methodRelation) {
+        return "%s --> %s".formatted(htmlIdText(methodRelation.from()), htmlIdText(methodRelation.to()));
+    }
+
+    private static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {
+        var tuple = jigMethodIdentifier.tuple();
+
+        var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
+        var parameterText = tuple.parameterTypeIdentifiers().stream()
+                .map(TypeIdentifier::packageAbbreviationText)
+                .collect(Collectors.joining(", ", "(", ")"));
+        return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }
 }

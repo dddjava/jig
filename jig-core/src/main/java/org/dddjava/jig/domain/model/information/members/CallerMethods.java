@@ -1,40 +1,35 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * 呼び出しメソッド一覧
  */
 public class CallerMethods {
-    List<MethodDeclaration> list;
+    List<JigMethodIdentifier> list;
 
-    public CallerMethods(List<MethodDeclaration> list) {
+    public CallerMethods(List<JigMethodIdentifier> list) {
         this.list = list;
     }
 
     public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
         return list.stream()
-                .anyMatch(item -> item.sameIdentifier(jigMethodIdentifier));
+                .anyMatch(item -> item.equals(jigMethodIdentifier));
     }
 
     public int size() {
         return list.size();
     }
 
-    public TypeIdentifiers toDeclareTypes() {
-        return list.stream()
-                .map(item -> item.declaringType())
-                .sorted()
-                .distinct()
-                .collect(TypeIdentifiers.collector());
+    public Collection<JigMethodIdentifier> jigMethodIdentifiers(Predicate<JigMethodIdentifier> predicate) {
+        return list.stream().filter(predicate).toList();
     }
 
-    public MethodDeclarations methodDeclarations() {
-        return new MethodDeclarations(list);
+    public long typeCount() {
+        return list.stream().map(JigMethodIdentifier::namespace).distinct().count();
     }
 }

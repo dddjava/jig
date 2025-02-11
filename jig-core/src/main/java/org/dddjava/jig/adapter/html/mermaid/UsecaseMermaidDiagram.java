@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -12,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public record UsecaseMermaidDiagram(
         JigTypes contextJigTypes,
@@ -23,8 +23,8 @@ public record UsecaseMermaidDiagram(
         mermaidText.add("graph LR");
 
         // 基点からの呼び出し全部 + 直近の呼び出し元
-        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.declaration())
-                .merge(methodRelations.filterTo(jigMethod.declaration()));
+        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.jigMethodIdentifier())
+                .merge(methodRelations.filterTo(jigMethod.jigMethodIdentifier()));
 
         // 解決済み（Usecaseメソッドに含まれるもの）を識別するためのコレクション
         // filteredRelationsに問い合わせればいい気もする
@@ -33,7 +33,7 @@ public record UsecaseMermaidDiagram(
         // メソッドのスタイル
         filteredRelations.jigMethodIdentifierStream().forEach(jigMethodIdentifier -> {
             // 自分は太字にする
-            if (jigMethodIdentifier.equals(jigMethod.declaration().jigMethodIdentifier())) {
+            if (jigMethodIdentifier.equals(jigMethod.jigMethodIdentifier())) {
                 resolved.add(jigMethodIdentifier);
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
                 mermaidText.add("style %s font-weight:bold".formatted(jigMethod.htmlIdText()));
@@ -55,13 +55,13 @@ public record UsecaseMermaidDiagram(
 
         Set<TypeIdentifier> others = new HashSet<>();
 
-        Function<MethodDeclaration, Optional<String>> converter = methodDeclaration -> {
+        Function<JigMethodIdentifier, Optional<String>> converter = jigMethodIdentifier -> {
             // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
-            if (resolved.contains(methodDeclaration.jigMethodIdentifier())) {
-                return Optional.of(methodDeclaration.htmlIdText());
+            if (resolved.contains(jigMethodIdentifier)) {
+                return Optional.of(htmlIdText(jigMethodIdentifier));
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
-            var typeIdentifier = methodDeclaration.declaringType();
+            var typeIdentifier = jigMethodIdentifier.tuple().declaringTypeIdentifier();
             if (typeIdentifier.packageIdentifier().equals(jigMethod.declaration().declaringType().packageIdentifier())) {
                 // 暫定的に同じパッケージのもののみ出力する
                 // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
@@ -92,5 +92,15 @@ public record UsecaseMermaidDiagram(
 
     private String usecaseMermaidNodeText(JigMethod jigMethod) {
         return "%s([\"%s\"])".formatted(jigMethod.htmlIdText(), jigMethod.labelTextOrLambda());
+    }
+
+    private static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {
+        var tuple = jigMethodIdentifier.tuple();
+
+        var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
+        var parameterText = tuple.parameterTypeIdentifiers().stream()
+                .map(TypeIdentifier::packageAbbreviationText)
+                .collect(Collectors.joining(", ", "(", ")"));
+        return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }
 }

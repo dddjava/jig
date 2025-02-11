@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.junit.jupiter.api.Test;
 
@@ -57,14 +55,7 @@ class MethodRelationsTest {
 
     private static MethodRelation relationOf(String from, String to) {
         return new MethodRelation(
-                new MethodDeclaration(
-                        TypeIdentifier.valueOf("dummy"),
-                        new MethodSignature(from),
-                        MethodReturn.fromTypeOnly(TypeIdentifier.valueOf("void"))),
-                new MethodDeclaration(
-                        TypeIdentifier.valueOf("dummy"),
-                        new MethodSignature(to),
-                        MethodReturn.fromTypeOnly(TypeIdentifier.valueOf("void")))
-        );
+                JigMethodIdentifier.from(TypeIdentifier.valueOf("dummy"), from, List.of()),
+                JigMethodIdentifier.from(TypeIdentifier.valueOf("dummy"), to, List.of()));
     }
 }

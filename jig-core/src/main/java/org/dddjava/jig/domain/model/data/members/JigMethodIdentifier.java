@@ -37,6 +37,10 @@ public record JigMethodIdentifier(String value) {
         return new Tuple(split[0], split[1], Arrays.stream(split[2].split(",")).toList());
     }
 
+    public boolean isLambda() {
+        return value.contains("#lambda$");
+    }
+
     public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNames) {
         public TypeIdentifier declaringTypeIdentifier() {
             return TypeIdentifier.valueOf(declaringTypeName);

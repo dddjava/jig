@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
@@ -76,5 +77,9 @@ public class RelationText {
 
     public void add(MethodDeclaration from, TypeIdentifier to) {
         add(from.asFullNameText(), to.fullQualifiedName());
+    }
+
+    public void add(JigMethodIdentifier from, JigMethodIdentifier to) {
+        add(from.value(), to.value());
     }
 }

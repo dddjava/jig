@@ -2,12 +2,14 @@ package org.dddjava.jig.domain.model.knowledge.core;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,13 +21,13 @@ public class ServiceAngle {
 
     ServiceMethod serviceMethod;
 
-    MethodDeclarations userServiceMethods;
+    Collection<JigMethodIdentifier> userServiceMethods;
     List<EntrypointMethod> entrypointMethods;
 
     MethodDeclarations usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, List<EntrypointMethod> entrypointMethods, MethodDeclarations userServiceMethods) {
+    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, List<EntrypointMethod> entrypointMethods, Collection<JigMethodIdentifier> userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
         this.usingRepositoryMethods = usingRepositoryMethods;
@@ -63,7 +65,7 @@ public class ServiceAngle {
         return serviceMethod.method().useNull();
     }
 
-    public MethodDeclarations userServiceMethods() {
+    public Collection<JigMethodIdentifier> userServiceMethods() {
         return userServiceMethods;
     }
 

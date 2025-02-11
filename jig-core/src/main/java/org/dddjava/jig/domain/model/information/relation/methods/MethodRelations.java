@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -34,15 +33,15 @@ public class MethodRelations implements CallerMethodsFactory {
                         .flatMap(jigMethod -> jigMethod.usingMethods().methodDeclarationStream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                                 .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                                .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod))))
+                                .map(toMethod -> new MethodRelation(jigMethod.declaration().jigMethodIdentifier(), toMethod.jigMethodIdentifier()))))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
     public static MethodRelations filterApplicationComponent(JigTypes jigTypes, MethodRelations methodRelations) {
         return methodRelations.list().stream()
                 .filter(methodRelation ->
-                        jigTypes.isApplicationComponent(methodRelation.from().declaringType())
-                                && jigTypes.isApplicationComponent(methodRelation.to().declaringType())
+                        jigTypes.isApplicationComponent(methodRelation.fromType())
+                                && jigTypes.isApplicationComponent(methodRelation.toType())
                 )
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
@@ -52,20 +51,14 @@ public class MethodRelations implements CallerMethodsFactory {
      */
     @Override
     public CallerMethods callerMethodsOf(JigMethodIdentifier jigMethodIdentifier) {
-        List<MethodDeclaration> callers = list.stream()
+        List<JigMethodIdentifier> callers = list.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodIdentifier))
                 .map(MethodRelation::from)
                 .collect(toList());
         return new CallerMethods(callers);
     }
 
-    public String mermaidEdgeText() {
-        return list.stream()
-                .map(MethodRelation::mermaidEdgeText)
-                .collect(Collectors.joining("\n"));
-    }
-
-    public String mermaidEdgeText(Function<MethodDeclaration, Optional<String>> converter) {
+    public String mermaidEdgeText(Function<JigMethodIdentifier, Optional<String>> converter) {
         // 型がMethodRelationではなくなるのでここで文字列化してしまう
         return list.stream()
                 .flatMap(methodRelation ->
@@ -78,42 +71,42 @@ public class MethodRelations implements CallerMethodsFactory {
                 .collect(Collectors.joining("\n"));
     }
 
-    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration) {
+    public MethodRelations filterFromRecursive(JigMethodIdentifier baseMethod) {
         var processedMethodId = new HashSet<JigMethodIdentifier>();
 
-        return filterFromRecursiveInternal(methodDeclaration, (jigMethodIdentifier -> {
+        return filterFromRecursiveInternal(baseMethod, (jigMethodIdentifier -> {
             if (processedMethodId.contains(jigMethodIdentifier)) return true;
             processedMethodId.add(jigMethodIdentifier);
             return false;
         })).collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration, Predicate<JigMethodIdentifier> stopper) {
+    public MethodRelations filterFromRecursive(JigMethodIdentifier baseMethod, Predicate<JigMethodIdentifier> stopper) {
         var processedMethodId = new HashSet<JigMethodIdentifier>();
 
-        return filterFromRecursiveInternal(methodDeclaration, stopper.or(jigMethodIdentifier -> {
+        return filterFromRecursiveInternal(baseMethod, stopper.or(jigMethodIdentifier -> {
             if (processedMethodId.contains(jigMethodIdentifier)) return true;
             processedMethodId.add(jigMethodIdentifier);
             return false;
         })).collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Predicate<JigMethodIdentifier> stopper) {
-        if (stopper.test(baseMethod.jigMethodIdentifier())) {
-            logger.debug("stopped for {}", baseMethod.asFullNameText());
+    private Stream<MethodRelation> filterFromRecursiveInternal(JigMethodIdentifier jigMethodIdentifier, Predicate<JigMethodIdentifier> stopper) {
+        if (stopper.test(jigMethodIdentifier)) {
+            logger.debug("stopped for {}", jigMethodIdentifier.value());
             return Stream.empty();
         }
 
         return list.stream()
-                .filter(methodRelation -> methodRelation.from().sameIdentifier(baseMethod))
+                .filter(methodRelation -> methodRelation.from().equals(jigMethodIdentifier))
                 .flatMap(methodRelation -> Stream.concat(
                         Stream.of(methodRelation),
                         filterFromRecursiveInternal(methodRelation.to(), stopper)));
     }
 
-    public MethodRelations filterTo(MethodDeclaration declaration) {
+    public MethodRelations filterTo(JigMethodIdentifier jigMethodIdentifier) {
         return list.stream()
-                .filter(methodRelation -> methodRelation.to().sameIdentifier(declaration))
+                .filter(methodRelation -> methodRelation.to().equals(jigMethodIdentifier))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
@@ -127,7 +120,7 @@ public class MethodRelations implements CallerMethodsFactory {
      */
     public MethodRelations inlineLambda() {
 
-        Map<JigMethodIdentifier, MethodDeclaration> replace = new HashMap<>();
+        Map<JigMethodIdentifier, JigMethodIdentifier> replace = new HashMap<>();
 
         List<MethodRelation> inlined = new ArrayList<>();
         List<MethodRelation> pending = new ArrayList<>();
@@ -136,7 +129,7 @@ public class MethodRelations implements CallerMethodsFactory {
             if (methodRelation.to().isLambda()) {
                 // lambdaへの関連
                 // この関連自体は残らない。ここで示されるfromにlambdaからの関連を置き換える
-                replace.put(methodRelation.to().jigMethodIdentifier(), methodRelation.from());
+                replace.put(methodRelation.to(), methodRelation.from());
             } else if (methodRelation.from().isLambda()) {
                 // lambdaからの関連
                 // 置き換え対象だが、この時点では何に置き換えたらいいか確定しないので一旦据え置く
@@ -150,15 +143,15 @@ public class MethodRelations implements CallerMethodsFactory {
         // 置き換え先がlambdaのものを展開する
         for (var entry : replace.entrySet()) {
             if (entry.getValue().isLambda()) {
-                replace.replace(entry.getKey(), replace.get(entry.getValue().jigMethodIdentifier()));
+                replace.replace(entry.getKey(), replace.get(entry.getValue()));
             }
         }
 
         var list2 = pending.stream()
                 .map(methodRelation ->
                         new MethodRelation(
-                                replace.getOrDefault(methodRelation.from().jigMethodIdentifier(), methodRelation.from()),
-                                replace.getOrDefault(methodRelation.to().jigMethodIdentifier(), methodRelation.to())
+                                replace.getOrDefault(methodRelation.from(), methodRelation.from()),
+                                replace.getOrDefault(methodRelation.to(), methodRelation.to())
                         ))
                 .toList();
 
@@ -173,7 +166,6 @@ public class MethodRelations implements CallerMethodsFactory {
     public Stream<JigMethodIdentifier> jigMethodIdentifierStream() {
         return list.stream()
                 .flatMap(methodRelation -> Stream.of(methodRelation.from(), methodRelation.to()))
-                .map(methodDeclaration -> methodDeclaration.jigMethodIdentifier())
                 .distinct();
     }
 }

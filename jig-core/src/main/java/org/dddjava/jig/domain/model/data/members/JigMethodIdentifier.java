@@ -22,4 +22,8 @@ public record JigMethodIdentifier(String value) {
     public String name() {
         return value.split("[#()]")[1];
     }
+
+    public String namespace() {
+        return value.split("[#()]")[0];
+    }
 }

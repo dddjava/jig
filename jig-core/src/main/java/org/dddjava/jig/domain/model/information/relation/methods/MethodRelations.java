@@ -50,9 +50,10 @@ public class MethodRelations implements CallerMethodsFactory {
     /**
      * 呼び出し元メソッドのフィルタリング
      */
-    public CallerMethods callerMethodsOf(MethodDeclaration calleeMethod) {
+    @Override
+    public CallerMethods callerMethodsOf(JigMethodIdentifier jigMethodIdentifier) {
         List<MethodDeclaration> callers = list.stream()
-                .filter(methodRelation -> methodRelation.calleeMethodIs(calleeMethod))
+                .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodIdentifier))
                 .map(MethodRelation::from)
                 .collect(toList());
         return new CallerMethods(callers);

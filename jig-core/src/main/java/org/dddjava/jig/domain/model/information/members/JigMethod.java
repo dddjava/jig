@@ -169,4 +169,8 @@ public class JigMethod {
     public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {
         return usingMethods().contains(jigMethodIdentifier);
     }
+
+    public JigMethodIdentifier jigMethodIdentifier() {
+        return jigMethodDeclaration.header().id();
+    }
 }

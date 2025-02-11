@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
 import java.util.List;
@@ -16,9 +17,9 @@ public class CallerMethods {
         this.list = list;
     }
 
-    public boolean contains(MethodDeclaration methodDeclaration) {
+    public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
         return list.stream()
-                .anyMatch(item -> methodDeclaration.sameIdentifier(item));
+                .anyMatch(item -> item.sameIdentifier(jigMethodIdentifier));
     }
 
     public int size() {

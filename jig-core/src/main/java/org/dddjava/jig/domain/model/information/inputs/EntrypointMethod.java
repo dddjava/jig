@@ -16,7 +16,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, JigMethod jigMethod) {
 
     public boolean anyMatch(CallerMethods callerMethods) {
-        return callerMethods.contains(jigMethod.declaration());
+        return callerMethods.contains(jigMethod.jigMethodIdentifier());
     }
 
     public TypeIdentifier typeIdentifier() {

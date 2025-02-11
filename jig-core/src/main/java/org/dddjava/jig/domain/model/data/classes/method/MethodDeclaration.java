@@ -75,6 +75,10 @@ public class MethodDeclaration {
         return declaringType().asSimpleText() + "." + asSignatureSimpleText();
     }
 
+    public boolean sameIdentifier(JigMethodIdentifier jigMethodIdentifier) {
+        return jigMethodIdentifier().equals(jigMethodIdentifier);
+    }
+
     public boolean sameIdentifier(MethodDeclaration methodDeclaration) {
         return methodIdentifier.equals(methodDeclaration.methodIdentifier);
     }

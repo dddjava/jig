@@ -38,11 +38,11 @@ public class MethodRelations implements CallerMethodsFactory {
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    public static MethodRelations filterSpringComponent(JigTypes jigTypes, MethodRelations methodRelations) {
+    public static MethodRelations filterApplicationComponent(JigTypes jigTypes, MethodRelations methodRelations) {
         return methodRelations.list().stream()
                 .filter(methodRelation ->
-                        jigTypes.isEndpointOrApplication(methodRelation.from().declaringType())
-                                && jigTypes.isEndpointOrApplication(methodRelation.to().declaringType())
+                        jigTypes.isApplicationComponent(methodRelation.from().declaringType())
+                                && jigTypes.isApplicationComponent(methodRelation.to().declaringType())
                 )
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }

@@ -81,10 +81,10 @@ public class JigTypes {
                 .isPresent();
     }
 
-    public boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
+    public boolean isApplicationComponent(TypeIdentifier typeIdentifier) {
         return resolveJigType(typeIdentifier)
                 .stream()
-                .anyMatch(jigType -> jigType.typeCategory().isBoundary());
+                .anyMatch(jigType -> jigType.typeCategory().isApplicationComponent());
     }
 
     public boolean empty() {

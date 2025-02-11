@@ -30,7 +30,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         Map<TypeIdentifier, Set<JigMethod>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
-        MethodRelations springComponentMethodRelations = MethodRelations.filterSpringComponent(jigTypes, methodRelations).inlineLambda();
+        MethodRelations springComponentMethodRelations = MethodRelations.filterApplicationComponent(jigTypes, methodRelations).inlineLambda();
 
         entrypointGroup.entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形

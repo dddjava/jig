@@ -23,20 +23,23 @@ public enum TypeCategory {
     OutputAdapter,
 
     /**
-     * バウンダリコンポーネント
+     * その他のコンポーネント
      *
      * コアドメインではなく、Controller、Service、Repository以外のアプリケーションを動かすために必要なコンポーネント。
      */
-    BoundaryComponent,
+    OtherApplicationComponent,
 
     /**
      * 判別できなかったもの
      */
     Others;
 
-    public boolean isBoundary() {
+    /**
+     * アプリケーションを動作させるためのコンポーネント
+     */
+    public boolean isApplicationComponent() {
         return switch (this) {
-            case Usecase, InputAdapter, OutputAdapter, BoundaryComponent -> true;
+            case Usecase, InputAdapter, OutputAdapter, OtherApplicationComponent -> true;
             default -> false;
         };
     }

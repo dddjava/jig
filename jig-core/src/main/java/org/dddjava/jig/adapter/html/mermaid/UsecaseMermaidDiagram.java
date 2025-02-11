@@ -54,6 +54,7 @@ public record UsecaseMermaidDiagram(
         Set<TypeIdentifier> others = new HashSet<>();
 
         Function<MethodDeclaration, Optional<String>> converter = methodDeclaration -> {
+            // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
             if (resolved.contains(methodDeclaration.identifier())) {
                 return Optional.of(methodDeclaration.htmlIdText());
             }

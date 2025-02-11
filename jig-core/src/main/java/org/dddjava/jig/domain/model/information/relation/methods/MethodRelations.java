@@ -79,30 +79,27 @@ public class MethodRelations implements CallerMethodsFactory {
     }
 
     public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration) {
-        var processedMethodId = new HashSet<MethodIdentifier>();
+        var processedMethodId = new HashSet<JigMethodIdentifier>();
 
-        return filterFromRecursiveInternal(methodDeclaration, (methodIdentifier -> {
-            if (processedMethodId.contains(methodIdentifier)) return true;
-            processedMethodId.add(methodIdentifier);
+        return filterFromRecursiveInternal(methodDeclaration, (jigMethodIdentifier -> {
+            if (processedMethodId.contains(jigMethodIdentifier)) return true;
+            processedMethodId.add(jigMethodIdentifier);
             return false;
-        }))
-                .collect(collectingAndThen(toList(), MethodRelations::new));
+        })).collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
+    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration, Predicate<JigMethodIdentifier> stopper) {
+        var processedMethodId = new HashSet<JigMethodIdentifier>();
 
-    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration, Predicate<MethodIdentifier> stopper) {
-        var processedMethodId = new HashSet<MethodIdentifier>();
-
-        return filterFromRecursiveInternal(methodDeclaration, stopper.or(methodIdentifier -> {
-            if (processedMethodId.contains(methodIdentifier)) return true;
-            processedMethodId.add(methodIdentifier);
+        return filterFromRecursiveInternal(methodDeclaration, stopper.or(jigMethodIdentifier -> {
+            if (processedMethodId.contains(jigMethodIdentifier)) return true;
+            processedMethodId.add(jigMethodIdentifier);
             return false;
-        }))
-                .collect(collectingAndThen(toList(), MethodRelations::new));
+        })).collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Predicate<MethodIdentifier> stopper) {
-        if (stopper.test(baseMethod.identifier())) {
+    private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Predicate<JigMethodIdentifier> stopper) {
+        if (stopper.test(baseMethod.jigMethodIdentifier())) {
             logger.debug("stopped for {}", baseMethod.asFullNameText());
             return Stream.empty();
         }

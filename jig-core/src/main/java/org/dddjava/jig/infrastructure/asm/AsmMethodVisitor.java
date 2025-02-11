@@ -88,7 +88,8 @@ class AsmMethodVisitor extends MethodVisitor {
                             isEnum,
                             jigMemberBuilder.isRecordComponent(methodDeclaration));
 
-                    if (jigMethodBuilder.methodIdentifier().methodSignature().isConstructor()) {
+                    // この時点でのコンストラクタ判定をしなくてよくしたい
+                    if (jigMethodBuilder.jigMethodIdentifier().name().equals("<init>")) {
                         // コンストラクタ
                         jigMemberBuilder.addConstructor(jigMethodBuilder);
                     } else if ((access & Opcodes.ACC_STATIC) != 0) {

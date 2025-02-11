@@ -26,23 +26,25 @@ public class StringComparingMethodList {
     }
 
     public static StringComparingMethodList createFrom(Entrypoint entrypoint, ServiceMethods serviceMethods) {
+        Stream<JigMethod> targetMethodStream = Stream.concat(
+                entrypoint.listRequestHandlerMethods().stream()
+                        .map(entrypointMethod -> entrypointMethod.jigMethod()),
+                serviceMethods.list().stream()
+                        .map(serviceMethod -> serviceMethod.method())
+        );
+        return createFrom(targetMethodStream);
+    }
+
+    static StringComparingMethodList createFrom(Stream<JigMethod> target) {
         // String#equals(Object)
         JigMethodIdentifier jigMethodIdentifier = JigMethodIdentifier.from(
                 TypeIdentifier.from(String.class),
                 "equals",
                 List.of(TypeIdentifier.from(Object.class))
         );
-
-        List<JigMethod> methods = Stream.concat(
-                        entrypoint.listRequestHandlerMethods().stream()
-                                .map(entrypointMethod -> entrypointMethod.jigMethod()),
-                        serviceMethods.list().stream()
-                                .map(serviceMethod -> serviceMethod.method())
-                )
+        return new StringComparingMethodList(target
                 .filter(jigMethod -> jigMethod.isCall(jigMethodIdentifier))
-                .collect(toList());
-
-        return new StringComparingMethodList(methods);
+                .collect(toList()));
     }
 
     public List<JigMethod> list() {

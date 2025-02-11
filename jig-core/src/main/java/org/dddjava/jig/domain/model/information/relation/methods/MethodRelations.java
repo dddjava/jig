@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -127,7 +126,7 @@ public class MethodRelations implements CallerMethodsFactory {
      */
     public MethodRelations inlineLambda() {
 
-        Map<MethodIdentifier, MethodDeclaration> replace = new HashMap<>();
+        Map<JigMethodIdentifier, MethodDeclaration> replace = new HashMap<>();
 
         List<MethodRelation> inlined = new ArrayList<>();
         List<MethodRelation> pending = new ArrayList<>();
@@ -136,7 +135,7 @@ public class MethodRelations implements CallerMethodsFactory {
             if (methodRelation.to().isLambda()) {
                 // lambdaへの関連
                 // この関連自体は残らない。ここで示されるfromにlambdaからの関連を置き換える
-                replace.put(methodRelation.to().identifier(), methodRelation.from());
+                replace.put(methodRelation.to().jigMethodIdentifier(), methodRelation.from());
             } else if (methodRelation.from().isLambda()) {
                 // lambdaからの関連
                 // 置き換え対象だが、この時点では何に置き換えたらいいか確定しないので一旦据え置く
@@ -150,15 +149,15 @@ public class MethodRelations implements CallerMethodsFactory {
         // 置き換え先がlambdaのものを展開する
         for (var entry : replace.entrySet()) {
             if (entry.getValue().isLambda()) {
-                replace.replace(entry.getKey(), replace.get(entry.getValue().identifier()));
+                replace.replace(entry.getKey(), replace.get(entry.getValue().jigMethodIdentifier()));
             }
         }
 
         var list2 = pending.stream()
                 .map(methodRelation ->
                         new MethodRelation(
-                                replace.getOrDefault(methodRelation.from().identifier(), methodRelation.from()),
-                                replace.getOrDefault(methodRelation.to().identifier(), methodRelation.to())
+                                replace.getOrDefault(methodRelation.from().jigMethodIdentifier(), methodRelation.from()),
+                                replace.getOrDefault(methodRelation.to().jigMethodIdentifier(), methodRelation.to())
                         ))
                 .toList();
 

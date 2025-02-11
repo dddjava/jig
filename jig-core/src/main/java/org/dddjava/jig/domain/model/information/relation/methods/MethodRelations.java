@@ -102,13 +102,6 @@ public class MethodRelations implements CallerMethodsFactory {
                         filterFromRecursiveInternal(methodRelation.to(), stopper)));
     }
 
-    public Set<MethodIdentifier> methodIdentifiers() {
-        return list.stream()
-                .flatMap(methodRelation -> Stream.of(methodRelation.from(), methodRelation.to()))
-                .map(MethodDeclaration::identifier)
-                .collect(Collectors.toSet());
-    }
-
     public MethodRelations filterTo(MethodDeclaration declaration) {
         return list.stream()
                 .filter(methodRelation -> methodRelation.to().sameIdentifier(declaration))

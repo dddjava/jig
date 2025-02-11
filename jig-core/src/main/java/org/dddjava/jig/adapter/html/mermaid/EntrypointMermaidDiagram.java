@@ -36,7 +36,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         entrypointGroup.entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
-            var apiMethodMmdId = entrypointMethod.declaration().htmlIdText();
+            var apiMethodMmdId = htmlIdText(entrypointMethod.jigMethod().jigMethodIdentifier());
             String apiMethodLabel = entrypointMethod.jigMethod().labelText();
 
             var description = switch (entrypointMethod.entrypointType()) {

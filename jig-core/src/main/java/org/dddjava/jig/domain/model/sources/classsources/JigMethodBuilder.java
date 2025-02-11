@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.sources.classsources;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
@@ -66,10 +65,6 @@ public class JigMethodBuilder {
 
     public JigMethod build() {
         return new JigMethod(jigMethodDeclaration, methodDeclaration, methodDerivation, term);
-    }
-
-    public MethodIdentifier methodIdentifier() {
-        return methodDeclaration.identifier();
     }
 
     public JigMethodIdentifier jigMethodIdentifier() {

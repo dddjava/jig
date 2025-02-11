@@ -1,8 +1,7 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelation;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -35,7 +34,7 @@ public record EntrypointGroup(JigType jigType, List<EntrypointMethod> entrypoint
 
         var apiMethodRelationText = new StringJoiner("\n");
 
-        Map<TypeIdentifier, Set<MethodIdentifier>> serviceMethodMap = new HashMap<>();
+        Map<TypeIdentifier, Set<JigMethod>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
         MethodRelations springComponentMethodRelations = MethodRelations.filterSpringComponent(jigTypes, methodRelations).inlineLambda();
@@ -63,7 +62,7 @@ public record EntrypointGroup(JigType jigType, List<EntrypointMethod> entrypoint
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.declaration(),
                     // @Serviceのクラスについたら終了
-                    methodIdentifier -> jigTypes.isService(methodIdentifier)
+                    jigMethodIdentifier -> jigTypes.isService(jigMethodIdentifier)
             );
             decraleMethodRelations.list()
                     .stream()
@@ -74,19 +73,21 @@ public record EntrypointGroup(JigType jigType, List<EntrypointMethod> entrypoint
             decraleMethodRelations.list()
                     .stream()
                     .map(MethodRelation::to)
-                    .map(MethodDeclaration::identifier)
-                    .forEach(methodIdentifier -> {
-                        if (jigTypes.isService(methodIdentifier)) {
-                            var key = methodIdentifier.declaringType();
-                            serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
-                            serviceMethodMap.get(key).add(methodIdentifier);
+                    .forEach(methodDeclaration -> {
+                        if (jigTypes.isService(methodDeclaration)) {
+                            jigTypes.resolveJigMethod(methodDeclaration.jigMethodIdentifier())
+                                    .ifPresent(jigMethod -> {
+                                        var key = methodDeclaration.declaringType();
+                                        serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
+                                        serviceMethodMap.get(key).add(jigMethod);
+                                    });
                         } else {
                             // controllerと同じクラスのメソッドはメソッド名だけ
-                            if (entrypointMethod.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                                methodLabelMap.put(methodIdentifier.htmlIdText(), methodIdentifier.methodSignature().methodName());
+                            if (entrypointMethod.typeIdentifier().equals(methodDeclaration.declaringType())) {
+                                methodLabelMap.put(methodDeclaration.htmlIdText(), methodDeclaration.methodSignature().methodName());
                             } else {
                                 // 他はクラス名+メソッド名
-                                methodLabelMap.put(methodIdentifier.htmlIdText(), methodIdentifier.asSimpleText());
+                                methodLabelMap.put(methodDeclaration.htmlIdText(), methodDeclaration.asSimpleText());
                             }
                         }
                     });
@@ -97,11 +98,10 @@ public record EntrypointGroup(JigType jigType, List<EntrypointMethod> entrypoint
         // サービスメソッドをクラス単位にグループ化して名前解決＆クリックで遷移できるようにする
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
-            values.forEach(value -> jigTypes.resolveJigMethod(value)
-                    .ifPresent(jigMethod -> {
-                        mermaidText.add("    %s([\"%s\"])".formatted(value.htmlIdText(), jigMethod.labelText()));
-                        mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(value.htmlIdText(), value.htmlIdText()));
-                    }));
+            values.forEach(jigMethod -> {
+                mermaidText.add("    %s([\"%s\"])".formatted(jigMethod.htmlIdText(), jigMethod.labelText()));
+                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(jigMethod.htmlIdText(), jigMethod.htmlIdText()));
+            });
             mermaidText.add("    end");
         });
         // サービスメソッド以外のメソッド

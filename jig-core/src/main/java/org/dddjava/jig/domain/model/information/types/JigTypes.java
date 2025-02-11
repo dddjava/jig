@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -79,9 +80,17 @@ public class JigTypes {
         return Optional.ofNullable(map.get(typeIdentifier));
     }
 
-    public boolean isService(MethodIdentifier methodIdentifier) {
-        return resolveJigType(methodIdentifier.declaringType())
-                .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Usecase);
+    public boolean isService(JigMethodIdentifier jigMethodIdentifier) {
+        return resolveJigMethod(jigMethodIdentifier)
+                .map(jigMethod -> jigMethod.declaration())
+                .filter(methodDeclaration -> isService(methodDeclaration))
+                .isPresent();
+    }
+
+    public boolean isService(MethodDeclaration methodDeclaration) {
+        return resolveJigType(methodDeclaration.declaringType())
+                .filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase)
+                .isPresent();
     }
 
     public boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
@@ -105,5 +114,4 @@ public class JigTypes {
     public boolean contains(TypeIdentifier typeIdentifier) {
         return map.containsKey(typeIdentifier);
     }
-
 }

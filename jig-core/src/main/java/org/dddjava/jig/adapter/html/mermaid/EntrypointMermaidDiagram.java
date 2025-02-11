@@ -1,8 +1,8 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointGroup;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.inputs.QueueListener;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -13,13 +13,13 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
 
-public record EntrypointMermaidDiagram(Entrypoint entrypoint, JigTypes contextJigTypes) {
+public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes contextJigTypes) {
 
     public String textFor(JigType jigType) {
-        return entrypoint().list().stream()
+        return entrypoints().list().stream()
                 .filter(entrypointGroup -> entrypointGroup.jigType() == jigType)
                 .findAny()
-                .map(entrypointGroup -> mermaid(entrypointGroup, entrypoint().methodRelations(), contextJigTypes))
+                .map(entrypointGroup -> mermaid(entrypointGroup, entrypoints().methodRelations(), contextJigTypes))
                 .orElse("");
     }
 

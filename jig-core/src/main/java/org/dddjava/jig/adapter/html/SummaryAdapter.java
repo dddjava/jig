@@ -8,7 +8,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -49,9 +49,9 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.EntrypointSummary)
     public SummaryModel entrypointSummary(JigTypesRepository jigTypesRepository) {
         JigTypes contextJigTypes = jigService.jigTypes(jigTypesRepository);
-        Entrypoint entrypoint = jigService.entrypoint(jigTypesRepository);
-        JigTypes jigTypes = entrypoint.jigTypes();
-        var entrypointMermaidDiagram = new EntrypointMermaidDiagram(entrypoint, contextJigTypes);
+        Entrypoints entrypoints = jigService.entrypoint(jigTypesRepository);
+        JigTypes jigTypes = entrypoints.jigTypes();
+        var entrypointMermaidDiagram = new EntrypointMermaidDiagram(entrypoints, contextJigTypes);
         return new SummaryModel(jigTypes, Map.of("mermaidDiagram", entrypointMermaidDiagram));
     }
 

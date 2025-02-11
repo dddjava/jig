@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
@@ -123,7 +123,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         ServiceAngles serviceAngles = jigService.serviceAngles(jigDataProvider);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigDataProvider);
         StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigDataProvider);
-        Entrypoint entrypoint = jigService.entrypoint(jigDataProvider);
+        Entrypoints entrypoints = jigService.entrypoint(jigDataProvider);
 
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(
@@ -135,7 +135,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeNames()),
                         Map.entry("分岐数", item -> item.jigMethod().decisionNumber().intValue()),
                         Map.entry("パス", item -> HttpEndpoint.from(item).pathText())
-                ), entrypoint.listRequestHandlerMethods()),
+                ), entrypoints.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
                         Map.entry("パッケージ名", item -> item.serviceMethod().declaringType().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),

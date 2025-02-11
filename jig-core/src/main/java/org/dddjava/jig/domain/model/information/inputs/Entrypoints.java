@@ -10,10 +10,10 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelations) {
+public record Entrypoints(List<EntrypointGroup> list, MethodRelations methodRelations) {
 
-    public static Entrypoint from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
-        return new Entrypoint(
+    public static Entrypoints from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
+        return new Entrypoints(
                 jigTypes.stream()
                         .flatMap(jigType -> EntrypointGroup.from(entrypointMethodDetector, jigType).stream())
                         .toList(),

@@ -9,8 +9,8 @@ import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -88,9 +88,9 @@ public class JigService {
         return datasourceMethods;
     }
 
-    public Entrypoint entrypoint(JigTypesRepository jigTypesRepository) {
+    public Entrypoints entrypoint(JigTypesRepository jigTypesRepository) {
         var entrypointMethodDetector = new EntrypointMethodDetector();
-        Entrypoint from = Entrypoint.from(entrypointMethodDetector, jigTypes(jigTypesRepository));
+        Entrypoints from = Entrypoints.from(entrypointMethodDetector, jigTypes(jigTypesRepository));
         if (from.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
         return from;
     }
@@ -115,9 +115,9 @@ public class JigService {
     }
 
     public StringComparingMethodList stringComparing(JigTypesRepository jigTypesRepository) {
-        Entrypoint entrypoint = entrypoint(jigTypesRepository);
+        Entrypoints entrypoints = entrypoint(jigTypesRepository);
         ServiceMethods serviceMethods = serviceMethods(jigTypesRepository);
-        return StringComparingMethodList.createFrom(entrypoint, serviceMethods);
+        return StringComparingMethodList.createFrom(entrypoints, serviceMethods);
     }
 
     public void notifyReportInformation() {

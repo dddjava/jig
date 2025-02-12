@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.data.classes.method;
+package org.dddjava.jig.domain.model.data.members;
 
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;

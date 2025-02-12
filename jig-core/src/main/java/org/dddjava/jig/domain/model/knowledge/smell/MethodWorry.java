@@ -22,7 +22,7 @@ public enum MethodWorry {
     基本型の授受を行なっている {
         @Override
         boolean judge(JigMethod jigMethod) {
-            return jigMethod.declaration().methodReturn().isPrimitive()
+            return jigMethod.methodReturnTypeReference().id().isPrimitive()
                     || jigMethod.declaration().methodSignature().arguments().stream().anyMatch(ParameterizedType::isPrimitive);
         }
     },

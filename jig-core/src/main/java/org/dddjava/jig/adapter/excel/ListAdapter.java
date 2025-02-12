@@ -129,8 +129,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("CONTROLLER", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item -> item.jigMethod().declaration().asSignatureSimpleText()),
-                        Map.entry("メソッド戻り値の型", item -> item.jigMethod().declaration().methodReturn().asSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.jigMethod().nameAndArgumentSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.jigMethod().methodReturnTypeReference().simpleName()),
                         Map.entry("クラス別名", item -> item.jigType().label()),
                         Map.entry("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeNames()),
                         Map.entry("分岐数", item -> item.jigMethod().decisionNumber().intValue()),
@@ -140,12 +140,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("パッケージ名", item -> item.serviceMethod().declaringType().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
                         Map.entry("メソッドシグネチャ", item -> item.method().asSignatureSimpleText()),
-                        Map.entry("メソッド戻り値の型", item -> item.method().methodReturn().asSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.serviceMethod().method().methodReturnTypeReference().simpleName()),
                         Map.entry("イベントハンドラ", item -> item.usingFromController() ? "◯" : ""),
                         Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.serviceMethod().declaringType()).title()),
                         Map.entry("メソッド別名", item -> item.serviceMethod().method().aliasTextOrBlank()),
                         Map.entry("メソッド戻り値の型の別名", item ->
-                                jigDocumentContext.typeTerm(item.serviceMethod().method().declaration().methodReturn().typeIdentifier()).title()
+                                jigDocumentContext.typeTerm(item.serviceMethod().method().methodReturnTypeReference().id()).title()
                         ),
                         Map.entry("メソッド引数の型の別名", item ->
                                 item.serviceMethod().method().declaration().methodSignature().arguments().stream()

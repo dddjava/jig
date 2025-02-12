@@ -33,4 +33,8 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
                 header.jigMethodAttribute().associatedTypeStream()
         ).collect(Collectors.toSet());
     }
+
+    public String nameAndArgumentSimpleText() {
+        return header.nameAndArgumentSimpleText();
+    }
 }

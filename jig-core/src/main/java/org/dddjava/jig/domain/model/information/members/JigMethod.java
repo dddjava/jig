@@ -178,4 +178,8 @@ public class JigMethod {
     public JigTypeReference methodReturnTypeReference() {
         return jigMethodDeclaration.header().jigMethodAttribute().returnType();
     }
+
+    public String nameAndArgumentSimpleText() {
+        return jigMethodDeclaration.nameAndArgumentSimpleText();
+    }
 }

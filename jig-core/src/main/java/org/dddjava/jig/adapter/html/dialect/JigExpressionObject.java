@@ -48,20 +48,20 @@ class JigExpressionObject {
     }
 
     public String fieldRawText(JigField jigField) {
-        return parameterizedTypeLinkText(jigField.jigTypeReference());
+        return linkText(jigField.jigTypeReference());
     }
 
     public String methodReturnLinkText(JigMethod jigMethod) {
-        return parameterizedTypeLinkText(jigMethod.jigMethodDeclaration().header().jigMethodAttribute().returnType());
+        return linkText(jigMethod.jigMethodDeclaration().header().jigMethodAttribute().returnType());
     }
 
     public Iterator<String> methodArgumentLinkTexts(JigMethod jigMethod) {
         return jigMethod.jigMethodDeclaration().header().jigMethodAttribute().argumentList().stream()
-                .map(this::parameterizedTypeLinkText)
+                .map(this::linkText)
                 .iterator();
     }
 
-    private String parameterizedTypeLinkText(JigTypeReference jigTypeReference) {
+    private String linkText(JigTypeReference jigTypeReference) {
         TypeIdentifier typeIdentifier = jigTypeReference.id();
         var typeArgumentList = jigTypeReference.typeArgumentList();
         if (typeArgumentList.isEmpty()) {

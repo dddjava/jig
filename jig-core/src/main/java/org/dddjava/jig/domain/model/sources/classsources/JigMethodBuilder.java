@@ -2,11 +2,9 @@ package org.dddjava.jig.domain.model.sources.classsources;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.objectweb.asm.Opcodes;
 
@@ -26,9 +24,8 @@ public class JigMethodBuilder {
         this.methodDerivation = methodDerivation;
     }
 
-    public static MethodDerivation resolveMethodDerivation(MethodDeclaration methodDeclaration, int access, boolean isEnum, boolean isRecordComponent) {
-        MethodSignature methodSignature = methodDeclaration.methodSignature();
-        String name = methodSignature.methodName();
+    public static MethodDerivation resolveMethodDerivation(JigMethodDeclaration jigMethodDeclaration, int access, boolean isEnum, boolean isRecordComponent) {
+        String name = jigMethodDeclaration.name();
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return MethodDerivation.CONSTRUCTOR;
         }
@@ -43,12 +40,10 @@ public class JigMethodBuilder {
 
         if (isEnum && (access & Opcodes.ACC_STATIC) != 0) {
             // enumで生成されるstaticメソッド2つをコンパイラ生成として扱う
-            if (methodSignature.isSame(new MethodSignature("values"))) {
+            if (jigMethodDeclaration.nameAndArgumentSimpleText().equals("values()")) {
                 return MethodDerivation.COMPILER_GENERATED;
-            } else {
-                if (methodSignature.isSame(new MethodSignature("valueOf", TypeIdentifier.from(String.class)))) {
-                    return MethodDerivation.COMPILER_GENERATED;
-                }
+            } else if (jigMethodDeclaration.nameAndArgumentSimpleText().equals("valueOf(String)")) {
+                return MethodDerivation.COMPILER_GENERATED;
             }
         }
 
@@ -59,7 +54,7 @@ public class JigMethodBuilder {
                                            int access,
                                            MethodDeclaration methodDeclaration,
                                            boolean isEnum, boolean isRecordComponent) {
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration, access, isEnum, isRecordComponent);
+        MethodDerivation methodDerivation = resolveMethodDerivation(jigMethodDeclaration, access, isEnum, isRecordComponent);
         return new JigMethodBuilder(jigMethodDeclaration, methodDeclaration, methodDerivation);
     }
 

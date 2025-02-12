@@ -40,7 +40,7 @@
                         <dt th:unless="${method.argumentTypes().isEmpty()}">要求するもの（引数）</dt>
                         <dd th:each="argText : ${#jig.methodArgumentLinkTexts(method)}" th:utext="${argText}">xxx</dd>
                         <dt th:unless="${methodReturn.isVoid()}">得られるもの（戻り値）</dt>
-                        <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</dd>
+                        <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnLinkText(method)}">xxxx</dd>
                     </dl>
 
                     <section class="description markdown" th:utext="${method.term().description()}">メソッドの **Javadoc**

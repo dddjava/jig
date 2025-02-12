@@ -68,11 +68,6 @@ public final class MethodSignature {
         return methodName.startsWith("lambda$");
     }
 
-    public boolean isConstructor() {
-        // 名前以外の判別方法があればそれにしたい
-        return methodName.equals("<init>");
-    }
-
     public boolean isSame(MethodSignature other) {
         return methodName.equals(other.methodName)
                 && arguments.equals(other.arguments);

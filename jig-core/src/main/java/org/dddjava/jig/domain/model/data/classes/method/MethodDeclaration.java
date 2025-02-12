@@ -57,10 +57,6 @@ public class MethodDeclaration {
         return methodReturn;
     }
 
-    public boolean isConstructor() {
-        return methodSignature().isConstructor();
-    }
-
     public boolean isLambda() {
         return methodSignature().isLambda();
     }
@@ -70,10 +66,6 @@ public class MethodDeclaration {
      */
     public String asSimpleTextWithDeclaringType() {
         return declaringType().asSimpleText() + "." + asSignatureSimpleText();
-    }
-
-    public boolean isJSL() {
-        return declaringType().isJavaLanguageType();
     }
 
     public JigMethodIdentifier jigMethodIdentifier() {

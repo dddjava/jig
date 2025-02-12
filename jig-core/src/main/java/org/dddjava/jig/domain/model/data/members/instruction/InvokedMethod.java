@@ -36,4 +36,13 @@ public record InvokedMethod(TypeIdentifier methodOwner, String methodName,
                 argumentTypes.stream().map(TypeIdentifier::asSimpleText).collect(Collectors.joining(", ")),
                 returnType.asSimpleText());
     }
+
+    public boolean isJSL() {
+        return methodOwner.isJavaLanguageType();
+    }
+
+    public boolean isConstructor() {
+        // 名前以外の判別方法があればそれにしたい
+        return methodName.equals("<init>");
+    }
 }

@@ -1,10 +1,6 @@
 package org.dddjava.jig.domain.model.information.members;
 
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
@@ -31,15 +27,6 @@ public record UsingMethods(List<InvokedMethod> invokedMethods) {
 
     public Stream<InvokedMethod> invokedMethodStream() {
         return invokedMethods.stream();
-    }
-
-    public Stream<MethodDeclaration> methodDeclarationStream() {
-        return invokedMethods.stream()
-                .map(invokedMethod -> {
-                    return new MethodDeclaration(invokedMethod.methodOwner(),
-                            new MethodSignature(invokedMethod.methodName(), invokedMethod.argumentTypes().toArray(TypeIdentifier[]::new)),
-                            new MethodReturn(new ParameterizedType(invokedMethod.returnType())));
-                });
     }
 
     public boolean contains(JigMethodIdentifier jigMethodIdentifier) {

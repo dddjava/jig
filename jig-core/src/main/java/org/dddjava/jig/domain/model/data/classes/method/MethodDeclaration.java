@@ -38,13 +38,6 @@ public class MethodDeclaration {
         return methodSignature().asSimpleText();
     }
 
-    /**
-     * @return "methodName(ArgumentType):ReturnType"
-     */
-    public String asSignatureAndReturnTypeSimpleText() {
-        return asSignatureSimpleText() + ":" + methodReturn().asSimpleText();
-    }
-
     public TypeIdentifier declaringType() {
         return declaringType;
     }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TypeSignature =
@@ -143,36 +141,6 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     public void visitEnd() {
         logger.debug("visitEnd");
         super.visitEnd();
-    }
-
-    public ParameterizedType generateParameterizedType() {
-        if (baseTypeIdentifier != null) {
-            return new ParameterizedType(TypeIdentifier.valueOf(baseTypeIdentifier));
-        } else if (typeVariableIdentifier != null) {
-            return new ParameterizedType(TypeIdentifier.valueOf(typeVariableIdentifier));
-        } else if (arrayAsmTypeSignatureVisitor != null) {
-            return new ParameterizedType(arrayAsmTypeSignatureVisitor.generateParameterizedType().typeIdentifier().convertArray());
-        } else if (classType != null) {
-
-            if (classType.innerClasses().isEmpty()) {
-                TypeIdentifier typeIdentifier = TypeIdentifier.valueOf(classType.name());
-                var argumentParameterizedTypes = classType.arguments().stream()
-                        .map(AsmTypeSignatureVisitor::generateParameterizedType)
-                        .toList();
-                return new ParameterizedType(typeIdentifier, argumentParameterizedTypes);
-            }
-            // InnerClassがある場合、このシグネチャの指すクラスは末尾になるので、そのように組み立てる。
-            // この場合の途中のParameter型をうまく表現する方法が思い当たらない。とりあえず無視する。
-            var innerClassName = classType.innerClasses().stream().map(ClassType::name).collect(Collectors.joining("."));
-            TypeIdentifier typeIdentifier = TypeIdentifier.valueOf(classType.name() + "." + innerClassName);
-            // 末尾のinnerClassの型パラメタを採用。
-            var argumentParameterizedTypes = classType.lastInnerClass().arguments().stream()
-                    .map(AsmTypeSignatureVisitor::generateParameterizedType)
-                    .toList();
-            return new ParameterizedType(typeIdentifier, argumentParameterizedTypes);
-        }
-
-        throw new IllegalStateException("想定していたシグネチャではありませんでした。TypeSignatureでないところにAsmTypeSignatureVisitorが使用された？");
     }
 
     JigTypeArgument typeArgument() {

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
 import org.dddjava.jig.domain.model.information.types.JigStaticMember;
@@ -42,11 +42,11 @@ public class JigMemberBuilder {
         recordComponentDefinitions.add(new RecordComponentDefinition(name, typeIdentifier));
     }
 
-    public boolean isRecordComponent(MethodDeclaration methodDeclaration) {
+    public boolean isRecordComponent(JigMethodHeader jigMethodHeader) {
         return recordComponentDefinitions.stream()
                 .anyMatch(recordComponentDefinition ->
-                        methodDeclaration.methodSignature().methodName().equals(recordComponentDefinition.name())
-                                && methodDeclaration.methodReturn().typeIdentifier().equals(recordComponentDefinition.typeIdentifier())
+                        jigMethodHeader.name().equals(recordComponentDefinition.name())
+                                && jigMethodHeader.jigMethodAttribute().returnType().id().equals(recordComponentDefinition.typeIdentifier())
                 );
 
     }

@@ -29,6 +29,10 @@ public record UsingMethods(List<InvokedMethod> invokedMethods) {
                 .anyMatch(TypeIdentifier::isStream);
     }
 
+    public Stream<InvokedMethod> invokedMethodStream() {
+        return invokedMethods.stream();
+    }
+
     public MethodDeclarations methodDeclarations() {
         return new MethodDeclarations(methodDeclarationStream().toList());
     }

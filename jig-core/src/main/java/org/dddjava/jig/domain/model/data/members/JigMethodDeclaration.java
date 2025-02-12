@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.members;
 
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Set;
@@ -36,5 +37,9 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
 
     public String nameAndArgumentSimpleText() {
         return header.nameAndArgumentSimpleText();
+    }
+
+    public Stream<JigTypeReference> argumentStream() {
+        return header.jigMethodAttribute().argumentList().stream();
     }
 }

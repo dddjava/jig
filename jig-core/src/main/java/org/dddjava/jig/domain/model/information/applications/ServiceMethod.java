@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -68,8 +68,8 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     }
 
     public List<TypeIdentifier> requireTypes() {
-        return methodDeclaration().methodSignature().arguments().stream()
-                .map(ParameterizedType::typeIdentifier)
+        return method.jigMethodDeclaration().argumentStream()
+                .map(JigTypeReference::id)
                 // primaryTypeは除く
                 .filter(argumentType -> primaryType().filter(primaryType -> primaryType.equals(argumentType)).isEmpty())
                 .toList();

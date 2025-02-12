@@ -78,7 +78,7 @@ public class InstructionTest {
         var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
 
         var list = jigType.instanceJigMethodStream()
-                .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("method(MethodArgument)"))
+                .filter(jigMethod -> jigMethod.nameAndArgumentSimpleText().equals("method(MethodArgument)"))
                 .toList();
         assertEquals(
                 "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]",
@@ -91,7 +91,7 @@ public class InstructionTest {
         var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
 
         var method3 = jigType.instanceJigMethodStream()
-                .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("methodRef()"))
+                .filter(jigMethod -> jigMethod.nameAndArgumentSimpleText().equals("methodRef()"))
                 .toList();
         assertEquals(
                 "[MethodReference.referenceMethod()]",
@@ -104,7 +104,7 @@ public class InstructionTest {
         var jigType = TestSupport.buildJigType(MethodInstructionTestStub.class);
 
         var method2 = jigType.instanceJigMethodStream()
-                .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))
+                .filter(jigMethod -> jigMethod.nameAndArgumentSimpleText().equals("lambda()"))
                 .toList();
         assertEquals(
                 "[MethodInstructionTestStub.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]",

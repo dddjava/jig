@@ -9,6 +9,8 @@ import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 
+import java.util.stream.Stream;
+
 /**
  * データソースの切り口
  */
@@ -39,6 +41,10 @@ public class DatasourceAngle {
 
     public JigTypeReference methodReturnTypeReference() {
         return interfaceMethod.methodReturnTypeReference();
+    }
+
+    public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
+        return interfaceMethod.methodArgumentTypeReferenceStream();
     }
 
     public String insertTables() {

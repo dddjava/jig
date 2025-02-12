@@ -4,7 +4,6 @@ import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigTypesRepository;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
@@ -172,8 +171,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 jigDocumentContext.typeTerm(item.methodReturnTypeReference().id()).title()
                         ),
                         Map.entry("メソッド引数の型の別名", item ->
-                                item.method().methodSignature().arguments().stream()
-                                        .map(ParameterizedType::typeIdentifier)
+                                item.methodArgumentTypeReferenceStream()
+                                        .map(JigTypeReference::id)
                                         .map(jigDocumentContext::typeTerm)
                                         .map(Term::title)
                                         .collect(Collectors.joining(", ", "[", "]"))

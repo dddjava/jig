@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.objectweb.asm.signature.SignatureReader;
@@ -83,8 +82,7 @@ class AsmMethodSignatureVisitor extends SignatureVisitor {
                         parameterVisitors.stream()
                                 .map(parameterVisitor -> parameterVisitor.generateParameterizedType())
                                 .collect(Collectors.toList())
-                ),
-                new MethodReturn(returnVisitor.generateParameterizedType())
+                )
         );
     }
 

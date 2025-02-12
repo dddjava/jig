@@ -63,7 +63,7 @@ class AsmMethodVisitor extends MethodVisitor {
                             .map(ParameterizedType::noneGenerics)
                             .collect(Collectors.toList());
                     var methodSignature = MethodSignature.from(name, argumentTypes);
-                    return new MethodDeclaration(declaringTypeIdentifier, methodSignature, methodReturn);
+                    return new MethodDeclaration(declaringTypeIdentifier, methodSignature);
                 });
 
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう

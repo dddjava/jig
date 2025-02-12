@@ -9,15 +9,13 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
  */
 public class MethodDeclaration {
 
-    private final MethodReturn methodReturn;
     private final JigMethodIdentifier jigMethodIdentifier;
     private final TypeIdentifier declaringType;
     private final MethodSignature methodSignature;
 
-    public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, MethodReturn methodReturn) {
+    public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature) {
         this.jigMethodIdentifier = JigMethodIdentifier.from(declaringType, methodSignature.methodName(),
                 methodSignature.arguments().stream().map(ParameterizedType::typeIdentifier).toList());
-        this.methodReturn = methodReturn;
         this.declaringType = declaringType;
         this.methodSignature = methodSignature;
     }

@@ -39,6 +39,10 @@ public class DatasourceAngle {
         return methodDeclaration;
     }
 
+    public String nameAndArgumentSimpleText() {
+        return interfaceMethod.nameAndArgumentSimpleText();
+    }
+
     public JigTypeReference methodReturnTypeReference() {
         return interfaceMethod.methodReturnTypeReference();
     }

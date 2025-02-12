@@ -105,7 +105,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("注意メソッド", List.of(
                         Map.entry("パッケージ名", item -> item.methodDeclaration().declaringType().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.methodDeclaration().declaringType().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item -> item.methodDeclaration().asSignatureSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.method().nameAndArgumentSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.methodReturnType().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.methodDeclaration().declaringType()).title()),
                         Map.entry("メンバを使用していない", item -> item.notUseMember() ? "◯" : ""),
@@ -139,7 +139,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("SERVICE", List.of(
                         Map.entry("パッケージ名", item -> item.serviceMethod().declaringType().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item -> item.method().asSignatureSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.serviceMethod().method().nameAndArgumentSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.serviceMethod().method().methodReturnTypeReference().simpleName()),
                         Map.entry("イベントハンドラ", item -> item.usingFromController() ? "◯" : ""),
                         Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.serviceMethod().declaringType()).title()),
@@ -164,7 +164,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("REPOSITORY", List.of(
                         Map.entry("パッケージ名", item -> item.method().declaringType().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.method().declaringType().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item -> item.method().asSignatureSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.methodReturnTypeReference().simpleNameWithGenerics()),
                         Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.method().declaringType()).title()),
                         Map.entry("メソッド戻り値の型の別名", item ->
@@ -186,9 +186,9 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("関連元メソッド数", item -> item.callerMethods().size())
                 ), datasourceAngles.list()),
                 new ReportSheet<>("文字列比較箇所", List.of(
-                        Map.entry("パッケージ名", item2 -> item2.declaration().declaringType().packageIdentifier().asText()),
-                        Map.entry("クラス名", item2 -> item2.declaration().declaringType().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item2 -> item2.declaration().asSignatureSimpleText())
+                        Map.entry("パッケージ名", item -> item.jigMethodDeclaration().declaringTypeIdentifier().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.jigMethodDeclaration().declaringTypeIdentifier().asSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText())
                 ), stringComparingMethodList.list())
         );
     }

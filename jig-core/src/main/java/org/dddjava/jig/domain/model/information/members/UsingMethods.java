@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.members;
 
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
@@ -12,6 +11,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -33,10 +33,6 @@ public record UsingMethods(List<InvokedMethod> invokedMethods) {
         return invokedMethods.stream();
     }
 
-    public MethodDeclarations methodDeclarations() {
-        return new MethodDeclarations(methodDeclarationStream().toList());
-    }
-
     public Stream<MethodDeclaration> methodDeclarationStream() {
         return invokedMethods.stream()
                 .map(invokedMethod -> {
@@ -49,5 +45,15 @@ public record UsingMethods(List<InvokedMethod> invokedMethods) {
     public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
         return invokedMethods.stream()
                 .anyMatch(invokedMethod -> invokedMethod.jigMethodIdentifierIs(jigMethodIdentifier));
+    }
+
+    public String asSimpleTextSorted() {
+        return invokedMethods.stream()
+                .map(invokedMethod -> {
+                    return invokedMethod.methodOwner().asSimpleText() + "." + invokedMethod.methodName() +
+                            invokedMethod.argumentTypes().stream().map(TypeIdentifier::asSimpleText).collect(Collectors.joining(", ", "(", ")"));
+                })
+                .sorted() // 出力の安定のために名前順にしている
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

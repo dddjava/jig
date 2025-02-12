@@ -82,7 +82,7 @@ public class InstructionTest {
                 .toList();
         assertEquals(
                 "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]",
-                list.get(0).usingMethods().methodDeclarations().asSimpleText()
+                list.get(0).usingMethods().asSimpleTextSorted()
         );
     }
 
@@ -95,7 +95,7 @@ public class InstructionTest {
                 .toList();
         assertEquals(
                 "[MethodReference.referenceMethod()]",
-                method3.get(0).usingMethods().methodDeclarations().asSimpleText()
+                method3.get(0).usingMethods().asSimpleTextSorted()
         );
     }
 
@@ -108,7 +108,7 @@ public class InstructionTest {
                 .toList();
         assertEquals(
                 "[MethodInstructionTestStub.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]",
-                method2.get(0).usingMethods().methodDeclarations().asSimpleText()
+                method2.get(0).usingMethods().asSimpleTextSorted()
         );
 
     }

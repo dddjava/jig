@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.members.UsingMethods;
 
 /**
  * データソースの構造
@@ -23,7 +23,7 @@ public class DatasourceMethod {
         return concreteMethod;
     }
 
-    public MethodDeclarations usingMethods() {
-        return concreteMethod().usingMethods().methodDeclarations();
+    public UsingMethods usingMethods() {
+        return concreteMethod().usingMethods();
     }
 }

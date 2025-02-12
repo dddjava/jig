@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 呼び出すメソッド
@@ -23,6 +24,16 @@ public record InvokedMethod(TypeIdentifier methodOwner, String methodName,
     }
 
     public boolean jigMethodIdentifierIs(JigMethodIdentifier jigMethodIdentifier) {
-        return jigMethodIdentifier.equals(JigMethodIdentifier.from(methodOwner, methodName, argumentTypes));
+        return jigMethodIdentifier.equals(jigMethodIdentifier());
+    }
+
+    public JigMethodIdentifier jigMethodIdentifier() {
+        return JigMethodIdentifier.from(methodOwner, methodName, argumentTypes);
+    }
+
+    public String asSignatureAndReturnTypeSimpleText() {
+        return "%s(%s):%s".formatted(methodName,
+                argumentTypes.stream().map(TypeIdentifier::asSimpleText).collect(Collectors.joining(", ")),
+                returnType.asSimpleText());
     }
 }

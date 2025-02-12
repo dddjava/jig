@@ -156,7 +156,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ),
                         Map.entry("使用しているフィールドの型", item -> item.usingFields().typeNames()),
                         Map.entry("分岐数", item -> item.serviceMethod().method().decisionNumber().intValue()),
-                        Map.entry("使用しているサービスのメソッド", item -> item.usingServiceMethods().asSignatureAndReturnTypeSimpleText()),
+                        Map.entry("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(Collectors.joining(", ", "[", "]"))),
                         Map.entry("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().asSimpleText()),
                         Map.entry("null使用", item -> item.useNull() ? "◯" : ""),
                         Map.entry("stream使用", item -> item.useStream() ? "◯" : "")

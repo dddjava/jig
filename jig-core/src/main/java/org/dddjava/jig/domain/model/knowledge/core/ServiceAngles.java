@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
@@ -24,10 +24,12 @@ public class ServiceAngles {
     public static ServiceAngles from(ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
-            MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
+            List<InvokedMethod> usingMethods = serviceMethod.usingMethods().invokedMethods();
 
             Collection<JigMethodIdentifier> userServiceMethods = serviceMethod.callerMethods().jigMethodIdentifiers(jigMethodIdentifier -> serviceMethods.contains(jigMethodIdentifier));
-            MethodDeclarations usingServiceMethods = usingMethods.filter(methodDeclaration -> serviceMethods.contains(methodDeclaration));
+            Collection<InvokedMethod> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
+                    .filter(invokedMethod-> serviceMethods.contains(invokedMethod.jigMethodIdentifier()))
+                    .toList();
             RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
             ServiceAngle serviceAngle = new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, entrypoints.collectEntrypointMethodOf(serviceMethod.callerMethods()), userServiceMethods);
             list.add(serviceAngle);

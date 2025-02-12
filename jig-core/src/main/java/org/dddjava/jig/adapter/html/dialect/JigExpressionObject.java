@@ -51,6 +51,10 @@ class JigExpressionObject {
         return linkText(jigField.jigTypeReference());
     }
 
+    public boolean hasArgument(JigMethod jigMethod) {
+        return jigMethod.jigMethodDeclaration().argumentStream().findAny().isPresent();
+    }
+
     public String nameAndArgumentsAndReturnSimpleText(JigMethod jigMethod) {
         return jigMethod.nameArgumentsReturnSimpleText();
     }

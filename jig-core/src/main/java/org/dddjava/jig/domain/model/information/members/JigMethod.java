@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
@@ -14,7 +13,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -117,10 +115,6 @@ public class JigMethod {
         return labelText();
     }
 
-    public List<ParameterizedType> argumentTypes() {
-        return declaration().methodSignature().arguments();
-    }
-
     public MethodDerivation derivation() {
         return methodDerivation;
     }
@@ -182,6 +176,7 @@ public class JigMethod {
     public String simpleText() {
         return jigMethodDeclaration.header().id().simpleText();
     }
+
     public String nameAndArgumentSimpleText() {
         return jigMethodDeclaration.nameAndArgumentSimpleText();
     }

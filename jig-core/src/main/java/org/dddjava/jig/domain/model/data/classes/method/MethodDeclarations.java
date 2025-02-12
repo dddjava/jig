@@ -34,10 +34,6 @@ public class MethodDeclarations {
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    public boolean contains(MethodDeclaration methodDeclaration) {
-        return list.stream().anyMatch(methodDeclaration::sameIdentifier);
-    }
-
     public boolean empty() {
         return list.isEmpty();
     }

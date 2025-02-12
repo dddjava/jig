@@ -78,8 +78,4 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     public TypeIdentifiers usingTypes() {
         return method().usingTypes();
     }
-
-    public boolean sameIdentifier(MethodDeclaration methodDeclaration) {
-        return methodDeclaration().sameIdentifier(methodDeclaration);
-    }
 }

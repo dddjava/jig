@@ -76,10 +76,6 @@ public class MethodDeclaration {
         return declaringType().asSimpleText() + "." + asSignatureSimpleText();
     }
 
-    public boolean sameIdentifier(MethodDeclaration methodDeclaration) {
-        return methodIdentifier.equals(methodDeclaration.methodIdentifier);
-    }
-
     public List<TypeIdentifier> relateTypes() {
         ArrayList<TypeIdentifier> types = new ArrayList<>();
         types.add(methodReturn().typeIdentifier());

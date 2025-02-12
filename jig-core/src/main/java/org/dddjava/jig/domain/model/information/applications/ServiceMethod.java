@@ -62,7 +62,7 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
 
     public Optional<TypeIdentifier> primaryType() {
         // 戻り値型が主要な関心
-        TypeIdentifier typeIdentifier = methodDeclaration().methodReturn().typeIdentifier();
+        TypeIdentifier typeIdentifier = method().methodReturnTypeReference().id();
         if (typeIdentifier.isVoid()) return Optional.empty();
         return Optional.of(typeIdentifier);
     }

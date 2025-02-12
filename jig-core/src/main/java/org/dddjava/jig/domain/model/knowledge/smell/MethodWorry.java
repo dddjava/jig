@@ -41,13 +41,13 @@ public enum MethodWorry {
     真偽値を返している {
         @Override
         boolean judge(JigMethod method) {
-            return method.declaration().methodReturn().typeIdentifier().isBoolean();
+            return method.methodReturnTypeReference().id().isBoolean();
         }
     },
     voidを返している {
         @Override
         boolean judge(JigMethod jigMethod) {
-            return jigMethod.declaration().methodReturn().isVoid();
+            return jigMethod.methodReturnTypeReference().id().isVoid();
         }
     };
 

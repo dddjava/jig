@@ -31,7 +31,7 @@ public record MethodSmell(JigMethod method, MethodWorries methodWorries) {
     }
 
     public TypeIdentifier methodReturnType() {
-        return method().jigMethodDeclaration().header().jigMethodAttribute().returnType().id();
+        return method().methodReturnTypeReference().id();
     }
 
     public boolean notUseMember() {

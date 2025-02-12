@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.DecisionNumber;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
@@ -172,5 +173,9 @@ public class JigMethod {
 
     public JigMethodDeclaration jigMethodDeclaration() {
         return jigMethodDeclaration;
+    }
+
+    public JigTypeReference methodReturnTypeReference() {
+        return jigMethodDeclaration.header().jigMethodAttribute().returnType();
     }
 }

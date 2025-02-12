@@ -14,7 +14,7 @@ public record JigMethodHeader(JigMethodIdentifier id,
         return id.name();
     }
 
-    public String asSignatureAndReturnTypeSimpleText() {
+    public String nameArgumentsReturnSimpleText() {
         return nameAndArgumentSimpleText() + ':' + jigMethodAttribute.returnType().simpleNameWithGenerics();
     }
 

@@ -51,6 +51,10 @@ class JigExpressionObject {
         return linkText(jigField.jigTypeReference());
     }
 
+    public String nameAndArgumentsAndReturnSimpleText(JigMethod jigMethod) {
+        return jigMethod.nameArgumentsReturnSimpleText();
+    }
+
     public String methodReturnLinkText(JigMethod jigMethod) {
         return linkText(jigMethod.jigMethodDeclaration().header().jigMethodAttribute().returnType());
     }

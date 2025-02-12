@@ -69,7 +69,7 @@ public class JigMethods {
 
     public String asSignatureAndReturnTypeSimpleText() {
         return list.stream()
-                .map(JigMethod::asNameArgumentsReturnText)
+                .map(JigMethod::nameArgumentsReturnSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));
     }

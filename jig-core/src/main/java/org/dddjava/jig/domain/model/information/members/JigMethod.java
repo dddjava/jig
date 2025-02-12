@@ -159,8 +159,8 @@ public class JigMethod {
         return jigMethodDeclaration.isAbstract();
     }
 
-    public String asNameArgumentsReturnText() {
-        return jigMethodDeclaration.header().asSignatureAndReturnTypeSimpleText();
+    public String nameArgumentsReturnSimpleText() {
+        return jigMethodDeclaration.header().nameArgumentsReturnSimpleText();
     }
 
     public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {

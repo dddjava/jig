@@ -213,7 +213,7 @@ class AsmMethodVisitorTest {
     @ParameterizedTest
     void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
         JigMethod actual = JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
-        assertEquals(expectedText, actual.asNameArgumentsReturnText());
+        assertEquals(expectedText, actual.nameArgumentsReturnSimpleText());
     }
 
     private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {

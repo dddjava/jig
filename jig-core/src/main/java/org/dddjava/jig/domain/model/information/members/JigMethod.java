@@ -81,12 +81,12 @@ public class JigMethod {
 
     public String aliasTextOrBlank() {
         var title = term.title();
-        return declaration().methodSignature().methodName().equals(title) ? "" : title;
+        return jigMethodDeclaration.name().equals(title) ? "" : title;
     }
 
     public String aliasText() {
         if (aliasTextOrBlank().isEmpty()) {
-            return declaration().declaringType().asSimpleText() + "\\n" + declaration().methodSignature().methodName();
+            return jigMethodDeclaration.declaringTypeIdentifier().asSimpleText() + "\\n" + declaration().methodSignature().methodName();
         }
         return aliasTextOrBlank();
     }

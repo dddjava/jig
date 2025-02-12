@@ -42,4 +42,8 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     public Stream<JigTypeReference> argumentStream() {
         return header.jigMethodAttribute().argumentList().stream();
     }
+
+    public TypeIdentifier declaringTypeIdentifier() {
+        return header.id().tuple().declaringTypeIdentifier();
+    }
 }

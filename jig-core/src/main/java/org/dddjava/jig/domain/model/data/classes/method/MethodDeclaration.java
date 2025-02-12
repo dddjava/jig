@@ -11,13 +11,11 @@ public class MethodDeclaration {
 
     private final JigMethodIdentifier jigMethodIdentifier;
     private final TypeIdentifier declaringType;
-    private final MethodSignature methodSignature;
 
     public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature) {
         this.jigMethodIdentifier = JigMethodIdentifier.from(declaringType, methodSignature.methodName(),
                 methodSignature.arguments().stream().map(ParameterizedType::typeIdentifier).toList());
         this.declaringType = declaringType;
-        this.methodSignature = methodSignature;
     }
 
     /**
@@ -27,32 +25,8 @@ public class MethodDeclaration {
         return jigMethodIdentifier.value();
     }
 
-    /**
-     * パッケージを省略したシグネチャの文字列表現
-     *
-     * @return "methodName(ArgumentType)"
-     */
-    public String asSignatureSimpleText() {
-        return methodSignature().asSimpleText();
-    }
-
     public TypeIdentifier declaringType() {
         return declaringType;
-    }
-
-    public MethodSignature methodSignature() {
-        return methodSignature;
-    }
-
-    public boolean isLambda() {
-        return methodSignature().isLambda();
-    }
-
-    /**
-     * @return "ClassName.methodName(ArgumentType)"
-     */
-    public String asSimpleTextWithDeclaringType() {
-        return declaringType().asSimpleText() + "." + asSignatureSimpleText();
     }
 
     public JigMethodIdentifier jigMethodIdentifier() {

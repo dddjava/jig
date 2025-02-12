@@ -169,4 +169,8 @@ public class JigMethod {
     public JigMethodIdentifier jigMethodIdentifier() {
         return jigMethodDeclaration.header().id();
     }
+
+    public JigMethodDeclaration jigMethodDeclaration() {
+        return jigMethodDeclaration;
+    }
 }

@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
@@ -27,6 +28,10 @@ public record MethodSmell(JigMethod method, MethodWorries methodWorries) {
 
     public MethodDeclaration methodDeclaration() {
         return method.declaration();
+    }
+
+    public TypeIdentifier methodReturnType() {
+        return method().jigMethodDeclaration().header().jigMethodAttribute().returnType().id();
     }
 
     public boolean notUseMember() {

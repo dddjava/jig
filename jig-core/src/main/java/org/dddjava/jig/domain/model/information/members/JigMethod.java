@@ -84,7 +84,7 @@ public class JigMethod {
 
     public String aliasText() {
         if (aliasTextOrBlank().isEmpty()) {
-            return jigMethodDeclaration.declaringTypeIdentifier().asSimpleText() + "\\n" + declaration().methodSignature().methodName();
+            return jigMethodDeclaration.declaringTypeIdentifier().asSimpleText() + "\\n" + name();
         }
         return aliasTextOrBlank();
     }

@@ -165,10 +165,10 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("パッケージ名", item -> item.method().declaringType().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.method().declaringType().asSimpleText()),
                         Map.entry("メソッドシグネチャ", item -> item.method().asSignatureSimpleText()),
-                        Map.entry("メソッド戻り値の型", item -> item.method().methodReturn().asSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.methodReturnTypeReference().simpleNameWithGenerics()),
                         Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.method().declaringType()).title()),
                         Map.entry("メソッド戻り値の型の別名", item ->
-                                jigDocumentContext.typeTerm(item.method().methodReturn().typeIdentifier()).title()
+                                jigDocumentContext.typeTerm(item.methodReturnTypeReference().id()).title()
                         ),
                         Map.entry("メソッド引数の型の別名", item ->
                                 item.method().methodSignature().arguments().stream()

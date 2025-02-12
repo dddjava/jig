@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.adapter;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -13,6 +14,7 @@ import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
  */
 public class DatasourceAngle {
 
+    private final JigMethod interfaceMethod;
     MethodDeclaration methodDeclaration;
     MyBatisStatements myBatisStatements;
     JigMethod concreteMethod;
@@ -20,7 +22,8 @@ public class DatasourceAngle {
     CallerMethods callerMethods;
 
     public DatasourceAngle(DatasourceMethod datasourceMethod, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
-        this.methodDeclaration = datasourceMethod.repositoryMethod().declaration();
+        interfaceMethod = datasourceMethod.repositoryMethod();
+        this.methodDeclaration = interfaceMethod.declaration();
         this.callerMethods = callerMethods;
         this.myBatisStatements = allMyBatisStatements.filterRelationOn(datasourceMethod.usingMethods());
         this.concreteMethod = datasourceMethod.concreteMethod();
@@ -32,6 +35,10 @@ public class DatasourceAngle {
 
     public MethodDeclaration method() {
         return methodDeclaration;
+    }
+
+    public JigTypeReference methodReturnTypeReference() {
+        return interfaceMethod.methodReturnTypeReference();
     }
 
     public String insertTables() {

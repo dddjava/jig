@@ -46,10 +46,6 @@ public class MethodDeclaration {
         return methodSignature;
     }
 
-    public MethodReturn methodReturn() {
-        return methodReturn;
-    }
-
     public boolean isLambda() {
         return methodSignature().isLambda();
     }

@@ -40,7 +40,7 @@ public class Usecase {
     }
 
     public String simpleTextWithDeclaringType() {
-        return serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType();
+        return serviceMethod.method().simpleText();
     }
 
     public boolean isHandler() {

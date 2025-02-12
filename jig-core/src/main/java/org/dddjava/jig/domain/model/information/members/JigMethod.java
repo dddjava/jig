@@ -180,4 +180,8 @@ public class JigMethod {
     public String nameAndArgumentSimpleText() {
         return jigMethodDeclaration.nameAndArgumentSimpleText();
     }
+
+    public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
+        return jigMethodDeclaration.argumentStream();
+    }
 }

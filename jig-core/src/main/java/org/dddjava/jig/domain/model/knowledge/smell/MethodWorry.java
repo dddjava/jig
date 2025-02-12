@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
@@ -23,7 +22,8 @@ public enum MethodWorry {
         @Override
         boolean judge(JigMethod jigMethod) {
             return jigMethod.methodReturnTypeReference().id().isPrimitive()
-                    || jigMethod.declaration().methodSignature().arguments().stream().anyMatch(ParameterizedType::isPrimitive);
+                    || jigMethod.methodArgumentTypeReferenceStream()
+                    .anyMatch(jigTypeReference -> jigTypeReference.id().isPrimitive());
         }
     },
     NULLリテラルを使用している {

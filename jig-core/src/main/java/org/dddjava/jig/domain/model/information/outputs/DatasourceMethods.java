@@ -46,8 +46,9 @@ public class DatasourceMethods {
                             .anyMatch(jigBaseTypeData -> jigBaseTypeData.id().equals(item.id())))) {
                 for (JigMethod interfaceJigMethod : interfaceJigType.instanceJigMethods().list()) {
                     implJigType.instanceJigMethodStream()
-                            // シグネチャが一致するもの
-                            .filter(implJigMethod -> interfaceJigMethod.declaration().methodSignature().isSame(implJigMethod.declaration().methodSignature()))
+                            // 名前と引数型が一致するもの
+                            .filter(implJigMethod -> interfaceJigMethod.jigMethodIdentifier().name().equals(implJigMethod.jigMethodIdentifier().name()))
+                            .filter(implJigMethod -> interfaceJigMethod.jigMethodIdentifier().tuple().parameterTypeNames().equals(implJigMethod.jigMethodIdentifier().tuple().parameterTypeNames()))
                             .map(implJigMethod -> new DatasourceMethod(interfaceJigMethod, implJigMethod))
                             .forEach(datasourceMethod -> list.add(datasourceMethod));
                 }

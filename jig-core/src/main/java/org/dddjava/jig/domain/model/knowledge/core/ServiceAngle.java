@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -41,10 +40,6 @@ public class ServiceAngle {
         return serviceMethod;
     }
 
-    public MethodDeclaration method() {
-        return serviceMethod.methodDeclaration();
-    }
-
     public boolean usingFromController() {
         return !entrypointMethods.isEmpty();
     }
@@ -81,5 +76,13 @@ public class ServiceAngle {
         return entrypointMethods.stream()
                 .map(entrypointMethod -> entrypointMethod.typeIdentifier())
                 .collect(Collectors.toSet());
+    }
+
+    public JigMethodIdentifier jigMethodIdentifier() {
+        return serviceMethod().method().jigMethodIdentifier();
+    }
+
+    public TypeIdentifier declaringType() {
+        return serviceMethod.declaringType();
     }
 }

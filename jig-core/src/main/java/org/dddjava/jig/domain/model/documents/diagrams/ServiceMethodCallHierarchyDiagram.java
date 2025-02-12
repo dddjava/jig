@@ -40,7 +40,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         RelationText relationText = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
             for (JigMethodIdentifier jigMethodIdentifier : serviceAngle.userServiceMethods()) {
-                relationText.add(jigMethodIdentifier, serviceAngle.method().jigMethodIdentifier());
+                relationText.add(jigMethodIdentifier, serviceAngle.jigMethodIdentifier());
             }
         }
 
@@ -65,7 +65,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
         // クラス名でグルーピングする
         String subgraphText = angles.stream()
-                .collect(groupingBy(serviceAngle -> serviceAngle.method().declaringType()))
+                .collect(groupingBy(serviceAngle -> serviceAngle.declaringType()))
                 .entrySet().stream()
                 .map(entry ->
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
@@ -73,7 +73,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                                 + "style=solid;"
                                 + "label=\"" + jigDocumentContext.typeTerm(entry.getKey()).title() + "\";"
                                 + entry.getValue().stream()
-                                .map(serviceAngle -> serviceAngle.method().asFullNameText())
+                                .map(serviceAngle -> serviceAngle.jigMethodIdentifier().value())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")
@@ -107,7 +107,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         RelationText repositoryRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
             for (JigMethod repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {
-                repositoryRelation.add(serviceAngle.method(), repositoryMethod.declaringType());
+                repositoryRelation.add(serviceAngle.serviceMethod().method().jigMethodIdentifier(), repositoryMethod.declaringType());
                 repositories.add(repositoryMethod.declaringType());
             }
         }

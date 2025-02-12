@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.applications;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
@@ -26,10 +25,6 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
         );
     }
 
-    public MethodDeclaration methodDeclaration() {
-        return method.declaration();
-    }
-
     public boolean isPublic() {
         return method.isPublic();
     }
@@ -47,7 +42,7 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     }
 
     public TypeIdentifier declaringType() {
-        return methodDeclaration().declaringType();
+        return method().declaringType();
     }
 
     public List<TypeIdentifier> internalUsingTypes() {

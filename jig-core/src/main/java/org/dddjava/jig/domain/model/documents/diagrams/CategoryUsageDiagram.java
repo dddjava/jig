@@ -50,7 +50,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                         || categoryJigTypes.typeIdentifiers().contains(usingTypeIdentifier)) {
                     // サービスメソッドからBusinessRule（Category含む）への関連を追加する
                     // この関連は[クラス->クラス]でなく[メソッド -> クラス]の関連になる
-                    serviceRelationText.add(serviceMethod.methodDeclaration(), usingTypeIdentifier);
+                    serviceRelationText.add(serviceMethod.method().jigMethodIdentifier(), usingTypeIdentifier);
                     related = true;
                 }
             }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
@@ -21,20 +20,14 @@ import java.util.stream.Stream;
 public class JigMethod {
 
     private final JigMethodDeclaration jigMethodDeclaration;
-    MethodDeclaration methodDeclaration;
 
     MethodDerivation methodDerivation;
     private final Term term;
 
     public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDerivation methodDerivation, Term term) {
         this.jigMethodDeclaration = jigMethodDeclaration;
-        this.methodDeclaration = null;
         this.methodDerivation = methodDerivation;
         this.term = term;
-    }
-
-    public MethodDeclaration declaration() {
-        return methodDeclaration;
     }
 
     public DecisionNumber decisionNumber() {

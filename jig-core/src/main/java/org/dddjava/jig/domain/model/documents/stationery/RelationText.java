@@ -75,8 +75,8 @@ public class RelationText {
         add(from.fullQualifiedName(), to);
     }
 
-    public void add(MethodDeclaration from, TypeIdentifier to) {
-        add(from.asFullNameText(), to.fullQualifiedName());
+    public void add(JigMethodIdentifier from, TypeIdentifier to) {
+        add(from.value(), to.fullQualifiedName());
     }
 
     public void add(JigMethodIdentifier from, JigMethodIdentifier to) {

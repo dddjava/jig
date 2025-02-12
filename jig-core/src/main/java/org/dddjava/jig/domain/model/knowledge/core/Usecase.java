@@ -32,7 +32,7 @@ public class Usecase {
     }
 
     public String usecaseIdentifier() {
-        return serviceMethod.methodDeclaration().asFullNameText();
+        return serviceMethod.method().fqn();
     }
 
     public String usecaseLabel() {

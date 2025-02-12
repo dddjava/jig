@@ -4,9 +4,6 @@ import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * メソッド定義
  */
@@ -74,15 +71,6 @@ public class MethodDeclaration {
      */
     public String asSimpleTextWithDeclaringType() {
         return declaringType().asSimpleText() + "." + asSignatureSimpleText();
-    }
-
-    public List<TypeIdentifier> relateTypes() {
-        ArrayList<TypeIdentifier> types = new ArrayList<>();
-        types.add(methodReturn().typeIdentifier());
-        types.addAll(methodReturn().parameterizedType().typeParameters().list());
-        types.addAll(methodSignature().arguments().stream().map(ParameterizedType::typeIdentifier).toList());
-        // TODO add arguments type parameter
-        return types;
     }
 
     public boolean isJSL() {

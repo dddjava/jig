@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
@@ -55,8 +54,6 @@ class AsmMethodVisitor extends MethodVisitor {
                     // signatureがないもしくは失敗した場合はdescriptorから構築する
                     // signatureの解析失敗はともかく、descriptorしかない場合はこの生成で適切なMethodSignatureができる
 
-                    // descriptorから戻り値型を生成
-                    MethodReturn methodReturn = MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor));
                     // descriptorから引数型を生成
                     List<ParameterizedType> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                             .map(type -> asmType2TypeIdentifier(type))

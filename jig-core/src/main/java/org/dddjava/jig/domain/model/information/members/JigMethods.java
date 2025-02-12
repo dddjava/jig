@@ -59,7 +59,7 @@ public class JigMethods {
 
     public JigMethods excludeNotNoteworthyObjectMethod() {
         return new JigMethods(list.stream()
-                .filter(jigMethod -> !jigMethod.objectMethod() || jigMethod.documented())
+                .filter(jigMethod -> !jigMethod.isObjectMethod() || jigMethod.documented())
                 .collect(Collectors.toList()));
     }
 

@@ -119,8 +119,8 @@ public class JigMethod {
         return methodDerivation;
     }
 
-    public boolean objectMethod() {
-        return declaration().methodSignature().isObjectMethod();
+    public boolean isObjectMethod() {
+        return jigMethodDeclaration.header().isObjectMethod();
     }
 
     public boolean documented() {

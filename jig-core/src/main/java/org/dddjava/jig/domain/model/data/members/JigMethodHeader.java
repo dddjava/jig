@@ -25,4 +25,11 @@ public record JigMethodHeader(JigMethodIdentifier id,
                         .map(JigTypeReference::simpleNameWithGenerics)
                         .collect(Collectors.joining(", ")));
     }
+
+    public boolean isObjectMethod() {
+        // とりあえずIDで比較するけど、attributeのFlagで判別できるようにしてていい気はする
+        return id.value().endsWith("#equals(java.lang.Object)")
+                || id.value().endsWith("#hashCode()")
+                || id.value().endsWith("#toString()");
+    }
 }

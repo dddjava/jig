@@ -15,7 +15,7 @@ public record MethodSmell(JigMethod method, MethodWorries methodWorries) {
 
     public static Optional<MethodSmell> createMethodSmell(JigMethod method, JigType contextJigType) {
         // java.lang.Object由来は除外する
-        if (method.objectMethod()) {
+        if (method.isObjectMethod()) {
             return Optional.empty();
         }
         var methodWorries = MethodWorries.from(method, contextJigType);

@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,8 +58,10 @@ class JigExpressionObject {
         return parameterizedTypeLinkText(jigField.jigTypeReference());
     }
 
-    public String methodArgumentRawText(ParameterizedType parameterizedType) {
-        return parameterizedTypeLinkText(parameterizedType);
+    public Iterator<String> methodArgumentLinkTexts(JigMethod jigMethod) {
+        return jigMethod.jigMethodDeclaration().header().jigMethodAttribute().argumentList().stream()
+                .map(this::parameterizedTypeLinkText)
+                .iterator();
     }
 
     private String parameterizedTypeLinkText(JigTypeReference jigTypeReference) {

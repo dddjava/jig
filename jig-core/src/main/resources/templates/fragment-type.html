@@ -62,7 +62,7 @@
                 <tr th:each="method : ${list}">
                     <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
                     <td>
-                        <span class="method-argument-item" th:each="arg : ${method.argumentTypes()}" th:utext="${#jig.methodArgumentRawText(arg)}">xxx</span>
+                        <span class="method-argument-item" th:each="argText : ${#jig.methodArgumentLinkTexts(method)}" th:utext="${argText}">xxx</span>
                     </td>
                     <td th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</td>
                     <td class="markdown" th:utext="${method.term().description()}">javadoc comment</td>

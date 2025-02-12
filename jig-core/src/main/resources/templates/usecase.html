@@ -38,7 +38,7 @@
 
                     <dl class="depends" th:with="methodReturn=${method.declaration().methodReturn()}">
                         <dt th:unless="${method.argumentTypes().isEmpty()}">要求するもの（引数）</dt>
-                        <dd th:each="arg : ${method.argumentTypes()}" th:utext="${#jig.methodArgumentRawText(arg)}">xxx</dd>
+                        <dd th:each="argText : ${#jig.methodArgumentLinkTexts(method)}" th:utext="${argText}">xxx</dd>
                         <dt th:unless="${methodReturn.isVoid()}">得られるもの（戻り値）</dt>
                         <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</dd>
                     </dl>

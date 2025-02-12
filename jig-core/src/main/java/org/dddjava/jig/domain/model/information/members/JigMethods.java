@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
@@ -17,10 +16,6 @@ public class JigMethods {
 
     public JigMethods(List<JigMethod> list) {
         this.list = list;
-    }
-
-    public MethodDeclarations declarations() {
-        return list.stream().map(JigMethod::declaration).collect(MethodDeclarations.collector());
     }
 
     /**
@@ -70,5 +65,12 @@ public class JigMethods {
 
     public Stream<JigMethod> stream() {
         return list.stream();
+    }
+
+    public String asSignatureAndReturnTypeSimpleText() {
+        return list.stream()
+                .map(JigMethod::asNameArgumentsReturnText)
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

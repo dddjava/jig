@@ -179,6 +179,9 @@ public class JigMethod {
         return jigMethodDeclaration.header().jigMethodAttribute().returnType();
     }
 
+    public String simpleText() {
+        return jigMethodDeclaration.header().id().simpleText();
+    }
     public String nameAndArgumentSimpleText() {
         return jigMethodDeclaration.nameAndArgumentSimpleText();
     }

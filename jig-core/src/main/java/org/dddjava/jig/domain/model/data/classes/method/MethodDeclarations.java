@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.data.classes.method;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -43,9 +42,5 @@ public class MethodDeclarations {
                 .map(MethodDeclaration::asSignatureAndReturnTypeSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));
-    }
-
-    public MethodDeclarations filter(Predicate<MethodDeclaration> predicate) {
-        return list.stream().filter(predicate).collect(collector());
     }
 }

@@ -41,6 +41,14 @@ public record JigMethodIdentifier(String value) {
         return value.contains("#lambda$");
     }
 
+    public String simpleText() {
+        Tuple tuple = tuple();
+        return "%s.%s(%s)".formatted(
+                tuple.declaringTypeIdentifier().asSimpleName(),
+                tuple.name(),
+                tuple.parameterTypeIdentifiers().stream().map(TypeIdentifier::asSimpleName).collect(Collectors.joining(",")));
+    }
+
     public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNames) {
         public TypeIdentifier declaringTypeIdentifier() {
             return TypeIdentifier.valueOf(declaringTypeName);

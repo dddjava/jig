@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
@@ -48,8 +47,8 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         // メソッドの表示方法
         String serviceMethodText = angles.stream()
                 .map(serviceAngle -> {
-                    MethodDeclaration method = serviceAngle.method();
-                    if (method.isLambda()) {
+                    JigMethod method = serviceAngle.serviceMethod().method();
+                    if (method.jigMethodIdentifier().isLambda()) {
                         return Nodes.lambda(method).asText();
                     }
                     Usecase usecase = new Usecase(serviceAngle);

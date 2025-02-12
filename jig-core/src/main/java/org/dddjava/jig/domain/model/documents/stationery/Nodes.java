@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.knowledge.core.Usecase;
 
@@ -18,16 +18,17 @@ public class Nodes {
     }
 
     public static Node usecase(ServiceMethod serviceMethod) {
-        return new Node(serviceMethod.methodDeclaration().asFullNameText())
+        JigMethod jigMethod = serviceMethod.method();
+        return new Node(jigMethod.jigMethodIdentifier().value())
                 .shape("ellipse")
-                .label(serviceMethod.method().aliasText())
-                .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
+                .label(jigMethod.aliasText())
+                .tooltip(jigMethod.simpleText())
                 .as(NodeRole.準主役)
-                .url(serviceMethod.methodDeclaration().declaringType(), JigDocument.ApplicationSummary);
+                .url(jigMethod.jigMethodDeclaration().declaringTypeIdentifier(), JigDocument.ApplicationSummary);
     }
 
-    public static Node lambda(MethodDeclaration method) {
-        return new Node(method.asFullNameText())
+    public static Node lambda(JigMethod method) {
+        return new Node(method.jigMethodIdentifier().value())
                 .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
     }
 

@@ -183,7 +183,7 @@ class AsmMethodVisitorTest {
     void 引数型のジェネリクスが取得できる() {
         JigMethod actual = JigMethod準備(MethodVisitorSut.class, "引数型のジェネリクスが取得できる");
 
-        assertEquals("引数型のジェネリクスが取得できる(java.util.List<java.lang.String>)", actual.declaration().methodSignature().asText());
+        assertEquals("引数型のジェネリクスが取得できる(List<String>)", actual.nameAndArgumentSimpleText());
     }
 
     @CsvSource({

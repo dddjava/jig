@@ -26,7 +26,7 @@ class ServiceMethodTest {
 
         var targetType = jigTypes.resolveJigType(TypeIdentifier.from(CanonicalService.class)).orElseThrow();
         ServiceMethod sut = targetType.allJigMethodStream()
-                .filter(jigMethod -> jigMethod.declaration().methodSignature().methodName().equals("fuga"))
+                .filter(jigMethod -> jigMethod.name().equals("fuga"))
                 .findAny()
                 .map(jigMethod -> new ServiceMethod(jigMethod, new CallerMethods(List.of())))
                 .orElseThrow();

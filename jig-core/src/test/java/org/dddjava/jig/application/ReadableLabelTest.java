@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -62,19 +61,19 @@ class ReadableLabelTest {
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
         JigType jigType = jigTypes.listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 
-        JigMethod method = resolveMethodBySignature(jigType, new MethodSignature("method"));
+        JigMethod method = resolveMethodBySignature(jigType, "method()");
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
-        JigMethod overloadedMethod = resolveMethodBySignature(jigType, new MethodSignature("overloadMethod", TypeIdentifier.from(String.class)));
+        JigMethod overloadedMethod = resolveMethodBySignature(jigType, "overloadMethod(String)");
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数ありのメソッド"));
 
-        JigMethod overloadedMethod2 = resolveMethodBySignature(jigType, new MethodSignature("overloadMethod"));
+        JigMethod overloadedMethod2 = resolveMethodBySignature(jigType, "overloadMethod()");
         assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数なしのメソッド"));
     }
 
-    JigMethod resolveMethodBySignature(JigType jigType, MethodSignature methodSignature) {
+    JigMethod resolveMethodBySignature(JigType jigType, String methodText) {
         return jigType.allJigMethodStream()
-                .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
+                .filter(jigMethod -> jigMethod.nameAndArgumentSimpleText().equals(methodText))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }

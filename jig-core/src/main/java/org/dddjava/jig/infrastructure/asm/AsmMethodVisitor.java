@@ -1,8 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.InvokeDynamicInstruction;
@@ -46,23 +43,6 @@ class AsmMethodVisitor extends MethodVisitor {
 
     public static MethodVisitor from(int api, int access, String name, String descriptor, String signature, String[] exceptions,
                                      TypeIdentifier declaringTypeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
-        MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
-                .flatMap(nonNullSignature ->
-                        // signatureがあればこちらから構築する
-                        AsmMethodSignatureVisitor.buildMethodDeclaration(api, name, declaringTypeIdentifier, nonNullSignature)
-                ).orElseGet(() -> {
-                    // signatureがないもしくは失敗した場合はdescriptorから構築する
-                    // signatureの解析失敗はともかく、descriptorしかない場合はこの生成で適切なMethodSignatureができる
-
-                    // descriptorから引数型を生成
-                    List<ParameterizedType> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                            .map(type -> asmType2TypeIdentifier(type))
-                            .map(ParameterizedType::noneGenerics)
-                            .collect(Collectors.toList());
-                    var methodSignature = MethodSignature.from(name, argumentTypes);
-                    return new MethodDeclaration(declaringTypeIdentifier, methodSignature);
-                });
-
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
         // throwsのアノテーションが必要になったら別途考える
         var throwsList = Optional.ofNullable(exceptions).stream().flatMap(Arrays::stream)
@@ -81,7 +61,6 @@ class AsmMethodVisitor extends MethodVisitor {
                     JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
                             jigMethodDeclaration,
                             access,
-                            methodDeclaration,
                             isEnum,
                             jigMemberBuilder.isRecordComponent(jigMethodHeader));
 

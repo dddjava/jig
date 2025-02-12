@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Comparator;
@@ -23,13 +22,7 @@ public class MethodSmellList {
 
     public List<MethodSmell> list() {
         return list.stream()
-                .sorted(Comparator.comparing(methodSmell -> methodSmell.methodDeclaration().asFullNameText()))
+                .sorted(Comparator.comparing(methodSmell -> methodSmell.method().jigMethodIdentifier().value()))
                 .collect(Collectors.toList());
-    }
-
-    public List<MethodSmell> collectBy(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .filter(methodSmell -> methodSmell.methodDeclaration().declaringType().equals(typeIdentifier))
-                .toList();
     }
 }

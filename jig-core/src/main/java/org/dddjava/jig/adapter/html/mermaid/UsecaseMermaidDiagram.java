@@ -63,7 +63,7 @@ public record UsecaseMermaidDiagram(
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
             var typeIdentifier = jigMethodIdentifier.tuple().declaringTypeIdentifier();
-            if (typeIdentifier.packageIdentifier().equals(jigMethod.declaration().declaringType().packageIdentifier())) {
+            if (typeIdentifier.packageIdentifier().equals(jigMethod.declaringType().packageIdentifier())) {
                 // 暫定的に同じパッケージのもののみ出力する
                 // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
                 others.add(typeIdentifier);

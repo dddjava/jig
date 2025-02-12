@@ -26,9 +26,9 @@ public class JigMethod {
     MethodDerivation methodDerivation;
     private final Term term;
 
-    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDeclaration methodDeclaration, MethodDerivation methodDerivation, Term term) {
+    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDerivation methodDerivation, Term term) {
         this.jigMethodDeclaration = jigMethodDeclaration;
-        this.methodDeclaration = methodDeclaration;
+        this.methodDeclaration = null;
         this.methodDerivation = methodDerivation;
         this.term = term;
     }
@@ -183,5 +183,9 @@ public class JigMethod {
 
     public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
         return jigMethodDeclaration.argumentStream();
+    }
+
+    public TypeIdentifier declaringType() {
+        return jigMethodDeclaration.declaringTypeIdentifier();
     }
 }

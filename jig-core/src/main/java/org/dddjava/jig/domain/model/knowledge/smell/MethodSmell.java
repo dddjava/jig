@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -24,10 +23,6 @@ public record MethodSmell(JigMethod method, MethodWorries methodWorries) {
         var instance = new MethodSmell(method, methodWorries);
         if (!instance.hasSmell()) return Optional.empty();
         return Optional.of(instance);
-    }
-
-    public MethodDeclaration methodDeclaration() {
-        return method.declaration();
     }
 
     public TypeIdentifier methodReturnType() {

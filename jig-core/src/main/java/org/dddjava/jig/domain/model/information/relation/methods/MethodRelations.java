@@ -33,7 +33,7 @@ public class MethodRelations implements CallerMethodsFactory {
                         .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                                 .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                                .map(toMethod -> new MethodRelation(jigMethod.declaration().jigMethodIdentifier(), toMethod.jigMethodIdentifier()))))
+                                .map(toMethod -> new MethodRelation(jigMethod.jigMethodIdentifier(), toMethod.jigMethodIdentifier()))))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 

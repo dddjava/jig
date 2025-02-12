@@ -29,7 +29,7 @@ public class JigMethods {
                 .filter(JigMethod::remarkable)
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
-                        .thenComparing(jigMethod -> jigMethod.declaration().asFullNameText()))
+                        .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
                 .collect(Collectors.toList());
     }
 
@@ -37,7 +37,7 @@ public class JigMethods {
         return list.stream()
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
-                        .thenComparing(jigMethod -> jigMethod.declaration().asFullNameText()))
+                        .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
                 .collect(Collectors.toList());
     }
 

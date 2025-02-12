@@ -29,7 +29,7 @@ public class DatasourceAngles {
 
     public List<DatasourceAngle> list() {
         return list.stream()
-                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.method().asFullNameText()))
+                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodIdentifier().value()))
                 .collect(Collectors.toList());
     }
 }

@@ -103,11 +103,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("アノテーション記述", item -> item.annotationDescription())
                 ), Validations.from(jigTypes).list()),
                 new ReportSheet<>("注意メソッド", List.of(
-                        Map.entry("パッケージ名", item -> item.methodDeclaration().declaringType().packageIdentifier().asText()),
-                        Map.entry("クラス名", item -> item.methodDeclaration().declaringType().asSimpleText()),
+                        Map.entry("パッケージ名", item -> item.method().declaringType().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.method().declaringType().asSimpleText()),
                         Map.entry("メソッドシグネチャ", item -> item.method().nameAndArgumentSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.methodReturnType().asSimpleText()),
-                        Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.methodDeclaration().declaringType()).title()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.method().declaringType()).title()),
                         Map.entry("メンバを使用していない", item -> item.notUseMember() ? "◯" : ""),
                         Map.entry("基本型の授受を行なっている", item -> item.primitiveInterface() ? "◯" : ""),
                         Map.entry("NULLリテラルを使用している", item -> item.referenceNull() ? "◯" : ""),
@@ -162,11 +162,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("stream使用", item -> item.useStream() ? "◯" : "")
                 ), serviceAngles.list()),
                 new ReportSheet<>("REPOSITORY", List.of(
-                        Map.entry("パッケージ名", item -> item.method().declaringType().packageIdentifier().asText()),
-                        Map.entry("クラス名", item -> item.method().declaringType().asSimpleText()),
+                        Map.entry("パッケージ名", item -> item.interfaceMethod().declaringType().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.interfaceMethod().declaringType().asSimpleText()),
                         Map.entry("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.methodReturnTypeReference().simpleNameWithGenerics()),
-                        Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.method().declaringType()).title()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.typeTerm(item.interfaceMethod().declaringType()).title()),
                         Map.entry("メソッド戻り値の型の別名", item ->
                                 jigDocumentContext.typeTerm(item.methodReturnTypeReference().id()).title()
                         ),

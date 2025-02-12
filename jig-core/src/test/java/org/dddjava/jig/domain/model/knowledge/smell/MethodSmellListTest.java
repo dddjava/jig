@@ -28,7 +28,9 @@ class MethodSmellListTest {
     void 注意メソッドの抽出(JigService jigService, JigTypesRepository jigTypesRepository) {
         MethodSmellList methodSmellList = jigService.methodSmells(jigTypesRepository);
 
-        var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
+        var detectedSmells = methodSmellList.list().stream()
+                .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeIdentifier.from(SmelledClass.class)))
+                .toList();
 
         assertEquals(9, detectedSmells.size());
 
@@ -103,7 +105,9 @@ class MethodSmellListTest {
     void 注意メソッドの抽出_record(JigService jigService, JigTypesRepository jigTypesRepository) {
         MethodSmellList methodSmellList = jigService.methodSmells(jigTypesRepository);
 
-        var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
+        var detectedSmells = methodSmellList.list().stream()
+                .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeIdentifier.from(SmelledRecord.class)))
+                .toList();
 
         assertEquals(1, detectedSmells.size());
 

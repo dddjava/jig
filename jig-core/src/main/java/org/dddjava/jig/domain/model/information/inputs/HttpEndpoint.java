@@ -36,13 +36,13 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
                 })
                 .toList();
         if (methodAnnotations.isEmpty()) {
-            logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.declaration().asFullNameText());
+            logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
             return new HttpEndpoint("???", jigMethod.labelText(), classPath, "");
         }
         // メソッドにアノテーションが複数指定されている場合、最初の一つが優先される（SpringMVCの挙動）
         var requestMappingForMethod = methodAnnotations.get(0);
         if (methodAnnotations.size() > 1) {
-            logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.declaration().asFullNameText());
+            logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
         }
         methodPath = requestMappingForMethod.elementTextOf("value").orElse(null);
         if (methodPath == null) methodPath = requestMappingForMethod.elementTextOf("path").orElse(null);

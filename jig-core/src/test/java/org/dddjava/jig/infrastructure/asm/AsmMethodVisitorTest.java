@@ -176,7 +176,7 @@ class AsmMethodVisitorTest {
     void 戻り値のジェネリクスが取得できる() throws Exception {
         JigMethod actual = JigMethod準備(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
 
-        assertEquals("List<String>", actual.declaration().methodReturn().parameterizedType().asSimpleText());
+        assertEquals("List<String>", actual.methodReturnTypeReference().simpleNameWithGenerics());
     }
 
     @Test

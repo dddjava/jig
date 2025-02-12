@@ -109,7 +109,7 @@ public class JigMethod {
     }
 
     public String labelTextOrLambda() {
-        if (declaration().isLambda()) {
+        if (jigMethodIdentifier().isLambda()) {
             return "lambda";
         }
         return labelText();

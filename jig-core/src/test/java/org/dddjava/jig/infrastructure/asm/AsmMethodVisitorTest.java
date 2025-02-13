@@ -218,7 +218,7 @@ class AsmMethodVisitorTest {
 
     private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
         JigTypeMembers members = 準備(sutClass).jigTypeMembers();
-        return members.jigMethodStream()
+        return members.jigMethods().stream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
                 .findFirst()
                 .orElseThrow();
@@ -226,7 +226,7 @@ class AsmMethodVisitorTest {
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
         var members = 準備(sutClass).jigTypeMembers();
-        return members.jigMethodStream()
+        return members.jigMethods().stream()
                 .map(JigMethod::jigMethodDeclaration)
                 .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
                 .findAny().orElseThrow();

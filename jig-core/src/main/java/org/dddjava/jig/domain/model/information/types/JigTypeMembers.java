@@ -66,16 +66,6 @@ public record JigTypeMembers(Collection<JigFieldHeader> jigFieldHeaders,
                 .toList();
     }
 
-    public Stream<JigMethod> jigMethodStream() {
-        return jigMethods.stream();
-
-//        return jigMethodDeclarations.stream()
-//                .map(jigMethodHeader -> new JigMethod(
-//                        jigMethodHeader,
-//                        null, null, null, null, null, null
-//                ));
-    }
-
     public JigMethods instanceMethods() {
         return new JigMethods(jigMethods.stream()
                 .filter(jigMethod -> {

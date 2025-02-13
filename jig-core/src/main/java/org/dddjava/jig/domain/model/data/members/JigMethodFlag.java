@@ -12,5 +12,12 @@ public enum JigMethodFlag {
     NATIVE,
     ABSTRACT,
     STRICT,
-    SYNTHETIC
+    SYNTHETIC,
+
+    // -- JIG独自フラグ
+    INITIALIZER,
+    STATIC_INITIALIZER,
+    ENUM_SUPPORT,
+    LAMBDA_SUPPORT,
+    RECORD_COMPONENT
 }

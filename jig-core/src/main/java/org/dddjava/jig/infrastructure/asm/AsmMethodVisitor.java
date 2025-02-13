@@ -104,6 +104,11 @@ class AsmMethodVisitor extends MethodVisitor {
         if ((access & Opcodes.ACC_STRICT) != 0) flags.add(JigMethodFlag.STRICT);
         if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigMethodFlag.SYNTHETIC);
 
+        String name = jigMethodIdentifier.name();
+        if (name.equals("<init>")) flags.add(JigMethodFlag.INITIALIZER);
+        if (name.equals("<clinit>")) flags.add(JigMethodFlag.STATIC_INITIALIZER);
+        if (name.startsWith("lambda$")) flags.add(JigMethodFlag.LAMBDA_SUPPORT);
+
         return new JigMethodHeader(jigMethodIdentifier, AsmUtils.jigMemberOwnership(access),
                 new JigMethodAttribute(AsmUtils.resolveMethodVisibility(access), declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
         );

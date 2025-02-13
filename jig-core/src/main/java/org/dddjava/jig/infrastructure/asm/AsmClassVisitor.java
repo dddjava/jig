@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
@@ -26,12 +27,14 @@ import java.util.*;
  * visitEnd
  */
 class AsmClassVisitor extends ClassVisitor {
-    private final JigMemberBuilder jigMemberBuilder = new JigMemberBuilder();
-
     private TypeIdentifier typeIdentifier;
     private JigTypeHeader jigTypeHeader;
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
+
+    // FieldやMethodで使用するもの
+    private final JigMemberBuilder jigMemberBuilder = new JigMemberBuilder();
+    private final Set<String> recordComponentNames = new HashSet<>();
 
     AsmClassVisitor() {
         super(Opcodes.ASM9);
@@ -92,7 +95,8 @@ class AsmClassVisitor extends ClassVisitor {
      */
     @Override
     public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
-        jigMemberBuilder.addRecordComponent(name, AsmUtils.typeDescriptorToIdentifier(descriptor));
+        recordComponentNames.add(name);
+        // TODO record componentのアノテーションを見る必要がある
         return super.visitRecordComponent(name, descriptor, signature);
     }
 
@@ -103,8 +107,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        boolean isEnum = jigTypeHeader.jigTypeKind() == JigTypeKind.ENUM;
-        return AsmMethodVisitor.from(this.api, access, name, descriptor, signature, exceptions, typeIdentifier, isEnum, jigMemberBuilder);
+        return AsmMethodVisitor.from(this, access, name, descriptor, signature, exceptions);
     }
 
     @Override
@@ -182,5 +185,18 @@ class AsmClassVisitor extends ClassVisitor {
 
     ClassDeclaration classDeclaration() {
         return new ClassDeclaration(jigMemberBuilder(), jigTypeHeader());
+    }
+
+    int api() {
+        return api;
+    }
+
+    boolean isRecordComponentName(String name) {
+        // recordであることと引数0の確認後なので名前比較だけでOK
+        return recordComponentNames.contains(name);
+    }
+
+    void addJigMethodDeclaration(JigMethodDeclaration jigMethodDeclaration) {
+        jigMemberBuilder.addJigMethodDeclaration(jigMethodDeclaration);
     }
 }

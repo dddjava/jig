@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.MethodInstructionTy
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
-import org.dddjava.jig.domain.model.sources.classsources.JigMethodBuilder;
 import org.objectweb.asm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,15 +32,16 @@ class AsmMethodVisitor extends MethodVisitor {
 
     private final Instructions methodInstructions = Instructions.newInstance();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final AsmClassVisitor contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
 
-    private AsmMethodVisitor(int api, Consumer<AsmMethodVisitor> finisher) {
-        super(api);
+    private AsmMethodVisitor(AsmClassVisitor contextClass, Consumer<AsmMethodVisitor> finisher) {
+        super(contextClass.api());
+        this.contextClass = contextClass;
         this.finisher = finisher;
     }
 
-    public static MethodVisitor from(int api, int access, String name, String descriptor, String signature, String[] exceptions,
-                                     TypeIdentifier declaringTypeIdentifier, boolean isEnum, JigMemberBuilder jigMemberBuilder) {
+    public static MethodVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, String signature, String[] exceptions) {
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
         // throwsのアノテーションが必要になったら別途考える
         var throwsList = Optional.ofNullable(exceptions).stream().flatMap(Arrays::stream)
@@ -50,31 +49,14 @@ class AsmMethodVisitor extends MethodVisitor {
 
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
-        var jigMethodIdentifier = JigMethodIdentifier.from(declaringTypeIdentifier, name,
+        var jigMethodIdentifier = JigMethodIdentifier.from(contextClass.jigTypeHeader().id(), name,
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeIdentifier(type)).toList());
 
-        return new AsmMethodVisitor(api,
+        return new AsmMethodVisitor(contextClass,
                 it -> {
                     JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, methodType, throwsList);
                     JigMethodDeclaration jigMethodDeclaration = new JigMethodDeclaration(jigMethodHeader, it.methodInstructions);
-                    jigMemberBuilder.addJigMethodDeclaration(jigMethodDeclaration);
-                    JigMethodBuilder jigMethodBuilder = JigMethodBuilder.builder(
-                            jigMethodDeclaration,
-                            access,
-                            isEnum,
-                            jigMemberBuilder.isRecordComponent(jigMethodHeader));
-
-                    // この時点でのコンストラクタ判定をしなくてよくしたい
-                    if (jigMethodBuilder.jigMethodIdentifier().name().equals("<init>")) {
-                        // コンストラクタ
-                        jigMemberBuilder.addConstructor(jigMethodBuilder);
-                    } else if ((access & Opcodes.ACC_STATIC) != 0) {
-                        // staticメソッド
-                        jigMemberBuilder.addStaticMethod(jigMethodBuilder);
-                    } else {
-                        // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
-                        jigMemberBuilder.addInstanceMethod(jigMethodBuilder);
-                    }
+                    contextClass.addJigMethodDeclaration(jigMethodDeclaration);
                 }
         );
     }
@@ -94,6 +76,7 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
+        JigMemberOwnership ownership = AsmUtils.jigMemberOwnership(access);
 
         EnumSet<JigMethodFlag> flags = EnumSet.noneOf(JigMethodFlag.class);
         if ((access & Opcodes.ACC_SYNCHRONIZED) != 0) flags.add(JigMethodFlag.SYNCHRONIZED);
@@ -109,7 +92,29 @@ class AsmMethodVisitor extends MethodVisitor {
         if (name.equals("<clinit>")) flags.add(JigMethodFlag.STATIC_INITIALIZER);
         if (name.startsWith("lambda$")) flags.add(JigMethodFlag.LAMBDA_SUPPORT);
 
-        return new JigMethodHeader(jigMethodIdentifier, AsmUtils.jigMemberOwnership(access),
+        contextClass.jigTypeHeader().baseTypeDataBundle().superType().ifPresent(superType -> {
+            // enumの場合に生成される以下をわかるようにしておく
+            // - public static MyEnum[] values();
+            // - public static MyEnum valueOf(java.lang.String);
+            // - private static MyEnum[] $values();
+            if (superType.typeIs(Enum.class)) {
+                if (ownership == JigMemberOwnership.CLASS) {
+                    if ((name.equals("values") && parameterList.isEmpty())
+                            || (name.equals("$values()") && parameterList.isEmpty())
+                            || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).typeIs(String.class))) {
+                        flags.add(JigMethodFlag.ENUM_SUPPORT);
+                    }
+                }
+            }
+            // recordの場合にcomponentをわかるようにしておく
+            if (superType.typeIs(Record.class)) {
+                if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodIdentifier.name())) {
+                    flags.add(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
+                }
+            }
+        });
+
+        return new JigMethodHeader(jigMethodIdentifier, ownership,
                 new JigMethodAttribute(AsmUtils.resolveMethodVisibility(access), declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
         );
     }

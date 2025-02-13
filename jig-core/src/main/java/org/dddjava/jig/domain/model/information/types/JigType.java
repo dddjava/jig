@@ -31,15 +31,13 @@ public class JigType {
         this.jigTypeMembers = jigTypeMembers;
 
         this.jigStaticMember = new JigStaticMember(
-                // コンストラクタ＆インスタンスイニシャライザ
-                jigTypeMembers.jigMethodDeclarations().stream()
-                        .filter(jigMethodDeclaration -> jigMethodDeclaration.header().jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER))
-                        .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration, null))
+                // コンストラクタ
+                jigTypeMembers.jigMethods().stream()
+                        .filter(jigMethod -> jigMethod.jigMethodDeclaration().header().jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER))
                         .toList(),
                 // staticメソッド、staticイニシャライザ
-                jigTypeMembers.jigMethodDeclarations().stream()
-                        .filter(jigMethodDeclaration -> jigMethodDeclaration.header().ownership() == JigMemberOwnership.CLASS)
-                        .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration, null))
+                jigTypeMembers.jigMethods().stream()
+                        .filter(jigMethod -> jigMethod.jigMethodDeclaration().header().ownership() == JigMemberOwnership.CLASS)
                         .toList()
         );
     }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Comparator;
@@ -53,7 +52,7 @@ public class JigMethods {
 
     public JigMethods filterProgrammerDefined() {
         return new JigMethods(list.stream()
-                .filter(jigMethod -> MethodDerivation.PROGRAMMER == jigMethod.derivation())
+                .filter(jigMethod -> jigMethod.isProgrammerDefined())
                 .collect(Collectors.toList()));
     }
 

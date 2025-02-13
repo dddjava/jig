@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -34,7 +33,7 @@ public record MethodSmell(JigMethod method, MethodWorries methodWorries) {
     }
 
     public boolean primitiveInterface() {
-        if (method.derivation() == MethodDerivation.RECORD_COMPONENT) {
+        if (method.isRecordComponent()) {
             // componentメソッドであれば基本型の授受を許容する
             return false;
         }

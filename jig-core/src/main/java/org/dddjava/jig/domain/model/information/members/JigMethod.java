@@ -108,9 +108,6 @@ public class JigMethod {
         return labelText();
     }
 
-    public MethodDerivation derivation() {
-        return methodDerivation;
-    }
 
     public boolean isObjectMethod() {
         return jigMethodDeclaration.header().isObjectMethod();
@@ -180,5 +177,13 @@ public class JigMethod {
 
     public TypeIdentifier declaringType() {
         return jigMethodDeclaration.declaringTypeIdentifier();
+    }
+
+    public boolean isProgrammerDefined() {
+        return methodDerivation == MethodDerivation.PROGRAMMER;
+    }
+
+    public boolean isRecordComponent() {
+        return methodDerivation == MethodDerivation.RECORD_COMPONENT;
     }
 }

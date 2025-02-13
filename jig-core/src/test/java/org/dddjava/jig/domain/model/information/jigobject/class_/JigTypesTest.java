@@ -60,7 +60,7 @@ class JigTypesTest {
     private static JigType callerMethodsOfJigType(String fqn) {
         return JigType.from(
                 JigTypeHeader.simple(fqn),
-                new JigTypeMembers(List.of(), List.of(), null, null),
+                new JigTypeMembers(List.of(), List.of()),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }

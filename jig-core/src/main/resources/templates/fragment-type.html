@@ -40,7 +40,7 @@
         <th:block th:replace="~{this::methodTable(kind='メソッド', list=${#jig.listRemarkableInstanceMethods(item)})}">
             メソッドテーブル
         </th:block>
-        <th:block th:replace="~{this::methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})}">
+        <th:block th:replace="~{this::methodTable(kind='staticメソッド', list=${#jig.listRemarkableStaticMethods(item)})}">
             メソッドテーブル
         </th:block>
     </section>

@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;
@@ -36,9 +35,8 @@ class AsmFieldVisitor extends FieldVisitor {
         this.finisher = finisher;
     }
 
-    static AsmFieldVisitor from(int api, int access, String name, String descriptor, String signature,
-                                TypeIdentifier declaringTypeIdentifier, JigMemberBuilder jigMemberBuilder) {
-        logger.debug("field: name={}, descriptor={}, signature={}, declaringTypeIdentifier={}", name, descriptor, signature, declaringTypeIdentifier);
+    static AsmFieldVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, String signature) {
+        logger.debug("field: name={}, descriptor={}, signature={}", name, descriptor, signature);
 
         EnumSet<JigFieldFlag> flags = EnumSet.noneOf(JigFieldFlag.class);
         if ((access & Opcodes.ACC_FINAL) != 0) flags.add(JigFieldFlag.FINAL);
@@ -47,10 +45,10 @@ class AsmFieldVisitor extends FieldVisitor {
         if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigFieldFlag.SYNTHETIC);
         if ((access & Opcodes.ACC_ENUM) != 0) flags.add(JigFieldFlag.ENUM);
 
-        return new AsmFieldVisitor(api, it -> {
-            jigMemberBuilder.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(declaringTypeIdentifier, name),
+        return new AsmFieldVisitor(contextClass.api(), it -> {
+            contextClass.addJigFieldHeader(new JigFieldHeader(JigFieldIdentifier.from(contextClass.jigTypeHeader().id(), name),
                     AsmUtils.jigMemberOwnership(access),
-                    resolveFieldTypeReference(api, descriptor, signature),
+                    resolveFieldTypeReference(contextClass.api(), descriptor, signature),
                     new JigFieldAttribute(AsmUtils.resolveMethodVisibility(access), it.declarationAnnotationCollector, flags)));
         });
     }

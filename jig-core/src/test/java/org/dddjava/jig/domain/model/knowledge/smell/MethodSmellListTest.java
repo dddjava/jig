@@ -32,7 +32,7 @@ class MethodSmellListTest {
                 .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeIdentifier.from(SmelledClass.class)))
                 .toList();
 
-        assertEquals(9, detectedSmells.size());
+        assertEquals(9, detectedSmells.size(), detectedSmells.toString());
 
         assertTrue(extractMethod(detectedSmells, "returnVoid").returnsVoid());
 
@@ -109,7 +109,7 @@ class MethodSmellListTest {
                 .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeIdentifier.from(SmelledRecord.class)))
                 .toList();
 
-        assertEquals(1, detectedSmells.size());
+        assertEquals(1, detectedSmells.size(), detectedSmells.toString());
 
         assertTrue(extractMethod(detectedSmells, "returnsVoid").returnsVoid());
     }

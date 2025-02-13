@@ -60,7 +60,7 @@
                 メソッドテーブル
             </th:block>
             <th:block
-                    th:replace="~{fragment-type :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})}">
+                    th:replace="~{fragment-type :: methodTable(kind='staticメソッド', list=${#jig.listRemarkableStaticMethods(item)})}">
                 メソッドテーブル
             </th:block>
         </section>

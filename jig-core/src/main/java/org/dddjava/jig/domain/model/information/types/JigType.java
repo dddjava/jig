@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.information.types;
 
+import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.*;
@@ -23,22 +25,33 @@ public class JigType {
 
     private final JigStaticMember jigStaticMember;
 
-    private JigType(JigTypeHeader jigTypeHeader, JigTypeTerms jigTypeTerms, JigTypeMembers jigTypeMembers) {
-        this.jigTypeHeader = jigTypeHeader;
+    private JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
         this.jigTypeTerms = jigTypeTerms;
+        this.jigTypeHeader = jigTypeHeader;
         this.jigTypeMembers = jigTypeMembers;
-        this.jigStaticMember = jigTypeMembers.jigStaticMember();
+
+        this.jigStaticMember = new JigStaticMember(
+                // コンストラクタ＆インスタンスイニシャライザ
+                jigTypeMembers.jigMethodDeclarations().stream()
+                        .filter(jigMethodDeclaration -> jigMethodDeclaration.header().jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER))
+                        .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration, null))
+                        .toList(),
+                // staticメソッド、staticイニシャライザ
+                jigTypeMembers.jigMethodDeclarations().stream()
+                        .filter(jigMethodDeclaration -> jigMethodDeclaration.header().ownership() == JigMemberOwnership.CLASS)
+                        .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration, null))
+                        .toList()
+        );
     }
 
     public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
-        return new JigType(jigTypeHeader, jigTypeTerms, jigTypeMembers);
+        return new JigType(jigTypeHeader, jigTypeMembers, jigTypeTerms);
     }
 
     public TypeIdentifier identifier() {
         return TypeIdentifier.valueOf(jigTypeHeader.id().value());
     }
 
-    // HeaderのほうもId<JigType>にする？
     public TypeIdentifier id() {
         return jigTypeHeader.id();
     }
@@ -185,5 +198,9 @@ public class JigType {
 
     public JigMethods instanceJigMethods() {
         return jigTypeMembers.instanceMethods();
+    }
+
+    public JigMethods staticJigMethods() {
+        return jigTypeMembers.staticMethods();
     }
 }

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
-import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
+import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -217,7 +217,7 @@ class AsmMethodVisitorTest {
     }
 
     private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
-        JigTypeMembers members = 準備(sutClass).buildJigTypeMembers();
+        JigTypeMembers members = 準備(sutClass).jigTypeMembers();
         return members.jigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
                 .findFirst()
@@ -225,12 +225,14 @@ class AsmMethodVisitorTest {
     }
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
-        var members = 準備(sutClass).buildJigTypeMembers();
-        Collection<JigMethodDeclaration> methodByName = members.findMethodByName(methodName);
-        return methodByName.stream().findFirst().orElseThrow();
+        var members = 準備(sutClass).jigTypeMembers();
+        return members.jigMethodStream()
+                .map(JigMethod::jigMethodDeclaration)
+                .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
+                .findAny().orElseThrow();
     }
 
-    private static JigMemberBuilder 準備(Class<?> sutClass) {
-        return AsmClassVisitorTest.asmClassVisitor(sutClass).jigMemberBuilder();
+    private static ClassDeclaration 準備(Class<?> sutClass) {
+        return AsmClassVisitorTest.asmClassVisitor(sutClass).classDeclaration();
     }
 }

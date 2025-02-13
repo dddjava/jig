@@ -4,10 +4,8 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
@@ -44,25 +42,16 @@ public record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
     }
 
     private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, GlossaryRepository glossaryRepository) {
-        return classSourceModel.classDeclarations().stream()
+        return classSourceModel.classDeclarations()
+                .stream()
                 .map(classDeclaration -> {
-                    // メソッドのコメント登録
-                    classDeclaration.jigMemberBuilder().applyAllMethodBuilders(jigMethodBuilder -> {
-                        var term = glossaryRepository.getMethodTermPossiblyMatches(jigMethodBuilder.jigMethodIdentifier());
-                        jigMethodBuilder.registerMethodTerm(term);
-                    });
-
-                    return buildJigType(classDeclaration.jigTypeHeader(), classDeclaration.jigTypeMembers(), glossaryRepository);
+                    return JigType.from(
+                            classDeclaration.jigTypeHeader(),
+                            classDeclaration.jigTypeMembers(glossaryRepository),
+                            glossaryRepository.collectJigTypeTerms(classDeclaration.jigTypeHeader().id())
+                    );
                 })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
-    }
-
-    private static JigType buildJigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, GlossaryRepository glossaryRepository) {
-        return JigType.from(
-                jigTypeHeader,
-                jigTypeMembers,
-                glossaryRepository.collectJigTypeTerms(jigTypeHeader.id())
-        );
     }
 
 }

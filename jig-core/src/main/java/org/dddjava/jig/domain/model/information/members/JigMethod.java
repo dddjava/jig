@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.DecisionNumber;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
@@ -12,23 +12,13 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
+import java.util.EnumSet;
 import java.util.stream.Stream;
 
 /**
  * メソッド
  */
-public class JigMethod {
-
-    private final JigMethodDeclaration jigMethodDeclaration;
-
-    MethodDerivation methodDerivation;
-    private final Term term;
-
-    public JigMethod(JigMethodDeclaration jigMethodDeclaration, MethodDerivation methodDerivation, Term term) {
-        this.jigMethodDeclaration = jigMethodDeclaration;
-        this.methodDerivation = methodDerivation;
-        this.term = term;
-    }
+public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
     public DecisionNumber decisionNumber() {
         return instructions().decisionNumber();
@@ -80,10 +70,6 @@ public class JigMethod {
             return jigMethodDeclaration.declaringTypeIdentifier().asSimpleText() + "\\n" + name();
         }
         return aliasTextOrBlank();
-    }
-
-    public Term term() {
-        return term;
     }
 
     /**
@@ -155,10 +141,6 @@ public class JigMethod {
         return jigMethodDeclaration.header().id();
     }
 
-    public JigMethodDeclaration jigMethodDeclaration() {
-        return jigMethodDeclaration;
-    }
-
     public JigTypeReference methodReturnTypeReference() {
         return jigMethodDeclaration.header().jigMethodAttribute().returnType();
     }
@@ -180,10 +162,21 @@ public class JigMethod {
     }
 
     public boolean isProgrammerDefined() {
-        return methodDerivation == MethodDerivation.PROGRAMMER;
+        EnumSet<JigMethodFlag> flags = jigMethodDeclaration.header().jigMethodAttribute().flags();
+        return flags.stream().noneMatch(flag ->
+                switch (flag) {
+                    case BRIDGE -> true;
+                    case SYNTHETIC -> true;
+                    case INITIALIZER -> true; // コンストラクタを一律除外してしまうのは微妙かもしれない
+                    case STATIC_INITIALIZER -> true;
+                    case ENUM_SUPPORT -> true;
+                    case LAMBDA_SUPPORT -> false;
+                    case RECORD_COMPONENT_ACCESSOR -> false;
+                    default -> false;
+                });
     }
 
     public boolean isRecordComponent() {
-        return methodDerivation == MethodDerivation.RECORD_COMPONENT;
+        return jigMethodDeclaration.header().jigMethodAttribute().flags().contains(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
     }
 }

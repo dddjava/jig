@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.members.JigFieldFlag;
-import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
-import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.*;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigFields;
@@ -17,14 +14,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record JigTypeMembers(
-        Collection<JigFieldHeader> jigFieldHeaders,
-        Collection<JigMethodDeclaration> jigMethodDeclarations,
-        // 互換のため
-        JigStaticMember jigStaticMember,
-        // 互換のため
-        JigMethods instanceMethods
-) {
+public record JigTypeMembers(Collection<JigFieldHeader> jigFieldHeaders,
+                             Collection<JigMethod> jigMethods) {
+
+    public Collection<JigMethodDeclaration> jigMethodDeclarations() {
+        return jigMethods.stream().map(jigMethod -> jigMethod.jigMethodDeclaration()).toList();
+    }
 
     public String instanceFieldsSimpleText() {
         return jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
@@ -63,12 +58,6 @@ public record JigTypeMembers(
                 .findAny();
     }
 
-    public Collection<JigMethodDeclaration> findMethodByName(String name) {
-        return jigMethodDeclarations.stream()
-                .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(name))
-                .toList();
-    }
-
     public List<String> enumConstantNames() {
         return jigFieldHeaderStream(JigMemberOwnership.CLASS)
                 .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))
@@ -78,7 +67,7 @@ public record JigTypeMembers(
     }
 
     public Stream<JigMethod> jigMethodStream() {
-        return instanceMethods().stream();
+        return jigMethods.stream();
 
 //        return jigMethodDeclarations.stream()
 //                .map(jigMethodHeader -> new JigMethod(
@@ -88,6 +77,17 @@ public record JigTypeMembers(
     }
 
     public JigMethods instanceMethods() {
-        return instanceMethods;
+        return new JigMethods(jigMethods.stream()
+                .filter(jigMethod -> {
+                    JigMethodHeader header = jigMethod.jigMethodDeclaration().header();
+                    return header.ownership() == JigMemberOwnership.INSTANCE
+                            // コンストラクタを除く
+                            && !header.jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER);
+                })
+                .toList());
+    }
+
+    public JigMethods staticMethods() {
+        return new JigMethods(jigMethods.stream().filter(jigMethod -> jigMethod.jigMethodDeclaration().header().ownership() == JigMemberOwnership.CLASS).toList());
     }
 }

@@ -17,9 +17,9 @@ public class JigStaticMember {
     private final JigMethods constructors;
     private final JigMethods staticMethods;
 
-    public JigStaticMember(JigMethods constructors, JigMethods staticMethods) {
-        this.constructors = constructors;
-        this.staticMethods = staticMethods;
+    public JigStaticMember(List<JigMethod> constructors, List<JigMethod> staticMethods) {
+        this.constructors = new JigMethods(constructors);
+        this.staticMethods = new JigMethods(staticMethods);
     }
 
     List<TypeIdentifier> listUsingTypes() {

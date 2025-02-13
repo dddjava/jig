@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
-import org.dddjava.jig.domain.model.sources.classsources.JigMemberBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 
@@ -33,7 +33,8 @@ class AsmClassVisitor extends ClassVisitor {
     private boolean isStaticNestedClass = false;
 
     // FieldやMethodで使用するもの
-    private final JigMemberBuilder jigMemberBuilder = new JigMemberBuilder();
+    private final Collection<JigFieldHeader> fieldHeaders = new ArrayList<>();
+    private final Collection<JigMethodDeclaration> methodDeclarations = new ArrayList<>();
     private final Set<String> recordComponentNames = new HashSet<>();
 
     AsmClassVisitor() {
@@ -102,7 +103,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        return AsmFieldVisitor.from(this.api, access, name, descriptor, signature, this.typeIdentifier, this.jigMemberBuilder);
+        return AsmFieldVisitor.from(this, access, name, descriptor, signature);
     }
 
     @Override
@@ -174,17 +175,12 @@ class AsmClassVisitor extends ClassVisitor {
         return JigTypeKind.CLASS;
     }
 
-    public JigMemberBuilder jigMemberBuilder() {
-        // visitEnd後にしか呼んではいけない
-        return Objects.requireNonNull(jigMemberBuilder);
-    }
-
     public JigTypeHeader jigTypeHeader() {
         return jigTypeHeader;
     }
 
     ClassDeclaration classDeclaration() {
-        return new ClassDeclaration(jigMemberBuilder(), jigTypeHeader());
+        return new ClassDeclaration(jigTypeHeader(), fieldHeaders, methodDeclarations);
     }
 
     int api() {
@@ -196,7 +192,11 @@ class AsmClassVisitor extends ClassVisitor {
         return recordComponentNames.contains(name);
     }
 
+    void addJigFieldHeader(JigFieldHeader jigFieldHeader) {
+        fieldHeaders.add(jigFieldHeader);
+    }
+
     void addJigMethodDeclaration(JigMethodDeclaration jigMethodDeclaration) {
-        jigMemberBuilder.addJigMethodDeclaration(jigMethodDeclaration);
+        methodDeclarations.add(jigMethodDeclaration);
     }
 }

@@ -110,6 +110,12 @@ class JigExpressionObject {
                 .excludeNotNoteworthyObjectMethod()
                 .listRemarkable();
     }
+    public List<JigMethod> listRemarkableStaticMethods(JigType jigType) {
+        return jigType.staticJigMethods()
+                .filterProgrammerDefined()
+                .excludeNotNoteworthyObjectMethod()
+                .listRemarkable();
+    }
 
     public static String htmlIdText(JigMethod jigMethod) {
         return htmlIdText(jigMethod.jigMethodIdentifier());

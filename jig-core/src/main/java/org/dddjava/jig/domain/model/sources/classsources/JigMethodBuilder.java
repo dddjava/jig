@@ -2,24 +2,12 @@ package org.dddjava.jig.domain.model.sources.classsources;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
-import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.objectweb.asm.Opcodes;
 
 /**
  * メソッドの実装から読み取れること
  */
 public class JigMethodBuilder {
-
-    private final JigMethodDeclaration jigMethodDeclaration;
-    private final MethodDerivation methodDerivation;
-    private Term term = null;
-
-    public JigMethodBuilder(JigMethodDeclaration jigMethodDeclaration, MethodDerivation methodDerivation) {
-        this.jigMethodDeclaration = jigMethodDeclaration;
-        this.methodDerivation = methodDerivation;
-    }
 
     public static MethodDerivation resolveMethodDerivation(JigMethodDeclaration jigMethodDeclaration, int access, boolean isEnum, boolean isRecordComponent) {
         String name = jigMethodDeclaration.name();
@@ -45,24 +33,5 @@ public class JigMethodBuilder {
         }
 
         return MethodDerivation.PROGRAMMER;
-    }
-
-    public static JigMethodBuilder builder(JigMethodDeclaration jigMethodDeclaration,
-                                           int access,
-                                           boolean isEnum, boolean isRecordComponent) {
-        MethodDerivation methodDerivation = resolveMethodDerivation(jigMethodDeclaration, access, isEnum, isRecordComponent);
-        return new JigMethodBuilder(jigMethodDeclaration, methodDerivation);
-    }
-
-    public JigMethod build() {
-        return new JigMethod(jigMethodDeclaration, methodDerivation, term);
-    }
-
-    public JigMethodIdentifier jigMethodIdentifier() {
-        return jigMethodDeclaration.header().id();
-    }
-
-    public void registerMethodTerm(Term term) {
-        this.term = term;
     }
 }

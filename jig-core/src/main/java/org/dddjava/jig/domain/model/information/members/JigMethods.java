@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,9 +12,9 @@ import java.util.stream.Stream;
  * メソッド一覧
  */
 public class JigMethods {
-    List<JigMethod> list;
+    Collection<JigMethod> list;
 
-    public JigMethods(List<JigMethod> list) {
+    public JigMethods(Collection<JigMethod> list) {
         this.list = list;
     }
 

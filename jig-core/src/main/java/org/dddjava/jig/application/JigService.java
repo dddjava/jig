@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.information.Architecture;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;

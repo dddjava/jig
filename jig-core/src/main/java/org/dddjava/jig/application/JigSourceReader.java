@@ -2,7 +2,6 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;

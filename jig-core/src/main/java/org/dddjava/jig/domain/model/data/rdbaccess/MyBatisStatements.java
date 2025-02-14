@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
-import org.dddjava.jig.domain.model.information.members.UsingMethods;
+import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,9 +42,9 @@ public class MyBatisStatements {
     /**
      * 引数のメソッドに関連するステートメントに絞り込む
      */
-    public MyBatisStatements filterRelationOn(UsingMethods usingMethods) {
+    public MyBatisStatements filterRelationOn(List<InvokedMethod> invokedMethods) {
         List<MyBatisStatement> myBatisStatements = list.stream()
-                .filter(myBatisStatement -> myBatisStatement.identifier().matches(usingMethods))
+                .filter(myBatisStatement -> myBatisStatement.identifier().matches(invokedMethods))
                 .collect(Collectors.toList());
         return new MyBatisStatements(myBatisStatements, sqlReadStatus);
     }

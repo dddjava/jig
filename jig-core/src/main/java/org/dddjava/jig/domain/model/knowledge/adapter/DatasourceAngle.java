@@ -24,7 +24,7 @@ public class DatasourceAngle {
     public DatasourceAngle(DatasourceMethod datasourceMethod, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
         interfaceMethod = datasourceMethod.repositoryMethod();
         this.callerMethods = callerMethods;
-        this.myBatisStatements = allMyBatisStatements.filterRelationOn(datasourceMethod.usingMethods());
+        this.myBatisStatements = allMyBatisStatements.filterRelationOn(datasourceMethod.usingMethods().invokedMethods());
         this.concreteMethod = datasourceMethod.concreteMethod();
     }
 

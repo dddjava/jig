@@ -2,9 +2,12 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
+import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceReader;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
@@ -13,6 +16,7 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -99,11 +103,19 @@ public class JigSourceReader {
                 .map(classDeclaration -> {
                     return JigType.from(
                             classDeclaration.jigTypeHeader(),
-                            classDeclaration.jigTypeMembers(glossaryRepository),
+                            getJigTypeMembers(glossaryRepository, classDeclaration),
                             glossaryRepository.collectJigTypeTerms(classDeclaration.jigTypeHeader().id())
                     );
                 })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
+    }
+
+    public static JigTypeMembers getJigTypeMembers(GlossaryRepository glossaryRepository, ClassDeclaration classDeclaration) {
+        Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
+                .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,
+                        glossaryRepository.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))
+                .toList();
+        return new JigTypeMembers(classDeclaration.jigFieldHeaders(), jigMethods);
     }
 
     /**

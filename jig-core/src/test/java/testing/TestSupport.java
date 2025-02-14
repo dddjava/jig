@@ -1,5 +1,6 @@
 package testing;
 
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
@@ -103,7 +104,7 @@ public class TestSupport {
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
         return JigType.from(
                 classDeclaration.jigTypeHeader(),
-                classDeclaration.jigTypeMembers(new OnMemoryGlossaryRepository()),
+                JigSourceReader.getJigTypeMembers(new OnMemoryGlossaryRepository(), classDeclaration),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }

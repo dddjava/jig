@@ -10,7 +10,7 @@ import org.dddjava.jig.infrastructure.asm.ut.MyTypeModifierClass;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.objectweb.asm.ClassReader;
+import testing.TestSupport;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -20,24 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AsmClassVisitorTest {
 
-    /**
-     * このパッケージのテストで使用するユーティリティ
-     */
-    static AsmClassVisitor asmClassVisitor(Class<?> clz) {
-        try {
-            AsmClassVisitor visitor = new AsmClassVisitor();
-            new ClassReader(clz.getName()).accept(visitor, 0);
-            return visitor;
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-    }
-
     @Test
     void JigTypeDataの取得() throws IOException {
-        AsmClassVisitor visitor = asmClassVisitor(MyClass.class);
-
-        var typeData = visitor.jigTypeHeader();
+        var typeData = TestSupport.getJigTypeHeader(MyClass.class);
 
         assertEquals("MyClass", typeData.simpleName());
         assertEquals("org.dddjava.jig.infrastructure.asm.ut.MyClass", typeData.fqn());
@@ -57,9 +42,7 @@ class AsmClassVisitorTest {
 
     @Test
     void JigTypeDataの取得_やりすぎばん() throws IOException {
-        AsmClassVisitor visitor = asmClassVisitor(MyGenericsMadnessInterface.class);
-
-        var typeData = visitor.jigTypeHeader();
+        JigTypeHeader typeData = TestSupport.getJigTypeHeader(MyGenericsMadnessInterface.class);
         assertEquals("MyGenericsMadnessInterface", typeData.simpleName());
         assertEquals("MyGenericsMadnessInterface<T extends List<Predicate<T>>>", typeData.simpleNameWithGenerics());
 
@@ -80,9 +63,7 @@ class AsmClassVisitorTest {
 //            MyTypeModifierClass.MyTypeModifierClassNON_SEALED.class
     })
     void 修飾子が取得できる(Class<?> target) throws IOException {
-        AsmClassVisitor visitor = asmClassVisitor(target);
-
-        JigTypeHeader jigTypeHeader = visitor.jigTypeHeader();
+        JigTypeHeader jigTypeHeader = TestSupport.getJigTypeHeader(target);
 
         Collection<JigTypeModifier> jigTypeModifiers = jigTypeHeader.jigTypeAttributeData().jigTypeModifiers();
         assertEquals(1, jigTypeModifiers.size());
@@ -95,17 +76,13 @@ class AsmClassVisitorTest {
 
     @Test
     void 多重ネスト_static_inner() throws IOException {
-        AsmClassVisitor nestInnerVisitor = asmClassVisitor(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class);
-
-        var header = nestInnerVisitor.jigTypeHeader();
+        JigTypeHeader header = TestSupport.getJigTypeHeader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class);
         assertFalse(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }
 
     @Test
     void 多重ネスト_static_static() throws IOException {
-        AsmClassVisitor nestNestVisitor = asmClassVisitor(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class);
-
-        var header = nestNestVisitor.jigTypeHeader();
+        JigTypeHeader header = TestSupport.getJigTypeHeader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class);
         assertTrue(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }
 }

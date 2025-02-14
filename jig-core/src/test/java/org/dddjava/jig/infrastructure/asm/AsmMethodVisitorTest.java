@@ -1,17 +1,15 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
-import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import stub.domain.model.relation.annotation.UseInAnnotation;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.misc.DecisionClass;
+import testing.TestSupport;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -120,7 +118,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用している型が取得できる() {
-        JigMethod method = JigMethod準備(MethodVisitorSut.class, "メソッドで使用している基本的な型が取得できる");
+        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用している基本的な型が取得できる");
 
         Set<String> actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
@@ -142,7 +140,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドで使用しているジェネリクスが取得できる() {
-        JigMethod method = JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているジェネリクスが取得できる");
+        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているジェネリクスが取得できる");
 
         var actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
@@ -157,7 +155,7 @@ class AsmMethodVisitorTest {
 
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-        JigMethod method = JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
+        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
         JigAnnotationReference sut = method.declarationAnnotationStream().findFirst().orElseThrow();
 
         assertThat(sut.id().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
@@ -174,14 +172,14 @@ class AsmMethodVisitorTest {
 
     @Test
     void 戻り値のジェネリクスが取得できる() throws Exception {
-        JigMethod actual = JigMethod準備(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
+        JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
 
         assertEquals("List<String>", actual.methodReturnTypeReference().simpleNameWithGenerics());
     }
 
     @Test
     void 引数型のジェネリクスが取得できる() {
-        JigMethod actual = JigMethod準備(MethodVisitorSut.class, "引数型のジェネリクスが取得できる");
+        JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "引数型のジェネリクスが取得できる");
 
         assertEquals("引数型のジェネリクスが取得できる(List<String>)", actual.nameAndArgumentSimpleText());
     }
@@ -195,7 +193,7 @@ class AsmMethodVisitorTest {
     })
     @ParameterizedTest
     void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
-        JigMethod actual = JigMethod準備(DecisionClass.class, name);
+        JigMethod actual = TestSupport.JigMethod準備(DecisionClass.class, name);
         assertEquals(number, actual.decisionNumber().intValue());
     }
 
@@ -212,27 +210,7 @@ class AsmMethodVisitorTest {
     })
     @ParameterizedTest
     void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
-        JigMethod actual = JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
+        JigMethod actual = TestSupport.JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
         assertEquals(expectedText, actual.nameArgumentsReturnSimpleText());
-    }
-
-    private static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
-        JigTypeMembers members = 準備(sutClass).jigTypeMembers();
-        return members.jigMethods().stream()
-                .filter(jigMethod -> jigMethod.name().equals(methodName))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
-        var members = 準備(sutClass).jigTypeMembers();
-        return members.jigMethods().stream()
-                .map(JigMethod::jigMethodDeclaration)
-                .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
-                .findAny().orElseThrow();
-    }
-
-    private static ClassDeclaration 準備(Class<?> sutClass) {
-        return AsmClassVisitorTest.asmClassVisitor(sutClass).classDeclaration();
     }
 }

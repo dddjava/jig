@@ -3,6 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.junit.jupiter.api.Test;
+import testing.TestSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,8 +42,7 @@ class AsmAnnotationVisitorTest {
 
     @Test
     void name() {
-        AsmClassVisitor visitor = AsmClassVisitorTest.asmClassVisitor(AnnotatedSut.class);
-        ClassDeclaration classDeclaration = visitor.classDeclaration();
+        ClassDeclaration classDeclaration = TestSupport.準備(AnnotatedSut.class);
 
         var sut = classDeclaration.jigTypeHeader()
                 .jigTypeAttributeData().declarationAnnotationList();

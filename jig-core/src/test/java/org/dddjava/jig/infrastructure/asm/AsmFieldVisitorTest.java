@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
 import org.dddjava.jig.infrastructure.asm.ut.field.MyEnumFieldSut;
 import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
 import org.junit.jupiter.api.Test;
@@ -29,8 +28,7 @@ class AsmFieldVisitorTest {
 
     @Test
     void JigFieldHeaderでJavaで書いたまま取れる() {
-        var classDeclaration = 準備(MySutClass.class);
-        var members = classDeclaration.jigTypeMembers();
+        var members = TestSupport.buildJigType(MySutClass.class).jigTypeMembers();
 
         assertFieldSimpleNameWithGenerics("byte", members.findFieldByName("primitiveField"));
         assertFieldSimpleNameWithGenerics("int[]", members.findFieldByName("primitiveArrayField"));
@@ -45,18 +43,13 @@ class AsmFieldVisitorTest {
         assertFieldSimpleNameWithGenerics("T[][]", members.findFieldByName("typeVariable2DArrayField"));
     }
 
-    private static ClassDeclaration 準備(Class<?> sutClass) {
-        return AsmClassVisitorTest.asmClassVisitor(sutClass).classDeclaration();
-    }
-
     void assertFieldSimpleNameWithGenerics(String expected, Optional<JigFieldHeader> actual) {
         assertEquals(expected, actual.orElseThrow().jigTypeReference().simpleNameWithGenerics());
     }
 
     @Test
     void enumフィールドのテスト() {
-        var classDeclaration = 準備(MyEnumFieldSut.class);
-        var members = classDeclaration.jigTypeMembers();
+        var members = TestSupport.buildJigType(MyEnumFieldSut.class).jigTypeMembers();
 
         List<String> enumConstantNames = members.enumConstantNames();
         assertEquals(List.of("通常の列挙値1", "通常の列挙値2", "Deprecatedな列挙値"), enumConstantNames,
@@ -75,8 +68,7 @@ class AsmFieldVisitorTest {
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-        var classDeclaration = 準備(MemberAnnotatedClass.class);
-        var members = classDeclaration.jigTypeMembers();
+        var members = TestSupport.buildJigType(MemberAnnotatedClass.class).jigTypeMembers();
         JigFieldHeader field = members.findFieldByName("field").orElseThrow();
 
         JigAnnotationReference sut = field.jigFieldAttribute().declarationAnnotations().stream().findFirst().orElseThrow();

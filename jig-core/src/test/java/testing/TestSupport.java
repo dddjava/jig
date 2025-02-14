@@ -1,9 +1,13 @@
 package testing;
 
+import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypeTerms;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
@@ -101,5 +105,29 @@ public class TestSupport {
                 classDeclaration.jigTypeMembers(),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
+    }
+
+    private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
+        var members = 準備(sutClass).jigTypeMembers();
+        return members.jigMethods().stream()
+                .map(JigMethod::jigMethodDeclaration)
+                .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
+                .findAny().orElseThrow();
+    }
+
+    public static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
+        JigTypeMembers members = 準備(sutClass).jigTypeMembers();
+        return members.jigMethods().stream()
+                .filter(jigMethod -> jigMethod.name().equals(methodName))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public static JigTypeHeader getJigTypeHeader(Class<?> clz) {
+        return 準備(clz).jigTypeHeader();
+    }
+
+    public static ClassDeclaration 準備(Class<?> sutClass) {
+        return new AsmClassSourceReader().classDeclarationForTest(sutClass).orElseThrow();
     }
 }

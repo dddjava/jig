@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.sources;
 
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
+import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.types.JigType;

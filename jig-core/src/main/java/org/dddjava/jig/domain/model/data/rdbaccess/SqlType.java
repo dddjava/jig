@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.rdbaccess;
+package org.dddjava.jig.domain.model.data.rdbaccess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

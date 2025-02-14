@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.sources.mybatis;
 
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.sources.Sources;
 
 /**

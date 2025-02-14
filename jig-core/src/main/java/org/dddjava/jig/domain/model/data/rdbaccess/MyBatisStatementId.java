@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.classes.rdbaccess;
+package org.dddjava.jig.domain.model.data.rdbaccess;
 
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.sources;
 
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlReadStatus;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlReadStatus;
 
 import java.util.Locale;
 

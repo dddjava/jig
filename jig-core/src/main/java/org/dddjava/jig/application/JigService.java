@@ -101,10 +101,10 @@ public class JigService {
         return ServiceAngles.from(serviceMethods, entrypoint(jigTypesRepository), datasourceMethods);
     }
 
-    public DatasourceAngles datasourceAngles(JigDataProvider jigDataProvider) {
-        JigTypes jigTypes = jigTypes(jigDataProvider);
-        DatasourceMethods datasourceMethods = repositoryMethods(jigDataProvider);
-        return new DatasourceAngles(datasourceMethods, jigDataProvider.fetchMybatisStatements(), MethodRelations.from(jigTypes));
+    public DatasourceAngles datasourceAngles(JigTypesRepository jigTypesRepository) {
+        JigTypes jigTypes = jigTypes(jigTypesRepository);
+        DatasourceMethods datasourceMethods = repositoryMethods(jigTypesRepository);
+        return new DatasourceAngles(datasourceMethods, jigTypesRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
     public CategoryUsageDiagram categoryUsages(JigTypesRepository jigTypesRepository) {

@@ -16,7 +16,6 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -78,14 +77,9 @@ public class JigDocumentGenerator {
     }
 
     public List<HandleResult> generateDocuments(JigTypesRepository jigTypesRepository) {
-        // TODO 継承関係はずれたら作り直す
-        return generateDocuments((JigDataProvider) jigTypesRepository);
-    }
-
-    public List<HandleResult> generateDocuments(JigDataProvider jigDataProvider) {
         List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigDataProvider))
+                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigTypesRepository))
                 .collect(Collectors.toList());
         jigService.notifyReportInformation();
         return handleResults;
@@ -114,26 +108,26 @@ public class JigDocumentGenerator {
         }
     }
 
-    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigDataProvider jigDataProvider) {
+    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigTypesRepository jigTypesRepository) {
         try {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
                 // テーブル
                 case TermTable -> {
-                    var terms = jigService.glossary(jigDataProvider);
+                    var terms = jigService.glossary(jigTypesRepository.jigDataProvider());
                     yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
                 // 一覧
                 case TermList -> {
-                    Glossary glossary = jigService.glossary(jigDataProvider);
+                    Glossary glossary = jigService.glossary(jigTypesRepository.jigDataProvider());
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Glossary.reporter(), glossary.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
                      PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                      ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,
-                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigDataProvider);
+                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigTypesRepository);
             };
 
             long takenTime = System.currentTimeMillis() - startTime;

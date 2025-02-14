@@ -7,7 +7,6 @@ import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -56,9 +55,9 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     }
 
     @HandleDocument(JigDocument.EnumSummary)
-    public SummaryModel inputSummary(JigDataProvider jigDataProvider) {
-        JigTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
-        return new SummaryModel(categoryTypes, Map.of("enumModels", jigDataProvider.fetchEnumModels()));
+    public SummaryModel inputSummary(JigTypesRepository jigTypesRepository) {
+        JigTypes categoryTypes = jigService.categoryTypes(jigTypesRepository);
+        return new SummaryModel(categoryTypes, Map.of("enumModels", jigTypesRepository.jigDataProvider().fetchEnumModels()));
     }
 
     @Override

@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
@@ -119,11 +118,11 @@ public class ListAdapter implements Adapter<ReportBook> {
     }
 
     @HandleDocument(JigDocument.ApplicationList)
-    public ReportBook applicationReports(JigDataProvider jigDataProvider) {
-        ServiceAngles serviceAngles = jigService.serviceAngles(jigDataProvider);
-        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigDataProvider);
-        StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigDataProvider);
-        Entrypoints entrypoints = jigService.entrypoint(jigDataProvider);
+    public ReportBook applicationReports(JigTypesRepository jigTypesRepository) {
+        ServiceAngles serviceAngles = jigService.serviceAngles(jigTypesRepository);
+        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigTypesRepository);
+        StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigTypesRepository);
+        Entrypoints entrypoints = jigService.entrypoint(jigTypesRepository);
 
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(

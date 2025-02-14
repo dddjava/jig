@@ -2,6 +2,9 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.information.JigDataProvider;
+import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceReader;
@@ -12,6 +15,7 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 取り込みサービス
@@ -48,14 +52,13 @@ public class JigSourceReader {
             return Optional.empty();
         }
 
-        var jigDataProvider = generateJigDataProvider(sources);
-        return Optional.of(jigDataProvider);
+        return Optional.of(jigTypeRepository(sources));
     }
 
     /**
      * プロジェクト情報を読み取る
      */
-    public DefaultJigDataProvider generateJigDataProvider(Sources sources) {
+    public JigTypesRepository jigTypeRepository(Sources sources) {
         JavaSources javaSources = sources.javaSources();
 
         javaSources.packageInfoPaths().forEach(
@@ -75,7 +78,33 @@ public class JigSourceReader {
         if (myBatisStatements.status().not正常())
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
-        return DefaultJigDataProvider.from(classSourceModel, javaSourceModel, myBatisStatements, glossaryRepository);
+        DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements, glossaryRepository.all());
+        JigTypes jigTypes = initializeJigTypes(classSourceModel, glossaryRepository);
+
+        return new JigTypesRepository() {
+            @Override
+            public JigTypes fetchJigTypes() {
+                return jigTypes;
+            }
+
+            @Override
+            public JigDataProvider jigDataProvider() {
+                return defaultJigDataProvider;
+            }
+        };
+    }
+
+    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, GlossaryRepository glossaryRepository) {
+        return classSourceModel.classDeclarations()
+                .stream()
+                .map(classDeclaration -> {
+                    return JigType.from(
+                            classDeclaration.jigTypeHeader(),
+                            classDeclaration.jigTypeMembers(glossaryRepository),
+                            glossaryRepository.collectJigTypeTerms(classDeclaration.jigTypeHeader().id())
+                    );
+                })
+                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
     /**

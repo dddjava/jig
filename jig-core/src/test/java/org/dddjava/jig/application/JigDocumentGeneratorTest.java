@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.JigDataProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import testing.xlsx.XlsxAssertions;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,11 +30,11 @@ class JigDocumentGeneratorTest {
                 new Term(new TermIdentifier("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
                 new Term(new TermIdentifier("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
         ));
-        JigDataProvider jigDataProvider = mock(JigDataProvider.class); // termはmockで返すようにしているのでここは同じインスタンスであればいいので
+        var jigDataProvider = mock(JigTypesRepository.class); // termはmockで返すようにしているのでここは同じインスタンスであればいいので
         // environment
         var jigDocumentContextMock = mock(JigDocumentContext.class);
         var jigServiceMock = mock(JigService.class);
-        when(jigServiceMock.glossary(jigDataProvider)).thenReturn(terms);
+        when(jigServiceMock.glossary(any())).thenReturn(terms);
 
         var sut = new JigDocumentGenerator(jigDocumentContextMock, jigServiceMock);
 

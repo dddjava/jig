@@ -108,7 +108,7 @@ public class TestSupport {
     }
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
-        var members = 準備(sutClass).jigTypeMembers();
+        var members = buildJigType(sutClass).jigTypeMembers();
         return members.jigMethods().stream()
                 .map(JigMethod::jigMethodDeclaration)
                 .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
@@ -116,7 +116,7 @@ public class TestSupport {
     }
 
     public static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
-        JigTypeMembers members = 準備(sutClass).jigTypeMembers();
+        JigTypeMembers members = buildJigType(sutClass).jigTypeMembers();
         return members.jigMethods().stream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
                 .findFirst()
@@ -124,10 +124,6 @@ public class TestSupport {
     }
 
     public static JigTypeHeader getJigTypeHeader(Class<?> clz) {
-        return 準備(clz).jigTypeHeader();
-    }
-
-    public static ClassDeclaration 準備(Class<?> sutClass) {
-        return new AsmClassSourceReader().classDeclarationForTest(sutClass).orElseThrow();
+        return buildJigType(clz).jigTypeHeader();
     }
 }

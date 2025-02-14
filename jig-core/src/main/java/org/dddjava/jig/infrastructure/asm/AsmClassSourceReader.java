@@ -35,18 +35,4 @@ public class AsmClassSourceReader implements ClassSourceReader {
             return Optional.empty();
         }
     }
-
-    public Optional<ClassDeclaration> classDeclarationForTest(Class<?> clz) {
-        try {
-            AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
-
-            ClassReader classReader = new ClassReader(clz.getName());
-            classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
-
-            return Optional.of(asmClassVisitor.classDeclaration());
-        } catch (Exception e) {
-            logger.warn("クラスの読み取りに失敗しました。スキップして続行します。 {}", clz, e);
-            return Optional.empty();
-        }
-    }
 }

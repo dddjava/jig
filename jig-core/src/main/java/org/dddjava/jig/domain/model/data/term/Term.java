@@ -12,6 +12,10 @@ public record Term(TermIdentifier identifier,
         this(identifier, title, description.trim(), termKind, null);
     }
 
+    public static Term simple(TermIdentifier termIdentifier, String title, TermKind termKind) {
+        return new Term(termIdentifier, title, "", termKind);
+    }
+
     public String textWithDelimiter(String delimiter) {
         if (description.isEmpty()) return title;
         return title + delimiter + description;

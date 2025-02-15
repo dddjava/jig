@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.term;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -41,7 +40,7 @@ public class Glossary {
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> TermFactory.fromClass(termIdentifier, typeIdentifier.asSimpleText()));
+                .orElseGet(() -> Term.simple(termIdentifier, typeIdentifier.asSimpleName(), TermKind.クラス));
     }
 
     public Stream<Term> stream() {

@@ -77,6 +77,7 @@ public class JigDocumentGenerator {
     }
 
     public List<HandleResult> generateDocuments(JigTypesRepository jigTypesRepository) {
+        prepareOutputDirectory();
         List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
                 .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigTypesRepository))
@@ -85,7 +86,7 @@ public class JigDocumentGenerator {
         return handleResults;
     }
 
-    public void prepareOutputDirectory() {
+    private void prepareOutputDirectory() {
         File file = outputDirectory.toFile();
         if (file.exists()) {
             if (file.isDirectory() && file.canWrite()) {

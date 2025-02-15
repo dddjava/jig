@@ -39,7 +39,6 @@ public class JigExecutor {
         DefaultJigRepositoryBuilder defaultJigRepositoryBuilder = configuration.sourceReader();
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
 
-        jigDocumentGenerator.prepareOutputDirectory();
         JigTypesRepository jigTypesRepository = defaultJigRepositoryBuilder.readPathSource(sourceBasePaths);
         var results = jigDocumentGenerator.generateDocuments(jigTypesRepository);
 

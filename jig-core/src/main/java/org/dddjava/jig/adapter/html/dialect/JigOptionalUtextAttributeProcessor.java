@@ -10,12 +10,12 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import java.util.Optional;
 
-class JigOptionalUtextTagProcessor extends AbstractAttributeTagProcessor {
+class JigOptionalUtextAttributeProcessor extends AbstractAttributeTagProcessor {
 
     public static final String ATTR_NAME = "opt-utext";
     public static final int PRECEDENCE = 10000;
 
-    protected JigOptionalUtextTagProcessor(TemplateMode templateMode, String dialectPrefix) {
+    protected JigOptionalUtextAttributeProcessor(TemplateMode templateMode, String dialectPrefix) {
         super(templateMode, dialectPrefix, null, false, ATTR_NAME, true, PRECEDENCE, true);
     }
 

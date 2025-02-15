@@ -21,7 +21,7 @@
                 <p th:if="${#jigEntrypoint.tagDescription(item)}" th:text="'Description: ' + ${#jigEntrypoint.tagDescription(item)}"></p>
                 <p th:if="${#jigEntrypoint.handlePath(item)}" th:text="'Path: ' + ${#jigEntrypoint.handlePath(item)}">/hoge/fuga</p>
 
-                <section class="markdown" th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
+                <section class="markdown" th:if="${#jig.descriptionText(item)}" th:utext="${#jig.descriptionText(item)}">
                     クラスの **Javadoc** コメント
                 </section>
 

@@ -110,6 +110,7 @@ class JigExpressionObject {
                 .excludeNotNoteworthyObjectMethod()
                 .listRemarkable();
     }
+
     public List<JigMethod> listRemarkableStaticMethods(JigType jigType) {
         return jigType.staticJigMethods()
                 .filterProgrammerDefined()
@@ -129,5 +130,9 @@ class JigExpressionObject {
                 .map(TypeIdentifier::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
+    public String descriptionText(JigType jigType) {
+        return jigType.term().description();
     }
 }

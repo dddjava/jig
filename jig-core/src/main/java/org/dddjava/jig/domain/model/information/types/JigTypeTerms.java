@@ -1,6 +1,10 @@
 package org.dddjava.jig.domain.model.information.types;
 
+import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 
 import java.util.Collection;
 
@@ -15,5 +19,19 @@ public record JigTypeTerms(Term term, Collection<Term> memberTerms) {
 
     public Term typeTerm() {
         return term;
+    }
+
+    public Term getMethodTermPossiblyMatches(JigMethodIdentifier jigMethodIdentifier) {
+        return memberTerms.stream()
+                .filter(term -> term.termKind() == TermKind.メソッド)
+                .filter(term -> {
+                    if (term.additionalInformation() instanceof JavaMethodDeclarator javaMethodDeclarator) {
+                        return javaMethodDeclarator.possiblyMatches(jigMethodIdentifier);
+                    } else {
+                        return false;
+                    }
+                })
+                .findAny()
+                .orElseGet(() -> new Term(new TermIdentifier(jigMethodIdentifier.value()), jigMethodIdentifier.name(), "", TermKind.メソッド));
     }
 }

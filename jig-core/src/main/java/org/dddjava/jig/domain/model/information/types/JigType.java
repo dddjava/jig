@@ -5,14 +5,12 @@ import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -44,6 +42,19 @@ public class JigType {
 
     public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
         return new JigType(jigTypeHeader, jigTypeMembers, jigTypeTerms);
+    }
+
+    public static JigType from(ClassDeclaration classDeclaration, JigTypeTerms jigTypeTerms) {
+        Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
+                .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,
+                        jigTypeTerms.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))
+                .toList();
+
+        return new JigType(
+                classDeclaration.jigTypeHeader(),
+                new JigTypeMembers(classDeclaration.jigFieldHeaders(), jigMethods),
+                jigTypeTerms
+        );
     }
 
     public TypeIdentifier identifier() {

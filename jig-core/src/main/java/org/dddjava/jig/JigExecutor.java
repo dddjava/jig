@@ -26,6 +26,9 @@ public class JigExecutor {
         this.sourceBasePaths = sourceBasePaths;
     }
 
+    /**
+     * 標準のJigExecutorを使用するエントリポイント
+     */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
         return new JigExecutor(configuration, sourceBasePaths).execute();
     }

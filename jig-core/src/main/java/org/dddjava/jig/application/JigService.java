@@ -21,6 +21,7 @@ import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitect
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
+import org.dddjava.jig.domain.model.sources.JigRepository;
 
 @Service
 public class JigService {

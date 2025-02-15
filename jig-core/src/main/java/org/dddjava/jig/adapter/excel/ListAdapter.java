@@ -2,7 +2,6 @@ package org.dddjava.jig.adapter.excel;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
-import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -20,6 +19,7 @@ import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
+import org.dddjava.jig.domain.model.sources.JigRepository;
 
 import java.nio.file.Path;
 import java.util.List;

@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.information.applications;
 
-import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.sources.JigRepository;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.domain.model.type.fuga.Fuga;

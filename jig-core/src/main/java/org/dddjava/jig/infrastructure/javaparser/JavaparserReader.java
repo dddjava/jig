@@ -12,7 +12,7 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
+import org.dddjava.jig.infrastructure.javaproductreader.JavaSourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,6 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig.domain.model.sources;
 
+import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 

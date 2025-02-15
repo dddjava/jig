@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +30,10 @@ public class PackageRelations {
     }
 
     public List<PackageRelation> list() {
-        return new ArrayList<>(relations);
+        return relations.stream()
+                .sorted(Comparator.comparing((PackageRelation packageRelation) -> packageRelation.from().asText())
+                        .thenComparing(packageRelation -> packageRelation.to().asText()))
+                .toList();
     }
 
     public PackageRelations applyDepth(PackageDepth packageDepth) {

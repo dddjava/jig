@@ -31,15 +31,13 @@ public class JigSourceReader {
     private final GlossaryRepository glossaryRepository;
 
     private final JavaSourceReader javaSourceReader;
-    private final AsmClassSourceReader classSourceReader;
 
     private final MyBatisStatementsReader myBatisStatementsReader;
 
     private final JigEventRepository jigEventRepository;
 
-    public JigSourceReader(GlossaryRepository glossaryRepository, AsmClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
+    public JigSourceReader(GlossaryRepository glossaryRepository, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
-        this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
         this.sourceCollector = sourceCollector;
@@ -74,7 +72,7 @@ public class JigSourceReader {
                 .orElseGet(JavaSourceModel::empty);
 
         ClassSources classSources = sources.classSources();
-        ClassSourceModel classSourceModel = classSourceReader.classSourceModel(classSources);
+        ClassSourceModel classSourceModel = new AsmClassSourceReader().classSourceModel(classSources);
 
         // クラス名の解決や対象の選別にClassSourceModelを使用するようにしたいので、この位置。
         // 現状（すくなくとも2025.2.1時点まで）はClassSourceを作る際にASMを使用している。その時点でのASM使用をやめたい。

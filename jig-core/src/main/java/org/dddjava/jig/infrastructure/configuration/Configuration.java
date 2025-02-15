@@ -6,7 +6,6 @@ import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.Architecture;
-import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.javaproductreader.JigSourceReader;
@@ -33,7 +32,6 @@ public class Configuration {
 
         this.jigSourceReader = new JigSourceReader(
                 glossaryRepository,
-                new AsmClassSourceReader(),
                 new JavaparserReader(properties),
                 new MyBatisMyBatisStatementsReader(),
                 new ClassOrJavaSourceCollector(),

@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.groupingBy;
  */
 public class PackageRelations {
 
-    Map<PackageRelation, List<PackageRelation>> map;
+    private final Map<PackageRelation, List<PackageRelation>> map;
 
     public PackageRelations(List<PackageRelation> list) {
         this(list.stream().collect(groupingBy(Function.identity())));

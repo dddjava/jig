@@ -7,9 +7,7 @@ import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
-import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
+import org.dddjava.jig.domain.model.information.JigInformationFactory;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
@@ -24,7 +22,6 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 public class DefaultJigRepositoryFactory {
 
@@ -95,7 +92,7 @@ public class DefaultJigRepositoryFactory {
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
-        JigTypes jigTypes = initializeJigTypes(classDeclarations, glossaryRepository);
+        JigTypes jigTypes = JigInformationFactory.createJigTypes(classDeclarations, glossaryRepository);
 
         return new JigRepository() {
             @Override
@@ -113,27 +110,6 @@ public class DefaultJigRepositoryFactory {
                 return glossaryRepository.all();
             }
         };
-    }
-
-    private static JigTypes initializeJigTypes(Collection<ClassDeclaration> classDeclarations, GlossaryRepository glossaryRepository) {
-        return classDeclarations
-                .stream()
-                .map(classDeclaration -> {
-                    return JigType.from(
-                            classDeclaration.jigTypeHeader(),
-                            getJigTypeMembers(glossaryRepository, classDeclaration),
-                            glossaryRepository.collectJigTypeTerms(classDeclaration.jigTypeHeader().id())
-                    );
-                })
-                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
-    }
-
-    public static JigTypeMembers getJigTypeMembers(GlossaryRepository glossaryRepository, ClassDeclaration classDeclaration) {
-        Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,
-                        glossaryRepository.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))
-                .toList();
-        return new JigTypeMembers(classDeclaration.jigFieldHeaders(), jigMethods);
     }
 
     /**

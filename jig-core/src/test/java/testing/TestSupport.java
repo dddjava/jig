@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
+import org.dddjava.jig.domain.model.information.JigInformationFactory;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
@@ -15,7 +16,6 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
-import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class TestSupport {
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
         return JigType.from(
                 classDeclaration.jigTypeHeader(),
-                DefaultJigRepositoryFactory.getJigTypeMembers(new OnMemoryGlossaryRepository(), classDeclaration),
+                JigInformationFactory.createJigTypeMembers(new OnMemoryGlossaryRepository(), classDeclaration),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }

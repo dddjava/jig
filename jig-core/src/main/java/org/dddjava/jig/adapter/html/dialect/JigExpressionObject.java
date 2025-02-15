@@ -12,6 +12,8 @@ import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class JigExpressionObject {
@@ -132,7 +134,8 @@ class JigExpressionObject {
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }
 
-    public String descriptionText(JigType jigType) {
-        return jigType.term().description();
+    public Optional<String> descriptionText(JigType jigType) {
+        return Optional.of(jigType.term().description())
+                .filter(Predicate.not(String::isEmpty));
     }
 }

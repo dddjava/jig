@@ -11,7 +11,7 @@ import org.dddjava.jig.adapter.html.IndexView;
 import org.dddjava.jig.adapter.html.SummaryAdapter;
 import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.adapter.html.ThymeleafSummaryWriter;
-import org.dddjava.jig.adapter.html.dialect.JigExpressionObjectDialect;
+import org.dddjava.jig.adapter.html.dialect.JigDialect;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -62,7 +62,7 @@ public class JigDocumentGenerator {
         templateResolver.setPrefix("templates/");
         templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
         templateEngine.setTemplateResolver(templateResolver);
-        templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
+        templateEngine.addDialect(new JigDialect(jigDocumentContext));
         this.thymeleafTemplateEngine = templateEngine;
 
         compositeAdapter = new CompositeAdapter();

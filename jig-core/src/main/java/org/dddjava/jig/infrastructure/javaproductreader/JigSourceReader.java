@@ -1,6 +1,9 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig.infrastructure.javaproductreader;
 
-import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.application.GlossaryRepository;
+import org.dddjava.jig.application.JigDataProvider;
+import org.dddjava.jig.application.JigEventRepository;
+import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -23,7 +26,6 @@ import java.util.stream.Collectors;
 /**
  * 取り込みサービス
  */
-@Service
 public class JigSourceReader {
 
     private final SourceCollector sourceCollector;

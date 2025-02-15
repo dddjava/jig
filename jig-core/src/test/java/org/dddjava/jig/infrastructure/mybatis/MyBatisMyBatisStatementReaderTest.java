@@ -1,11 +1,11 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
-import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.infrastructure.javaproductreader.JigSourceReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

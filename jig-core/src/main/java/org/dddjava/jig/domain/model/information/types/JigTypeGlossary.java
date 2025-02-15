@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
  * 型およびメンバの用語を保持する
  */
-public record JigTypeTerms(Term term, Collection<Term> memberTerms) {
+public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
 
     public boolean markedCore() {
         return typeTerm().title().startsWith("*");

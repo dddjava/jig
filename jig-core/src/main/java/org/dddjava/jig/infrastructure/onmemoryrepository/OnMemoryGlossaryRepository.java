@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.types.JigTypeTerms;
+import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public JigTypeTerms collectJigTypeTerms(TypeIdentifier typeIdentifier) {
-        return new JigTypeTerms(get(typeIdentifier),
+    public JigTypeGlossary collectJigTypeTerms(TypeIdentifier typeIdentifier) {
+        return new JigTypeGlossary(get(typeIdentifier),
                 terms.stream()
                         .filter(term -> term.termKind() == TermKind.メソッド || term.termKind() == TermKind.フィールド)
                         .filter(term -> term.relatesTo(typeIdentifier.fullQualifiedName()))

@@ -18,13 +18,13 @@ import java.util.stream.Stream;
  */
 public class JigType {
     private final JigTypeHeader jigTypeHeader;
-    private final JigTypeTerms jigTypeTerms;
+    private final JigTypeGlossary jigTypeGlossary;
     private final JigTypeMembers jigTypeMembers;
 
     private final JigStaticMember jigStaticMember;
 
-    private JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
-        this.jigTypeTerms = jigTypeTerms;
+    private JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
+        this.jigTypeGlossary = jigTypeGlossary;
         this.jigTypeHeader = jigTypeHeader;
         this.jigTypeMembers = jigTypeMembers;
 
@@ -40,20 +40,20 @@ public class JigType {
         );
     }
 
-    public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeTerms jigTypeTerms) {
-        return new JigType(jigTypeHeader, jigTypeMembers, jigTypeTerms);
+    public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
+        return new JigType(jigTypeHeader, jigTypeMembers, jigTypeGlossary);
     }
 
-    public static JigType from(ClassDeclaration classDeclaration, JigTypeTerms jigTypeTerms) {
+    public static JigType from(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
         Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,
-                        jigTypeTerms.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))
+                        jigTypeGlossary.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))
                 .toList();
 
         return new JigType(
                 classDeclaration.jigTypeHeader(),
                 new JigTypeMembers(classDeclaration.jigFieldHeaders(), jigMethods),
-                jigTypeTerms
+                jigTypeGlossary
         );
     }
 
@@ -107,11 +107,11 @@ public class JigType {
     }
 
     public String label() {
-        return jigTypeTerms.typeTerm().title();
+        return jigTypeGlossary.typeTerm().title();
     }
 
     public Term term() {
-        return jigTypeTerms.typeTerm();
+        return jigTypeGlossary.typeTerm();
     }
 
     public JigTypeMembers jigTypeMembers() {
@@ -135,7 +135,7 @@ public class JigType {
     }
 
     public boolean markedCore() {
-        return jigTypeTerms.markedCore();
+        return jigTypeGlossary.markedCore();
     }
 
     public boolean isDeprecated() {
@@ -189,7 +189,7 @@ public class JigType {
     }
 
     public String nodeLabel(String delimiter) {
-        return jigTypeTerms.typeTerm().textWithDelimiter(delimiter);
+        return jigTypeGlossary.typeTerm().textWithDelimiter(delimiter);
     }
 
     public boolean hasInstanceField() {

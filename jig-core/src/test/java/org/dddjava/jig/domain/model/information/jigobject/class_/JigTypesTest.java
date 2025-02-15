@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
-import org.dddjava.jig.domain.model.information.types.JigTypeTerms;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class JigTypesTest {
         return JigType.from(
                 JigTypeHeader.simple(fqn),
                 new JigTypeMembers(List.of(), List.of()),
-                new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
+                new JigTypeGlossary(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }
 }

@@ -34,10 +34,19 @@ public class JigService {
         this.jigEventRepository = jigEventRepository;
     }
 
+    /**
+     * 全JigTypeを取得する
+     *
+     * ここで取得されるJigTypesにはsourceで定義された全てのJigTypeが含まれる。
+     * ライブラリのクラスなど、使用しているだけのものは入らない。
+     */
     public JigTypes jigTypes(JigRepository jigRepository) {
         return jigRepository.fetchJigTypes();
     }
 
+    /**
+     * 用語集を取得する
+     */
     public Glossary glossary(JigRepository jigRepository) {
         return jigRepository.fetchGlossary();
     }
@@ -47,6 +56,11 @@ public class JigService {
         return new ArchitectureDiagram(packageBasedArchitecture);
     }
 
+    /**
+     * コアドメインのみのJigTypesを取得する
+     *
+     * コアドメインは実行時に指定するパターンなどによって識別する。
+     */
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
         JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(architecture::isCoreDomain);
         if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();

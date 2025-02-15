@@ -1,11 +1,15 @@
 package org.dddjava.jig.domain.model.data.term;
 
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.infrastructure.javaparser.TermFactory;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Glossary {
     Collection<Term> terms;
@@ -28,5 +32,19 @@ public class Glossary {
                 Map.entry("種類", term -> term.termKind().name()),
                 Map.entry("識別子", term -> term.identifier().asText())
         );
+    }
+
+    public Term typeTermOf(TypeIdentifier typeIdentifier) {
+        TermIdentifier termIdentifier = new TermIdentifier(typeIdentifier.fullQualifiedName());
+        return terms.stream()
+                .filter(term -> term.termKind() == TermKind.クラス)
+                .filter(term -> term.identifier().equals(termIdentifier))
+                .findAny()
+                // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
+                .orElseGet(() -> TermFactory.fromClass(termIdentifier, typeIdentifier.asSimpleText()));
+    }
+
+    public Stream<Term> stream() {
+        return terms.stream();
     }
 }

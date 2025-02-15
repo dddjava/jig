@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.ArrayList;
@@ -40,15 +39,6 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> TermFactory.fromPackage(termIdentifier, packageIdentifier.simpleName()));
-    }
-
-    @Override
-    public JigTypeGlossary collectJigTypeTerms(TypeIdentifier typeIdentifier) {
-        return new JigTypeGlossary(get(typeIdentifier),
-                terms.stream()
-                        .filter(term -> term.termKind() == TermKind.メソッド || term.termKind() == TermKind.フィールド)
-                        .filter(term -> term.relatesTo(typeIdentifier.fullQualifiedName()))
-                        .toList());
     }
 
     @Override

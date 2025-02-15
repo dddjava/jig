@@ -92,7 +92,7 @@ public class DefaultJigRepositoryFactory {
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
-        JigTypes jigTypes = JigInformationFactory.createJigTypes(classDeclarations, glossaryRepository);
+        JigTypes jigTypes = JigInformationFactory.createJigTypes(classDeclarations, glossaryRepository.all());
 
         return new JigRepository() {
             @Override

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.applications;
 
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ServiceMethodTest {
 
     @Test
-    void name(JigService jigService, JigTypesRepository jigTypesRepository) {
-        JigTypes jigTypes = jigService.jigTypes(jigTypesRepository);
+    void name(JigService jigService, JigRepository jigRepository) {
+        JigTypes jigTypes = jigService.jigTypes(jigRepository);
 
         var targetType = jigTypes.resolveJigType(TypeIdentifier.from(CanonicalService.class)).orElseThrow();
         ServiceMethod sut = targetType.allJigMethodStream()

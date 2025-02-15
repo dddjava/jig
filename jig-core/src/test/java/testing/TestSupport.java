@@ -15,7 +15,7 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
-import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryBuilder;
+import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 import java.io.IOException;
@@ -104,7 +104,7 @@ public class TestSupport {
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
         return JigType.from(
                 classDeclaration.jigTypeHeader(),
-                DefaultJigRepositoryBuilder.getJigTypeMembers(new OnMemoryGlossaryRepository(), classDeclaration),
+                DefaultJigRepositoryFactory.getJigTypeMembers(new OnMemoryGlossaryRepository(), classDeclaration),
                 new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
         );
     }

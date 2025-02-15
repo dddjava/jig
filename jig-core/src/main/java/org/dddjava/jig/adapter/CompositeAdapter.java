@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter;
 
-import org.dddjava.jig.application.JigTypesRepository;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.lang.invoke.MethodHandle;
@@ -33,12 +33,12 @@ public class CompositeAdapter {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> List<Path> invoke(JigDocument jigDocument, JigTypesRepository jigTypesRepository) {
+    public <T> List<Path> invoke(JigDocument jigDocument, JigRepository jigRepository) {
         Adapter<T> adapter = (Adapter<T>) adapterInstanceMap.get(jigDocument);
         MethodHandle adapterMethod = adapterMethodMap.get(jigDocument);
 
         try {
-            Object result = adapterMethod.invoke(adapter, jigTypesRepository);
+            Object result = adapterMethod.invoke(adapter, jigRepository);
             T model = adapter.convertMethodResultToAdapterModel(result);
             return adapter.write(model, jigDocument);
         } catch (Throwable e) {

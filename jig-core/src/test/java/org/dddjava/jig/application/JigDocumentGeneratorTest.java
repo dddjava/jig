@@ -30,7 +30,7 @@ class JigDocumentGeneratorTest {
                 new Term(new TermIdentifier("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
                 new Term(new TermIdentifier("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
         ));
-        var jigDataProvider = mock(JigTypesRepository.class); // termはmockで返すようにしているのでここは同じインスタンスであればいいので
+        var jigDataProvider = mock(JigRepository.class); // termはmockで返すようにしているのでここは同じインスタンスであればいいので
         // environment
         var jigDocumentContextMock = mock(JigDocumentContext.class);
         var jigServiceMock = mock(JigService.class);

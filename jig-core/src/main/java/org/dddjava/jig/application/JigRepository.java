@@ -4,10 +4,10 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.List;
 
-public interface JigTypesRepository {
+public interface JigRepository {
 
-    static JigTypesRepository empty() {
-        return new JigTypesRepository() {
+    static JigRepository empty() {
+        return new JigRepository() {
             @Override
             public JigTypes fetchJigTypes() {
                 return new JigTypes(List.of());

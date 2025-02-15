@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusinessRuleServiceTest {
 
     @Test
-    void クラス可視性の判定(JigTypesRepository jigTypesRepository) throws Exception {
-        List<JigType> jigTypes = jigTypesRepository.fetchJigTypes().list();
+    void クラス可視性の判定(JigRepository jigRepository) throws Exception {
+        List<JigType> jigTypes = jigRepository.fetchJigTypes().list();
 
         JigType publicType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PublicType"))
@@ -44,20 +44,20 @@ class BusinessRuleServiceTest {
      * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
      */
     @Test
-    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigTypesRepository jigTypesRepository) {
+    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigRepository jigRepository) {
         var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
 
-        var jigTypes = jigService.jigTypes(jigTypesRepository);
+        var jigTypes = jigService.jigTypes(jigRepository);
 
         assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
 
-        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigTypesRepository);
+        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         assertFalse(coreDomainJigTypes.contains(typeIdentifier), "domain coreには存在しない");
     }
 
     @Test
-    void 関連(JigService jigService, JigTypesRepository jigTypesRepository) {
-        var jigTypes = jigService.jigTypes(jigTypesRepository);
+    void 関連(JigService jigService, JigRepository jigRepository) {
+        var jigTypes = jigService.jigTypes(jigRepository);
 
         var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
         var classRelations = ClassRelations.internalTypeRelationsFrom(jigTypes, targetJigType);

@@ -76,11 +76,11 @@ public class JigDocumentGenerator {
         copyAssets(outputDirectory);
     }
 
-    public List<HandleResult> generateDocuments(JigTypesRepository jigTypesRepository) {
+    public List<HandleResult> generateDocuments(JigRepository jigRepository) {
         prepareOutputDirectory();
         List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigTypesRepository))
+                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
                 .collect(Collectors.toList());
         jigService.notifyReportInformation();
         return handleResults;
@@ -109,26 +109,26 @@ public class JigDocumentGenerator {
         }
     }
 
-    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigTypesRepository jigTypesRepository) {
+    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
         try {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
                 // テーブル
                 case TermTable -> {
-                    var terms = jigService.glossary(jigTypesRepository.jigDataProvider());
+                    var terms = jigService.glossary(jigRepository.jigDataProvider());
                     yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
                 // 一覧
                 case TermList -> {
-                    Glossary glossary = jigService.glossary(jigTypesRepository.jigDataProvider());
+                    Glossary glossary = jigService.glossary(jigRepository.jigDataProvider());
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Glossary.reporter(), glossary.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
                      PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                      ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,
-                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigTypesRepository);
+                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigRepository);
             };
 
             long takenTime = System.currentTimeMillis() - startTime;

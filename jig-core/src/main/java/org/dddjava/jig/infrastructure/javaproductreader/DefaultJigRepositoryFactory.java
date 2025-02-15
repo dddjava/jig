@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.application.JigTypesRepository;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -18,22 +18,25 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
+import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
+import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
+import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class DefaultJigRepositoryBuilder {
+public class DefaultJigRepositoryFactory {
 
     private final SourceCollector sourceCollector;
     private final GlossaryRepository glossaryRepository;
-
     private final JavaSourceReader javaSourceReader;
-
     private final MyBatisStatementsReader myBatisStatementsReader;
-
     private final JigEventRepository jigEventRepository;
 
-    public DefaultJigRepositoryBuilder(GlossaryRepository glossaryRepository, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
+    private JigRepository jigRepository;
+
+    public DefaultJigRepositoryFactory(GlossaryRepository glossaryRepository, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
@@ -41,23 +44,37 @@ public class DefaultJigRepositoryBuilder {
         this.jigEventRepository = jigEventRepository;
     }
 
-    public JigTypesRepository readPathSource(SourceBasePaths sourceBasePaths) {
+    public static DefaultJigRepositoryFactory init(Configuration configuration) {
+        return new DefaultJigRepositoryFactory(
+                configuration.glossaryRepository(),
+                new JavaparserReader(),
+                new MyBatisMyBatisStatementsReader(),
+                new ClassOrJavaSourceCollector(),
+                configuration.jigEventRepository()
+        );
+    }
+
+    public void readPathSource(SourceBasePaths sourceBasePaths) {
         Sources sources = sourceCollector.collectSources(sourceBasePaths);
         if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
         if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
         if (jigEventRepository.hasError()) {
-            return JigTypesRepository.empty();
+            jigRepository = JigRepository.empty();
         }
 
-        return jigTypeRepository(sources);
+        jigRepository = jigTypesRepository(sources);
+    }
+
+    public JigRepository jigTypesRepository() {
+        return jigRepository;
     }
 
     /**
      * プロジェクト情報を読み取る
      */
-    public JigTypesRepository jigTypeRepository(Sources sources) {
+    private JigRepository jigTypesRepository(Sources sources) {
         JavaSources javaSources = sources.javaSources();
 
         javaSources.packageInfoPaths().forEach(
@@ -80,7 +97,7 @@ public class DefaultJigRepositoryBuilder {
         DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements, glossaryRepository.all());
         JigTypes jigTypes = initializeJigTypes(classSourceModel, glossaryRepository);
 
-        return new JigTypesRepository() {
+        return new JigRepository() {
             @Override
             public JigTypes fetchJigTypes() {
                 return jigTypes;

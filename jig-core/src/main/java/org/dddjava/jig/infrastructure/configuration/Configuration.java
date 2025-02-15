@@ -6,16 +6,15 @@ import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.Architecture;
-import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
-import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryBuilder;
-import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
+import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 public class Configuration {
+    private final GlossaryRepository glossaryRepository;
+    private final JigEventRepository jigEventRepository;
     JigProperties properties;
 
-    DefaultJigRepositoryBuilder defaultJigRepositoryBuilder;
+    DefaultJigRepositoryFactory defaultJigRepositoryFactory;
     JigDocumentGenerator jigDocumentGenerator;
     JigService jigService;
     JigDocumentContext jigDocumentContext;
@@ -23,31 +22,30 @@ public class Configuration {
     public Configuration(JigProperties jigProperties) {
         this.properties = new JigPropertyLoader(jigProperties).load();
 
-        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+        glossaryRepository = new OnMemoryGlossaryRepository();
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
-        JigEventRepository jigEventRepository = new JigEventRepository();
-        this.jigService = new JigService(architecture, jigEventRepository);
+        jigEventRepository = new JigEventRepository();
+        jigService = new JigService(architecture, jigEventRepository);
 
-        this.defaultJigRepositoryBuilder = new DefaultJigRepositoryBuilder(
-                glossaryRepository,
-                new JavaparserReader(),
-                new MyBatisMyBatisStatementsReader(),
-                new ClassOrJavaSourceCollector(),
-                jigEventRepository
-        );
-
-        this.jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
-        this.jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
+        jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
+        jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
     }
 
-    public DefaultJigRepositoryBuilder sourceReader() {
-        return defaultJigRepositoryBuilder;
+    public DefaultJigRepositoryFactory sourceReader() {
+        return defaultJigRepositoryFactory;
     }
 
     public JigDocumentGenerator documentGenerator() {
         return jigDocumentGenerator;
     }
 
+    public GlossaryRepository glossaryRepository() {
+        return glossaryRepository;
+    }
+
+    public JigEventRepository jigEventRepository() {
+        return jigEventRepository;
+    }
 }

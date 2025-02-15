@@ -15,8 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PackageDependenciesTest {
 
     @Test
-    void パッケージ依存(JigService jigService, JigTypesRepository jigTypesRepository) {
-        PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies(jigTypesRepository);
+    void パッケージ依存(JigService jigService, JigRepository jigRepository) {
+        PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies(jigRepository);
 
         // パッケージのリストアップ
         List<String> packageNames = packageRelationDiagram.allPackages().list().stream()

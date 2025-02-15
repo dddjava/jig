@@ -1,14 +1,14 @@
 package org.dddjava.jig;
 
 import org.dddjava.jig.application.JigDocumentGenerator;
-import org.dddjava.jig.application.JigTypesRepository;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryBuilder;
+import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,28 +19,32 @@ public class JigExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
     private final Configuration configuration;
-    private final SourceBasePaths sourceBasePaths;
 
-    public JigExecutor(Configuration configuration, SourceBasePaths sourceBasePaths) {
+    public JigExecutor(Configuration configuration) {
         this.configuration = configuration;
-        this.sourceBasePaths = sourceBasePaths;
     }
 
     /**
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        return new JigExecutor(configuration, sourceBasePaths).execute();
+        return new JigExecutor(configuration).execute(sourceBasePaths);
     }
 
-    private List<HandleResult> execute() {
+    private List<HandleResult> execute(SourceBasePaths sourceBasePaths) {
         long startTime = System.currentTimeMillis();
 
-        DefaultJigRepositoryBuilder defaultJigRepositoryBuilder = configuration.sourceReader();
-        JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
+        // configurationに従ってJigRepositoryの生成と初期化を行う。
+        // 現状はローカルのJava/Classファイルを読む形なので固定実装だが雰囲気分けておく。
+        // JARなどを読み取る場合やJavaファイルのみなどはSourceBasePathsの形も変わる想定。いつやるかは未定。
+        // このフェーズで source -> data の変換を終え、以降は source は触らない。
+        DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
+        jigRepositoryFactory.readPathSource(sourceBasePaths);
+        JigRepository jigRepository = jigRepositoryFactory.jigTypesRepository();
 
-        JigTypesRepository jigTypesRepository = defaultJigRepositoryBuilder.readPathSource(sourceBasePaths);
-        var results = jigDocumentGenerator.generateDocuments(jigTypesRepository);
+        // JigRepositoryを参照してJIGドキュメントを生成する
+        JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
+        var results = jigDocumentGenerator.generateDocuments(jigRepository);
 
         jigDocumentGenerator.generateIndex(results);
         long takenTime = System.currentTimeMillis() - startTime;
@@ -63,20 +67,17 @@ public class JigExecutor {
                     targetRootPath.resolve(Path.of("build", "resources", "main"))
             ));
         };
+        JavaSourceBasePaths javaSourceBasePaths = new JavaSourceBasePaths(List.of(
+                targetRootPath.resolve(Path.of("src", "main", "java")),
+                targetRootPath.resolve(Path.of("src", "main", "resources"))
+        ));
 
         return new JigExecutor(
                 new Configuration(new JigProperties(
                         JigDocument.canonical(),
                         jigOptions.domainPattern(),
                         jigOptions.outputDirectory()
-                )),
-                new SourceBasePaths(
-                        binarySourcePaths,
-                        new JavaSourceBasePaths(List.of(
-                                targetRootPath.resolve(Path.of("src", "main", "java")),
-                                targetRootPath.resolve(Path.of("src", "main", "resources"))
-                        ))
-                )
+                ))
         );
     }
 
@@ -85,6 +86,6 @@ public class JigExecutor {
      */
     @Deprecated(since = "2025.1.1")
     public JigExecutor withSourcePaths(SourceBasePaths sourceBasePaths) {
-        return new JigExecutor(configuration, sourceBasePaths);
+        return new JigExecutor(configuration);
     }
 }

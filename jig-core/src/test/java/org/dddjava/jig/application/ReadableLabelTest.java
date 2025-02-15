@@ -38,8 +38,8 @@ class ReadableLabelTest {
 
     @ParameterizedTest
     @MethodSource
-    void クラスコメント取得(Class<?> targetClass, String expectedText, JigTypesRepository jigTypesRepository) {
-        var jigTypes = jigTypesRepository.fetchJigTypes();
+    void クラスコメント取得(Class<?> targetClass, String expectedText, JigRepository jigRepository) {
+        var jigTypes = jigRepository.fetchJigTypes();
         String label = jigTypes.resolveJigType(TypeIdentifier.from(targetClass))
                 .map(jigType -> jigType.label())
                 .orElseThrow(AssertionError::new);
@@ -56,8 +56,8 @@ class ReadableLabelTest {
     }
 
     @Test
-    void メソッド別名取得(JigTypesRepository jigTypesRepository) {
-        JigTypes jigTypes = jigTypesRepository.fetchJigTypes();
+    void メソッド別名取得(JigRepository jigRepository) {
+        JigTypes jigTypes = jigRepository.fetchJigTypes();
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
         JigType jigType = jigTypes.listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 

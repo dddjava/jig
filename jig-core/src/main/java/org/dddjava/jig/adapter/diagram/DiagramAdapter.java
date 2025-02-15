@@ -2,8 +2,8 @@ package org.dddjava.jig.adapter.diagram;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
@@ -25,38 +25,38 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
     }
 
     @HandleDocument(JigDocument.PackageRelationDiagram)
-    public DiagramSourceWriter packageRelation(JigTypesRepository jigTypesRepository) {
-        return jigService.packageDependencies(jigTypesRepository);
+    public DiagramSourceWriter packageRelation(JigRepository jigRepository) {
+        return jigService.packageDependencies(jigRepository);
     }
 
     @HandleDocument(JigDocument.CompositeUsecaseDiagram)
-    public DiagramSourceWriter CompositeUsecaseDiagram(JigTypesRepository jigTypesRepository) {
-        return new CompositeUsecaseDiagram(jigService.serviceAngles(jigTypesRepository));
+    public DiagramSourceWriter CompositeUsecaseDiagram(JigRepository jigRepository) {
+        return new CompositeUsecaseDiagram(jigService.serviceAngles(jigRepository));
     }
 
     @HandleDocument(JigDocument.ArchitectureDiagram)
-    public DiagramSourceWriter architectureDiagram(JigTypesRepository jigTypesRepository) {
-        return jigService.architectureDiagram(jigTypesRepository);
+    public DiagramSourceWriter architectureDiagram(JigRepository jigRepository) {
+        return jigService.architectureDiagram(jigRepository);
     }
 
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)
-    public DiagramSourceWriter businessRuleRelation(JigTypesRepository jigTypesRepository) {
-        return new ClassRelationDiagram(jigService.coreDomainJigTypes(jigTypesRepository));
+    public DiagramSourceWriter businessRuleRelation(JigRepository jigRepository) {
+        return new ClassRelationDiagram(jigService.coreDomainJigTypes(jigRepository));
     }
 
     @HandleDocument(JigDocument.CategoryDiagram)
-    public DiagramSourceWriter categories(JigTypesRepository jigTypesRepository) {
-        return jigService.categories(jigTypesRepository);
+    public DiagramSourceWriter categories(JigRepository jigRepository) {
+        return jigService.categories(jigRepository);
     }
 
     @HandleDocument(JigDocument.CategoryUsageDiagram)
-    public DiagramSourceWriter categoryUsages(JigTypesRepository jigTypesRepository) {
-        return jigService.categoryUsages(jigTypesRepository);
+    public DiagramSourceWriter categoryUsages(JigRepository jigRepository) {
+        return jigService.categoryUsages(jigRepository);
     }
 
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)
-    public DiagramSourceWriter serviceMethodCallHierarchy(JigTypesRepository jigTypesRepository) {
-        return new ServiceMethodCallHierarchyDiagram(jigService.serviceAngles(jigTypesRepository));
+    public DiagramSourceWriter serviceMethodCallHierarchy(JigRepository jigRepository) {
+        return new ServiceMethodCallHierarchyDiagram(jigService.serviceAngles(jigRepository));
     }
 
     @Override

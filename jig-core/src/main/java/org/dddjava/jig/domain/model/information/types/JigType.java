@@ -40,10 +40,6 @@ public class JigType {
         );
     }
 
-    public static JigType from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
-        return new JigType(jigTypeHeader, jigTypeMembers, jigTypeGlossary);
-    }
-
     public static JigType from(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
         Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,

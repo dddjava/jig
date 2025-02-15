@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.sources.classsources.ClassDeclaration;
+import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 

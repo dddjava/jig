@@ -25,7 +25,7 @@ public class JigInformationFactory {
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
-    public static JigTypeMembers createJigTypeMembers(GlossaryRepository glossaryRepository, ClassDeclaration classDeclaration) {
+    private static JigTypeMembers createJigTypeMembers(GlossaryRepository glossaryRepository, ClassDeclaration classDeclaration) {
         Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,
                         glossaryRepository.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))

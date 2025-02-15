@@ -5,46 +5,40 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-
-import static java.util.stream.Collectors.groupingBy;
+import java.util.stream.Collectors;
 
 /**
  * パッケージの依存関係一覧
  */
 public class PackageRelations {
 
-    private final Map<PackageRelation, List<PackageRelation>> map;
+    private final Collection<PackageRelation> set;
 
-    public PackageRelations(List<PackageRelation> list) {
-        this(list.stream().collect(groupingBy(Function.identity())));
-    }
-
-    public PackageRelations(Map<PackageRelation, List<PackageRelation>> map) {
-        this.map = map;
+    public PackageRelations(Collection<PackageRelation> set) {
+        this.set = set;
     }
 
     public static PackageRelations from(ClassRelations classRelations) {
-        Map<PackageRelation, List<PackageRelation>> map = classRelations.list().stream()
+        var collect = classRelations.list().stream()
                 .map(classRelation -> new PackageRelation(
                         classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
                 .filter(PackageRelation::notSelfRelation)
-                .collect(groupingBy(Function.identity()));
-        return new PackageRelations(map);
+                .collect(Collectors.toSet());
+        return new PackageRelations(collect);
     }
 
     public List<PackageRelation> list() {
-        return new ArrayList<>(map.keySet());
+        return new ArrayList<>(set);
     }
 
     public PackageRelations applyDepth(PackageDepth packageDepth) {
-        Map<PackageRelation, List<PackageRelation>> map = this.list().stream()
+        var newSet = this.set.stream()
                 .map(relation -> relation.applyDepth(packageDepth))
                 .filter(PackageRelation::notSelfRelation)
-                .collect(groupingBy(Function.identity()));
-        return new PackageRelations(map);
+                .collect(Collectors.toSet());
+        return new PackageRelations(newSet);
     }
 
     public RelationNumber number() {
@@ -52,13 +46,14 @@ public class PackageRelations {
     }
 
     public PackageRelations filterBothMatch(PackageIdentifiers packageIdentifiers) {
-        Map<PackageRelation, List<PackageRelation>> map = this.map.keySet().stream()
+        var collection = this.set.stream()
                 .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
-                .collect(groupingBy(Function.identity()));
-        return new PackageRelations(map);
+                .collect(Collectors.toSet());
+
+        return new PackageRelations(collection);
     }
 
     public boolean available() {
-        return !map.isEmpty();
+        return !set.isEmpty();
     }
 }

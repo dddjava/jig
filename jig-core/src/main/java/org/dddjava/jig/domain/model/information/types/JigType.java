@@ -65,6 +65,14 @@ public class JigType {
         return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
     }
 
+    // テスト用
+    public TypeIdentifiers allUsingTypes() {
+        return new TypeIdentifiers(Stream.concat(
+                jigTypeHeader.containedIds().stream(),
+                jigTypeMembers.allTypeIdentifierSet().stream()
+        ).collect(Collectors.toSet()));
+    }
+
     public TypeIdentifiers usingTypes() {
         var collect = Stream.concat(
                         jigTypeHeader.containedIds().stream(),

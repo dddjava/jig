@@ -99,12 +99,10 @@ class AsmFieldVisitorTest {
         TypeIdentifiers identifiers = jigType.usingTypes();
         assertThat(identifiers.list())
                 .contains(
-                        TypeIdentifier.from(List.class),
                         TypeIdentifier.from(stub.domain.model.relation.field.FieldAnnotation.class),
                         TypeIdentifier.from(StaticField.class),
                         TypeIdentifier.from(InstanceField.class),
                         TypeIdentifier.from(GenericField.class),
-                        TypeIdentifier.valueOf(ArrayField.class.getName() + "[]"),
                         TypeIdentifier.from(ArrayField.class),
                         TypeIdentifier.from(ReferenceConstantOwnerAtFieldDefinition.class),
                         TypeIdentifier.from(ReferenceConstantAtFieldDefinition.class)

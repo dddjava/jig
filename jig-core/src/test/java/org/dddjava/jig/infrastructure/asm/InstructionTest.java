@@ -26,7 +26,9 @@ public class InstructionTest {
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
         var jigType = TestSupport.buildJigType(clz);
 
-        TypeIdentifiers identifiers = jigType.usingTypes();
+        // 標準型で代用しているところがあるのでusingTypesを使うと検出できているかのテストができなくなるためallUsingTypesを使用する
+        // 不要になるようにテストを直したい
+        TypeIdentifiers identifiers = jigType.allUsingTypes();
         assertThat(identifiers.list())
                 .containsExactlyInAnyOrder(
                         // 標準

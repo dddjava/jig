@@ -59,7 +59,6 @@ public class AsmClassSourceReaderTest {
         assertThat(identifiers.list())
                 .contains(
                         TypeIdentifier.from(ClassAnnotation.class),
-                        TypeIdentifier.from(Comparable.class),
                         TypeIdentifier.from(GenericsParameter.class)
                 );
 

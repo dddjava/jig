@@ -31,7 +31,6 @@ public class JigTestExtension implements ParameterResolver {
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         Class<?> parameterType = parameterContext.getParameter().getType();
         if (parameterType == Configuration.class
-                || parameterType == Sources.class
                 || parameterType == SourceBasePaths.class
                 || parameterType == JigRepository.class) {
             return true;
@@ -49,7 +48,6 @@ public class JigTestExtension implements ParameterResolver {
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         Class<?> parameterType = parameterContext.getParameter().getType();
         if (parameterType == Configuration.class) return configuration;
-        if (parameterType == Sources.class) return getTestRawSource();
         if (parameterType == SourceBasePaths.class) return TestSupport.getRawSourceLocations();
         if (parameterType == JigRepository.class) {
             DefaultJigRepositoryFactory factory = DefaultJigRepositoryFactory.init(configuration);

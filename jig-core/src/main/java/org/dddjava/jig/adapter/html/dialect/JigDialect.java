@@ -57,7 +57,7 @@ public class JigDialect implements IExpressionObjectDialect, IProcessorDialect {
      */
     @Override
     public Set<IProcessor> getProcessors(String dialectPrefix) {
-        return Set.of(new JigOptionalUTextTagProcessor(TemplateMode.HTML, dialectPrefix));
+        return Set.of(new JigOptionalUtextTagProcessor(TemplateMode.HTML, dialectPrefix));
     }
 }
 

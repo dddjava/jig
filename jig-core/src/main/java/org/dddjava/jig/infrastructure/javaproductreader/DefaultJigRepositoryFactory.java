@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
@@ -87,7 +86,7 @@ public class DefaultJigRepositoryFactory {
                 .orElseGet(JavaSourceModel::empty);
 
         ClassSources classSources = sources.classSources();
-        ClassSourceModel classSourceModel = new AsmClassSourceReader().classSourceModel(classSources);
+        Collection<ClassDeclaration> classDeclarations = new AsmClassSourceReader().classSourceModel(classSources);
 
         // クラス名の解決や対象の選別にClassSourceModelを使用するようにしたいので、この位置。
         // 現状（すくなくとも2025.2.1時点まで）はClassSourceを作る際にASMを使用している。その時点でのASM使用をやめたい。
@@ -96,7 +95,7 @@ public class DefaultJigRepositoryFactory {
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
-        JigTypes jigTypes = initializeJigTypes(classSourceModel, glossaryRepository);
+        JigTypes jigTypes = initializeJigTypes(classDeclarations, glossaryRepository);
 
         return new JigRepository() {
             @Override
@@ -116,8 +115,8 @@ public class DefaultJigRepositoryFactory {
         };
     }
 
-    private static JigTypes initializeJigTypes(ClassSourceModel classSourceModel, GlossaryRepository glossaryRepository) {
-        return classSourceModel.classDeclarations()
+    private static JigTypes initializeJigTypes(Collection<ClassDeclaration> classDeclarations, GlossaryRepository glossaryRepository) {
+        return classDeclarations
                 .stream()
                 .map(classDeclaration -> {
                     return JigType.from(

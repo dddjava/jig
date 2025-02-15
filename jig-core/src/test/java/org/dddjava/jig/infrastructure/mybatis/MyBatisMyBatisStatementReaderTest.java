@@ -1,11 +1,10 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
-import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MyBatisMyBatisStatementReaderTest {
 
     @Test
-    void bindを使ってても解析できる(DefaultJigRepositoryFactory defaultJigRepositoryFactory, Sources sources) {
-        MyBatisStatements myBatisStatements = defaultJigRepositoryFactory.readSqlSource(sources);
+    void bindを使ってても解析できる(JigRepository jigRepository) {
+        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
                 .filter(statement -> statement.identifier().equals(new MyBatisStatementId(SampleMapper.class.getCanonicalName() + ".binding")))
@@ -32,8 +31,8 @@ class MyBatisMyBatisStatementReaderTest {
 
     @ParameterizedTest
     @MethodSource
-    void 標準的なパターン(String methodName, String tableName, SqlType sqlType, DefaultJigRepositoryFactory defaultJigRepositoryFactory, Sources sources) {
-        MyBatisStatements myBatisStatements = defaultJigRepositoryFactory.readSqlSource(sources);
+    void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigRepository jigRepository) {
+        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
                 .filter(current -> current.identifier().equals(new MyBatisStatementId("stub.infrastructure.datasource.CanonicalMapper." + methodName)))

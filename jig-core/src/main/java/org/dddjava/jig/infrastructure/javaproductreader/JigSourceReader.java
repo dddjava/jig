@@ -12,12 +12,12 @@ import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceReader;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
+import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -31,13 +31,13 @@ public class JigSourceReader {
     private final GlossaryRepository glossaryRepository;
 
     private final JavaSourceReader javaSourceReader;
-    private final ClassSourceReader classSourceReader;
+    private final AsmClassSourceReader classSourceReader;
 
     private final MyBatisStatementsReader myBatisStatementsReader;
 
     private final JigEventRepository jigEventRepository;
 
-    public JigSourceReader(GlossaryRepository glossaryRepository, ClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
+    public JigSourceReader(GlossaryRepository glossaryRepository, AsmClassSourceReader classSourceReader, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
         this.classSourceReader = classSourceReader;
         this.javaSourceReader = javaSourceReader;

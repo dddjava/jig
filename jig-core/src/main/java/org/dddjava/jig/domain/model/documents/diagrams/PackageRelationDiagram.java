@@ -46,7 +46,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     public static PackageRelationDiagram empty() {
         return new PackageRelationDiagram(
                 new PackageIdentifiers(Collections.emptyList()),
-                new PackageRelations(Collections.emptyList()),
+                PackageRelations.from(Collections.emptyList()),
                 null,
                 new PackageDepth(-1)
         );

@@ -16,7 +16,7 @@ public class PackageRelations {
 
     private final Collection<PackageRelation> relations;
 
-    public PackageRelations(Collection<PackageRelation> relations) {
+    private PackageRelations(Collection<PackageRelation> relations) {
         this.relations = relations;
     }
 
@@ -26,11 +26,16 @@ public class PackageRelations {
                         classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
                 .filter(PackageRelation::notSelfRelation)
                 .collect(Collectors.toSet());
-        return new PackageRelations(collect);
+        return from(collect);
+    }
+
+    public static PackageRelations from(Collection<PackageRelation> relations) {
+        return new PackageRelations(relations);
     }
 
     public List<PackageRelation> list() {
         return relations.stream()
+                .distinct()
                 .sorted(Comparator.comparing((PackageRelation packageRelation) -> packageRelation.from().asText())
                         .thenComparing(packageRelation -> packageRelation.to().asText()))
                 .toList();
@@ -41,7 +46,7 @@ public class PackageRelations {
                 .map(relation -> relation.applyDepth(packageDepth))
                 .filter(PackageRelation::notSelfRelation)
                 .collect(Collectors.toSet());
-        return new PackageRelations(newSet);
+        return from(newSet);
     }
 
     public RelationNumber number() {
@@ -53,7 +58,7 @@ public class PackageRelations {
                 .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
                 .collect(Collectors.toSet());
 
-        return new PackageRelations(collection);
+        return from(collection);
     }
 
     public boolean available() {

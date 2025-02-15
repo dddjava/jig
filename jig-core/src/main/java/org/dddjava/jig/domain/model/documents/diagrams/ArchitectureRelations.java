@@ -53,6 +53,6 @@ public class ArchitectureRelations {
     }
 
     public PackageRelations packageRelations() {
-        return PackageRelations.from(list);
+        return new PackageRelations(list);
     }
 }

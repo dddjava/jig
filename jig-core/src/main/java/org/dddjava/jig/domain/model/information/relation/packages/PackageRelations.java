@@ -7,58 +7,66 @@ import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * パッケージの依存関係一覧
+ * パッケージの依存関係
  */
 public class PackageRelations {
 
+    /**
+     * 重複・自己参照・順序に関わらず保持するコレクション
+     */
     private final Collection<PackageRelation> relations;
 
-    private PackageRelations(Collection<PackageRelation> relations) {
+    public PackageRelations(Collection<PackageRelation> relations) {
         this.relations = relations;
     }
 
+    /**
+     * クラスの関連をパッケージの関連に丸める
+     */
     public static PackageRelations from(ClassRelations classRelations) {
-        var collect = classRelations.list().stream()
+        return new PackageRelations(classRelations.list().stream()
                 .map(classRelation -> new PackageRelation(
                         classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
-                .filter(PackageRelation::notSelfRelation)
-                .collect(Collectors.toSet());
-        return from(collect);
+                .toList());
     }
 
-    public static PackageRelations from(Collection<PackageRelation> relations) {
-        return new PackageRelations(relations);
-    }
-
+    /**
+     * 重複と自己参照を除いた上で、from,toの名前順のリストを生成する
+     */
     public List<PackageRelation> list() {
         return relations.stream()
                 .distinct()
+                .filter(PackageRelation::notSelfRelation)
                 .sorted(Comparator.comparing((PackageRelation packageRelation) -> packageRelation.from().asText())
                         .thenComparing(packageRelation -> packageRelation.to().asText()))
                 .toList();
     }
 
-    public PackageRelations applyDepth(PackageDepth packageDepth) {
-        var newSet = this.relations.stream()
-                .map(relation -> relation.applyDepth(packageDepth))
-                .filter(PackageRelation::notSelfRelation)
-                .collect(Collectors.toSet());
-        return from(newSet);
-    }
-
+    /**
+     * 関連数
+     */
     public RelationNumber number() {
-        return new RelationNumber(relations.size());
+        return new RelationNumber(list().size());
     }
 
-    public PackageRelations filterBothMatch(PackageIdentifiers packageIdentifiers) {
-        var collection = this.relations.stream()
-                .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
-                .collect(Collectors.toSet());
+    /**
+     * 指定された深さに切り詰める
+     */
+    public PackageRelations applyDepth(PackageDepth packageDepth) {
+        return new PackageRelations(this.relations.stream()
+                .map(relation -> relation.applyDepth(packageDepth))
+                .toList());
+    }
 
-        return from(collection);
+    /**
+     * 指定されたパッケージ間の参照のみにフィルタリングする
+     */
+    public PackageRelations filterInternal(PackageIdentifiers packageIdentifiers) {
+        return new PackageRelations(this.relations.stream()
+                .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
+                .toList());
     }
 
     public boolean available() {

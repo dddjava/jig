@@ -37,7 +37,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     private PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {
         this.packageIdentifiers = packageIdentifiers;
-        this.packageRelations = packageRelations.filterBothMatch(packageIdentifiers);
+        this.packageRelations = packageRelations.filterInternal(packageIdentifiers);
         this.classRelations = classRelations;
         this.appliedDepth = appliedDepth;
         this.packageMutualDependencies = PackageMutualDependencies.from(this.packageRelations);
@@ -46,7 +46,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     public static PackageRelationDiagram empty() {
         return new PackageRelationDiagram(
                 new PackageIdentifiers(Collections.emptyList()),
-                PackageRelations.from(Collections.emptyList()),
+                new PackageRelations(Collections.emptyList()),
                 null,
                 new PackageDepth(-1)
         );

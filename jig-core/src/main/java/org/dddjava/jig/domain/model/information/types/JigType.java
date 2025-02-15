@@ -9,7 +9,9 @@ import org.dddjava.jig.domain.model.information.members.JigFields;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -64,10 +66,16 @@ public class JigType {
     }
 
     public TypeIdentifiers usingTypes() {
-        Set<TypeIdentifier> set = new HashSet<>();
-        set.addAll(jigTypeHeader.containedIds());
-        set.addAll(jigTypeMembers.allTypeIdentifierSet());
-        return new TypeIdentifiers(new ArrayList<>(set));
+        var collect = Stream.concat(
+                        jigTypeHeader.containedIds().stream(),
+                        jigTypeMembers.allTypeIdentifierSet().stream()
+                )
+                // [L からはじまるarrayが別になるのは嬉しくないので。水際的にここで処置しておくが、源泉近くで対応したい。
+                .map(TypeIdentifier::unarray)
+                // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。水際的にここで処置しておくが、源泉近くで対応したい。
+                .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
+                .collect(Collectors.toSet());
+        return new TypeIdentifiers(collect);
     }
 
     public PackageIdentifier packageIdentifier() {

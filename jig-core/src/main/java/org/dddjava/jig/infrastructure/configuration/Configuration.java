@@ -8,14 +8,14 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
-import org.dddjava.jig.infrastructure.javaproductreader.JigSourceReader;
+import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryBuilder;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 public class Configuration {
     JigProperties properties;
 
-    JigSourceReader jigSourceReader;
+    DefaultJigRepositoryBuilder defaultJigRepositoryBuilder;
     JigDocumentGenerator jigDocumentGenerator;
     JigService jigService;
     JigDocumentContext jigDocumentContext;
@@ -30,7 +30,7 @@ public class Configuration {
         JigEventRepository jigEventRepository = new JigEventRepository();
         this.jigService = new JigService(architecture, jigEventRepository);
 
-        this.jigSourceReader = new JigSourceReader(
+        this.defaultJigRepositoryBuilder = new DefaultJigRepositoryBuilder(
                 glossaryRepository,
                 new JavaparserReader(properties),
                 new MyBatisMyBatisStatementsReader(),
@@ -42,8 +42,8 @@ public class Configuration {
         this.jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
     }
 
-    public JigSourceReader sourceReader() {
-        return jigSourceReader;
+    public DefaultJigRepositoryBuilder sourceReader() {
+        return defaultJigRepositoryBuilder;
     }
 
     public JigDocumentGenerator documentGenerator() {

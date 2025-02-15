@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.infrastructure.javaproductreader.JigSourceReader;
+import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MyBatisMyBatisStatementReaderTest {
 
     @Test
-    void bindを使ってても解析できる(JigSourceReader jigSourceReader, Sources sources) {
-        MyBatisStatements myBatisStatements = jigSourceReader.readSqlSource(sources);
+    void bindを使ってても解析できる(DefaultJigRepositoryBuilder defaultJigRepositoryBuilder, Sources sources) {
+        MyBatisStatements myBatisStatements = defaultJigRepositoryBuilder.readSqlSource(sources);
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
                 .filter(statement -> statement.identifier().equals(new MyBatisStatementId(SampleMapper.class.getCanonicalName() + ".binding")))
@@ -32,8 +32,8 @@ class MyBatisMyBatisStatementReaderTest {
 
     @ParameterizedTest
     @MethodSource
-    void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigSourceReader jigSourceReader, Sources sources) {
-        MyBatisStatements myBatisStatements = jigSourceReader.readSqlSource(sources);
+    void 標準的なパターン(String methodName, String tableName, SqlType sqlType, DefaultJigRepositoryBuilder defaultJigRepositoryBuilder, Sources sources) {
+        MyBatisStatements myBatisStatements = defaultJigRepositoryBuilder.readSqlSource(sources);
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
                 .filter(current -> current.identifier().equals(new MyBatisStatementId("stub.infrastructure.datasource.CanonicalMapper." + methodName)))

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.javaproductreader.JigSourceReader;
+import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +33,11 @@ public class JigExecutor {
     private List<HandleResult> execute() {
         long startTime = System.currentTimeMillis();
 
-        JigSourceReader jigSourceReader = configuration.sourceReader();
+        DefaultJigRepositoryBuilder defaultJigRepositoryBuilder = configuration.sourceReader();
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
 
         jigDocumentGenerator.prepareOutputDirectory();
-        JigTypesRepository jigTypesRepository = jigSourceReader.readPathSource(sourceBasePaths);
+        JigTypesRepository jigTypesRepository = defaultJigRepositoryBuilder.readPathSource(sourceBasePaths);
         var results = jigDocumentGenerator.generateDocuments(jigTypesRepository);
 
         jigDocumentGenerator.generateIndex(results);

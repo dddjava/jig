@@ -22,10 +22,7 @@ import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-/**
- * 取り込みサービス
- */
-public class JigSourceReader {
+public class DefaultJigRepositoryBuilder {
 
     private final SourceCollector sourceCollector;
     private final GlossaryRepository glossaryRepository;
@@ -36,7 +33,7 @@ public class JigSourceReader {
 
     private final JigEventRepository jigEventRepository;
 
-    public JigSourceReader(GlossaryRepository glossaryRepository, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
+    public DefaultJigRepositoryBuilder(GlossaryRepository glossaryRepository, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;

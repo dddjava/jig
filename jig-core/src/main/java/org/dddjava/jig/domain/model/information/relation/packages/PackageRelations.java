@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
  */
 public class PackageRelations {
 
-    private final Collection<PackageRelation> set;
+    private final Collection<PackageRelation> relations;
 
-    public PackageRelations(Collection<PackageRelation> set) {
-        this.set = set;
+    public PackageRelations(Collection<PackageRelation> relations) {
+        this.relations = relations;
     }
 
     public static PackageRelations from(ClassRelations classRelations) {
@@ -30,11 +30,11 @@ public class PackageRelations {
     }
 
     public List<PackageRelation> list() {
-        return new ArrayList<>(set);
+        return new ArrayList<>(relations);
     }
 
     public PackageRelations applyDepth(PackageDepth packageDepth) {
-        var newSet = this.set.stream()
+        var newSet = this.relations.stream()
                 .map(relation -> relation.applyDepth(packageDepth))
                 .filter(PackageRelation::notSelfRelation)
                 .collect(Collectors.toSet());
@@ -42,11 +42,11 @@ public class PackageRelations {
     }
 
     public RelationNumber number() {
-        return new RelationNumber(list().size());
+        return new RelationNumber(relations.size());
     }
 
     public PackageRelations filterBothMatch(PackageIdentifiers packageIdentifiers) {
-        var collection = this.set.stream()
+        var collection = this.relations.stream()
                 .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
                 .collect(Collectors.toSet());
 
@@ -54,6 +54,6 @@ public class PackageRelations {
     }
 
     public boolean available() {
-        return !set.isEmpty();
+        return !relations.isEmpty();
     }
 }

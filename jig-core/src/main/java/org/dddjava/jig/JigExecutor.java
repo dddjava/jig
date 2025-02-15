@@ -1,6 +1,7 @@
 package org.dddjava.jig;
 
 import org.dddjava.jig.application.JigDocumentGenerator;
+import org.dddjava.jig.application.JigTypesRepository;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
@@ -36,9 +37,8 @@ public class JigExecutor {
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
 
         jigDocumentGenerator.prepareOutputDirectory();
-        var results = jigSourceReader.readPathSource(sourceBasePaths)
-                .map(jigDocumentGenerator::generateDocuments)
-                .orElseGet(List::of);
+        JigTypesRepository jigTypesRepository = jigSourceReader.readPathSource(sourceBasePaths);
+        var results = jigDocumentGenerator.generateDocuments(jigTypesRepository);
 
         jigDocumentGenerator.generateIndex(results);
         long takenTime = System.currentTimeMillis() - startTime;

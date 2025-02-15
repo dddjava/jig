@@ -20,7 +20,6 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,17 +46,17 @@ public class JigSourceReader {
         this.jigEventRepository = jigEventRepository;
     }
 
-    public Optional<JigTypesRepository> readPathSource(SourceBasePaths sourceBasePaths) {
+    public JigTypesRepository readPathSource(SourceBasePaths sourceBasePaths) {
         Sources sources = sourceCollector.collectSources(sourceBasePaths);
         if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
         if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
         if (jigEventRepository.hasError()) {
-            return Optional.empty();
+            return JigTypesRepository.empty();
         }
 
-        return Optional.of(jigTypeRepository(sources));
+        return jigTypeRepository(sources);
     }
 
     /**

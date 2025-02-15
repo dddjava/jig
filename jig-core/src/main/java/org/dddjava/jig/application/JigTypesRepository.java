@@ -2,7 +2,23 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
+import java.util.List;
+
 public interface JigTypesRepository {
+
+    static JigTypesRepository empty() {
+        return new JigTypesRepository() {
+            @Override
+            public JigTypes fetchJigTypes() {
+                return new JigTypes(List.of());
+            }
+
+            @Override
+            public JigDataProvider jigDataProvider() {
+                return JigDataProvider.none();
+            }
+        };
+    }
 
     JigTypes fetchJigTypes();
 

@@ -32,7 +32,7 @@ public class Configuration {
 
         this.defaultJigRepositoryBuilder = new DefaultJigRepositoryBuilder(
                 glossaryRepository,
-                new JavaparserReader(properties),
+                new JavaparserReader(),
                 new MyBatisMyBatisStatementsReader(),
                 new ClassOrJavaSourceCollector(),
                 jigEventRepository

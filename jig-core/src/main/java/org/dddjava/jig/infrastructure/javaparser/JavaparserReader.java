@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ public class JavaparserReader implements JavaSourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(JavaparserReader.class);
 
-    public JavaparserReader(JigProperties properties) {
+    public JavaparserReader() {
         ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
         configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
         if (Runtime.version().feature() >= 21) {

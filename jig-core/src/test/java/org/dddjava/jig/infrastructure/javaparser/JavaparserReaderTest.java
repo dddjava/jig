@@ -23,7 +23,7 @@ class JavaparserReaderTest {
     @BeforeEach
     void setUp() {
         // javaparserReaderの中でCompilationUnitの初期設定を行っているため、parseより前に呼び出す必要がある。
-        sut = new JavaparserReader(null);
+        sut = new JavaparserReader();
     }
 
     @ValueSource(strings = {"""

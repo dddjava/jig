@@ -6,7 +6,6 @@ import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.Architecture;
-import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 public class Configuration {
@@ -14,7 +13,6 @@ public class Configuration {
     private final JigEventRepository jigEventRepository;
     JigProperties properties;
 
-    DefaultJigRepositoryFactory defaultJigRepositoryFactory;
     JigDocumentGenerator jigDocumentGenerator;
     JigService jigService;
     JigDocumentContext jigDocumentContext;
@@ -31,10 +29,6 @@ public class Configuration {
 
         jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
         jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
-    }
-
-    public DefaultJigRepositoryFactory sourceReader() {
-        return defaultJigRepositoryFactory;
     }
 
     public JigDocumentGenerator documentGenerator() {

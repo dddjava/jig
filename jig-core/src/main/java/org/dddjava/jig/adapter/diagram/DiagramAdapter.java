@@ -13,6 +13,11 @@ import org.dddjava.jig.domain.model.sources.JigRepository;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * ダイアグラムのOutputAdapter
+ *
+ * {@link HandleDocument} で指定されたドキュメントを出力する際に各メソッドが実行される。
+ */
 @HandleDocument
 public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 

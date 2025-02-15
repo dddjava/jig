@@ -11,13 +11,9 @@ import java.util.stream.Collectors;
 public class JigInformationFactory {
 
     public static JigTypes createJigTypes(Collection<ClassDeclaration> classDeclarations, GlossaryRepository glossaryRepository) {
-        return classDeclarations
-                .stream()
+        return classDeclarations.stream()
                 .map(classDeclaration -> {
-                    return JigType.from(
-                            classDeclaration,
-                            glossaryRepository.collectJigTypeTerms(classDeclaration.jigTypeHeader().id())
-                    );
+                    return JigType.from(classDeclaration, glossaryRepository.collectJigTypeTerms(classDeclaration.jigTypeHeader().id()));
                 })
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }

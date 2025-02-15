@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
-import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -19,26 +17,13 @@ import java.util.stream.Stream;
  */
 public class JigType {
     private final JigTypeHeader jigTypeHeader;
-    private final JigTypeGlossary jigTypeGlossary;
     private final JigTypeMembers jigTypeMembers;
-
-    private final JigStaticMember jigStaticMember;
+    private final JigTypeGlossary jigTypeGlossary;
 
     private JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
         this.jigTypeGlossary = jigTypeGlossary;
         this.jigTypeHeader = jigTypeHeader;
         this.jigTypeMembers = jigTypeMembers;
-
-        this.jigStaticMember = new JigStaticMember(
-                // コンストラクタ
-                jigTypeMembers.jigMethods().stream()
-                        .filter(jigMethod -> jigMethod.jigMethodDeclaration().header().jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER))
-                        .toList(),
-                // staticメソッド、staticイニシャライザ
-                jigTypeMembers.jigMethods().stream()
-                        .filter(jigMethod -> jigMethod.jigMethodDeclaration().header().ownership() == JigMemberOwnership.CLASS)
-                        .toList()
-        );
     }
 
     public static JigType from(ClassDeclaration classDeclaration, Glossary glossary) {
@@ -78,10 +63,6 @@ public class JigType {
         return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
     }
 
-    public JigStaticMember staticMember() {
-        return jigStaticMember;
-    }
-
     public TypeIdentifiers usingTypes() {
         Set<TypeIdentifier> set = new HashSet<>();
         set.addAll(jigTypeHeader.containedIds());
@@ -115,10 +96,6 @@ public class JigType {
 
     public JigFields instanceJigFields() {
         return jigTypeMembers.instanceFields();
-    }
-
-    public JigMethods staticMethods() {
-        return staticMember().staticMethods().filterProgrammerDefined();
     }
 
     public JigTypeValueKind toValueKind() {

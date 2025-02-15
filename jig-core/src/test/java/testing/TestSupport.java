@@ -1,16 +1,12 @@
 package testing;
 
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
-import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
-import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.information.JigInformationFactory;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
-import org.dddjava.jig.domain.model.information.types.JigTypeTerms;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
@@ -102,11 +98,7 @@ public class TestSupport {
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
-        return JigType.from(
-                classDeclaration.jigTypeHeader(),
-                JigInformationFactory.createJigTypeMembers(new OnMemoryGlossaryRepository(), classDeclaration),
-                new JigTypeTerms(new Term(new TermIdentifier(""), "", "", TermKind.クラス), List.of())
-        );
+        return JigInformationFactory.createJigTypes(List.of(classDeclaration), new OnMemoryGlossaryRepository()).stream().findFirst().orElseThrow();
     }
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {

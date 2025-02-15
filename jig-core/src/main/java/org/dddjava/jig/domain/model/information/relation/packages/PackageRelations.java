@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * パッケージの依存関係
@@ -71,5 +72,13 @@ public class PackageRelations {
 
     public boolean available() {
         return !relations.isEmpty();
+    }
+
+    public PackageIdentifiers packageIdentifiers() {
+        var packageIdentifiers = relations.stream()
+                .flatMap(relation -> Stream.of(relation.from(), relation.to()))
+                .distinct()
+                .toList();
+        return new PackageIdentifiers(packageIdentifiers);
     }
 }

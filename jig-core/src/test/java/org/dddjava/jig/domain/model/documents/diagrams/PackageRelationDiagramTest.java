@@ -28,67 +28,34 @@ import static org.mockito.Mockito.when;
 class PackageRelationDiagramTest {
     private static final Logger logger = LoggerFactory.getLogger(PackageRelationDiagramTest.class);
 
-    public static Stream<Arguments> 出力されないパターン() {
-        return Stream.of(
-                Arguments.argumentSet(
-                        "パッケージも関連も空",
-                        List.of(),
-                        List.of()
-                ),
-                Arguments.argumentSet(
-                        "パッケージはあるが関連はない",
-                        List.of(PackageIdentifier.valueOf("a.aa"),
-                                PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.ab")),
-                        List.of()
-                )
-        );
-    }
+    @Test
+    void 出力されない() {
+        var sut = PackageRelations.from(new ClassRelations(List.of()));
 
-    @MethodSource
-    @ParameterizedTest
-    void 出力されないパターン(List<PackageIdentifier> packageIdentifiers, List<ClassRelation> classRelations) {
-        var sut = new PackageRelationDiagram(new PackageIdentifiers(packageIdentifiers), new ClassRelations(classRelations));
-
-        var actual = sut.dependencyDotText(null);
-
-        assertTrue(actual.noValue());
+        assertFalse(sut.available());
     }
 
     public static Stream<Arguments> 出力されるパターン() {
         return Stream.of(
                 Arguments.argumentSet("直下の関連がある",
-                        List.of(PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.aa.aab")),
                         List.of(classRelationFrom("a.aa.aaa.Foo", "a.aa.aab.Bar")),
                         3,
                         List.of("\"a.aa.aaa\" -> \"a.aa.aab\";")
                 ),
                 Arguments.argumentSet("階層がずれた関連がある",
-                        List.of(PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.aa.aab.aaba"),
-                                PackageIdentifier.valueOf("b")),
                         List.of(classRelationFrom("a.aa.aaa.Foo", "a.aa.aab.aaba.Bar"),
                                 classRelationFrom("a.aa.aaa.Foo", "b.Bbb")),
                         3,
                         List.of("\"a.aa.aaa\" -> \"a.aa.aab\";",
-                                "\"a.aa.aaa\" -> \"b\";",
-                                "subgraph \"cluster_a.aa\"")
+                                "\"a.aa.aaa\" -> \"b\";")
                 ),
                 Arguments.argumentSet("階層がずれた関連を1階層切り詰める",
-                        List.of(PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.aa.aab.aaba"),
-                                PackageIdentifier.valueOf("b")),
                         List.of(classRelationFrom("a.aa.aaa.Foo", "a.aa.aab.aaba.Bar"),
                                 classRelationFrom("a.aa.aaa.Foo", "b.Bbb")),
                         2,
                         List.of("\"a.aa\" -> \"b\";")
                 ),
                 Arguments.argumentSet("デフォルトパッケージを扱える",
-                        List.of(PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa"),
-                                PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaab"),
-                                PackageIdentifier.defaultPackage(),
-                                PackageIdentifier.valueOf("a")),
                         List.of(classRelationFrom("a.aa.aaa.aaaa.aaaaa.Hoge", "a.aa.aaa.aaaa.aaaab.Fuga"),
                                 classRelationFrom("a.aa.aaa.aaaa.aaaaa.Hoge", "DefaultPackageClass")),
                         4,
@@ -103,21 +70,19 @@ class PackageRelationDiagramTest {
 
     @MethodSource
     @ParameterizedTest
-    void 出力されるパターン(List<PackageIdentifier> packageIdentifiers, List<ClassRelation> classRelations, int depth, List<String> expectedContainsTexts) {
-        var sut = new PackageRelationDiagram(new PackageIdentifiers(packageIdentifiers), new ClassRelations(classRelations))
-                .applyDepth(new PackageDepth(depth));
+    void 出力されるパターン(List<ClassRelation> classRelations, int depth, List<String> expectedContainsTexts) {
+        var sut = PackageRelations.from(new ClassRelations(classRelations)).applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageTerm(any()))
                 .thenAnswer(invocationOnMock ->
                         TermFactory.fromPackage(new TermIdentifier("dummy"), "dummy"));
-        var actual = sut.dependencyDotText(jigDocumentContext);
 
-        for (String expectedContains : expectedContainsTexts) {
-            assertTrue(actual.text().contains(expectedContains), actual.text());
-        }
+        var list = sut.list().stream()
+                .map(packageRelation -> "\"%s\" -> \"%s\";".formatted(packageRelation.from().asText(), packageRelation.to().asText()))
+                .toList();
 
-        logger.debug(actual.text());
+        assertEquals(expectedContainsTexts, list);
     }
 
     @Test
@@ -164,6 +129,7 @@ class PackageRelationDiagramTest {
         assertTrue(depth1Relations.available());
 
         PackageRelations depth0Relations = sut.applyDepth(new PackageDepth(0));
-        assertFalse(depth0Relations.available());
+        // packageRelationでは自己参照も含むためTrueになる。この場合は default -> default
+        assertTrue(depth0Relations.available());
     }
 }

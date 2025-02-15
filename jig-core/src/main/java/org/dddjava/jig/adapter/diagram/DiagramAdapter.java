@@ -5,6 +5,7 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
@@ -31,7 +32,8 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.PackageRelationDiagram)
     public DiagramSourceWriter packageRelation(JigRepository jigRepository) {
-        return jigService.packageDependencies(jigRepository);
+        var jigTypes = jigService.coreDomainJigTypes(jigRepository);
+        return PackageRelationDiagram.from(jigTypes);
     }
 
     @HandleDocument(JigDocument.CompositeUsecaseDiagram)

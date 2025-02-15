@@ -5,13 +5,11 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -65,12 +63,6 @@ public class JigService {
         JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(architecture::isCoreDomain);
         if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
         return coreDomainJigTypes;
-    }
-
-    public PackageRelationDiagram packageDependencies(JigRepository jigRepository) {
-        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
-        if (coreDomainJigTypes.empty()) return PackageRelationDiagram.empty();
-        return new PackageRelationDiagram(coreDomainJigTypes.typeIdentifiers().packageIdentifiers(), ClassRelations.internalRelation(coreDomainJigTypes));
     }
 
     public MethodSmellList methodSmells(JigRepository jigRepository) {

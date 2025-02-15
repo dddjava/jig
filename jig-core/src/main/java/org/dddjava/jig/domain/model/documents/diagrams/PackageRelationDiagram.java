@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualD
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
 
@@ -25,35 +26,47 @@ import static java.util.stream.Collectors.toList;
  */
 public class PackageRelationDiagram implements DiagramSourceWriter {
 
-    PackageIdentifiers packageIdentifiers;
-    PackageRelations packageRelations;
-    ClassRelations classRelations;
-    PackageDepth appliedDepth;
-    PackageMutualDependencies packageMutualDependencies;
+    /**
+     * 出力対象の関連
+     */
+    private final PackageRelations packageRelations;
 
-    public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
-        this(packageIdentifiers, PackageRelations.from(classRelations), classRelations, new PackageDepth(-1));
-    }
+    /**
+     * コンテキストとなるJigType
+     * 依存なしのパッケージや相互参照場合の原因となるクラス関連を出力するため
+     */
+    private final JigTypes contextJigTypes;
 
-    private PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {
-        this.packageIdentifiers = packageIdentifiers;
-        this.packageRelations = packageRelations.filterInternal(packageIdentifiers);
-        this.classRelations = classRelations;
+    /**
+     * 現在適用されている深さ
+     */
+    private final PackageDepth appliedDepth;
+
+    public PackageRelationDiagram(PackageRelations packageRelations, JigTypes contextJigTypes, PackageDepth appliedDepth) {
+        this.packageRelations = packageRelations;
+        this.contextJigTypes = contextJigTypes;
         this.appliedDepth = appliedDepth;
-        this.packageMutualDependencies = PackageMutualDependencies.from(this.packageRelations);
     }
 
     public static PackageRelationDiagram empty() {
         return new PackageRelationDiagram(
-                new PackageIdentifiers(Collections.emptyList()),
                 new PackageRelations(Collections.emptyList()),
                 null,
                 new PackageDepth(-1)
         );
     }
 
+    public static DiagramSourceWriter from(JigTypes jigTypes) {
+        var classRelations = ClassRelations.internalRelation(jigTypes);
+        var packageRelations = PackageRelations.from(classRelations);
+        return new PackageRelationDiagram(packageRelations, jigTypes, new PackageDepth(-1));
+    }
+
+    /**
+     * 関連なしも含むすべてのパッケージ
+     */
     public PackageIdentifiers allPackages() {
-        return packageIdentifiers;
+        return contextJigTypes.typeIdentifiers().packageIdentifiers().applyDepth(appliedDepth);
     }
 
     public PackageRelations packageDependencies() {
@@ -62,9 +75,8 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     public PackageRelationDiagram applyDepth(PackageDepth depth) {
         return new PackageRelationDiagram(
-                packageIdentifiers.applyDepth(depth),
                 packageRelations.applyDepth(depth),
-                this.classRelations,
+                contextJigTypes,
                 depth
         );
     }
@@ -75,7 +87,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         }
 
         PackageRelations packageRelations = packageDependencies();
-        PackageMutualDependencies packageMutualDependencies = this.packageMutualDependencies;
+        PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(packageRelations);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         for (PackageRelation packageRelation : packageRelations.list()) {
@@ -84,13 +96,14 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             }
         }
 
-        PackageDepth maxDepth = allPackages().maxDepth();
+        var allPackages = allPackages();
+        PackageDepth maxDepth = allPackages.maxDepth();
         // 最下層を一つ上でグルーピング
         Map<PackageIdentifier, List<PackageIdentifier>> groupingPackages = new HashMap<>();
         // 最下層以外
         List<PackageIdentifier> standalonePackages = new ArrayList<>();
 
-        for (PackageIdentifier packageIdentifier : allPackages().list()) {
+        for (PackageIdentifier packageIdentifier : allPackages.list()) {
             if (packageIdentifier.depth().just(maxDepth)) {
                 groupingPackages.computeIfAbsent(packageIdentifier.parent(), k -> new ArrayList<>())
                         .add(packageIdentifier);
@@ -140,7 +153,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         String summaryText = "summary[shape=note,label=\""
                 + labeler.contextDescription() + "\\l"
-                + allPackages().number().localizedLabel() + "\\l"
+                + allPackages.number().localizedLabel() + "\\l"
                 + packageRelations.number().localizedLabel() + "\\l"
                 + "\"]";
 
@@ -155,21 +168,22 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(standalonePackageNodeText)
                 .toString();
 
-        return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText());
+        return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText(packageMutualDependencies));
     }
 
-    private AdditionalText additionalText() {
+    private AdditionalText additionalText(PackageMutualDependencies packageMutualDependencies) {
         if (packageMutualDependencies.none()) {
             return AdditionalText.empty();
         }
-        return new AdditionalText(bidirectionalRelationReasonText());
+        return new AdditionalText(bidirectionalRelationReasonText(packageMutualDependencies));
     }
 
-    private String bidirectionalRelationReasonText() {
+    private String bidirectionalRelationReasonText(PackageMutualDependencies packageMutualDependencies) {
+        var contextClassRelations = ClassRelations.internalRelation(contextJigTypes);
         StringJoiner sj = new StringJoiner("\n");
         for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());
-            for (ClassRelation classRelation : classRelations.list()) {
+            for (ClassRelation classRelation : contextClassRelations.list()) {
                 PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
                 if (packageMutualDependency.matches(packageRelation)) {
                     sj.add("- " + classRelation.formatText());
@@ -184,7 +198,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
      */
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        List<PackageDepth> depths = packageIdentifiers.maxDepth().surfaceList();
+        List<PackageDepth> depths = packageRelations.packageIdentifiers().maxDepth().surfaceList();
 
         List<DiagramSource> diagramSources = depths.stream()
                 .map(this::applyDepth)

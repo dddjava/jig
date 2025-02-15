@@ -161,7 +161,7 @@ public class JigType {
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
-                || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.adapter.HandleDocument.class))) {
+                || hasAnnotation(TypeIdentifier.valueOf("org.dddjava.jig.adapter.HandleDocument"))) {
             return TypeCategory.InputAdapter;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))

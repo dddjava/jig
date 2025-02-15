@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -60,21 +59,6 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     @Override
     public Glossary all() {
         return new Glossary(terms);
-    }
-
-    @Override
-    public Term getMethodTermPossiblyMatches(JigMethodIdentifier jigMethodIdentifier) {
-        return terms.stream()
-                .filter(term -> term.termKind() == TermKind.メソッド)
-                .filter(term -> {
-                    if (term.additionalInformation() instanceof JavaMethodDeclarator javaMethodDeclarator) {
-                        return javaMethodDeclarator.possiblyMatches(jigMethodIdentifier);
-                    } else {
-                        return false;
-                    }
-                })
-                .findAny()
-                .orElseGet(() -> new Term(new TermIdentifier(jigMethodIdentifier.value()), jigMethodIdentifier.name(), "", TermKind.メソッド));
     }
 
     @Override

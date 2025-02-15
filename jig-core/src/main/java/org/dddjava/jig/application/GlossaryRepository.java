@@ -1,7 +1,6 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -23,8 +22,6 @@ public interface GlossaryRepository {
     void register(Term term);
 
     Glossary all();
-
-    Term getMethodTermPossiblyMatches(JigMethodIdentifier jigMethodIdentifier);
 
     TermIdentifier fromPackageIdentifier(PackageIdentifier packageIdentifier);
 

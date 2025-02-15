@@ -116,12 +116,12 @@ public class JigDocumentGenerator {
             var outputFilePaths = switch (jigDocument) {
                 // テーブル
                 case TermTable -> {
-                    var terms = jigService.glossary(jigRepository.jigDataProvider());
+                    var terms = jigService.glossary(jigRepository);
                     yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
                 // 一覧
                 case TermList -> {
-                    Glossary glossary = jigService.glossary(jigRepository.jigDataProvider());
+                    Glossary glossary = jigService.glossary(jigRepository);
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Glossary.reporter(), glossary.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }

@@ -5,6 +5,7 @@ import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -94,7 +95,7 @@ public class DefaultJigRepositoryFactory {
         if (myBatisStatements.status().not正常())
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
-        DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements, glossaryRepository.all());
+        DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
         JigTypes jigTypes = initializeJigTypes(classSourceModel, glossaryRepository);
 
         return new JigRepository() {
@@ -106,6 +107,11 @@ public class DefaultJigRepositoryFactory {
             @Override
             public JigDataProvider jigDataProvider() {
                 return defaultJigDataProvider;
+            }
+
+            @Override
+            public Glossary fetchGlossary() {
+                return glossaryRepository.all();
             }
         };
     }

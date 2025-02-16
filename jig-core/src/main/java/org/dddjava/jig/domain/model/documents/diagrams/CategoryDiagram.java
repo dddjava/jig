@@ -43,7 +43,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
                         String nameText = list.get(i);
                         categoryValues.add(nameText);
                     }
-                    String categoryName = categoryType.nodeLabel("<br/>");
+                    String categoryName = categoryType.label();
 
                     return Node.typeOf(categoryType.typeIdentifier())
                             .html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>")

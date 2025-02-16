@@ -1,29 +1,21 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import com.github.javaparser.StaticJavaParser;
-import com.github.javaparser.ast.CompilationUnit;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.Mockito;
 import testing.TestSupport;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 class JavaparserReaderTest {
 
@@ -55,6 +47,24 @@ class JavaparserReaderTest {
         assertEquals(expected, term.title());
     }
 
+    @Test
+    void 典型的なPackageInfoを読み取れる() {
+        Path path = Path.of("ut/package_info_typical", "package-info.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.loadPackageInfoJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        PackageIdentifier packageIdentifier = TypeIdentifier.from(this.getClass())
+                .packageIdentifier().subpackageOf("ut", "package_info_typical");
+        Term term = glossaryRepository.get(packageIdentifier);
+
+        assertEquals("色々書いているpackage-info", term.title());
+        assertEquals("""
+                １行目がタイトルとして採用。２行目以降に書かれているものが本文として読み取られる。
+                ここに記述されている linkタグ や codeタグ はテキストとして可読な形に置き換えられる。
+                インラインでないJavadocタグは本文には含まれない。""", term.description());
+    }
+
     private Path getJavaFilePath(Path requireJavaFilePath) {
         StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
@@ -71,78 +81,5 @@ class JavaparserReaderTest {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-    }
-
-    @MethodSource
-    @ParameterizedTest
-    void コメントが取得できる(String code, String expectedTitle, String expectedBody) {
-        GlossaryRepository mock = mock(GlossaryRepository.class);
-        CompilationUnit cu = StaticJavaParser.parse(code);
-
-        sut.loadPackageInfoJavaFile(cu, mock);
-
-        verify(mock).register(Mockito.argThat(term ->
-                term.title().equals(expectedTitle) && term.description().equals(expectedBody)));
-    }
-
-    static Stream<Arguments> コメントが取得できる() {
-        return Stream.of(
-                argumentSet("概要のみ",
-                        """
-                                /**
-                                 * packageにつけられたコメント
-                                 */
-                                package org.dddjava.jig.my_package;
-                                """,
-                        "packageにつけられたコメント",
-                        ""),
-                argumentSet("概要と本文",
-                        """
-                                /**
-                                 * 概要です。
-                                 *
-                                 * 本文です。
-                                 */
-                                package org.dddjava.jig.my_package;
-                                """,
-                        "概要です",
-                        "本文です。"
-                ),
-                argumentSet("概要と本文",
-                        """
-                                /**
-                                 * packageにつけられたコメント。ここからが本文です。複文もOK
-                                 *
-                                 * 改行されたものも入ります。
-                                 * 末尾の改行は入りません。
-                                 *
-                                 * @link javadocタグは入りません。
-                                 * @original 独自タグも入りません。
-                                 */
-                                package org.dddjava.jig.my_package;
-                                """,
-                        "packageにつけられたコメント",
-                        """
-                                ここからが本文です。複文もOK
-                                
-                                改行されたものも入ります。
-                                末尾の改行は入りません。"""
-                ),
-                argumentSet("インラインタグ（@link）をただの文字列にする",
-                        """
-                                /**
-                                 * 概要に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト}にします。
-                                 *
-                                 * 本文に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト }にします
-                                 * 本文に使われたインラインタグ {@link hoge.fuga text} をただの{@link テキスト }にします
-                                 */
-                                package org.dddjava.jig.my_package;
-                                """,
-                        "概要に使われたインラインタグ text をただのテキストにします",
-                        """
-                                本文に使われたインラインタグ text をただのテキストにします
-                                本文に使われたインラインタグ text をただのテキストにします"""
-                )
-        );
     }
 }

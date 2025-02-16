@@ -41,15 +41,21 @@ public class TermFactory {
     private static final Pattern INLINETAG_LINK_PATTERN = Pattern.compile("\\{@link\\s+(?:\\S+\\s+)?(\\S+)\\s*}");
 
     /**
+     * インラインのcodeタグをテキストにするためのパターン
+     */
+    private static final Pattern INLINETAG_CODE_PATTERN = Pattern.compile("\\{@code\\s+(\\S+)\\s*}");
+
+    /**
      * 改行コードを統一するためのパターン。
      * Javaparserを使用する場合、ソースの改行コードに関わらずline.separatorに置き換えられる。JIGの出力は\nに寄せるので、ここで一律置き換える。
      */
     private static final Pattern LINE_SEPARATOR_PATTERN = Pattern.compile("\\R");
 
     static String normalize(String javadocDescriptionText) {
-        return INLINETAG_LINK_PATTERN.matcher(
-                LINE_SEPARATOR_PATTERN.matcher(javadocDescriptionText).replaceAll("\n")
-        ).replaceAll("$1");
+        String 改行コード統一済み = LINE_SEPARATOR_PATTERN.matcher(javadocDescriptionText).replaceAll("\n");
+        String linkタグ処理済み = INLINETAG_LINK_PATTERN.matcher(改行コード統一済み).replaceAll("$1");
+        String codeタグ処理済み = INLINETAG_CODE_PATTERN.matcher(linkタグ処理済み).replaceAll("$1");
+        return codeタグ処理済み;
     }
 
     static String summaryText(String value) {

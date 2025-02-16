@@ -27,12 +27,14 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
     private static String mermaid(EntrypointGroup entrypointGroup, MethodRelations methodRelations, JigTypes jigTypes) {
 
-        var apiMethodRelationText = new StringJoiner("\n");
+        var entryPointText = new StringJoiner("\n");
 
         Map<TypeIdentifier, Set<JigMethod>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
         MethodRelations springComponentMethodRelations = MethodRelations.filterApplicationComponent(jigTypes, methodRelations).inlineLambda();
+
+        var methodRelationSet = new HashSet<MethodRelation>();
 
         entrypointGroup.entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
@@ -49,20 +51,17 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
                 default -> entrypointMethod.entrypointType().toString();
             };
             // apiMethod
-            apiMethodRelationText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, apiMethodLabel));
+            entryPointText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, apiMethodLabel));
             // path -> apiMethod
             String apiPointMmdId = "__" + apiMethodMmdId;
-            apiMethodRelationText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
+            entryPointText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
 
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodIdentifier(),
                     // @Serviceのクラスについたら終了
                     jigMethodIdentifier -> jigTypes.isService(jigMethodIdentifier)
             );
-            decraleMethodRelations.list()
-                    .stream()
-                    .map(methodRelation -> methodRelationEdgeText(methodRelation))
-                    .forEach(apiMethodRelationText::add);
+            methodRelationSet.addAll(decraleMethodRelations.list());
 
             // Service表示＆リンクのための収集
             decraleMethodRelations.list()
@@ -90,6 +89,8 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
+        // pathとentrypoint method
+        mermaidText.add(entryPointText.toString());
         // サービスメソッドをクラス単位にグループ化して名前解決＆クリックで遷移できるようにする
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
@@ -103,7 +104,11 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         // サービスメソッド以外のメソッド
         methodLabelMap.forEach((key, value) -> mermaidText.add("    %s[%s]".formatted(key, value)));
 
-        mermaidText.add(apiMethodRelationText.toString());
+        // 関連線
+        methodRelationSet.stream()
+                .map(methodRelation -> methodRelationEdgeText(methodRelation))
+                .forEach(mermaidText::add);
+
         return mermaidText.toString();
     }
 

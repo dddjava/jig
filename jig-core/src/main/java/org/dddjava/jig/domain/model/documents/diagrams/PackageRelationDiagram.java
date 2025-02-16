@@ -69,10 +69,6 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         return contextJigTypes.typeIdentifiers().packageIdentifiers().applyDepth(appliedDepth);
     }
 
-    public PackageRelations packageDependencies() {
-        return packageRelations;
-    }
-
     public PackageRelationDiagram applyDepth(PackageDepth depth) {
         return new PackageRelationDiagram(
                 packageRelations.applyDepth(depth),
@@ -82,11 +78,11 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     }
 
     public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext) {
-        if (!packageDependencies().available()) {
+        if (!packageRelations.available()) {
             return DiagramSource.emptyUnit();
         }
 
-        PackageRelations packageRelations = packageDependencies();
+        PackageRelations packageRelations = this.packageRelations;
         PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(packageRelations);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");

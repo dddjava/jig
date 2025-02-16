@@ -19,6 +19,8 @@ record JigAnnotationInstanceElementArray(List<JigAnnotationInstanceElementValue>
         implements JigAnnotationInstanceElementValue {
     @Override
     public String valueText() {
+        // 1つの場合はJava言語でも {} を省略できるのでそのようにする。
+        if (values.size() == 1) return values.get(0).valueText();
         return values.stream().map(JigAnnotationInstanceElementValue::valueText).collect(joining(", ", "{", "}"));
     }
 }
@@ -30,6 +32,7 @@ record JigAnnotationInstanceElementNormalValue(Object value)
         return Objects.toString(value);
     }
 }
+
 record JigAnnotationInstanceElementClassValue(TypeIdentifier value)
         implements JigAnnotationInstanceElementValue {
     @Override

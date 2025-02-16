@@ -61,15 +61,6 @@ public class PackageRelations {
                 .toList());
     }
 
-    /**
-     * 指定されたパッケージ間の参照のみにフィルタリングする
-     */
-    public PackageRelations filterInternal(PackageIdentifiers packageIdentifiers) {
-        return new PackageRelations(this.relations.stream()
-                .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
-                .toList());
-    }
-
     public boolean available() {
         return !relations.isEmpty();
     }

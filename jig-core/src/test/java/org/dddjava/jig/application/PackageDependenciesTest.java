@@ -17,8 +17,7 @@ public class PackageDependenciesTest {
     void パッケージ依存(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.coreDomainJigTypes(jigRepository);
 
-        var sut = PackageRelations.from(ClassRelations.from(jigTypes))
-                .filterInternal(jigTypes.typeIdentifiers().packageIdentifiers());
+        var sut = PackageRelations.from(ClassRelations.internalRelation(jigTypes));
 
         // パッケージの関連
         assertThat(sut.list())

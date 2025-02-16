@@ -31,10 +31,6 @@ public class PackageIdentifiers {
                 .orElseGet(() -> new PackageDepth(0));
     }
 
-    public boolean contains(PackageIdentifier packageIdentifier) {
-        return list.contains(packageIdentifier);
-    }
-
     public PackageNumber number() {
         return new PackageNumber(list.size());
     }

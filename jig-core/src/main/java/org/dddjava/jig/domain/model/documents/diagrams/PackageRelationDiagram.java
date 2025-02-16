@@ -15,9 +15,9 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageRelatio
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 /**
  * パッケージ関連図
@@ -190,19 +190,17 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         return sj.toString();
     }
 
-    /**
-     * TODO 浅 -> 深の順で並べる
-     */
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        List<PackageDepth> depths = packageRelations.packageIdentifiers().maxDepth().surfaceList();
+        var maxDepth = packageRelations.packageIdentifiers().maxDepth();
 
-        List<DiagramSource> diagramSources = depths.stream()
-                .map(this::applyDepth)
-                .map(packageRelationDiagram -> packageRelationDiagram.dependencyDotText(jigDocumentContext))
-                .filter(diagramSource -> !diagramSource.noValue())
-                .collect(toList());
-        return DiagramSource.createDiagramSource(diagramSources);
+        return DiagramSource.createDiagramSource(
+                IntStream.rangeClosed(1, maxDepth.value())
+                        .mapToObj(PackageDepth::new)
+                        .map(this::applyDepth)
+                        .map(packageRelationDiagram -> packageRelationDiagram.dependencyDotText(jigDocumentContext))
+                        .filter(diagramSource -> !diagramSource.noValue())
+                        .toList());
     }
 
     public String packageRelationText(List<PackageRelation> packageRelations) {

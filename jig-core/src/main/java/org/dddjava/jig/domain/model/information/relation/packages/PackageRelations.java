@@ -36,7 +36,7 @@ public class PackageRelations {
     /**
      * 重複と自己参照を除いた上で、from,toの名前順のリストを生成する
      */
-    public List<PackageRelation> list() {
+    public List<PackageRelation> listUnique() {
         return relations.stream()
                 .distinct()
                 .filter(PackageRelation::notSelfRelation)
@@ -49,7 +49,7 @@ public class PackageRelations {
      * 関連数
      */
     public RelationNumber number() {
-        return new RelationNumber(list().size());
+        return new RelationNumber(listUnique().size());
     }
 
     /**

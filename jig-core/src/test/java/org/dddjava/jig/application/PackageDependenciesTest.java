@@ -20,7 +20,7 @@ public class PackageDependenciesTest {
         var sut = PackageRelations.from(ClassRelations.internalRelation(jigTypes));
 
         // パッケージの関連
-        assertThat(sut.list())
+        assertThat(sut.listUnique())
                 .extracting(dependency -> {
                     PackageIdentifier from = dependency.from();
                     PackageIdentifier to = dependency.to();

@@ -24,12 +24,12 @@ public class PackageMutualDependencies {
         return true;
     }
 
-    public static PackageMutualDependencies from(PackageRelations packageRelations) {
+    public static PackageMutualDependencies from(List<PackageRelation> packageRelations) {
         List<PackageMutualDependency> list = new ArrayList<>();
         PackageMutualDependencies packageMutualDependencies = new PackageMutualDependencies(list);
 
-        for (PackageRelation packageRelation : packageRelations.list()) {
-            for (PackageRelation right : packageRelations.list()) {
+        for (PackageRelation packageRelation : packageRelations) {
+            for (PackageRelation right : packageRelations) {
                 if (packageRelation.from().equals(right.to()) && packageRelation.to().equals(right.from())) {
                     if (packageMutualDependencies.notContains(packageRelation)) {
                         list.add(PackageMutualDependency.from(packageRelation));

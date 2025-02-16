@@ -38,7 +38,7 @@ public class RelationText {
 
     public static RelationText fromPackageRelations(PackageRelations packageRelations) {
         RelationText relationText = new RelationText();
-        for (PackageRelation packageRelation : packageRelations.list()) {
+        for (PackageRelation packageRelation : packageRelations.listUnique()) {
             relationText.add(packageRelation.from(), packageRelation.to());
         }
         return relationText;

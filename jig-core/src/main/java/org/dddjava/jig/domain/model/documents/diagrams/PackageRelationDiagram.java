@@ -78,14 +78,16 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     }
 
     public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext) {
-        if (!packageRelations.available()) {
+        var relationList = packageRelations.listUnique();
+
+        if (relationList.isEmpty()) {
             return DiagramSource.emptyUnit();
         }
 
-        PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(packageRelations);
+        PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(relationList);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
-        for (PackageRelation packageRelation : packageRelations.list()) {
+        for (PackageRelation packageRelation : relationList) {
             if (packageMutualDependencies.notContains(packageRelation)) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
             }
@@ -149,7 +151,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         String summaryText = "summary[shape=note,label=\""
                 + labeler.contextDescription() + "\\l"
                 + allPackages.number().localizedLabel() + "\\l"
-                + packageRelations.number().localizedLabel() + "\\l"
+                + packageRelationText(relationList) + "\\l"
                 + "\"]";
 
         DocumentName documentName = DocumentName.of(JigDocument.PackageRelationDiagram);
@@ -203,4 +205,9 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         return DiagramSource.createDiagramSource(diagramSources);
     }
 
+    public String packageRelationText(List<PackageRelation> packageRelations) {
+        Locale locale = Locale.getDefault();
+        boolean isEnglish = locale.getLanguage().equals("en");
+        return (isEnglish ? "Relations: " : "関連数: ") + packageRelations.size();
+    }
 }

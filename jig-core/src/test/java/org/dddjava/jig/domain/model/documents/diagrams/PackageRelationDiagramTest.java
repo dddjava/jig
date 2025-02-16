@@ -78,7 +78,7 @@ class PackageRelationDiagramTest {
                 .thenAnswer(invocationOnMock ->
                         TermFactory.fromPackage(new TermIdentifier("dummy"), "dummy"));
 
-        var list = sut.list().stream()
+        var list = sut.listUnique().stream()
                 .map(packageRelation -> "\"%s\" -> \"%s\";".formatted(packageRelation.from().asText(), packageRelation.to().asText()))
                 .toList();
 

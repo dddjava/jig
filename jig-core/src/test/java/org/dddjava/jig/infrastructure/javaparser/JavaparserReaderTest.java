@@ -12,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import testing.TestSupport;
 
@@ -23,8 +22,8 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class JavaparserReaderTest {
 
@@ -37,12 +36,13 @@ class JavaparserReaderTest {
     }
 
     @CsvSource({
-            "ut/package_info_javadoc,       package-info.java, this is term title",
-            "ut/package_info_block_comment, package-info.java, package_info_block_comment", // javadocでないものはそのままパッケージ名がtitleになる
-            "ut/package_info_no_comment,    package-info.java, package_info_no_comment", // コメントがないものはそのままパッケージ名がtitleになる
+            "ut/package_info_javadoc,          package-info.java, this is term title",
+            "ut/package_info_block_comment,    package-info.java, package_info_block_comment", // javadocでないものはそのままパッケージ名がtitleになる
+            "ut/package_info_no_comment,       package-info.java, package_info_no_comment", // コメントがないものはそのままパッケージ名がtitleになる
+            "ut/package_info_javadoc_tag_only, package-info.java, package_info_javadoc_tag_only", // javadocタグのみのものはパッケージ名がtitleになる
     })
     @ParameterizedTest
-    void パッケージコメントの読み取り(String packagePathText, String filePathText, String expected) throws IOException {
+    void PackageInfoからタイトルを読み取れる(String packagePathText, String filePathText, String expected) throws IOException {
         Path targetPath = getJavaFilePath(Path.of(packagePathText, filePathText));
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 
@@ -71,38 +71,6 @@ class JavaparserReaderTest {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-    }
-
-    @ValueSource(strings = {"""
-            package org.dddjava.jig.my_package;
-            """, """
-            // ラインコメント
-            package org.dddjava.jig.my_package;
-            """, """
-            /*
-             * ブロックコメント
-             */
-            package org.dddjava.jig.my_package;
-            """, """
-            package org.dddjava.jig.my_package;
-            /**
-             * 後ろにあるJavadoc風コメント
-             */
-            """, """
-            /**
-             * @see javadocタグのみある
-             */
-            package org.dddjava.jig.my_package;
-            """
-    })
-    @ParameterizedTest
-    void JavadocコメントのないものはエラーにならずPackageCommentも生成されない(String code) {
-        GlossaryRepository mock = mock(GlossaryRepository.class);
-        CompilationUnit cu = StaticJavaParser.parse(code);
-
-        sut.loadPackageInfoJavaFile(cu, mock);
-
-        verify(mock, never()).register(any());
     }
 
     @MethodSource

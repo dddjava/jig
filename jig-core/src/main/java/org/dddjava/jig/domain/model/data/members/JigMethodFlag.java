@@ -6,11 +6,14 @@ package org.dddjava.jig.domain.model.data.members;
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.6">...</a>
  */
 public enum JigMethodFlag {
+    /**
+     * synchronizedメソッド
+     */
     SYNCHRONIZED,
     /**
      * コンパイラによって生成されるブリッジメソッド
      */
-    BRIDGE,
+    BRIDGE(true),
     /**
      * 可変長引数を持つ
      */
@@ -30,27 +33,41 @@ public enum JigMethodFlag {
     /**
      * コンパイラによって生成される合成メソッド
      */
-    SYNTHETIC,
+    SYNTHETIC(true),
 
     // -- JIG独自フラグ
     /**
      * インスタンスイニシャライザおよびコンストラクタ
      */
-    INITIALIZER,
+    INITIALIZER(true),
     /**
      * クラスイニシャライザ
      */
-    STATIC_INITIALIZER,
+    STATIC_INITIALIZER(true),
     /**
      * enumを定義した際に生成されるvalueOfなど
      */
-    ENUM_SUPPORT,
+    ENUM_SUPPORT(true),
     /**
      * lambda式を記述した際にコンパイラによって生成される
      */
-    LAMBDA_SUPPORT,
+    LAMBDA_SUPPORT(true),
     /**
      * recordを定義した際に生成されるアクセサ
      */
-    RECORD_COMPONENT_ACCESSOR
+    RECORD_COMPONENT_ACCESSOR(true);
+
+    private final boolean compilerGenerated;
+
+    JigMethodFlag() {
+        this(false);
+    }
+
+    JigMethodFlag(boolean compilerGenerated) {
+        this.compilerGenerated = compilerGenerated;
+    }
+
+    public boolean compilerGenerated() {
+        return compilerGenerated;
+    }
 }

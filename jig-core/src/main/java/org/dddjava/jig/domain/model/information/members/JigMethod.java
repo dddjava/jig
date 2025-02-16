@@ -163,17 +163,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
     public boolean isProgrammerDefined() {
         EnumSet<JigMethodFlag> flags = jigMethodDeclaration.header().jigMethodAttribute().flags();
-        return flags.stream().noneMatch(flag ->
-                switch (flag) {
-                    case BRIDGE -> true;
-                    case SYNTHETIC -> true;
-                    case INITIALIZER -> true; // コンストラクタを一律除外してしまうのは微妙かもしれない
-                    case STATIC_INITIALIZER -> true;
-                    case ENUM_SUPPORT -> true;
-                    case LAMBDA_SUPPORT -> false;
-                    case RECORD_COMPONENT_ACCESSOR -> false;
-                    default -> false;
-                });
+        return flags.stream().noneMatch(JigMethodFlag::compilerGenerated);
     }
 
     public boolean isRecordComponent() {

@@ -159,4 +159,8 @@ public class PackageIdentifier {
                     .collect(Collectors.joining("."));
         }
     }
+
+    public PackageIdentifier subpackageOf(String... packages) {
+        return PackageIdentifier.valueOf(value + "." + String.join(".", packages));
+    }
 }

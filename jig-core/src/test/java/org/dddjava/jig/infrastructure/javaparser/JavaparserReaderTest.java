@@ -3,15 +3,25 @@ package org.dddjava.jig.infrastructure.javaparser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import org.dddjava.jig.application.GlossaryRepository;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
+import testing.TestSupport;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -24,6 +34,43 @@ class JavaparserReaderTest {
     void setUp() {
         // javaparserReaderの中でCompilationUnitの初期設定を行っているため、parseより前に呼び出す必要がある。
         sut = new JavaparserReader();
+    }
+
+    @CsvSource({
+            "ut/my_package_1, package-info.java, this is term title",
+            "ut/my_package_2, package-info.java, my_package_2", // javadocでないものはそのままパッケージ名がtitleになる
+            "ut/my_package_3, package-info.java, my_package_3", // コメントがないものはそのままパッケージ名がtitleになる
+    })
+    @ParameterizedTest
+    void パッケージコメントの読み取り(String packagePathText, String filePathText, String expected) throws IOException {
+        Path targetPath = getJavaFilePath(Path.of(packagePathText, filePathText));
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.loadPackageInfoJavaFile(targetPath, glossaryRepository);
+
+        PackageIdentifier packageIdentifier = TypeIdentifier.from(this.getClass())
+                .packageIdentifier().subpackageOf(packagePathText.split("/"));
+        Term term = glossaryRepository.get(packageIdentifier);
+
+        assertEquals(expected, term.title());
+    }
+
+    private Path getJavaFilePath(Path requireJavaFilePath) {
+        StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+
+        Class<?> callerClass = walker.walk(stackFrames -> stackFrames.skip(1).findFirst().orElseThrow())
+                // DeclaringClassをとるために RETAIN_CLASS_REFERENCE を指定している。
+                // 1クラスだけなので getClassName から Class.forName の方がいい気はしないでもない。
+                .getDeclaringClass();
+
+        try (var pathStream = Files.find(TestSupport.getTestSourceRootPath(),
+                10, (path, basicFileAttributes) -> path.endsWith(callerClass.getSimpleName() + ".java"))) {
+            Path callerClassJavaFilePath = pathStream.findAny().orElseThrow();
+
+            return callerClassJavaFilePath.resolveSibling(requireJavaFilePath);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
     @ValueSource(strings = {"""

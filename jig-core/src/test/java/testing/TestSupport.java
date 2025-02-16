@@ -91,8 +91,12 @@ public class TestSupport {
     public static SourceBasePaths getRawSourceLocations() {
         return new SourceBasePaths(
                 new ClassSourceBasePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve("stub"))),
-                new JavaSourceBasePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("java").resolve("stub")))
+                new JavaSourceBasePaths(Collections.singletonList(getTestSourceRootPath().resolve("stub")))
         );
+    }
+
+    public static Path getTestSourceRootPath() {
+        return getModuleRootPath().resolve("src").resolve("test").resolve("java");
     }
 
     public static JigType buildJigType(Class<?> definitionClass) {

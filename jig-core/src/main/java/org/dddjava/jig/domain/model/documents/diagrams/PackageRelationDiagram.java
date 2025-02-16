@@ -82,7 +82,6 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             return DiagramSource.emptyUnit();
         }
 
-        PackageRelations packageRelations = this.packageRelations;
         PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(packageRelations);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");

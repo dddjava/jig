@@ -23,7 +23,7 @@ class ValidationsTest {
                 Arguments.arguments("minAndMax", List.of(
                         new TypeAndDescription("Min", "[value=12]"), new TypeAndDescription("Max", "[value=345]"))),
                 Arguments.arguments("email()", List.of(
-                        new TypeAndDescription("Email", "[message=めっせーじ, regexp=.+@.+, flags={Flag.CANON_EQ}]")))
+                        new TypeAndDescription("Email", "[message=めっせーじ, regexp=.+@.+, flags=Flag.CANON_EQ]")))
         );
     }
 

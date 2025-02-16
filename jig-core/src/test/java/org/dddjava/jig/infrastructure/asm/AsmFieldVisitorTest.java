@@ -78,7 +78,7 @@ class AsmFieldVisitorTest {
         assertThat(sut.asText())
                 .contains(
                         "string=af",
-                        "arrayString={bf}",
+                        "arrayString=bf",
                         "number=13",
                         "clz=Field",
                         "arrayClz={Object, Object}",
@@ -86,7 +86,7 @@ class AsmFieldVisitorTest {
                         "annotation=@Deprecated(...)"
                 );
 
-        assertThat(sut.elementTextOf("arrayString").orElseThrow()).isEqualTo("{bf}");
+        assertThat(sut.elementTextOf("arrayString").orElseThrow()).isEqualTo("bf");
     }
 
     @Test

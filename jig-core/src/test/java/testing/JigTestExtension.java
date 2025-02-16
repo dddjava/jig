@@ -3,10 +3,8 @@ package testing;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.JigRepository;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -68,11 +66,5 @@ public class JigTestExtension implements ParameterResolver {
 
         // 実装ミスでもなければここには来ない
         throw new AssertionError();
-    }
-
-    public Sources getTestRawSource() {
-        SourceBasePaths sourceBasePaths = TestSupport.getRawSourceLocations();
-        ClassOrJavaSourceCollector localFileRawSourceFactory = new ClassOrJavaSourceCollector();
-        return localFileRawSourceFactory.collectSources(sourceBasePaths);
     }
 }

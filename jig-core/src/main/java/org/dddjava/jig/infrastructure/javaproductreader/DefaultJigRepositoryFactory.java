@@ -44,7 +44,7 @@ public class DefaultJigRepositoryFactory {
                 configuration.glossaryRepository(),
                 new JavaparserReader(),
                 new MyBatisMyBatisStatementsReader(),
-                new ClassOrJavaSourceCollector(),
+                new ClassOrJavaSourceCollector(configuration.jigEventRepository()),
                 configuration.jigEventRepository()
         );
     }

@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.filesystem;
 
+import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.SourceCollector;
 import org.dddjava.jig.domain.model.sources.Sources;
@@ -23,8 +24,13 @@ import static java.util.stream.Collectors.toList;
  * classやjavaファイルを対象とするSourceReader
  */
 public class ClassOrJavaSourceCollector implements SourceCollector {
-
     private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceCollector.class);
+
+    private final JigEventRepository jigEventRepository;
+
+    public ClassOrJavaSourceCollector(JigEventRepository jigEventRepository) {
+        this.jigEventRepository = jigEventRepository;
+    }
 
     ClassSources collectClassSources(SourceBasePaths sourceBasePaths) {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
@@ -56,6 +62,10 @@ public class ClassOrJavaSourceCollector implements SourceCollector {
     }
 
     private List<Path> collectSourcePathList(Path basePath, String suffix) {
+        if (!Files.exists(basePath)) {
+            jigEventRepository.register指定されたパスが存在しない(basePath);
+            return List.of();
+        }
         try (Stream<Path> pathStream = Files.walk(basePath)) {
             return pathStream
                     .filter(path -> path.getFileName().toString().endsWith(suffix))

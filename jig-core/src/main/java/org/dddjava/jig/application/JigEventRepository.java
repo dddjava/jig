@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -48,6 +49,10 @@ public class JigEventRepository {
 
     public boolean hasError() {
         return readStatuses.stream().anyMatch(ReadStatus::isError);
+    }
+
+    public void register指定されたパスが存在しない(Path basePath) {
+        logger.info("'{}' が指定されましたが、存在しません。読み飛ばします。", basePath);
     }
 
     /**

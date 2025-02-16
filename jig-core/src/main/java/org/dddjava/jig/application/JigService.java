@@ -2,9 +2,6 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
@@ -15,7 +12,6 @@ import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
-import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
@@ -49,11 +45,6 @@ public class JigService {
         return jigRepository.fetchGlossary();
     }
 
-    public ArchitectureDiagram architectureDiagram(JigRepository jigRepository) {
-        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigTypes(jigRepository));
-        return new ArchitectureDiagram(packageBasedArchitecture);
-    }
-
     /**
      * コアドメインのみのJigTypesを取得する
      *
@@ -73,15 +64,11 @@ public class JigService {
         return coreDomainJigTypes(jigRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
     }
 
-    public CategoryDiagram categories(JigRepository jigRepository) {
-        return CategoryDiagram.create(categoryTypes(jigRepository));
-    }
-
     public JigTypes serviceTypes(JigRepository jigRepository) {
         return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
     }
 
-    private ServiceMethods serviceMethods(JigRepository jigRepository) {
+    public ServiceMethods serviceMethods(JigRepository jigRepository) {
         JigTypes serviceJigTypes = serviceTypes(jigRepository);
         ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(jigTypes(jigRepository)));
         if (serviceMethods.empty()) jigEventRepository.registerサービスが見つからない();
@@ -111,13 +98,6 @@ public class JigService {
         JigTypes jigTypes = jigTypes(jigRepository);
         DatasourceMethods datasourceMethods = repositoryMethods(jigRepository);
         return new DatasourceAngles(datasourceMethods, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
-    }
-
-    public CategoryUsageDiagram categoryUsages(JigRepository jigRepository) {
-        ServiceMethods serviceMethods = serviceMethods(jigRepository);
-        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
-
-        return new CategoryUsageDiagram(serviceMethods, coreDomainJigTypes);
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {

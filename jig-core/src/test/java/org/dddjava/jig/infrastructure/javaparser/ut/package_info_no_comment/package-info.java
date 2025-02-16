@@ -1,0 +1,1 @@
+package org.dddjava.jig.infrastructure.javaparser.ut.package_info_no_comment;

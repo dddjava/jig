@@ -1,1 +1,0 @@
-package org.dddjava.jig.infrastructure.javaparser.ut.my_package_3;

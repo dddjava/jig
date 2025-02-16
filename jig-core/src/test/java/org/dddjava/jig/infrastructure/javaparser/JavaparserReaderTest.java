@@ -37,9 +37,9 @@ class JavaparserReaderTest {
     }
 
     @CsvSource({
-            "ut/my_package_1, package-info.java, this is term title",
-            "ut/my_package_2, package-info.java, my_package_2", // javadocでないものはそのままパッケージ名がtitleになる
-            "ut/my_package_3, package-info.java, my_package_3", // コメントがないものはそのままパッケージ名がtitleになる
+            "ut/package_info_javadoc,       package-info.java, this is term title",
+            "ut/package_info_block_comment, package-info.java, package_info_block_comment", // javadocでないものはそのままパッケージ名がtitleになる
+            "ut/package_info_no_comment,    package-info.java, package_info_no_comment", // コメントがないものはそのままパッケージ名がtitleになる
     })
     @ParameterizedTest
     void パッケージコメントの読み取り(String packagePathText, String filePathText, String expected) throws IOException {

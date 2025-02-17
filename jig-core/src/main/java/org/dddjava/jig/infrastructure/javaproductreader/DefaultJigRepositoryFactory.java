@@ -6,7 +6,7 @@ import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
-import org.dddjava.jig.domain.model.information.JigInformationFactory;
+import org.dddjava.jig.domain.model.information.types.JigTypeFactory;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
@@ -90,7 +90,7 @@ public class DefaultJigRepositoryFactory {
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
-        JigTypes jigTypes = JigInformationFactory.createJigTypes(classDeclarations, glossaryRepository.all());
+        JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
 
         return new JigRepository() {
             @Override

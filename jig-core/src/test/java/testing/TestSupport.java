@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
-import org.dddjava.jig.domain.model.information.JigInformationFactory;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeFactory;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
@@ -102,7 +102,7 @@ public class TestSupport {
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
-        return JigInformationFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).stream().findFirst().orElseThrow();
+        return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).stream().findFirst().orElseThrow();
     }
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {

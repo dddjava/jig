@@ -1,15 +1,12 @@
 package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,21 +19,10 @@ public class JigType {
     private final JigTypeMembers jigTypeMembers;
     private final JigTypeGlossary jigTypeGlossary;
 
-    private JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
+    public JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
         this.jigTypeGlossary = jigTypeGlossary;
         this.jigTypeHeader = jigTypeHeader;
         this.jigTypeMembers = jigTypeMembers;
-    }
-
-    public static JigType from(ClassDeclaration classDeclaration, Glossary glossary) {
-        JigTypeGlossary jigTypeGlossary = JigTypeGlossary.from(glossary, classDeclaration.jigTypeHeader().id());
-
-        Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> new JigMethod(jigMethodDeclaration,
-                        jigTypeGlossary.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id())))
-                .toList();
-
-        return new JigType(classDeclaration.jigTypeHeader(), new JigTypeMembers(classDeclaration.jigFieldHeaders(), jigMethods), jigTypeGlossary);
     }
 
     public TypeIdentifier identifier() {

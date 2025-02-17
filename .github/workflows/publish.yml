@@ -9,9 +9,11 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=UTF-8'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version}}
       - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -22,7 +24,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
       - name: Run Build
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
@@ -30,9 +32,14 @@ jobs:
           ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
         run: |
           echo "publish as ${{ github.event.inputs.version }}"
-          ./gradlew build publishToSonatype
+          ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
+          echo ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: jig-cli/build/libs/jig-cli.jar
       - name: Upload test failure report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: test-failure-reports-${{ runner.os }}

@@ -32,7 +32,7 @@ jobs:
           ORG_GRADLE_PROJECT_version: ${{ github.event.inputs.version }}
         run: |
           echo "publish as ${{ github.event.inputs.version }}"
-          ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
+          ./gradlew build
           echo ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
       - name: Upload artifact
         uses: actions/upload-artifact@v4

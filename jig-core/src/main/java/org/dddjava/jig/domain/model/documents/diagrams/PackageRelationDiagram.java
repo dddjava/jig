@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
+import org.dddjava.jig.domain.model.information.relation.Edges;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependencies;
@@ -15,7 +16,6 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageRelatio
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
@@ -88,8 +88,8 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(relationList);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
-        // 相互依存と推移依存を除いたものを出力対象とする
-        List<PackageRelation> filteredRelations = removeTransitive(relationList);
+        // 相互依存と推移依存で到達できるものを除いたものを出力対象とする
+        List<PackageRelation> filteredRelations = Edges.from(relationList).transitiveReduction().convert(PackageRelation::new);
         for (PackageRelation packageRelation : filteredRelations) {
             if (packageMutualDependencies.notContains(packageRelation)) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
@@ -170,48 +170,6 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText(packageMutualDependencies));
     }
-
-    static List<PackageRelation> removeTransitive(List<PackageRelation> relations) {
-        // とりあえずシステムプロパティを有効にしないと機能しないようにしておく
-        if (!"true".equals(System.getProperty("PackageDiagramRemoveTransitive"))) {
-            return relations;
-        }
-        Map<PackageIdentifier, List<PackageIdentifier>> graph = relations.stream()
-                .collect(Collectors.groupingBy(PackageRelation::from, Collectors.mapping(PackageRelation::to, Collectors.toList())));
-
-        List<PackageRelation> toRemove = relations.stream()
-                .filter(relation -> isReachableWithoutDirect(graph, relation))
-                .toList();
-
-        return relations.stream().filter(relation -> !toRemove.contains(relation)).toList();
-    }
-
-    private static boolean isReachableWithoutDirect(Map<PackageIdentifier, List<PackageIdentifier>> graph, PackageRelation relation) {
-        return dfs(graph, relation.from(), relation.to(), new HashSet<>(), true);
-    }
-
-    private static boolean dfs(Map<PackageIdentifier, List<PackageIdentifier>> graph,
-                               PackageIdentifier current,
-                               PackageIdentifier target,
-                               Set<PackageIdentifier> visited,
-                               boolean skipDirectEdge) {
-        // currentとtargetが一致＝到達した
-        if (current.equals(target)) return true;
-        // ここを始点とした探索はしたことを記録しておく
-        visited.add(current);
-        // graphの中に到達可能なものがあるかを探す
-        for (PackageIdentifier neighbor : graph.getOrDefault(current, List.of())) {
-            // 最初に指定したedgeはスキップする。（これをスキップしないと全部到達可能と判断されてしまう）
-            if (skipDirectEdge && neighbor.equals(target)) continue;
-            // 判定済み=ここからは到達しないものなのでスキップ（効率化と循環時にstackoverflowになるののストッパー）
-            if (visited.contains(neighbor)) continue;
-            // currentをneighborとして探索する。これで到達可能なら到達可能。
-            if (dfs(graph, neighbor, target, visited, false)) return true;
-        }
-        // currentを始点とする関連がなかった or 到達しなかった
-        return false;
-    }
-
 
     private AdditionalText additionalText(PackageMutualDependencies packageMutualDependencies) {
         if (packageMutualDependencies.none()) {

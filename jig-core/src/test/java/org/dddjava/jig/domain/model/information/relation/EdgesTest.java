@@ -50,4 +50,30 @@ class EdgesTest {
                 )
         );
     }
+
+    @MethodSource
+    @ParameterizedTest
+    void 相互依存抽出(List<Edge<String>> relations, List<Edge<String>> expected) {
+        var edges = new Edges<>(relations);
+        assertEquals(expected, edges.cyclicEdges().list());
+    }
+
+    public static Stream<Arguments> 相互依存抽出() {
+        return Stream.of(
+                argumentSet("相互依存なし",
+                        List.of(edge("a", "b"), edge("b", "c"), edge("a", "c")),
+                        List.of()
+                ),
+                argumentSet("相互依存あり",
+                        List.of(edge("a", "b"), edge("a", "c"),
+                                edge("b", "a"), edge("b", "c")),
+                        List.of(edge("a", "b"), edge("b", "a"))
+                ),
+                argumentSet("循環依存",
+                        List.of(edge("a", "b"), edge("b", "c"), edge("c", "d"), edge("d", "a")),
+                        List.of(edge("a", "b"), edge("b", "c"), edge("c", "d"), edge("d", "a"))
+                )
+        );
+    }
+
 }

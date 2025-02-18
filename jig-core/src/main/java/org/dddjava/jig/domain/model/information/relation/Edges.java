@@ -73,6 +73,88 @@ public class Edges<T> {
                 .toList();
     }
 
+    /**
+     * 相互および循環する関連を抽出する
+     */
+    public Edges<T> cyclicEdges() {
+        Map<T, List<T>> graph = relations.stream()
+                .collect(Collectors.groupingBy(Edge::from, Collectors.mapping(Edge::to, Collectors.toList())));
+
+        List<List<T>> stronglyConnectedComponents = detectStronglyConnectedComponents(graph);
+
+        // SCC に含まれるノード間のエッジを抽出
+        Set<T> sccNodes = stronglyConnectedComponents.stream()
+                // SCC が2つ以上のノードを含んでいる（単一ノードは相互依存にならない）
+                .filter(scc -> scc.size() > 1)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
+
+        List<Edge<T>> mutualDependencyEdges = relations.stream()
+                // SCC 内のノード間のエッジを収集する
+                .filter(edge -> sccNodes.contains(edge.from()) && sccNodes.contains(edge.to()))
+                .toList();
+        return new Edges<>(mutualDependencyEdges);
+    }
+
+    /**
+     * SCCの抽出
+     * Tarjan's Algorithm を使って強連結成分 (SCC: Strongly Connected Components) を抽出する
+     */
+    private List<List<T>> detectStronglyConnectedComponents(Map<T, List<T>> graph) {
+        // Tarjan's Algorithm 用のデータ構造
+        Map<T, Integer> indices = new HashMap<>();
+        Map<T, Integer> lowLink = new HashMap<>();
+        Stack<T> stack = new Stack<>();
+        Set<T> onStack = new HashSet<>();
+        List<List<T>> result = new ArrayList<>();
+        int[] index = {0}; // 可変の訪問順序カウンタ
+
+        // Tarjan の強連結成分ヘルパーメソッド
+        for (T node : graph.keySet()) {
+            if (!indices.containsKey(node)) {
+                strongConnect(node, graph, indices, lowLink, stack, onStack, result, index);
+            }
+        }
+
+        return result;
+    }
+
+    private void strongConnect(T node, Map<T, List<T>> graph,
+                               Map<T, Integer> indices, Map<T, Integer> lowLink,
+                               Stack<T> stack, Set<T> onStack, List<List<T>> result,
+                               int[] index) {
+        // ノードに訪問順序を設定
+        indices.put(node, index[0]);
+        lowLink.put(node, index[0]);
+        index[0]++;
+        stack.push(node);
+        onStack.add(node);
+
+        // 隣接ノードを探索
+        for (T neighbor : graph.getOrDefault(node, List.of())) {
+            if (!indices.containsKey(neighbor)) {
+                // 未探索ノード -> 再帰で探索
+                strongConnect(neighbor, graph, indices, lowLink, stack, onStack, result, index);
+                lowLink.put(node, Math.min(lowLink.get(node), lowLink.get(neighbor)));
+            } else if (onStack.contains(neighbor)) {
+                // スタック上のノード -> 強連結の一部
+                lowLink.put(node, Math.min(lowLink.get(node), indices.get(neighbor)));
+            }
+        }
+
+        // 強連結成分の特定とスタックからの取り出し
+        if (lowLink.get(node).equals(indices.get(node))) {
+            List<T> scc = new ArrayList<>();
+            T current;
+            do {
+                current = stack.pop();
+                onStack.remove(current);
+                scc.add(current);
+            } while (!current.equals(node));
+            result.add(scc);
+        }
+    }
+
     public List<Edge<T>> list() {
         return relations.stream().toList();
     }

@@ -8,14 +8,14 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public class Edges<T> {
-    private final Collection<Edge<T>> relations;
+    private final Collection<Edge<T>> edges;
 
     public static <T> Edge<T> edge(T from, T to) {
         return new Edge<>(from, to);
     }
 
-    public Edges(Collection<Edge<T>> relations) {
-        this.relations = relations;
+    public Edges(Collection<Edge<T>> edges) {
+        this.edges = edges;
     }
 
     public static Edges<PackageIdentifier> from(Collection<PackageRelation> packageRelations) {
@@ -33,14 +33,14 @@ public class Edges<T> {
         if (!"true".equals(System.getProperty("transitiveReduction"))) {
             return this;
         }
-        Map<T, List<T>> graph = relations.stream()
+        Map<T, List<T>> graph = edges.stream()
                 .collect(Collectors.groupingBy(Edge::from, Collectors.mapping(Edge::to, Collectors.toList())));
 
-        List<Edge<T>> toRemove = relations.stream()
+        List<Edge<T>> toRemove = edges.stream()
                 .filter(relation -> isReachableWithoutDirect(graph, relation))
                 .toList();
 
-        List<Edge<T>> newList = relations.stream().filter(relation -> !toRemove.contains(relation)).toList();
+        List<Edge<T>> newList = edges.stream().filter(relation -> !toRemove.contains(relation)).toList();
         return new Edges<>(newList);
     }
 
@@ -68,7 +68,7 @@ public class Edges<T> {
     }
 
     public <R> List<R> convert(BiFunction<T, T, R> converter) {
-        return relations.stream()
+        return edges.stream()
                 .map(edge -> converter.apply(edge.from(), edge.to()))
                 .toList();
     }
@@ -76,24 +76,24 @@ public class Edges<T> {
     /**
      * 相互および循環する関連を抽出する
      */
-    public Edges<T> cyclicEdges() {
-        Map<T, List<T>> graph = relations.stream()
+    public Collection<Edges<T>> cyclicEdgesGroup() {
+        Map<T, List<T>> graph = edges.stream()
                 .collect(Collectors.groupingBy(Edge::from, Collectors.mapping(Edge::to, Collectors.toList())));
 
         List<List<T>> stronglyConnectedComponents = detectStronglyConnectedComponents(graph);
 
-        // SCC に含まれるノード間のエッジを抽出
-        Set<T> sccNodes = stronglyConnectedComponents.stream()
-                // SCC が2つ以上のノードを含んでいる（単一ノードは相互依存にならない）
+        return stronglyConnectedComponents.stream()
+                // SCCの要素が2以上ない場合、自己参照を除いてedgeはないので除外する。
                 .filter(scc -> scc.size() > 1)
-                .flatMap(List::stream)
-                .collect(Collectors.toSet());
-
-        List<Edge<T>> mutualDependencyEdges = relations.stream()
-                // SCC 内のノード間のエッジを収集する
-                .filter(edge -> sccNodes.contains(edge.from()) && sccNodes.contains(edge.to()))
+                // relationsから両端が同じSCCに属するedgeを収集する
+                .map(scc -> collectEdgesWithin(scc))
+                // SCC単位でEdgesにまとめる
+                .map(Edges::new)
                 .toList();
-        return new Edges<>(mutualDependencyEdges);
+    }
+
+    private Collection<Edge<T>> collectEdgesWithin(Collection<T> nodes) {
+        return edges.stream().filter(edge -> edge.bothEndpointsIn(nodes)).toList();
     }
 
     /**
@@ -156,6 +156,6 @@ public class Edges<T> {
     }
 
     public List<Edge<T>> list() {
-        return relations.stream().toList();
+        return edges.stream().sorted().toList();
     }
 }

@@ -55,7 +55,8 @@ class EdgesTest {
     @ParameterizedTest
     void 相互依存抽出(List<Edge<String>> relations, List<Edge<String>> expected) {
         var edges = new Edges<>(relations);
-        assertEquals(expected, edges.cyclicEdges().list());
+        assertEquals(expected.stream().sorted().toList(),
+                edges.cyclicEdgesGroup().stream().map(Edges::list).flatMap(List::stream).sorted().toList());
     }
 
     public static Stream<Arguments> 相互依存抽出() {
@@ -65,13 +66,27 @@ class EdgesTest {
                         List.of()
                 ),
                 argumentSet("相互依存あり",
-                        List.of(edge("a", "b"), edge("a", "c"),
-                                edge("b", "a"), edge("b", "c")),
+                        List.of(edge("a", "b"), edge("a", "c"), edge("b", "a"), edge("b", "c")),
                         List.of(edge("a", "b"), edge("b", "a"))
                 ),
+                argumentSet("相互依存あり2",
+                        List.of(edge("a", "b"), edge("b", "a"),
+                                edge("c", "d"), edge("d", "c"),
+                                edge("b", "c"), edge("a", "z"), edge("b", "z") // これは除外される
+                        ),
+                        List.of(edge("a", "b"), edge("b", "a"), edge("c", "d"), edge("d", "c"))
+                ),
                 argumentSet("循環依存",
-                        List.of(edge("a", "b"), edge("b", "c"), edge("c", "d"), edge("d", "a")),
+                        List.of(edge("a", "b"), edge("b", "c"), edge("c", "d"), edge("d", "a"),
+                                edge("c", "x")), // これは除外される
                         List.of(edge("a", "b"), edge("b", "c"), edge("c", "d"), edge("d", "a"))
+                ),
+                argumentSet("循環依存2",
+                        List.of(edge("a", "b"), edge("b", "c"), edge("c", "a"),
+                                edge("aa", "ab"), edge("ab", "ac"), edge("ac", "aa"),
+                                edge("x", "y")),  // これは除外される
+                        List.of(edge("a", "b"), edge("b", "c"), edge("c", "a"),
+                                edge("aa", "ab"), edge("ab", "ac"), edge("ac", "aa"))
                 )
         );
     }

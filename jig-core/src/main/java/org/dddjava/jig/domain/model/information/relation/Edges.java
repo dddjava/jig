@@ -58,16 +58,13 @@ public class Edges<T> {
         // ここを始点とした探索はしたことを記録しておく
         visited.add(current);
         // graphの中に到達可能なものがあるかを探す
-        for (T neighbor : graph.getOrDefault(current, List.of())) {
-            // 最初に指定したedgeはスキップする。（これをスキップしないと全部到達可能と判断されてしまう）
-            if (skipDirectEdge && neighbor.equals(target)) continue;
-            // 判定済み=ここからは到達しないものなのでスキップ（効率化と循環時にstackoverflowになるののストッパー）
-            if (visited.contains(neighbor)) continue;
-            // currentをneighborとして探索する。これで到達可能なら到達可能。
-            if (dfs(graph, neighbor, target, visited, false)) return true;
-        }
-        // currentを始点とする関連がなかった or 到達しなかった
-        return false;
+        return graph.getOrDefault(current, List.of()).stream()
+                // 最初に指定したedgeはスキップする。（これをスキップしないと全部到達可能と判断されてしまう）
+                .filter(neighbor -> !(skipDirectEdge && neighbor.equals(target)))
+                // 判定済み=ここからは到達しないものなのでスキップ（効率化と循環時にstackoverflowになるののストッパー）
+                .filter(neighbor -> !visited.contains(neighbor))
+                // currentをneighborとして探索して、見つかれば到達可能と判定。
+                .anyMatch(neighbor -> dfs(graph, neighbor, target, visited, false));
     }
 
     public <R> List<R> convert(BiFunction<T, T, R> converter) {

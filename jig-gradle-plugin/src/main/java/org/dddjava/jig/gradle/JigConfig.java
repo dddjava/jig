@@ -25,6 +25,8 @@ public class JigConfig {
 
     JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
 
+    boolean diagramTransitiveReduction = true;
+
     List<JigDocument> documentTypes() {
         List<JigDocument> toExclude = documentTypesToExclude();
         return documentTypesToInclude().stream()
@@ -49,7 +51,9 @@ public class JigConfig {
     public JigProperties asProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
-                modelPattern, resolveOutputDirectory(project), diagramFormat
+                modelPattern, resolveOutputDirectory(project),
+                diagramFormat,
+                diagramTransitiveReduction
         );
     }
 
@@ -101,6 +105,14 @@ public class JigConfig {
         this.diagramFormat = diagramFormat;
     }
 
+    public boolean isDiagramTransitiveReduction() {
+        return diagramTransitiveReduction;
+    }
+
+    public void setDiagramTransitiveReduction(boolean diagramTransitiveReduction) {
+        this.diagramTransitiveReduction = diagramTransitiveReduction;
+    }
+
     public String getOutputOmitPrefix() {
         return outputOmitPrefix;
     }
@@ -115,6 +127,7 @@ public class JigConfig {
                 .add("modelPattern = '" + modelPattern + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("diagramFormat= '" + diagramFormat + '\'')
+                .add("diagramTransitiveReduction= '" + diagramTransitiveReduction + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
                 .toString();
     }

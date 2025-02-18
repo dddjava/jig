@@ -37,10 +37,6 @@ public class Edges<T> {
      * `[a->b, b->c, a->c]` を `[a->b, b->c]` だけにする。
      */
     public Edges<T> transitiveReduction() {
-        // とりあえずシステムプロパティを有効にしないと機能しないようにしておく
-        if (!"true".equals(System.getProperty("transitiveReduction"))) {
-            return this;
-        }
         Collection<Edges<T>> cyclicEdgesGroup = cyclicEdgesGroup();
         Set<Edge<T>> cyclicEdges = cyclicEdgesGroup.stream().flatMap(it -> it.edges.stream()).collect(Collectors.toSet());
 

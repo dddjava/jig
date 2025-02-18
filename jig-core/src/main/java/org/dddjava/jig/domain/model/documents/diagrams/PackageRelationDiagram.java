@@ -88,8 +88,9 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(relationList);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
-        // 相互依存と推移依存で到達できるものを除いたものを出力対象とする
-        List<PackageRelation> filteredRelations = Edges.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::new);
+        List<PackageRelation> filteredRelations = jigDocumentContext.diagramOption().transitiveReduction()
+                ? Edges.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::new)
+                : relationList;
         for (PackageRelation packageRelation : filteredRelations) {
             if (packageMutualDependencies.notContains(packageRelation)) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());

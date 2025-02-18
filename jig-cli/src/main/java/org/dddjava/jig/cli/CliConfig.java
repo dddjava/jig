@@ -26,6 +26,8 @@ class CliConfig {
     String outputDirectory;
     @Value("${jig.output.diagram.format:svg}")
     JigDiagramFormat diagramFormat;
+    @Value("${jig.output.diagram.transitiveReduction:true}")
+    boolean diagramTransitiveReduction;
 
     @Value("${project.path}")
     String projectPath;
@@ -46,6 +48,7 @@ class CliConfig {
                 .add("jig.pattern.domain=" + modelPattern)
                 .add("jig.output.directory=" + outputDirectory)
                 .add("jig.output.diagram.format=" + diagramFormat)
+                .add("jig.output.diagram.transitiveReduction=" + diagramTransitiveReduction)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
@@ -74,7 +77,9 @@ class CliConfig {
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),
-                        modelPattern, Paths.get(this.outputDirectory), diagramFormat
+                        modelPattern, Paths.get(this.outputDirectory),
+                        diagramFormat,
+                        diagramTransitiveReduction
                 ));
     }
 

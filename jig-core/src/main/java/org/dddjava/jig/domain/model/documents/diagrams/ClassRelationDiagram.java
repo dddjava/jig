@@ -26,11 +26,12 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         this.jigTypes = jigTypes;
     }
 
-    public DiagramSources sources() {
-        return sources(jigTypes, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
+    @Override
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+        return sources(jigDocumentContext.diagramOption(), jigTypes, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
-    DiagramSources sources(JigTypes jigTypes, DocumentName documentName) {
+    DiagramSources sources(JigDiagramOption jigDiagramOption, JigTypes jigTypes, DocumentName documentName) {
         if (jigTypes.empty()) {
             return DiagramSource.empty();
         }
@@ -70,8 +71,10 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
             graph.add(subgraph.toString());
         }
 
-        Edges<TypeIdentifier> edges = Edges.fromClassRelations(internalClassRelations.list());
-        for (Edge<TypeIdentifier> edge : edges.transitiveReduction().list()) {
+        Edges<TypeIdentifier> edges = jigDiagramOption.transitiveReduction()
+                ? Edges.fromClassRelations(internalClassRelations.list()).transitiveReduction()
+                : Edges.fromClassRelations(internalClassRelations.list());
+        for (Edge<TypeIdentifier> edge : edges.list()) {
             graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }
 

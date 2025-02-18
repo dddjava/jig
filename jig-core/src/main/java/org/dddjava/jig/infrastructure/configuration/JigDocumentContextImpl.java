@@ -4,8 +4,8 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
 import java.nio.file.Path;
@@ -42,7 +42,10 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     }
 
     @Override
-    public JigDiagramFormat diagramFormat() {
-        return properties.outputDiagramFormat;
+    public JigDiagramOption diagramOption() {
+        return new JigDiagramOption(
+                properties.outputDiagramFormat,
+                properties.diagramTransitiveReduction
+        );
     }
 }

@@ -13,8 +13,8 @@ import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.adapter.html.ThymeleafSummaryWriter;
 import org.dddjava.jig.adapter.html.dialect.JigDialect;
 import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class JigDocumentGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
 
-    private final JigDiagramFormat diagramFormat;
+    private final JigDiagramOption diagramOption;
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
@@ -50,7 +50,7 @@ public class JigDocumentGenerator {
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
-        this.diagramFormat = jigDocumentContext.diagramFormat();
+        this.diagramOption = jigDocumentContext.diagramOption();
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
@@ -72,7 +72,7 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramFormat);
+        IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
         indexView.render(results, outputDirectory);
         copyAssets(outputDirectory);
     }

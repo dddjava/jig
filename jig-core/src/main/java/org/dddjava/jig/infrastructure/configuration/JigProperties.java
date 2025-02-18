@@ -38,6 +38,13 @@ public class JigProperties {
     List<JigDocument> jigDocuments;
 
     /**
+     * ダイアグラムで関係を簡略化して出力する
+     *
+     * パッケージ関連図とビジネスルール関連図が対象です。
+     */
+    public boolean diagramTransitiveReduction;
+
+    /**
      * 最小のコンストラクタ。あまり変更しない。
      */
     public JigProperties(List<JigDocument> jigDocuments, String domainPattern, Path outputDirectory) {
@@ -45,7 +52,8 @@ public class JigProperties {
                 jigDocuments,
                 domainPattern,
                 outputDirectory,
-                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue())
+                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue()),
+                true
         );
     }
 
@@ -55,13 +63,15 @@ public class JigProperties {
     public JigProperties(List<JigDocument> jigDocuments,
                          String domainPattern,
                          Path outputDirectory,
-                         JigDiagramFormat outputDiagramFormat) {
+                         JigDiagramFormat outputDiagramFormat,
+                         boolean diagramTransitiveReduction) {
         this.jigDocuments = jigDocuments;
 
         this.domainPattern = domainPattern;
 
         this.outputDirectory = outputDirectory;
         this.outputDiagramFormat = outputDiagramFormat;
+        this.diagramTransitiveReduction = diagramTransitiveReduction;
     }
 
     static JigProperties defaultInstance() {

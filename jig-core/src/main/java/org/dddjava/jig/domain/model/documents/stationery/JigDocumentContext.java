@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
 
@@ -24,5 +23,5 @@ public interface JigDocumentContext {
 
     List<JigDocument> jigDocuments();
 
-    JigDiagramFormat diagramFormat();
+    JigDiagramOption diagramOption();
 }

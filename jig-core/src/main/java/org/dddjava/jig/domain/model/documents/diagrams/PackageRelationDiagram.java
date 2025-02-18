@@ -89,7 +89,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         // 相互依存と推移依存で到達できるものを除いたものを出力対象とする
-        List<PackageRelation> filteredRelations = Edges.from(relationList).transitiveReduction().convert(PackageRelation::new);
+        List<PackageRelation> filteredRelations = Edges.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::new);
         for (PackageRelation packageRelation : filteredRelations) {
             if (packageMutualDependencies.notContains(packageRelation)) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());

@@ -1,12 +1,14 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.Edge;
+import org.dddjava.jig.domain.model.information.relation.Edges;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -68,8 +70,9 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
             graph.add(subgraph.toString());
         }
 
-        for (ClassRelation classRelation : internalClassRelations.list()) {
-            graph.add(classRelation.dotText());
+        Edges<TypeIdentifier> edges = Edges.fromClassRelations(internalClassRelations.list());
+        for (Edge<TypeIdentifier> edge : edges.transitiveReduction().list()) {
+            graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());

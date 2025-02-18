@@ -18,7 +18,7 @@ class EdgesTest {
     void 推移簡約(List<Edge<String>> relations, List<Edge<String>> expected) {
         System.setProperty("transitiveReduction", "true");
         var edges = new Edges<>(relations);
-        assertEquals(expected, edges.transitiveReduction().list());
+        assertEquals(expected.stream().sorted().toList(), edges.transitiveReduction().list());
     }
 
     public static Stream<Arguments> 推移簡約() {
@@ -33,20 +33,51 @@ class EdgesTest {
                 ),
                 argumentSet("推移依存のある直接依存は削除される2",
                         List.of(
-                                edge("a", "b"), edge("a", "c"), edge("b", "c"),
-                                edge("a", "d"), edge("b", "d"), edge("c", "d")
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"), // a->b->c->d
+                                edge("a", "c"), edge("a", "d"), edge("b", "d") // 削除対象となる直接依存
                         ),
                         List.of(edge("a", "b"), edge("b", "c"), edge("c", "d"))
                 ),
-                argumentSet("相互依存があると変になる", // これ単体だとイマイチだけど相互依存検出とあわせるとまぁいいかという感じかもしれない
+                argumentSet("推移依存がある直接依存でも相互依存なら削除しない",
                         List.of(
-                                edge("a", "b"), edge("a", "c"),
-                                edge("b", "a"), edge("b", "c"),
-                                edge("c", "b")
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"), // a->b->c->d
+                                edge("a", "c"), edge("a", "d"), edge("b", "d"), // 通常は削除対象となる直接依存
+                                edge("c", "b") // c<->bによりb,cが相互依存
+                        ),
+                        List.of( // a->d は推移依存で解決できる判定になるので削除される
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"),
+                                edge("a", "c"), edge("b", "d"),
+                                edge("c", "b"))
+                ),
+                argumentSet("推移依存がある直接依存でも相互依存なら削除しない2",
+                        List.of(
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"), // a->b->c->d
+                                edge("a", "c"), edge("a", "d"), edge("b", "d"), // 通常は削除対象となる直接依存
+                                edge("d", "b") // d->bによりa以外のすべてがSCCになる
+                        ),
+                        List.of( // SCC内はすべて残し、aからSCCへのedgeも残すため何も削除されない
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"),
+                                edge("a", "c"), edge("a", "d"), edge("b", "d"),
+                                edge("d", "b"))
+                ),
+                argumentSet("推移依存がある直接依存でも相互依存なら削除しない3",
+                        List.of(
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"), // a->b->c->d
+                                edge("a", "d"), // 通常は削除対象となる直接依存
+                                edge("c", "b") // c<->bによりb,cが相互依存
                         ),
                         List.of(
-                                edge("b", "a"), edge("c", "b")
-                        )
+                                edge("a", "b"), edge("b", "c"), edge("c", "d"),
+                                edge("a", "d"), // a->b->c->dで到達可能だが、b<->cが相互依存なので判定対象外となり、a->dは除去対象でなくなる
+                                edge("c", "b"))
+                ),
+                argumentSet("循環依存は除去しない",
+                        List.of(edge("a", "b"), edge("a", "c"),
+                                edge("b", "a"), edge("b", "c"),
+                                edge("c", "b")),
+                        List.of(edge("a", "b"), edge("a", "c"),
+                                edge("b", "a"), edge("b", "c"),
+                                edge("c", "b"))
                 )
         );
     }

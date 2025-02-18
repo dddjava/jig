@@ -33,11 +33,19 @@ public class Edges<T> {
         if (!"true".equals(System.getProperty("transitiveReduction"))) {
             return this;
         }
-        Map<T, List<T>> graph = edges.stream()
+        Collection<Edges<T>> cyclicEdgesGroup = cyclicEdgesGroup();
+        Set<Edge<T>> cyclicEdges = cyclicEdgesGroup.stream().flatMap(it -> it.edges.stream()).collect(Collectors.toSet());
+
+        // 循環依存を除いたgraphで到達可能かを判断する
+        var graph = edges.stream()
+                .filter(edge -> !cyclicEdges.contains(edge))
                 .collect(Collectors.groupingBy(Edge::from, Collectors.mapping(Edge::to, Collectors.toList())));
 
         List<Edge<T>> toRemove = edges.stream()
-                .filter(relation -> isReachableWithoutDirect(graph, relation))
+                // 循環依存は除外しない
+                .filter(edge -> !cyclicEdges.contains(edge))
+                // 循環依存を除いて到達可能かを判断する
+                .filter(edge -> isReachableWithoutDirect(graph, edge))
                 .toList();
 
         List<Edge<T>> newList = edges.stream().filter(relation -> !toRemove.contains(relation)).toList();

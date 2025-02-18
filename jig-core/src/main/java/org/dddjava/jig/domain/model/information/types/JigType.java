@@ -161,7 +161,7 @@ public class JigType {
     }
 
     public String nodeLabel(String delimiter) {
-        return jigTypeGlossary.typeTerm().textWithDelimiter(delimiter);
+        return jigTypeGlossary.typeTerm().titleAndSimpleName(delimiter);
     }
 
     public boolean hasInstanceField() {

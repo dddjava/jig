@@ -16,9 +16,10 @@ public record Term(TermIdentifier identifier,
         return new Term(termIdentifier, title, "", termKind);
     }
 
-    public String textWithDelimiter(String delimiter) {
-        if (description.isEmpty()) return title;
-        return title + delimiter + description;
+    public String titleAndSimpleName(String delimiter) {
+        String identifierSimpleText = identifier.simpleText();
+        if (title.isEmpty() || title.equals(identifierSimpleText)) return identifierSimpleText;
+        return title + delimiter + identifierSimpleText;
     }
 
     public boolean relatesTo(String otherIdentifier) {

@@ -6,10 +6,10 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
+import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
-import org.dddjava.jig.domain.model.sources.JigRepository;
 
 import java.nio.file.Path;
 import java.util.List;

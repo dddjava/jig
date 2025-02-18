@@ -3,6 +3,7 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.information.Architecture;
+import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
@@ -15,7 +16,6 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.dddjava.jig.domain.model.sources.JigRepository;
 
 @Service
 public class JigService {

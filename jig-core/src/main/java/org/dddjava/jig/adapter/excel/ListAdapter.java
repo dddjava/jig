@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
@@ -19,7 +20,6 @@ import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
-import org.dddjava.jig.domain.model.sources.JigRepository;
 
 import java.nio.file.Path;
 import java.util.List;

@@ -6,10 +6,10 @@ import org.dddjava.jig.adapter.html.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.sources.JigRepository;
 
 import java.nio.file.Path;
 import java.util.List;

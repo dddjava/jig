@@ -2,7 +2,7 @@ package org.dddjava.jig;
 
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.JigRepository;
+import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;

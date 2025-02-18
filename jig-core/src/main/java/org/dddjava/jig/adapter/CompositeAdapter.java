@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.JigRepository;
+import org.dddjava.jig.domain.model.information.JigRepository;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

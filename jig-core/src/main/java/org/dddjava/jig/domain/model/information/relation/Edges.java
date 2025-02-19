@@ -9,6 +9,11 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+/**
+ * Edgeのまとまり。グラフ。
+ * それぞれの関連をEdgeに単純化してまとめて操作するためのクラス。
+ * @param <T> Nodeの型
+ */
 public class Edges<T> {
     private final Collection<Edge<T>> edges;
 

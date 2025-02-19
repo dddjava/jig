@@ -149,11 +149,7 @@ public class JigType {
     }
 
     public String nodeLabel() {
-        return nodeLabel("\\n");
-    }
-
-    public String nodeLabel(String delimiter) {
-        return jigTypeGlossary.typeTerm().titleAndSimpleName(delimiter);
+        return jigTypeGlossary.typeTerm().titleAndSimpleName("\\n");
     }
 
     public boolean hasInstanceField() {

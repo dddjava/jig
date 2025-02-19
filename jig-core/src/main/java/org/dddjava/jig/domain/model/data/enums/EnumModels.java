@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.enums;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.List;
 
@@ -14,7 +14,8 @@ public class EnumModels {
         this.list = list;
     }
 
-    public EnumModel select(TypeIdentifier typeIdentifier) {
+    public EnumModel select(JigType jigType) {
+        var typeIdentifier = jigType.id();
         return list.stream()
                 .filter(enumModel -> enumModel.typeIdentifier.equals(typeIdentifier))
                 .findAny()

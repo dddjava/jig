@@ -80,12 +80,16 @@ public class JigType {
         return jigTypeHeader.fqn();
     }
 
-    public String label() {
-        return jigTypeGlossary.typeTerm().title();
-    }
-
     public Term term() {
         return jigTypeGlossary.typeTerm();
+    }
+
+    public String label() {
+        return term().title();
+    }
+
+    public String nodeLabel() {
+        return term().titleAndSimpleName("\\n");
     }
 
     public JigTypeMembers jigTypeMembers() {
@@ -146,10 +150,6 @@ public class JigType {
 
     public TypeIdentifier typeIdentifier() {
         return identifier();
-    }
-
-    public String nodeLabel() {
-        return jigTypeGlossary.typeTerm().titleAndSimpleName("\\n");
     }
 
     public boolean hasInstanceField() {

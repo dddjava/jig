@@ -25,12 +25,20 @@ public class JigType {
         this.jigTypeMembers = jigTypeMembers;
     }
 
+    public TypeIdentifier typeIdentifier() {
+        return identifier();
+    }
+
     public TypeIdentifier identifier() {
         return TypeIdentifier.valueOf(jigTypeHeader.id().value());
     }
 
     public TypeIdentifier id() {
         return jigTypeHeader.id();
+    }
+
+    public PackageIdentifier packageIdentifier() {
+        return identifier().packageIdentifier();
     }
 
     public JigTypeHeader jigTypeHeader() {
@@ -49,6 +57,22 @@ public class JigType {
 
     public JigTypeVisibility visibility() {
         return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
+    }
+
+    public String fqn() {
+        return jigTypeHeader.fqn();
+    }
+
+    public Term term() {
+        return jigTypeGlossary.typeTerm();
+    }
+
+    public String label() {
+        return term().title();
+    }
+
+    public String nodeLabel() {
+        return term().titleAndSimpleName("\\n");
     }
 
     // テスト用
@@ -70,34 +94,6 @@ public class JigType {
                 .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
                 .collect(Collectors.toSet());
         return new TypeIdentifiers(collect);
-    }
-
-    public PackageIdentifier packageIdentifier() {
-        return identifier().packageIdentifier();
-    }
-
-    public String fqn() {
-        return jigTypeHeader.fqn();
-    }
-
-    public Term term() {
-        return jigTypeGlossary.typeTerm();
-    }
-
-    public String label() {
-        return term().title();
-    }
-
-    public String nodeLabel() {
-        return term().titleAndSimpleName("\\n");
-    }
-
-    public JigTypeMembers jigTypeMembers() {
-        return jigTypeMembers;
-    }
-
-    public JigFields instanceJigFields() {
-        return jigTypeMembers.instanceFields();
     }
 
     public JigTypeValueKind toValueKind() {
@@ -148,24 +144,28 @@ public class JigType {
         return TypeCategory.Others;
     }
 
-    public TypeIdentifier typeIdentifier() {
-        return identifier();
+    public JigTypeMembers jigTypeMembers() {
+        return jigTypeMembers;
+    }
+
+    public JigFields instanceJigFields() {
+        return jigTypeMembers.instanceFields();
     }
 
     public boolean hasInstanceField() {
         return jigTypeMembers.instanceFields().empty() == false;
     }
 
-    public boolean hasInstanceMethod() {
-        return !instanceJigMethods().empty();
+    public JigMethods instanceJigMethods() {
+        return jigTypeMembers.instanceMethods();
     }
 
     public Stream<JigMethod> instanceJigMethodStream() {
         return instanceJigMethods().stream();
     }
 
-    public JigMethods instanceJigMethods() {
-        return jigTypeMembers.instanceMethods();
+    public boolean hasInstanceMethod() {
+        return !instanceJigMethods().empty();
     }
 
     public JigMethods staticJigMethods() {

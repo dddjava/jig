@@ -33,26 +33,16 @@ public class JigType {
         return id().packageIdentifier();
     }
 
+    public String fqn() {
+        return jigTypeHeader.fqn();
+    }
+
     public JigTypeHeader jigTypeHeader() {
         return jigTypeHeader;
     }
 
-    public TypeKind typeKind() {
-        // 互換のためにTypeKindを返す形を維持するための実装。TypeKindはあまり活用できていないので、別の何かで再定義したい
-        return switch (jigTypeHeader.jigTypeKind()) {
-            case RECORD -> TypeKind.レコード型;
-            case ENUM -> jigTypeHeader.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
-                    ? TypeKind.抽象列挙型 : TypeKind.列挙型;
-            default -> TypeKind.通常型;
-        };
-    }
-
     public JigTypeVisibility visibility() {
         return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
-    }
-
-    public String fqn() {
-        return jigTypeHeader.fqn();
     }
 
     public Term term() {
@@ -76,10 +66,6 @@ public class JigType {
         return new TypeIdentifiers(collect);
     }
 
-    public JigTypeValueKind toValueKind() {
-        return JigTypeValueKind.from(this);
-    }
-
     public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
         return jigTypeHeader.jigTypeAttributeData().declaredAnnotation(typeIdentifier);
     }
@@ -97,8 +83,18 @@ public class JigType {
                 .findFirst();
     }
 
-    public Stream<JigMethod> allJigMethodStream() {
-        return jigTypeMembers.jigMethods().stream();
+    public TypeKind typeKind() {
+        // 互換のためにTypeKindを返す形を維持するための実装。TypeKindはあまり活用できていないので、別の何かで再定義したい
+        return switch (jigTypeHeader.jigTypeKind()) {
+            case RECORD -> TypeKind.レコード型;
+            case ENUM -> jigTypeHeader.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
+                    ? TypeKind.抽象列挙型 : TypeKind.列挙型;
+            default -> TypeKind.通常型;
+        };
+    }
+
+    public JigTypeValueKind toValueKind() {
+        return JigTypeValueKind.from(this);
     }
 
     public TypeCategory typeCategory() {
@@ -122,6 +118,10 @@ public class JigType {
         }
 
         return TypeCategory.Others;
+    }
+
+    public Stream<JigMethod> allJigMethodStream() {
+        return jigTypeMembers.jigMethods().stream();
     }
 
     public JigTypeMembers jigTypeMembers() {

@@ -25,20 +25,12 @@ public class JigType {
         this.jigTypeMembers = jigTypeMembers;
     }
 
-    public TypeIdentifier typeIdentifier() {
-        return identifier();
-    }
-
-    public TypeIdentifier identifier() {
-        return TypeIdentifier.valueOf(jigTypeHeader.id().value());
-    }
-
     public TypeIdentifier id() {
         return jigTypeHeader.id();
     }
 
     public PackageIdentifier packageIdentifier() {
-        return identifier().packageIdentifier();
+        return id().packageIdentifier();
     }
 
     public JigTypeHeader jigTypeHeader() {

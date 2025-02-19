@@ -35,7 +35,7 @@ public class Validations {
                         .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
                         .map(jigAnnotationReference -> {
                             return new Validation(
-                                    jigType.identifier(),
+                                    jigType.id(),
                                     jigMethodDeclaration.header().nameAndArgumentSimpleText(),
                                     jigMethodDeclaration.header().jigMethodAttribute().returnType().id(),
                                     jigAnnotationReference.id(),
@@ -48,7 +48,7 @@ public class Validations {
                         .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
                         .map(jigAnnotationReference -> {
                             return new Validation(
-                                    jigType.identifier(),
+                                    jigType.id(),
                                     jigFieldHeader.name(),
                                     jigFieldHeader.jigTypeReference().id(),
                                     jigAnnotationReference.id(),

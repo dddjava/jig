@@ -45,9 +45,9 @@ public class CategoryDiagram implements DiagramSourceWriter {
                     }
                     String categoryName = categoryType.label();
 
-                    return Node.typeOf(categoryType.typeIdentifier())
+                    return Node.typeOf(categoryType.id())
                             .html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>")
-                            .url(categoryType.typeIdentifier(), JigDocument.EnumSummary)
+                            .url(categoryType.id(), JigDocument.EnumSummary)
                             .as(NodeRole.主役);
                 })
                 .map(Node::asText)

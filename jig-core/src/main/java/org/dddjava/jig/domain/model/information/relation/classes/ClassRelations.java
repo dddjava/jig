@@ -29,7 +29,7 @@ public class ClassRelations {
     public static ClassRelations from(JigTypes jigTypes) {
         return new ClassRelations(jigTypes.stream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .flatMap(usingType -> ClassRelation.from(jigType.typeIdentifier(), usingType).stream()))
+                        .flatMap(usingType -> ClassRelation.from(jigType.id(), usingType).stream()))
                 .toList());
     }
 
@@ -41,18 +41,18 @@ public class ClassRelations {
                 return keyJigTypes.stream()
                         .flatMap(jigType -> jigType.usingTypes().list().stream()
                                 .filter(typeIdentifier -> keyJigTypes.contains(typeIdentifier))
-                                .flatMap(typeIdentifier -> ClassRelation.from(jigType.typeIdentifier(), typeIdentifier).stream()))
+                                .flatMap(typeIdentifier -> ClassRelation.from(jigType.id(), typeIdentifier).stream()))
                         .collect(collectingAndThen(toList(), ClassRelations::new));
             });
         }
     }
 
     public static ClassRelations internalTypeRelationsFrom(JigTypes jigTypes, JigType targetJigType) {
-        return internalRelation(jigTypes).filterFrom(targetJigType.typeIdentifier());
+        return internalRelation(jigTypes).filterFrom(targetJigType.id());
     }
 
     public static ClassRelations internalTypeRelationsTo(JigTypes jigTypes, JigType targetJigType) {
-        return internalRelation(jigTypes).filterTo(targetJigType.identifier());
+        return internalRelation(jigTypes).filterTo(targetJigType.id());
     }
 
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {

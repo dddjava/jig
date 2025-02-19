@@ -59,7 +59,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
 
             for (JigType jigType : jigTypesPackage.jigTypes()) {
                 Node node = Nodes.businessRuleNodeOf(jigType);
-                if (isolatedTypes.contains(jigType.typeIdentifier())) {
+                if (isolatedTypes.contains(jigType.id())) {
                     node.warning();
                 }
                 if (jigType.isDeprecated()) {

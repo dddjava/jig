@@ -19,7 +19,7 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
     }
 
     public TypeIdentifier typeIdentifier() {
-        return jigType.identifier();
+        return jigType.id();
     }
 
     public PackageIdentifier packageIdentifier() {

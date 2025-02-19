@@ -15,7 +15,7 @@ public enum MethodWorry {
             }
             var instructions = jigMethod.instructions();
             return instructions.values().stream()
-                    .noneMatch(instruction -> instruction.instructMethodOrFieldOwnerIs(contextJigType.typeIdentifier()));
+                    .noneMatch(instruction -> instruction.instructMethodOrFieldOwnerIs(contextJigType.id()));
         }
     },
     基本型の授受を行なっている {

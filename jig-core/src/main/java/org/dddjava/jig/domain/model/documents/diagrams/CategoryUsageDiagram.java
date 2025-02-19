@@ -84,7 +84,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes) {
         return coreDomainJigTypes.stream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
-                .filter(jigType -> categoryRelatedTypes.contains(jigType.typeIdentifier()))
+                .filter(jigType -> categoryRelatedTypes.contains(jigType.id()))
                 .map(jigType -> Nodes.businessRuleNodeOf(jigType))
                 .map(Node::asText)
                 .collect(joining("\n"));
@@ -92,7 +92,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     String categoryNodeTexts(JigTypes categoryJigTypes) {
         return categoryJigTypes.list().stream()
-                .map(jigType -> Node.typeOf(jigType.typeIdentifier())
+                .map(jigType -> Node.typeOf(jigType.id())
                         .label(jigType.nodeLabel())
                         .as(NodeRole.主役))
                 .map(Node::asText)

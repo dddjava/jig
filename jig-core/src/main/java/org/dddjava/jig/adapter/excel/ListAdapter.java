@@ -55,27 +55,27 @@ public class ListAdapter implements Adapter<ReportBook> {
                 ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
-                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス名", item -> item.id().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
                         Map.entry("関連元ビジネスルール数", item -> ClassRelations.internalTypeRelationsTo(coreDomainJigTypes, item).size()),
                         Map.entry("関連先ビジネスルール数", item -> ClassRelations.internalTypeRelationsFrom(coreDomainJigTypes, item).size()),
-                        Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
+                        Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != JigTypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {
-                            var list = allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).packageIdentifiers().list();
+                            var list = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().list();
                             return list.size() == 1 && list.get(0).equals(item.packageIdentifier()) ? "◯" : "";
                         }),
-                        Map.entry("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText())
+                        Map.entry("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText())
                 ), coreDomainJigTypes.list()),
                 new ReportSheet<>("ENUM", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
-                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス名", item -> item.id().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(Collectors.joining(", ", "[", "]"))),
                         Map.entry("フィールド", item -> item.jigTypeMembers().instanceFieldsSimpleText()),
-                        Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
-                        Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText()),
+                        Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
+                        Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない
                         Map.entry("パラメーター有り", item -> item.hasInstanceField() ? "◯" : ""),
                         Map.entry("振る舞い有り", item -> item.hasInstanceMethod() ? "◯" : ""),
@@ -84,11 +84,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                 ), categoryTypes.list()),
                 new ReportSheet<>("COLLECTION", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
-                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス名", item -> item.id().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("フィールドの型", item -> item.jigTypeMembers().instanceFieldsSimpleTextWithGenerics()),
-                        Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
-                        Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
+                        Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).size()),
+                        Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         Map.entry("メソッド数", item -> item.instanceJigMethods().list().size()),
                         Map.entry("メソッド一覧", item -> item.instanceJigMethods().asSignatureAndReturnTypeSimpleText())
                 ), coreDomainJigTypes.listCollectionType()),

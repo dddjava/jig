@@ -33,8 +33,8 @@ public class Nodes {
     }
 
     public static Node businessRuleNodeOf(JigType jigType) {
-        return new Node(jigType.typeIdentifier().fullQualifiedName())
+        return new Node(jigType.id().fullQualifiedName())
                 .label(jigType.nodeLabel())
-                .url(jigType.typeIdentifier(), JigDocument.DomainSummary);
+                .url(jigType.id(), JigDocument.DomainSummary);
     }
 }

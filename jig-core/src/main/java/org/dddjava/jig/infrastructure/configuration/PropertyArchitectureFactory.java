@@ -17,7 +17,7 @@ public class PropertyArchitectureFactory {
         Pattern businessRulePattern = Pattern.compile(jigProperties.getDomainPattern());
 
         return jigType -> {
-            String fqn = jigType.identifier().fullQualifiedName();
+            String fqn = jigType.id().fullQualifiedName();
             if (fqn.endsWith(".package-info")) return false;
             return businessRulePattern.matcher(fqn).matches()
                     && !compilerGeneratedClassPattern.matcher(fqn).matches();

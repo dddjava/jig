@@ -60,7 +60,7 @@ class ReadableLabelTest {
     void メソッド別名取得(JigRepository jigRepository) {
         JigTypes jigTypes = jigRepository.fetchJigTypes();
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
-        JigType jigType = jigTypes.listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
+        JigType jigType = jigTypes.listMatches(item -> item.id().equals(テスト対象クラス)).get(0);
 
         JigMethod method = resolveMethodBySignature(jigType, "method()");
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());

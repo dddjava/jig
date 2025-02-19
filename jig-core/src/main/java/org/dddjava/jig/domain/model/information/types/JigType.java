@@ -104,10 +104,6 @@ public class JigType {
         return jigTypeHeader.jigTypeAttributeData().declaredAnnotation(typeIdentifier);
     }
 
-    public boolean markedCore() {
-        return jigTypeGlossary.markedCore();
-    }
-
     public boolean isDeprecated() {
         return hasAnnotation(TypeIdentifier.from(Deprecated.class));
     }

@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class AsmMethodVisitorTest {
 
+    // <editor-fold desc="テスト用実装">
     private static class MethodVisitorSut {
 
         @SutAnnotations.A1
@@ -115,6 +116,7 @@ class AsmMethodVisitorTest {
         void varargsMethod(LocalDate... localDates) {
         }
     }
+    // </editor-fold>
 
     @Test
     void メソッドで使用している型が取得できる() {

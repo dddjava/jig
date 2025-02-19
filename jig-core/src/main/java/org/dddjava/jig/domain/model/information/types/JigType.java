@@ -63,10 +63,6 @@ public class JigType {
         return term().title();
     }
 
-    public String nodeLabel() {
-        return term().titleAndSimpleName("\\n");
-    }
-
     public TypeIdentifiers usingTypes() {
         var collect = Stream.concat(
                         jigTypeHeader.containedIds().stream(),

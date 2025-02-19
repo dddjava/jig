@@ -34,7 +34,7 @@ public class Nodes {
 
     public static Node businessRuleNodeOf(JigType jigType) {
         return new Node(jigType.id().fullQualifiedName())
-                .label(jigType.nodeLabel())
+                .label(jigType.term().titleAndSimpleName("\\n"))
                 .url(jigType.id(), JigDocument.DomainSummary);
     }
 }

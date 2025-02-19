@@ -93,7 +93,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     String categoryNodeTexts(JigTypes categoryJigTypes) {
         return categoryJigTypes.list().stream()
                 .map(jigType -> Node.typeOf(jigType.id())
-                        .label(jigType.nodeLabel())
+                        .label(jigType.term().titleAndSimpleName("\\n"))
                         .as(NodeRole.主役))
                 .map(Node::asText)
                 .collect(joining("\n"));

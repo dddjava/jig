@@ -76,10 +76,6 @@ public class JigType {
         return identifier().packageIdentifier();
     }
 
-    public String simpleName() {
-        return jigTypeHeader.simpleName();
-    }
-
     public String fqn() {
         return jigTypeHeader.fqn();
     }

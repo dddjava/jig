@@ -133,7 +133,7 @@ public class JigType {
     }
 
     public boolean hasInstanceField() {
-        return jigTypeMembers.instanceFields().empty() == false;
+        return instanceJigFields().empty() == false;
     }
 
     public JigMethods instanceJigMethods() {

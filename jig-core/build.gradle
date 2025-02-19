@@ -77,6 +77,8 @@ dependencies {
     // HTML出力
     api libs.thymeleaf
 
+    api libs.caffeine
+
     testRuntimeOnly libs.logback.classic
     testImplementation libs.junit
     testImplementation libs.mockito

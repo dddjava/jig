@@ -1,5 +1,7 @@
 package org.dddjava.jig.application;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.information.Architecture;
@@ -22,10 +24,12 @@ public class JigService {
 
     private final Architecture architecture;
     private final JigEventRepository jigEventRepository;
+    private final Cache<String, JigTypes> jigTypesCache;
 
     public JigService(Architecture architecture, JigEventRepository jigEventRepository) {
         this.architecture = architecture;
         this.jigEventRepository = jigEventRepository;
+        this.jigTypesCache = Caffeine.newBuilder().build();
     }
 
     /**
@@ -51,9 +55,11 @@ public class JigService {
      * コアドメインは実行時に指定するパターンなどによって識別する。
      */
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
-        JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(architecture::isCoreDomain);
-        if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
-        return coreDomainJigTypes;
+        return jigTypesCache.get("core", key -> {
+            JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(architecture::isCoreDomain);
+            if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
+            return coreDomainJigTypes;
+        });
     }
 
     public MethodSmellList methodSmells(JigRepository jigRepository) {
@@ -61,11 +67,15 @@ public class JigService {
     }
 
     public JigTypes categoryTypes(JigRepository jigRepository) {
-        return coreDomainJigTypes(jigRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
+        return jigTypesCache.get("category", key -> {
+            return coreDomainJigTypes(jigRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
+        });
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {
-        return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
+        return jigTypesCache.get("service", key -> {
+            return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
+        });
     }
 
     public ServiceMethods serviceMethods(JigRepository jigRepository) {

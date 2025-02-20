@@ -3,7 +3,6 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -15,9 +14,9 @@ public class PackageDependenciesTest {
 
     @Test
     void パッケージ依存(JigService jigService, JigRepository jigRepository) {
-        var jigTypes = jigService.coreDomainJigTypes(jigRepository);
+        var jigTypes = jigService.coreDomainJigTypesWithRelationships(jigRepository);
 
-        var sut = PackageRelations.from(TypeRelationships.internalRelation(jigTypes));
+        var sut = PackageRelations.from(jigTypes.typeRelationships());
 
         // パッケージの関連
         assertThat(sut.listUnique())

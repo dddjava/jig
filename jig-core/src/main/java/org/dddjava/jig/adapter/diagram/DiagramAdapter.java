@@ -32,8 +32,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.PackageRelationDiagram)
     public DiagramSourceWriter packageRelation(JigRepository jigRepository) {
-        var jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return PackageRelationDiagram.from(jigTypes);
+        return PackageRelationDiagram.from(jigService.coreDomainJigTypesWithRelationships(jigRepository));
     }
 
     @HandleDocument(JigDocument.CompositeUsecaseDiagram)
@@ -49,7 +48,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)
     public DiagramSourceWriter businessRuleRelation(JigRepository jigRepository) {
-        return new ClassRelationDiagram(jigService.coreDomainJigTypes(jigRepository));
+        return new ClassRelationDiagram(jigService.coreDomainJigTypesWithRelationships(jigRepository));
     }
 
     @HandleDocument(JigDocument.CategoryDiagram)

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.types.relations;
 
+import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
@@ -49,12 +50,12 @@ public class TypeRelationships {
         }
     }
 
-    public static TypeRelationships internalTypeRelationsFrom(JigTypes jigTypes, JigType targetJigType) {
-        return internalRelation(jigTypes).filterFrom(targetJigType.id());
+    public static TypeRelationships internalTypeRelationsFrom(JigTypesWithRelationships jigTypes, JigType targetJigType) {
+        return jigTypes.typeRelationships().filterFrom(targetJigType.id());
     }
 
-    public static TypeRelationships internalTypeRelationsTo(JigTypes jigTypes, JigType targetJigType) {
-        return internalRelation(jigTypes).filterTo(targetJigType.id());
+    public static TypeRelationships internalTypeRelationsTo(JigTypesWithRelationships jigTypes, JigType targetJigType) {
+        return jigTypes.typeRelationships().filterTo(targetJigType.id());
     }
 
     public static TypeRelationships from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers) {

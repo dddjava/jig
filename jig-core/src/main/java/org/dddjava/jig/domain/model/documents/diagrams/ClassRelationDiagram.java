@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
+import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
@@ -10,8 +11,6 @@ import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.Edge;
 import org.dddjava.jig.domain.model.information.relation.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.StringJoiner;
 
@@ -20,19 +19,19 @@ import java.util.StringJoiner;
  */
 public class ClassRelationDiagram implements DiagramSourceWriter {
 
-    JigTypes jigTypes;
+    JigTypesWithRelationships jigTypesWithRelationships;
 
-    public ClassRelationDiagram(JigTypes jigTypes) {
-        this.jigTypes = jigTypes;
+    public ClassRelationDiagram(JigTypesWithRelationships jigTypesWithRelationships) {
+        this.jigTypesWithRelationships = jigTypesWithRelationships;
     }
 
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        return sources(jigDocumentContext.diagramOption(), jigTypes, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
+        return sources(jigDocumentContext.diagramOption(), DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
-    DiagramSources sources(JigDiagramOption jigDiagramOption, JigTypes jigTypes, DocumentName documentName) {
-        if (jigTypes.empty()) {
+    DiagramSources sources(JigDiagramOption jigDiagramOption, DocumentName documentName) {
+        if (jigTypesWithRelationships.jigTypes().empty()) {
             return DiagramSource.empty();
         }
 
@@ -42,14 +41,14 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         // 出力対象の内部だけの関連
-        var internalClassRelations = TypeRelationships.internalRelation(jigTypes);
+        var internalClassRelations = jigTypesWithRelationships.typeRelationships();
 
         // 関連のないものだけ抽出する
-        TypeIdentifiers isolatedTypes = jigTypes
-                .filter(jigType -> TypeRelationships.internalTypeRelationsFrom(jigTypes, jigType).isEmpty() && TypeRelationships.internalTypeRelationsTo(jigTypes, jigType).isEmpty())
+        TypeIdentifiers isolatedTypes = jigTypesWithRelationships.jigTypes()
+                .filter(jigType -> internalClassRelations.filterFrom(jigType.id()).isEmpty() && internalClassRelations.filterTo(jigType.id()).isEmpty())
                 .typeIdentifiers();
 
-        for (JigTypesPackage jigTypesPackage : JigTypesPackage.from(jigTypes)) {
+        for (JigTypesPackage jigTypesPackage : JigTypesPackage.from(jigTypesWithRelationships.jigTypes())) {
             PackageIdentifier packageIdentifier = jigTypesPackage.packageIdentifier();
 
             String fqn = packageIdentifier.asText();

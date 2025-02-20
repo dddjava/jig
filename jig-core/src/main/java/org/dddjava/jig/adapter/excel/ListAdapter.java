@@ -3,6 +3,7 @@ package org.dddjava.jig.adapter.excel;
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
@@ -44,7 +45,8 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
         var allClassRelations = TypeRelationships.from(jigTypes);
 
-        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
+        JigTypesWithRelationships jigTypesWithRelationships = jigService.coreDomainJigTypesWithRelationships(jigRepository);
+        JigTypes coreDomainJigTypes = jigTypesWithRelationships.jigTypes();
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
         List<JigTypesPackage> jigTypePackages = JigTypesPackage.from(coreDomainJigTypes);
         return new ReportBook(
@@ -58,8 +60,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.id().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        Map.entry("関連元ビジネスルール数", item -> TypeRelationships.internalTypeRelationsTo(coreDomainJigTypes, item).size()),
-                        Map.entry("関連先ビジネスルール数", item -> TypeRelationships.internalTypeRelationsFrom(coreDomainJigTypes, item).size()),
+                        Map.entry("関連元ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterTo(item.id()).size()),
+                        Map.entry("関連先ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterFrom(item.id()).size()),
                         Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != JigTypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,6 +52,10 @@ public class JigType {
 
     public String label() {
         return term().title();
+    }
+
+    public TypeRelationships typeRelationships() {
+        return TypeRelationships.from(jigTypeHeader, jigTypeMembers);
     }
 
     public TypeIdentifiers usingTypes() {

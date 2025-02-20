@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.types.relations;
 
 public enum TypeRelationKind {
-    親クラス,
+    継承クラス,
     実装インタフェース,
     型引数,
     型パラメータ型,

@@ -58,7 +58,7 @@ class MethodSmellListTest {
     @ParameterizedTest(name = "{index} {1} :: {0}")
     void メンバ未使用の判定(Class<?> clz, String name, boolean expected) {
         var jigType = TestSupport.buildJigType(clz);
-        MethodSmellList methodSmellList = new MethodSmellList(new JigTypes(List.of(jigType)));
+        MethodSmellList methodSmellList = MethodSmellList.from(new JigTypes(List.of(jigType)));
 
         // smellListに入っていないものは警告なしの判定になるのでfilterとanyMatchで検証
         assertEquals(expected, methodSmellList.list().stream()

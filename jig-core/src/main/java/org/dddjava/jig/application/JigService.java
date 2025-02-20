@@ -66,7 +66,7 @@ public class JigService {
     }
 
     public MethodSmellList methodSmells(JigRepository jigRepository) {
-        return new MethodSmellList(coreDomainJigTypes(jigRepository));
+        return MethodSmellList.from(coreDomainJigTypes(jigRepository));
     }
 
     public JigTypes categoryTypes(JigRepository jigRepository) {

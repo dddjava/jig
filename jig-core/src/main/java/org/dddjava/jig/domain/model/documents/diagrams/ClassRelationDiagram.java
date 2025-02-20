@@ -9,9 +9,9 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.Edge;
 import org.dddjava.jig.domain.model.information.relation.Edges;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.StringJoiner;
 
@@ -42,11 +42,11 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         // 出力対象の内部だけの関連
-        var internalClassRelations = ClassRelations.internalRelation(jigTypes);
+        var internalClassRelations = TypeRelationships.internalRelation(jigTypes);
 
         // 関連のないものだけ抽出する
         TypeIdentifiers isolatedTypes = jigTypes
-                .filter(jigType -> ClassRelations.internalTypeRelationsFrom(jigTypes, jigType).isEmpty() && ClassRelations.internalTypeRelationsTo(jigTypes, jigType).isEmpty())
+                .filter(jigType -> TypeRelationships.internalTypeRelationsFrom(jigTypes, jigType).isEmpty() && TypeRelationships.internalTypeRelationsTo(jigTypes, jigType).isEmpty())
                 .typeIdentifiers();
 
         for (JigTypesPackage jigTypesPackage : JigTypesPackage.from(jigTypes)) {

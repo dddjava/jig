@@ -7,13 +7,13 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.relation.Edges;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
-import org.dddjava.jig.domain.model.information.relation.classes.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependencies;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -58,7 +58,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     }
 
     public static DiagramSourceWriter from(JigTypes jigTypes) {
-        var classRelations = ClassRelations.internalRelation(jigTypes);
+        var classRelations = TypeRelationships.internalRelation(jigTypes);
         var packageRelations = PackageRelations.from(classRelations);
         return new PackageRelationDiagram(packageRelations, jigTypes, new PackageDepth(-1));
     }
@@ -180,7 +180,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     }
 
     private String bidirectionalRelationReasonText(PackageMutualDependencies packageMutualDependencies) {
-        var contextClassRelations = ClassRelations.internalRelation(contextJigTypes);
+        var contextClassRelations = TypeRelationships.internalRelation(contextJigTypes);
         StringJoiner sj = new StringJoiner("\n");
         for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());

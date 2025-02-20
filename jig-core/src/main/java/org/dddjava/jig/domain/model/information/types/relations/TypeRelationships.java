@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.relation.classes;
+package org.dddjava.jig.domain.model.information.types.relations;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
@@ -18,40 +18,40 @@ import static java.util.stream.Collectors.toList;
 /**
  * 型依存関係一覧
  */
-public class ClassRelations {
+public class TypeRelationships {
 
     List<TypeRelationship> list;
 
-    public ClassRelations(List<TypeRelationship> list) {
+    public TypeRelationships(List<TypeRelationship> list) {
         this.list = list;
     }
 
-    public static ClassRelations from(JigTypes jigTypes) {
-        return new ClassRelations(jigTypes.stream()
+    public static TypeRelationships from(JigTypes jigTypes) {
+        return new TypeRelationships(jigTypes.stream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
                         .flatMap(usingType -> TypeRelationship.from(jigType.id(), usingType).stream()))
                 .toList());
     }
 
-    private static final ConcurrentHashMap<JigTypes, ClassRelations> cache = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<JigTypes, TypeRelationships> cache = new ConcurrentHashMap<>();
 
-    public static ClassRelations internalRelation(JigTypes jigTypes) {
+    public static TypeRelationships internalRelation(JigTypes jigTypes) {
         synchronized (jigTypes) {
             return cache.computeIfAbsent(jigTypes, keyJigTypes -> {
                 return keyJigTypes.stream()
                         .flatMap(jigType -> jigType.usingTypes().list().stream()
                                 .filter(typeIdentifier -> keyJigTypes.contains(typeIdentifier))
                                 .flatMap(typeIdentifier -> TypeRelationship.from(jigType.id(), typeIdentifier).stream()))
-                        .collect(collectingAndThen(toList(), ClassRelations::new));
+                        .collect(collectingAndThen(toList(), TypeRelationships::new));
             });
         }
     }
 
-    public static ClassRelations internalTypeRelationsFrom(JigTypes jigTypes, JigType targetJigType) {
+    public static TypeRelationships internalTypeRelationsFrom(JigTypes jigTypes, JigType targetJigType) {
         return internalRelation(jigTypes).filterFrom(targetJigType.id());
     }
 
-    public static ClassRelations internalTypeRelationsTo(JigTypes jigTypes, JigType targetJigType) {
+    public static TypeRelationships internalTypeRelationsTo(JigTypes jigTypes, JigType targetJigType) {
         return internalRelation(jigTypes).filterTo(targetJigType.id());
     }
 
@@ -67,15 +67,15 @@ public class ClassRelations {
         return list;
     }
 
-    public ClassRelations filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
+    public TypeRelationships filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
         List<TypeRelationship> collect = list.stream()
                 .filter(classRelation -> toTypeIdentifiers.contains(classRelation.to()))
                 .collect(Collectors.toList());
-        return new ClassRelations(collect);
+        return new TypeRelationships(collect);
     }
 
-    public ClassRelations distinct() {
-        return new ClassRelations(distinctList());
+    public TypeRelationships distinct() {
+        return new TypeRelationships(distinctList());
     }
 
     public List<TypeRelationship> distinctList() {
@@ -101,33 +101,33 @@ public class ClassRelations {
                 .collect(TypeIdentifiers.collector());
     }
 
-    public ClassRelations relationsFromRootTo(TypeIdentifiers toTypeIdentifiers) {
+    public TypeRelationships relationsFromRootTo(TypeIdentifiers toTypeIdentifiers) {
         HashSet<TypeRelationship> set = new HashSet<>();
 
         int size = 0;
         while (true) {
-            ClassRelations temp = filterRelationsTo(toTypeIdentifiers);
+            TypeRelationships temp = filterRelationsTo(toTypeIdentifiers);
             set.addAll(temp.list());
 
             if (size == set.size()) break;
             size = set.size();
             toTypeIdentifiers = temp.fromTypeIdentifiers();
         }
-        return new ClassRelations(new ArrayList<>(set));
+        return new TypeRelationships(new ArrayList<>(set));
     }
 
-    public ClassRelations filterFrom(TypeIdentifier typeIdentifier) {
+    public TypeRelationships filterFrom(TypeIdentifier typeIdentifier) {
         List<TypeRelationship> collect = list.stream()
                 .filter(classRelation -> classRelation.from().equals(typeIdentifier))
                 .collect(Collectors.toList());
-        return new ClassRelations(collect);
+        return new TypeRelationships(collect);
     }
 
-    public ClassRelations filterTo(TypeIdentifier typeIdentifier) {
+    public TypeRelationships filterTo(TypeIdentifier typeIdentifier) {
         List<TypeRelationship> collect = list.stream()
                 .filter(classRelation -> classRelation.to().equals(typeIdentifier))
                 .collect(Collectors.toList());
-        return new ClassRelations(collect);
+        return new TypeRelationships(collect);
     }
 
     public TypeIdentifiers fromTypeIdentifiers() {

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.relation.classes;
+package org.dddjava.jig.domain.model.information.types.relations;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 

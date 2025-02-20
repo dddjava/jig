@@ -7,9 +7,9 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.StringJoiner;
 
@@ -35,8 +35,8 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        ClassRelations businessRuleRelations = ClassRelations.internalRelation(coreDomainJigTypes);
-        ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
+        TypeRelationships businessRuleRelations = TypeRelationships.internalRelation(coreDomainJigTypes);
+        TypeRelationships relations = businessRuleRelations.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
         TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 
         StringJoiner useCaseText = new StringJoiner("\n");

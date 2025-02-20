@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.relation.packages;
 
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -26,8 +26,8 @@ public class PackageRelations {
     /**
      * クラスの関連をパッケージの関連に丸める
      */
-    public static PackageRelations from(ClassRelations classRelations) {
-        return new PackageRelations(classRelations.list().stream()
+    public static PackageRelations from(TypeRelationships typeRelationships) {
+        return new PackageRelations(typeRelationships.list().stream()
                 .map(classRelation -> new PackageRelation(
                         classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
                 .toList());

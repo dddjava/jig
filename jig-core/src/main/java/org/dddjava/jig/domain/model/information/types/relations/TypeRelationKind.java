@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.relation.classes;
+package org.dddjava.jig.domain.model.information.types.relations;
 
 public enum TypeRelationKind {
     親クラス,

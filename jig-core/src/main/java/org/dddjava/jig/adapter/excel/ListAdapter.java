@@ -12,9 +12,9 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
@@ -42,7 +42,7 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         MethodSmellList methodSmellList = jigService.methodSmells(jigRepository);
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
-        var allClassRelations = ClassRelations.from(jigTypes);
+        var allClassRelations = TypeRelationships.from(jigTypes);
 
         JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
@@ -58,8 +58,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.id().asSimpleText()),
                         Map.entry("クラス別名", item -> item.label()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        Map.entry("関連元ビジネスルール数", item -> ClassRelations.internalTypeRelationsTo(coreDomainJigTypes, item).size()),
-                        Map.entry("関連先ビジネスルール数", item -> ClassRelations.internalTypeRelationsFrom(coreDomainJigTypes, item).size()),
+                        Map.entry("関連元ビジネスルール数", item -> TypeRelationships.internalTypeRelationsTo(coreDomainJigTypes, item).size()),
+                        Map.entry("関連先ビジネスルール数", item -> TypeRelationships.internalTypeRelationsFrom(coreDomainJigTypes, item).size()),
                         Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != JigTypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {

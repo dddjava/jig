@@ -6,9 +6,9 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
-import org.dddjava.jig.domain.model.information.relation.classes.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,7 +28,7 @@ class PackageEdgeDiagramTest {
 
     @Test
     void 出力されない() {
-        var sut = PackageRelations.from(new ClassRelations(List.of()));
+        var sut = PackageRelations.from(new TypeRelationships(List.of()));
         assertFalse(sut.available());
     }
 
@@ -68,7 +68,7 @@ class PackageEdgeDiagramTest {
     @MethodSource
     @ParameterizedTest
     void 出力されるパターン(List<TypeRelationship> classRelations, int depth, List<String> expectedContainsTexts) {
-        var sut = PackageRelations.from(new ClassRelations(classRelations)).applyDepth(new PackageDepth(depth));
+        var sut = PackageRelations.from(new TypeRelationships(classRelations)).applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageTerm(any()))
@@ -108,12 +108,12 @@ class PackageEdgeDiagramTest {
 
     @Test
     void ClassRelationsからPackageRelationsへの変換とapplyDepthの検証() {
-        ClassRelations classRelations = new ClassRelations(List.of(
+        TypeRelationships typeRelationships = new TypeRelationships(List.of(
                 classRelationFrom("a.aa.aaa.Foo", "a.ab.aab.aaba.Bar"),
                 classRelationFrom("a.aa.aaa.Foo", "b.Bbb")
         ));
 
-        PackageRelations sut = PackageRelations.from(classRelations);
+        PackageRelations sut = PackageRelations.from(typeRelationships);
         assertTrue(sut.available());
 
         PackageRelations depth3 = sut.applyDepth(new PackageDepth(3));

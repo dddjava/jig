@@ -3,8 +3,8 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.relation.ClassDefinition;
 import testing.JigServiceTest;
@@ -61,7 +61,7 @@ class BusinessRuleServiceTest {
         var jigTypes = jigService.jigTypes(jigRepository);
 
         var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
-        var classRelations = ClassRelations.internalTypeRelationsFrom(jigTypes, targetJigType);
+        var classRelations = TypeRelationships.internalTypeRelationsFrom(jigTypes, targetJigType);
 
         assertEquals("""
                         "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ClassAnnotation";

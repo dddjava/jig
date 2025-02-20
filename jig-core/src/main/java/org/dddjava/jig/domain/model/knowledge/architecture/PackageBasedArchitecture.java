@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.knowledge.architecture;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,19 +17,19 @@ import static java.util.stream.Collectors.groupingBy;
 public class PackageBasedArchitecture {
 
     List<PackageIdentifier> architecturePackages;
-    private final ClassRelations classRelations;
+    private final TypeRelationships typeRelationships;
 
-    PackageBasedArchitecture(List<PackageIdentifier> architecturePackages, ClassRelations classRelations) {
+    PackageBasedArchitecture(List<PackageIdentifier> architecturePackages, TypeRelationships typeRelationships) {
         this.architecturePackages = architecturePackages;
-        this.classRelations = classRelations;
+        this.typeRelationships = typeRelationships;
     }
 
-    public ClassRelations classRelations() {
-        return classRelations;
+    public TypeRelationships classRelations() {
+        return typeRelationships;
     }
 
     public static PackageBasedArchitecture from(JigTypes jigTypes) {
-        return new PackageBasedArchitecture(getArchitecturePackages(jigTypes), ClassRelations.from(jigTypes));
+        return new PackageBasedArchitecture(getArchitecturePackages(jigTypes), TypeRelationships.from(jigTypes));
     }
 
     private static List<PackageIdentifier> getArchitecturePackages(JigTypes jigTypes) {

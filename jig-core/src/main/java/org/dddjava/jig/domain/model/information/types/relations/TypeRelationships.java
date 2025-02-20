@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.information.types.relations;
 
-import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -41,14 +39,6 @@ public class TypeRelationships {
                         .filter(typeIdentifier -> jigTypes.contains(typeIdentifier))
                         .flatMap(typeIdentifier -> TypeRelationship.from(jigType.id(), typeIdentifier).stream()))
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
-    }
-
-    public static TypeRelationships internalTypeRelationsFrom(JigTypesWithRelationships jigTypes, JigType targetJigType) {
-        return jigTypes.typeRelationships().filterFrom(targetJigType.id());
-    }
-
-    public static TypeRelationships internalTypeRelationsTo(JigTypesWithRelationships jigTypes, JigType targetJigType) {
-        return jigTypes.typeRelationships().filterTo(targetJigType.id());
     }
 
     public static TypeRelationships from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers) {

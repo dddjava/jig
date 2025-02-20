@@ -9,17 +9,17 @@ import java.util.Optional;
 /**
  * メソッドの不吉なにおい
  */
-public record MethodSmell(JigMethod method, MethodWorries methodWorries) {
+public record MethodSmell(JigMethod method, MethodWorries methodWorries, JigType declaringJigType) {
 
-    public static Optional<MethodSmell> createMethodSmell(JigMethod method, JigType contextJigType) {
+    public static Optional<MethodSmell> createMethodSmell(JigMethod method, JigType declaringJigType) {
         // java.lang.Object由来は除外する
         if (method.isObjectMethod()) {
             return Optional.empty();
         }
-        var methodWorries = MethodWorries.from(method, contextJigType);
+        var methodWorries = MethodWorries.from(method, declaringJigType);
         if (methodWorries.empty()) return Optional.empty();
 
-        var instance = new MethodSmell(method, methodWorries);
+        var instance = new MethodSmell(method, methodWorries, declaringJigType);
         if (!instance.hasSmell()) return Optional.empty();
         return Optional.of(instance);
     }

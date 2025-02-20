@@ -107,7 +107,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("クラス名", item -> item.method().declaringType().asSimpleText()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.method().nameAndArgumentSimpleText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnType().asSimpleText()),
-                        ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.method().declaringType()).title()),
+                        ReportItem.ofString("クラス別名", item -> item.declaringJigType().label()),
                         ReportItem.ofString("メンバを使用していない", item -> item.notUseMember() ? "◯" : ""),
                         ReportItem.ofString("基本型の授受を行なっている", item -> item.primitiveInterface() ? "◯" : ""),
                         ReportItem.ofString("NULLリテラルを使用している", item -> item.referenceNull() ? "◯" : ""),

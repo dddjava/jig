@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 
@@ -30,8 +30,8 @@ public class RelationText {
 
     public static RelationText fromClassRelation(ClassRelations relations) {
         RelationText relationText = new RelationText();
-        for (ClassRelation classRelation : relations.distinctList()) {
-            relationText.add(classRelation.from(), classRelation.to());
+        for (TypeRelationship typeRelationship : relations.distinctList()) {
+            relationText.add(typeRelationship.from(), typeRelationship.to());
         }
         return relationText;
     }

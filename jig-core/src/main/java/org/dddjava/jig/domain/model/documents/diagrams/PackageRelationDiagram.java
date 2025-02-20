@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.relation.Edges;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependencies;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
@@ -184,10 +184,10 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         StringJoiner sj = new StringJoiner("\n");
         for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());
-            for (ClassRelation classRelation : contextClassRelations.list()) {
-                PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
+            for (TypeRelationship typeRelationship : contextClassRelations.list()) {
+                PackageRelation packageRelation = new PackageRelation(typeRelationship.from().packageIdentifier(), typeRelationship.to().packageIdentifier());
                 if (packageMutualDependency.matches(packageRelation)) {
-                    sj.add("- " + classRelation.formatText());
+                    sj.add("- " + typeRelationship.formatText());
                 }
             }
         }

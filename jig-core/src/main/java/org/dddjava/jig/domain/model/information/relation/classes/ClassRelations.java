@@ -20,16 +20,16 @@ import static java.util.stream.Collectors.toList;
  */
 public class ClassRelations {
 
-    List<ClassRelation> list;
+    List<TypeRelationship> list;
 
-    public ClassRelations(List<ClassRelation> list) {
+    public ClassRelations(List<TypeRelationship> list) {
         this.list = list;
     }
 
     public static ClassRelations from(JigTypes jigTypes) {
         return new ClassRelations(jigTypes.stream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .flatMap(usingType -> ClassRelation.from(jigType.id(), usingType).stream()))
+                        .flatMap(usingType -> TypeRelationship.from(jigType.id(), usingType).stream()))
                 .toList());
     }
 
@@ -41,7 +41,7 @@ public class ClassRelations {
                 return keyJigTypes.stream()
                         .flatMap(jigType -> jigType.usingTypes().list().stream()
                                 .filter(typeIdentifier -> keyJigTypes.contains(typeIdentifier))
-                                .flatMap(typeIdentifier -> ClassRelation.from(jigType.id(), typeIdentifier).stream()))
+                                .flatMap(typeIdentifier -> TypeRelationship.from(jigType.id(), typeIdentifier).stream()))
                         .collect(collectingAndThen(toList(), ClassRelations::new));
             });
         }
@@ -58,17 +58,17 @@ public class ClassRelations {
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {
         return list.stream()
                 .filter(classRelation -> classRelation.toIs(typeIdentifier))
-                .map(ClassRelation::from)
+                .map(TypeRelationship::from)
                 .collect(TypeIdentifiers.collector())
                 .normalize();
     }
 
-    public List<ClassRelation> list() {
+    public List<TypeRelationship> list() {
         return list;
     }
 
     public ClassRelations filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
-        List<ClassRelation> collect = list.stream()
+        List<TypeRelationship> collect = list.stream()
                 .filter(classRelation -> toTypeIdentifiers.contains(classRelation.to()))
                 .collect(Collectors.toList());
         return new ClassRelations(collect);
@@ -78,16 +78,16 @@ public class ClassRelations {
         return new ClassRelations(distinctList());
     }
 
-    public List<ClassRelation> distinctList() {
-        List<ClassRelation> results = new ArrayList<>();
+    public List<TypeRelationship> distinctList() {
+        List<TypeRelationship> results = new ArrayList<>();
         ADD:
-        for (ClassRelation classRelation : list) {
-            for (ClassRelation result : results) {
-                if (classRelation.sameRelation(result)) {
+        for (TypeRelationship typeRelationship : list) {
+            for (TypeRelationship result : results) {
+                if (typeRelationship.sameRelation(result)) {
                     continue ADD;
                 }
             }
-            results.add(classRelation);
+            results.add(typeRelationship);
         }
         return results;
     }
@@ -102,7 +102,7 @@ public class ClassRelations {
     }
 
     public ClassRelations relationsFromRootTo(TypeIdentifiers toTypeIdentifiers) {
-        HashSet<ClassRelation> set = new HashSet<>();
+        HashSet<TypeRelationship> set = new HashSet<>();
 
         int size = 0;
         while (true) {
@@ -117,14 +117,14 @@ public class ClassRelations {
     }
 
     public ClassRelations filterFrom(TypeIdentifier typeIdentifier) {
-        List<ClassRelation> collect = list.stream()
+        List<TypeRelationship> collect = list.stream()
                 .filter(classRelation -> classRelation.from().equals(typeIdentifier))
                 .collect(Collectors.toList());
         return new ClassRelations(collect);
     }
 
     public ClassRelations filterTo(TypeIdentifier typeIdentifier) {
-        List<ClassRelation> collect = list.stream()
+        List<TypeRelationship> collect = list.stream()
                 .filter(classRelation -> classRelation.to().equals(typeIdentifier))
                 .collect(Collectors.toList());
         return new ClassRelations(collect);
@@ -156,7 +156,7 @@ public class ClassRelations {
 
     public String dotText() {
         return list.stream()
-                .map(ClassRelation::dotText)
+                .map(TypeRelationship::dotText)
                 .collect(Collectors.joining("\n"));
     }
 }

@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.relation;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.classes.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 
 import java.util.*;
@@ -31,7 +31,7 @@ public class Edges<T> {
                 .toList());
     }
 
-    public static Edges<TypeIdentifier> fromClassRelations(List<ClassRelation> relations) {
+    public static Edges<TypeIdentifier> fromClassRelations(List<TypeRelationship> relations) {
         return new Edges<>(relations.stream()
                 .map(relation -> new Edge<>(relation.from(), relation.to()))
                 .toList());

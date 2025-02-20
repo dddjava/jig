@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 import org.junit.jupiter.api.Test;
@@ -61,13 +61,13 @@ class PackageEdgeDiagramTest {
         );
     }
 
-    private static ClassRelation classRelationFrom(String value, String value1) {
-        return ClassRelation.from(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1)).orElseThrow();
+    private static TypeRelationship classRelationFrom(String value, String value1) {
+        return TypeRelationship.from(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1)).orElseThrow();
     }
 
     @MethodSource
     @ParameterizedTest
-    void 出力されるパターン(List<ClassRelation> classRelations, int depth, List<String> expectedContainsTexts) {
+    void 出力されるパターン(List<TypeRelationship> classRelations, int depth, List<String> expectedContainsTexts) {
         var sut = PackageRelations.from(new ClassRelations(classRelations)).applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);

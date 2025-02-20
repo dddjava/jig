@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
+import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
@@ -22,10 +23,12 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     ServiceMethods serviceMethods;
     private final JigTypes coreDomainJigTypes;
+    private TypeRelationships relationships;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, JigTypes coreDomainJigTypes) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, JigTypesWithRelationships jigTypesWithRelationships) {
         this.serviceMethods = serviceMethods;
-        this.coreDomainJigTypes = coreDomainJigTypes;
+        this.coreDomainJigTypes = jigTypesWithRelationships.jigTypes();
+        this.relationships = jigTypesWithRelationships.typeRelationships();
     }
 
     public DiagramSources sources() {
@@ -35,8 +38,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        TypeRelationships businessRuleRelations = TypeRelationships.internalRelation(coreDomainJigTypes);
-        TypeRelationships relations = businessRuleRelations.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
+        TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
         TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 
         StringJoiner useCaseText = new StringJoiner("\n");

@@ -3,12 +3,12 @@ package org.dddjava.jig.adapter.diagram;
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 
 import java.nio.file.Path;
@@ -60,8 +60,8 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
     @HandleDocument(JigDocument.CategoryUsageDiagram)
     public DiagramSourceWriter categoryUsages(JigRepository jigRepository) {
         ServiceMethods serviceMethods = jigService.serviceMethods(jigRepository);
-        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return new CategoryUsageDiagram(serviceMethods, coreDomainJigTypes);
+        JigTypesWithRelationships jigTypesWithRelationships = jigService.coreDomainJigTypesWithRelationships(jigRepository);
+        return new CategoryUsageDiagram(serviceMethods, jigTypesWithRelationships);
     }
 
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)

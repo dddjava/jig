@@ -14,6 +14,7 @@ import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
@@ -118,5 +119,11 @@ public class JigService {
 
     public void notifyReportInformation() {
         jigEventRepository.notifyWithLogger();
+    }
+
+    public JigTypesWithRelationships coreDomainJigTypesWithRelationships(JigRepository jigRepository) {
+        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
+        TypeRelationships typeRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
+        return new JigTypesWithRelationships(coreDomainJigTypes, typeRelationships);
     }
 }

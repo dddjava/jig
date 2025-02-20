@@ -68,7 +68,7 @@ window.addEventListener("popstate", function(event) {
     const hash = event.target.location.hash;
 
     if (hash) {
-        const anchor = document.querySelector('a[name="' + hash.substring(1) + '"]');
+        const anchor = document.getElementById(hash.substring(1))
         if (anchor) {
             anchor.scrollIntoView();
         }

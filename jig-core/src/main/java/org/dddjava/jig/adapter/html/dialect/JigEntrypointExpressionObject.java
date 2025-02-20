@@ -2,11 +2,18 @@ package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.thymeleaf.context.IExpressionContext;
 
 /**
  * entrypoint向けのExpressionObject
  */
 class JigEntrypointExpressionObject {
+
+    private final IExpressionContext context;
+
+    public JigEntrypointExpressionObject(IExpressionContext context) {
+        this.context = context;
+    }
 
     public String handlePath(JigType jigType) {
         return jigType.annotationValueOf(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")

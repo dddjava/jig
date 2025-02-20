@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
+import org.thymeleaf.context.IExpressionContext;
 
 import java.util.Iterator;
 import java.util.List;
@@ -17,9 +18,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class JigExpressionObject {
+    private final IExpressionContext context;
     private final JigDocumentContext jigDocumentContext;
 
-    public JigExpressionObject(JigDocumentContext jigDocumentContext) {
+    public JigExpressionObject(IExpressionContext context, JigDocumentContext jigDocumentContext) {
+        this.context = context;
         this.jigDocumentContext = jigDocumentContext;
     }
 

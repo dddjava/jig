@@ -21,9 +21,9 @@ class JigExpressionObjectFactory implements IExpressionObjectFactory {
     @Override
     public Object buildObject(IExpressionContext context, String expressionObjectName) {
         if (expressionObjectName.equals("jigEntrypoint")) {
-            return new JigEntrypointExpressionObject();
+            return new JigEntrypointExpressionObject(context);
         }
-        return new JigExpressionObject(jigDocumentContext);
+        return new JigExpressionObject(context, jigDocumentContext);
     }
 
     @Override

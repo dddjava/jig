@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,18 +35,12 @@ public class TypeRelationships {
                 .toList());
     }
 
-    private static final ConcurrentHashMap<JigTypes, TypeRelationships> cache = new ConcurrentHashMap<>();
-
     public static TypeRelationships internalRelation(JigTypes jigTypes) {
-        synchronized (jigTypes) {
-            return cache.computeIfAbsent(jigTypes, keyJigTypes -> {
-                return keyJigTypes.stream()
-                        .flatMap(jigType -> jigType.usingTypes().list().stream()
-                                .filter(typeIdentifier -> keyJigTypes.contains(typeIdentifier))
-                                .flatMap(typeIdentifier -> TypeRelationship.from(jigType.id(), typeIdentifier).stream()))
-                        .collect(collectingAndThen(toList(), TypeRelationships::new));
-            });
-        }
+        return jigTypes.stream()
+                .flatMap(jigType -> jigType.usingTypes().list().stream()
+                        .filter(typeIdentifier -> jigTypes.contains(typeIdentifier))
+                        .flatMap(typeIdentifier -> TypeRelationship.from(jigType.id(), typeIdentifier).stream()))
+                .collect(collectingAndThen(toList(), TypeRelationships::new));
     }
 
     public static TypeRelationships internalTypeRelationsFrom(JigTypesWithRelationships jigTypes, JigType targetJigType) {

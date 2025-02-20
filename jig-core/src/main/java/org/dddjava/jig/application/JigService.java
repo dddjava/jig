@@ -26,11 +26,13 @@ public class JigService {
     private final Architecture architecture;
     private final JigEventRepository jigEventRepository;
     private final Cache<String, JigTypes> jigTypesCache;
+    private final Cache<String, JigTypesWithRelationships> JigTypesWithRelationshipsCache;
 
     public JigService(Architecture architecture, JigEventRepository jigEventRepository) {
         this.architecture = architecture;
         this.jigEventRepository = jigEventRepository;
         this.jigTypesCache = Caffeine.newBuilder().build();
+        this.JigTypesWithRelationshipsCache = Caffeine.newBuilder().build();
     }
 
     /**
@@ -122,8 +124,10 @@ public class JigService {
     }
 
     public JigTypesWithRelationships coreDomainJigTypesWithRelationships(JigRepository jigRepository) {
-        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
-        TypeRelationships typeRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
-        return new JigTypesWithRelationships(coreDomainJigTypes, typeRelationships);
+        return JigTypesWithRelationshipsCache.get("coreDomainInternalRelation", key -> {
+            JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
+            TypeRelationships typeRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
+            return new JigTypesWithRelationships(coreDomainJigTypes, typeRelationships);
+        });
     }
 }

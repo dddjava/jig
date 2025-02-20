@@ -180,7 +180,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
         logger.debug("visitInvokeDynamicInsn {} {} {} {}", name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         // name, descriptorにはLambdaやメソッド参照を受ける型の情報。
-        // たとえばFunctionで受けるなら name=apply descriptor=()Ljava/util/function/Function; となる。
+        // たとえばFunctionで受けるなら name=apply descriptor=()Ljava/util/valueResolver/Function; となる。
         // invokeDynamic実行時点でのこの情報あまり意味がないので使用しない。（必要であれば他のメソッド呼び出し時の引数として登場するはず。）
 
         // bootstrapMethodHandleはinvokedynamicの起動メソッドが入る。

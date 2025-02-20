@@ -8,17 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 public class ReportSheet<T> {
     private static final Logger logger = LoggerFactory.getLogger(ReportSheet.class);
 
     private final String sheetName;
-    private final List<Map.Entry<String, Function<T, Object>>> reporter;
+    private final List<ReportItem<T>> reporter;
     private final List<T> items;
 
-    public ReportSheet(String sheetName, List<Map.Entry<String, Function<T, Object>>> reporter, List<T> items) {
+    public ReportSheet(String sheetName, List<ReportItem<T>> reporter, List<T> items) {
         this.sheetName = sheetName;
         this.reporter = reporter;
         this.items = items;
@@ -38,10 +36,12 @@ public class ReportSheet<T> {
         return items.isEmpty();
     }
 
-    private void writeSheet(Workbook book, String sheetName, List<Map.Entry<String, Function<T, Object>>> reporter, List<T> items) {
+    private void writeSheet(Workbook book, String sheetName, List<ReportItem<T>> reporter, List<T> items) {
         Sheet sheet = book.createSheet(sheetName);
-        writeHeader(sheet, reporter.stream().map(Map.Entry::getKey).toList());
-        List<Function<T, Object>> bodyFunctions = reporter.stream().map(Map.Entry::getValue).toList();
+        writeHeader(sheet, reporter.stream().map(ReportItem::label).toList());
+
+        //List<Function<T, ?>> にしたらコンパイルエラーになる。varならいける。謎。
+        var bodyFunctions = reporter.stream().map(ReportItem::valueResolver).toList();
 
         items.forEach(item -> {
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);

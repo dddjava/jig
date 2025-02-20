@@ -1,13 +1,12 @@
 package org.dddjava.jig.domain.model.information.types.relations;
 
-import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,43 +60,45 @@ public class TypeRelationships {
     public static TypeRelationships from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers) {
         TypeIdentifier id = jigTypeHeader.id();
 
-        // 型引数の型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
+        Stream<TypeRelationship> typeRelationshipStream = headerTypeRelationshipStream(jigTypeHeader, id);
+
+        return new TypeRelationships(typeRelationshipStream.toList());
+    }
+
+    private static Stream<TypeRelationship> headerTypeRelationshipStream(JigTypeHeader jigTypeHeader, TypeIdentifier id) {
+        // 自身の型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
         Stream<TypeRelationship> typeParameterStream = jigTypeHeader.jigTypeAttributeData().typeParameters().stream()
                 // 型パラメタ自体は型ではないが、型パラメタの境界は型引数なので取得する
                 .flatMap(jigTypeParameter -> jigTypeParameter.bounds().stream())
                 .map(typeArg -> new TypeRelationship(id, typeArg.typeIdentifier(), TypeRelationKind.型引数));
+        // 自身のアノテーション
+        Stream<TypeRelationship> annotationStream = annotationTypeRelationshipStream(jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances(), id);
 
-        // アノテーション（アノテーション引数は未対応）
-        Stream<TypeRelationship> annotationStream = jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().stream()
-                .map(annoRef -> new TypeRelationship(id, annoRef.id(), TypeRelationKind.使用アノテーション));
-
+        // superとinterface
         Stream<TypeRelationship> superStream = jigTypeHeader.superType().stream()
-                .flatMap(jigTypeReference -> Stream.of(
-                        // 自身
-                        Stream.of(new TypeRelationship(id, jigTypeReference.id(), TypeRelationKind.継承クラス)),
-                        // 型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
-                        jigTypeReference.typeArgumentList().stream()
-                                .map(typeArg -> new TypeRelationship(id, typeArg.typeIdentifier(), TypeRelationKind.型引数)),
-                        // アノテーション（アノテーション引数は未対応）
-                        jigTypeReference.typeAnnotations().stream()
-                                .map(annoRef -> new TypeRelationship(id, annoRef.id(), TypeRelationKind.使用アノテーション)))
-                ).flatMap(Function.identity());
-
+                .flatMap(jigTypeReference -> typeReferenceRelationshipStream(id, jigTypeReference, TypeRelationKind.継承クラス));
         Stream<TypeRelationship> interfaceStream = jigTypeHeader.interfaceTypeList().stream()
-                .flatMap(jigTypeReference -> Stream.of(
+                .flatMap(jigTypeReference -> typeReferenceRelationshipStream(id, jigTypeReference, TypeRelationKind.実装インタフェース));
+
+        return Stream.of(typeParameterStream, annotationStream, superStream, interfaceStream).flatMap(Function.identity());
+    }
+
+    private static Stream<TypeRelationship> typeReferenceRelationshipStream(TypeIdentifier id, JigTypeReference jigTypeReference, TypeRelationKind typeRelationKind) {
+        return Stream.of(
                         // 自身
-                        Stream.of(new TypeRelationship(id, jigTypeReference.id(), TypeRelationKind.実装インタフェース)),
+                        Stream.of(new TypeRelationship(id, jigTypeReference.id(), typeRelationKind)),
                         // 型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
                         jigTypeReference.typeArgumentList().stream()
                                 .map(typeArg -> new TypeRelationship(id, typeArg.typeIdentifier(), TypeRelationKind.型引数)),
-                        // アノテーション（アノテーション引数は未対応）
-                        jigTypeReference.typeAnnotations().stream()
-                                .map(annoRef -> new TypeRelationship(id, annoRef.id(), TypeRelationKind.使用アノテーション))
-                ).flatMap(Function.identity()));
+                        // 型アノテーション
+                        annotationTypeRelationshipStream(jigTypeReference.typeAnnotations(), id))
+                .flatMap(Function.identity());
+    }
 
-        return new TypeRelationships(Stream.of(
-                typeParameterStream, annotationStream, superStream, interfaceStream
-        ).flatMap(Function.identity()).toList());
+    private static Stream<TypeRelationship> annotationTypeRelationshipStream(Collection<JigAnnotationReference> jigTypeReference, TypeIdentifier id) {
+        // アノテーション（アノテーション引数は未対応）
+        return jigTypeReference.stream()
+                .map(annoRef -> new TypeRelationship(id, annoRef.id(), TypeRelationKind.使用アノテーション));
     }
 
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {

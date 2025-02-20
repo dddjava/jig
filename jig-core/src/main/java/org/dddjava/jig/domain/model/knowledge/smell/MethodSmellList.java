@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 /**
  * メソッドの不吉なにおい一覧
  */
-public record MethodSmellList(JigTypes jigTypes, List<MethodSmell> list) {
+public record MethodSmellList(List<MethodSmell> list) {
 
     public static MethodSmellList from(JigTypes jigTypes) {
-        return new MethodSmellList(jigTypes, jigTypes.stream()
+        return new MethodSmellList(jigTypes.stream()
                 .flatMap(jigType -> jigType.instanceJigMethodStream()
                         .flatMap(method -> MethodSmell.createMethodSmell(method, jigType).stream())
                 )

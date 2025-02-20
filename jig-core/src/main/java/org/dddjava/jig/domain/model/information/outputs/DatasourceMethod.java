@@ -2,26 +2,12 @@ package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
+import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
  * データソースの構造
  */
-public class DatasourceMethod {
-    JigMethod repositoryMethod;
-    JigMethod concreteMethod;
-
-    public DatasourceMethod(JigMethod repositoryMethod, JigMethod concreteMethod) {
-        this.repositoryMethod = repositoryMethod;
-        this.concreteMethod = concreteMethod;
-    }
-
-    public JigMethod repositoryMethod() {
-        return repositoryMethod;
-    }
-
-    public JigMethod concreteMethod() {
-        return concreteMethod;
-    }
+public record DatasourceMethod(JigMethod repositoryMethod, JigMethod concreteMethod, JigType interfaceJigType) {
 
     public UsingMethods usingMethods() {
         return concreteMethod().usingMethods();

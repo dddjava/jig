@@ -15,6 +15,7 @@ import java.util.stream.Stream;
  */
 public class DatasourceAngle {
 
+    private final DatasourceMethod datasourceMethod;
     private final JigMethod interfaceMethod;
     MyBatisStatements myBatisStatements;
     JigMethod concreteMethod;
@@ -22,14 +23,15 @@ public class DatasourceAngle {
     CallerMethods callerMethods;
 
     public DatasourceAngle(DatasourceMethod datasourceMethod, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
-        interfaceMethod = datasourceMethod.repositoryMethod();
+        this.interfaceMethod = datasourceMethod.repositoryMethod();
+        this.datasourceMethod = datasourceMethod;
         this.callerMethods = callerMethods;
         this.myBatisStatements = allMyBatisStatements.filterRelationOn(datasourceMethod.usingMethods().invokedMethods());
         this.concreteMethod = datasourceMethod.concreteMethod();
     }
 
     public TypeIdentifier declaringType() {
-        return interfaceMethod.declaringType();
+        return datasourceMethod.interfaceJigType().id();
     }
 
     public JigMethod interfaceMethod() {
@@ -70,5 +72,15 @@ public class DatasourceAngle {
 
     public CallerMethods callerMethods() {
         return callerMethods;
+    }
+
+    public String packageText() {
+        return declaringType().packageIdentifier().asText();
+    }
+    public String typeSimpleName() {
+        return declaringType().asSimpleText();
+    }
+    public String typeLabel() {
+        return datasourceMethod.interfaceJigType().label();
     }
 }

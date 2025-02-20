@@ -162,11 +162,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("stream使用", item -> item.useStream() ? "◯" : "")
                 ), serviceAngles.list()),
                 new ReportSheet<>("REPOSITORY", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.interfaceMethod().declaringType().packageIdentifier().asText()),
-                        ReportItem.ofString("クラス名", item -> item.interfaceMethod().declaringType().asSimpleText()),
+                        ReportItem.ofString("パッケージ名", item -> item.packageText()),
+                        ReportItem.ofString("クラス名", item -> item.typeSimpleName()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnTypeReference().simpleNameWithGenerics()),
-                        ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.interfaceMethod().declaringType()).title()),
+                        ReportItem.ofString("クラス別名", item -> item.typeLabel()),
                         ReportItem.ofString("メソッド戻り値の型の別名", item ->
                                 jigDocumentContext.typeTerm(item.methodReturnTypeReference().id()).title()
                         ),

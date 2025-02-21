@@ -14,8 +14,19 @@ public enum MethodWorry {
                 return false;
             }
             var instructions = jigMethod.instructions();
-            return instructions.values().stream()
-                    .noneMatch(instruction -> instruction.instructMethodOrFieldOwnerIs(contextJigType.id()));
+            if (instructions.fieldReferenceStream()
+                    .anyMatch(fieldReference -> fieldReference.declaringType().equals(contextJigType.id()))) {
+                return false;
+            }
+            if (instructions.invokedMethodStream()
+                    .anyMatch(invokedMethod -> invokedMethod.methodOwner().equals(contextJigType.id()))) {
+                return false;
+            }
+            // lambdaの中からも自身のメンバにアクセスしていない
+            return instructions.invokeDynamicInstructionStream().noneMatch(invokeDynamicInstruction ->
+                    // TODO invokeDynamicはLambdaの中を見ないと正しい判断はできないが、とりあえずusingで代用しておく。
+                    invokeDynamicInstruction.usingTypes().anyMatch(contextJigType.id()::equals)
+            );
         }
     },
     基本型の授受を行なっている {

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public record InvokeDynamicInstruction(InvokedMethod invokedMethod, TypeIdentifier returnType,
                                        List<TypeIdentifier> argumentTypes) {
 
-    Stream<TypeIdentifier> usingTypes() {
+    public Stream<TypeIdentifier> usingTypes() {
         return Stream.of(
                 invokedMethod().extractTypeIdentifiers().stream(),
                 argumentTypes().stream(),

@@ -9,18 +9,6 @@ package org.dddjava.jig.domain.model.data.members.instruction;
  */
 public enum MethodInstructionType {
     /**
-     * GETSTATIC, PUTSTATIC, GETFIELD or PUTFIELD.
-     */
-    FIELD,
-    /**
-     * INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or INVOKEINTERFACE.
-     */
-    METHOD,
-    /**
-     * LDC?
-     */
-    CLASS参照,
-    /**
      * LOOKUPSWITCH
      */
     SWITCH,
@@ -32,10 +20,6 @@ public enum MethodInstructionType {
      * IFNONNULL, IFNULL
      */
     NULL判定,
-    /**
-     * INVOKEDYNAMIC
-     */
-    InvokeDynamic,
     /**
      * ACONST_NULL
      */

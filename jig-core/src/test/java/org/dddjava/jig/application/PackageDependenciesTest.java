@@ -30,7 +30,6 @@ public class PackageDependenciesTest {
                         "stub.domain.model.relation -> stub.domain.model.relation.clz",
                         "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_wrapper_constant",
                         "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
-                        "stub.domain.model.relation -> stub.domain.model.relation.field",
                         "stub.domain.model.relation -> stub.domain.model.relation.method"
                 );
     }

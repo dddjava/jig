@@ -1,13 +1,11 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
 /**
- * メソッドに対する操作
- *
- * オペコードに対するASMのまとめた単位と近似する
+ * 単純命令の種類
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Formata>
  */
-public enum MethodInstructionType {
+public enum SimpleInstructionType {
     /**
      * LOOKUPSWITCH
      */

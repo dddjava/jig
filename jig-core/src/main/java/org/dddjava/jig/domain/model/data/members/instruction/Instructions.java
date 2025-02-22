@@ -19,7 +19,7 @@ public record Instructions(List<Object> instructions) {
         return new Instructions(new ArrayList<>());
     }
 
-    public void register(MethodInstructionType type) {
+    public void register(SimpleInstructionType type) {
         instructions.add(new SimpleInstruction(type));
     }
 
@@ -54,7 +54,7 @@ public record Instructions(List<Object> instructions) {
     }
 
     public boolean hasNullDecision() {
-        return basicInstructionStream().anyMatch(instruction -> instruction.type() == MethodInstructionType.NULL判定);
+        return basicInstructionStream().anyMatch(instruction -> instruction.type() == SimpleInstructionType.NULL判定);
     }
 
     private Stream<SimpleInstruction> basicInstructionStream() {
@@ -65,13 +65,13 @@ public record Instructions(List<Object> instructions) {
 
     public DecisionNumber decisionNumber() {
         var count = basicInstructionStream()
-                .filter(instruction -> instruction.type() == MethodInstructionType.JUMP || instruction.type() == MethodInstructionType.SWITCH)
+                .filter(instruction -> instruction.type() == SimpleInstructionType.JUMP || instruction.type() == SimpleInstructionType.SWITCH)
                 .count();
         return new DecisionNumber(Math.toIntExact(count));
     }
 
     public boolean hasNullReference() {
-        return basicInstructionStream().anyMatch(instruction -> instruction.type() == MethodInstructionType.NULL参照);
+        return basicInstructionStream().anyMatch(instruction -> instruction.type() == SimpleInstructionType.NULL参照);
     }
 
     public Stream<TypeIdentifier> associatedTypeStream() {

@@ -128,7 +128,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitInsn(int opcode) {
         logger.debug("visitInsn {}", opcode);
         if (opcode == Opcodes.ACONST_NULL) {
-            methodInstructions.register(MethodInstructionType.NULL参照);
+            methodInstructions.register(SimpleInstructionType.NULL参照);
         }
         super.visitInsn(opcode);
     }
@@ -231,7 +231,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
         // switchがある
-        methodInstructions.register(MethodInstructionType.SWITCH);
+        methodInstructions.register(SimpleInstructionType.SWITCH);
         super.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
@@ -241,11 +241,11 @@ class AsmMethodVisitor extends MethodVisitor {
         // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
             // 何かしらの分岐がある
-            methodInstructions.register(MethodInstructionType.JUMP);
+            methodInstructions.register(SimpleInstructionType.JUMP);
         }
 
         if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-            methodInstructions.register(MethodInstructionType.NULL判定);
+            methodInstructions.register(SimpleInstructionType.NULL判定);
         }
         super.visitJumpInsn(opcode, label);
     }

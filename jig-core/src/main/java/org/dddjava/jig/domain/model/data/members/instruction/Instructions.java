@@ -19,7 +19,7 @@ public record Instructions(List<Object> instructions) {
     }
 
     public void register(MethodInstructionType type) {
-        instructions.add(new Instruction(type));
+        instructions.add(new SimpleInstruction(type));
     }
 
     public void registerField(TypeIdentifier declaringType, TypeIdentifier fieldTypeIdentifier, String name) {
@@ -56,10 +56,10 @@ public record Instructions(List<Object> instructions) {
         return basicInstructionStream().anyMatch(instruction -> instruction.type() == MethodInstructionType.NULL判定);
     }
 
-    private Stream<Instruction> basicInstructionStream() {
+    private Stream<SimpleInstruction> basicInstructionStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof Instruction)
-                .map(instruction -> (Instruction) instruction);
+                .filter(instruction -> instruction instanceof SimpleInstruction)
+                .map(instruction -> (SimpleInstruction) instruction);
     }
 
     public DecisionNumber decisionNumber() {

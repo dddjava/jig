@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.infrastructure.asm.ut.field.MyEnumFieldSut;
@@ -12,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.relation.FieldDefinition;
 import stub.domain.model.relation.annotation.VariableAnnotation;
-import stub.domain.model.relation.field.*;
 import testing.TestSupport;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,19 +92,25 @@ class AsmFieldVisitorTest {
     void フィールド定義に使用している型が取得できる() throws Exception {
         JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
 
-        String fieldsText = jigType.jigTypeMembers().instanceFieldsSimpleText();
-        assertEquals("[InstanceField instanceField, List genericFields, ArrayField[] arrayFields, Object obj]", fieldsText);
+        record TypeAndName(String typeText, String name) {
+        }
 
-        TypeIdentifiers identifiers = jigType.usingTypes();
-        assertThat(identifiers.list())
-                .contains(
-                        TypeIdentifier.from(stub.domain.model.relation.field.FieldAnnotation.class),
-                        TypeIdentifier.from(StaticField.class),
-                        TypeIdentifier.from(InstanceField.class),
-                        TypeIdentifier.from(GenericField.class),
-                        TypeIdentifier.from(ArrayField.class),
-                        TypeIdentifier.from(ReferenceConstantOwnerAtFieldDefinition.class),
-                        TypeIdentifier.from(ReferenceConstantAtFieldDefinition.class)
-                );
+        var actualFields = jigType.jigTypeMembers().jigFieldHeaders()
+                // assertionのためにフィールド名順で並び替える
+                .stream().sorted(Comparator.comparing(JigFieldHeader::name))
+                .map(jigFieldHeader -> new TypeAndName(
+                        jigFieldHeader.jigTypeReference().simpleNameWithGenerics(),
+                        jigFieldHeader.name()))
+                .toList();
+
+        assertEquals(List.of(
+                        new TypeAndName("ArrayField[]", "arrayFields"),
+                        new TypeAndName("List<GenericField>", "genericFields"),
+                        new TypeAndName("InstanceField", "instanceField"),
+                        new TypeAndName("Object", "obj"),
+                        new TypeAndName("StaticField", "staticField")
+                ),
+                actualFields
+        );
     }
 }

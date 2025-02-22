@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.members.instruction.FieldReference;
+import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
@@ -11,10 +11,10 @@ import java.util.stream.Collectors;
  * メソッドが使用しているフィールド
  */
 public class UsingFields {
-    private final Collection<FieldReference> fieldReferences;
+    private final Collection<JigFieldIdentifier> fieldIds;
 
-    private UsingFields(Collection<FieldReference> fieldReferences) {
-        this.fieldReferences = fieldReferences;
+    private UsingFields(Collection<JigFieldIdentifier> fieldIds) {
+        this.fieldIds = fieldIds;
     }
 
     static UsingFields from(Instructions instructions) {
@@ -22,8 +22,8 @@ public class UsingFields {
     }
 
     public String typeNames() {
-        return fieldReferences.stream()
-                .map(FieldReference::fieldTypeIdentifier)
+        return fieldIds.stream()
+                .map(JigFieldIdentifier::declaringTypeIdentifier)
                 .map(TypeIdentifier::asSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));

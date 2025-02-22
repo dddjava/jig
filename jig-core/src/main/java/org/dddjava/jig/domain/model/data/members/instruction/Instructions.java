@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
+import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ public record Instructions(List<Object> instructions) {
         instructions.add(new SimpleInstruction(type));
     }
 
-    public void registerField(TypeIdentifier declaringType, TypeIdentifier fieldTypeIdentifier, String name) {
-        instructions.add(new FieldReference(declaringType, fieldTypeIdentifier, name));
+    public void registerField(FieldInstruction fieldInstruction) {
+        instructions.add(fieldInstruction);
     }
 
     public void registerMethod(InvokedMethod invokedMethod) {
@@ -79,8 +80,8 @@ public record Instructions(List<Object> instructions) {
                     if (instruction instanceof ClassReference classReference) {
                         return Stream.of(classReference.typeIdentifier());
                     }
-                    if (instruction instanceof FieldReference fieldReference) {
-                        return Stream.of(fieldReference.fieldTypeIdentifier(), fieldReference.declaringType());
+                    if (instruction instanceof FieldInstruction fieldInstruction) {
+                        return Stream.of(fieldInstruction.jigFieldIdentifier().declaringTypeIdentifier());
                     }
                     if (instruction instanceof InvokedMethod invokedMethod) {
                         return Stream.concat(invokedMethod.extractTypeIdentifiers().stream(), Stream.of(invokedMethod.returnType()));
@@ -92,14 +93,15 @@ public record Instructions(List<Object> instructions) {
                 });
     }
 
-    public Collection<FieldReference> fieldReferences() {
+    public Collection<JigFieldIdentifier> fieldReferences() {
         return fieldReferenceStream().toList();
     }
 
-    public Stream<FieldReference> fieldReferenceStream() {
+    public Stream<JigFieldIdentifier> fieldReferenceStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof FieldReference)
-                .map(instruction -> (FieldReference) instruction);
+                .filter(instruction -> instruction instanceof FieldInstruction)
+                .map(instruction -> (FieldInstruction) instruction)
+                .map(FieldInstruction::jigFieldIdentifier);
     }
 
     public Stream<ClassReference> classReferenceStream() {

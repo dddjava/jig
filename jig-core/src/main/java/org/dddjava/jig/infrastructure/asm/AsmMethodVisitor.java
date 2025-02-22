@@ -1,10 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.*;
-import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
-import org.dddjava.jig.domain.model.data.members.instruction.InvokeDynamicInstruction;
-import org.dddjava.jig.domain.model.data.members.instruction.InvokedMethod;
-import org.dddjava.jig.domain.model.data.members.instruction.MethodInstructionType;
+import org.dddjava.jig.domain.model.data.members.instruction.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -136,13 +133,23 @@ class AsmMethodVisitor extends MethodVisitor {
         super.visitInsn(opcode);
     }
 
+    /// フィールドに関するinstruction
+    /// descriptorはフィールドの型だが、対象のフィールドの型自体にそれほど重要な意味はないので、
+    /// JIGでは使用しないことにする。
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
         TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
-        TypeIdentifier fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
 
-        methodInstructions.registerField(declaringType, fieldTypeIdentifier, name);
+        JigFieldIdentifier jigFieldIdentifier = JigFieldIdentifier.from(declaringType, name);
+        var fieldInstruction = switch (opcode) {
+            case Opcodes.H_GETFIELD, Opcodes.H_GETSTATIC -> FieldInstruction.get(jigFieldIdentifier);
+            case Opcodes.H_PUTFIELD, Opcodes.H_PUTSTATIC -> FieldInstruction.set(jigFieldIdentifier);
+            // エラーにせず、ASMがFieldInsnを検出したことだけは記録しておく
+            default -> FieldInstruction.unknown(jigFieldIdentifier);
+        };
+
+        methodInstructions.registerField(fieldInstruction);
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }
 

@@ -15,7 +15,7 @@ public enum MethodWorry {
             }
             var instructions = jigMethod.instructions();
             if (instructions.fieldReferenceStream()
-                    .anyMatch(fieldReference -> fieldReference.declaringType().equals(contextJigType.id()))) {
+                    .anyMatch(fieldReference -> fieldReference.declaringTypeIdentifier().equals(contextJigType.id()))) {
                 return false;
             }
             if (instructions.invokedMethodStream()

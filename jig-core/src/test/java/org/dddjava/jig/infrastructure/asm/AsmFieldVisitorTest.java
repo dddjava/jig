@@ -12,7 +12,6 @@ import stub.domain.model.relation.annotation.VariableAnnotation;
 import testing.TestSupport;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,22 +24,24 @@ class AsmFieldVisitorTest {
     @Test
     void JigFieldHeaderでJavaで書いたまま取れる() {
         var members = TestSupport.buildJigType(MySutClass.class).jigTypeMembers();
+        List<String> actual = members.jigFieldHeaders().stream()
+                .map(JigFieldHeader::simpleNameWithGenerics)
+                .sorted().toList();
 
-        assertFieldSimpleNameWithGenerics("byte", members.findFieldByName("primitiveField"));
-        assertFieldSimpleNameWithGenerics("int[]", members.findFieldByName("primitiveArrayField"));
-        assertFieldSimpleNameWithGenerics("String", members.findFieldByName("stringField"));
-        assertFieldSimpleNameWithGenerics("String[]", members.findFieldByName("stringArrayField"));
-        assertFieldSimpleNameWithGenerics("List<BigDecimal>", members.findFieldByName("genericField"));
-        assertFieldSimpleNameWithGenerics("List<BigDecimal[]>", members.findFieldByName("genericArrayField"));
-        assertFieldSimpleNameWithGenerics("List<T>", members.findFieldByName("genericTypeVariableField"));
-        assertFieldSimpleNameWithGenerics("List<T[]>", members.findFieldByName("genericTypeVariableArrayField"));
-        assertFieldSimpleNameWithGenerics("T", members.findFieldByName("typeVariableField"));
-        assertFieldSimpleNameWithGenerics("T[]", members.findFieldByName("typeVariableArrayField"));
-        assertFieldSimpleNameWithGenerics("T[][]", members.findFieldByName("typeVariable2DArrayField"));
-    }
-
-    void assertFieldSimpleNameWithGenerics(String expected, Optional<JigFieldHeader> actual) {
-        assertEquals(expected, actual.orElseThrow().jigTypeReference().simpleNameWithGenerics());
+        assertEquals(List.of(
+                        "List<BigDecimal> genericField",
+                        "List<BigDecimal[]> genericArrayField",
+                        "List<T> genericTypeVariableField",
+                        "List<T[]> genericTypeVariableArrayField",
+                        "String stringField",
+                        "String[] stringArrayField",
+                        "T typeVariableField",
+                        "T[] typeVariableArrayField",
+                        "T[][] typeVariable2DArrayField",
+                        "byte primitiveField",
+                        "int[] primitiveArrayField"
+                ),
+                actual);
     }
 
     @Test

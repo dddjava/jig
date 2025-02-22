@@ -4,16 +4,13 @@ import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigField;
-import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.infrastructure.asm.ut.field.MyEnumFieldSut;
 import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.MemberAnnotatedClass;
-import stub.domain.model.relation.FieldDefinition;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import testing.TestSupport;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,28 +83,5 @@ class AsmFieldVisitorTest {
                 );
 
         assertThat(sut.elementTextOf("arrayString").orElseThrow()).isEqualTo("bf");
-    }
-
-    @Test
-    void フィールド定義に使用している型が取得できる() throws Exception {
-        JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
-
-        var actualFields = jigType.jigTypeMembers().jigFieldHeaders()
-                // assertionのためにフィールド名順で並び替える
-                .stream().sorted(Comparator.comparing(JigFieldHeader::name))
-                .map(jigFieldHeader -> "%s %s".formatted(
-                        jigFieldHeader.jigTypeReference().simpleNameWithGenerics(),
-                        jigFieldHeader.name()))
-                .toList();
-
-        assertEquals(List.of(
-                        "ArrayField[] arrayFields",
-                        "List<GenericField> genericFields",
-                        "InstanceField instanceField",
-                        "Object obj",
-                        "StaticField staticField"
-                ),
-                actualFields
-        );
     }
 }

@@ -92,6 +92,7 @@ class AsmFieldVisitorTest {
     void フィールド定義に使用している型が取得できる() throws Exception {
         JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
 
+        // テスト用タプル
         record TypeAndName(String typeText, String name) {
         }
 

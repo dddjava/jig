@@ -92,24 +92,20 @@ class AsmFieldVisitorTest {
     void フィールド定義に使用している型が取得できる() throws Exception {
         JigType jigType = TestSupport.buildJigType(FieldDefinition.class);
 
-        // テスト用タプル
-        record TypeAndName(String typeText, String name) {
-        }
-
         var actualFields = jigType.jigTypeMembers().jigFieldHeaders()
                 // assertionのためにフィールド名順で並び替える
                 .stream().sorted(Comparator.comparing(JigFieldHeader::name))
-                .map(jigFieldHeader -> new TypeAndName(
+                .map(jigFieldHeader -> "%s %s".formatted(
                         jigFieldHeader.jigTypeReference().simpleNameWithGenerics(),
                         jigFieldHeader.name()))
                 .toList();
 
         assertEquals(List.of(
-                        new TypeAndName("ArrayField[]", "arrayFields"),
-                        new TypeAndName("List<GenericField>", "genericFields"),
-                        new TypeAndName("InstanceField", "instanceField"),
-                        new TypeAndName("Object", "obj"),
-                        new TypeAndName("StaticField", "staticField")
+                        "ArrayField[] arrayFields",
+                        "List<GenericField> genericFields",
+                        "InstanceField instanceField",
+                        "Object obj",
+                        "StaticField staticField"
                 ),
                 actualFields
         );

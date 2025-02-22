@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -14,30 +13,6 @@ import java.util.stream.Stream;
  * バイトコード上の順番を維持するため、Listで保持する
  */
 public record Instructions(List<Object> instructions) {
-
-    public static Instructions newInstance() {
-        return new Instructions(new ArrayList<>());
-    }
-
-    public void register(SimpleInstructionType type) {
-        instructions.add(new SimpleInstruction(type));
-    }
-
-    public void registerField(FieldInstruction fieldInstruction) {
-        instructions.add(fieldInstruction);
-    }
-
-    public void registerMethod(InvokedMethod invokedMethod) {
-        instructions.add(invokedMethod);
-    }
-
-    public void registerClassReference(TypeIdentifier typeIdentifier) {
-        instructions.add(new ClassReference(typeIdentifier));
-    }
-
-    public void registerInvokeDynamic(InvokeDynamicInstruction invokeDynamicInstruction) {
-        instructions.add(invokeDynamicInstruction);
-    }
 
     public List<InvokedMethod> instructMethods() {
         return instructions.stream()

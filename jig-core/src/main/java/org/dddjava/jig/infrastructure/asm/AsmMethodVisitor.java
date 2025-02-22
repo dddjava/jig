@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 class AsmMethodVisitor extends MethodVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodVisitor.class);
 
-    private final Instructions methodInstructions = Instructions.newInstance();
+    private final ArrayList<Object> methodInstructionCollector = new ArrayList<>();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private final AsmClassVisitor contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
@@ -52,7 +52,7 @@ class AsmMethodVisitor extends MethodVisitor {
         return new AsmMethodVisitor(contextClass,
                 it -> {
                     JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, methodType, throwsList);
-                    JigMethodDeclaration jigMethodDeclaration = new JigMethodDeclaration(jigMethodHeader, it.methodInstructions);
+                    JigMethodDeclaration jigMethodDeclaration = new JigMethodDeclaration(jigMethodHeader, new Instructions(it.methodInstructionCollector));
                     contextClass.addJigMethodDeclaration(jigMethodDeclaration);
                 }
         );
@@ -128,7 +128,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitInsn(int opcode) {
         logger.debug("visitInsn {}", opcode);
         if (opcode == Opcodes.ACONST_NULL) {
-            methodInstructions.register(SimpleInstructionType.NULL参照);
+            methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.NULL参照));
         }
         super.visitInsn(opcode);
     }
@@ -149,7 +149,7 @@ class AsmMethodVisitor extends MethodVisitor {
             default -> FieldInstruction.unknown(jigFieldIdentifier);
         };
 
-        methodInstructions.registerField(fieldInstruction);
+        methodInstructionCollector.add(fieldInstruction);
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }
 
@@ -162,7 +162,7 @@ class AsmMethodVisitor extends MethodVisitor {
         TypeIdentifier returnType = methodDescriptorToReturnIdentifier(descriptor);
 
         InvokedMethod invokedMethod = new InvokedMethod(TypeIdentifier.valueOf(owner), name, argumentTypes, returnType);
-        methodInstructions.registerMethod(invokedMethod);
+        methodInstructionCollector.add(invokedMethod);
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
 
@@ -172,7 +172,7 @@ class AsmMethodVisitor extends MethodVisitor {
         if (value instanceof Type typeValue) {
             // `Xxx.class` などのクラス参照を読み込む
             var typeIdentifier = asmType2TypeIdentifier(typeValue);
-            methodInstructions.registerClassReference(typeIdentifier);
+            methodInstructionCollector.add(new ClassReference(typeIdentifier));
         }
 
         super.visitLdcInsn(value);
@@ -219,7 +219,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     var returnType = asmType2TypeIdentifier(type.getReturnType());
                     var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> asmType2TypeIdentifier(t)).toList();
 
-                    methodInstructions.registerInvokeDynamic(new InvokeDynamicInstruction(handleInvokeMethod, returnType, argumentTypes));
+                    methodInstructionCollector.add(new InvokeDynamicInstruction(handleInvokeMethod, returnType, argumentTypes));
                 }
             }
         }
@@ -231,7 +231,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
         // switchがある
-        methodInstructions.register(SimpleInstructionType.SWITCH);
+        methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.SWITCH));
         super.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
@@ -241,11 +241,11 @@ class AsmMethodVisitor extends MethodVisitor {
         // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
             // 何かしらの分岐がある
-            methodInstructions.register(SimpleInstructionType.JUMP);
+            methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.JUMP));
         }
 
         if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-            methodInstructions.register(SimpleInstructionType.NULL判定);
+            methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.NULL判定));
         }
         super.visitJumpInsn(opcode, label);
     }

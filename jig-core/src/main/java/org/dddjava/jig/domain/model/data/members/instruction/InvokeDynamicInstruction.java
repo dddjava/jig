@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public record InvokeDynamicInstruction(InvokedMethod invokedMethod, TypeIdentifier returnType,
-                                       List<TypeIdentifier> argumentTypes) {
+                                       List<TypeIdentifier> argumentTypes) implements Instruction {
 
     public Stream<TypeIdentifier> usingTypes() {
         return Stream.of(

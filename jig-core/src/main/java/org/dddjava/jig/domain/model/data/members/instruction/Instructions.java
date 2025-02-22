@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  *
  * バイトコード上の順番を維持するため、Listで保持する
  */
-public record Instructions(List<Object> instructions) {
+public record Instructions(List<Instruction> instructions) {
 
     public List<InvokedMethod> instructMethods() {
         return instructions.stream()
@@ -28,25 +28,24 @@ public record Instructions(List<Object> instructions) {
                 .toList();
     }
 
-    public boolean hasNullDecision() {
-        return basicInstructionStream().anyMatch(instruction -> instruction.type() == SimpleInstructionType.NULL判定);
+    private Stream<Instruction> simpleInstructionStream() {
+        return instructions.stream()
+                .filter(instruction -> instruction instanceof SimpleInstruction);
     }
 
-    private Stream<SimpleInstruction> basicInstructionStream() {
-        return instructions.stream()
-                .filter(instruction -> instruction instanceof SimpleInstruction)
-                .map(instruction -> (SimpleInstruction) instruction);
+    public boolean hasNullDecision() {
+        return simpleInstructionStream().anyMatch(instruction -> instruction == SimpleInstruction.NULL判定);
     }
 
     public DecisionNumber decisionNumber() {
-        var count = basicInstructionStream()
-                .filter(instruction -> instruction.type() == SimpleInstructionType.JUMP || instruction.type() == SimpleInstructionType.SWITCH)
+        var count = simpleInstructionStream()
+                .filter(instruction -> instruction == SimpleInstruction.JUMP || instruction == SimpleInstruction.SWITCH)
                 .count();
         return new DecisionNumber(Math.toIntExact(count));
     }
 
     public boolean hasNullReference() {
-        return basicInstructionStream().anyMatch(instruction -> instruction.type() == SimpleInstructionType.NULL参照);
+        return simpleInstructionStream().anyMatch(instruction -> instruction == SimpleInstruction.NULL参照);
     }
 
     public Stream<TypeIdentifier> associatedTypeStream() {

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public record InvokedMethod(TypeIdentifier methodOwner, String methodName,
                             List<TypeIdentifier> argumentTypes,
-                            TypeIdentifier returnType) {
+                            TypeIdentifier returnType) implements Instruction {
 
     public List<TypeIdentifier> extractTypeIdentifiers() {
         List<TypeIdentifier> extractedTypes = new ArrayList<>(argumentTypes);

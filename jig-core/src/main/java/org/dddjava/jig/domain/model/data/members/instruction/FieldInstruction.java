@@ -2,7 +2,8 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 
 import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 
-public sealed interface FieldInstruction permits GetInstruction, SetInstruction, UnknownInstruction {
+public sealed interface FieldInstruction extends Instruction
+        permits GetInstruction, SetInstruction, UnknownInstruction {
     JigFieldIdentifier jigFieldIdentifier();
 
     static FieldInstruction set(JigFieldIdentifier jigFieldIdentifier) {

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 class AsmMethodVisitor extends MethodVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodVisitor.class);
 
-    private final ArrayList<Object> methodInstructionCollector = new ArrayList<>();
+    private final ArrayList<Instruction> methodInstructionCollector = new ArrayList<>();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private final AsmClassVisitor contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
@@ -128,7 +128,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitInsn(int opcode) {
         logger.debug("visitInsn {}", opcode);
         if (opcode == Opcodes.ACONST_NULL) {
-            methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.NULL参照));
+            methodInstructionCollector.add(SimpleInstruction.NULL参照);
         }
         super.visitInsn(opcode);
     }
@@ -231,7 +231,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
         // switchがある
-        methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.SWITCH));
+        methodInstructionCollector.add(SimpleInstruction.SWITCH);
         super.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
@@ -241,11 +241,11 @@ class AsmMethodVisitor extends MethodVisitor {
         // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
             // 何かしらの分岐がある
-            methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.JUMP));
+            methodInstructionCollector.add(SimpleInstruction.JUMP);
         }
 
         if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-            methodInstructionCollector.add(new SimpleInstruction(SimpleInstructionType.NULL判定));
+            methodInstructionCollector.add(SimpleInstruction.NULL判定);
         }
         super.visitJumpInsn(opcode, label);
     }

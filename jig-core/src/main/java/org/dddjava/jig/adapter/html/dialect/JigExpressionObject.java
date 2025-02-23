@@ -182,7 +182,8 @@ class JigExpressionObject {
 
             // 外部関連を表示する閾値
             int threshold = 20;
-            boolean omitExternalRelations = partitioningRelations.get(true).size() + partitioningRelations.get(false).size() > threshold;
+            int externalRelationNumber = partitioningRelations.get(false).size();
+            boolean omitExternalRelations = externalRelationNumber > 0 && partitioningRelations.get(true).size() + externalRelationNumber > threshold;
             List<TypeRelationship> targetRelationships = omitExternalRelations
                     ? partitioningRelations.get(true) // パッケージ外への関連の方が多い場合はパッケージ内のみにする
                     : partitioningRelations.values().stream().flatMap(Collection::stream).toList();

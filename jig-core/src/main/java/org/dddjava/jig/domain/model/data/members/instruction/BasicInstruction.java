@@ -1,5 +1,9 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+
+import java.util.stream.Stream;
+
 /**
  * 基本的な命令
  *
@@ -26,5 +30,10 @@ public enum BasicInstruction implements Instruction {
 
     public boolean isBranch() {
         return this == SWITCH || this == 判定 || this == NULL判定;
+    }
+
+    @Override
+    public Stream<TypeIdentifier> streamAssociatedTypes() {
+        return Stream.empty();
     }
 }

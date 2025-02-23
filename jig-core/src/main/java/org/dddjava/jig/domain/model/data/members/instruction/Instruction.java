@@ -15,8 +15,5 @@ public sealed interface Instruction
     }
 
     /// この命令によって関連づけられる型のストリーム
-    /// BasicInstruction以外ではあるはず。
-    default Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.empty();
-    }
+    Stream<TypeIdentifier> streamAssociatedTypes();
 }

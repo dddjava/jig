@@ -180,7 +180,7 @@ class JigExpressionObject {
                 return Optional.empty();
             }
 
-            Map<Boolean, String> nodeMap = filteredRelationships.stream()
+            Map<Boolean, List<String>> nodeMap = filteredRelationships.stream()
                     .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
                     .sorted().distinct()
                     .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageIdentifier().equals(packageIdentifier),
@@ -188,20 +188,22 @@ class JigExpressionObject {
                                         String label = jigTypesWithRelationships.jigTypes()
                                                 .resolveJigType(typeIdentifier).map(JigType::label)
                                                 .orElseGet(typeIdentifier::asSimpleName);
-                                        return "    %s[%s]".formatted(typeIdentifier.htmlIdText(), label);
+                                        return "%s[%s]".formatted(typeIdentifier.htmlIdText(), label);
                                     },
-                                    Collectors.joining("\n"))));
+                                    Collectors.toList())));
 
-            String edgesText = filteredRelationships.stream()
-                    .map(relationship -> "    %s --> %s".formatted(relationship.from().htmlIdText(), relationship.to().htmlIdText()))
-                    .collect(Collectors.joining("\n"));
-
-            StringJoiner diagramText = new StringJoiner("\n    ", "flowchart\n", "");
-            diagramText.add("    subgraph %s[%s]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
-            diagramText.add(nodeMap.get(true));
-            diagramText.add("    end");
-            diagramText.add(nodeMap.get(false));
-            diagramText.add(edgesText);
+            StringJoiner diagramText = new StringJoiner("\n    ", "\nflowchart TB\n    ", "");
+            if (nodeMap.containsKey(true)) {
+                diagramText.add("subgraph %s[%s]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
+                nodeMap.get(true).forEach(diagramText::add);
+                diagramText.add("end");
+            }
+            if (nodeMap.containsKey(false)) {
+                nodeMap.get(false).forEach(diagramText::add);
+            }
+            filteredRelationships.stream()
+                    .map(relationship -> "%s --> %s".formatted(relationship.from().htmlIdText(), relationship.to().htmlIdText()))
+                    .forEach(diagramText::add);
 
             return Optional.of(diagramText.toString());
         }

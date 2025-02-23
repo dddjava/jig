@@ -25,7 +25,7 @@ public enum MethodWorry {
             // lambdaの中からも自身のメンバにアクセスしていない
             return instructions.invokeDynamicInstructionStream().noneMatch(invokeDynamicInstruction ->
                     // TODO invokeDynamicはLambdaの中を見ないと正しい判断はできないが、とりあえずusingで代用しておく。
-                    invokeDynamicInstruction.usingTypes().anyMatch(contextJigType.id()::equals)
+                    invokeDynamicInstruction.streamAssociatedTypes().anyMatch(contextJigType.id()::equals)
             );
         }
     },

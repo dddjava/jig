@@ -8,15 +8,6 @@ import java.util.stream.Stream;
 public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType,
                                 List<TypeIdentifier> argumentTypes) implements Instruction {
 
-    // TODO 後でstreamAssociatedTypesに統合
-    public Stream<TypeIdentifier> usingTypes() {
-        return Stream.of(
-                methodCall().streamAssociatedTypes(),
-                argumentTypes().stream(),
-                Stream.of(returnType())
-        ).flatMap(stream -> stream);
-    }
-
     @Override
     public Stream<MethodCall> findMethodCall() {
         return Stream.of(methodCall());
@@ -24,6 +15,10 @@ public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType
 
     @Override
     public Stream<TypeIdentifier> streamAssociatedTypes() {
-        return usingTypes();
+        return Stream.of(
+                methodCall().streamAssociatedTypes(),
+                argumentTypes().stream(),
+                Stream.of(returnType())
+        ).flatMap(stream -> stream);
     }
 }

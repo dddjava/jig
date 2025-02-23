@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -20,24 +21,12 @@ public record Instructions(List<Instruction> instructions) {
                 .toList();
     }
 
-    private Stream<Instruction> simpleInstructionStream() {
-        return instructions.stream()
-                .filter(instruction -> instruction instanceof BasicInstruction);
-    }
-
-    public boolean hasNullDecision() {
-        return simpleInstructionStream().anyMatch(instruction -> instruction == BasicInstruction.NULL判定);
-    }
-
     public DecisionNumber decisionNumber() {
-        var count = simpleInstructionStream()
+        var count = instructions.stream()
+                .filter(instruction -> instruction instanceof BasicInstruction)
                 .filter(instruction -> instruction == BasicInstruction.JUMP || instruction == BasicInstruction.SWITCH)
                 .count();
         return new DecisionNumber(Math.toIntExact(count));
-    }
-
-    public boolean hasNullReference() {
-        return simpleInstructionStream().anyMatch(instruction -> instruction == BasicInstruction.NULL参照);
     }
 
     public Stream<TypeIdentifier> associatedTypeStream() {
@@ -72,5 +61,13 @@ public record Instructions(List<Instruction> instructions) {
         return instructions.stream()
                 .filter(instruction -> instruction instanceof DynamicMethodCall)
                 .map(instruction -> (DynamicMethodCall) instruction);
+    }
+
+    public boolean containsAll(BasicInstruction... basicInstruction) {
+        return Arrays.stream(basicInstruction).allMatch(instructions::contains);
+    }
+
+    public boolean containsAny(BasicInstruction... basicInstruction) {
+        return Arrays.stream(basicInstruction).anyMatch(instructions::contains);
     }
 }

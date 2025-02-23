@@ -44,18 +44,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return UsingMethods.from(instructions());
     }
 
-    public boolean conditionalNull() {
-        return instructions().hasNullDecision();
-    }
-
-    public boolean referenceNull() {
-        return instructions().hasNullReference();
-    }
-
-    public boolean useNull() {
-        return referenceNull() || conditionalNull();
-    }
-
     public TypeIdentifiers usingTypes() {
         return new TypeIdentifiers(jigMethodDeclaration.associatedTypes());
     }

@@ -6,16 +6,16 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * 呼び出すメソッド
- *
- * MethodDeclarationやMethodSignatureはジェネリクスを含む場合などもあるため、呼び出しでは使用できない。
+ * メソッド呼び出し
  */
 public record MethodCall(TypeIdentifier methodOwner, String methodName,
                          List<TypeIdentifier> argumentTypes,
                          TypeIdentifier returnType) implements Instruction {
 
+    // TODO streamAssociatedTypesに統合
     public List<TypeIdentifier> extractTypeIdentifiers() {
         List<TypeIdentifier> extractedTypes = new ArrayList<>(argumentTypes);
         extractedTypes.add(methodOwner);
@@ -44,5 +44,18 @@ public record MethodCall(TypeIdentifier methodOwner, String methodName,
     public boolean isConstructor() {
         // 名前以外の判別方法があればそれにしたい
         return methodName.equals("<init>");
+    }
+
+    @Override
+    public Stream<MethodCall> findMethodCall() {
+        return Stream.of(this);
+    }
+
+    @Override
+    public Stream<TypeIdentifier> streamAssociatedTypes() {
+        return Stream.concat(
+                argumentTypes.stream(),
+                Stream.of(methodOwner, returnType)
+        );
     }
 }

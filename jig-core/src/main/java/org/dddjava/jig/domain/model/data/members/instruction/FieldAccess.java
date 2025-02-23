@@ -1,9 +1,13 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
 import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+
+import java.util.stream.Stream;
 
 public sealed interface FieldAccess extends Instruction
         permits GetAccess, SetAccess, UnknownAccess {
+
     JigFieldIdentifier jigFieldIdentifier();
 
     static FieldAccess set(JigFieldIdentifier jigFieldIdentifier) {
@@ -16,6 +20,11 @@ public sealed interface FieldAccess extends Instruction
 
     static FieldAccess unknown(JigFieldIdentifier jigFieldIdentifier) {
         return new UnknownAccess(jigFieldIdentifier);
+    }
+
+    @Override
+    default Stream<TypeIdentifier> streamAssociatedTypes() {
+        return Stream.of(jigFieldIdentifier().declaringTypeIdentifier());
     }
 }
 

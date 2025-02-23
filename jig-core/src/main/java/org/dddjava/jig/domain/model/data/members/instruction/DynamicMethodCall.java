@@ -18,6 +18,7 @@ public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType
         return Stream.of(
                 methodCall().streamAssociatedTypes(),
                 argumentTypes().stream(),
+                // voidは返さなくていいと思うんだ
                 Stream.of(returnType())
         ).flatMap(stream -> stream);
     }

@@ -2,13 +2,19 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import testing.TestSupport;
 
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AsmMethodVisitorInstructionTest {
 
@@ -32,7 +38,8 @@ public class AsmMethodVisitorInstructionTest {
         public void lambda式メソッド() {
             Stream.of(1)
                     .map(i -> {
-                        return "hoge";
+                        int variant = UUID.randomUUID().variant();
+                        return Double.toString(variant);
                     })
                     .close();
         }
@@ -81,5 +88,28 @@ public class AsmMethodVisitorInstructionTest {
                 .findAny().orElseThrow();
 
         assertEquals("lambda$lambda式メソッド$0", actual.methodName());
+    }
+
+    @CsvSource({
+            // return, arg
+            "自クラスメソッド参照メソッド, java.lang.Character",
+            "自クラスメソッド参照メソッド, long",
+            // owner, return, arg
+            "他クラスメソッド参照メソッド, org.dddjava.jig.infrastructure.asm.AsmMethodVisitorInstructionTest$AnotherClass",
+            "他クラスメソッド参照メソッド, java.lang.CharSequence",
+            "他クラスメソッド参照メソッド, int",
+            // return, arg, lambda内使用
+            "lambda式メソッド, java.lang.String",
+            "lambda式メソッド, java.lang.Integer",
+            //"lambda式メソッド, java.lang.Double",
+            //"lambda式メソッド, java.util.UUID",
+            //"lambda式メソッド, int",
+    })
+    @ParameterizedTest
+    void メソッド参照やLambda式で使用している型が検出できる(String methodName, String expected) {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, methodName);
+
+        Set<TypeIdentifier> actual = jigMethod.jigMethodDeclaration().associatedTypes();
+        assertTrue(actual.contains(TypeIdentifier.valueOf(expected)), actual.toString());
     }
 }

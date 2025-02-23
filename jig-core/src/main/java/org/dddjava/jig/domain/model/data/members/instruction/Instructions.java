@@ -17,6 +17,7 @@ public record Instructions(List<Instruction> instructions) {
     public List<MethodCall> instructMethods() {
         return instructions.stream()
                 .flatMap(instruction -> {
+                    // Java21にしたらpattern-switchにするぞ
                     if (instruction instanceof MethodCall methodCall) {
                         return Stream.of(methodCall);
                     }
@@ -51,6 +52,7 @@ public record Instructions(List<Instruction> instructions) {
     public Stream<TypeIdentifier> associatedTypeStream() {
         return instructions.stream()
                 .flatMap(instruction -> {
+                    // Java21にしたらpattern-switchにするぞ
                     if (instruction instanceof ClassReference classReference) {
                         return Stream.of(classReference.typeIdentifier());
                     }

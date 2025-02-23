@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.junit.jupiter.api.Test;
@@ -47,18 +48,24 @@ public class AsmMethodVisitorInstructionTest {
     void 自身のメソッド参照のInstructionが検出できる() {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "自クラスメソッド参照メソッド");
 
-        MethodCall actual = jigMethod.instructions().invokeDynamicInstructionStream()
+        MethodCall actual = getDynamicMethodCallStream(jigMethod)
                 .flatMap(instruction -> instruction.findMethodCall())
                 .findAny().orElseThrow();
 
         assertEquals("メソッド参照で呼ばれるメソッド1", actual.methodName());
     }
 
+    private static Stream<DynamicMethodCall> getDynamicMethodCallStream(JigMethod jigMethod) {
+        return jigMethod.instructions().instructions().stream()
+                .filter(instruction -> instruction instanceof DynamicMethodCall)
+                .map(instruction -> (DynamicMethodCall) instruction);
+    }
+
     @Test
     void 違うクラスのメソッド参照のInstructionが検出できる() {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "他クラスメソッド参照メソッド");
 
-        MethodCall actual = jigMethod.instructions().invokeDynamicInstructionStream()
+        MethodCall actual = getDynamicMethodCallStream(jigMethod)
                 .flatMap(instruction -> instruction.findMethodCall())
                 .findAny().orElseThrow();
 
@@ -69,7 +76,7 @@ public class AsmMethodVisitorInstructionTest {
     void Lambda式のInstructionが検出できる() {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド");
 
-        MethodCall actual = jigMethod.instructions().invokeDynamicInstructionStream()
+        MethodCall actual = getDynamicMethodCallStream(jigMethod)
                 .flatMap(instruction -> instruction.findMethodCall())
                 .findAny().orElseThrow();
 

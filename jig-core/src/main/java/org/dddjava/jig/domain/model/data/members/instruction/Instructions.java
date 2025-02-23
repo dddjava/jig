@@ -39,12 +39,6 @@ public record Instructions(List<Instruction> instructions) {
                 .flatMap(Instruction::findMethodCall);
     }
 
-    public Stream<DynamicMethodCall> invokeDynamicInstructionStream() {
-        return instructions.stream()
-                .filter(instruction -> instruction instanceof DynamicMethodCall)
-                .map(instruction -> (DynamicMethodCall) instruction);
-    }
-
     public boolean containsAll(BasicInstruction... basicInstruction) {
         return Arrays.stream(basicInstruction).allMatch(instructions::contains);
     }

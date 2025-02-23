@@ -13,6 +13,11 @@ public record LambdaExpressionCall(MethodCall methodCall, TypeIdentifier returnT
     }
 
     @Override
+    public Stream<MethodCall> findMethodCall() {
+        return Stream.of(methodCall());
+    }
+
+    @Override
     public Stream<TypeIdentifier> streamAssociatedTypes() {
         return Stream.of(
                 methodCall().streamAssociatedTypes(),

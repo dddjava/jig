@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
+import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -56,16 +57,15 @@ public class AsmMethodVisitorInstructionTest {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "自クラスメソッド参照メソッド");
 
         MethodCall actual = getDynamicMethodCallStream(jigMethod)
-                .flatMap(instruction -> instruction.findMethodCall())
                 .findAny().orElseThrow();
 
         assertEquals("メソッド参照で呼ばれるメソッド1", actual.methodName());
     }
 
-    private static Stream<DynamicMethodCall> getDynamicMethodCallStream(JigMethod jigMethod) {
+    private static Stream<MethodCall> getDynamicMethodCallStream(JigMethod jigMethod) {
         return jigMethod.instructions().instructions().stream()
-                .filter(instruction -> instruction instanceof DynamicMethodCall)
-                .map(instruction -> (DynamicMethodCall) instruction);
+                .filter(instruction -> instruction instanceof DynamicMethodCall || instruction instanceof LambdaExpressionCall)
+                .flatMap(instruction -> instruction.findMethodCall());
     }
 
     @Test
@@ -73,7 +73,6 @@ public class AsmMethodVisitorInstructionTest {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "他クラスメソッド参照メソッド");
 
         MethodCall actual = getDynamicMethodCallStream(jigMethod)
-                .flatMap(instruction -> instruction.findMethodCall())
                 .findAny().orElseThrow();
 
         assertEquals("メソッド参照で呼ばれるメソッド2", actual.methodName());
@@ -84,7 +83,6 @@ public class AsmMethodVisitorInstructionTest {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド");
 
         MethodCall actual = getDynamicMethodCallStream(jigMethod)
-                .flatMap(instruction -> instruction.findMethodCall())
                 .findAny().orElseThrow();
 
         assertEquals("lambda$lambda式メソッド$0", actual.methodName());

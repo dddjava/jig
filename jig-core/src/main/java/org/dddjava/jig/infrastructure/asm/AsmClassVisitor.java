@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -27,6 +29,8 @@ import java.util.*;
  * visitEnd
  */
 class AsmClassVisitor extends ClassVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
+
     private TypeIdentifier typeIdentifier;
     private JigTypeHeader jigTypeHeader;
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
@@ -108,6 +112,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        logger.debug("visitMethod: {}, {}, {}, {}, {}", access, name, descriptor, signature, exceptions);
         return AsmMethodVisitor.from(this, access, name, descriptor, signature, exceptions);
     }
 

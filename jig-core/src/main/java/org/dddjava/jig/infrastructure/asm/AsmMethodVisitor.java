@@ -194,38 +194,40 @@ class AsmMethodVisitor extends MethodVisitor {
         // Lambdaの場合は LambdaMetafactory#metafactory になり、他にも以下のようなものがある。
         // - 文字列の+での連結: StringConcatFactory#makeConcatWithConstants
         // - recordのtoStringなど: ObjectMethods#bootstrap
-        // これ自体はアプリケーションコード実装者が意識するものでないので使用しない。
+        // これ自体はアプリケーションコード実装者が意識するものでないので、当面JIGではスルーする。
 
         // JavaでのLambdaやメソッド参照のみを処理する
         if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())
                 && "metafactory".equals(bootstrapMethodHandle.getName())) {
             if ((bootstrapMethodArguments.length == 3)
-                    // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
+                    // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject; となる。
                     // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ
                     // 2: Type 動的に適用される型。ジェネリクスなども解決される。Lambdaを受けるインタフェースがジェネリクスを使用していない場合は 0 と同じになる。
                     // 0は無視して1,2を参照する。
                     && (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
                     && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD)) {
+                // 実際に呼び出されるメソッド
                 var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
                 var handleMethodName = handle.getName();
                 var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
                         .map(type1 -> asmType2TypeIdentifier(type1))
                         .collect(Collectors.toList());
                 var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
-                var handleInvokeMethod = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
+                var handleMethodCall = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
 
+                // returnType/argumentTypesは呼び出し側としての型。同じになることも多いが、違うこともある。
+                // たとえば　int method() をメソッド参照で呼び出すと ()Ljava/lang/Integer; になったりする。
                 var returnType = asmType2TypeIdentifier(type.getReturnType());
-                var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> asmType2TypeIdentifier(t)).toList();
+                var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(AsmMethodVisitor::asmType2TypeIdentifier).toList();
+                DynamicMethodCall dynamicMethodCall = new DynamicMethodCall(handleMethodCall, returnType, argumentTypes);
 
-                methodInstructionCollector.add(new DynamicMethodCall(handleInvokeMethod, returnType, argumentTypes));
+                methodInstructionCollector.add(dynamicMethodCall);
             } else {
                 logger.warn("JIGの想定していないLambdaMetafactory#metafactory使用が検出されました。読み飛ばします。 {} {}", name, descriptor);
             }
         }
 
-        super.
-
-                visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+        super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
     }
 
     @Override

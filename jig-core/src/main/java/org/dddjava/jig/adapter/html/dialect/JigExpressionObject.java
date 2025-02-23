@@ -171,16 +171,24 @@ class JigExpressionObject {
             PackageIdentifier packageIdentifier = jigPackage.packageIdentifier();
             TypeRelationships typeRelationships = jigTypesWithRelationships.typeRelationships();
 
-            List<TypeRelationship> filteredRelationships = typeRelationships.list().stream()
+            Map<Boolean, List<TypeRelationship>> partitioningRelations = typeRelationships.list().stream()
                     // fromがこのパッケージを対象とし、このパッケージのクラスから外のクラスへの関連を出力する。
                     // toを対象にすると広く使われるクラス（たとえばIDなど）があるパッケージは見れたものではなくなるので出さない。
                     .filter(typeRelationship -> typeRelationship.from().packageIdentifier().equals(packageIdentifier))
-                    .toList();
-            if (filteredRelationships.isEmpty()) {
+                    .collect(Collectors.partitioningBy(typeRelationship -> typeRelationship.to().packageIdentifier().equals(packageIdentifier)));
+            if (partitioningRelations.get(true).isEmpty()) {
                 return Optional.empty();
             }
 
-            Map<Boolean, List<String>> nodeMap = filteredRelationships.stream()
+            // 外部関連を表示する閾値
+            int threshold = 20;
+            boolean omitExternalRelations = partitioningRelations.get(true).size() + partitioningRelations.get(false).size() > threshold;
+            List<TypeRelationship> targetRelationships = omitExternalRelations
+                    ? partitioningRelations.get(true) // パッケージ外への関連の方が多い場合はパッケージ内のみにする
+                    : partitioningRelations.values().stream().flatMap(Collection::stream).toList();
+
+            // 関連に含まれるnodeをパッケージの内側と外側に仕分け＆ラベル付け
+            Map<Boolean, List<String>> nodeMap = targetRelationships.stream()
                     .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
                     .sorted().distinct()
                     .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageIdentifier().equals(packageIdentifier),
@@ -192,18 +200,22 @@ class JigExpressionObject {
                                     },
                                     Collectors.toList())));
 
-            StringJoiner diagramText = new StringJoiner("\n    ", "\nflowchart TB\n    ", "");
+            StringJoiner diagramText = new StringJoiner("\n    ", "\ngraph TB\n    ", "");
             if (nodeMap.containsKey(true)) {
                 diagramText.add("subgraph %s[%s]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
+                diagramText.add("direction TB");
                 nodeMap.get(true).forEach(diagramText::add);
                 diagramText.add("end");
             }
             if (nodeMap.containsKey(false)) {
                 nodeMap.get(false).forEach(diagramText::add);
             }
-            filteredRelationships.stream()
+            targetRelationships.stream()
                     .map(relationship -> "%s --> %s".formatted(relationship.from().htmlIdText(), relationship.to().htmlIdText()))
                     .forEach(diagramText::add);
+            if (omitExternalRelations) {
+                diagramText.add("A@{ shape: braces, label: \"関連数が%dを超えるため、外部への関連は省略されました。\" }".formatted(threshold));
+            }
 
             return Optional.of(diagramText.toString());
         }

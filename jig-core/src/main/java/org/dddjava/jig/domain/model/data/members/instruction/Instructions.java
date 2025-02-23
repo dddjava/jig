@@ -34,12 +34,6 @@ public record Instructions(List<Instruction> instructions) {
                 .map(FieldAccess::jigFieldIdentifier);
     }
 
-    public Stream<ClassReference> classReferenceStream() {
-        return instructions.stream()
-                .filter(instruction -> instruction instanceof ClassReference)
-                .map(instruction -> (ClassReference) instruction);
-    }
-
     public Stream<MethodCall> methodCallStream() {
         return instructions.stream()
                 .flatMap(Instruction::findMethodCall);

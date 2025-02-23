@@ -18,7 +18,7 @@ public class UsingFields {
     }
 
     static UsingFields from(Instructions instructions) {
-        return new UsingFields(instructions.fieldReferences());
+        return new UsingFields(instructions.fieldReferenceStream().toList());
     }
 
     public String typeNames() {

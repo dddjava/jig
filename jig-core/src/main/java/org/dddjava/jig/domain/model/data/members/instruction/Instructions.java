@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -32,10 +31,6 @@ public record Instructions(List<Instruction> instructions) {
     public Stream<TypeIdentifier> associatedTypeStream() {
         return instructions.stream()
                 .flatMap(Instruction::streamAssociatedTypes);
-    }
-
-    public Collection<JigFieldIdentifier> fieldReferences() {
-        return fieldReferenceStream().toList();
     }
 
     public Stream<JigFieldIdentifier> fieldReferenceStream() {

@@ -24,11 +24,9 @@ public enum MethodWorry {
                     .anyMatch(methodCall -> methodCall.methodOwner().equals(contextJigType.id()))) {
                 return false;
             }
-            // lambdaの中からも自身のメンバにアクセスしていない
-            return instructions.invokeDynamicInstructionStream().noneMatch(invokeDynamicInstruction ->
-                    // TODO invokeDynamicはLambdaの中を見ないと正しい判断はできないが、とりあえずusingで代用しておく。
-                    invokeDynamicInstruction.streamAssociatedTypes().anyMatch(contextJigType.id()::equals)
-            );
+            // TODO lambdaの中からも自身のメンバにアクセスしていないことを検証したい
+
+            return true;
         }
     },
     基本型の授受を行なっている {

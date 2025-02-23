@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
  *
  * MethodDeclarationやMethodSignatureはジェネリクスを含む場合などもあるため、呼び出しでは使用できない。
  */
-public record InvokedMethod(TypeIdentifier methodOwner, String methodName,
-                            List<TypeIdentifier> argumentTypes,
-                            TypeIdentifier returnType) implements Instruction {
+public record MethodCall(TypeIdentifier methodOwner, String methodName,
+                         List<TypeIdentifier> argumentTypes,
+                         TypeIdentifier returnType) implements Instruction {
 
     public List<TypeIdentifier> extractTypeIdentifiers() {
         List<TypeIdentifier> extractedTypes = new ArrayList<>(argumentTypes);

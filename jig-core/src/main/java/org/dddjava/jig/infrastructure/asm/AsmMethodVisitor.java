@@ -128,7 +128,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitInsn(int opcode) {
         logger.debug("visitInsn {}", opcode);
         if (opcode == Opcodes.ACONST_NULL) {
-            methodInstructionCollector.add(SimpleInstruction.NULL参照);
+            methodInstructionCollector.add(BasicInstruction.NULL参照);
         }
         super.visitInsn(opcode);
     }
@@ -143,10 +143,10 @@ class AsmMethodVisitor extends MethodVisitor {
 
         JigFieldIdentifier jigFieldIdentifier = JigFieldIdentifier.from(declaringType, name);
         var fieldInstruction = switch (opcode) {
-            case Opcodes.H_GETFIELD, Opcodes.H_GETSTATIC -> FieldInstruction.get(jigFieldIdentifier);
-            case Opcodes.H_PUTFIELD, Opcodes.H_PUTSTATIC -> FieldInstruction.set(jigFieldIdentifier);
+            case Opcodes.H_GETFIELD, Opcodes.H_GETSTATIC -> FieldAccess.get(jigFieldIdentifier);
+            case Opcodes.H_PUTFIELD, Opcodes.H_PUTSTATIC -> FieldAccess.set(jigFieldIdentifier);
             // エラーにせず、ASMがFieldInsnを検出したことだけは記録しておく
-            default -> FieldInstruction.unknown(jigFieldIdentifier);
+            default -> FieldAccess.unknown(jigFieldIdentifier);
         };
 
         methodInstructionCollector.add(fieldInstruction);
@@ -161,8 +161,8 @@ class AsmMethodVisitor extends MethodVisitor {
                 .toList();
         TypeIdentifier returnType = methodDescriptorToReturnIdentifier(descriptor);
 
-        InvokedMethod invokedMethod = new InvokedMethod(TypeIdentifier.valueOf(owner), name, argumentTypes, returnType);
-        methodInstructionCollector.add(invokedMethod);
+        MethodCall methodCall = new MethodCall(TypeIdentifier.valueOf(owner), name, argumentTypes, returnType);
+        methodInstructionCollector.add(methodCall);
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
 
@@ -214,12 +214,12 @@ class AsmMethodVisitor extends MethodVisitor {
                             .map(type1 -> asmType2TypeIdentifier(type1))
                             .collect(Collectors.toList());
                     var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
-                    var handleInvokeMethod = new InvokedMethod(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
+                    var handleInvokeMethod = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
 
                     var returnType = asmType2TypeIdentifier(type.getReturnType());
                     var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> asmType2TypeIdentifier(t)).toList();
 
-                    methodInstructionCollector.add(new InvokeDynamicInstruction(handleInvokeMethod, returnType, argumentTypes));
+                    methodInstructionCollector.add(new DynamicMethodCall(handleInvokeMethod, returnType, argumentTypes));
                 }
             }
         }
@@ -231,7 +231,7 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
         // switchがある
-        methodInstructionCollector.add(SimpleInstruction.SWITCH);
+        methodInstructionCollector.add(BasicInstruction.SWITCH);
         super.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
@@ -241,11 +241,11 @@ class AsmMethodVisitor extends MethodVisitor {
         // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
             // 何かしらの分岐がある
-            methodInstructionCollector.add(SimpleInstruction.JUMP);
+            methodInstructionCollector.add(BasicInstruction.JUMP);
         }
 
         if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-            methodInstructionCollector.add(SimpleInstruction.NULL判定);
+            methodInstructionCollector.add(BasicInstruction.NULL判定);
         }
         super.visitJumpInsn(opcode, label);
     }

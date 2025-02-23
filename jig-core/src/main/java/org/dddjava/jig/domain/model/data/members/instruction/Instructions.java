@@ -14,14 +14,14 @@ import java.util.stream.Stream;
  */
 public record Instructions(List<Instruction> instructions) {
 
-    public List<InvokedMethod> instructMethods() {
+    public List<MethodCall> instructMethods() {
         return instructions.stream()
                 .flatMap(instruction -> {
-                    if (instruction instanceof InvokedMethod invokedMethod) {
-                        return Stream.of(invokedMethod);
+                    if (instruction instanceof MethodCall methodCall) {
+                        return Stream.of(methodCall);
                     }
-                    if (instruction instanceof InvokeDynamicInstruction invokeDynamicInstruction) {
-                        return Stream.of(invokeDynamicInstruction.invokedMethod());
+                    if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
+                        return Stream.of(dynamicMethodCall.methodCall());
                     }
                     return Stream.empty();
                 })
@@ -30,22 +30,22 @@ public record Instructions(List<Instruction> instructions) {
 
     private Stream<Instruction> simpleInstructionStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof SimpleInstruction);
+                .filter(instruction -> instruction instanceof BasicInstruction);
     }
 
     public boolean hasNullDecision() {
-        return simpleInstructionStream().anyMatch(instruction -> instruction == SimpleInstruction.NULL判定);
+        return simpleInstructionStream().anyMatch(instruction -> instruction == BasicInstruction.NULL判定);
     }
 
     public DecisionNumber decisionNumber() {
         var count = simpleInstructionStream()
-                .filter(instruction -> instruction == SimpleInstruction.JUMP || instruction == SimpleInstruction.SWITCH)
+                .filter(instruction -> instruction == BasicInstruction.JUMP || instruction == BasicInstruction.SWITCH)
                 .count();
         return new DecisionNumber(Math.toIntExact(count));
     }
 
     public boolean hasNullReference() {
-        return simpleInstructionStream().anyMatch(instruction -> instruction == SimpleInstruction.NULL参照);
+        return simpleInstructionStream().anyMatch(instruction -> instruction == BasicInstruction.NULL参照);
     }
 
     public Stream<TypeIdentifier> associatedTypeStream() {
@@ -54,14 +54,14 @@ public record Instructions(List<Instruction> instructions) {
                     if (instruction instanceof ClassReference classReference) {
                         return Stream.of(classReference.typeIdentifier());
                     }
-                    if (instruction instanceof FieldInstruction fieldInstruction) {
-                        return Stream.of(fieldInstruction.jigFieldIdentifier().declaringTypeIdentifier());
+                    if (instruction instanceof FieldAccess fieldAccess) {
+                        return Stream.of(fieldAccess.jigFieldIdentifier().declaringTypeIdentifier());
                     }
-                    if (instruction instanceof InvokedMethod invokedMethod) {
-                        return Stream.concat(invokedMethod.extractTypeIdentifiers().stream(), Stream.of(invokedMethod.returnType()));
+                    if (instruction instanceof MethodCall methodCall) {
+                        return Stream.concat(methodCall.extractTypeIdentifiers().stream(), Stream.of(methodCall.returnType()));
                     }
-                    if (instruction instanceof InvokeDynamicInstruction invokeDynamicInstruction) {
-                        return invokeDynamicInstruction.usingTypes();
+                    if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
+                        return dynamicMethodCall.usingTypes();
                     }
                     return Stream.empty();
                 });
@@ -73,9 +73,9 @@ public record Instructions(List<Instruction> instructions) {
 
     public Stream<JigFieldIdentifier> fieldReferenceStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof FieldInstruction)
-                .map(instruction -> (FieldInstruction) instruction)
-                .map(FieldInstruction::jigFieldIdentifier);
+                .filter(instruction -> instruction instanceof FieldAccess)
+                .map(instruction -> (FieldAccess) instruction)
+                .map(FieldAccess::jigFieldIdentifier);
     }
 
     public Stream<ClassReference> classReferenceStream() {
@@ -84,15 +84,15 @@ public record Instructions(List<Instruction> instructions) {
                 .map(instruction -> (ClassReference) instruction);
     }
 
-    public Stream<InvokedMethod> invokedMethodStream() {
+    public Stream<MethodCall> invokedMethodStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof InvokedMethod)
-                .map(instruction -> (InvokedMethod) instruction);
+                .filter(instruction -> instruction instanceof MethodCall)
+                .map(instruction -> (MethodCall) instruction);
     }
 
-    public Stream<InvokeDynamicInstruction> invokeDynamicInstructionStream() {
+    public Stream<DynamicMethodCall> invokeDynamicInstructionStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof InvokeDynamicInstruction)
-                .map(instruction -> (InvokeDynamicInstruction) instruction);
+                .filter(instruction -> instruction instanceof DynamicMethodCall)
+                .map(instruction -> (DynamicMethodCall) instruction);
     }
 }

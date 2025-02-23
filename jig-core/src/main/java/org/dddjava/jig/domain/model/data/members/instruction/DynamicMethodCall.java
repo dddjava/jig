@@ -5,12 +5,12 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record InvokeDynamicInstruction(InvokedMethod invokedMethod, TypeIdentifier returnType,
-                                       List<TypeIdentifier> argumentTypes) implements Instruction {
+public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType,
+                                List<TypeIdentifier> argumentTypes) implements Instruction {
 
     public Stream<TypeIdentifier> usingTypes() {
         return Stream.of(
-                invokedMethod().extractTypeIdentifiers().stream(),
+                methodCall().extractTypeIdentifiers().stream(),
                 argumentTypes().stream(),
                 Stream.of(returnType())
         ).flatMap(stream -> stream);

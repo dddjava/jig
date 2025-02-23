@@ -4,5 +4,5 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 /// 現在、命令に共通のドメインロジックはないためメソッドを持たないが、
 /// [Instructions] で扱えるものを制限するためにマーカーインタフェースとして置く。
 public sealed interface Instruction
-        permits ClassReference, FieldInstruction, InvokeDynamicInstruction, InvokedMethod, SimpleInstruction {
+        permits ClassReference, FieldAccess, DynamicMethodCall, MethodCall, BasicInstruction {
 }

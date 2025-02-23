@@ -8,6 +8,10 @@ public record Term(TermIdentifier identifier,
                    String description,
                    TermKind termKind,
                    Object additionalInformation) {
+    public Term {
+        title = title.isEmpty() ? identifier.simpleText() : title;
+    }
+
     public Term(TermIdentifier identifier, String title, String description, TermKind termKind) {
         this(identifier, title, description.trim(), termKind, null);
     }

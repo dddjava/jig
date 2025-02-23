@@ -241,14 +241,15 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitJumpInsn(int opcode, Label label) {
         logger.debug("visitJumpInsn {} {}", opcode, label);
-        // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
+        // if<cond> はJumpInsnにくるのでこのメソッドで判定があるかを検出するが、
+        // GOTOやJSR（Java7で削除されたJump to Subroutine。ASMに存在するので一応。）は
+        // 判定せずの移動だけなので、「判定」の記録からは除外する。
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
-            // 何かしらの分岐がある
-            methodInstructionCollector.add(BasicInstruction.JUMP);
-        }
-
-        if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-            methodInstructionCollector.add(BasicInstruction.NULL判定);
+            if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
+                methodInstructionCollector.add(BasicInstruction.NULL判定);
+            } else {
+                methodInstructionCollector.add(BasicInstruction.判定);
+            }
         }
         super.visitJumpInsn(opcode, label);
     }

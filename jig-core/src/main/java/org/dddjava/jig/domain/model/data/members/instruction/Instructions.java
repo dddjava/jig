@@ -24,7 +24,7 @@ public record Instructions(List<Instruction> instructions) {
     public DecisionNumber decisionNumber() {
         var count = instructions.stream()
                 .filter(instruction -> instruction instanceof BasicInstruction)
-                .filter(instruction -> instruction == BasicInstruction.JUMP || instruction == BasicInstruction.SWITCH)
+                .filter(instruction -> ((BasicInstruction) instruction).isBranch())
                 .count();
         return new DecisionNumber(Math.toIntExact(count));
     }

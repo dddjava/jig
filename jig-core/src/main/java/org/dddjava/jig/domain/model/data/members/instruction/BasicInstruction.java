@@ -14,7 +14,7 @@ public enum BasicInstruction implements Instruction {
     /**
      * IFEQ, IFNE, IFLT, IFGE, IFGT, IFLE, IF_ICMPEQ, IF_ICMPNE, IF_ICMPLT, IF_ICMPGE, IF_ICMPGT, IF_ICMPLE, IF_ACMPEQ, IF_ACMPNE, IFNULL or IFNONNULL.
      */
-    JUMP,
+    判定,
     /**
      * IFNONNULL, IFNULL
      */
@@ -22,5 +22,9 @@ public enum BasicInstruction implements Instruction {
     /**
      * ACONST_NULL
      */
-    NULL参照
+    NULL参照;
+
+    public boolean isBranch() {
+        return this == SWITCH || this == 判定 || this == NULL判定;
+    }
 }

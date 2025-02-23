@@ -1,25 +1,28 @@
 package org.dddjava.jig.adapter.html.dialect;
 
+import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
+import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.IExpressionContext;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class JigExpressionObject {
     private static final Logger logger = LoggerFactory.getLogger(JigExpressionObject.class);
@@ -161,5 +164,47 @@ class JigExpressionObject {
         logger.warn("cannot find enum model for {}. Try to create empty model.", typeIdentifier.fullQualifiedName());
         // 落ちないように
         return new EnumModel(typeIdentifier, List.of());
+    }
+
+    public Optional<String> relationDiagram(JigPackage jigPackage) {
+        if (context.getVariable("relationships") instanceof JigTypesWithRelationships jigTypesWithRelationships) {
+            PackageIdentifier packageIdentifier = jigPackage.packageIdentifier();
+            TypeRelationships typeRelationships = jigTypesWithRelationships.typeRelationships();
+
+            List<TypeRelationship> filteredRelationships = typeRelationships.list().stream()
+                    // fromがこのパッケージを対象とし、このパッケージのクラスから外のクラスへの関連を出力する。
+                    // toを対象にすると広く使われるクラス（たとえばIDなど）があるパッケージは見れたものではなくなるので出さない。
+                    .filter(typeRelationship -> typeRelationship.from().packageIdentifier().equals(packageIdentifier))
+                    .toList();
+            if (filteredRelationships.isEmpty()) {
+                return Optional.empty();
+            }
+
+            Map<Boolean, String> nodeMap = filteredRelationships.stream()
+                    .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
+                    .sorted().distinct()
+                    .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageIdentifier().equals(packageIdentifier),
+                            Collectors.mapping(typeIdentifier -> {
+                                        String label = jigTypesWithRelationships.jigTypes()
+                                                .resolveJigType(typeIdentifier).map(JigType::label)
+                                                .orElseGet(typeIdentifier::asSimpleName);
+                                        return "    %s[%s]".formatted(typeIdentifier.htmlIdText(), label);
+                                    },
+                                    Collectors.joining("\n"))));
+
+            String edgesText = filteredRelationships.stream()
+                    .map(relationship -> "    %s --> %s".formatted(relationship.from().htmlIdText(), relationship.to().htmlIdText()))
+                    .collect(Collectors.joining("\n"));
+
+            StringJoiner diagramText = new StringJoiner("\n    ", "flowchart\n", "");
+            diagramText.add("    subgraph %s[%s]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
+            diagramText.add(nodeMap.get(true));
+            diagramText.add("    end");
+            diagramText.add(nodeMap.get(false));
+            diagramText.add(edgesText);
+
+            return Optional.of(diagramText.toString());
+        }
+        return Optional.empty();
     }
 }

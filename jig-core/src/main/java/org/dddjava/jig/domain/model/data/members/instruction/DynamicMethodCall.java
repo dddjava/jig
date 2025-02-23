@@ -11,7 +11,7 @@ public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType
     // TODO 後でstreamAssociatedTypesに統合
     public Stream<TypeIdentifier> usingTypes() {
         return Stream.of(
-                methodCall().extractTypeIdentifiers().stream(),
+                methodCall().streamAssociatedTypes(),
                 argumentTypes().stream(),
                 Stream.of(returnType())
         ).flatMap(stream -> stream);

@@ -57,7 +57,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.EnumSummary)
     public SummaryModel inputSummary(JigRepository jigRepository) {
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        return new SummaryModel(categoryTypes, Map.of("enumModels", jigRepository.jigDataProvider().fetchEnumModels()));
+        return new SummaryModel(categoryTypes, Map.of("enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap()));
     }
 
     @Override

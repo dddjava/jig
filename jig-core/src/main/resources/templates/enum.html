@@ -21,7 +21,7 @@
             </section>
 
             <table class="fields" th:if="${#jig.isEnum(item)}"
-                   th:with="enumModel=${enumModels.select(item)}">
+                   th:with="enumModel=${#jig.selectEnumModel(item)}">
                 <thead>
                 <tr>
                     <th>列挙定数名</th>

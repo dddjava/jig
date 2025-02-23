@@ -1,8 +1,10 @@
 package org.dddjava.jig.domain.model.data.enums;
 
-import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Enum固有で取得するモデル
@@ -14,11 +16,8 @@ public class EnumModels {
         this.list = list;
     }
 
-    public EnumModel select(JigType jigType) {
-        var typeIdentifier = jigType.id();
+    public Map<TypeIdentifier, EnumModel> toMap() {
         return list.stream()
-                .filter(enumModel -> enumModel.typeIdentifier.equals(typeIdentifier))
-                .findAny()
-                .orElseGet(() -> new EnumModel(typeIdentifier, List.of()));
+                .collect(Collectors.toMap(enumModel -> enumModel.typeIdentifier, enumModel -> enumModel));
     }
 }

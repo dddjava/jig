@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.html.dialect;
 
+import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -9,15 +10,20 @@ import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.IExpressionContext;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class JigExpressionObject {
+    private static final Logger logger = LoggerFactory.getLogger(JigExpressionObject.class);
+
     private final IExpressionContext context;
     private final JigDocumentContext jigDocumentContext;
 
@@ -140,5 +146,20 @@ class JigExpressionObject {
     public Optional<String> descriptionText(JigType jigType) {
         return Optional.of(jigType.term().description())
                 .filter(Predicate.not(String::isEmpty));
+    }
+
+    public EnumModel selectEnumModel(JigType jigType) {
+        var typeIdentifier = jigType.id();
+        // これを使用するテンプレートは "enumModelMap" をcontextにputしておく
+        // ・・・ならexpressionにしなくてもいいのでは？？？？
+        Object variable = context.getVariable("enumModelMap");
+        if (variable instanceof Map<?, ?> map) {
+            if (map.get(typeIdentifier) instanceof EnumModel enumModel) {
+                return enumModel;
+            }
+        }
+        logger.warn("cannot find enum model for {}. Try to create empty model.", typeIdentifier.fullQualifiedName());
+        // 落ちないように
+        return new EnumModel(typeIdentifier, List.of());
     }
 }

@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
-import org.dddjava.jig.domain.model.data.members.instruction.DecisionNumber;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
@@ -30,10 +29,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
     public String fqn() {
         return jigMethodIdentifier().value();
-    }
-
-    public DecisionNumber decisionNumber() {
-        return instructions().decisionNumber();
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {

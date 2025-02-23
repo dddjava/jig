@@ -20,6 +20,18 @@ import java.util.stream.Stream;
  */
 public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
+    public JigMethodIdentifier jigMethodIdentifier() {
+        return jigMethodDeclaration.header().id();
+    }
+
+    public String simpleText() {
+        return jigMethodIdentifier().simpleText();
+    }
+
+    public String fqn() {
+        return jigMethodIdentifier().value();
+    }
+
     public DecisionNumber decisionNumber() {
         return instructions().decisionNumber();
     }
@@ -69,10 +81,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
     public String labelText() {
         return term.title();
-    }
-
-    public String fqn() {
-        return jigMethodDeclaration.header().id().value();
     }
 
     public String labelTextOrLambda() {
@@ -125,16 +133,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return usingMethods().contains(jigMethodIdentifier);
     }
 
-    public JigMethodIdentifier jigMethodIdentifier() {
-        return jigMethodDeclaration.header().id();
-    }
-
     public JigTypeReference methodReturnTypeReference() {
         return jigMethodDeclaration.header().jigMethodAttribute().returnType();
-    }
-
-    public String simpleText() {
-        return jigMethodDeclaration.header().id().simpleText();
     }
 
     public String nameAndArgumentSimpleText() {

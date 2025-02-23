@@ -49,4 +49,8 @@ public record MethodCall(TypeIdentifier methodOwner, String methodName,
                 Stream.of(methodOwner, returnType)
         );
     }
+
+    public boolean isLambda() {
+        return jigMethodIdentifier().isLambda();
+    }
 }

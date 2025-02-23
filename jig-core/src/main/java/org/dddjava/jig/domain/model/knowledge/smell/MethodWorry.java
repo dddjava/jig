@@ -19,8 +19,9 @@ public enum MethodWorry {
                     .anyMatch(fieldReference -> fieldReference.declaringTypeIdentifier().equals(contextJigType.id()))) {
                 return false;
             }
-            if (instructions.invokedMethodStream()
-                    .anyMatch(invokedMethod -> invokedMethod.methodOwner().equals(contextJigType.id()))) {
+            if (instructions.methodCallStream()
+                    .filter(methodCall -> !methodCall.isLambda()) // lambdaの合成メソッドのownerは自身になるので除外しないと「使用している」になってしまう
+                    .anyMatch(methodCall -> methodCall.methodOwner().equals(contextJigType.id()))) {
                 return false;
             }
             // lambdaの中からも自身のメンバにアクセスしていない

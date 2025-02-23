@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 public record UsingMethods(List<MethodCall> methodCalls) {
 
     static UsingMethods from(Instructions instructions) {
-        return new UsingMethods(instructions.instructMethods());
+        return new UsingMethods(instructions.methodCallStream().toList());
     }
 
     public boolean containsStream() {

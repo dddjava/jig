@@ -14,12 +14,6 @@ import java.util.stream.Stream;
  */
 public record Instructions(List<Instruction> instructions) {
 
-    public List<MethodCall> instructMethods() {
-        return instructions.stream()
-                .flatMap(Instruction::findMethodCall)
-                .toList();
-    }
-
     public DecisionNumber decisionNumber() {
         var count = instructions.stream()
                 .filter(instruction -> instruction instanceof BasicInstruction)
@@ -46,10 +40,9 @@ public record Instructions(List<Instruction> instructions) {
                 .map(instruction -> (ClassReference) instruction);
     }
 
-    public Stream<MethodCall> invokedMethodStream() {
+    public Stream<MethodCall> methodCallStream() {
         return instructions.stream()
-                .filter(instruction -> instruction instanceof MethodCall)
-                .map(instruction -> (MethodCall) instruction);
+                .flatMap(Instruction::findMethodCall);
     }
 
     public Stream<DynamicMethodCall> invokeDynamicInstructionStream() {

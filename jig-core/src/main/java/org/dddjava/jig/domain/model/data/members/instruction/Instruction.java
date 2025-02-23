@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 /// コードで実行される命令
 public sealed interface Instruction
-        permits BasicInstruction, ClassReference, DynamicMethodCall, FieldAccess, MethodCall, LambdaExpressionCall {
+        permits BasicInstruction, ClassReference, FieldAccess, MethodCall, DynamicMethodCall, LambdaExpressionCall {
 
     /// メソッド呼び出しの場合に中身がある
     /// Optionalのほうがいいんだけど、Optionalからstreamへの変換がノイジーなのでstreamにしておく。

@@ -199,32 +199,33 @@ class AsmMethodVisitor extends MethodVisitor {
         // JavaでのLambdaやメソッド参照のみを処理する
         if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())
                 && "metafactory".equals(bootstrapMethodHandle.getName())) {
-            if (bootstrapMethodArguments.length != 3) {
-                logger.warn("想定外のInvokeDynamicが検出されました。読み飛ばします。 {} {}", name, descriptor);
+            if ((bootstrapMethodArguments.length == 3)
+                    // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
+                    // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ
+                    // 2: Type 動的に適用される型。ジェネリクスなども解決される。Lambdaを受けるインタフェースがジェネリクスを使用していない場合は 0 と同じになる。
+                    // 0は無視して1,2を参照する。
+                    && (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
+                    && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD)) {
+                var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
+                var handleMethodName = handle.getName();
+                var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
+                        .map(type1 -> asmType2TypeIdentifier(type1))
+                        .collect(Collectors.toList());
+                var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
+                var handleInvokeMethod = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
+
+                var returnType = asmType2TypeIdentifier(type.getReturnType());
+                var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> asmType2TypeIdentifier(t)).toList();
+
+                methodInstructionCollector.add(new DynamicMethodCall(handleInvokeMethod, returnType, argumentTypes));
             } else {
-                // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
-                // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ
-                // 2: Type 動的に適用される型。ジェネリクスなども解決される。Lambdaを受けるインタフェースがジェネリクスを使用していない場合は 0 と同じになる。
-                // 0は無視して1,2を参照する。
-                if (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
-                        && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD) {
-                    var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
-                    var handleMethodName = handle.getName();
-                    var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
-                            .map(type1 -> asmType2TypeIdentifier(type1))
-                            .collect(Collectors.toList());
-                    var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
-                    var handleInvokeMethod = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
-
-                    var returnType = asmType2TypeIdentifier(type.getReturnType());
-                    var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> asmType2TypeIdentifier(t)).toList();
-
-                    methodInstructionCollector.add(new DynamicMethodCall(handleInvokeMethod, returnType, argumentTypes));
-                }
+                logger.warn("JIGの想定していないLambdaMetafactory#metafactory使用が検出されました。読み飛ばします。 {} {}", name, descriptor);
             }
         }
 
-        super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+        super.
+
+                visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
     }
 
     @Override

@@ -1,7 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.data.members.*;
+import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
+import org.dddjava.jig.domain.model.data.members.instruction.Instruction;
+import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.objectweb.asm.*;
@@ -10,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * visit
@@ -37,8 +42,11 @@ class AsmClassVisitor extends ClassVisitor {
     private boolean isStaticNestedClass = false;
 
     // FieldやMethodで使用するもの
+    record Pair<T1, T2>(T1 header, T2 body) {
+    }
+
     private final Collection<JigFieldHeader> fieldHeaders = new ArrayList<>();
-    private final Collection<JigMethodDeclaration> methodDeclarations = new ArrayList<>();
+    private final Collection<Pair<JigMethodHeader, List<Instruction>>> methodCollector = new ArrayList<>();
     private final Set<String> recordComponentNames = new HashSet<>();
 
     AsmClassVisitor() {
@@ -185,6 +193,35 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     ClassDeclaration classDeclaration() {
+        // lambda合成メソッドを名前でひけるように収集
+        Map<String, Instructions> lambdaMethods = methodCollector.stream()
+                // lambda合成メソッドは ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC なのでフィルタ
+                .filter(collectedMethod ->
+                        collectedMethod.header().jigMethodAttribute().jigMemberVisibility() == JigMemberVisibility.PRIVATE
+                                && collectedMethod.header().ownership() == JigMemberOwnership.CLASS
+                                && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.SYNTHETIC)
+                                && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.LAMBDA_SUPPORT))
+                .collect(toMap(it -> it.header().name(), it -> new Instructions(it.body())));
+
+        // method内でlambda式を実装している場合にLambda合成メソッドのInstructionを関連づける
+        Collection<JigMethodDeclaration> methodDeclarations = methodCollector.stream()
+                .map(it -> {
+                    List<Instruction> instructions = it.body().stream()
+                            .map(instruction -> {
+                                // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallに展開する
+                                if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
+                                    String name = dynamicMethodCall.methodCall().methodName();
+                                    if (lambdaMethods.containsKey(name)) {
+                                        return LambdaExpressionCall.from(dynamicMethodCall, lambdaMethods.get(name));
+                                    }
+                                }
+                                return instruction;
+                            })
+                            .toList();
+                    return new JigMethodDeclaration(it.header(), new Instructions(instructions));
+                })
+                .toList();
+
         return new ClassDeclaration(jigTypeHeader(), fieldHeaders, methodDeclarations);
     }
 
@@ -201,7 +238,8 @@ class AsmClassVisitor extends ClassVisitor {
         fieldHeaders.add(jigFieldHeader);
     }
 
-    void addJigMethodDeclaration(JigMethodDeclaration jigMethodDeclaration) {
-        methodDeclarations.add(jigMethodDeclaration);
+    public void finishVisitMethod(JigMethodHeader jigMethodHeader, List<Instruction> methodInstructionList) {
+        // lambda式の展開のためにこの形で保持しておく
+        methodCollector.add(new Pair<>(jigMethodHeader, methodInstructionList));
     }
 }

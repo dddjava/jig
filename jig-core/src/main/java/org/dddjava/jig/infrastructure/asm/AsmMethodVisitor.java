@@ -52,8 +52,7 @@ class AsmMethodVisitor extends MethodVisitor {
         return new AsmMethodVisitor(contextClass,
                 it -> {
                     JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, methodType, throwsList);
-                    JigMethodDeclaration jigMethodDeclaration = new JigMethodDeclaration(jigMethodHeader, new Instructions(it.methodInstructionCollector));
-                    contextClass.addJigMethodDeclaration(jigMethodDeclaration);
+                    contextClass.finishVisitMethod(jigMethodHeader, it.methodInstructionCollector);
                 }
         );
     }

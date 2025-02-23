@@ -101,9 +101,9 @@ public class AsmMethodVisitorInstructionTest {
             // return, arg, lambda内使用
             "lambda式メソッド, java.lang.String",
             "lambda式メソッド, java.lang.Integer",
-            //"lambda式メソッド, java.lang.Double",
-            //"lambda式メソッド, java.util.UUID",
-            //"lambda式メソッド, int",
+            "lambda式メソッド, java.lang.Double",
+            "lambda式メソッド, java.util.UUID",
+            "lambda式メソッド, int",
     })
     @ParameterizedTest
     void メソッド参照やLambda式で使用している型が検出できる(String methodName, String expected) {

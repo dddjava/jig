@@ -40,13 +40,13 @@ public enum MethodWorry {
     NULLリテラルを使用している {
         @Override
         boolean judge(JigMethod jigMethod) {
-            return jigMethod.instructions().containsAll(BasicInstruction.NULL参照);
+            return jigMethod.instructions().containsAllBasicInstruction(BasicInstruction.NULL参照);
         }
     },
     NULL判定をしている {
         @Override
         boolean judge(JigMethod jigMethod) {
-            return jigMethod.instructions().containsAll(BasicInstruction.NULL判定);
+            return jigMethod.instructions().containsAllBasicInstruction(BasicInstruction.NULL判定);
         }
     },
     真偽値を返している {

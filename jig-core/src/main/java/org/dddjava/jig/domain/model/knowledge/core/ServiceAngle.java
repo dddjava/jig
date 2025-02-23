@@ -74,7 +74,7 @@ public class ServiceAngle {
 
     public boolean useNull() {
         return serviceMethod.method().instructions()
-                .containsAny(BasicInstruction.NULL参照, BasicInstruction.NULL判定);
+                .containsAnyBasicInstruction(BasicInstruction.NULL参照, BasicInstruction.NULL判定);
     }
 
     public Collection<JigMethodIdentifier> userServiceMethods() {

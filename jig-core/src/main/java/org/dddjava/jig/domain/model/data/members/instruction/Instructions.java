@@ -39,11 +39,11 @@ public record Instructions(List<Instruction> instructions) {
                 .flatMap(Instruction::findMethodCall);
     }
 
-    public boolean containsAll(BasicInstruction... basicInstruction) {
+    public boolean containsAllBasicInstruction(BasicInstruction... basicInstruction) {
         return Arrays.stream(basicInstruction).allMatch(instructions::contains);
     }
 
-    public boolean containsAny(BasicInstruction... basicInstruction) {
+    public boolean containsAnyBasicInstruction(BasicInstruction... basicInstruction) {
         return Arrays.stream(basicInstruction).anyMatch(instructions::contains);
     }
 }

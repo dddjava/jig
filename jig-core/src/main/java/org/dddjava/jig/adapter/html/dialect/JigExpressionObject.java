@@ -188,9 +188,10 @@ class JigExpressionObject {
                     : partitioningRelations.values().stream().flatMap(Collection::stream).toList();
 
             // 関連に含まれるnodeをパッケージの内側と外側に仕分け＆ラベル付け
-            Map<Boolean, List<String>> nodeMap = targetRelationships.stream()
+            Set<TypeIdentifier> targetTypes = targetRelationships.stream()
                     .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
-                    .sorted().distinct()
+                    .collect(Collectors.toSet());
+            Map<Boolean, List<String>> nodeMap = targetTypes.stream()
                     .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageIdentifier().equals(packageIdentifier),
                             Collectors.mapping(typeIdentifier -> {
                                         String label = jigTypesWithRelationships.jigTypes()
@@ -210,6 +211,9 @@ class JigExpressionObject {
             if (nodeMap.containsKey(false)) {
                 nodeMap.get(false).forEach(diagramText::add);
             }
+            // クリックでジャンプ
+            targetTypes.stream().map(id -> "click %s \"#%s\"".formatted(id.htmlIdText(), id.fullQualifiedName())).forEach(diagramText::add);
+
             targetRelationships.stream()
                     .map(relationship -> "%s --> %s".formatted(relationship.from().htmlIdText(), relationship.to().htmlIdText()))
                     .forEach(diagramText::add);

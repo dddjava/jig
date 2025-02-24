@@ -193,9 +193,17 @@ pre.mermaid {
     text-align: center;
 }
 */
-.glossary #search {
+
+.glossary .controls {
     margin: 1em auto;
-    text-align: center;
+    width: 90%;
+    max-width: 800px;
+}
+.glossary .controls summary {
+    list-style: none;
+}
+.glossary .controls > * {
+    display: block;
 }
 .glossary #search input {
     width: 90%;
@@ -217,6 +225,7 @@ pre.mermaid {
     visibility: hidden;
     margin: 0;
     font-size: 0;
+    padding: 0;
 }
 .glossary .letter-navigation a {
     text-decoration: none;
@@ -239,6 +248,9 @@ pre.mermaid {
 .glossary .term {
     padding: 1em;
     border-bottom: 1px solid #ccc;
+}
+.glossary .term.hidden {
+    display: none;
 }
 .glossary .term h2 {
     margin: 0;

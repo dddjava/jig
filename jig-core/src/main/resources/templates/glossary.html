@@ -11,10 +11,22 @@
 <body class="glossary">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
-    <!-- 検索フィールド -->
-    <div id="search">
-        <input type="text" placeholder="用語を検索してください..." aria-label="用語検索">
-    </div>
+    <details class="controls" open>
+        <summary>⚙️</summary>
+        <!--label id="search">
+            部分一致で絞り込む
+            <input type="text" placeholder="検索ワード">
+        </label-->
+        <label>
+            説明のない用語を表示しない
+            <input id="hidden-no-description" type="checkbox">
+        </label>
+        <div id="filter-kind">
+            <label>パッケージ<input type="checkbox" checked></label>
+            <label>メソッド<input type="checkbox" checked></label>
+            <label>フィールド<input type="checkbox" checked></label>
+        </div>
+    </details>
 
     <section class="term-list">
         <th-block th:each="term,iterStat : ${terms.list()}">
@@ -35,7 +47,7 @@
                     <dt>種類</dt>
                     <dd th:text="${term.termKind()}">クラス</dd>
                 </dl>
-                <div th:utext="${term.description()}" class="markdown">
+                <div th:utext="${term.description()}" class="description markdown">
                     この用語の説明です。
                 </div>
             </article>

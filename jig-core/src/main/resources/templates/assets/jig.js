@@ -74,3 +74,20 @@ window.addEventListener("popstate", function(event) {
         }
     }
 });
+
+document.getElementById("hidden-no-description").addEventListener("change", function(event) {
+    console.log(event.target.checked);
+    const hidden = event.target.checked;
+    const termArticles = document.getElementsByClassName("term");
+
+    for (let i = 0; i < termArticles.length; i++) {
+        const description = termArticles[i].getElementsByClassName("description")[0];
+        if (!description || description.textContent.trim().length === 0) {
+            if (hidden) {
+                termArticles[i].classList.add("hidden");
+            } else {
+                termArticles[i].classList.remove("hidden");
+            }
+        }
+    }
+})

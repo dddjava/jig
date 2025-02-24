@@ -51,7 +51,7 @@ public class TypeMermaidDiagram {
 
         StringJoiner diagramText = new StringJoiner("\n    ", "\ngraph TB\n    ", "");
         if (nodeMap.containsKey(true)) {
-            diagramText.add("subgraph %s[%s]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
+            diagramText.add("subgraph %s[\"%s\"]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
             diagramText.add("direction TB");
             nodeMap.get(true).forEach(diagramText::add);
             diagramText.add("end");

@@ -34,7 +34,7 @@ public class JigDialect implements IExpressionObjectDialect, IProcessorDialect {
     }
 
     /**
-     * 属性のデフォルトプレフィックス。 `<tag jig:xxx></tag>` の形で使用できる。
+     * 属性のデフォルトプレフィックス。 `jig:xxx` の形で使用できる。
      * {@link IProcessorDialect}
      */
     @Override

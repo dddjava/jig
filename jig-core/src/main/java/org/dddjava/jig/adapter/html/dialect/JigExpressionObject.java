@@ -4,6 +4,7 @@ import org.dddjava.jig.adapter.html.mermaid.TypeMermaidDiagram;
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -171,5 +172,16 @@ class JigExpressionObject {
             return new TypeMermaidDiagram().write(jigPackage, jigTypesWithRelationships);
         }
         return Optional.empty();
+    }
+
+    public String nearLetter(List<String> letters, Term term) {
+        String termLetter = term.title().substring(0, 1);
+
+        for (String letter : letters) {
+            int compared = letter.compareTo(termLetter);
+            // 同じかletterの方が大きい場合
+            if (compared >= 0) return letter;
+        }
+        return letters.get(letters.size() - 1);
     }
 }

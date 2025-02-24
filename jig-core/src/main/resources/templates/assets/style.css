@@ -207,16 +207,30 @@ pre.mermaid {
 .glossary .letter-navigation {
     text-align: center;
     margin: 1em 0;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.glossary .letter-navigation.hidden {
+    /* display:none にするとid指定で移動できなくなるので、出しつつ見えないようにする */
+    visibility: hidden;
+    margin: 0;
+    font-size: 0;
 }
 .glossary .letter-navigation a {
-    margin: 0 0.5em;
     text-decoration: none;
     color: #0073e6;
     font-weight: bold;
+    font-size: 1em;
 }
-.glossary .letter-navigation a:hover {
-    text-decoration: underline;
+.glossary .letter-navigation a:not(:last-child)::after {
+    margin: 0 0.4em;
+    content: "|";
+    font-weight: normal;
+    color: #ccc;
 }
+
 .glossary .term-list {
     margin: 1em auto;
     width: 90%;

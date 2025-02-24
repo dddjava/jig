@@ -16,28 +16,30 @@
         <input type="text" placeholder="用語を検索してください..." aria-label="用語検索">
     </div>
 
-    <!-- 用語の頭文字をとって作る。十単語ずつくらい。それごとに挿入する。hrefのidはnavのidにする。 -->
-    <nav id="a" class="letter-navigation">
-        <a href="#a">A</a>
-        <a href="#i">い</a>
-    </nav>
-
     <section class="term-list">
-        <article class="term" th:each="term : ${terms.list()}">
-            <h2 th:text="${term.title()}">名称A</h2>
-            <dl>
-                <dt>単純名</dt>
-                <dd th:text="${term.identifier().simpleText()}">org.dddjava.jig.domain.model.data.types.JigTypeHeader</dd>
-                <dt>完全修飾名</dt>
-                <dd th:text="${term.identifier().asText()}">org.dddjava.jig.domain.model.data.types.JigTypeHeader</dd>
-                <dt>種類</dt>
-                <dd th:text="${term.termKind()}">クラス</dd>
-            </dl>
-            <div th:utext="${term.description()}" class="markdown">
-                この用語の説明です。
-            </div>
-        </article>
-
+        <th-block th:each="term,iterStat : ${terms.list()}">
+            <nav class="letter-navigation" th:id="${#jig.nearLetter(navigationLetters, term)}"
+                 th:classappend="${iterStat.index % 10 ? 'hidden' : ''}">
+                <a th:each="letter : ${navigationLetters}" th:href="'#' + ${letter}" th:text="${letter}">a</a>
+            </nav>
+            <article class="term">
+                <h2 th:text="${term.title()}">名称A</h2>
+                <dl>
+                    <dt>単純名</dt>
+                    <dd th:text="${term.identifier().simpleText()}">
+                        org.dddjava.jig.domain.model.data.types.JigTypeHeader
+                    </dd>
+                    <dt>完全修飾名</dt>
+                    <dd th:text="${term.identifier().asText()}">org.dddjava.jig.domain.model.data.types.JigTypeHeader
+                    </dd>
+                    <dt>種類</dt>
+                    <dd th:text="${term.termKind()}">クラス</dd>
+                </dl>
+                <div th:utext="${term.description()}" class="markdown">
+                    この用語の説明です。
+                </div>
+            </article>
+        </th-block>
     </section>
 
 </main>

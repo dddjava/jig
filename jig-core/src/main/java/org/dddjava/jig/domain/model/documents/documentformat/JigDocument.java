@@ -137,8 +137,8 @@ public enum JigDocument {
             JigDocumentLabel.of("用語集", "term"),
             "term"),
     TermTable(
-            JigDocumentLabel.of("用語集", "term"),
-            "term");
+            JigDocumentLabel.of("用語集", "glossary"),
+            "glossary");
 
     private final JigDocumentLabel label;
     private final String documentFileName;

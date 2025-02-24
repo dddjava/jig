@@ -178,3 +178,74 @@ main table.fields thead {
 pre.mermaid {
     font-size: 0;
 }
+
+/*
+.glossary body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+.glossary header {
+    padding: 1em;
+    background-color: #0073e6;
+    color: white;
+    text-align: center;
+}
+*/
+.glossary #search {
+    margin: 1em auto;
+    text-align: center;
+}
+.glossary #search input {
+    width: 90%;
+    max-width: 400px;
+    padding: 0.5em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.glossary .letter-navigation {
+    text-align: center;
+    margin: 1em 0;
+}
+.glossary .letter-navigation a {
+    margin: 0 0.5em;
+    text-decoration: none;
+    color: #0073e6;
+    font-weight: bold;
+}
+.glossary .letter-navigation a:hover {
+    text-decoration: underline;
+}
+.glossary .term-list {
+    margin: 1em auto;
+    width: 90%;
+    max-width: 800px;
+}
+.glossary .term {
+    padding: 1em;
+    border-bottom: 1px solid #ccc;
+}
+.glossary .term h2 {
+    margin: 0;
+    color: #0073e6;
+}
+.glossary .term p {
+    margin: 0.5em 0 0 0;
+}
+.glossary .term dl {
+    color: #666;
+    font-size: 0.7em;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    margin: 0;
+}
+.glossary .term dl dt {
+    font-weight: bold;
+    width: 100px;
+    margin: 0;
+}
+.glossary .term dl dd {
+    margin: 0;
+}

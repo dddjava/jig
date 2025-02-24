@@ -18,13 +18,14 @@
             <input type="text" placeholder="検索ワード">
         </label-->
         <label>
-            説明のない用語を表示しない
-            <input id="hidden-no-description" type="checkbox">
+            説明のない用語を表示する
+            <input id="show-empty-description" type="checkbox" checked>
         </label>
         <div id="filter-kind">
-            <label>パッケージ<input type="checkbox" checked></label>
-            <label>メソッド<input type="checkbox" checked></label>
-            <label>フィールド<input type="checkbox" checked></label>
+            <label>パッケージ<input type="checkbox" id="show-package" checked></label>
+            <label>クラス<input type="checkbox" id="show-class" checked></label>
+            <label>メソッド<input type="checkbox" id="show-method" checked></label>
+            <label>フィールド<input type="checkbox" id="show-field" checked></label>
         </div>
     </details>
 
@@ -45,7 +46,7 @@
                     <dd th:text="${term.identifier().asText()}">org.dddjava.jig.domain.model.data.types.JigTypeHeader
                     </dd>
                     <dt>種類</dt>
-                    <dd th:text="${term.termKind()}">クラス</dd>
+                    <dd class="kind" th:text="${term.termKind()}">クラス</dd>
                 </dl>
                 <div th:utext="${term.description()}" class="description markdown">
                     この用語の説明です。

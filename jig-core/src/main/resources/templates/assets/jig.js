@@ -4,7 +4,7 @@ function toggleTableColumn(tableId, columnIndex) {
     var table = document.getElementById(tableId);
     var rows = table.rows;
 
-   for (var i = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
         var row = rows[i];
         var cells = row.cells;
         var cell = cells[columnIndex];
@@ -61,10 +61,11 @@ function sortTable(tableId, columnIndex) {
         tbody.appendChild(row);
     });
 }
+
 // ブラウザバックなどで該当要素に移動する
 // Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
 // なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
-window.addEventListener("popstate", function(event) {
+window.addEventListener("popstate", function (event) {
     const hash = event.target.location.hash;
 
     if (hash) {
@@ -75,19 +76,54 @@ window.addEventListener("popstate", function(event) {
     }
 });
 
-document.getElementById("hidden-no-description").addEventListener("change", function(event) {
-    console.log(event.target.checked);
-    const hidden = event.target.checked;
-    const termArticles = document.getElementsByClassName("term");
+function changeArticleVisibility(event) {
+    const showEmptyDescription = document.getElementById("show-empty-description").checked;
+    const showPackage = document.getElementById("show-package").checked;
+    const showClass = document.getElementById("show-class").checked;
+    const showMethod = document.getElementById("show-method").checked;
 
+    const termArticles = document.getElementsByClassName("term");
     for (let i = 0; i < termArticles.length; i++) {
-        const description = termArticles[i].getElementsByClassName("description")[0];
-        if (!description || description.textContent.trim().length === 0) {
-            if (hidden) {
-                termArticles[i].classList.add("hidden");
-            } else {
+        const kindText = termArticles[i].getElementsByClassName("kind")[0].textContent;
+        if (kindText === "パッケージ") {
+            if (showPackage) {
                 termArticles[i].classList.remove("hidden");
+            } else {
+                termArticles[i].classList.add("hidden");
+                // ここでhiddenとするものは以降の判定不要
+                continue;
+            }
+        } else if (kindText === "クラス") {
+            if (showClass) {
+                termArticles[i].classList.remove("hidden");
+            } else {
+                termArticles[i].classList.add("hidden");
+                // ここでhiddenとするものは以降の判定不要
+                continue;
+            }
+        } else if (kindText === "メソッド") {
+            if (showMethod) {
+                termArticles[i].classList.remove("hidden");
+            } else {
+                termArticles[i].classList.add("hidden");
+                // ここでhiddenとするものは以降の判定不要
+                continue;
+            }
+        }
+
+        if (showEmptyDescription) {
+            termArticles[i].classList.remove("hidden");
+        } else {
+            const description = termArticles[i].getElementsByClassName("description")[0];
+            if (!description || description.textContent.trim().length === 0) {
+                termArticles[i].classList.add("hidden");
             }
         }
     }
-})
+}
+
+document.getElementById("show-empty-description").addEventListener("change", changeArticleVisibility);
+document.getElementById("show-package").addEventListener("change", changeArticleVisibility);
+document.getElementById("show-class").addEventListener("change", changeArticleVisibility);
+document.getElementById("show-method").addEventListener("change", changeArticleVisibility);
+document.getElementById("show-field").addEventListener("change", changeArticleVisibility);

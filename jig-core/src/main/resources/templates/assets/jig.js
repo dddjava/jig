@@ -127,3 +127,16 @@ document.getElementById("show-package").addEventListener("change", changeArticle
 document.getElementById("show-class").addEventListener("change", changeArticleVisibility);
 document.getElementById("show-method").addEventListener("change", changeArticleVisibility);
 document.getElementById("show-field").addEventListener("change", changeArticleVisibility);
+
+document.getElementById("show-navigation").addEventListener("change", function (event) {
+    const showNavigation = document.getElementById("show-navigation").checked;
+    const navigations = document.getElementsByClassName("letter-navigation");
+    for (let i = 0; i < navigations.length; i++) {
+        const navigation = navigations[i];
+        if (showNavigation && navigation.classList.contains("fix")) {
+            navigation.classList.remove("hidden");
+        } else {
+            navigation.classList.add("hidden");
+        }
+    }
+});

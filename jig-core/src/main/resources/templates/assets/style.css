@@ -226,6 +226,7 @@ pre.mermaid {
     margin: 0;
     font-size: 0;
     padding: 0;
+    border: none;
 }
 .glossary .letter-navigation a {
     text-decoration: none;

@@ -11,8 +11,8 @@
 <body class="glossary">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
-    <details class="controls" open>
-        <summary>⚙️</summary>
+    <details class="controls">
+        <summary>⚙️ 表示設定</summary>
         <!--label id="search">
             部分一致で絞り込む
             <input type="text" placeholder="検索ワード">
@@ -27,12 +27,16 @@
             <label>メソッド<input type="checkbox" id="show-method" checked></label>
             <label>フィールド<input type="checkbox" id="show-field" checked></label>
         </div>
+        <label>
+            ナビを表示する
+            <input id="show-navigation" type="checkbox" checked>
+        </label>
     </details>
 
     <section class="term-list">
         <th-block th:each="term,iterStat : ${terms.list()}">
             <nav class="letter-navigation" th:id="${#jig.nearLetter(navigationLetters, term)}"
-                 th:classappend="${iterStat.index % 10 ? 'hidden' : ''}">
+                 th:classappend="${iterStat.index % 10 ? 'hidden' : 'fix'}">
                 <a th:each="letter : ${navigationLetters}" th:href="'#' + ${letter}" th:text="${letter}">a</a>
             </nav>
             <article class="term">

@@ -8,8 +8,6 @@ plugins {
 dependencies {
     implementation project(':jig-core')
     runtimeOnly libs.log4j.to.slf4j
-
-    testImplementation libs.junit
 }
 
 jar {

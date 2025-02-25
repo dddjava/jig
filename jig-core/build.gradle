@@ -80,7 +80,6 @@ dependencies {
     api libs.caffeine
 
     testRuntimeOnly libs.logback.classic
-    testImplementation libs.junit
     testImplementation libs.mockito
     testImplementation libs.assertj
 

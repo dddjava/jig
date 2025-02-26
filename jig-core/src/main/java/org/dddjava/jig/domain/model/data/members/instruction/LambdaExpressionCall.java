@@ -5,6 +5,12 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Lambda式呼び出し
+ *
+ * {@link DynamicMethodCall} の特化型で、呼び出されているLambdaの {@link Instructions} を保持する。
+ * メソッドを辿らずともこれを展開すれば実装上の処理は追える。
+ */
 public record LambdaExpressionCall(MethodCall methodCall, TypeIdentifier returnType,
                                    List<TypeIdentifier> argumentTypes,
                                    Instructions instructions) implements Instruction {

@@ -2,6 +2,11 @@ package org.dddjava.jig.domain.model.data.enums;
 
 import java.util.List;
 
+/**
+ * Enumの定数
+ *
+ * 定数名とコンストラクタの引数リストを持つ
+ */
 public class EnumConstant {
     /**
      * 定数名

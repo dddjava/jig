@@ -119,16 +119,23 @@ function updateArticleVisibility() {
         term.classList.remove("hidden");
     });
 
-    removeContiguousLetterNavigation();
+    updateLetterNavigationVisibility();
 }
 
-function removeContiguousLetterNavigation() {
-    console.log("removeContiguousLetterNavigation");
+function updateLetterNavigationVisibility() {
     const letterNavigations = Array.from(document.getElementsByClassName("letter-navigation"));
+    const showNavigation = document.getElementById("show-letter-navigation").checked;
+    if (!showNavigation) {
+        letterNavigations.forEach(nav => nav.classList.add("hidden"));
+        return;
+    }
 
     letterNavigations.forEach((nav, index) => {
         // 1件目は無視
-        if (index === 0) return;
+        if (index === 0) {
+            nav.classList.remove("hidden");
+            return;
+        }
 
         let visibleCount = 0;
         let sibling = nav.previousElementSibling;
@@ -159,16 +166,11 @@ document.getElementById("show-package").addEventListener("change", updateArticle
 document.getElementById("show-class").addEventListener("change", updateArticleVisibility);
 document.getElementById("show-method").addEventListener("change", updateArticleVisibility);
 document.getElementById("show-field").addEventListener("change", updateArticleVisibility);
+document.getElementById("show-letter-navigation").addEventListener("change", updateLetterNavigationVisibility);
 
-document.getElementById("show-navigation").addEventListener("change", function (event) {
-    const showNavigation = document.getElementById("show-navigation").checked;
-    const navigations = document.getElementsByClassName("letter-navigation");
-    for (let i = 0; i < navigations.length; i++) {
-        const navigation = navigations[i];
-        if (showNavigation && navigation.classList.contains("fix")) {
-            navigation.classList.remove("hidden");
-        } else {
-            navigation.classList.add("hidden");
-        }
+// ページ読み込み時のイベント
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.body.classList.contains("glossary")) {
+        updateLetterNavigationVisibility();
     }
 });

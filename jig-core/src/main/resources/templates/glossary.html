@@ -29,14 +29,13 @@
         </div>
         <label>
             ナビを表示する
-            <input id="show-navigation" type="checkbox" checked>
+            <input id="show-letter-navigation" type="checkbox" checked>
         </label>
     </details>
 
     <section class="term-list">
-        <th-block th:each="term,iterStat : ${terms.list()}">
-            <nav class="letter-navigation" th:id="${#jig.nearLetter(navigationLetters, term)}"
-                 th:classappend="${iterStat.index % 10 ? 'hidden' : 'fix'}">
+        <th-block th:each="term : ${terms.list()}">
+            <nav class="letter-navigation class" th:id="${#jig.nearLetter(navigationLetters, term)}">
                 <a th:each="letter : ${navigationLetters}" th:href="'#' + ${letter}" th:text="${letter}">a</a>
             </nav>
             <article class="term">

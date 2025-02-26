@@ -13,10 +13,10 @@
 <main>
     <details class="controls">
         <summary>⚙️ 表示設定</summary>
-        <!--label id="search">
+        <label id="search">
             部分一致で絞り込む
-            <input type="text" placeholder="検索ワード">
-        </label-->
+            <input id="search-input" type="text" placeholder="検索ワード">
+        </label>
         <label>
             説明のない用語を表示する
             <input id="show-empty-description" type="checkbox" checked>
@@ -40,7 +40,7 @@
                 <a th:each="letter : ${navigationLetters}" th:href="'#' + ${letter}" th:text="${letter}">a</a>
             </nav>
             <article class="term">
-                <h2 th:text="${term.title()}">名称A</h2>
+                <h2 th:text="${term.title()}" class="term-title">名称A</h2>
                 <dl>
                     <dt>単純名</dt>
                     <dd th:text="${term.identifier().simpleText()}">

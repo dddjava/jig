@@ -140,3 +140,21 @@ document.getElementById("show-navigation").addEventListener("change", function (
         }
     }
 });
+
+document.getElementById("search-input").addEventListener("input", function () {
+    const searchKeyword = this.value.toLowerCase(); // 小文字で比較する
+    const termElements = document.getElementsByClassName("term");
+
+    Array.from(termElements).forEach(term => {
+        const title = term.getElementsByClassName("term-title")[0].textContent.toLowerCase();
+        const descriptionElement = term.getElementsByClassName("description")[0];
+        const description = descriptionElement ? descriptionElement.textContent.toLowerCase() : "";
+
+        // タイトルまたは説明文に検索キーワードが含まれている場合
+        if (title.includes(searchKeyword) || description.includes(searchKeyword)) {
+            term.classList.remove("hidden");
+        } else {
+            term.classList.add("hidden");
+        }
+    });
+});

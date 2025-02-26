@@ -118,6 +118,39 @@ function updateArticleVisibility() {
         // すべての条件をパスした場合に表示
         term.classList.remove("hidden");
     });
+
+    removeContiguousLetterNavigation();
+}
+
+function removeContiguousLetterNavigation() {
+    console.log("removeContiguousLetterNavigation");
+    const letterNavigations = Array.from(document.getElementsByClassName("letter-navigation"));
+
+    letterNavigations.forEach((nav, index) => {
+        // 1件目は無視
+        if (index === 0) return;
+
+        let visibleCount = 0;
+        let sibling = nav.previousElementSibling;
+        while (sibling) {
+            // 表示しているものだけ対象にする
+            if (!sibling.classList.contains("hidden")) {
+                // letter-navigationはカウント対象外
+                if (sibling.classList.contains("letter-navigation")) break;
+                visibleCount++;
+                // これ以上カウントする意味がないので抜ける
+                if (visibleCount >= 10) break;
+            }
+            sibling = sibling.previousElementSibling;
+        }
+
+        // 10個以上表示するものがあったら表示する
+        if (visibleCount >= 10) {
+            nav.classList.remove("hidden");
+        } else {
+            nav.classList.add("hidden");
+        }
+    });
 }
 
 document.getElementById("search-input").addEventListener("input", updateArticleVisibility);

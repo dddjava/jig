@@ -105,8 +105,8 @@ function updateArticleVisibility() {
             term.classList.add("hidden");
             return;
         }
-        // 検索キーワードでの判定
-        const title = term.getElementsByTagName("h2")[0]?.textContent?.toLowerCase() || ""; // タイトル
+        // 検索キーワードでの判定（タイトルと説明文）
+        const title = term.getElementsByClassName("term-title")[0]?.textContent?.toLowerCase() || "";
         if (searchKeyword && !title.includes(searchKeyword) && !description.includes(searchKeyword)) {
             term.classList.add("hidden");
             return;

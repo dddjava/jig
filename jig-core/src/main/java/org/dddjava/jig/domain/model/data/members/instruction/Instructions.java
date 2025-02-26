@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * メソッドで実施されている命令
+ * 命令群
  *
- * バイトコード上の順番を維持するため、Listで保持する
+ * 主にメソッドで記述されるもの。コンストラクタやイニシャライザも含まれる。
+ * バイトコード上の順番を維持するため、Listで保持する。
  */
 public record Instructions(List<Instruction> instructions) {
 

@@ -78,10 +78,12 @@ window.addEventListener("popstate", function (event) {
 
 function updateArticleVisibility() {
     const showEmptyDescription = document.getElementById("show-empty-description").checked;
-    const showPackage = document.getElementById("show-package").checked;
-    const showClass = document.getElementById("show-class").checked;
-    const showMethod = document.getElementById("show-method").checked;
-    const showField = document.getElementById("show-field").checked;
+    const kindVisibilityMap = {
+        "パッケージ": document.getElementById("show-package").checked,
+        "クラス": document.getElementById("show-class").checked,
+        "メソッド": document.getElementById("show-method").checked,
+        "フィールド": document.getElementById("show-field").checked,
+    };
 
     const searchKeyword = document.getElementById("search-input").value.toLowerCase();
     const termArticles = document.getElementsByClassName("term");
@@ -90,12 +92,7 @@ function updateArticleVisibility() {
         const kindText = term.getElementsByClassName("kind")[0]?.textContent || "";
 
         // 種類で絞り込む
-        let isVisible = false;
-        if (kindText === "パッケージ" && showPackage) isVisible = true;
-        if (kindText === "クラス" && showClass) isVisible = true;
-        if (kindText === "メソッド" && showMethod) isVisible = true;
-        if (kindText === "フィールド" && showField) isVisible = true;
-        if (!isVisible) {
+        if (!kindVisibilityMap[kindText]) {
             term.classList.add("hidden");
             return;
         }

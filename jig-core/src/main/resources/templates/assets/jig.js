@@ -76,57 +76,56 @@ window.addEventListener("popstate", function (event) {
     }
 });
 
-function changeArticleVisibility(event) {
+function updateArticleVisibility() {
     const showEmptyDescription = document.getElementById("show-empty-description").checked;
     const showPackage = document.getElementById("show-package").checked;
     const showClass = document.getElementById("show-class").checked;
     const showMethod = document.getElementById("show-method").checked;
+    const showField = document.getElementById("show-field").checked;
 
+    const searchKeyword = document.getElementById("search-input").value.toLowerCase();
     const termArticles = document.getElementsByClassName("term");
-    for (let i = 0; i < termArticles.length; i++) {
-        const kindText = termArticles[i].getElementsByClassName("kind")[0].textContent;
-        if (kindText === "パッケージ") {
-            if (showPackage) {
-                termArticles[i].classList.remove("hidden");
-            } else {
-                termArticles[i].classList.add("hidden");
-                // ここでhiddenとするものは以降の判定不要
-                continue;
-            }
-        } else if (kindText === "クラス") {
-            if (showClass) {
-                termArticles[i].classList.remove("hidden");
-            } else {
-                termArticles[i].classList.add("hidden");
-                // ここでhiddenとするものは以降の判定不要
-                continue;
-            }
-        } else if (kindText === "メソッド") {
-            if (showMethod) {
-                termArticles[i].classList.remove("hidden");
-            } else {
-                termArticles[i].classList.add("hidden");
-                // ここでhiddenとするものは以降の判定不要
-                continue;
-            }
+
+    Array.from(termArticles).forEach(term => {
+        const kindText = term.getElementsByClassName("kind")[0]?.textContent || "";
+
+        // 種類で絞り込む
+        let isVisible = false;
+        if (kindText === "パッケージ" && showPackage) isVisible = true;
+        if (kindText === "クラス" && showClass) isVisible = true;
+        if (kindText === "メソッド" && showMethod) isVisible = true;
+        if (kindText === "フィールド" && showField) isVisible = true;
+        if (!isVisible) {
+            term.classList.add("hidden");
+            return;
         }
 
-        if (showEmptyDescription) {
-            termArticles[i].classList.remove("hidden");
-        } else {
-            const description = termArticles[i].getElementsByClassName("description")[0];
-            if (!description || description.textContent.trim().length === 0) {
-                termArticles[i].classList.add("hidden");
-            }
+        // 以降の判定で使用する説明文を取得
+        const description = term.getElementsByClassName("description")[0]?.textContent?.toLowerCase() || "";
+
+        // 説明文有無での判定
+        if (!showEmptyDescription && !description) {
+            term.classList.add("hidden");
+            return;
         }
-    }
+        // 検索キーワードでの判定
+        const title = term.getElementsByTagName("h2")[0]?.textContent?.toLowerCase() || ""; // タイトル
+        if (searchKeyword && !title.includes(searchKeyword) && !description.includes(searchKeyword)) {
+            term.classList.add("hidden");
+            return;
+        }
+
+        // すべての条件をパスした場合に表示
+        term.classList.remove("hidden");
+    });
 }
 
-document.getElementById("show-empty-description").addEventListener("change", changeArticleVisibility);
-document.getElementById("show-package").addEventListener("change", changeArticleVisibility);
-document.getElementById("show-class").addEventListener("change", changeArticleVisibility);
-document.getElementById("show-method").addEventListener("change", changeArticleVisibility);
-document.getElementById("show-field").addEventListener("change", changeArticleVisibility);
+document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
+document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);
+document.getElementById("show-package").addEventListener("change", updateArticleVisibility);
+document.getElementById("show-class").addEventListener("change", updateArticleVisibility);
+document.getElementById("show-method").addEventListener("change", updateArticleVisibility);
+document.getElementById("show-field").addEventListener("change", updateArticleVisibility);
 
 document.getElementById("show-navigation").addEventListener("change", function (event) {
     const showNavigation = document.getElementById("show-navigation").checked;
@@ -139,22 +138,4 @@ document.getElementById("show-navigation").addEventListener("change", function (
             navigation.classList.add("hidden");
         }
     }
-});
-
-document.getElementById("search-input").addEventListener("input", function () {
-    const searchKeyword = this.value.toLowerCase(); // 小文字で比較する
-    const termElements = document.getElementsByClassName("term");
-
-    Array.from(termElements).forEach(term => {
-        const title = term.getElementsByClassName("term-title")[0].textContent.toLowerCase();
-        const descriptionElement = term.getElementsByClassName("description")[0];
-        const description = descriptionElement ? descriptionElement.textContent.toLowerCase() : "";
-
-        // タイトルまたは説明文に検索キーワードが含まれている場合
-        if (title.includes(searchKeyword) || description.includes(searchKeyword)) {
-            term.classList.remove("hidden");
-        } else {
-            term.classList.add("hidden");
-        }
-    });
 });

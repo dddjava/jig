@@ -119,6 +119,7 @@ function updateArticleVisibility() {
         term.classList.remove("hidden");
     });
 
+    // 表示が変わるのでnavも更新する
     updateLetterNavigationVisibility();
 }
 

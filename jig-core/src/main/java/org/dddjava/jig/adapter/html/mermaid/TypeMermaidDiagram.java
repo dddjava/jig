@@ -45,13 +45,13 @@ public class TypeMermaidDiagram {
                                     String label = jigTypesWithRelationships.jigTypes()
                                             .resolveJigType(typeIdentifier).map(JigType::label)
                                             .orElseGet(typeIdentifier::asSimpleName);
-                                    return "%s[\"%s\"]".formatted(typeIdentifier.htmlIdText(), label);
+                                    return "%s[\"%s\"]".formatted(mermaidId(typeIdentifier), label);
                                 },
                                 Collectors.toList())));
 
         StringJoiner diagramText = new StringJoiner("\n    ", "\ngraph TB\n    ", "");
         if (nodeMap.containsKey(true)) {
-            diagramText.add("subgraph %s[\"%s\"]".formatted(jigPackage.packageIdentifier().htmlIdText(), jigPackage.label()));
+            diagramText.add("subgraph %s[\"%s\"]".formatted(mermaidId(jigPackage.packageIdentifier()), jigPackage.label()));
             diagramText.add("direction TB");
             nodeMap.get(true).forEach(diagramText::add);
             diagramText.add("end");
@@ -60,15 +60,35 @@ public class TypeMermaidDiagram {
             nodeMap.get(false).forEach(diagramText::add);
         }
         // クリックでジャンプ
-        targetTypes.stream().map(id -> "click %s \"#%s\"".formatted(id.htmlIdText(), id.fullQualifiedName())).forEach(diagramText::add);
+        targetTypes.stream().map(id -> "click %s \"#%s\"".formatted(mermaidId(id), id.fullQualifiedName())).forEach(diagramText::add);
 
         targetRelationships.stream()
-                .map(relationship -> "%s --> %s".formatted(relationship.from().htmlIdText(), relationship.to().htmlIdText()))
+                .map(relationship -> "%s --> %s".formatted(mermaidId(relationship.from()), mermaidId(relationship.to())))
                 .forEach(diagramText::add);
         if (omitExternalRelations) {
             diagramText.add("A@{ shape: braces, label: \"関連数が%dを超えるため、外部への関連は省略されました。\" }".formatted(threshold));
         }
 
         return Optional.of(diagramText.toString());
+    }
+
+    /**
+     * mermaidのidに使用するテキストへの変換
+     *
+     * PackageIdentifierで使用できる文字は使用できそうなのと、
+     * このダイアグラムでは種類も多くないのでFQNをそのまま使用する。
+     */
+    private Object mermaidId(PackageIdentifier packageIdentifier) {
+        return packageIdentifier.asText();
+    }
+
+    /**
+     * mermaidのidに使用するテキストへの変換
+     *
+     * TypeIdentifierで使用できる文字は使用できそうなのと、
+     * このダイアグラムでは種類も多くないのでFQNをそのまま使用する。
+     */
+    private String mermaidId(TypeIdentifier typeIdentifier) {
+        return typeIdentifier.fullQualifiedName();
     }
 }

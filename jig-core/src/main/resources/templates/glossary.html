@@ -11,26 +11,27 @@
 <body class="glossary">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
-    <details class="controls">
+    <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
         <label id="search">
             部分一致で絞り込む
             <input id="search-input" type="text" placeholder="検索ワード">
         </label>
         <label>
-            説明のない用語を表示する
             <input id="show-empty-description" type="checkbox" checked>
+            説明のない用語を表示する
         </label>
-        <div id="filter-kind">
-            <label>パッケージ<input type="checkbox" id="show-package" checked></label>
-            <label>クラス<input type="checkbox" id="show-class" checked></label>
-            <label>メソッド<input type="checkbox" id="show-method" checked></label>
-            <label>フィールド<input type="checkbox" id="show-field" checked></label>
+        <div>
+            種類：
+            <label><input type="checkbox" id="show-package" checked>パッケージ</label>
+            <label><input type="checkbox" id="show-class" checked>クラス</label>
+            <label><input type="checkbox" id="show-method" checked>メソッド</label>
+            <label><input type="checkbox" id="show-field" checked>フィールド</label>
         </div>
-        <label>
-            ナビを表示する
-            <input id="show-letter-navigation" type="checkbox" checked>
-        </label>
+        <div>
+            ナビ：
+            <label><input id="show-letter-navigation" type="checkbox" checked>表示する</label>
+        </div>
     </details>
 
     <section class="term-list">

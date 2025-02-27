@@ -179,39 +179,40 @@ pre.mermaid {
     font-size: 0;
 }
 
-/*
-.glossary body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
+label {
+    cursor: pointer;
 }
-.glossary header {
-    padding: 1em;
-    background-color: #0073e6;
-    color: white;
-    text-align: center;
-}
-*/
 
-.glossary .controls {
+/* 用語集の表示設定 */
+.glossary details.controls {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: 1em auto;
     width: 90%;
     max-width: 800px;
 }
-.glossary .controls summary {
+.glossary details.controls summary {
     list-style: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding: 5px 0;
 }
-.glossary .controls > * {
+
+.glossary details.controls > div,
+.glossary details.controls > label {
     display: block;
+    margin-right: 10px;
 }
-.glossary #search input {
-    width: 90%;
-    max-width: 400px;
-    padding: 0.5em;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+
+.glossary details.controls input[type="text"],
+.glossary details.controls input[type="checkbox"] {
+    margin-left: 8px;
 }
+
+/* 用語集 / 目次 */
 .glossary .letter-navigation {
     text-align: center;
     margin: 1em 0;
@@ -241,6 +242,7 @@ pre.mermaid {
     color: #ccc;
 }
 
+/* 用語集 / 用語 */
 .glossary .term-list {
     margin: 1em auto;
     width: 90%;

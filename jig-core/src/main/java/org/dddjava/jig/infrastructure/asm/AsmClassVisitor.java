@@ -17,6 +17,9 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 
 /**
+ * クラスのバイトコードから必要な情報を抽出するMethodVisitorの実装
+ *
+ * ```
  * visit
  * [ visitSource ]
  * [ visitModule ]
@@ -32,6 +35,7 @@ import static java.util.stream.Collectors.toMap;
  * | visitMethod
  * )*
  * visitEnd
+ * ```
  */
 class AsmClassVisitor extends ClassVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);

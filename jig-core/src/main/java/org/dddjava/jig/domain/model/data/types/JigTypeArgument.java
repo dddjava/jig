@@ -1,7 +1,9 @@
 package org.dddjava.jig.domain.model.data.types;
 
 /**
- * {@link JigTypeParameter 型パラメタ} に対する具体的な引数
+ * 型引数
+ *
+ * {@link JigTypeParameter 型パラメタ} に対する、具体的な引数。
  *
  * TODO wildcard対応
  */

@@ -14,12 +14,17 @@ import java.util.stream.Stream;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
+ * JVMSのシグネチャのうち、メソッドシグネチャから情報を取得するSignatureVisitorの実装
+ *
+ * ```
  * ClassSignature = ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )* (visitSuperclass visitInterface* )
+ * ```
  *
  * ClassSignatureは型パラメタ、親クラス、インタフェースからなる。
  * 親クラスとインタフェースはさらに型引数をとることがある。
  * このクラスではクラス自身の型パラメタを扱い、親クラスやインタフェースはそれぞれでAsmTypeSignatureVisitorを生成して扱う。
- * ClassSignatureのvisitEndは呼ばれない。
+ *
+ * なお、ClassSignatureのvisitEndは呼ばれない。なぜかは調べていない。
  *
  * 例: {@code <T:Ljava/lang/Number;>LParentClass;Ljava/lang/Comparable<TT;>;}
  *
@@ -28,6 +33,9 @@ import static org.slf4j.LoggerFactory.getLogger;
 class AsmClassSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = getLogger(AsmClassSignatureVisitor.class);
 
+    /**
+     * 型パラメタは複数あるので、それを取りまとめるための構造体
+     */
     record JigTypeParameterBuilder(String name,
                                    List<AsmTypeSignatureVisitor> classBound,
                                    List<AsmTypeSignatureVisitor> interfaceBounds) {

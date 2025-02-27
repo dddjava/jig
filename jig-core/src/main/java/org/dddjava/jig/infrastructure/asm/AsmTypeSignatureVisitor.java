@@ -11,11 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * JVMSのシグネチャのうち、型シグネチャから情報を取得するSignatureVisitorの実装
+ *
+ * クラス、メソッド、フィールドのいずれも型シグネチャを扱うことをあるので、よく使われる。
+ *
+ * ```
  * TypeSignature =
  * visitBaseType
  * | visitTypeVariable
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
+ * ```
  *
  * 例:
  * - {@code List<String>}: {@code Ljava/util/List<Ljava/lang/String;>;}
@@ -32,7 +38,10 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     }
 
     /**
-     * @param name
+     * 型と型引数（のVisitor）をひとまとめにする内部構造体
+     *
+     * 型引数が登場するとネストする構造になっているため、関連づけるために
+     * @param name         asmの認識している型の名前
      * @param arguments    visitTypeArgumentのsignatureを処理するAsmTypeSignatureVisitorを出てきた順に保持するためのリスト
      * @param innerClasses visitInnerClassのsignatureを処理するAsmTypeSignatureVisitor
      */
@@ -143,6 +152,12 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         super.visitEnd();
     }
 
+    /**
+     * このシグネチャの情報から型引数を構築する
+     *
+     * TODO jigTypeReference() と重複。
+     *   本メソッドを使用せず、常に jigTypeReference() で構築して呼び出し元でJigTypeArgumentにしたほうが良い気がする。
+     */
     JigTypeArgument typeArgument() {
         logger.debug("typeArgument");
         if (baseTypeIdentifier != null) {
@@ -169,6 +184,9 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");
     }
 
+    /**
+     * このシグネチャから型参照を構築する
+     */
     public JigTypeReference jigTypeReference() {
         if (baseTypeIdentifier != null) {
             return JigTypeReference.fromId(TypeIdentifier.valueOf(baseTypeIdentifier));

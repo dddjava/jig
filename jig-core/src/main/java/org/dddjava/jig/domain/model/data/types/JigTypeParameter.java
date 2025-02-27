@@ -8,7 +8,7 @@ import static java.util.stream.Collectors.joining;
  * 型パラメタ
  *
  * @param name   パラメタ名。 `T` などが慣習的に使用されるが、慣習。
- * @param bounds
+ * @param bounds 境界型引数
  */
 public record JigTypeParameter(String name, List<JigTypeArgument> bounds) {
 

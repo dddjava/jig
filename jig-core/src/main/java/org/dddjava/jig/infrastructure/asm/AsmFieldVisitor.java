@@ -17,7 +17,7 @@ import java.util.EnumSet;
 import java.util.function.Consumer;
 
 /**
- * FieldVisitor
+ * フィールドのバイトコードから必要な情報を抽出するMethodVisitorの実装
  *
  * {@code ( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd}
  * シンプルなフィールドは visitEnd 以外呼ばれない。

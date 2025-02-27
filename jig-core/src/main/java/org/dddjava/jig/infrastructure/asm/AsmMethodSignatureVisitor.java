@@ -9,9 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * JVMSのシグネチャのうち、メソッドシグネチャから情報を取得するSignatureVisitorの実装
+ *
+ * ```
  * MethodSignature =
  * ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )*
  * (visitParameterType* visitReturnType visitExceptionType* )
+ * ```
  *
  * 例: {@code <T:Ljava/lang/Object;S:Ljava/lang/Number;>(TS;Ljava/util/List<TS;>;)TT;^Ljava/io/IOException;}
  *

@@ -14,6 +14,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
+ * メソッドのバイトコードから必要な情報を抽出するMethodVisitorの実装
+ *
+ * ```
  * ( visitParameter )*
  * [ visitAnnotationDefault ]
  * ( visitAnnotation | visitAnnotableParameterCount | visitParameterAnnotation | visitTypeAnnotation | visitAttribute )*
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
  * visitMaxs
  * ]
  * visitEnd
+ * ```
  */
 class AsmMethodVisitor extends MethodVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodVisitor.class);

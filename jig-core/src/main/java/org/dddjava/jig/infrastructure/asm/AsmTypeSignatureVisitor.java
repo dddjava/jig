@@ -161,6 +161,8 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     JigTypeArgument typeArgument() {
         logger.debug("typeArgument");
         if (baseTypeIdentifier != null) {
+            // FIXME 引数間違ってる（必ずnullになるはず、入れるならbaseTypeIdentifierにすべき）だけど、特に問題になっていない。
+            //  型引数にprimitiveは使えないからだろうけど、であれば分岐も消すべき。やはりnullチェックして渡すのはよくない。。。
             return JigTypeArgument.primitive(typeVariableIdentifier);
         } else if (typeVariableIdentifier != null) {
             // 型引数に型パラメタが渡されているもの

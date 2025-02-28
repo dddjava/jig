@@ -158,7 +158,7 @@ class AsmClassVisitor extends ClassVisitor {
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
      *
-     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
      */
     private JigTypeVisibility resolveVisibility(int access) {
         if ((access & Opcodes.ACC_PUBLIC) != 0) return JigTypeVisibility.PUBLIC;
@@ -166,7 +166,7 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     /**
-     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
      */
     private Collection<JigTypeModifier> resolveTypeModifiers(int access) {
         EnumSet<JigTypeModifier> set = EnumSet.noneOf(JigTypeModifier.class);
@@ -180,7 +180,7 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     /**
-     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
+     * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
      */
     private JigTypeKind resolveTypeKind(int access) {
         if ((access & Opcodes.ACC_ENUM) != 0) return JigTypeKind.ENUM;

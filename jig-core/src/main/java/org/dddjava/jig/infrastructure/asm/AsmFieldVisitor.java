@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  * {@code ( visitAnnotation | visitTypeAnnotation | visitAttribute )* visitEnd}
  * シンプルなフィールドは visitEnd 以外呼ばれない。
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.5">...</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.5">...</a>
  */
 class AsmFieldVisitor extends FieldVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmFieldVisitor.class);

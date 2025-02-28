@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
  * ]
  * visitEnd
  * ```
+ *
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.6">4.6. Methods</a>
  */
 class AsmMethodVisitor extends MethodVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodVisitor.class);

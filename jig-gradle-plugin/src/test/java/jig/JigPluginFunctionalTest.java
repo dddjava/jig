@@ -5,12 +5,13 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,9 +27,15 @@ public class JigPluginFunctionalTest {
     @TempDir
     Path testProjectDir;
 
+    static Stream<String> supportGradleVersion() {
+        return Stream.of(SupportGradleVersion.values())
+                .map(SupportGradleVersion::getVersion)
+                .distinct();
+    }
+
     @ParameterizedTest
-    @EnumSource(SupportGradleVersion.class)
-    void Javaプラグインが適用されていないプロジェクトではプロジェクトのビルドでエラーになる(SupportGradleVersion version) throws IOException {
+    @MethodSource("supportGradleVersion")
+    void Javaプラグインが適用されていないプロジェクトではプロジェクトのビルドでエラーになる(String version) throws IOException {
         settingsGradle("""
                 rootProject.name = 'my-test'
                 """);
@@ -51,8 +58,8 @@ public class JigPluginFunctionalTest {
      * classファイルも含めたテストをする場合はbuildする必要も出てくる。
      */
     @ParameterizedTest
-    @EnumSource(SupportGradleVersion.class)
-    void 実行できる(SupportGradleVersion version) throws IOException {
+    @MethodSource("supportGradleVersion")
+    void 実行できる(String version) throws IOException {
         settingsGradle("""
                 rootProject.name = 'my-test'
                 """);
@@ -80,10 +87,10 @@ public class JigPluginFunctionalTest {
         Files.writeString(testProjectDir.resolve("build.gradle"), buildScript);
     }
 
-    private GradleRunner runner(SupportGradleVersion version) throws IOException {
+    private GradleRunner runner(String version) throws IOException {
 
         return GradleRunner.create()
-                .withGradleVersion(version.getVersion())
+                .withGradleVersion(version)
                 .withProjectDir(testProjectDir.toFile())
                 .withArguments("jig", "--info")
                 .withPluginClasspath();

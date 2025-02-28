@@ -91,7 +91,7 @@ public class JigPluginFunctionalTest {
                 sourceSets {
                     main {
                         java {
-                            srcDirs = ['src/main/java', 'src/sub/java']
+                            srcDirs = ['src/hoge/java', 'src/fuga/java']
                         }
                     }
                 }
@@ -102,8 +102,11 @@ public class JigPluginFunctionalTest {
         assertEquals(TaskOutcome.SUCCESS, taskResult.getOutcome());
         assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
 
-        assertTrue(result.getOutput().contains("src/main/java"), result.getOutput());
-        assertTrue(result.getOutput().contains("src/sub/java"), result.getOutput());
+        assertAll(
+                () -> assertFalse(result.getOutput().contains("src/main/java"), result.getOutput()),
+                () -> assertTrue(result.getOutput().contains("src/hoge/java"), result.getOutput()),
+                () -> assertTrue(result.getOutput().contains("src/fuga/java"), result.getOutput())
+        );
     }
 
     @ParameterizedTest

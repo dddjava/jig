@@ -154,36 +154,9 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
 
     /**
      * このシグネチャの情報から型引数を構築する
-     *
-     * TODO jigTypeReference() と重複。
-     *   本メソッドを使用せず、常に jigTypeReference() で構築して呼び出し元でJigTypeArgumentにしたほうが良い気がする。
      */
     JigTypeArgument typeArgument() {
-        logger.debug("typeArgument");
-        if (baseTypeIdentifier != null) {
-            // FIXME 引数間違ってる（必ずnullになるはず、入れるならbaseTypeIdentifierにすべき）だけど、特に問題になっていない。
-            //  型引数にprimitiveは使えないからだろうけど、であれば分岐も消すべき。やはりnullチェックして渡すのはよくない。。。
-            return JigTypeArgument.primitive(typeVariableIdentifier);
-        } else if (typeVariableIdentifier != null) {
-            // 型引数に型パラメタが渡されているもの
-            return JigTypeArgument.just(typeVariableIdentifier);
-        } else if (arrayAsmTypeSignatureVisitor != null) {
-            var jigTypeReference = arrayAsmTypeSignatureVisitor.jigTypeReference();
-            // TODO 配列のジェネリクス未対応
-            return JigTypeArgument.just(jigTypeReference.id().convertArray().fullQualifiedName());
-        } else if (classType != null) {
-            // 型引数がクラスの素直なもの
-            // TODO これがさらに型引数を持っているパターンは未対応
-            // こっちはInnerClassはありえる？
-            return JigTypeArgument.just(new JigTypeReference(
-                    TypeIdentifier.fromJvmBinaryName(classType.name()),
-                    List.of(), // 型アノテーション未対応
-                    classType.arguments().stream()
-                            .map(visitor -> visitor.typeArgument())
-                            .toList()));
-        }
-
-        throw new IllegalStateException("JIG内部で不具合が発生しました。報告いただけると幸いです。");
+        return JigTypeArgument.just(jigTypeReference());
     }
 
     /**

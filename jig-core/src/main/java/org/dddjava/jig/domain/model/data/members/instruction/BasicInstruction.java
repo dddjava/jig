@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  * 基本的な命令
  *
  * JIGではその存在を記録するのみで、パラメタを扱わないものです。
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Formata>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Format</a>
  */
 public enum BasicInstruction implements Instruction {
     /**

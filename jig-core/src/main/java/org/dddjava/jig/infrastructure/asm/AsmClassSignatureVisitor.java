@@ -28,7 +28,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  *
  * 例: {@code <T:Ljava/lang/Number;>LParentClass;Ljava/lang/Comparable<TT;>;}
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-400">class signature</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-400">ClassSignature</a>
  */
 class AsmClassSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = getLogger(AsmClassSignatureVisitor.class);

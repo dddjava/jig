@@ -27,8 +27,8 @@ import java.util.List;
  * - {@code List<String>}: {@code Ljava/util/List<Ljava/lang/String;>;}
  * - {@code List<?>}: {@code Ljava/util/List<*>;}
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-600">JVMS 4.7.9.1-600 FieldSignature</a>
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-300-B">JVMS 4.7.9.1-300-B ReferenceTypeSignature</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-600">FieldSignature</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-300-B">ReferenceTypeSignature</a>
  */
 class AsmTypeSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmTypeSignatureVisitor.class);

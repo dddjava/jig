@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JVMSのシグネチャのうち、メソッドシグネチャから情報を取得するSignatureVisitorの実装
+ * JVMSのシグネチャのうち、メソッドシグネチャから情報を取得するSignatureVisitorの実装。
+ * ASMではSignatureVisitorでClassSignature、MethodSignature、TypeSignatureを扱うが、
+ * ネストするし使用箇所が明確に分かれるので、JIGでは別々に実装する。
  *
  * ```
  * MethodSignature =

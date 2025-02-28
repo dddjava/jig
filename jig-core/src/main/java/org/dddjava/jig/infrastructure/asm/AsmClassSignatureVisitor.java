@@ -14,7 +14,9 @@ import java.util.stream.Stream;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
- * JVMSのシグネチャのうち、メソッドシグネチャから情報を取得するSignatureVisitorの実装
+ * JVMSのシグネチャのうち、メソッドシグネチャから情報を取得するSignatureVisitorの実装。
+ * ASMではSignatureVisitorでClassSignature、MethodSignature、TypeSignatureを扱うが、
+ * ネストするし使用箇所が明確に分かれるので、JIGでは別々に実装する。
  *
  * ```
  * ClassSignature = ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )* (visitSuperclass visitInterface* )

@@ -11,13 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JVMSのシグネチャのうち、型シグネチャから情報を取得するSignatureVisitorの実装
+ * JVMSのシグネチャのうち、型シグネチャから情報を取得するSignatureVisitorの実装。
+ * ASMではSignatureVisitorでClassSignature、MethodSignature、TypeSignatureを扱うが、
+ * ネストするし使用箇所が明確に分かれるので、JIGでは別々に実装する。
  *
  * クラス、メソッド、フィールドのいずれも型シグネチャを扱うことをあるので、よく使われる。
  *
+ * JVMSでの`JavaTypeSignature`は`ReferenceTypeSignature|BaseType`であり、
+ * `ReferenceTypeSignature`は`ClassTypeSignature|TypeVariableSignature|ArrayTypeSignature`である。
+ *
+ * ASMではこれらおよび`MethodSignature`の`Result`である`VoidDescriptor`をまとめて`TypeSignature`として扱っている。
+ *
  * ```
  * TypeSignature =
- * visitBaseType
+ *   visitBaseType
  * | visitTypeVariable
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
@@ -27,8 +34,7 @@ import java.util.List;
  * - {@code List<String>}: {@code Ljava/util/List<Ljava/lang/String;>;}
  * - {@code List<?>}: {@code Ljava/util/List<*>;}
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-600">FieldSignature</a>
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-300-B">ReferenceTypeSignature</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-300-A">JavaTypeSignature</a>
  */
 class AsmTypeSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmTypeSignatureVisitor.class);

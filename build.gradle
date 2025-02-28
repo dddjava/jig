@@ -15,14 +15,15 @@ nexusPublishing {
 
 dependencies {
     testReportAggregation project(':jig-core')
-    testReportAggregation project(':jig-cli')
+    // spring-boot-starterのBOM解決ができないとかでうまく収集できない。一旦コメントアウト。
+    //testReportAggregation project(':jig-cli')
     testReportAggregation project(':jig-gradle-plugin')
 }
 
 reporting {
     reports {
         testAggregateTestReport(AggregateTestReport) {
-            testType = TestSuiteType.UNIT_TEST
+            testSuiteName = "unit-test"
         }
     }
 }

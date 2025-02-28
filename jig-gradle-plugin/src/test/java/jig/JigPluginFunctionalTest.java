@@ -7,6 +7,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -103,9 +104,9 @@ public class JigPluginFunctionalTest {
         assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
 
         assertAll(
-                () -> assertFalse(result.getOutput().contains("src/main/java"), result.getOutput()),
-                () -> assertTrue(result.getOutput().contains("src/hoge/java"), result.getOutput()),
-                () -> assertTrue(result.getOutput().contains("src/fuga/java"), result.getOutput())
+                () -> assertFalse(result.getOutput().contains("src/main/java".replace("/", File.separator)), result.getOutput()),
+                () -> assertTrue(result.getOutput().contains("src/hoge/java".replace("/", File.separator)), result.getOutput()),
+                () -> assertTrue(result.getOutput().contains("src/fuga/java".replace("/", File.separator)), result.getOutput())
         );
     }
 
@@ -174,6 +175,7 @@ public class JigPluginFunctionalTest {
                         project + "/build/classes/java/main",
                         project + "/build/resources/main"
                 ))
+                .map(path -> path.replace("/", File.separator))
                 .map(path -> () -> assertTrue(output.contains(path), path)));
         // 含まれないもの
         assertAll(Stream.of("c-a", "c-c")
@@ -182,6 +184,7 @@ public class JigPluginFunctionalTest {
                         project + "/build/classes/java/main",
                         project + "/build/resources/main"
                 ))
+                .map(path -> path.replace("/", File.separator))
                 .map(path -> () -> assertFalse(output.contains(path), path)));
     }
 

@@ -81,6 +81,33 @@ public class JigPluginFunctionalTest {
 
     @ParameterizedTest
     @MethodSource("supportGradleVersion")
+    void 複数のソースセットを収集できる(String version) throws IOException {
+        settingsGradle("rootProject.name = 'my-test'");
+        buildGradle("""
+                plugins {
+                    id 'java'
+                    id 'org.dddjava.jig-gradle-plugin'
+                }
+                sourceSets {
+                    main {
+                        java {
+                            srcDirs = ['src/main/java', 'src/sub/java']
+                        }
+                    }
+                }
+                """);
+        var result = runner(version).build();
+
+        var taskResult = Objects.requireNonNull(result.task(":jigReports"));
+        assertEquals(TaskOutcome.SUCCESS, taskResult.getOutcome());
+        assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
+
+        assertTrue(result.getOutput().contains("src/main/java"), result.getOutput());
+        assertTrue(result.getOutput().contains("src/sub/java"), result.getOutput());
+    }
+
+    @ParameterizedTest
+    @MethodSource("supportGradleVersion")
     void マルチプロジェクト構成でソースディレクトリを収集できる(String version) throws IOException {
         settingsGradle("""
                 rootProject.name = 'my-test'

@@ -3,6 +3,8 @@ package jig;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see <a href="https://docs.gradle.org/8.13/userguide/test_kit.html">Testing Build Logic with TestKit</a>
  */
+@EnabledOnJre(JRE.JAVA_17) // Gradle7がJava21に対応していないため17でのみ実行する
 public class JigPluginFunctionalTest {
 
     @TempDir

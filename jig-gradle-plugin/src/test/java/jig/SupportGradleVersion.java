@@ -2,9 +2,22 @@ package jig;
 
 import org.gradle.util.GradleVersion;
 
+/**
+ * サポートするGradleのバージョン
+ */
 public enum SupportGradleVersion {
+    /**
+     * JIGが使用しているGradleのバージョン　
+     */
     CURRENT(GradleVersion.current().getVersion()),
-    _8("8.10.2");
+    /**
+     * 最新
+     */
+    LATEST("8.13"),
+    /**
+     * 一つ前のメジャーバージョンの最終
+     */
+    PREVIOUS_MAJOR_LATEST("7.6.4");
 
     private final String version;
 

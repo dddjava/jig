@@ -1,5 +1,6 @@
 package jig;
 
+import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,8 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * jig-gradle-pluginのFunctionalTest
@@ -29,63 +29,58 @@ public class JigPluginFunctionalTest {
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
     void Javaプラグインが適用されていないプロジェクトではプロジェクトのビルドでエラーになる(SupportGradleVersion version) throws IOException {
-        var result = runner(version, """
+        settingsGradle("""
+                rootProject.name = 'my-test'
+                """);
+        buildGradle("""
                 plugins {
                     id 'org.dddjava.jig-gradle-plugin'
                 }
-                """)
-                .buildAndFail();
+                """);
 
-        var taskResult = Objects.requireNonNull(result.task(":jigReports"));
+        var result = runner(version).buildAndFail();
+
+        BuildTask taskResult = result.task(":jigReports");
+        assertNotNull(taskResult);
         assertEquals(TaskOutcome.FAILED, taskResult.getOutcome());
         assertTrue(result.getOutput().contains("Java プラグインが適用されていません。"), result.getOutput());
     }
 
+    /**
+     * java&classファイルの有無はプラグインの責務ではないので空で実行できればよしとする。
+     * classファイルも含めたテストをする場合はbuildする必要も出てくる。
+     */
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
-    void 空プロジェクトで実行できる(SupportGradleVersion version) throws IOException {
-        var result = runner(version, """
+    void 実行できる(SupportGradleVersion version) throws IOException {
+        settingsGradle("""
+                rootProject.name = 'my-test'
+                """);
+        buildGradle("""
                 plugins {
                     id 'java'
                     id 'org.dddjava.jig-gradle-plugin'
-                }
-                """)
-                .build();
-
-        var taskResult = Objects.requireNonNull(result.task(":jigReports"));
-        assertEquals(TaskOutcome.SUCCESS, taskResult.getOutcome());
-        assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
-    }
-
-    @ParameterizedTest
-    @EnumSource(SupportGradleVersion.class)
-    void 単純なプロジェクトでJIGドキュメントが作成できる(SupportGradleVersion version) throws IOException {
-        var srcDir = Files.createDirectories(testProjectDir.resolve("src").resolve("main").resolve("java"));
-        var samplePackageDir = Files.createDirectories(srcDir.resolve("sample"));
-        Files.writeString(samplePackageDir.resolve("Sample.java"), """
-                package sample;
-                class Sample {
                 }
                 """);
 
-        var result = runner(version, """
-                plugins {
-                    id 'java'
-                    id 'org.dddjava.jig-gradle-plugin'
-                }
-                jig {
-                    modelPattern = '.+'
-                }
-                """)
-                .build();
+        var result = runner(version).build();
 
         var taskResult = Objects.requireNonNull(result.task(":jigReports"));
         assertEquals(TaskOutcome.SUCCESS, taskResult.getOutcome());
         assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
+
+        assertTrue(testProjectDir.resolve(Path.of("build", "jig", "index.html")).toFile().isFile());
     }
 
-    private GradleRunner runner(SupportGradleVersion version, String buildGradle) throws IOException {
-        Files.writeString(testProjectDir.resolve("build.gradle"), buildGradle);
+    private void settingsGradle(String buildScript) throws IOException {
+        Files.writeString(testProjectDir.resolve("settings.gradle"), buildScript);
+    }
+
+    private void buildGradle(String buildScript) throws IOException {
+        Files.writeString(testProjectDir.resolve("build.gradle"), buildScript);
+    }
+
+    private GradleRunner runner(SupportGradleVersion version) throws IOException {
 
         return GradleRunner.create()
                 .withGradleVersion(version.getVersion())

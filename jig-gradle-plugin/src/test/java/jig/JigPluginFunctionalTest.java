@@ -1,10 +1,7 @@
 package jig;
 
-import org.dddjava.jig.gradle.JigReportsTask;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -14,26 +11,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * jig-gradle-pluginの適用および実行のテスト
+ * jig-gradle-pluginのFunctionalTest
+ *
+ * Gradle TestKitを使用して実際にGradleを動作させてテストを行う。
+ *
+ * @see <a href="https://docs.gradle.org/8.13/userguide/test_kit.html">Testing Build Logic with TestKit</a>
  */
-public class JigPluginTest {
+public class JigPluginFunctionalTest {
 
     @TempDir
-    Path tempDir;
-
-    /**
-     * プラグイン適用はProjectBuilderで検証する。
-     */
-    @Test
-    void プラグイン適用でjigReportsタスクが登録される() {
-        var project = ProjectBuilder.builder().build();
-        project.getPluginManager().apply("org.dddjava.jig-gradle-plugin");
-
-        assertInstanceOf(JigReportsTask.class, project.getTasks().getByName("jigReports"));
-    }
+    Path testProjectDir;
 
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
@@ -69,7 +60,7 @@ public class JigPluginTest {
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
     void 単純なプロジェクトでJIGドキュメントが作成できる(SupportGradleVersion version) throws IOException {
-        var srcDir = Files.createDirectories(tempDir.resolve("src").resolve("main").resolve("java"));
+        var srcDir = Files.createDirectories(testProjectDir.resolve("src").resolve("main").resolve("java"));
         var samplePackageDir = Files.createDirectories(srcDir.resolve("sample"));
         Files.writeString(samplePackageDir.resolve("Sample.java"), """
                 package sample;
@@ -94,11 +85,11 @@ public class JigPluginTest {
     }
 
     private GradleRunner runner(SupportGradleVersion version, String buildGradle) throws IOException {
-        Files.writeString(tempDir.resolve("build.gradle"), buildGradle);
+        Files.writeString(testProjectDir.resolve("build.gradle"), buildGradle);
 
         return GradleRunner.create()
                 .withGradleVersion(version.getVersion())
-                .withProjectDir(tempDir.toFile())
+                .withProjectDir(testProjectDir.toFile())
                 .withArguments("jig", "--info")
                 .withPluginClasspath();
     }

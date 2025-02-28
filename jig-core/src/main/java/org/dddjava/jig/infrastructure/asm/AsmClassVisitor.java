@@ -17,7 +17,7 @@ import java.util.*;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * クラスのバイトコードから必要な情報を抽出するMethodVisitorの実装
+ * クラスのバイトコードから必要な情報を抽出するClassVisitorの実装
  *
  * ```
  * visit

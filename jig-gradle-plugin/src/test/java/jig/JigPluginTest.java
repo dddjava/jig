@@ -1,7 +1,10 @@
 package jig;
 
+import org.dddjava.jig.gradle.JigReportsTask;
+import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -11,8 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * jig-gradle-pluginの適用および実行のテスト
@@ -21,6 +23,17 @@ public class JigPluginTest {
 
     @TempDir
     Path tempDir;
+
+    /**
+     * プラグイン適用はProjectBuilderで検証する。
+     */
+    @Test
+    void プラグイン適用でjigReportsタスクが登録される() {
+        var project = ProjectBuilder.builder().build();
+        project.getPluginManager().apply("org.dddjava.jig-gradle-plugin");
+
+        assertInstanceOf(JigReportsTask.class, project.getTasks().getByName("jigReports"));
+    }
 
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)

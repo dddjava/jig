@@ -19,7 +19,7 @@ import java.util.List;
  *
  * 例: {@code <T:Ljava/lang/Object;S:Ljava/lang/Number;>(TS;Ljava/util/List<TS;>;)TT;^Ljava/io/IOException;}
  *
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-500">JVMS 4.7.9.1-500</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-500">method signature</a>
  */
 class AsmMethodSignatureVisitor extends SignatureVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodSignatureVisitor.class);

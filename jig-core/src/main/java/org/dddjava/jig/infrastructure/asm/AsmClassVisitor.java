@@ -36,6 +36,8 @@ import static java.util.stream.Collectors.toMap;
  * )*
  * visitEnd
  * ```
+ *
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Format</a>
  */
 class AsmClassVisitor extends ClassVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);

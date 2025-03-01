@@ -27,10 +27,14 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     private final List<JigAnnotationInstanceElement> elementList = new ArrayList<>();
     private final Consumer<AsmAnnotationVisitor> finisher;
 
-    public AsmAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<AsmAnnotationVisitor> finisher) {
+    private AsmAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<AsmAnnotationVisitor> finisher) {
         super(api);
         this.annotationType = annotationType;
         this.finisher = finisher;
+    }
+
+    public static AsmAnnotationVisitor from(int api, TypeIdentifier annotationType, Consumer<AsmAnnotationVisitor> finisher) {
+        return new AsmAnnotationVisitor(api, annotationType, finisher);
     }
 
     @Override
@@ -55,7 +59,7 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     public AnnotationVisitor visitAnnotation(String name, String descriptor) {
         logger.debug("visitAnnotation: {}, {}", name, descriptor);
         TypeIdentifier typeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
-        return new AsmAnnotationVisitor(api, typeIdentifier, it -> {
+        return from(api, typeIdentifier, it -> {
             elementList.add(JigAnnotationInstanceElement.annotationElement(name, it.annotationType, it.elementList));
         });
     }
@@ -63,7 +67,7 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     @Override
     public AnnotationVisitor visitArray(String name) {
         logger.debug("visitArray: {}", name);
-        return new AsmAnnotationVisitor(api, annotationType, it -> {
+        return from(api, annotationType, it -> {
             elementList.add(JigAnnotationInstanceElement.arrayElement(name,
                     it.elementList.stream()
                             .map(JigAnnotationInstanceElement::value)

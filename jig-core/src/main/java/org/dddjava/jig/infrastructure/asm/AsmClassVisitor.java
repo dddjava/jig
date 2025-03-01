@@ -88,7 +88,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        return new AsmAnnotationVisitor(this.api, AsmUtils.typeDescriptorToIdentifier(descriptor), it -> {
+        return AsmAnnotationVisitor.from(this.api, AsmUtils.typeDescriptorToIdentifier(descriptor), it -> {
             declarationAnnotationCollector.add(it.annotationReference());
         });
     }

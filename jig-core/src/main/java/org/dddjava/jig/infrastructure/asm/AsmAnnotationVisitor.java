@@ -12,7 +12,13 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * ( visit | visitEnum | visitAnnotation | visitArray )* visitEnd.
+ * AnnotationVisitorの実装
+ *
+ * アノテーションに設定されている要素を読み取る
+ *
+ * ```
+ * ( visit | visitEnum | visitAnnotation | visitArray )* visitEnd
+ * ```
  */
 class AsmAnnotationVisitor extends AnnotationVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmAnnotationVisitor.class);

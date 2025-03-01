@@ -124,7 +124,7 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         logger.debug("visitAnnotation {} {}", descriptor, visible);
-        return AsmAnnotationVisitor.from(this.api, AsmUtils.typeDescriptorToIdentifier(descriptor), it -> {
+        return AsmAnnotationVisitor.from(this.api, descriptor, it -> {
             declarationAnnotationCollector.add(it.annotationReference());
         });
     }

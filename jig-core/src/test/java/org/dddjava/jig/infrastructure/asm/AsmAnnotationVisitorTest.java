@@ -21,6 +21,8 @@ class AsmAnnotationVisitorTest {
         Class<?>[] arrayClz() default {};
 
         MyEnum enumValue() default MyEnum.AAA;
+
+        MyEnum[] arrayEnumValue() default {};
     }
 
     private @interface MyAnnotation2 {
@@ -33,8 +35,18 @@ class AsmAnnotationVisitorTest {
         AAA, BBB;
     }
 
-    @MyAnnotation2(annotation = @MyAnnotation(string = "foo"))
-    @MyAnnotation(string = "hoge", arrayString = {"fuga", "piyo"}, number = 9, clz = String.class, arrayClz = {Integer.class}, enumValue = MyEnum.BBB)
+    @MyAnnotation2(
+            annotation = @MyAnnotation(string = "foo"),
+            arrayAnnotation = {
+                    @MyAnnotation(string = "array1"),
+                    @MyAnnotation(string = "array2")
+            }
+    )
+    @MyAnnotation(string = "hoge", number = 9, clz = String.class, enumValue = MyEnum.BBB,
+            arrayString = {"fuga", "piyo"},
+            arrayClz = {Integer.class},
+            arrayEnumValue = {MyEnum.BBB, MyEnum.AAA}
+    )
     private static class AnnotatedSut {
 
     }
@@ -49,17 +61,19 @@ class AsmAnnotationVisitorTest {
         JigAnnotationReference myAnnotation = sut.get(0);
         assertEquals("MyAnnotation", myAnnotation.id().asSimpleName());
 
-        assertEquals(6, myAnnotation.elements().size());
+        assertEquals(7, myAnnotation.elements().size());
         assertEquals("hoge", myAnnotation.elementTextOf("string").orElseThrow());
         assertEquals("{fuga, piyo}", myAnnotation.elementTextOf("arrayString").orElseThrow());
         assertEquals("9", myAnnotation.elementTextOf("number").orElseThrow());
         assertEquals("String", myAnnotation.elementTextOf("clz").orElseThrow());
         assertEquals("Integer", myAnnotation.elementTextOf("arrayClz").orElseThrow());
         assertEquals("MyEnum.BBB", myAnnotation.elementTextOf("enumValue").orElseThrow());
+        assertEquals("{MyEnum.BBB, MyEnum.AAA}", myAnnotation.elementTextOf("arrayEnumValue").orElseThrow());
 
         JigAnnotationReference myAnnotation1 = sut.get(1);
         assertEquals("MyAnnotation2", myAnnotation1.id().asSimpleName());
-        assertEquals(1, myAnnotation1.elements().size());
+        assertEquals(2, myAnnotation1.elements().size());
+        // TODO アノテーションのネストは未対応のため省略表示
         assertEquals("@MyAnnotation(...)", myAnnotation1.elementTextOf("annotation").orElseThrow());
     }
 }

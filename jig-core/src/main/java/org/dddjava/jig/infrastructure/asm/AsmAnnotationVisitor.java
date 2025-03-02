@@ -69,6 +69,10 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
         logger.debug("visitArray: {}", name);
         return new AsmAnnotationVisitor(api, annotationType, it -> {
             elementList.add(JigAnnotationInstanceElement.arrayElement(name,
+                    // このメソッドで生成されるVisitorのvisitに渡されるelementのnameはnullとなる。
+                    // AsmAnnotationVisitorではなくarray用のを作った方がいいかもしれないが、
+                    // nameがnullになる以外に個別処理があるわけでもなく、name自体はarrayのものを採用すればよいので、
+                    // nameを無視してvalueのみ参照する。
                     it.elementList.stream()
                             .map(JigAnnotationInstanceElement::value)
                             .toList()));

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * 命令群
+ * 命令リスト
  *
  * 主にメソッドで記述されるもの。コンストラクタやイニシャライザも含まれる。
  * バイトコード上の順番を維持するため、Listで保持する。

@@ -1,10 +1,14 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.*;
+import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.Instruction;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigField;

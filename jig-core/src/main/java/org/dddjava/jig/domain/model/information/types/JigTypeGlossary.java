@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;

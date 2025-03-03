@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.applications;
 
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.members;
+package org.dddjava.jig.domain.model.data.members.methods;
 
 /**
  * Methodの扱うaccess_flagsのうち、可視性と所有関係を除くもの。

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Arrays;

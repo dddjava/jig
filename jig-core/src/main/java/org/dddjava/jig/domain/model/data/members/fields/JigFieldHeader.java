@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.data.members;
+package org.dddjava.jig.domain.model.data.members.fields;
 
+import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 

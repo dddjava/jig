@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.members;
+package org.dddjava.jig.domain.model.data.members.methods;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 

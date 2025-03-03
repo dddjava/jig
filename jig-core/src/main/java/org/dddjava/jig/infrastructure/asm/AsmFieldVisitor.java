@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.JigFieldAttribute;
-import org.dddjava.jig.domain.model.data.members.JigFieldFlag;
-import org.dddjava.jig.domain.model.data.members.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldAttribute;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldFlag;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;

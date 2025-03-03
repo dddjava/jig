@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 class JavaparserMethodVisitor extends VoidVisitorAdapter<GlossaryRepository> {

@@ -3,7 +3,7 @@ package org.dddjava.jig.adapter.html.dialect;
 import org.dddjava.jig.adapter.html.mermaid.TypeMermaidDiagram;
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;

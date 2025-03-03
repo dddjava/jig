@@ -1,7 +1,12 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.*;
+import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.*;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodAttribute;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;

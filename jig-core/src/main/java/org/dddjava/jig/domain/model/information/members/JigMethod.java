@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
-import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
-import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;

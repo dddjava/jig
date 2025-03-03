@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.data.members.JavaMethodDeclarator;
+import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;

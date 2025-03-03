@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
+import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;

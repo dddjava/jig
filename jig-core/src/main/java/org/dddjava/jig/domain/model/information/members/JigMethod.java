@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
-import org.dddjava.jig.domain.model.data.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.data.members.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
@@ -10,6 +9,7 @@ import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
 
 import java.util.EnumSet;
 import java.util.stream.Stream;

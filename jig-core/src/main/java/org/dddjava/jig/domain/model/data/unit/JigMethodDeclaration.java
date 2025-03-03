@@ -1,5 +1,7 @@
-package org.dddjava.jig.domain.model.data.members;
+package org.dddjava.jig.domain.model.data.unit;
 
+import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.members.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.types.relations;
 
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
+import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.ArrayList;
@@ -41,7 +41,8 @@ public class TypeRelationships {
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
     }
 
-    public static TypeRelationships from(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers) {
+    public static TypeRelationships from(JigType jigType) {
+        JigTypeHeader jigTypeHeader = jigType.jigTypeHeader();
         TypeIdentifier id = jigTypeHeader.id();
 
         Stream<TypeRelationship> typeRelationshipStream = headerTypeRelationshipStream(jigTypeHeader, id);

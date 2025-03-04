@@ -28,7 +28,8 @@ public class JigTypeRelationshipCreateTest {
 
     @Test
     void simpleClassTest() {
-        TypeRelationships sut = TestSupport.buildJigType(SimpleClass.class).typeRelationships();
+        JigType jigType = TestSupport.buildJigType(SimpleClass.class);
+        TypeRelationships sut = TypeRelationships.from(jigType);
 
         assertEquals(1, sut.size());
         assertEquals(
@@ -40,7 +41,8 @@ public class JigTypeRelationshipCreateTest {
 
     @Test
     void complexClassTest() {
-        TypeRelationships sut = TestSupport.buildJigType(ComplexClass.class).typeRelationships();
+        JigType jigType = TestSupport.buildJigType(ComplexClass.class);
+        TypeRelationships sut = TypeRelationships.from(jigType);
 
         assertEquals(5, sut.size());
         Comparator<TypeRelationship> comparing = Comparator.comparing(TypeRelationship::to);

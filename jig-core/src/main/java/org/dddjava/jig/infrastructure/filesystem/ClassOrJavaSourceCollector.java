@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
-import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +38,7 @@ public class ClassOrJavaSourceCollector implements SourceCollector {
                 .map(path -> {
                     try {
                         byte[] bytes = Files.readAllBytes(path);
-                        // TODO このクラス名の用途がMyBatisでロードするためだけなのでほとんどのクラスで意味がない。不要にしたい。こんなところでASM使いたくないし。
-                        ClassReader classReader = new ClassReader(bytes);
-                        String className = classReader.getClassName().replace('/', '.');
-                        return new ClassSource(bytes, className);
+                        return new ClassSource(bytes);
                     } catch (IOException e) {
                         // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
                         logger.warn("skip class source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage(), e);

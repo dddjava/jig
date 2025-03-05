@@ -6,26 +6,19 @@ package org.dddjava.jig.domain.model.sources.classsources;
 public class ClassSource {
 
     byte[] value;
-    String className;
 
-    public ClassSource(byte[] value, String className) {
+    public ClassSource(byte[] value) {
         this.value = value;
-        this.className = className;
     }
 
     public byte[] value() {
         return value;
     }
 
-    public String className() {
-        return className;
-    }
-
     @Override
     public String toString() {
         return "ClassSource{" +
                 "value(byte[] length)=" + value.length +
-                ", className='" + className + '\'' +
                 '}';
     }
 }

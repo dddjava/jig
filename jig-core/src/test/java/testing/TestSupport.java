@@ -67,10 +67,10 @@ public class TestSupport {
         }
     }
 
-    private static ClassSource newClassSource(Path path, String className) {
+    private static ClassSource newClassSource(Path path) {
         try {
             byte[] bytes = Files.readAllBytes(path);
-            return new ClassSource(bytes, className);
+            return new ClassSource(bytes);
         } catch (IOException e) {
             throw new AssertionError(e);
         }
@@ -82,7 +82,7 @@ public class TestSupport {
         URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
         try {
             Path path = Paths.get(url.toURI());
-            return newClassSource(path, className);
+            return newClassSource(path);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

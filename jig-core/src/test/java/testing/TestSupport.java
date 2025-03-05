@@ -6,13 +6,13 @@ import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeFactory;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
+import org.dddjava.jig.infrastructure.javaproductreader.JigTypeFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

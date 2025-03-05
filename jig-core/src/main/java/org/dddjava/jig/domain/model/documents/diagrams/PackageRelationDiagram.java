@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependencies;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
@@ -87,7 +86,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         List<PackageRelation> filteredRelations = jigDocumentContext.diagramOption().transitiveReduction()
-                ? Edges.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::new)
+                ? PackageRelations.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::new)
                 : relationList;
         for (PackageRelation packageRelation : filteredRelations) {
             if (packageMutualDependencies.notContains(packageRelation)) {

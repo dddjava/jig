@@ -67,24 +67,15 @@ public class TestSupport {
         }
     }
 
-    private static ClassSource newClassSource(Path path) {
-        try {
-            byte[] bytes = Files.readAllBytes(path);
-            return new ClassSource(bytes);
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-    }
-
     public static ClassSource getClassSource(Class<?> clz) {
         var className = clz.getName();
         String resourcePath = className.replace('.', '/') + ".class";
         URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
         try {
             Path path = Paths.get(url.toURI());
-            return newClassSource(path);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            return new ClassSource(Files.readAllBytes(path));
+        } catch (URISyntaxException | IOException e) {
+            throw new AssertionError(e);
         }
     }
 

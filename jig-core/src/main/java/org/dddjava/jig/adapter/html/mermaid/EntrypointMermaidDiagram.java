@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes contextJigTypes) {
 
     public String textFor(JigType jigType) {
-        return entrypoints().list().stream()
+        return entrypoints().groups().stream()
                 .filter(entrypointGroup -> entrypointGroup.jigType() == jigType)
                 .findAny()
                 .map(entrypointGroup -> mermaid(entrypointGroup, entrypoints().methodRelations(), contextJigTypes))

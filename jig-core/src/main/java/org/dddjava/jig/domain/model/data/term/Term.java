@@ -31,7 +31,7 @@ public record Term(TermIdentifier identifier,
      *
      * 前方一致していれば関連していると見做す
      */
-    public boolean relatesTo(String otherIdentifier) {
-        return identifier().asText().startsWith(otherIdentifier);
+    public boolean relatesTo(TermIdentifier otherIdentifier) {
+        return identifier().asText().startsWith(otherIdentifier.asText());
     }
 }

@@ -16,11 +16,18 @@ import java.util.Collection;
 public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
 
     public static JigTypeGlossary from(Glossary glossary, TypeIdentifier typeIdentifier) {
-        return new JigTypeGlossary(glossary.typeTermOf(typeIdentifier),
-                glossary.stream()
-                        .filter(term -> term.termKind() == TermKind.メソッド || term.termKind() == TermKind.フィールド)
-                        .filter(term -> term.relatesTo(typeIdentifier.fullQualifiedName()))
-                        .toList());
+        TermIdentifier termIdentifier = new TermIdentifier(typeIdentifier.fullQualifiedName());
+        Collection<Term> terms = glossary.collect(termIdentifier);
+
+        Term typeTerm = terms.stream()
+                .filter(term -> term.termKind() == TermKind.クラス)
+                // termsにはネストクラスも含まれるため、完全一致に絞り込む
+                .filter(term -> term.identifier().equals(termIdentifier))
+                .findAny()
+                // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
+                .orElseGet(() -> Term.simple(termIdentifier, typeIdentifier.asSimpleName(), TermKind.クラス));
+
+        return new JigTypeGlossary(typeTerm, terms);
     }
 
     public boolean markedCore() {

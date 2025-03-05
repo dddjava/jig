@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.information.relation.graph.Edge;
+import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -84,6 +86,12 @@ public class TypeRelationships {
         // アノテーション（アノテーション引数は未対応）
         return jigTypeReference.stream()
                 .map(annoRef -> new TypeRelationship(id, annoRef.id(), TypeRelationKind.使用アノテーション));
+    }
+
+    public static Edges<TypeIdentifier> fromClassRelations(List<TypeRelationship> relations) {
+        return new Edges<>(relations.stream()
+                .map(relation -> new Edge<>(relation.from(), relation.to()))
+                .toList());
     }
 
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {

@@ -1,8 +1,5 @@
 package org.dddjava.jig.domain.model.information.relation.graph;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
-
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -21,12 +18,6 @@ public class Edges<T> {
 
     public Edges(Collection<Edge<T>> edges) {
         this.edges = edges;
-    }
-
-    public static Edges<TypeIdentifier> fromClassRelations(List<TypeRelationship> relations) {
-        return new Edges<>(relations.stream()
-                .map(relation -> new Edge<>(relation.from(), relation.to()))
-                .toList());
     }
 
     /**

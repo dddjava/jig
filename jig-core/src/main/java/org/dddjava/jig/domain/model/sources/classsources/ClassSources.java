@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.sources.classsources;
 import java.util.Collection;
 
 /**
- * バイナリソース一覧
+ * classファイル一式
  */
 public record ClassSources(Collection<ClassSource> values) {
 

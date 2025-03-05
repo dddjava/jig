@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
 /**
- * classソース
+ * classファイルの中身
  */
 public record ClassSource(byte[] bytes) {
 

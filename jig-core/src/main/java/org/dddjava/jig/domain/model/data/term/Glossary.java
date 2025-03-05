@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.term;
 
-import org.dddjava.jig.adapter.excel.ReportItem;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;
@@ -23,16 +22,6 @@ public class Glossary {
         return terms.stream()
                 .sorted(Comparator.comparing(Term::title).thenComparing(term -> term.identifier().asText()))
                 .collect(Collectors.toList());
-    }
-
-    public static List<ReportItem<Term>> reporter() {
-        return List.of(
-                ReportItem.ofString("用語（英名）", term -> term.identifier().simpleText()),
-                ReportItem.ofString("用語", term -> term.title()),
-                ReportItem.ofString("説明", term -> term.description()),
-                ReportItem.ofString("種類", term -> term.termKind().name()),
-                ReportItem.ofString("識別子", term -> term.identifier().asText())
-        );
     }
 
     public Term typeTermOf(TypeIdentifier typeIdentifier) {

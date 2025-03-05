@@ -4,15 +4,13 @@ import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
 import org.dddjava.jig.adapter.diagram.DiagramAdapter;
 import org.dddjava.jig.adapter.diagram.GraphvizDiagramWriter;
+import org.dddjava.jig.adapter.excel.GlossaryAdapter;
 import org.dddjava.jig.adapter.excel.ListAdapter;
-import org.dddjava.jig.adapter.excel.ReportBook;
-import org.dddjava.jig.adapter.excel.ReportSheet;
 import org.dddjava.jig.adapter.html.IndexView;
 import org.dddjava.jig.adapter.html.SummaryAdapter;
 import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.adapter.html.ThymeleafSummaryWriter;
 import org.dddjava.jig.adapter.html.dialect.JigDialect;
-import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -115,17 +113,10 @@ public class JigDocumentGenerator {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
-                // テーブル
-                case TermTable -> {
-                    var terms = jigService.glossary(jigRepository);
-                    yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
-                }
-                // 一覧
-                case TermList -> {
-                    Glossary glossary = jigService.glossary(jigRepository);
-                    var modelReports = new ReportBook(new ReportSheet<>("TERM", Glossary.reporter(), glossary.list()));
-                    yield modelReports.writeXlsx(jigDocument, outputDirectory);
-                }
+                case TermTable -> new TableView(jigDocument, thymeleafTemplateEngine)
+                        .write(outputDirectory, jigService.glossary(jigRepository));
+                case TermList ->
+                        GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
                      PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                      ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,

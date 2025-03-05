@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.information.types.JigType;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -12,9 +12,9 @@ import java.util.Optional;
  * - SpringMVCのControllerのRequestMapping
  * - SpringRabbitのRabbitListener
  */
-public record EntrypointGroup(JigType jigType, List<EntrypointMethod> entrypointMethod) {
+public record EntrypointGroup(JigType jigType, Collection<EntrypointMethod> entrypointMethods) {
     public EntrypointGroup {
-        if (entrypointMethod.isEmpty()) throw new IllegalArgumentException("entrypointMethod is empty");
+        if (entrypointMethods.isEmpty()) throw new IllegalArgumentException("entrypointMethods is empty");
     }
 
     static Optional<EntrypointGroup> from(EntrypointMethodDetector entrypointMethodDetector, JigType jigType) {

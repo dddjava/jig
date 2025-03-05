@@ -27,7 +27,7 @@ public record Entrypoints(List<EntrypointGroup> list, MethodRelations methodRela
 
     private Stream<EntrypointMethod> requetHandlerMethodStream() {
         return list.stream()
-                .flatMap(entrypointGroup -> entrypointGroup.entrypointMethod().stream())
+                .flatMap(entrypointGroup -> entrypointGroup.entrypointMethods().stream())
                 .filter(entrypointMethod -> entrypointMethod.entrypointType() == EntrypointType.HTTP_API);
     }
 

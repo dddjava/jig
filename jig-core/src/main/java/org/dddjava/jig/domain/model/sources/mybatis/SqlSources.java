@@ -19,7 +19,9 @@ public class SqlSources {
     }
 
     public static SqlSources from(Sources sources) {
-        List<ClassSource> mapperClassSource = sources.classSources().filterClassName(name -> name.endsWith("Mapper"));
+        List<ClassSource> mapperClassSource = sources.classSources().list().stream()
+                .filter(classSource -> classSource.className().endsWith("Mapper"))
+                .toList();
         return new SqlSources(sources.sourceBasePaths(), mapperClassSource);
     }
 

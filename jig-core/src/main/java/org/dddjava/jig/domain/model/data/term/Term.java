@@ -26,6 +26,11 @@ public record Term(TermIdentifier identifier,
         return title + delimiter + identifierSimpleText;
     }
 
+    /**
+     * 用語の関連をIDで判定する
+     *
+     * 前方一致していれば関連していると見做す
+     */
     public boolean relatesTo(String otherIdentifier) {
         return identifier().asText().startsWith(otherIdentifier);
     }

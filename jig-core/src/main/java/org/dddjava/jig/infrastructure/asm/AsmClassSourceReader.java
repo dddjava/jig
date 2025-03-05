@@ -25,7 +25,7 @@ public class AsmClassSourceReader {
         try {
             AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
 
-            ClassReader classReader = new ClassReader(classSource.value());
+            ClassReader classReader = new ClassReader(classSource.bytes());
             classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
 
             return Optional.of(asmClassVisitor.classDeclaration());

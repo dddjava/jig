@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

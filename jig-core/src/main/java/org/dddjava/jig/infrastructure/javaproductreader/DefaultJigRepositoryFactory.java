@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
+import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;

@@ -35,17 +35,15 @@ public class ClassOrJavaSourceCollector implements SourceCollector {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
                 .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
                 .flatMap(List::stream)
-                .map(path -> {
+                .flatMap(path -> {
                     try {
-                        byte[] bytes = Files.readAllBytes(path);
-                        return new ClassSource(bytes);
+                        return Stream.of(new ClassSource(Files.readAllBytes(path)));
                     } catch (IOException e) {
                         // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
                         logger.warn("skip class source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage(), e);
-                        return null;
+                        return Stream.empty();
                     }
                 })
-                .filter(classSource -> classSource != null)
                 .toList();
         return new ClassSources(classSourceList);
     }

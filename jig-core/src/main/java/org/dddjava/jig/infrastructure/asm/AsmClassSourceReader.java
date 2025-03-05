@@ -15,7 +15,7 @@ public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
     public Collection<ClassDeclaration> readClasses(ClassSources classSources) {
-        return classSources.list().stream()
+        return classSources.values().stream()
                 .map(classSource -> classDeclaration(classSource))
                 .flatMap(Optional::stream)
                 .toList();

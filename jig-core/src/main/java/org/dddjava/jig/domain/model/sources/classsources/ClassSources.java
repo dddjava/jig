@@ -1,14 +1,13 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * バイナリソース一覧
  */
-public record ClassSources(List<ClassSource> list) {
+public record ClassSources(Collection<ClassSource> values) {
 
     public boolean nothing() {
-        return list.isEmpty();
+        return values.isEmpty();
     }
-
 }

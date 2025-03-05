@@ -10,9 +10,10 @@ import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.data.rdbaccess.*;
-import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
-import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +38,17 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(MyBatisMyBatisStatementsReader.class);
 
     @Override
-    public MyBatisStatements readFrom(Sources sources) {
-        SqlSources sqlSources = SqlSources.from(sources);
-        // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わない
-        if (sqlSources.classNames().isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
+    public MyBatisStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, SourceBasePaths sourceBasePaths) {
+        Collection<String> classNames = jigTypeHeaders.stream()
+                .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributeData()
+                        .declaredAnnotation(TypeIdentifier.valueOf("org.apache.ibatis.annotations.Mapper")))
+                .map(JigTypeHeader::fqn)
+                .toList();
 
-        URL[] classLocationUrls = sqlSources.sourceBasePaths().classSourceBasePaths().stream()
+        // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わない
+        if (classNames.isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
+
+        URL[] classLocationUrls = sourceBasePaths.classSourceBasePaths().stream()
                 .map(path -> {
                     try {
                         return path.toUri().toURL();
@@ -56,7 +62,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
         try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
-            return extractSql(sqlSources, classLoader);
+            return extractSql(classNames, classLoader);
         } catch (IOException e) {
             logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
@@ -69,11 +75,11 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
         }
     }
 
-    private MyBatisStatements extractSql(SqlSources sqlSources, ClassLoader classLoader) {
+    private MyBatisStatements extractSql(Collection<String> classNames, ClassLoader classLoader) {
         SqlReadStatus sqlReadStatus = SqlReadStatus.成功;
 
         Configuration config = new Configuration();
-        for (String className : sqlSources.classNames()) {
+        for (String className : classNames) {
             try {
                 Class<?> mapperClass = classLoader.loadClass(className);
                 config.addMapper(mapperClass);

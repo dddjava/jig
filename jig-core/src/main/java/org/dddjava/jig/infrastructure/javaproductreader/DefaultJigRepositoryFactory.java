@@ -5,6 +5,7 @@ import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.term.Glossary;
+import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.*;
@@ -85,7 +86,10 @@ public class DefaultJigRepositoryFactory {
 
         // クラス名の解決や対象の選別にClassSourceModelを使用するようにしたいので、この位置。
         // 現状（すくなくとも2025.2.1時点まで）はClassSourceを作る際にASMを使用している。その時点でのASM使用をやめたい。
-        MyBatisStatements myBatisStatements = readSqlSource(sources);
+        Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
+                .map(ClassDeclaration::jigTypeHeader)
+                .toList();
+        MyBatisStatements myBatisStatements = readSqlSource(jigTypeHeaders, sources.sourceBasePaths());
         if (myBatisStatements.status().not正常())
             jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
@@ -113,7 +117,7 @@ public class DefaultJigRepositoryFactory {
     /**
      * ソースからSQLを読み取る
      */
-    public MyBatisStatements readSqlSource(Sources sources) {
-        return myBatisStatementsReader.readFrom(sources);
+    public MyBatisStatements readSqlSource(Collection<JigTypeHeader> jigTypeHeaders, SourceBasePaths sourceBasePaths) {
+        return myBatisStatementsReader.readFrom(jigTypeHeaders, sourceBasePaths);
     }
 }

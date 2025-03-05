@@ -8,12 +8,7 @@ import java.util.stream.Collectors;
 /**
  * 用語集
  */
-public class Glossary {
-    Collection<Term> terms;
-
-    public Glossary(Collection<Term> terms) {
-        this.terms = terms;
-    }
+public record Glossary(Collection<Term> terms) {
 
     public List<Term> list() {
         return terms.stream()

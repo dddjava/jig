@@ -23,7 +23,7 @@ public class JigTypes {
     private final Map<TypeIdentifier, JigType> map;
 
     public JigTypes(List<JigType> list) {
-        this.list = list.stream().sorted(Comparator.comparing(jigType1 -> jigType1.id())).toList();
+        this.list = list.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
         this.map = list.stream().collect(Collectors.toMap(
                 jigType -> jigType.id(),
                 Function.identity(),

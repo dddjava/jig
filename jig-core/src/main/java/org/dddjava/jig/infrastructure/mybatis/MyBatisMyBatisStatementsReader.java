@@ -12,7 +12,6 @@ import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.data.rdbaccess.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +21,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,17 +38,18 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(MyBatisMyBatisStatementsReader.class);
 
     @Override
-    public MyBatisStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, SourceBasePaths sourceBasePaths) {
+    public MyBatisStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
+        // Mapperアノテーションがついているクラスを対象にする
         Collection<String> classNames = jigTypeHeaders.stream()
                 .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributeData()
                         .declaredAnnotation(TypeIdentifier.valueOf("org.apache.ibatis.annotations.Mapper")))
                 .map(JigTypeHeader::fqn)
                 .toList();
 
-        // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わない
+        // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
         if (classNames.isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
 
-        URL[] classLocationUrls = sourceBasePaths.classSourceBasePaths().stream()
+        URL[] classLocationUrls = classPaths.stream()
                 .map(path -> {
                     try {
                         return path.toUri().toURL();

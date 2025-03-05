@@ -20,7 +20,9 @@ import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 
 public class DefaultJigRepositoryFactory {
 
@@ -84,14 +86,7 @@ public class DefaultJigRepositoryFactory {
         ClassSources classSources = sources.classSources();
         Collection<ClassDeclaration> classDeclarations = new AsmClassSourceReader().classSourceModel(classSources);
 
-        // クラス名の解決や対象の選別にClassSourceModelを使用するようにしたいので、この位置。
-        // 現状（すくなくとも2025.2.1時点まで）はClassSourceを作る際にASMを使用している。その時点でのASM使用をやめたい。
-        Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
-                .map(ClassDeclaration::jigTypeHeader)
-                .toList();
-        MyBatisStatements myBatisStatements = readSqlSource(jigTypeHeaders, sources.sourceBasePaths());
-        if (myBatisStatements.status().not正常())
-            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+        MyBatisStatements myBatisStatements = readMyBatisStatements(sources, classDeclarations);
 
         DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
         JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
@@ -114,10 +109,19 @@ public class DefaultJigRepositoryFactory {
         };
     }
 
-    /**
-     * ソースからSQLを読み取る
-     */
-    public MyBatisStatements readSqlSource(Collection<JigTypeHeader> jigTypeHeaders, SourceBasePaths sourceBasePaths) {
-        return myBatisStatementsReader.readFrom(jigTypeHeaders, sourceBasePaths);
+    private MyBatisStatements readMyBatisStatements(Sources sources, Collection<ClassDeclaration> classDeclarations) {
+        // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
+        Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
+                .map(ClassDeclaration::jigTypeHeader)
+                .toList();
+        // MyBatisがMapperXMLやインタフェースclassを探すパス
+        List<Path> classPaths = sources.sourceBasePaths().classSourceBasePaths();
+
+        MyBatisStatements myBatisStatements = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
+
+        if (myBatisStatements.status().not正常()) {
+            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+        }
+        return myBatisStatements;
     }
 }

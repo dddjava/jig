@@ -84,7 +84,7 @@ public class DefaultJigRepositoryFactory {
                 .orElseGet(JavaSourceModel::empty);
 
         ClassSources classSources = sources.classSources();
-        Collection<ClassDeclaration> classDeclarations = new AsmClassSourceReader().classSourceModel(classSources);
+        Collection<ClassDeclaration> classDeclarations = new AsmClassSourceReader().readClasses(classSources);
 
         MyBatisStatements myBatisStatements = readMyBatisStatements(sources, classDeclarations);
 

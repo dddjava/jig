@@ -14,7 +14,7 @@ import java.util.Optional;
 public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
-    public Collection<ClassDeclaration> classSourceModel(ClassSources classSources) {
+    public Collection<ClassDeclaration> readClasses(ClassSources classSources) {
         return classSources.list().stream()
                 .map(classSource -> classDeclaration(classSource))
                 .flatMap(Optional::stream)

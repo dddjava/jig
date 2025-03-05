@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 用語集
+ */
 public class Glossary {
     Collection<Term> terms;
 

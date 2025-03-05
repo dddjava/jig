@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.relation;
+package org.dddjava.jig.domain.model.information.relation.graph;
 
 import java.util.Collection;
 

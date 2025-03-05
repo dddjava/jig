@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
-import org.dddjava.jig.domain.model.information.relation.Edge;
-import org.dddjava.jig.domain.model.information.relation.Edges;
+import org.dddjava.jig.domain.model.information.relation.graph.Edge;
+import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.StringJoiner;

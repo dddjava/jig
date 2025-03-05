@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.annotation.Repository;
-import org.dddjava.jig.domain.model.data.unit.ClassDeclaration;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
+import org.dddjava.jig.infrastructure.javaproductreader.ClassDeclaration;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

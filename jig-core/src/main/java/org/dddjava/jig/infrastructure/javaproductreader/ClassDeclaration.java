@@ -1,7 +1,8 @@
-package org.dddjava.jig.domain.model.data.unit;
+package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
 
 import java.util.Collection;
 

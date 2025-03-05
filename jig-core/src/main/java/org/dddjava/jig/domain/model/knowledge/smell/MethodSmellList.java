@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public record MethodSmellList(Collection<MethodSmell> smells) {
 
     public static MethodSmellList from(JigTypes jigTypes) {
-        return new MethodSmellList(jigTypes.stream()
+        return new MethodSmellList(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.instanceJigMethodStream()
                         .flatMap(method -> MethodSmell.createMethodSmell(method, jigType).stream())
                 )

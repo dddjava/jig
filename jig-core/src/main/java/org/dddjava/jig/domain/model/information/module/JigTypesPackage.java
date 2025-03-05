@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toList;
 public record JigTypesPackage(PackageIdentifier packageIdentifier, List<JigType> jigTypes) {
 
     public static List<JigTypesPackage> from(JigTypes jigTypes) {
-        Map<PackageIdentifier, List<JigType>> map = jigTypes.stream()
+        Map<PackageIdentifier, List<JigType>> map = jigTypes.orderedStream()
                 .collect(Collectors.groupingBy(JigType::packageIdentifier));
         return map.entrySet().stream()
                 .map(entity -> new JigTypesPackage(entity.getKey(), entity.getValue()))

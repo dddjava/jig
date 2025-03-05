@@ -102,7 +102,7 @@ public class TestSupport {
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
-        return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).stream().findFirst().orElseThrow();
+        return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).orderedStream().findFirst().orElseThrow();
     }
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {

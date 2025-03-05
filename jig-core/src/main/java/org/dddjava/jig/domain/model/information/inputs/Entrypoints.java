@@ -4,18 +4,17 @@ import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public record Entrypoints(Collection<EntrypointGroup> groups, MethodRelations methodRelations) {
+public record Entrypoints(List<EntrypointGroup> groups, MethodRelations methodRelations) {
 
     public static Entrypoints from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
         return new Entrypoints(
-                jigTypes.stream()
+                jigTypes.orderedStream()
                         .flatMap(jigType -> EntrypointGroup.from(entrypointMethodDetector, jigType).stream())
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず

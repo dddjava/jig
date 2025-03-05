@@ -29,14 +29,14 @@ public class TypeRelationships {
     }
 
     public static TypeRelationships from(JigTypes jigTypes) {
-        return new TypeRelationships(jigTypes.stream()
+        return new TypeRelationships(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
                         .flatMap(usingType -> TypeRelationship.from(jigType.id(), usingType).stream()))
                 .toList());
     }
 
     public static TypeRelationships internalRelation(JigTypes jigTypes) {
-        return jigTypes.stream()
+        return jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
                         .filter(typeIdentifier -> jigTypes.contains(typeIdentifier))
                         .flatMap(typeIdentifier -> TypeRelationship.from(jigType.id(), typeIdentifier).stream()))

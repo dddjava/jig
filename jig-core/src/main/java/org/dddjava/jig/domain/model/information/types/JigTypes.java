@@ -84,7 +84,7 @@ public class JigTypes {
         return list.isEmpty();
     }
 
-    public Stream<JigType> stream() {
+    public Stream<JigType> orderedStream() {
         return list.stream();
     }
 

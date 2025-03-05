@@ -28,7 +28,7 @@ public class MethodRelations implements CallerMethodsFactory {
     }
 
     public static MethodRelations from(JigTypes jigTypes) {
-        return jigTypes.stream()
+        return jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream()
                         .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く

@@ -22,7 +22,7 @@ public class Validations {
     }
 
     public static Validations from(JigTypes jigTypes) {
-        List<Validation> list = jigTypes.stream()
+        List<Validation> list = jigTypes.orderedStream()
                 .flatMap(Validations::validationAnnotatedMembers)
                 .collect(Collectors.toList());
         return new Validations(list);

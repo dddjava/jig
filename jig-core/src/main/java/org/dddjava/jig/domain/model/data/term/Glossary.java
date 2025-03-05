@@ -21,7 +21,7 @@ public class Glossary {
                 .collect(Collectors.toList());
     }
 
-    public Collection<Term> collect(TermIdentifier termIdentifier) {
+    public Collection<Term> findRelated(TermIdentifier termIdentifier) {
         return terms.stream()
                 .filter(term -> term.relatesTo(termIdentifier))
                 .toList();

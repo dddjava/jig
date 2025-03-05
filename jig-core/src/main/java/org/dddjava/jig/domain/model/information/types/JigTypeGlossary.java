@@ -17,7 +17,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
 
     public static JigTypeGlossary from(Glossary glossary, TypeIdentifier typeIdentifier) {
         TermIdentifier termIdentifier = new TermIdentifier(typeIdentifier.fullQualifiedName());
-        Collection<Term> terms = glossary.collect(termIdentifier);
+        Collection<Term> terms = glossary.findRelated(termIdentifier);
 
         Term typeTerm = terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)

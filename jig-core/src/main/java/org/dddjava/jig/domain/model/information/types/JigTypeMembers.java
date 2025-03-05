@@ -19,6 +19,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 型のメンバ一式　
+ * おもにフィールドおよびメソッド。コンストラクタやイニシャライザも入る。
+ */
 public record JigTypeMembers(Collection<JigFieldHeader> jigFieldHeaders,
                              Collection<JigMethod> jigMethods) {
 

@@ -4,9 +4,9 @@ import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
 
 import java.util.*;
 import java.util.stream.Collectors;

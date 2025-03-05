@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.relation.graph;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 
 import java.util.*;
 import java.util.function.BiFunction;

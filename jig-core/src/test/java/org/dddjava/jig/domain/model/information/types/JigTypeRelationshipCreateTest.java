@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationKind;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 

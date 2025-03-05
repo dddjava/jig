@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.graph.Edges;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationships;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
 import java.util.Collection;
 import java.util.Comparator;

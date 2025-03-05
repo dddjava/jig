@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualD
 import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.information.types.relations.TypeRelationship;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 
 import java.util.*;
 import java.util.stream.IntStream;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.types.relations;
+package org.dddjava.jig.domain.model.information.relation.types;
 
 public enum TypeRelationKind {
     継承クラス,

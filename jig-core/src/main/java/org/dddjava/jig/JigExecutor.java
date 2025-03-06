@@ -39,8 +39,7 @@ public class JigExecutor {
         // JARなどを読み取る場合やJavaファイルのみなどはSourceBasePathsの形も変わる想定。いつやるかは未定。
         // このフェーズで source -> data の変換を終え、以降は source は触らない。
         DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
-        jigRepositoryFactory.readPathSource(sourceBasePaths);
-        JigRepository jigRepository = jigRepositoryFactory.jigTypesRepository();
+        JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths);
 
         // JigRepositoryを参照してJIGドキュメントを生成する
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();

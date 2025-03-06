@@ -49,8 +49,7 @@ public class JigTestExtension implements ParameterResolver {
         if (parameterType == SourceBasePaths.class) return TestSupport.getRawSourceLocations();
         if (parameterType == JigRepository.class) {
             DefaultJigRepositoryFactory factory = DefaultJigRepositoryFactory.init(configuration);
-            factory.readPathSource(TestSupport.getRawSourceLocations());
-            return factory.jigTypesRepository();
+            return factory.createJigRepository(TestSupport.getRawSourceLocations());
         }
 
         for (Field field : Configuration.class.getDeclaredFields()) {

@@ -37,8 +37,6 @@ public class DefaultJigRepositoryFactory {
     private final JigEventRepository jigEventRepository;
     private final GlossaryRepository glossaryRepository;
 
-    private JigRepository jigRepository;
-
     public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         this.sourceCollector = sourceCollector;
         this.asmClassSourceReader = asmClassSourceReader;
@@ -58,21 +56,17 @@ public class DefaultJigRepositoryFactory {
         );
     }
 
-    public void readPathSource(SourceBasePaths sourceBasePaths) {
+    public JigRepository createJigRepository(SourceBasePaths sourceBasePaths) {
         Sources sources = sourceCollector.collectSources(sourceBasePaths);
         if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
         if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
         // errorが1つでもあったら読み取り失敗としてSourceを返さない
         if (jigEventRepository.hasError()) {
-            jigRepository = JigRepository.empty();
+            return JigRepository.empty();
         }
 
-        jigRepository = jigTypesRepository(sources);
-    }
-
-    public JigRepository jigTypesRepository() {
-        return jigRepository;
+        return jigTypesRepository(sources);
     }
 
     /**

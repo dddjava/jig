@@ -12,7 +12,6 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
-import org.dddjava.jig.infrastructure.javaproductreader.JavaSourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,7 @@ import java.util.Optional;
 /**
  * Javaparserで読み取る
  */
-public class JavaparserReader implements JavaSourceReader {
+public class JavaparserReader {
 
     private static final Logger logger = LoggerFactory.getLogger(JavaparserReader.class);
 
@@ -38,7 +37,6 @@ public class JavaparserReader implements JavaSourceReader {
         // configuration.setCharacterEncoding(properties.inputEncoding());
     }
 
-    @Override
     public JavaSourceModel parseJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
             // StaticJavaParserを変えるときはテストも変えること
@@ -57,7 +55,6 @@ public class JavaparserReader implements JavaSourceReader {
         }
     }
 
-    @Override
     public void loadPackageInfoJavaFile(Path path, GlossaryRepository glossaryRepository) {
         try {
             // StaticJavaParserを変えるときはテストも変えること

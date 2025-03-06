@@ -28,13 +28,13 @@ public class DefaultJigRepositoryFactory {
 
     private final SourceCollector sourceCollector;
     private final GlossaryRepository glossaryRepository;
-    private final JavaSourceReader javaSourceReader;
+    private final JavaparserReader javaSourceReader;
     private final MyBatisStatementsReader myBatisStatementsReader;
     private final JigEventRepository jigEventRepository;
 
     private JigRepository jigRepository;
 
-    public DefaultJigRepositoryFactory(GlossaryRepository glossaryRepository, JavaSourceReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
+    public DefaultJigRepositoryFactory(GlossaryRepository glossaryRepository, JavaparserReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
         this.glossaryRepository = glossaryRepository;
         this.javaSourceReader = javaSourceReader;
         this.myBatisStatementsReader = myBatisStatementsReader;

@@ -27,28 +27,32 @@ import java.util.List;
 public class DefaultJigRepositoryFactory {
 
     private final SourceCollector sourceCollector;
-    private final GlossaryRepository glossaryRepository;
-    private final JavaparserReader javaSourceReader;
+
+    private final AsmClassSourceReader asmClassSourceReader;
+    private final JavaparserReader javaparserReader;
     private final MyBatisStatementsReader myBatisStatementsReader;
+
     private final JigEventRepository jigEventRepository;
+    private final GlossaryRepository glossaryRepository;
 
     private JigRepository jigRepository;
 
-    public DefaultJigRepositoryFactory(GlossaryRepository glossaryRepository, JavaparserReader javaSourceReader, MyBatisStatementsReader myBatisStatementsReader, SourceCollector sourceCollector, JigEventRepository jigEventRepository) {
-        this.glossaryRepository = glossaryRepository;
-        this.javaSourceReader = javaSourceReader;
-        this.myBatisStatementsReader = myBatisStatementsReader;
+    public DefaultJigRepositoryFactory(SourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         this.sourceCollector = sourceCollector;
+        this.asmClassSourceReader = asmClassSourceReader;
+        this.javaparserReader = javaparserReader;
+        this.myBatisStatementsReader = myBatisStatementsReader;
+        this.glossaryRepository = glossaryRepository;
         this.jigEventRepository = jigEventRepository;
     }
 
     public static DefaultJigRepositoryFactory init(Configuration configuration) {
         return new DefaultJigRepositoryFactory(
-                configuration.glossaryRepository(),
+                new ClassOrJavaSourceCollector(configuration.jigEventRepository()),
+                new AsmClassSourceReader(),
                 new JavaparserReader(),
                 new MyBatisMyBatisStatementsReader(),
-                new ClassOrJavaSourceCollector(configuration.jigEventRepository()),
-                configuration.jigEventRepository()
+                configuration.jigEventRepository(), configuration.glossaryRepository()
         );
     }
 
@@ -76,15 +80,15 @@ public class DefaultJigRepositoryFactory {
         JavaSources javaSources = sources.javaSources();
 
         javaSources.packageInfoPaths().forEach(
-                path -> javaSourceReader.loadPackageInfoJavaFile(path, glossaryRepository));
+                path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository));
 
         JavaSourceModel javaSourceModel = javaSources.javaPaths().stream()
-                .map(path -> javaSourceReader.parseJavaFile(path, glossaryRepository))
+                .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                 .reduce(JavaSourceModel::merge)
                 .orElseGet(JavaSourceModel::empty);
 
         ClassSources classSources = sources.classSources();
-        Collection<ClassDeclaration> classDeclarations = new AsmClassSourceReader().readClasses(classSources);
+        Collection<ClassDeclaration> classDeclarations = asmClassSourceReader.readClasses(classSources);
 
         MyBatisStatements myBatisStatements = readMyBatisStatements(sources, classDeclarations);
 

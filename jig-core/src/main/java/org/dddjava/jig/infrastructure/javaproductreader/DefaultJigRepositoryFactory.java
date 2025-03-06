@@ -8,7 +8,10 @@ import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.sources.*;
+import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
+import org.dddjava.jig.domain.model.sources.ReadStatus;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
@@ -16,7 +19,6 @@ import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 
@@ -26,7 +28,7 @@ import java.util.List;
 
 public class DefaultJigRepositoryFactory {
 
-    private final SourceCollector sourceCollector;
+    private final ClassOrJavaSourceCollector sourceCollector;
 
     private final AsmClassSourceReader asmClassSourceReader;
     private final JavaparserReader javaparserReader;
@@ -37,7 +39,7 @@ public class DefaultJigRepositoryFactory {
 
     private JigRepository jigRepository;
 
-    public DefaultJigRepositoryFactory(SourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
+    public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         this.sourceCollector = sourceCollector;
         this.asmClassSourceReader = asmClassSourceReader;
         this.javaparserReader = javaparserReader;

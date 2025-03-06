@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
-import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceCollector;
+import org.dddjava.jig.infrastructure.javaproductreader.ClassOrJavaSourceCollector;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

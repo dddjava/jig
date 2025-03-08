@@ -86,7 +86,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         List<PackageRelation> filteredRelations = jigDocumentContext.diagramOption().transitiveReduction()
-                ? PackageRelations.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::new)
+                ? PackageRelations.fromPackageRelations(relationList).transitiveReduction().convert(PackageRelation::from)
                 : relationList;
         for (PackageRelation packageRelation : filteredRelations) {
             if (packageMutualDependencies.notContains(packageRelation)) {
@@ -181,7 +181,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());
             for (TypeRelationship typeRelationship : contextJigTypes.typeRelationships().list()) {
-                PackageRelation packageRelation = new PackageRelation(typeRelationship.from().packageIdentifier(), typeRelationship.to().packageIdentifier());
+                PackageRelation packageRelation = PackageRelation.from(typeRelationship.from().packageIdentifier(), typeRelationship.to().packageIdentifier());
                 if (packageMutualDependency.matches(packageRelation)) {
                     sj.add("- " + typeRelationship.formatText());
                 }

@@ -9,8 +9,8 @@ import org.dddjava.jig.domain.model.information.relation.graph.Edge;
  */
 public record PackageRelation(Edge<PackageIdentifier> edge) {
 
-    public PackageRelation(PackageIdentifier from, PackageIdentifier to) {
-        this(new Edge<>(from, to));
+    public static PackageRelation from(PackageIdentifier from, PackageIdentifier to) {
+        return new PackageRelation(new Edge<>(from, to));
     }
 
     public PackageIdentifier from() {
@@ -22,7 +22,7 @@ public record PackageRelation(Edge<PackageIdentifier> edge) {
     }
 
     public PackageRelation applyDepth(PackageDepth packageDepth) {
-        return new PackageRelation(from().applyDepth(packageDepth), to().applyDepth(packageDepth));
+        return from(from().applyDepth(packageDepth), to().applyDepth(packageDepth));
     }
 
     public boolean notSelfRelation() {

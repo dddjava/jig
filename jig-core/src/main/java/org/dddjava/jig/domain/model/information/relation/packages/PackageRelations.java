@@ -31,7 +31,7 @@ public class PackageRelations {
      */
     public static PackageRelations from(TypeRelationships typeRelationships) {
         return new PackageRelations(typeRelationships.list().stream()
-                .map(classRelation -> new PackageRelation(
+                .map(classRelation -> PackageRelation.from(
                         classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
                 .toList());
     }

@@ -39,7 +39,7 @@ public class ArchitectureRelations {
                 // 自己参照
                 continue;
             }
-            PackageRelation e = new PackageRelation(fromPackage, toPackage);
+            PackageRelation e = PackageRelation.from(fromPackage, toPackage);
             if (!list.contains(e)) {
                 list.add(e);
             }

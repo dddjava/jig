@@ -9,10 +9,10 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 public record PackageRelation(PackageIdentifier from, PackageIdentifier to) {
 
     public PackageRelation applyDepth(PackageDepth packageDepth) {
-        return new PackageRelation(from.applyDepth(packageDepth), to.applyDepth(packageDepth));
+        return new PackageRelation(from().applyDepth(packageDepth), to().applyDepth(packageDepth));
     }
 
     public boolean notSelfRelation() {
-        return !from.equals(to);
+        return !from().equals(to());
     }
 }

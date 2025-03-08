@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.relation.graph;
 
 import java.util.*;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -67,9 +67,9 @@ public class Edges<T> {
                 .anyMatch(neighbor -> dfs(graph, neighbor, target, visited, false));
     }
 
-    public <R> List<R> convert(BiFunction<T, T, R> converter) {
+    public <R> List<R> convert(Function<Edge<T>, R> converter) {
         return edges.stream()
-                .map(edge -> converter.apply(edge.from(), edge.to()))
+                .map(converter)
                 .toList();
     }
 

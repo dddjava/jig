@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 /**
  * パッケージ識別子
  */
-public class PackageIdentifier {
+public class PackageIdentifier implements Comparable<PackageIdentifier> {
 
     private final String value;
 
@@ -162,5 +162,10 @@ public class PackageIdentifier {
 
     public PackageIdentifier subpackageOf(String... packages) {
         return PackageIdentifier.valueOf(value + "." + String.join(".", packages));
+    }
+
+    @Override
+    public int compareTo(PackageIdentifier o) {
+        return value.compareTo(o.value);
     }
 }

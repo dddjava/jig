@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  * それぞれの関連をEdgeに単純化してまとめて操作するためのクラス。
  * @param <T> Nodeの型
  */
-public class Edges<T> {
+public class Edges<T extends Comparable<T>> {
     private final Collection<Edge<T>> edges;
 
     public static <T> Edge<T> edge(T from, T to) {
@@ -65,10 +65,6 @@ public class Edges<T> {
                 .filter(neighbor -> !visited.contains(neighbor))
                 // currentをneighborとして探索して、見つかれば到達可能と判定。
                 .anyMatch(neighbor -> dfs(graph, neighbor, target, visited, false));
-    }
-
-    public <R> List<R> convert(Function<Edge<T>, R> converter) {
-        return edges.stream().map(converter).toList();
     }
 
     /**
@@ -155,5 +151,9 @@ public class Edges<T> {
 
     public List<Edge<T>> list() {
         return edges.stream().sorted().toList();
+    }
+
+    public <R> List<R> convert(Function<Edge<T>, R> converter) {
+        return edges.stream().map(converter).sorted().toList();
     }
 }

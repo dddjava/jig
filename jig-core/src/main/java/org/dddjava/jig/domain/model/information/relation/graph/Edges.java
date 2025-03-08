@@ -68,9 +68,7 @@ public class Edges<T> {
     }
 
     public <R> List<R> convert(Function<Edge<T>, R> converter) {
-        return edges.stream()
-                .map(converter)
-                .toList();
+        return edges.stream().map(converter).toList();
     }
 
     /**

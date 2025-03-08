@@ -86,7 +86,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         List<PackageRelation> filteredRelations = jigDocumentContext.diagramOption().transitiveReduction()
-                ? PackageRelations.fromPackageRelations(relationList).transitiveReduction().listSortedAndConverted(PackageRelation::new)
+                ? PackageRelations.toEdges(relationList).transitiveReduction().listSortedAndConverted(PackageRelation::new)
                 : relationList;
         for (PackageRelation packageRelation : filteredRelations) {
             if (packageMutualDependencies.notContains(packageRelation)) {

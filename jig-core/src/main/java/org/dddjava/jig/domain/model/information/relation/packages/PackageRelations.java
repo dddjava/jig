@@ -35,7 +35,7 @@ public class PackageRelations {
                 .toList());
     }
 
-    public static Edges<PackageIdentifier> fromPackageRelations(Collection<PackageRelation> relations) {
+    public static Edges<PackageIdentifier> toEdges(Collection<PackageRelation> relations) {
         return new Edges<>(relations.stream().map(PackageRelation::edge).toList());
     }
 

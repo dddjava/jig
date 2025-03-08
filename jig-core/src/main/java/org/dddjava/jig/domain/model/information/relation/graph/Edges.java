@@ -149,11 +149,17 @@ public class Edges<T extends Comparable<T>> {
         }
     }
 
+    /**
+     * 含まれるEdgeをソートしてリストにする
+     */
     public List<Edge<T>> list() {
         return edges.stream().sorted().toList();
     }
 
+    /**
+     * 含まれるEdgeをソートしたのち、指定されたconverterで変換してリストにする
+     */
     public <R> List<R> convert(Function<Edge<T>, R> converter) {
-        return edges.stream().map(converter).sorted().toList();
+        return edges.stream().sorted().map(converter).toList();
     }
 }

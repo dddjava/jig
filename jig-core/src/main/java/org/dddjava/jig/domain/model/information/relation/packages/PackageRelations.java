@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.information.relation.packages;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
-import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
@@ -37,9 +36,7 @@ public class PackageRelations {
     }
 
     public static Edges<PackageIdentifier> fromPackageRelations(Collection<PackageRelation> relations) {
-        return new Edges<>(relations.stream()
-                .map(relation -> new Edge<>(relation.from(), relation.to()))
-                .toList());
+        return new Edges<>(relations.stream().map(PackageRelation::edge).toList());
     }
 
     /**

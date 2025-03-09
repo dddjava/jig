@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @param value
  */
-public record JigMethodIdentifier(String value) {
+public record JigMethodIdentifier(String value) implements Comparable<JigMethodIdentifier> {
 
     /**
      * 完全なIDを生成するファクトリ
@@ -57,5 +57,10 @@ public record JigMethodIdentifier(String value) {
         public List<TypeIdentifier> parameterTypeIdentifiers() {
             return parameterTypeNames.stream().map(TypeIdentifier::valueOf).collect(Collectors.toList());
         }
+    }
+
+    @Override
+    public int compareTo(JigMethodIdentifier o) {
+        return this.value.compareTo(o.value());
     }
 }

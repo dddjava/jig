@@ -54,7 +54,7 @@ class MethodRelationsTest {
     }
 
     private static MethodRelation relationOf(String from, String to) {
-        return new MethodRelation(
+        return MethodRelation.from(
                 JigMethodIdentifier.from(TypeIdentifier.valueOf("dummy"), from, List.of()),
                 JigMethodIdentifier.from(TypeIdentifier.valueOf("dummy"), to, List.of()));
     }

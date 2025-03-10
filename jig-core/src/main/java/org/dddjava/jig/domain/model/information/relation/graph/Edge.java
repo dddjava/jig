@@ -12,7 +12,7 @@ import java.util.Collection;
 public record Edge<NODE>(NODE from, NODE to) implements Comparable<Edge<NODE>> {
 
     /**
-     * 指定されたコレクション内に両端のノードが含まれているかを確認する。
+     * 両端のノードが指定されたコレクションに含まれているか確認する。
      */
     boolean bothEndpointsIn(Collection<NODE> nodes) {
         return nodes.contains(from) && nodes.contains(to);
@@ -21,7 +21,7 @@ public record Edge<NODE>(NODE from, NODE to) implements Comparable<Edge<NODE>> {
     /**
      * ソートのための他のEdgeとの比較処理。
      * NODEにインタフェースを持たせていないので、ノードの文字列表現で比較する。
-     * NODEがComparableの場合はそっちを採用してもいいかもしれない。
+     * NODEをComparableに制限してもいいかもしれない。
      */
     @Override
     public int compareTo(Edge<NODE> o) {

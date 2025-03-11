@@ -3,12 +3,15 @@ package org.dddjava.jig.application;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
+import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
@@ -19,6 +22,8 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
+
+import java.util.List;
 
 @Service
 public class JigService {
@@ -129,5 +134,12 @@ public class JigService {
             TypeRelationships typeRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
             return new JigTypesWithRelationships(coreDomainJigTypes, typeRelationships);
         });
+    }
+
+    public List<JigPackage> packages(JigRepository jigRepository) {
+        return glossary(jigRepository).list().stream()
+                .filter(term -> term.termKind() == TermKind.パッケージ)
+                .map(term -> new JigPackage(PackageIdentifier.valueOf(term.identifier().asText()), term))
+                .toList();
     }
 }

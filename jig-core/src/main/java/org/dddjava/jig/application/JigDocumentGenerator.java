@@ -6,10 +6,7 @@ import org.dddjava.jig.adapter.diagram.DiagramAdapter;
 import org.dddjava.jig.adapter.diagram.GraphvizDiagramWriter;
 import org.dddjava.jig.adapter.excel.GlossaryAdapter;
 import org.dddjava.jig.adapter.excel.ListAdapter;
-import org.dddjava.jig.adapter.html.IndexView;
-import org.dddjava.jig.adapter.html.SummaryAdapter;
-import org.dddjava.jig.adapter.html.TableView;
-import org.dddjava.jig.adapter.html.ThymeleafSummaryWriter;
+import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.html.dialect.JigDialect;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
@@ -117,6 +114,8 @@ public class JigDocumentGenerator {
                         .write(outputDirectory, jigService.glossary(jigRepository));
                 case TermList ->
                         GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);
+                case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
+                        .write(outputDirectory, jigService.packages(jigRepository));
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
                      PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                      ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,

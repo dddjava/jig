@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head th:replace="~{fragment-base::head(${title})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>用語集</title>
+    <style></style>
+</head>
+<body class="package-list">
+<header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
+<main>
+    <details class="controls" open>
+        <summary>⚙️ 表示設定</summary>
+    </details>
+
+    <table>
+        <thead>
+        <tr>
+            <th>完全修飾名</th>
+            <th>名称</th>
+            <th>詳細</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${packages}">
+            <td th:text="item.fqn()">com.example</td>
+            <td th:text="item.label()"></td>
+            <td th:text="item.term().description()" class="markdown">## アプリケーションのベースパッケージです。
+- システム全体で利用される基本的な構成要素を含みます。
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<th:block th:replace="~{fragment-base::scripts}">
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
+</th:block>
+</body>
+</html>

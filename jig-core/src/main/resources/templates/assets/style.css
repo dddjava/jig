@@ -278,3 +278,19 @@ label {
 .glossary .term dl dd {
     margin: 0;
 }
+
+/* テーブル全体のスタイル */
+.package-list table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 16px;
+    table-layout: fixed; /* 列幅を固定して可読性を確保 */
+}
+.package-list td {
+    text-align: left;
+    vertical-align: top;
+}
+.package-list tr:nth-child(even) {
+    background-color: #f9f9f9;
+}

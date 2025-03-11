@@ -32,6 +32,9 @@ public enum JigDocument {
     PackageRelationDiagram(
             JigDocumentLabel.of("パッケージ関連図", "PackageRelationDiagram"),
             "package-relation"),
+    PackageSummary(
+            JigDocumentLabel.of("パッケージ概要", "PackageSummary"),
+            "package"),
 
     /**
      * ビジネスルール関連図

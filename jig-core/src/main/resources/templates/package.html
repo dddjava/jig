@@ -21,14 +21,14 @@
         <tr>
             <th>完全修飾名</th>
             <th>名称</th>
-            <th class="description">詳細</th>
+            <th class="description hidden">詳細</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="item : ${packages}">
             <td th:text="${item.fqn()}">com.example</td>
             <td th:text="${item.label()}"></td>
-            <td th:text="${item.term().description()}" class="description markdown">## アプリケーションのベースパッケージです。
+            <td th:text="${item.term().description()}" class="description hidden markdown">## アプリケーションのベースパッケージです。
 - システム全体で利用される基本的な構成要素を含みます。
             </td>
         </tr>

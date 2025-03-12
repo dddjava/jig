@@ -23,6 +23,7 @@ import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -137,9 +138,10 @@ public class JigService {
     }
 
     public List<JigPackage> packages(JigRepository jigRepository) {
-        return glossary(jigRepository).list().stream()
+        return glossary(jigRepository).terms().stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
                 .map(term -> new JigPackage(PackageIdentifier.valueOf(term.identifier().asText()), term))
+                .sorted(Comparator.comparing(JigPackage::fqn))
                 .toList();
     }
 }

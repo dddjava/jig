@@ -47,7 +47,7 @@ public class HandleResult {
                  EntrypointSummary,
                  EnumSummary,
                  TermList,
-                 TermTable,
+                 Glossary,
                  PackageSummary -> false;
         };
     }

@@ -110,7 +110,7 @@ public class JigDocumentGenerator {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
-                case TermTable -> new TableView(jigDocument, thymeleafTemplateEngine)
+                case Glossary -> new TableView(jigDocument, thymeleafTemplateEngine)
                         .write(outputDirectory, jigService.glossary(jigRepository));
                 case TermList ->
                         GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);

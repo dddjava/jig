@@ -139,7 +139,7 @@ public enum JigDocument {
     TermList(
             JigDocumentLabel.of("用語集", "term"),
             "term"),
-    TermTable(
+    Glossary(
             JigDocumentLabel.of("用語集", "glossary"),
             "glossary");
 

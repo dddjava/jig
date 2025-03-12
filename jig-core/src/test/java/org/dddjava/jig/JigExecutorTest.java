@@ -8,8 +8,7 @@ import testing.JigServiceTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @JigServiceTest
 class JigExecutorTest {
@@ -25,8 +24,9 @@ class JigExecutorTest {
         // canonicalのすべてが処理されている
         assertTrue(actualDocuments.containsAll(JigDocument.canonical()), actualDocuments::toString);
 
-        for (HandleResult handleResult : actual) {
-            assertFalse(handleResult.failure(), () -> handleResult.toString());
-        }
+        // すべて失敗していない（success or skip）であること
+        assertAll(actual.stream().map(actualResult ->
+                () -> assertFalse(actualResult.failure(), () -> actualResult.toString())
+        ));
     }
 }

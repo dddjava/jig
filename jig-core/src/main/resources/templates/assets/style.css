@@ -294,3 +294,6 @@ label {
 .package-list tr:nth-child(even) {
     background-color: #f9f9f9;
 }
+.package-list .hidden {
+    display: none;
+}

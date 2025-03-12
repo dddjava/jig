@@ -158,6 +158,22 @@ function updateLetterNavigationVisibility() {
     });
 }
 
+function toggleColumnByClass(className) {
+    // クラス名に一致する要素を全部取得
+    const elements = document.querySelectorAll(`.${className}`);
+
+    // 各要素に対して「hidden」クラスをトグル（付けたり外したり）する
+    elements.forEach(el => {
+        console.log(el);
+        el.classList.toggle("hidden");
+    });
+}
+
+// ボタンクリックで切り替え
+document.getElementById("toggle-description-btn").addEventListener("click", () => {
+    toggleColumnByClass("description");
+});
+
 // ページ読み込み時のイベント
 document.addEventListener("DOMContentLoaded", function () {
     if (document.body.classList.contains("glossary")) {

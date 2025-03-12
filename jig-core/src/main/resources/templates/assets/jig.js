@@ -158,17 +158,18 @@ function updateLetterNavigationVisibility() {
     });
 }
 
-document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
-document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);
-document.getElementById("show-package").addEventListener("change", updateArticleVisibility);
-document.getElementById("show-class").addEventListener("change", updateArticleVisibility);
-document.getElementById("show-method").addEventListener("change", updateArticleVisibility);
-document.getElementById("show-field").addEventListener("change", updateArticleVisibility);
-document.getElementById("show-letter-navigation").addEventListener("change", updateLetterNavigationVisibility);
-
 // ページ読み込み時のイベント
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     if (document.body.classList.contains("glossary")) {
+        // リスナーの登録はそのページだけでやる
+        document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
+        document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);
+        document.getElementById("show-package").addEventListener("change", updateArticleVisibility);
+        document.getElementById("show-class").addEventListener("change", updateArticleVisibility);
+        document.getElementById("show-method").addEventListener("change", updateArticleVisibility);
+        document.getElementById("show-field").addEventListener("change", updateArticleVisibility);
+        document.getElementById("show-letter-navigation").addEventListener("change", updateLetterNavigationVisibility);
+
         updateLetterNavigationVisibility();
     }
 });

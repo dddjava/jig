@@ -15,10 +15,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JigExecutorTest {
 
     @Test
-    void name(Configuration configuration, SourceBasePaths SourceBasePaths) {
+    void name(Configuration configuration, SourceBasePaths sourceBasePaths) {
         var actual = JigExecutor.execute(
                 configuration,
-                SourceBasePaths
+                sourceBasePaths
         );
 
         List<JigDocument> actualDocuments = actual.stream().map(handleResult -> handleResult.jigDocument).toList();

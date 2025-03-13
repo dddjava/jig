@@ -11,10 +11,6 @@ import java.util.stream.Collectors;
  */
 public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
 
-    public static <T> Edge<T> edge(T from, T to) {
-        return new Edge<>(from, to);
-    }
-
     /**
      * 推移簡約
      * `[a->b, b->c, a->c]` を `[a->b, b->c]` だけにする。

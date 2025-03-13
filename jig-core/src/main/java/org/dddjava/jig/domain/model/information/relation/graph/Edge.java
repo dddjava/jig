@@ -11,6 +11,10 @@ import java.util.Collection;
  */
 public record Edge<NODE>(NODE from, NODE to) implements Comparable<Edge<NODE>> {
 
+    public static <T> Edge<T> of(T from, T to) {
+        return new Edge<>(from, to);
+    }
+
     /**
      * 両端のノードが指定されたコレクションに含まれているか確認する。
      */

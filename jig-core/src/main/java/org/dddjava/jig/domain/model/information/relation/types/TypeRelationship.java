@@ -9,7 +9,7 @@ import java.util.Optional;
  */
 public record TypeRelationship(TypeIdentifier from, TypeIdentifier to, TypeRelationKind typeRelationKind) {
 
-    public static Optional<TypeRelationship> of不明(TypeIdentifier from, TypeIdentifier to) {
+    static Optional<TypeRelationship> of不明(TypeIdentifier from, TypeIdentifier to) {
         // TODO ここでnormalizeしなくてよくなってるかもしれない
         TypeIdentifier normalizeFrom = from.normalize();
         TypeIdentifier normalizeTo = to.normalize();

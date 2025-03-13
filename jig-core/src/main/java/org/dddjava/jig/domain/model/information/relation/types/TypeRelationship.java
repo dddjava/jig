@@ -1,13 +1,14 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 
 import java.util.Optional;
 
 /**
  * 型の関連
  */
-public record TypeRelationship(TypeIdentifier from, TypeIdentifier to, TypeRelationKind typeRelationKind) {
+public record TypeRelationship(Edge<TypeIdentifier> edge, TypeRelationKind typeRelationKind) {
 
     static Optional<TypeRelationship> of不明(TypeIdentifier from, TypeIdentifier to) {
         // TODO ここでnormalizeしなくてよくなってるかもしれない
@@ -27,24 +28,32 @@ public record TypeRelationship(TypeIdentifier from, TypeIdentifier to, TypeRelat
     }
 
     static TypeRelationship of(TypeIdentifier from, TypeIdentifier to, TypeRelationKind typeRelationKind) {
-        return new TypeRelationship(from, to, typeRelationKind);
+        return new TypeRelationship(new Edge<>(from, to), typeRelationKind);
+    }
+
+    public TypeIdentifier from() {
+        return edge.from();
+    }
+
+    public TypeIdentifier to() {
+        return edge.to();
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {
-        return to.equals(typeIdentifier);
+        return to().equals(typeIdentifier);
     }
 
     public boolean sameRelation(TypeRelationship other) {
-        return from.equals(other.from) && to.equals(other.to);
+        return from().equals(other.from()) && to().equals(other.to());
     }
 
     public String dotText() {
-        return String.format("\"%s\" -> \"%s\";", from.fullQualifiedName(), to.fullQualifiedName());
+        return String.format("\"%s\" -> \"%s\";", from().fullQualifiedName(), to().fullQualifiedName());
     }
 
     @Override
     public String toString() {
-        return from.fullQualifiedName() + " -> " + to.fullQualifiedName();
+        return from().fullQualifiedName() + " -> " + to().fullQualifiedName();
     }
 
     public String formatText() {

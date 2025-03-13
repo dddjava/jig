@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
@@ -63,7 +64,7 @@ class PackageEdgeDiagramTest {
     }
 
     private static TypeRelationship classRelationFrom(String value, String value1) {
-        return new TypeRelationship(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1), TypeRelationKind.不明);
+        return new TypeRelationship(new Edge<>(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1)), TypeRelationKind.不明);
     }
 
     @MethodSource

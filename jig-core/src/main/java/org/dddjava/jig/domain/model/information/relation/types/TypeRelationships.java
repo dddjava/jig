@@ -87,8 +87,8 @@ public class TypeRelationships {
                 .map(annoRef -> TypeRelationship.of使用アノテーション(id, annoRef.id()));
     }
 
-    public static Edges<TypeIdentifier> toEdges(TypeRelationships relations) {
-        return new Edges<>(relations.list.stream()
+    public Edges<TypeIdentifier> toEdges() {
+        return new Edges<>(list.stream()
                 .map(TypeRelationship::edge)
                 .toList());
     }

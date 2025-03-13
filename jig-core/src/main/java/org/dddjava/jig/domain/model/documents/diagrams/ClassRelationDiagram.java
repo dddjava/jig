@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.graph.Edges;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.StringJoiner;
@@ -72,8 +71,8 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         }
 
         Edges<TypeIdentifier> edges = jigDiagramOption.transitiveReduction()
-                ? TypeRelationships.toEdges(internalClassRelations).transitiveReduction()
-                : TypeRelationships.toEdges(internalClassRelations);
+                ? internalClassRelations.toEdges().transitiveReduction()
+                : internalClassRelations.toEdges();
         for (Edge<TypeIdentifier> edge : edges.list()) {
             graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }

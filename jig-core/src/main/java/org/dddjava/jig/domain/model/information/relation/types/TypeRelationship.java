@@ -9,13 +9,25 @@ import java.util.Optional;
  */
 public record TypeRelationship(TypeIdentifier from, TypeIdentifier to, TypeRelationKind typeRelationKind) {
 
-    public static Optional<TypeRelationship> from(TypeIdentifier from, TypeIdentifier to) {
+    public static Optional<TypeRelationship> of不明(TypeIdentifier from, TypeIdentifier to) {
         // TODO ここでnormalizeしなくてよくなってるかもしれない
         TypeIdentifier normalizeFrom = from.normalize();
         TypeIdentifier normalizeTo = to.normalize();
         // 自己参照を除く
         if (normalizeFrom.equals(normalizeTo)) return Optional.empty();
-        return Optional.of(new TypeRelationship(normalizeFrom, normalizeTo, TypeRelationKind.不明));
+        return Optional.of(of(normalizeFrom, normalizeTo, TypeRelationKind.不明));
+    }
+
+    static TypeRelationship of型引数(TypeIdentifier from, TypeIdentifier to) {
+        return of(from, to, TypeRelationKind.型引数);
+    }
+
+    static TypeRelationship of使用アノテーション(TypeIdentifier from, TypeIdentifier to) {
+        return of(from, to, TypeRelationKind.使用アノテーション);
+    }
+
+    static TypeRelationship of(TypeIdentifier from, TypeIdentifier to, TypeRelationKind typeRelationKind) {
+        return new TypeRelationship(from, to, typeRelationKind);
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {

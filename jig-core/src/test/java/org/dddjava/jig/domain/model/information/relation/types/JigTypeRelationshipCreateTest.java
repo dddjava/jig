@@ -31,7 +31,7 @@ public class JigTypeRelationshipCreateTest {
 
         assertEquals(1, sut.size());
         assertEquals(
-                new TypeRelationship(
+                TypeRelationship.of(
                         TypeIdentifier.from(SimpleClass.class), TypeIdentifier.from(Object.class),
                         TypeRelationKind.継承クラス),
                 sut.list().get(0));
@@ -46,11 +46,11 @@ public class JigTypeRelationshipCreateTest {
         Comparator<TypeRelationship> comparing = Comparator.comparing(TypeRelationship::to);
         TypeIdentifier from = TypeIdentifier.from(ComplexClass.class);
         assertEquals(Stream.of(
-                        new TypeRelationship(from, TypeIdentifier.from(CharSequence.class), TypeRelationKind.型引数),
-                        new TypeRelationship(from, TypeIdentifier.from(ComplexSubClass.class), TypeRelationKind.継承クラス),
-                        new TypeRelationship(from, TypeIdentifier.from(String.class), TypeRelationKind.型引数),
-                        new TypeRelationship(from, TypeIdentifier.from(ComplexInterface.class), TypeRelationKind.実装インタフェース),
-                        new TypeRelationship(from, TypeIdentifier.from(Integer.class), TypeRelationKind.型引数)
+                        TypeRelationship.of(from, TypeIdentifier.from(CharSequence.class), TypeRelationKind.型引数),
+                        TypeRelationship.of(from, TypeIdentifier.from(ComplexSubClass.class), TypeRelationKind.継承クラス),
+                        TypeRelationship.of(from, TypeIdentifier.from(String.class), TypeRelationKind.型引数),
+                        TypeRelationship.of(from, TypeIdentifier.from(ComplexInterface.class), TypeRelationKind.実装インタフェース),
+                        TypeRelationship.of(from, TypeIdentifier.from(Integer.class), TypeRelationKind.型引数)
                 ).sorted(comparing).toList(),
                 sut.list().stream().sorted(comparing).toList());
     }

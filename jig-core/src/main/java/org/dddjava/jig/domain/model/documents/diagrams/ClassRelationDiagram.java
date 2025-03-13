@@ -72,8 +72,8 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         }
 
         Edges<TypeIdentifier> edges = jigDiagramOption.transitiveReduction()
-                ? TypeRelationships.toEdges(internalClassRelations.list()).transitiveReduction()
-                : TypeRelationships.toEdges(internalClassRelations.list());
+                ? TypeRelationships.toEdges(internalClassRelations).transitiveReduction()
+                : TypeRelationships.toEdges(internalClassRelations);
         for (Edge<TypeIdentifier> edge : edges.list()) {
             graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }

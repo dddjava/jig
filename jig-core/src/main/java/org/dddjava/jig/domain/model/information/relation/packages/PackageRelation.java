@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 public record PackageRelation(Edge<PackageIdentifier> edge) {
 
     public static PackageRelation from(PackageIdentifier from, PackageIdentifier to) {
-        return new PackageRelation(new Edge<>(from, to));
+        return new PackageRelation(Edge.of(from, to));
     }
 
     public PackageIdentifier from() {

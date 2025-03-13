@@ -28,7 +28,7 @@ public record TypeRelationship(Edge<TypeIdentifier> edge, TypeRelationKind typeR
     }
 
     static TypeRelationship of(TypeIdentifier from, TypeIdentifier to, TypeRelationKind typeRelationKind) {
-        return new TypeRelationship(new Edge<>(from, to), typeRelationKind);
+        return new TypeRelationship(Edge.of(from, to), typeRelationKind);
     }
 
     public TypeIdentifier from() {

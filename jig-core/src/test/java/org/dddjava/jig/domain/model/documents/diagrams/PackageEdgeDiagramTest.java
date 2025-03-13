@@ -64,7 +64,7 @@ class PackageEdgeDiagramTest {
     }
 
     private static TypeRelationship classRelationFrom(String value, String value1) {
-        return new TypeRelationship(new Edge<>(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1)), TypeRelationKind.不明);
+        return new TypeRelationship(Edge.of(TypeIdentifier.valueOf(value), TypeIdentifier.valueOf(value1)), TypeRelationKind.不明);
     }
 
     @MethodSource

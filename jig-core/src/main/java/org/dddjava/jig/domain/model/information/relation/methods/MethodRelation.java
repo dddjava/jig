@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 public record MethodRelation(Edge<JigMethodIdentifier> edge) {
 
     public static MethodRelation from(JigMethodIdentifier from, JigMethodIdentifier to) {
-        return new MethodRelation(new Edge<>(from, to));
+        return new MethodRelation(Edge.of(from, to));
     }
 
     public JigMethodIdentifier from() {

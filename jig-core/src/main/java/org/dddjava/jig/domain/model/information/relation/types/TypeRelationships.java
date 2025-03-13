@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -90,7 +89,7 @@ public class TypeRelationships {
 
     public static Edges<TypeIdentifier> toEdges(List<TypeRelationship> relations) {
         return new Edges<>(relations.stream()
-                .map(relation -> new Edge<>(relation.from(), relation.to()))
+                .map(TypeRelationship::edge)
                 .toList());
     }
 

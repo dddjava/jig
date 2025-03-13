@@ -9,15 +9,10 @@ import java.util.stream.Collectors;
  * それぞれの関連をEdgeに単純化してまとめて操作するためのクラス。
  * @param <T> Nodeの型
  */
-public class Edges<T extends Comparable<T>> {
-    private final Collection<Edge<T>> edges;
+public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
 
     public static <T> Edge<T> edge(T from, T to) {
         return new Edge<>(from, to);
-    }
-
-    public Edges(Collection<Edge<T>> edges) {
-        this.edges = edges;
     }
 
     /**

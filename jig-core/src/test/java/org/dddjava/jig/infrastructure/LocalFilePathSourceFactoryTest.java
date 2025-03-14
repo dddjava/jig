@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.application.JigEventRepository;
+import org.dddjava.jig.domain.model.sources.PathSource;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.javaproductreader.ClassOrJavaSourceCollector;
@@ -14,7 +14,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LocalFileSourcesFactoryTest {
+class LocalFilePathSourceFactoryTest {
 
     @Test
     void 読み取れないパスが指定されていてもエラーにならない() {
@@ -27,7 +27,7 @@ class LocalFileSourcesFactoryTest {
 
         var jigEventRepository = Mockito.spy(new JigEventRepository());
         ClassOrJavaSourceCollector sut = new ClassOrJavaSourceCollector(jigEventRepository);
-        Sources source = sut.collectSources(sourceBasePaths);
+        PathSource source = sut.collectSources(sourceBasePaths);
 
         assertTrue(source.emptyClassSources());
         assertTrue(source.emptyJavaSources());

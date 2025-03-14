@@ -1,11 +1,11 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.application.JigEventRepository;
+import org.dddjava.jig.domain.model.sources.PathSource;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
+import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class ClassOrJavaSourceCollector {
         this.jigEventRepository = jigEventRepository;
     }
 
-    ClassSources collectClassSources(SourceBasePaths sourceBasePaths) {
+    ClassFilePaths collectClassSources(SourceBasePaths sourceBasePaths) {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
                 .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
                 .flatMap(List::stream)
@@ -44,14 +44,14 @@ public class ClassOrJavaSourceCollector {
                     }
                 })
                 .toList();
-        return new ClassSources(classSourceList);
+        return new ClassFilePaths(classSourceList);
     }
 
-    JavaSources collectJavaSources(SourceBasePaths sourceBasePaths) {
+    JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
         return sourceBasePaths.javaSourceBasePaths().stream()
                 .map(basePath -> collectSourcePathList(basePath, ".java"))
                 .flatMap(List::stream)
-                .collect(collectingAndThen(toList(), JavaSources::new));
+                .collect(collectingAndThen(toList(), JavaFilePaths::new));
     }
 
     private List<Path> collectSourcePathList(Path basePath, String suffix) {
@@ -70,8 +70,8 @@ public class ClassOrJavaSourceCollector {
         }
     }
 
-    public Sources collectSources(SourceBasePaths sourceBasePaths) {
+    public PathSource collectSources(SourceBasePaths sourceBasePaths) {
         logger.info("read paths: binary={}, text={}", sourceBasePaths.classSourceBasePaths(), sourceBasePaths.javaSourceBasePaths());
-        return new Sources(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
+        return new PathSource(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }
 }

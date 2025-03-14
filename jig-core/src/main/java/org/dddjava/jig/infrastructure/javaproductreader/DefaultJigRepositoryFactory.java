@@ -9,12 +9,12 @@ import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
+import org.dddjava.jig.domain.model.sources.PathSource;
 import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
+import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
+import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
@@ -57,7 +57,7 @@ public class DefaultJigRepositoryFactory {
     }
 
     public JigRepository createJigRepository(SourceBasePaths sourceBasePaths) {
-        Sources sources = sourceCollector.collectSources(sourceBasePaths);
+        PathSource sources = sourceCollector.collectSources(sourceBasePaths);
         if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
         if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
@@ -72,19 +72,19 @@ public class DefaultJigRepositoryFactory {
     /**
      * プロジェクト情報を読み取る
      */
-    private JigRepository jigTypesRepository(Sources sources) {
-        JavaSources javaSources = sources.javaSources();
+    private JigRepository jigTypesRepository(PathSource sources) {
+        JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
-        javaSources.packageInfoPaths().forEach(
+        javaFilePaths.packageInfoPaths().forEach(
                 path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository));
 
-        JavaSourceModel javaSourceModel = javaSources.javaPaths().stream()
+        JavaSourceModel javaSourceModel = javaFilePaths.javaPaths().stream()
                 .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                 .reduce(JavaSourceModel::merge)
                 .orElseGet(JavaSourceModel::empty);
 
-        ClassSources classSources = sources.classSources();
-        Collection<ClassDeclaration> classDeclarations = asmClassSourceReader.readClasses(classSources);
+        ClassFilePaths classFilePaths = sources.classFilePaths();
+        Collection<ClassDeclaration> classDeclarations = asmClassSourceReader.readClasses(classFilePaths);
 
         MyBatisStatements myBatisStatements = readMyBatisStatements(sources, classDeclarations);
 
@@ -109,7 +109,7 @@ public class DefaultJigRepositoryFactory {
         };
     }
 
-    private MyBatisStatements readMyBatisStatements(Sources sources, Collection<ClassDeclaration> classDeclarations) {
+    private MyBatisStatements readMyBatisStatements(PathSource sources, Collection<ClassDeclaration> classDeclarations) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)

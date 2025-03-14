@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * テキストソース一覧
  */
-public record JavaSources(List<Path> paths) {
+public record JavaFilePaths(List<Path> paths) {
 
     public boolean nothing() {
         return paths.isEmpty();

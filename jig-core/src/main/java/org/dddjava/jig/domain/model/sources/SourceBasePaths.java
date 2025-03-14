@@ -6,22 +6,14 @@ import java.util.List;
 /**
  * ソースのパス
  */
-public class SourceBasePaths {
-
-    SourceBasePath classFileBasePath;
-    SourceBasePath javaFileBasePath;
-
-    public SourceBasePaths(SourceBasePath classFileBasePath, SourceBasePath javaFileBasePath) {
-        this.classFileBasePath = classFileBasePath;
-        this.javaFileBasePath = javaFileBasePath;
-    }
+public record SourceBasePaths(SourceBasePath classFileBasePath, SourceBasePath javaFileBasePath) {
 
     public List<Path> classSourceBasePaths() {
-        return classFileBasePath.paths();
+        return classFileBasePath.pathList();
     }
 
     public List<Path> javaSourceBasePaths() {
-        return javaFileBasePath.paths();
+        return javaFileBasePath.pathList();
     }
 
     public SourceBasePaths merge(SourceBasePaths other) {

@@ -71,7 +71,7 @@ public class ClassOrJavaSourceCollector {
     }
 
     public PathSource collectSources(SourceBasePaths sourceBasePaths) {
-        logger.info("read paths: binary={}, text={}", sourceBasePaths.classSourceBasePaths(), sourceBasePaths.javaSourceBasePaths());
+        logger.info("read paths: {}", sourceBasePaths);
         return new PathSource(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }
 }

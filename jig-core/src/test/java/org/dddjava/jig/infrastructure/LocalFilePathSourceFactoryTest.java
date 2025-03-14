@@ -2,9 +2,8 @@ package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.sources.PathSource;
+import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.javaproductreader.ClassOrJavaSourceCollector;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,8 +20,8 @@ class LocalFilePathSourceFactoryTest {
         var invalidClassPath = Path.of("invalid-binary-path");
         var invalidJavaPath = Path.of("invalid-text-path");
         SourceBasePaths sourceBasePaths = new SourceBasePaths(
-                new ClassSourceBasePaths(Collections.singletonList(invalidClassPath)),
-                new JavaSourceBasePaths(Collections.singletonList(invalidJavaPath))
+                new SourceBasePath(Collections.singletonList(invalidClassPath)),
+                new SourceBasePath(Collections.singletonList(invalidJavaPath))
         );
 
         var jigEventRepository = Mockito.spy(new JigEventRepository());

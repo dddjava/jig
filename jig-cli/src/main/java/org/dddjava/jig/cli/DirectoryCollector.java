@@ -1,8 +1,7 @@
 package org.dddjava.jig.cli;
 
+import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ public class DirectoryCollector implements FileVisitor<Path> {
     public SourceBasePaths toSourcePaths() {
         logger.debug("visitCount: {}", visitCounter.get());
         return new SourceBasePaths(
-                new ClassSourceBasePaths(binarySourcePaths),
-                new JavaSourceBasePaths(textSourcesPaths));
+                new SourceBasePath(binarySourcePaths),
+                new SourceBasePath(textSourcesPaths));
     }
 }

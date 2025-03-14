@@ -6,10 +6,9 @@ import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
+import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.javaproductreader.JigTypeFactory;
@@ -81,8 +80,8 @@ public class TestSupport {
 
     public static SourceBasePaths getRawSourceLocations() {
         return new SourceBasePaths(
-                new ClassSourceBasePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve("stub"))),
-                new JavaSourceBasePaths(Collections.singletonList(getTestSourceRootPath().resolve("stub")))
+                new SourceBasePath(Collections.singletonList(Paths.get(defaultPackageClassURI()).resolve("stub"))),
+                new SourceBasePath(Collections.singletonList(getTestSourceRootPath().resolve("stub")))
         );
     }
 

@@ -1,8 +1,7 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
@@ -75,8 +74,8 @@ public class GradleProject {
                 .map(GradleProject::new)
                 .map(gradleProject ->
                         new SourceBasePaths(
-                                new ClassSourceBasePaths(gradleProject.classPaths()),
-                                new JavaSourceBasePaths(gradleProject.sourcePaths())
+                                new SourceBasePath(gradleProject.classPaths()),
+                                new SourceBasePath(gradleProject.sourcePaths())
                         ))
                 .reduce(SourceBasePaths::merge)
                 .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));

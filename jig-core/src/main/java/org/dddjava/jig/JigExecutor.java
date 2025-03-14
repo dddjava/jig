@@ -3,9 +3,8 @@ package org.dddjava.jig;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
@@ -59,14 +58,14 @@ public class JigExecutor {
         var targetRootPath = jigOptions.workingDirectory().toAbsolutePath();
 
         var binarySourcePaths = switch (jigOptions.resolveBuildTool()) {
-            case MAVEN -> new ClassSourceBasePaths(List.of(
+            case MAVEN -> new SourceBasePath(List.of(
                     targetRootPath.resolve(Path.of("target", "classes"))));
-            case GRADLE -> new ClassSourceBasePaths(List.of(
+            case GRADLE -> new SourceBasePath(List.of(
                     targetRootPath.resolve(Path.of("build", "classes", "java", "main")),
                     targetRootPath.resolve(Path.of("build", "resources", "main"))
             ));
         };
-        JavaSourceBasePaths javaSourceBasePaths = new JavaSourceBasePaths(List.of(
+        SourceBasePath sourceBasePath = new SourceBasePath(List.of(
                 targetRootPath.resolve(Path.of("src", "main", "java")),
                 targetRootPath.resolve(Path.of("src", "main", "resources"))
         ));

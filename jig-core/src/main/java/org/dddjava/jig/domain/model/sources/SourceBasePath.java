@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.sources.classsources;
+package org.dddjava.jig.domain.model.sources;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * バイナリソースの場所
+ * コードのパス
  */
-public class ClassSourceBasePaths {
+public class SourceBasePath {
 
     List<Path> list;
 
-    public ClassSourceBasePaths(Collection<Path> collection) {
+    public SourceBasePath(Collection<Path> collection) {
         this.list = new ArrayList<>(collection);
     }
 
@@ -24,7 +24,7 @@ public class ClassSourceBasePaths {
                 .collect(Collectors.toList());
     }
 
-    public ClassSourceBasePaths merge(ClassSourceBasePaths other) {
-        return new ClassSourceBasePaths(Stream.concat(list.stream(), other.list.stream()).collect(Collectors.toList()));
+    public SourceBasePath merge(SourceBasePath other) {
+        return new SourceBasePath(Stream.concat(list.stream(), other.list.stream()).collect(Collectors.toList()));
     }
 }

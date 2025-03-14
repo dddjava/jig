@@ -8,23 +8,23 @@ import java.util.List;
  */
 public class SourceBasePaths {
 
-    SourceBasePath classSourceBasePaths;
-    SourceBasePath sourceBasePath;
+    SourceBasePath classFileBasePath;
+    SourceBasePath javaFileBasePath;
 
-    public SourceBasePaths(SourceBasePath classSourceBasePaths, SourceBasePath sourceBasePath) {
-        this.classSourceBasePaths = classSourceBasePaths;
-        this.sourceBasePath = sourceBasePath;
+    public SourceBasePaths(SourceBasePath classFileBasePath, SourceBasePath javaFileBasePath) {
+        this.classFileBasePath = classFileBasePath;
+        this.javaFileBasePath = javaFileBasePath;
     }
 
     public List<Path> classSourceBasePaths() {
-        return classSourceBasePaths.paths();
+        return classFileBasePath.paths();
     }
 
     public List<Path> javaSourceBasePaths() {
-        return sourceBasePath.paths();
+        return javaFileBasePath.paths();
     }
 
     public SourceBasePaths merge(SourceBasePaths other) {
-        return new SourceBasePaths(classSourceBasePaths.merge(other.classSourceBasePaths), sourceBasePath.merge(other.sourceBasePath));
+        return new SourceBasePaths(classFileBasePath.merge(other.classFileBasePath), javaFileBasePath.merge(other.javaFileBasePath));
     }
 }

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
+import org.dddjava.jig.domain.model.sources.classsources.ClassFile;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.javaproductreader.JigTypeFactory;
@@ -66,13 +66,13 @@ public class TestSupport {
         }
     }
 
-    public static ClassSource getClassSource(Class<?> clz) {
+    public static ClassFile getClassSource(Class<?> clz) {
         var className = clz.getName();
         String resourcePath = className.replace('.', '/') + ".class";
         URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
         try {
             Path path = Paths.get(url.toURI());
-            return new ClassSource(Files.readAllBytes(path));
+            return new ClassFile(Files.readAllBytes(path));
         } catch (URISyntaxException | IOException e) {
             throw new AssertionError(e);
         }

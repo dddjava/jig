@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.domain.model.sources.PathSource;
+import org.dddjava.jig.domain.model.sources.LocalSource;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
+import org.dddjava.jig.domain.model.sources.classsources.ClassFile;
+import org.dddjava.jig.domain.model.sources.classsources.ClassFiles;
 import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +30,13 @@ public class ClassOrJavaSourceCollector {
         this.jigEventRepository = jigEventRepository;
     }
 
-    ClassFilePaths collectClassSources(SourceBasePaths sourceBasePaths) {
+    ClassFiles collectClassSources(SourceBasePaths sourceBasePaths) {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
                 .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
                 .flatMap(List::stream)
                 .flatMap(path -> {
                     try {
-                        return Stream.of(new ClassSource(Files.readAllBytes(path)));
+                        return Stream.of(new ClassFile(Files.readAllBytes(path)));
                     } catch (IOException e) {
                         // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
                         logger.warn("skip class source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage(), e);
@@ -44,7 +44,7 @@ public class ClassOrJavaSourceCollector {
                     }
                 })
                 .toList();
-        return new ClassFilePaths(classSourceList);
+        return new ClassFiles(classSourceList);
     }
 
     JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
@@ -70,8 +70,8 @@ public class ClassOrJavaSourceCollector {
         }
     }
 
-    public PathSource collectSources(SourceBasePaths sourceBasePaths) {
+    public LocalSource collectSources(SourceBasePaths sourceBasePaths) {
         logger.info("read paths: {}", sourceBasePaths);
-        return new PathSource(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
+        return new LocalSource(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }
 }

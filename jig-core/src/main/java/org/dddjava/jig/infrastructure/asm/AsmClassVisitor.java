@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCal
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
+import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;

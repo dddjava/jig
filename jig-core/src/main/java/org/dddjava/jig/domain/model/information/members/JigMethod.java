@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
 
 import java.util.EnumSet;
 import java.util.stream.Stream;

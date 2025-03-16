@@ -6,11 +6,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.unit.JigMethodDeclaration;
-import org.dddjava.jig.domain.model.information.members.JigField;
-import org.dddjava.jig.domain.model.information.members.JigFields;
-import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.members.JigMethods;
+import org.dddjava.jig.domain.model.information.members.*;
 
 import java.util.Collection;
 import java.util.List;

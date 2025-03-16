@@ -4,12 +4,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
-public class JigField {
-    private final JigFieldHeader jigFieldHeader;
-
-    public JigField(JigFieldHeader jigFieldHeader) {
-        this.jigFieldHeader = jigFieldHeader;
-    }
+public record JigField(JigFieldHeader jigFieldHeader) {
 
     public static JigField from(JigFieldHeader jigFieldHeader) {
         return new JigField(jigFieldHeader);

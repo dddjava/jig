@@ -18,7 +18,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -72,7 +71,7 @@ public class TestSupport {
         URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
         try {
             Path path = Paths.get(url.toURI());
-            return new ClassFile(Files.readAllBytes(path));
+            return ClassFile.readFromPath(path);
         } catch (URISyntaxException | IOException e) {
             throw new AssertionError(e);
         }

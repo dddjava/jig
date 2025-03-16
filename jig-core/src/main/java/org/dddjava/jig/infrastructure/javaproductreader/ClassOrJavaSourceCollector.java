@@ -36,7 +36,7 @@ public class ClassOrJavaSourceCollector {
                 .flatMap(List::stream)
                 .flatMap(path -> {
                     try {
-                        return Stream.of(new ClassFile(Files.readAllBytes(path)));
+                        return Stream.of(ClassFile.readFromPath(path));
                     } catch (IOException e) {
                         // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
                         logger.warn("skip class source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage(), e);

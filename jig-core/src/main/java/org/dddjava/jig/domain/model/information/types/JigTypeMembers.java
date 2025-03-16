@@ -58,11 +58,10 @@ public record JigTypeMembers(Collection<JigField> jigFields,
                 .toList());
     }
 
-    public Optional<JigFieldHeader> findFieldByName(String name) {
+    public Optional<JigField> findFieldByName(String name) {
         return jigFields.stream()
                 .filter(jigField -> jigField.nameText().equals(name))
-                .findAny()
-                .map(JigField::jigFieldHeader);
+                .findAny();
     }
 
     public List<String> enumConstantNames() {

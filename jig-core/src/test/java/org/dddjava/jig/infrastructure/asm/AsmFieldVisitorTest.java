@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigField;
@@ -52,13 +51,11 @@ class AsmFieldVisitorTest {
         assertEquals(List.of("通常の列挙値1", "通常の列挙値2", "Deprecatedな列挙値"), enumConstantNames,
                 "enumの列挙として記述された以外のフィールドが含まれていないこと");
 
-        JigField normalConstant = members.findFieldByName("通常の列挙値1")
-                .map(JigField::from).orElseThrow();
+        JigField normalConstant = members.findFieldByName("通常の列挙値1").orElseThrow();
         assertEquals("通常の列挙値1", normalConstant.nameText());
         assertFalse(normalConstant.isDeprecated());
 
-        JigField deprecatedConstant = members.findFieldByName("Deprecatedな列挙値")
-                .map(JigField::from).orElseThrow();
+        JigField deprecatedConstant = members.findFieldByName("Deprecatedな列挙値").orElseThrow();
         assertEquals("Deprecatedな列挙値", deprecatedConstant.nameText());
         assertTrue(deprecatedConstant.isDeprecated());
     }
@@ -66,9 +63,9 @@ class AsmFieldVisitorTest {
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
         var members = TestSupport.buildJigType(MemberAnnotatedClass.class).jigTypeMembers();
-        JigFieldHeader field = members.findFieldByName("field").orElseThrow();
+        JigField field = members.findFieldByName("field").orElseThrow();
 
-        JigAnnotationReference sut = field.jigFieldAttribute().declarationAnnotations().stream().findFirst().orElseThrow();
+        JigAnnotationReference sut = field.jigFieldHeader().jigFieldAttribute().declarationAnnotations().stream().findFirst().orElseThrow();
 
         assertEquals(TypeIdentifier.from(VariableAnnotation.class), sut.id());
 

@@ -13,10 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * classやjavaファイルを対象とするSourceReader
@@ -48,10 +48,13 @@ public class ClassOrJavaSourceCollector {
     }
 
     JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
-        return sourceBasePaths.javaSourceBasePaths().stream()
+        enum JavaFileType {PackageInfoFile, JavaFile}
+
+        Map<JavaFileType, List<Path>> collected = sourceBasePaths.javaSourceBasePaths().stream()
                 .map(basePath -> collectSourcePathList(basePath, ".java"))
                 .flatMap(List::stream)
-                .collect(collectingAndThen(toList(), JavaFilePaths::new));
+                .collect(groupingBy(path -> path.getFileName().toString().equals("package-info.java") ? JavaFileType.PackageInfoFile : JavaFileType.JavaFile));
+        return new JavaFilePaths(collected.getOrDefault(JavaFileType.PackageInfoFile, List.of()), collected.getOrDefault(JavaFileType.JavaFile, List.of()));
     }
 
     private List<Path> collectSourcePathList(Path basePath, String suffix) {

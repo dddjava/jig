@@ -7,21 +7,17 @@ import java.util.List;
 /**
  * テキストソース一覧
  */
-public record JavaFilePaths(List<Path> paths) {
+public record JavaFilePaths(List<Path> packageInfos, List<Path> javaFiles) {
 
     public boolean nothing() {
-        return paths.isEmpty();
+        return packageInfos.isEmpty() && javaFiles.isEmpty();
     }
 
     public Collection<Path> packageInfoPaths() {
-        return paths.stream()
-                .filter(path -> path.endsWith("package-info.java"))
-                .toList();
+        return packageInfos;
     }
 
     public Collection<Path> javaPaths() {
-        return paths.stream()
-                .filter(path -> !path.endsWith("package-info.java"))
-                .toList();
+        return javaFiles;
     }
 }

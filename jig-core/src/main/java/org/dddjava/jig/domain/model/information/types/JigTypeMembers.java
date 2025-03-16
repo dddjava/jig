@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * 型のメンバ一式　
  * おもにフィールドおよびメソッド。コンストラクタやイニシャライザも入る。
  */
-public record JigTypeMembers(Collection<JigFieldHeader> jigFieldHeaders,
+public record JigTypeMembers(Collection<JigField> jigFields,
                              Collection<JigMethod> jigMethods) {
 
     public Collection<JigMethodDeclaration> jigMethodDeclarations() {
@@ -40,13 +40,14 @@ public record JigTypeMembers(Collection<JigFieldHeader> jigFieldHeaders,
     }
 
     private Stream<JigFieldHeader> jigFieldHeaderStream(JigMemberOwnership jigMemberOwnership) {
-        return jigFieldHeaders().stream()
+        return jigFields().stream()
+                .map(JigField::jigFieldHeader)
                 .filter(jigFieldHeader -> jigFieldHeader.ownership() == jigMemberOwnership);
     }
 
     public Set<TypeIdentifier> allTypeIdentifierSet() {
         return Stream.concat(
-                jigFieldHeaders.stream().flatMap(JigFieldHeader::allTypeIdentifierStream),
+                jigFields.stream().flatMap(jigFields -> jigFields.jigFieldHeader().allTypeIdentifierStream()),
                 jigMethods.stream().flatMap(jigMethod -> jigMethod.jigMethodDeclaration().associatedTypes().stream())
         ).collect(Collectors.toSet());
     }
@@ -58,9 +59,10 @@ public record JigTypeMembers(Collection<JigFieldHeader> jigFieldHeaders,
     }
 
     public Optional<JigFieldHeader> findFieldByName(String name) {
-        return jigFieldHeaders.stream()
-                .filter(jigFieldHeader -> jigFieldHeader.name().equals(name))
-                .findAny();
+        return jigFields.stream()
+                .filter(jigField -> jigField.nameText().equals(name))
+                .findAny()
+                .map(JigField::jigFieldHeader);
     }
 
     public List<String> enumConstantNames() {

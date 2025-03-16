@@ -25,4 +25,8 @@ public record JigField(JigFieldHeader jigFieldHeader) {
     public boolean isDeprecated() {
         return jigFieldHeader.isDeprecated();
     }
+
+    public String simpleNameWithGenerics() {
+        return jigFieldHeader().simpleNameWithGenerics();
+    }
 }

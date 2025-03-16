@@ -42,15 +42,15 @@ public class Validations {
                                     jigAnnotationReference.asText()
                             );
                         }));
-        Stream<Validation> fieldStream = jigType.jigTypeMembers().jigFieldHeaders().stream()
-                .flatMap(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().declarationAnnotations().stream()
+        Stream<Validation> fieldStream = jigType.jigTypeMembers().jigFields().stream()
+                .flatMap(jigField -> jigField.jigFieldHeader().jigFieldAttribute().declarationAnnotations().stream()
                         // TODO 正規表現の絞り込みをやめる
                         .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
                         .map(jigAnnotationReference -> {
                             return new Validation(
                                     jigType.id(),
-                                    jigFieldHeader.name(),
-                                    jigFieldHeader.jigTypeReference().id(),
+                                    jigField.nameText(),
+                                    jigField.jigTypeReference().id(),
                                     jigAnnotationReference.id(),
                                     jigAnnotationReference.asText()
                             );

@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -32,7 +32,9 @@ public class JigTypeFactory {
     }
 
     private static JigTypeMembers createJigMember(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
-        Collection<JigFieldHeader> jigFields = classDeclaration.jigFieldHeaders();
+        Collection<JigField> jigFields = classDeclaration.jigFieldHeaders().stream()
+                .map(jigFieldHeader -> JigField.from(jigFieldHeader))
+                .toList();
         Collection<JigMethod> jigMethods = classDeclaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> createJigMethod(jigMethodDeclaration, jigTypeGlossary))
                 .toList();

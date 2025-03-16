@@ -24,8 +24,8 @@ class AsmFieldVisitorTest {
     @Test
     void JigFieldHeaderでJavaで書いたまま取れる() {
         var members = TestSupport.buildJigType(MySutClass.class).jigTypeMembers();
-        List<String> actual = members.jigFieldHeaders().stream()
-                .map(JigFieldHeader::simpleNameWithGenerics)
+        List<String> actual = members.jigFields().stream()
+                .map(JigField::simpleNameWithGenerics)
                 .sorted().toList();
 
         assertEquals(List.of(

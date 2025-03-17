@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+/**
+ * フィールド　
+ */
 public record JigField(JigFieldHeader jigFieldHeader) {
 
     public static JigField from(JigFieldHeader jigFieldHeader) {

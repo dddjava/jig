@@ -42,7 +42,7 @@ public class Validations {
                                     jigAnnotationReference.asText()
                             );
                         }));
-        Stream<Validation> fieldStream = jigType.jigTypeMembers().jigFields().stream()
+        Stream<Validation> fieldStream = jigType.jigTypeMembers().allJigFieldStream()
                 .flatMap(jigField -> jigField.jigFieldHeader().jigFieldAttribute().declarationAnnotations().stream()
                         // TODO 正規表現の絞り込みをやめる
                         .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())

@@ -96,7 +96,7 @@ public class TestSupport {
 
     private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
         var members = buildJigType(sutClass).jigTypeMembers();
-        return members.jigMethods().stream()
+        return members.allJigMethodStream()
                 .map(JigMethod::jigMethodDeclaration)
                 .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
                 .findAny().orElseThrow();
@@ -104,7 +104,7 @@ public class TestSupport {
 
     public static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {
         JigTypeMembers members = buildJigType(sutClass).jigTypeMembers();
-        return members.jigMethods().stream()
+        return members.allJigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
                 .findFirst()
                 .orElseThrow();

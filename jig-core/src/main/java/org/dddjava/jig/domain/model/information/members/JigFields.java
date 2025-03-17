@@ -1,19 +1,10 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import java.util.List;
+import java.util.Collection;
 
-public class JigFields {
-    List<JigField> list;
-
-    public JigFields(List<JigField> list) {
-        this.list = list;
-    }
+public record JigFields(Collection<JigField> fields) {
 
     public boolean empty() {
-        return list.isEmpty();
-    }
-
-    public List<JigField> list() {
-        return list;
+        return fields.isEmpty();
     }
 }

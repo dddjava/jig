@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.information.members.JigFields;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -44,20 +45,21 @@ public enum JigTypeValueKind {
         if (matchFieldType(instanceJigFields, LocalDate.class)) {
             return 日付;
         }
-        if (matchFieldType(instanceJigFields, LocalDate.class, LocalDate.class)) {
+        if (isDateRange(instanceJigFields)) {
             return 期間;
         }
         return 不明;
     }
 
-    private static boolean matchFieldType(JigFields jigFields, Class<?>... classes) {
-        List<JigField> list = jigFields.list();
-        if (list.size() != classes.length) return false;
-        for (int i = 0; i < list.size(); i++) {
-            if (!list.get(i).typeIdentifier().equals(TypeIdentifier.from(classes[i]))) {
-                return false;
-            }
-        }
-        return true;
+    private static boolean matchFieldType(JigFields jigFields, Class<?> clz) {
+        Collection<JigField> fields = jigFields.fields();
+        if (fields.size() != 1) return false;
+        return fields.stream().anyMatch(field -> field.typeIdentifier().equals(TypeIdentifier.from(clz)));
+    }
+
+    private static boolean isDateRange(JigFields jigFields) {
+        Collection<JigField> fields = jigFields.fields();
+        if (fields.size() != 2) return false;
+        return fields.stream().anyMatch(field -> field.typeIdentifier().equals(TypeIdentifier.from(LocalDate.class)));
     }
 }

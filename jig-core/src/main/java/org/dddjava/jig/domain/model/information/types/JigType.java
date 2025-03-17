@@ -121,7 +121,7 @@ public class JigType {
     }
 
     public Stream<JigMethod> allJigMethodStream() {
-        return jigTypeMembers.jigMethods().stream();
+        return jigTypeMembers.allJigMethodStream();
     }
 
     public JigTypeMembers jigTypeMembers() {
@@ -129,7 +129,7 @@ public class JigType {
     }
 
     public JigFields instanceJigFields() {
-        return jigTypeMembers.instanceFields();
+        return new JigFields(jigTypeMembers.instanceFields());
     }
 
     public boolean hasInstanceField() {
@@ -137,7 +137,7 @@ public class JigType {
     }
 
     public JigMethods instanceJigMethods() {
-        return jigTypeMembers.instanceMethods();
+        return new JigMethods(jigTypeMembers.instanceMethods());
     }
 
     public Stream<JigMethod> instanceJigMethodStream() {
@@ -149,6 +149,6 @@ public class JigType {
     }
 
     public JigMethods staticJigMethods() {
-        return jigTypeMembers.staticMethods();
+        return new JigMethods(jigTypeMembers.staticMethods());
     }
 }

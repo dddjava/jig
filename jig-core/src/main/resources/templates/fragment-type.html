@@ -30,7 +30,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="field : ${item.instanceJigFields().list()}">
+            <tr th:each="field : ${item.instanceJigFields().fields()}">
                 <td th:text="${field.nameText()}" th:classappend="${field.isDeprecated()}? 'deprecated'">xxx</td>
                 <td th:utext="${#jig.fieldRawText(field)}">xxxx</td>
             </tr>

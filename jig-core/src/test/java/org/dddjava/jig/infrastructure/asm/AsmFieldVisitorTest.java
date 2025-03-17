@@ -23,7 +23,7 @@ class AsmFieldVisitorTest {
     @Test
     void JigFieldHeaderでJavaで書いたまま取れる() {
         var members = TestSupport.buildJigType(MySutClass.class).jigTypeMembers();
-        List<String> actual = members.jigFields().stream()
+        List<String> actual = members.instanceFields().stream()
                 .map(JigField::simpleNameWithGenerics)
                 .sorted().toList();
 

@@ -1,12 +1,10 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldFlag;
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.members.*;
+import org.dddjava.jig.domain.model.information.members.JigField;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,71 +17,55 @@ import java.util.stream.Stream;
  * 型のメンバ一式　
  * おもにフィールドおよびメソッド。コンストラクタやイニシャライザも入る。
  */
-public record JigTypeMembers(Collection<JigField> jigFields,
-                             Collection<JigMethod> jigMethods) {
+public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigField> instanceFields,
+                             Collection<JigMethod> initializers,
+                             Collection<JigMethod> staticMethods, Collection<JigMethod> instanceMethods) {
 
     public Collection<JigMethodDeclaration> jigMethodDeclarations() {
-        return jigMethods.stream().map(jigMethod -> jigMethod.jigMethodDeclaration()).toList();
+        return Stream.concat(staticMethods.stream(), instanceMethods.stream())
+                .map(jigMethod -> jigMethod.jigMethodDeclaration()).toList();
     }
 
     public String instanceFieldsSimpleText() {
-        return jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
-                .map(jigFieldHeader -> jigFieldHeader.simpleText())
+        return instanceFields.stream()
+                .map(jigField -> jigField.jigFieldHeader().simpleText())
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public String instanceFieldsSimpleTextWithGenerics() {
-        List<String> list = jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
-                .map(jigFieldHeader -> jigFieldHeader.jigTypeReference().simpleNameWithGenerics())
+        List<String> list = instanceFields.stream()
+                .map(jigField -> jigField.jigTypeReference().simpleNameWithGenerics())
                 .toList();
         return list.size() == 1 ? list.get(0) : list.stream().collect(Collectors.joining(", ", "[", "]"));
     }
 
-    private Stream<JigFieldHeader> jigFieldHeaderStream(JigMemberOwnership jigMemberOwnership) {
-        return jigFields().stream()
-                .map(JigField::jigFieldHeader)
-                .filter(jigFieldHeader -> jigFieldHeader.ownership() == jigMemberOwnership);
-    }
-
     public Set<TypeIdentifier> allTypeIdentifierSet() {
         return Stream.concat(
-                jigFields.stream().flatMap(jigFields -> jigFields.jigFieldHeader().allTypeIdentifierStream()),
-                jigMethods.stream().flatMap(jigMethod -> jigMethod.jigMethodDeclaration().associatedTypes().stream())
+                allJigFieldStream().flatMap(jigFields -> jigFields.jigFieldHeader().allTypeIdentifierStream()),
+                allJigMethodStream().flatMap(jigMethod -> jigMethod.jigMethodDeclaration().associatedTypes().stream())
         ).collect(Collectors.toSet());
     }
 
-    public JigFields instanceFields() {
-        return new JigFields(jigFieldHeaderStream(JigMemberOwnership.INSTANCE)
-                .map(jigFieldHeader -> JigField.from(jigFieldHeader))
-                .toList());
-    }
-
     public Optional<JigField> findFieldByName(String name) {
-        return jigFields.stream()
+        return allJigFieldStream()
                 .filter(jigField -> jigField.nameText().equals(name))
                 .findAny();
     }
 
     public List<String> enumConstantNames() {
-        return jigFieldHeaderStream(JigMemberOwnership.CLASS)
+        return staticFields.stream()
+                .map(JigField::jigFieldHeader)
                 .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))
                 // TODO enumの順でソートしないと狂う可能性がある
                 .map(jigFieldHeader -> jigFieldHeader.name())
                 .toList();
     }
 
-    public JigMethods instanceMethods() {
-        return new JigMethods(jigMethods.stream()
-                .filter(jigMethod -> {
-                    JigMethodHeader header = jigMethod.jigMethodDeclaration().header();
-                    return header.ownership() == JigMemberOwnership.INSTANCE
-                            // コンストラクタを除く
-                            && !header.jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER);
-                })
-                .toList());
+    public Stream<JigMethod> allJigMethodStream() {
+        return Stream.of(initializers, staticMethods, instanceMethods).flatMap(Collection::stream);
     }
 
-    public JigMethods staticMethods() {
-        return new JigMethods(jigMethods.stream().filter(jigMethod -> jigMethod.jigMethodDeclaration().header().ownership() == JigMemberOwnership.CLASS).toList());
+    public Stream<JigField> allJigFieldStream() {
+        return Stream.of(staticFields, instanceFields).flatMap(Collection::stream);
     }
 }

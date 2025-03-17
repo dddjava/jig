@@ -24,7 +24,7 @@ spring-context = { module = "org.springframework:spring-context", version.ref = 
 spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
-mockito = "org.mockito:mockito-core:5.16.0"
+mockito = "org.mockito:mockito-core:5.16.1"
 assertj = "org.assertj:assertj-core:3.27.3"
 
 [bundles]

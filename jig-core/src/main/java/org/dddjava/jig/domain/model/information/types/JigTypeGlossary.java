@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
@@ -50,5 +51,14 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
                 })
                 .findAny()
                 .orElseGet(() -> new Term(new TermIdentifier(jigMethodIdentifier.value()), jigMethodIdentifier.name(), "", TermKind.メソッド));
+    }
+
+    public Term fieldTerm(JigFieldIdentifier id) {
+        TermIdentifier termIdentifier = new TermIdentifier(id.value());
+        return memberTerms.stream()
+                .filter(term -> term.termKind() == TermKind.フィールド)
+                .filter(term -> term.identifier().equals(termIdentifier))
+                .findAny()
+                .orElseGet(() -> Term.simple(termIdentifier, id.name(), TermKind.フィールド));
     }
 }

@@ -1,16 +1,17 @@
 package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 /**
  * フィールド　
  */
-public record JigField(JigFieldHeader jigFieldHeader) {
+public record JigField(JigFieldHeader jigFieldHeader, Term term) {
 
-    public static JigField from(JigFieldHeader jigFieldHeader) {
-        return new JigField(jigFieldHeader);
+    public static JigField from(JigFieldHeader jigFieldHeader, Term term) {
+        return new JigField(jigFieldHeader, term);
     }
 
     public JigTypeReference jigTypeReference() {

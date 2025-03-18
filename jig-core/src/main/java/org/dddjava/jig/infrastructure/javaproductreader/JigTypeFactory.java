@@ -39,7 +39,7 @@ public class JigTypeFactory {
 
     private static JigTypeMembers createJigMember(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
         var fields = classDeclaration.jigFieldHeaders().stream()
-                .map(jigFieldHeader -> JigField.from(jigFieldHeader))
+                .map(jigFieldHeader -> JigField.from(jigFieldHeader, jigTypeGlossary.fieldTerm(jigFieldHeader.id())))
                 .collect(groupingBy(jigField -> jigField.jigFieldHeader().ownership()));
 
         enum MethodGrouping {

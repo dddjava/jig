@@ -11,12 +11,7 @@ import java.util.stream.Stream;
 /**
  * メソッド一覧
  */
-public class JigMethods {
-    Collection<JigMethod> list;
-
-    public JigMethods(Collection<JigMethod> list) {
-        this.list = list;
-    }
+public record JigMethods(Collection<JigMethod> methods) {
 
     /**
      * 注目に値するメソッド一覧
@@ -25,7 +20,7 @@ public class JigMethods {
      * 主に概要での出力に使用する。
      */
     public List<JigMethod> listRemarkable() {
-        return list.stream()
+        return methods.stream()
                 .filter(JigMethod::remarkable)
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
@@ -34,7 +29,7 @@ public class JigMethods {
     }
 
     public List<JigMethod> list() {
-        return list.stream()
+        return methods.stream()
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
                         .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
@@ -42,33 +37,33 @@ public class JigMethods {
     }
 
     public boolean empty() {
-        return list.isEmpty();
+        return methods.isEmpty();
     }
 
     public List<TypeIdentifier> listUsingTypes() {
-        return list.stream()
+        return methods.stream()
                 .flatMap(jigMethod -> jigMethod.usingTypes().list().stream())
                 .collect(Collectors.toList());
     }
 
     public JigMethods filterProgrammerDefined() {
-        return new JigMethods(list.stream()
+        return new JigMethods(methods.stream()
                 .filter(jigMethod -> jigMethod.isProgrammerDefined())
                 .collect(Collectors.toList()));
     }
 
     public JigMethods excludeNotNoteworthyObjectMethod() {
-        return new JigMethods(list.stream()
+        return new JigMethods(methods.stream()
                 .filter(jigMethod -> !jigMethod.isObjectMethod() || jigMethod.documented())
                 .collect(Collectors.toList()));
     }
 
     public Stream<JigMethod> stream() {
-        return list.stream();
+        return methods.stream();
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return list.stream()
+        return methods.stream()
                 .map(JigMethod::nameArgumentsReturnSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));

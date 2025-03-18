@@ -9,7 +9,7 @@ public record TermIdentifier(String value) {
         return value;
     }
 
-    public String simpleText() {
+    String simpleText() {
         int methodStart = value.indexOf('#');
         if (methodStart == -1) {
             int lastDot = value.lastIndexOf('.');

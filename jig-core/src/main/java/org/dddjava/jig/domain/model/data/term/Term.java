@@ -20,8 +20,12 @@ public record Term(TermIdentifier identifier,
         return new Term(termIdentifier, title, "", termKind);
     }
 
+    public String simpleText() {
+        return identifier.simpleText();
+    }
+
     public String titleAndSimpleName(String delimiter) {
-        String identifierSimpleText = identifier.simpleText();
+        String identifierSimpleText = simpleText();
         if (title.isEmpty() || title.equals(identifierSimpleText)) return identifierSimpleText;
         return title + delimiter + identifierSimpleText;
     }

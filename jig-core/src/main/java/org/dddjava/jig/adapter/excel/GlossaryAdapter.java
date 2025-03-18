@@ -11,7 +11,7 @@ public class GlossaryAdapter {
 
     private static List<ReportItem<Term>> reporter() {
         return List.of(
-                ReportItem.ofString("用語（英名）", term -> term.identifier().simpleText()),
+                ReportItem.ofString("用語（英名）", term -> term.simpleText()),
                 ReportItem.ofString("用語", term -> term.title()),
                 ReportItem.ofString("説明", term -> term.description()),
                 ReportItem.ofString("種類", term -> term.termKind().name()),

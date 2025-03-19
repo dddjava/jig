@@ -8,13 +8,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * パッケージ識別子一覧
  */
-public class PackageIdentifiers {
-
-    List<PackageIdentifier> list;
-
-    public PackageIdentifiers(List<PackageIdentifier> list) {
-        this.list = list;
-    }
+public record PackageIdentifiers(List<PackageIdentifier> list) {
 
     public PackageIdentifiers applyDepth(PackageDepth packageDepth) {
         List<PackageIdentifier> list = this.list.stream()
@@ -37,10 +31,6 @@ public class PackageIdentifiers {
 
     public boolean isEmpty() {
         return list.isEmpty();
-    }
-
-    public List<PackageIdentifier> list() {
-        return list;
     }
 
     public PackageIdentifiers parent() {

@@ -13,17 +13,10 @@ import java.util.stream.Stream;
 
 /**
  * パッケージの依存関係
+ *
+ * @param relations 重複・自己参照・順序に関わらず保持するコレクション
  */
-public class PackageRelations {
-
-    /**
-     * 重複・自己参照・順序に関わらず保持するコレクション
-     */
-    private final Collection<PackageRelation> relations;
-
-    public PackageRelations(Collection<PackageRelation> relations) {
-        this.relations = relations;
-    }
+public record PackageRelations(Collection<PackageRelation> relations) {
 
     /**
      * クラスの関連をパッケージの関連に丸める

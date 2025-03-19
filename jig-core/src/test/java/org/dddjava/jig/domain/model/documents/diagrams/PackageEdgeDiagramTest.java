@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,7 +87,7 @@ class PackageEdgeDiagramTest {
 
     @Test
     void PackageIdentifiersのapplyDepth検証() {
-        PackageIdentifiers sut = new PackageIdentifiers(List.of(
+        PackageIdentifiers sut = new PackageIdentifiers(Set.of(
                 PackageIdentifier.valueOf("a.a.a.a"),
                 PackageIdentifier.valueOf("a.a.b"),
                 PackageIdentifier.valueOf("a"),
@@ -94,18 +95,18 @@ class PackageEdgeDiagramTest {
                 PackageIdentifier.valueOf("a.b.c.d"),
                 PackageIdentifier.valueOf("x")
         ));
-        assertEquals(6, sut.list().size());
+        assertEquals(6, sut.identifiers().size());
         assertEquals(6, sut.maxDepth().value());
 
         PackageIdentifiers depth3 = sut.applyDepth(new PackageDepth(3));
-        assertEquals(5, depth3.list().size());
+        assertEquals(5, depth3.identifiers().size());
         assertEquals(3, depth3.maxDepth().value());
 
         PackageIdentifiers depth2 = sut.applyDepth(new PackageDepth(2));
-        assertEquals(4, depth2.list().size());
+        assertEquals(4, depth2.identifiers().size());
 
         PackageIdentifiers depth1 = sut.applyDepth(new PackageDepth(1));
-        assertEquals(2, depth1.list().size());
+        assertEquals(2, depth1.identifiers().size());
     }
 
     @Test

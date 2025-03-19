@@ -3,10 +3,7 @@ package org.dddjava.jig.domain.model.data.types;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -47,10 +44,9 @@ public class TypeIdentifiers {
     }
 
     public PackageIdentifiers packageIdentifiers() {
-        List<PackageIdentifier> availablePackages = identifiers.stream()
+        Set<PackageIdentifier> availablePackages = identifiers.stream()
                 .map(TypeIdentifier::packageIdentifier)
-                .distinct()
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         return new PackageIdentifiers(availablePackages);
     }
 

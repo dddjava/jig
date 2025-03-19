@@ -24,6 +24,7 @@ import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @HandleDocument
@@ -64,8 +65,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("非PUBLIC", item -> item.visibility() != JigTypeVisibility.PUBLIC ? "◯" : ""),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {
-                            var list = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().list();
-                            return list.size() == 1 && list.get(0).equals(item.packageIdentifier()) ? "◯" : "";
+                            var identifiers = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().identifiers();
+                            return identifiers.equals(Set.of(item.packageIdentifier())) ? "◯" : "";
                         }),
                         ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText())
                 ), coreDomainJigTypes.list()),

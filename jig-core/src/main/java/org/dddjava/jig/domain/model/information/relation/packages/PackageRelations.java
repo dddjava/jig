@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -67,8 +68,7 @@ public record PackageRelations(Collection<PackageRelation> relations) {
     public PackageIdentifiers packageIdentifiers() {
         var packageIdentifiers = relations.stream()
                 .flatMap(relation -> Stream.of(relation.from(), relation.to()))
-                .distinct()
-                .toList();
+                .collect(Collectors.toSet());
         return new PackageIdentifiers(packageIdentifiers);
     }
 }

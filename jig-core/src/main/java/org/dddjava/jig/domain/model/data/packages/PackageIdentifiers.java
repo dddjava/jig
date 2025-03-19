@@ -1,36 +1,34 @@
 package org.dddjava.jig.domain.model.data.packages;
 
 import java.util.Comparator;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * パッケージ識別子一覧
  */
-public record PackageIdentifiers(List<PackageIdentifier> list) {
+public record PackageIdentifiers(Set<PackageIdentifier> identifiers) {
 
     public PackageIdentifiers applyDepth(PackageDepth packageDepth) {
-        List<PackageIdentifier> list = this.list.stream()
+        Set<PackageIdentifier> set = identifiers.stream()
                 .map(identifier -> identifier.applyDepth(packageDepth))
-                .distinct()
-                .collect(toList());
-        return new PackageIdentifiers(list);
+                .collect(Collectors.toSet());
+        return new PackageIdentifiers(set);
     }
 
     public PackageDepth maxDepth() {
-        return list.stream()
+        return identifiers.stream()
                 .map(PackageIdentifier::depth)
                 .max(Comparator.comparing(PackageDepth::value))
                 .orElseGet(() -> new PackageDepth(0));
     }
 
     public PackageNumber number() {
-        return new PackageNumber(list.size());
+        return new PackageNumber(identifiers.size());
     }
 
     public boolean isEmpty() {
-        return list.isEmpty();
+        return identifiers.isEmpty();
     }
 
     public PackageIdentifiers parent() {

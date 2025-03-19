@@ -101,7 +101,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         // 最下層以外
         List<PackageIdentifier> standalonePackages = new ArrayList<>();
 
-        for (PackageIdentifier packageIdentifier : allPackages.list()) {
+        for (PackageIdentifier packageIdentifier : allPackages.identifiers()) {
             if (packageIdentifier.depth().just(maxDepth)) {
                 groupingPackages.computeIfAbsent(packageIdentifier.parent(), k -> new ArrayList<>())
                         .add(packageIdentifier);

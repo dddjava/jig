@@ -45,7 +45,7 @@ public class TypeMermaidDiagram {
                                     String label = jigTypesWithRelationships.jigTypes()
                                             .resolveJigType(typeIdentifier).map(JigType::label)
                                             .orElseGet(typeIdentifier::asSimpleName);
-                                    return "%s[\"%s\"]".formatted(mermaidId(typeIdentifier), label);
+                                    return Mermaid.BOX.of(mermaidId(typeIdentifier), label);
                                 },
                                 Collectors.toList())));
 

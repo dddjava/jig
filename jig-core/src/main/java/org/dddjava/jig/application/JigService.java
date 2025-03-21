@@ -3,7 +3,6 @@ package org.dddjava.jig.application;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.dddjava.jig.annotation.Service;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.information.Architecture;
@@ -15,6 +14,7 @@ import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
+import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
@@ -138,9 +138,13 @@ public class JigService {
     }
 
     public List<JigPackage> packages(JigRepository jigRepository) {
-        return glossary(jigRepository).terms().stream()
-                .filter(term -> term.termKind() == TermKind.パッケージ)
-                .map(term -> new JigPackage(PackageIdentifier.valueOf(term.identifier().asText()), term))
+        JigTypes jigTypes = jigTypes(jigRepository);
+        Glossary glossary = glossary(jigRepository);
+
+        return jigTypes.stream()
+                .map(JigType::packageIdentifier)
+                .distinct()
+                .map(packageIdentifier -> new JigPackage(packageIdentifier, glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ)))
                 .sorted(Comparator.comparing(JigPackage::fqn))
                 .toList();
     }

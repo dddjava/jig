@@ -21,4 +21,12 @@ public record Glossary(Collection<Term> terms) {
                 .filter(term -> term.relatesTo(termIdentifier))
                 .toList();
     }
+
+    public Term termOf(String idText, TermKind termKind) {
+        TermIdentifier termIdentifier = new TermIdentifier(idText);
+        return terms.stream()
+                .filter(term -> term.identifier().equals(termIdentifier))
+                .findAny()
+                .orElseGet(() -> Term.simple(termIdentifier, termIdentifier.simpleText(), termKind));
+    }
 }

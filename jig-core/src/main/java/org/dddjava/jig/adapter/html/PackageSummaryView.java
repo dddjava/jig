@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * パッケージ概要
+ */
 public class PackageSummaryView {
 
     private final JigDocument jigDocument;

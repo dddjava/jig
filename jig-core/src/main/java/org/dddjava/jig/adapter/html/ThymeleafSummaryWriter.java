@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
-import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
+import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.thymeleaf.TemplateEngine;
@@ -37,9 +37,9 @@ public class ThymeleafSummaryWriter {
         }
 
         JigTypes jigTypes = summaryModel.jigTypes();
-        List<JigTypesPackage> jigTypesPackages = JigTypesPackage.from(jigTypes);
-        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypesPackages.stream()
-                .map(JigTypesPackage::packageIdentifier)
+        List<JigPackageWithJigTypes> jigPackageWithJigTypes = JigPackageWithJigTypes.from(jigTypes);
+        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigPackageWithJigTypes.stream()
+                .map(JigPackageWithJigTypes::packageIdentifier)
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
         var baseComposite = createTreeBaseComposite(jigTypes, packageMap);

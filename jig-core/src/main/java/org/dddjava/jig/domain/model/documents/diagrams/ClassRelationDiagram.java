@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
+import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -48,15 +48,15 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .filter(jigType -> internalClassRelations.filterFrom(jigType.id()).isEmpty() && internalClassRelations.filterTo(jigType.id()).isEmpty())
                 .typeIdentifiers();
 
-        for (JigTypesPackage jigTypesPackage : JigTypesPackage.from(jigTypesWithRelationships.jigTypes())) {
-            PackageIdentifier packageIdentifier = jigTypesPackage.packageIdentifier();
+        for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(jigTypesWithRelationships.jigTypes())) {
+            PackageIdentifier packageIdentifier = jigPackageWithJigTypes.packageIdentifier();
 
             String fqn = packageIdentifier.asText();
             Subgraph subgraph = new Subgraph(fqn)
                     .label(fqn)
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
-            for (JigType jigType : jigTypesPackage.jigTypes()) {
+            for (JigType jigType : jigPackageWithJigTypes.jigTypes()) {
                 Node node = Nodes.businessRuleNodeOf(jigType);
                 if (isolatedTypes.contains(jigType.id())) {
                     node.warning();

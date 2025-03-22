@@ -14,14 +14,14 @@ import static java.util.stream.Collectors.toList;
 /**
  * パッケージ単位のJigTypeのグループ
  */
-public record JigTypesPackage(PackageIdentifier packageIdentifier, List<JigType> jigTypes) {
+public record JigPackageWithJigTypes(PackageIdentifier packageIdentifier, List<JigType> jigTypes) {
 
-    public static List<JigTypesPackage> from(JigTypes jigTypes) {
+    public static List<JigPackageWithJigTypes> from(JigTypes jigTypes) {
         Map<PackageIdentifier, List<JigType>> map = jigTypes.orderedStream()
                 .collect(Collectors.groupingBy(JigType::packageIdentifier));
         return map.entrySet().stream()
-                .map(entity -> new JigTypesPackage(entity.getKey(), entity.getValue()))
-                .sorted(Comparator.comparing(jigTypesPackage -> jigTypesPackage.packageIdentifier().asText()))
+                .map(entity -> new JigPackageWithJigTypes(entity.getKey(), entity.getValue()))
+                .sorted(Comparator.comparing(jigPackageWithJigTypes -> jigPackageWithJigTypes.packageIdentifier().asText()))
                 .collect(toList());
     }
 }

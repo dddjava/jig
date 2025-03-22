@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
-import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
+import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
@@ -48,7 +48,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypesWithRelationships jigTypesWithRelationships = jigService.coreDomainJigTypesWithRelationships(jigRepository);
         JigTypes coreDomainJigTypes = jigTypesWithRelationships.jigTypes();
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        List<JigTypesPackage> jigTypePackages = JigTypesPackage.from(coreDomainJigTypes);
+        List<JigPackageWithJigTypes> jigTypePackages = JigPackageWithJigTypes.from(coreDomainJigTypes);
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),

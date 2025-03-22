@@ -3,18 +3,7 @@ package org.dddjava.jig.domain.model.information.module;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 
-public class JigPackage {
-    PackageIdentifier packageIdentifier;
-    private final Term term;
-
-    public JigPackage(PackageIdentifier packageIdentifier, Term term) {
-        this.packageIdentifier = packageIdentifier;
-        this.term = term;
-    }
-
-    public PackageIdentifier packageIdentifier() {
-        return packageIdentifier;
-    }
+public record JigPackage(PackageIdentifier packageIdentifier, Term term) {
 
     public String simpleName() {
         return packageIdentifier.simpleName();
@@ -29,9 +18,5 @@ public class JigPackage {
 
     public String label() {
         return term.title();
-    }
-
-    public Term term() {
-        return term;
     }
 }

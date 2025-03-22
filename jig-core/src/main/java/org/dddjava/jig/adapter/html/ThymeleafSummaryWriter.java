@@ -47,7 +47,7 @@ public class ThymeleafSummaryWriter {
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
-                .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
+                .map(packageIdentifier -> jigPackage(packageIdentifier))
                 .collect(toList());
 
         var contextMap = Map.of(
@@ -69,7 +69,7 @@ public class ThymeleafSummaryWriter {
     }
 
     private TreeComposite createTreeBaseComposite(JigTypes jigTypes, Map<PackageIdentifier, Set<PackageIdentifier>> packageMap) {
-        TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
+        TreeComposite baseComposite = new TreeComposite(jigPackage(PackageIdentifier.defaultPackage()));
         createTree(jigTypes, packageMap, baseComposite);
         return baseComposite;
     }
@@ -78,7 +78,7 @@ public class ThymeleafSummaryWriter {
                             Map<PackageIdentifier, Set<PackageIdentifier>> packageMap,
                             TreeComposite baseComposite) {
         for (PackageIdentifier current : packageMap.getOrDefault(baseComposite.packageIdentifier(), Collections.emptySet())) {
-            TreeComposite composite = new TreeComposite(jigDocumentContext.jigPackage(current));
+            TreeComposite composite = new TreeComposite(jigPackage(current));
             // add package
             baseComposite.addComponent(composite);
             // add class
@@ -87,5 +87,9 @@ public class ThymeleafSummaryWriter {
             }
             createTree(jigTypes, packageMap, composite);
         }
+    }
+
+    private JigPackage jigPackage(PackageIdentifier packageIdentifier) {
+        return new JigPackage(packageIdentifier, jigDocumentContext.packageTerm(packageIdentifier));
     }
 }

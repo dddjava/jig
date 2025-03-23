@@ -59,7 +59,7 @@ public class ThymeleafSummaryWriter {
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
-        context.setVariables(summaryModel.getAdditionalMap());
+        context.setVariables(summaryModel.additionalMap());
         String template = jigDocumentWriter.jigDocument().fileName();
 
         jigDocumentWriter.writeTextAs(".html",

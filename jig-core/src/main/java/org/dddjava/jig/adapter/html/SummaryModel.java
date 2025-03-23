@@ -4,28 +4,9 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Map;
 
-public class SummaryModel {
-    private final JigTypes jigTypes;
-    private final Map<String, Object> additionalMap;
-
-    SummaryModel(JigTypes jigTypes) {
-        this(jigTypes, Map.of());
-    }
-
-    SummaryModel(JigTypes jigTypes, Map<String, Object> additionalMap) {
-        this.jigTypes = jigTypes;
-        this.additionalMap = additionalMap;
-    }
-
-    public JigTypes jigTypes() {
-        return jigTypes;
-    }
+public record SummaryModel(JigTypes jigTypes, Map<String, Object> additionalMap) {
 
     public boolean empty() {
         return jigTypes.empty();
-    }
-
-    public Map<String, Object> getAdditionalMap() {
-        return additionalMap;
     }
 }

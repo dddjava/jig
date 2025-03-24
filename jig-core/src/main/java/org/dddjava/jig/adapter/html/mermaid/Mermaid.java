@@ -1,5 +1,10 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
+/**
+ * Mermaid表記
+ *
+ * 出力する際に必要なエスケープなどを共通化する
+ */
 enum Mermaid {
     BOX;
 

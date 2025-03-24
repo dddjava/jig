@@ -29,20 +29,20 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.DomainSummary)
     public SummaryModel domainSummary(JigRepository jigRepository) {
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return new SummaryModel(jigTypes, Map.of("relationships", jigService.coreDomainJigTypesWithRelationships(jigRepository)));
+        return SummaryModel.of(jigTypes).withAdditionalMap(Map.of("relationships", jigService.coreDomainJigTypesWithRelationships(jigRepository)));
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)
     public SummaryModel applicationSummary(JigRepository jigRepository) {
         JigTypes jigTypes = jigService.serviceTypes(jigRepository);
-        return new SummaryModel(jigTypes, Map.of());
+        return SummaryModel.of(jigTypes);
     }
 
     @HandleDocument(JigDocument.UsecaseSummary)
     public SummaryModel usecaseSummary(JigRepository jigRepository) {
         JigTypes jigTypes = jigService.serviceTypes(jigRepository);
         var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.from(jigTypes).inlineLambda());
-        return new SummaryModel(jigTypes, Map.of("mermaidDiagram", usecaseMermaidDiagram));
+        return SummaryModel.of(jigTypes).withAdditionalMap(Map.of("mermaidDiagram", usecaseMermaidDiagram));
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)
@@ -51,13 +51,13 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
         Entrypoints entrypoints = jigService.entrypoint(jigRepository);
         JigTypes jigTypes = entrypoints.jigTypes();
         var entrypointMermaidDiagram = new EntrypointMermaidDiagram(entrypoints, contextJigTypes);
-        return new SummaryModel(jigTypes, Map.of("mermaidDiagram", entrypointMermaidDiagram));
+        return SummaryModel.of(jigTypes).withAdditionalMap(Map.of("mermaidDiagram", entrypointMermaidDiagram));
     }
 
     @HandleDocument(JigDocument.EnumSummary)
     public SummaryModel inputSummary(JigRepository jigRepository) {
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        return new SummaryModel(categoryTypes, Map.of("enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap()));
+        return SummaryModel.of(categoryTypes).withAdditionalMap(Map.of("enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap()));
     }
 
     @Override

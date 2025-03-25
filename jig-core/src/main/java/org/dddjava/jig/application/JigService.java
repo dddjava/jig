@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
+import org.dddjava.jig.domain.model.information.module.JigPackages;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
@@ -22,9 +23,6 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-
-import java.util.Comparator;
-import java.util.List;
 
 @Service
 public class JigService {
@@ -137,15 +135,14 @@ public class JigService {
         });
     }
 
-    public List<JigPackage> packages(JigRepository jigRepository) {
+    public JigPackages packages(JigRepository jigRepository) {
         JigTypes jigTypes = jigTypes(jigRepository);
         Glossary glossary = glossary(jigRepository);
 
-        return jigTypes.stream()
+        return new JigPackages(jigTypes.stream()
                 .map(JigType::packageIdentifier)
                 .distinct()
                 .map(packageIdentifier -> new JigPackage(packageIdentifier, glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ)))
-                .sorted(Comparator.comparing(JigPackage::fqn))
-                .toList();
+                .toList());
     }
 }

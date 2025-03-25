@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.information.module.JigPackage;
+import org.dddjava.jig.domain.model.information.module.JigPackages;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -24,12 +24,12 @@ public class PackageSummaryView {
         this.templateEngine = templateEngine;
     }
 
-    public List<Path> write(Path outputDirectory, List<JigPackage> packageList) {
+    public List<Path> write(Path outputDirectory, JigPackages jigPackages) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "packages", packageList
+                "packages", jigPackages.listPackage()
         );
 
         Context context = new Context(Locale.ROOT, contextMap);

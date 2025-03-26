@@ -3,7 +3,10 @@ package org.dddjava.jig.application;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
+import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -23,6 +26,11 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class JigService {
@@ -139,10 +147,23 @@ public class JigService {
         JigTypes jigTypes = jigTypes(jigRepository);
         Glossary glossary = glossary(jigRepository);
 
-        return new JigPackages(jigTypes.stream()
-                .map(JigType::packageIdentifier)
+        Map<PackageIdentifier, List<JigType>> packageAndJigTypes = jigTypes.stream()
+                .collect(Collectors.groupingBy(JigType::packageIdentifier));
+
+        List<Term> packageTerms = glossary.terms().stream()
+                .filter(term -> term.termKind() == TermKind.パッケージ)
+                .toList();
+
+        List<JigPackage> jigPackages = Stream.concat(
+                        packageAndJigTypes.keySet().stream(),
+                        packageTerms.stream().map(Term::identifier).map(TermIdentifier::asText).map(PackageIdentifier::valueOf))
                 .distinct()
-                .map(packageIdentifier -> new JigPackage(packageIdentifier, glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ)))
-                .toList());
+                .map(packageIdentifier -> {
+                    var packageTerm = glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ);
+                    return new JigPackage(packageIdentifier, packageTerm, packageAndJigTypes.getOrDefault(packageIdentifier, List.of()));
+                })
+                .toList();
+
+        return new JigPackages(jigPackages);
     }
 }

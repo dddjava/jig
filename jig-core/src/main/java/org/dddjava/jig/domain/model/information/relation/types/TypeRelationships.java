@@ -19,13 +19,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * 型依存関係一覧
  */
-public class TypeRelationships {
-
-    List<TypeRelationship> list;
-
-    public TypeRelationships(List<TypeRelationship> list) {
-        this.list = list;
-    }
+public record TypeRelationships(List<TypeRelationship> list) {
 
     public static TypeRelationships from(JigTypes jigTypes) {
         return new TypeRelationships(jigTypes.orderedStream()

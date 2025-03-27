@@ -105,10 +105,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return new TypeRelationships(collect);
     }
 
-    public TypeRelationships distinct() {
-        return new TypeRelationships(distinctList());
-    }
-
     public List<TypeRelationship> distinctList() {
         List<TypeRelationship> results = new ArrayList<>();
         ADD:

@@ -23,7 +23,7 @@ public record PackageRelations(Collection<PackageRelation> relations) {
      * クラスの関連をパッケージの関連に丸める
      */
     public static PackageRelations from(TypeRelationships typeRelationships) {
-        return new PackageRelations(typeRelationships.list().stream()
+        return new PackageRelations(typeRelationships.typeRelationships().stream()
                 .map(classRelation -> PackageRelation.from(
                         classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
                 .toList());

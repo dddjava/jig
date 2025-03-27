@@ -34,7 +34,7 @@ public class JigTypeRelationshipCreateTest {
                 TypeRelationship.of(
                         TypeIdentifier.from(SimpleClass.class), TypeIdentifier.from(Object.class),
                         TypeRelationKind.継承クラス),
-                sut.list().get(0));
+                sut.typeRelationships().stream().findFirst().orElseThrow());
     }
 
     @Test

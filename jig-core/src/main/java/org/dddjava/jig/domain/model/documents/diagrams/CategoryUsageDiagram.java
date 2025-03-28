@@ -78,7 +78,9 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .add(useCaseText.toString())
                 .add("}")
                 .add(nonCategoryNodeTexts(categoryRelatedTypes))
-                .add(RelationText.fromClassRelation(relations).asText())
+                .add(relations.toEdges().orderedUniqueStream()
+                        .map(edge -> "\"%s\" -> \"%s\"".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()))
+                        .collect(joining("\n")))
                 .add(serviceRelationText.asText())
                 .toString());
     }

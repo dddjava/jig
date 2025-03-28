@@ -43,10 +43,6 @@ public record TypeRelationship(Edge<TypeIdentifier> edge, TypeRelationKind typeR
         return to().equals(typeIdentifier);
     }
 
-    public boolean sameRelation(TypeRelationship other) {
-        return from().equals(other.from()) && to().equals(other.to());
-    }
-
     public String dotText() {
         return String.format("\"%s\" -> \"%s\";", from().fullQualifiedName(), to().fullQualifiedName());
     }

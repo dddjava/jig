@@ -105,20 +105,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return new TypeRelationships(collect);
     }
 
-    public List<TypeRelationship> distinctList() {
-        List<TypeRelationship> results = new ArrayList<>();
-        ADD:
-        for (TypeRelationship typeRelationship : list()) {
-            for (TypeRelationship result : results) {
-                if (typeRelationship.sameRelation(result)) {
-                    continue ADD;
-                }
-            }
-            results.add(typeRelationship);
-        }
-        return results;
-    }
-
     public TypeIdentifiers allTypeIdentifiers() {
         return typeRelationships.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))

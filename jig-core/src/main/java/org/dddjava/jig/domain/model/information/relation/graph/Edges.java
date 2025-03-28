@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.information.relation.graph;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Edgeのまとまり。グラフ。
@@ -152,5 +153,9 @@ public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
      */
     public <R> List<R> listSortedAndConverted(Function<Edge<T>, R> converter) {
         return edges.stream().sorted().map(converter).toList();
+    }
+
+    public Stream<Edge<T>> orderedUniqueStream() {
+        return edges.stream().sorted().distinct();
     }
 }

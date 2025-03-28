@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,14 +24,6 @@ public class RelationText {
     public RelationText(String attribute) {
         list = new ArrayList<>();
         list.add(attribute);
-    }
-
-    public static RelationText fromClassRelation(TypeRelationships relations) {
-        RelationText relationText = new RelationText();
-        for (TypeRelationship typeRelationship : relations.distinctList()) {
-            relationText.add(typeRelationship.from(), typeRelationship.to());
-        }
-        return relationText;
     }
 
     public static RelationText fromPackageRelations(PackageRelations packageRelations) {

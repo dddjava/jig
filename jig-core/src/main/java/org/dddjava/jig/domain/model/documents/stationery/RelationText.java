@@ -52,14 +52,6 @@ public class RelationText {
         add(from.asText(), to.asText());
     }
 
-    public void add(TypeIdentifier from, TypeIdentifier to) {
-        add(from.fullQualifiedName(), to.fullQualifiedName());
-    }
-
-    public void add(TypeIdentifier from, String to) {
-        add(from.fullQualifiedName(), to);
-    }
-
     public void add(JigMethodIdentifier from, TypeIdentifier to) {
         add(from.value(), to.fullQualifiedName());
     }

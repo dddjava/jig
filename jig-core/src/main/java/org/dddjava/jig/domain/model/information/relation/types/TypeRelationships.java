@@ -109,7 +109,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return typeRelationships.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
                 .map(TypeIdentifier::normalize)
-                .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());
     }
@@ -146,7 +145,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     public TypeIdentifiers fromTypeIdentifiers() {
         return typeRelationships.stream()
                 .map(classRelation -> classRelation.from())
-                .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());
     }
@@ -154,7 +152,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     public TypeIdentifiers toTypeIdentifiers() {
         return typeRelationships.stream()
                 .map(classRelation -> classRelation.to())
-                .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());
     }

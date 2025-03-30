@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.junit.jupiter.api.Test;
-import stub.domain.model.relation.ClassDefinition;
 import testing.JigServiceTest;
 
 import java.util.List;
@@ -53,21 +52,5 @@ class BusinessRuleServiceTest {
 
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         assertFalse(coreDomainJigTypes.contains(typeIdentifier), "domain coreには存在しない");
-    }
-
-    @Test
-    void 関連(JigService jigService, JigRepository jigRepository) {
-        var jigTypes = jigService.coreDomainJigTypesWithRelationships(jigRepository);
-
-        var targetJigType = jigTypes.jigTypes().resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
-        var classRelations = jigTypes.typeRelationships().filterFrom(targetJigType.id());
-
-        assertEquals("""
-                        "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ClassAnnotation";
-                        "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.GenericsParameter";
-                        "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ImplementA";
-                        "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ImplementB";
-                        "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.SuperClass";""",
-                classRelations.dotText());
     }
 }

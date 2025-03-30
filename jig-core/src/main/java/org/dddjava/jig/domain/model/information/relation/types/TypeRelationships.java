@@ -163,10 +163,4 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     public boolean isEmpty() {
         return typeRelationships.isEmpty();
     }
-
-    public String dotText() {
-        return typeRelationships.stream()
-                .map(TypeRelationship::dotText)
-                .collect(Collectors.joining("\n"));
-    }
 }

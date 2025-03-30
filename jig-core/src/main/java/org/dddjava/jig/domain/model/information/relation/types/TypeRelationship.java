@@ -43,10 +43,6 @@ public record TypeRelationship(Edge<TypeIdentifier> edge, TypeRelationKind typeR
         return to().equals(typeIdentifier);
     }
 
-    public String dotText() {
-        return String.format("\"%s\" -> \"%s\";", from().fullQualifiedName(), to().fullQualifiedName());
-    }
-
     @Override
     public String toString() {
         return from().fullQualifiedName() + " -> " + to().fullQualifiedName();

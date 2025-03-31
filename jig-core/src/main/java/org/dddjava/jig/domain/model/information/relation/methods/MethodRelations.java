@@ -18,14 +18,8 @@ import static java.util.stream.Collectors.toList;
 /**
  * メソッドの使用しているメソッド一覧
  */
-public class MethodRelations implements CallerMethodsFactory {
+public record MethodRelations(List<MethodRelation> list) implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
-
-    private final List<MethodRelation> list;
-
-    public MethodRelations(List<MethodRelation> list) {
-        this.list = list;
-    }
 
     public static MethodRelations from(JigTypes jigTypes) {
         return jigTypes.orderedStream()
@@ -157,10 +151,6 @@ public class MethodRelations implements CallerMethodsFactory {
 
         inlined.addAll(list2);
         return new MethodRelations(inlined);
-    }
-
-    public List<MethodRelation> list() {
-        return list;
     }
 
     public Stream<JigMethodIdentifier> jigMethodIdentifierStream() {

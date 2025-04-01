@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 public record MethodRelations(List<MethodRelation> list) implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
+    @Deprecated(since = "2025.4.1") // まだ期待通り動作しない
     public static MethodRelations lambdaInlined(JigTypes jigTypes) {
         return new MethodRelations(jigTypes.stream()
                 .flatMap(jigType -> jigType.allJigMethodStream())

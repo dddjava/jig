@@ -41,7 +41,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.UsecaseSummary)
     public SummaryModel usecaseSummary(JigRepository jigRepository) {
         JigTypes jigTypes = jigService.serviceTypes(jigRepository);
-        var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.lambdaInlined(jigTypes));
+        var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.from(jigTypes).inlineLambda());
         return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("mermaidDiagram", usecaseMermaidDiagram));
     }
 

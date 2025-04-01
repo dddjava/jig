@@ -10,8 +10,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import testing.TestSupport;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,6 +91,23 @@ public class AsmMethodVisitorInstructionTest {
 
         assertEquals("lambda$lambda式メソッド$0", actual.methodName());
     }
+
+    @Test
+    void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド");
+
+        List<String> actual = jigMethod.instructions().lambdaInlinedMethodCallStream()
+                .map(MethodCall::methodName)
+                // バイトコードの順番は記述順と異なるので名前順にしておく
+                .sorted()
+                .toList();
+
+        assertEquals(Stream.of(
+                "of", "map", "close", "valueOf", // lambda式の外（valueOfはオートボクシング）
+                "randomUUID", "variant", "toString" // lambda式の内側
+        ).sorted().toList(), actual);
+    }
+
 
     @CsvSource({
             // return, arg

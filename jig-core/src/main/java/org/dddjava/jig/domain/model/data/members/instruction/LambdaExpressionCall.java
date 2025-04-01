@@ -25,6 +25,12 @@ public record LambdaExpressionCall(MethodCall methodCall, TypeIdentifier returnT
     }
 
     @Override
+    public Stream<MethodCall> lambdaInlinedMethodCallStream() {
+        // methodCallは合成メソッドなので使用しない
+        return instructions.lambdaInlinedMethodCallStream();
+    }
+
+    @Override
     public Stream<TypeIdentifier> streamAssociatedTypes() {
         return Stream.of(
                 methodCall().streamAssociatedTypes(),

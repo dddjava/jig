@@ -47,4 +47,9 @@ public record Instructions(List<Instruction> instructions) {
     public boolean containsAnyBasicInstruction(BasicInstruction... basicInstruction) {
         return Arrays.stream(basicInstruction).anyMatch(instructions::contains);
     }
+
+    public Stream<MethodCall> lambdaInlinedMethodCallStream() {
+        return instructions.stream()
+                .flatMap(instruction -> instruction.lambdaInlinedMethodCallStream());
+    }
 }

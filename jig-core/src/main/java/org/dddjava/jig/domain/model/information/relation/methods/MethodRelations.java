@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
+import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -22,7 +23,15 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
     public static MethodRelations lambdaInlined(JigTypes jigTypes) {
-        return from(jigTypes).inlineLambda();
+        return new MethodRelations(jigTypes.stream()
+                .flatMap(jigType -> jigType.allJigMethodStream())
+                .flatMap(jigMethod -> {
+                    Instructions instructions = jigMethod.instructions();
+                    return instructions.lambdaInlinedMethodCallStream()
+                            .filter(methodCall -> !methodCall.isJSL()) // JSLを除く
+                            .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く
+                            .map(methodCall -> MethodRelation.from(jigMethod.jigMethodIdentifier(), methodCall.jigMethodIdentifier()));
+                }).toList());
     }
 
     public static MethodRelations from(JigTypes jigTypes) {

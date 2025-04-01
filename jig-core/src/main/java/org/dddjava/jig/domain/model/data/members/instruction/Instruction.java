@@ -22,4 +22,11 @@ public sealed interface Instruction
      * この命令によって関連づけられる型のストリーム
      */
     Stream<TypeIdentifier> streamAssociatedTypes();
+
+    /**
+     * lambdaのメソッド呼び出しをインライン化したもの
+     */
+    default Stream<MethodCall> lambdaInlinedMethodCallStream() {
+        return findMethodCall();
+    }
 }

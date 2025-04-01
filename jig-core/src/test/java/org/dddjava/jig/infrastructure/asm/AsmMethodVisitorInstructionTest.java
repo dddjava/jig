@@ -48,6 +48,23 @@ public class AsmMethodVisitorInstructionTest {
                     })
                     .close();
         }
+
+        public void lambda式の多段メソッド() {
+            Supplier<Object> s = () -> {
+                return UUID.randomUUID();
+            };
+            Consumer<Object> c1 = o -> {
+                Supplier<Object> s1 = () -> {
+                    return o.hashCode();
+                };
+            };
+            Consumer<Object> c2 = o -> {
+                Supplier<Object> s2 = () -> {
+                    Objects.requireNonNull(o);
+                    return Objects.requireNonNullElseGet(o, () -> "null".length());
+                };
+            };
+        }
     }
 
     private static class AnotherClass {
@@ -105,6 +122,21 @@ public class AsmMethodVisitorInstructionTest {
         assertEquals(Stream.of(
                 "of", "map", "close", "valueOf", // lambda式の外（valueOfはオートボクシング）
                 "randomUUID", "variant", "toString" // lambda式の内側
+        ).sorted().toList(), actual);
+    }
+
+    @Test
+    void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる_多段() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式の多段メソッド");
+
+        List<String> actual = jigMethod.instructions().lambdaInlinedMethodCallStream()
+                .map(MethodCall::methodName)
+                // バイトコードの順番は記述順と異なるので名前順にしておく
+                .sorted()
+                .toList();
+
+        assertEquals(Stream.of(
+                "randomUUID", "hashCode", "requireNonNull", "requireNonNullElseGet", "length"
         ).sorted().toList(), actual);
     }
 

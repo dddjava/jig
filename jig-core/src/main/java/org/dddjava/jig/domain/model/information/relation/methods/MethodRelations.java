@@ -21,6 +21,10 @@ import static java.util.stream.Collectors.toList;
 public record MethodRelations(List<MethodRelation> list) implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
+    public static MethodRelations lambdaInlined(JigTypes jigTypes) {
+        return from(jigTypes).inlineLambda();
+    }
+
     public static MethodRelations from(JigTypes jigTypes) {
         return jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream()

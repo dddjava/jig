@@ -8,12 +8,9 @@ import java.util.stream.Stream;
 /**
  * 動的メソッド呼び出し
  *
- * メソッド参照の場合はmethodCallにはそのまま対象のメソッドが入る。
- * Lambda式の場合はlambda合成メソッドが入る。
+ * メソッド参照の場合はmethodCallには対象のメソッドが入る。
  *
  * @param methodCall 呼び出すメソッド
- * @param returnType
- * @param argumentTypes
  */
 public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType,
                                 List<TypeIdentifier> argumentTypes) implements Instruction {

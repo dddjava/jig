@@ -9,7 +9,8 @@ import java.util.stream.Stream;
  * Lambda式呼び出し
  *
  * {@link DynamicMethodCall} の特化型で、呼び出されているLambdaの {@link Instructions} を保持する。
- * メソッドを辿らずともこれを展開すれば実装上の処理は追える。
+ *
+ * @param methodCall lambda式のコンパイルにより生成される合成メソッド。実装依存だが `lambda$methodName$0` のような名前になる。
  */
 public record LambdaExpressionCall(MethodCall methodCall, TypeIdentifier returnType,
                                    List<TypeIdentifier> argumentTypes,

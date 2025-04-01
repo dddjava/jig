@@ -213,6 +213,7 @@ class AsmClassVisitor extends ClassVisitor {
                                 && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.LAMBDA_SUPPORT))
                 .collect(toMap(it -> it.header().name(), it -> new Instructions(it.body())));
 
+        // FIXME lambda内でlambdaを使用している場合に２段目以降が関連づけれていない。再帰的に処理する必要がある。
         // method内でlambda式を実装している場合にLambda合成メソッドのInstructionを関連づける
         Collection<JigMethodDeclaration> methodDeclarations = methodCollector.stream()
                 .map(it -> {

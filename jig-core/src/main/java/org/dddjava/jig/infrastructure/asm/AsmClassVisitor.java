@@ -204,7 +204,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     ClassDeclaration classDeclaration() {
         // lambda合成メソッドを名前でひけるように収集
-        Map<String, Instructions> lambdaMethods = methodCollector.stream()
+        Map<String, Instructions> lambdaMethodMap = methodCollector.stream()
                 // lambda合成メソッドは ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC なのでフィルタ
                 .filter(collectedMethod ->
                         collectedMethod.header().jigMethodAttribute().jigMemberVisibility() == JigMemberVisibility.PRIVATE
@@ -222,8 +222,8 @@ class AsmClassVisitor extends ClassVisitor {
                                 // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallに展開する
                                 if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
                                     String name = dynamicMethodCall.methodCall().methodName();
-                                    if (lambdaMethods.containsKey(name)) {
-                                        return LambdaExpressionCall.from(dynamicMethodCall, lambdaMethods.get(name));
+                                    if (lambdaMethodMap.containsKey(name)) {
+                                        return LambdaExpressionCall.from(dynamicMethodCall, lambdaMethodMap.get(name));
                                     }
                                 }
                                 return instruction;

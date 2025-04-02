@@ -32,7 +32,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         Map<TypeIdentifier, Set<JigMethod>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
-        MethodRelations springComponentMethodRelations = MethodRelations.filterApplicationComponent(jigTypes, methodRelations).inlineLambda();
+        MethodRelations springComponentMethodRelations = methodRelations.filterApplicationComponent(jigTypes).inlineLambda();
 
         var methodRelationSet = new HashSet<MethodRelation>();
 

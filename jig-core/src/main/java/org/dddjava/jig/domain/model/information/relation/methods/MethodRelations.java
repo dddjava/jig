@@ -44,8 +44,8 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    public static MethodRelations filterApplicationComponent(JigTypes jigTypes, MethodRelations methodRelations) {
-        return methodRelations.list().stream()
+    public MethodRelations filterApplicationComponent(JigTypes jigTypes) {
+        return list().stream()
                 .filter(methodRelation ->
                         jigTypes.isApplicationComponent(methodRelation.fromType())
                                 && jigTypes.isApplicationComponent(methodRelation.toType())

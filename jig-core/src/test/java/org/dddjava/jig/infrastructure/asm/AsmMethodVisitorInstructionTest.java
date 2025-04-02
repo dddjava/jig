@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCal
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -126,7 +125,6 @@ public class AsmMethodVisitorInstructionTest {
         ).sorted().toList(), actual);
     }
 
-    @Disabled("AsmClassVisitorの関連付けFIXMEを対応しないとDynamicMethodCallのままになっているためとおらない")
     @Test
     void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる_多段() {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式の多段メソッド");
@@ -138,7 +136,8 @@ public class AsmMethodVisitorInstructionTest {
                 .toList();
 
         assertEquals(Stream.of(
-                "randomUUID", "hashCode", "requireNonNull", "requireNonNullElseGet", "length"
+                "randomUUID", "hashCode", "requireNonNull", "requireNonNullElseGet", "length",
+                "valueOf", "valueOf" // オートボクシング
         ).sorted().toList(), actual);
     }
 

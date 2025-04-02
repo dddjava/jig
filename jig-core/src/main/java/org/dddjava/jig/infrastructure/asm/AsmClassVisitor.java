@@ -204,16 +204,15 @@ class AsmClassVisitor extends ClassVisitor {
 
     ClassDeclaration classDeclaration() {
         // lambda合成メソッドを名前でひけるように収集
-        Map<String, Instructions> lambdaMethodMap = methodCollector.stream()
+        Map<String, List<Instruction>> lambdaMethodMap = methodCollector.stream()
                 // lambda合成メソッドは ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC なのでフィルタ
                 .filter(collectedMethod ->
                         collectedMethod.header().jigMethodAttribute().jigMemberVisibility() == JigMemberVisibility.PRIVATE
                                 && collectedMethod.header().ownership() == JigMemberOwnership.CLASS
                                 && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.SYNTHETIC)
                                 && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.LAMBDA_SUPPORT))
-                .collect(toMap(it -> it.header().name(), it -> new Instructions(it.body())));
+                .collect(toMap(it -> it.header().name(), it -> it.body()));
 
-        // FIXME lambda内でlambdaを使用している場合に２段目以降が関連づけれていない。再帰的に処理する必要がある。
         // method内でlambda式を実装している場合にLambda合成メソッドのInstructionを関連づける
         Collection<JigMethodDeclaration> methodDeclarations = methodCollector.stream()
                 .map(it -> {
@@ -229,12 +228,15 @@ class AsmClassVisitor extends ClassVisitor {
         return new ClassDeclaration(jigTypeHeader(), fieldHeaders, methodDeclarations);
     }
 
-    private static Instruction resolveInstruction(Instruction instruction, Map<String, Instructions> lambdaMethodMap) {
+    private static Instruction resolveInstruction(Instruction instruction, Map<String, List<Instruction>> lambdaMethodMap) {
         // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallに展開する
         if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
             String name = dynamicMethodCall.methodCall().methodName();
             if (lambdaMethodMap.containsKey(name)) {
-                return LambdaExpressionCall.from(dynamicMethodCall, lambdaMethodMap.get(name));
+                List<Instruction> instructionList = lambdaMethodMap.get(name).stream()
+                        // lambdaのネストに対応するために再帰
+                        .map(it -> resolveInstruction(it, lambdaMethodMap)).toList();
+                return LambdaExpressionCall.from(dynamicMethodCall, new Instructions(instructionList));
             }
         }
         return instruction;

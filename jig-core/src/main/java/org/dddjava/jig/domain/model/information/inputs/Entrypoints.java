@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,7 +36,7 @@ public record Entrypoints(List<EntrypointGroup> groups, MethodRelations methodRe
         return groups.isEmpty();
     }
 
-    public List<EntrypointMethod> collectEntrypointMethodOf(CallerMethods callerMethods) {
+    public Collection<EntrypointMethod> collectEntrypointMethodOf(CallerMethods callerMethods) {
         return requetHandlerMethodStream()
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();

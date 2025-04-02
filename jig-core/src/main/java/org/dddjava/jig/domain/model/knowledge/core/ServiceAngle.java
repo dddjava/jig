@@ -25,12 +25,12 @@ public class ServiceAngle {
     ServiceMethod serviceMethod;
 
     Collection<JigMethodIdentifier> userServiceMethods;
-    List<EntrypointMethod> entrypointMethods;
+    Collection<EntrypointMethod> entrypointMethods;
 
     Collection<MethodCall> usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    private ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, Collection<MethodCall> usingServiceMethods, List<EntrypointMethod> entrypointMethods, Collection<JigMethodIdentifier> userServiceMethods) {
+    private ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, Collection<MethodCall> usingServiceMethods, Collection<EntrypointMethod> entrypointMethods, Collection<JigMethodIdentifier> userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
         this.usingRepositoryMethods = usingRepositoryMethods;
@@ -48,7 +48,7 @@ public class ServiceAngle {
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodIdentifier()))
                 .toList();
         RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
-        List<EntrypointMethod> entrypointMethods = entrypoints.collectEntrypointMethodOf(serviceMethod.callerMethods());
+        Collection<EntrypointMethod> entrypointMethods = entrypoints.collectEntrypointMethodOf(serviceMethod.callerMethods());
         return new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, entrypointMethods, userServiceMethods);
     }
 

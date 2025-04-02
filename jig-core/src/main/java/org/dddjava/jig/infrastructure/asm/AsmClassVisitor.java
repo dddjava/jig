@@ -219,14 +219,7 @@ class AsmClassVisitor extends ClassVisitor {
                 .map(it -> {
                     List<Instruction> instructions = it.body().stream()
                             .map(instruction -> {
-                                // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallに展開する
-                                if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
-                                    String name = dynamicMethodCall.methodCall().methodName();
-                                    if (lambdaMethodMap.containsKey(name)) {
-                                        return LambdaExpressionCall.from(dynamicMethodCall, lambdaMethodMap.get(name));
-                                    }
-                                }
-                                return instruction;
+                                return resolveInstruction(instruction, lambdaMethodMap);
                             })
                             .toList();
                     return new JigMethodDeclaration(it.header(), new Instructions(instructions));
@@ -234,6 +227,17 @@ class AsmClassVisitor extends ClassVisitor {
                 .toList();
 
         return new ClassDeclaration(jigTypeHeader(), fieldHeaders, methodDeclarations);
+    }
+
+    private static Instruction resolveInstruction(Instruction instruction, Map<String, Instructions> lambdaMethodMap) {
+        // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallに展開する
+        if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
+            String name = dynamicMethodCall.methodCall().methodName();
+            if (lambdaMethodMap.containsKey(name)) {
+                return LambdaExpressionCall.from(dynamicMethodCall, lambdaMethodMap.get(name));
+            }
+        }
+        return instruction;
     }
 
     int api() {

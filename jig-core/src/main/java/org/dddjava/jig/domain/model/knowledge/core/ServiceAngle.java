@@ -48,8 +48,8 @@ public class ServiceAngle {
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodIdentifier()))
                 .toList();
         RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
-        ServiceAngle serviceAngle = new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, entrypoints.collectEntrypointMethodOf(serviceMethod.callerMethods()), userServiceMethods);
-        return serviceAngle;
+        List<EntrypointMethod> entrypointMethods = entrypoints.collectEntrypointMethodOf(serviceMethod.callerMethods());
+        return new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, entrypointMethods, userServiceMethods);
     }
 
     public ServiceMethod serviceMethod() {

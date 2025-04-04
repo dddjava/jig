@@ -3,14 +3,17 @@ package org.dddjava.jig.domain.model.data.types;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
  * 型の識別子一覧
  */
-public record TypeIdentifiers(Collection<TypeIdentifier> identifiers) {
+public record TypeIdentifiers(Set<TypeIdentifier> identifiers) {
 
     public List<TypeIdentifier> list() {
         ArrayList<TypeIdentifier> list = new ArrayList<>(this.identifiers);
@@ -19,7 +22,7 @@ public record TypeIdentifiers(Collection<TypeIdentifier> identifiers) {
     }
 
     public static Collector<TypeIdentifier, ?, TypeIdentifiers> collector() {
-        return Collectors.collectingAndThen(Collectors.toList(), TypeIdentifiers::new);
+        return Collectors.collectingAndThen(Collectors.toSet(), TypeIdentifiers::new);
     }
 
     public String asSimpleText() {

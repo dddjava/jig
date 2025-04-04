@@ -149,12 +149,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .collect(TypeIdentifiers.collector());
     }
 
-    public TypeIdentifiers toTypeIdentifiers() {
-        return typeRelationships.stream()
-                .map(classRelation -> classRelation.to())
-                .collect(TypeIdentifiers.collector());
-    }
-
     public int size() {
         return typeRelationships.size();
     }

@@ -10,13 +10,7 @@ import java.util.stream.Collectors;
 /**
  * 型の識別子一覧
  */
-public class TypeIdentifiers {
-
-    Collection<TypeIdentifier> identifiers;
-
-    public TypeIdentifiers(Collection<TypeIdentifier> identifiers) {
-        this.identifiers = identifiers;
-    }
+public record TypeIdentifiers(Collection<TypeIdentifier> identifiers) {
 
     public List<TypeIdentifier> list() {
         ArrayList<TypeIdentifier> list = new ArrayList<>(this.identifiers);

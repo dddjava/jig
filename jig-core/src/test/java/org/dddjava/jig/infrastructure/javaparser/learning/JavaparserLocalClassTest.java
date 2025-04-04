@@ -64,6 +64,7 @@ public class JavaparserLocalClassTest {
         // コンパイルできることを示す
         enum Fuga {}
 
+        // https://github.com/javaparser/javaparser/issues/3990
         assertThrows(ParseProblemException.class, () -> {
             StaticJavaParser.parse("""
                     class Hoge {

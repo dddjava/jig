@@ -120,7 +120,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return new TypeRelationships(new ArrayList<>(set));
     }
 
-    public TypeRelationships filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
+    private TypeRelationships filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
         return filterRelationships(classRelation -> toTypeIdentifiers.contains(classRelation.to()));
     }
 

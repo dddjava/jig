@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -99,13 +98,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList();
     }
 
-    public TypeRelationships filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
-        List<TypeRelationship> collect = typeRelationships.stream()
-                .filter(classRelation -> toTypeIdentifiers.contains(classRelation.to()))
-                .collect(Collectors.toList());
-        return new TypeRelationships(collect);
-    }
-
     public TypeIdentifiers allTypeIdentifiers() {
         return typeRelationships.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
@@ -126,6 +118,10 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
             toTypeIdentifiers = temp.fromTypeIdentifiers();
         }
         return new TypeRelationships(new ArrayList<>(set));
+    }
+
+    public TypeRelationships filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
+        return filterRelationships(classRelation -> toTypeIdentifiers.contains(classRelation.to()));
     }
 
     public TypeRelationships filterFrom(TypeIdentifier typeIdentifier) {

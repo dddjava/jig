@@ -14,10 +14,6 @@ public class DecisionNumber {
         return Integer.toString(value);
     }
 
-    public boolean notZero() {
-        return value > 0;
-    }
-
     public int intValue() {
         return value;
     }

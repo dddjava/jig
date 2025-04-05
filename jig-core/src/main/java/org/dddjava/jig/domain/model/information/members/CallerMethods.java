@@ -9,12 +9,7 @@ import java.util.function.Predicate;
 /**
  * 呼び出しメソッド一覧
  */
-public class CallerMethods {
-    List<JigMethodIdentifier> list;
-
-    public CallerMethods(List<JigMethodIdentifier> list) {
-        this.list = list;
-    }
+public record CallerMethods(List<JigMethodIdentifier> list) {
 
     public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
         return list.stream()

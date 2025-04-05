@@ -10,10 +10,6 @@ public class DecisionNumber {
         this.value = value;
     }
 
-    public String asText() {
-        return Integer.toString(value);
-    }
-
     public int intValue() {
         return value;
     }

@@ -14,6 +14,7 @@ import testing.JigServiceTest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,7 +29,7 @@ class ServiceMethodTest {
         ServiceMethod sut = targetType.allJigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals("fuga"))
                 .findAny()
-                .map(jigMethod -> new ServiceMethod(jigMethod, new CallerMethods(List.of())))
+                .map(jigMethod -> new ServiceMethod(jigMethod, new CallerMethods(Set.of())))
                 .orElseThrow();
 
         Optional<TypeIdentifier> primaryType = sut.primaryType();

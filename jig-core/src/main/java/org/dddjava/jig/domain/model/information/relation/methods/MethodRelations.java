@@ -58,11 +58,10 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
      */
     @Override
     public CallerMethods callerMethodsOf(JigMethodIdentifier jigMethodIdentifier) {
-        List<JigMethodIdentifier> callers = list.stream()
+        return new CallerMethods(list.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodIdentifier))
                 .map(MethodRelation::from)
-                .collect(toList());
-        return new CallerMethods(callers);
+                .collect(Collectors.toSet()));
     }
 
     public String mermaidEdgeText(Function<JigMethodIdentifier, Optional<String>> converter) {

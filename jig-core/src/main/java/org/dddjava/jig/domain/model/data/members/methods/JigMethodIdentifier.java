@@ -25,6 +25,9 @@ public record JigMethodIdentifier(String value) implements Comparable<JigMethodI
         return value.split("[#()]")[1];
     }
 
+    /**
+     * メソッドの名前空間（＝定義されたクラスのFQN）を取得する
+     */
     public String namespace() {
         return value.split("[#()]")[0];
     }

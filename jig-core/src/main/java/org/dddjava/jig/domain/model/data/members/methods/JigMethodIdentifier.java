@@ -29,7 +29,7 @@ public record JigMethodIdentifier(String value) implements Comparable<JigMethodI
      * メソッドの名前空間（＝定義されたクラスのFQN）を取得する
      */
     public String namespace() {
-        return value.split("[#()]")[0];
+        return value.split("#")[0];
     }
 
     public Tuple tuple() {

@@ -134,7 +134,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().methodReturnTypeReference().simpleName()),
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeNames()),
-                        ReportItem.ofNumber("分岐数", item -> item.jigMethod().instructions().decisionNumber().intValue()),
+                        ReportItem.ofNumber("分岐数", item -> item.jigMethod().instructions().decisionCount()),
                         ReportItem.ofString("パス", item -> HttpEndpoint.from(item).pathText())
                 ), entrypoints.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
@@ -156,7 +156,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .collect(Collectors.joining(", ", "[", "]"))
                         ),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().typeNames()),
-                        ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionNumber().intValue()),
+                        ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionCount()),
                         ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(Collectors.joining(", ", "[", "]"))),
                         ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().asSimpleText()),
                         ReportItem.ofString("null使用", item -> item.useNull() ? "◯" : ""),
@@ -178,7 +178,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(Term::title)
                                         .collect(Collectors.joining(", ", "[", "]"))
                         ),
-                        ReportItem.ofNumber("分岐数", item -> item.concreteMethod().instructions().decisionNumber().intValue()),
+                        ReportItem.ofNumber("分岐数", item -> item.concreteMethod().instructions().decisionCount()),
                         ReportItem.ofString("INSERT", item -> item.insertTables()),
                         ReportItem.ofString("SELECT", item -> item.selectTables()),
                         ReportItem.ofString("UPDATE", item -> item.updateTables()),

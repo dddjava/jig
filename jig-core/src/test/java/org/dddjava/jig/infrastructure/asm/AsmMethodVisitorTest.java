@@ -196,7 +196,7 @@ class AsmMethodVisitorTest {
     @ParameterizedTest
     void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
         JigMethod actual = TestSupport.JigMethod準備(DecisionClass.class, name);
-        assertEquals(number, actual.instructions().decisionNumber().intValue());
+        assertEquals(number, actual.instructions().decisionCount());
     }
 
     @CsvSource({

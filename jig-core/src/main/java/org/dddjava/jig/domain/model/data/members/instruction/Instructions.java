@@ -15,12 +15,11 @@ import java.util.stream.Stream;
  */
 public record Instructions(List<Instruction> instructions) {
 
-    public DecisionNumber decisionNumber() {
-        var count = instructions.stream()
+    public int decisionCount() {
+        return Math.toIntExact(instructions.stream()
                 .filter(instruction -> instruction instanceof BasicInstruction)
                 .filter(instruction -> ((BasicInstruction) instruction).isBranch())
-                .count();
-        return new DecisionNumber(Math.toIntExact(count));
+                .count());
     }
 
     public Stream<TypeIdentifier> associatedTypeStream() {

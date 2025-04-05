@@ -9,22 +9,22 @@ import java.util.function.Predicate;
 /**
  * 呼び出しメソッド一覧
  */
-public record CallerMethods(List<JigMethodIdentifier> list) {
+public record CallerMethods(List<JigMethodIdentifier> methodIdentifiers) {
 
     public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
-        return list.stream()
+        return methodIdentifiers.stream()
                 .anyMatch(item -> item.equals(jigMethodIdentifier));
     }
 
     public int size() {
-        return list.size();
+        return methodIdentifiers.size();
     }
 
     public Collection<JigMethodIdentifier> jigMethodIdentifiers(Predicate<JigMethodIdentifier> predicate) {
-        return list.stream().filter(predicate).toList();
+        return methodIdentifiers.stream().filter(predicate).toList();
     }
 
     public long typeCount() {
-        return list.stream().map(JigMethodIdentifier::namespace).distinct().count();
+        return methodIdentifiers.stream().map(JigMethodIdentifier::namespace).distinct().count();
     }
 }

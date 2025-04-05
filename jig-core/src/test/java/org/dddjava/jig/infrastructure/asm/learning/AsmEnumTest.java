@@ -13,7 +13,7 @@ import stub.domain.model.category.RichEnum;
 import stub.domain.model.category.SimpleEnum;
 
 public class AsmEnumTest {
-    static Logger logger = LoggerFactory.getLogger(AsmEnumTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsmEnumTest.class);
 
 
     @ValueSource(classes = {

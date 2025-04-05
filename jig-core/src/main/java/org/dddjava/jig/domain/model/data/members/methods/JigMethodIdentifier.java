@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 /**
  * メソッドのID
- *
- * @param value
  */
 public record JigMethodIdentifier(String value) implements Comparable<JigMethodIdentifier> {
 

@@ -43,7 +43,7 @@ public class ServiceAngle {
     public static ServiceAngle from(ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods, ServiceMethod serviceMethod) {
         List<MethodCall> usingMethods = serviceMethod.usingMethods().methodCalls();
 
-        Collection<JigMethodIdentifier> userServiceMethods = serviceMethod.callerMethods().jigMethodIdentifiers(jigMethodIdentifier -> serviceMethods.contains(jigMethodIdentifier));
+        Collection<JigMethodIdentifier> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodIdentifier -> serviceMethods.contains(jigMethodIdentifier));
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodIdentifier()))
                 .toList();

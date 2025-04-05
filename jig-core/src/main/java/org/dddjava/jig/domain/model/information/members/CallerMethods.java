@@ -20,7 +20,7 @@ public record CallerMethods(Set<JigMethodIdentifier> methodIdentifiers) {
         return methodIdentifiers.size();
     }
 
-    public Collection<JigMethodIdentifier> jigMethodIdentifiers(Predicate<JigMethodIdentifier> predicate) {
+    public Collection<JigMethodIdentifier> filter(Predicate<JigMethodIdentifier> predicate) {
         return methodIdentifiers.stream().filter(predicate).toList();
     }
 

@@ -22,7 +22,7 @@ public class JavaparserLocalClassTest {
         ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
         ParserConfiguration.LanguageLevel languageLevel = configuration.getLanguageLevel();
 
-        assertEquals(languageLevel, ParserConfiguration.LanguageLevel.JAVA_17);
+        assertEquals(ParserConfiguration.LanguageLevel.JAVA_17, languageLevel);
     }
 
     @Test

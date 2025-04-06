@@ -40,7 +40,7 @@ public record JigMethodHeader(JigMethodIdentifier id,
 
     public String nameAndArgumentSimpleText() {
         return "%s(%s)".formatted(
-                id().name(),
+                id.name(),
                 jigMethodAttribute.argumentList().stream()
                         .map(JigTypeReference::simpleNameWithGenerics)
                         .collect(Collectors.joining(", ")));
@@ -72,34 +72,34 @@ public record JigMethodHeader(JigMethodIdentifier id,
      */
     public boolean isLambdaSyntheticMethod() {
         return jigMemberVisibility() == JigMemberVisibility.PRIVATE
-                && ownership() == JigMemberOwnership.CLASS
-                && jigMethodAttribute().flags().contains(JigMethodFlag.SYNTHETIC)
-                && jigMethodAttribute().flags().contains(JigMethodFlag.LAMBDA_SUPPORT);
+                && ownership == JigMemberOwnership.CLASS
+                && jigMethodAttribute.flags().contains(JigMethodFlag.SYNTHETIC)
+                && jigMethodAttribute.flags().contains(JigMethodFlag.LAMBDA_SUPPORT);
     }
 
     public List<JigTypeReference> argumentList() {
-        return jigMethodAttribute().argumentList();
+        return jigMethodAttribute.argumentList();
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
-        return jigMethodAttribute().declarationAnnotations().stream();
+        return jigMethodAttribute.declarationAnnotations().stream();
     }
 
     public JigTypeReference returnType() {
-        return jigMethodAttribute().returnType();
+        return jigMethodAttribute.returnType();
     }
 
     public boolean isRecordComponentAccessor() {
-        return jigMethodAttribute().flags().contains(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
+        return jigMethodAttribute.flags().contains(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
     }
 
     public boolean isProgrammerDefined() {
-        EnumSet<JigMethodFlag> flags = jigMethodAttribute().flags();
+        EnumSet<JigMethodFlag> flags = jigMethodAttribute.flags();
         return flags.stream().noneMatch(JigMethodFlag::compilerGenerated);
     }
 
     public boolean isStaticOrInstanceInitializer() {
-        return jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER) ||
-                jigMethodAttribute().flags().contains(JigMethodFlag.STATIC_INITIALIZER);
+        return jigMethodAttribute.flags().contains(JigMethodFlag.INITIALIZER) ||
+                jigMethodAttribute.flags().contains(JigMethodFlag.STATIC_INITIALIZER);
     }
 }

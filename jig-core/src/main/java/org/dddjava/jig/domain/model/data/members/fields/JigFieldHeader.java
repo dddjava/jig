@@ -27,15 +27,15 @@ public record JigFieldHeader(JigFieldIdentifier id,
     }
 
     public String simpleText() {
-        return jigTypeReference().simpleName() + ' ' + id.name();
+        return jigTypeReference.simpleName() + ' ' + id.name();
     }
 
     public Stream<TypeIdentifier> allTypeIdentifierStream() {
-        return Stream.concat(jigTypeReference.allTypeIentifierStream(), jigFieldAttribute.allTypeIdentifierStream());
+        return Stream.concat(jigTypeReference.allTypeIentifierStream(), jigFieldAttribute().allTypeIdentifierStream());
     }
 
     public String simpleNameWithGenerics() {
-        return jigTypeReference().simpleNameWithGenerics() + ' ' + id.name();
+        return jigTypeReference.simpleNameWithGenerics() + ' ' + id.name();
     }
 
     public String name() {
@@ -47,10 +47,10 @@ public record JigFieldHeader(JigFieldIdentifier id,
     }
 
     public boolean isEnumConstant() {
-        return jigFieldAttribute().flags().contains(JigFieldFlag.ENUM);
+        return jigFieldAttribute.flags().contains(JigFieldFlag.ENUM);
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
-        return jigFieldAttribute().declarationAnnotations().stream();
+        return jigFieldAttribute.declarationAnnotations().stream();
     }
 }

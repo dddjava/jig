@@ -1,9 +1,13 @@
 package org.dddjava.jig.domain.model.data.members.fields;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.stream.Stream;
 
 /**
@@ -16,6 +20,12 @@ public record JigFieldHeader(JigFieldIdentifier id,
                              JigMemberOwnership ownership,
                              JigTypeReference jigTypeReference,
                              JigFieldAttribute jigFieldAttribute) {
+    public static JigFieldHeader from(JigFieldIdentifier id, JigMemberOwnership jigMemberOwnership, JigTypeReference jigTypeReference,
+                                      JigMemberVisibility jigMemberVisibility, Collection<JigAnnotationReference> declarationAnnotations, EnumSet<JigFieldFlag> flags) {
+        return new JigFieldHeader(id, jigMemberOwnership, jigTypeReference,
+                new JigFieldAttribute(jigMemberVisibility, declarationAnnotations, flags));
+    }
+
     public String simpleText() {
         return jigTypeReference().simpleName() + ' ' + id.name();
     }

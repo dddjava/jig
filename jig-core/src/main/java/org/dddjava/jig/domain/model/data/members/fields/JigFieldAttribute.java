@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.stream.Stream;
 
-public record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
+record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                                 Collection<JigAnnotationReference> declarationAnnotations,
                                 EnumSet<JigFieldFlag> flags) {
     Stream<TypeIdentifier> allTypeIdentifierStream() {

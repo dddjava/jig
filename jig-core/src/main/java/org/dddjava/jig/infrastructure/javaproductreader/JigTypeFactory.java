@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.term.Glossary;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -51,8 +50,7 @@ public class JigTypeFactory {
                 .map(jigMethodDeclaration -> createJigMethod(jigMethodDeclaration, jigTypeGlossary))
                 .collect(groupingBy(jigMethod -> {
                     JigMethodHeader header = jigMethod.jigMethodDeclaration().header();
-                    if (header.jigMethodAttribute().flags().contains(JigMethodFlag.INITIALIZER) ||
-                            header.jigMethodAttribute().flags().contains(JigMethodFlag.STATIC_INITIALIZER)) {
+                    if (header.isStaticOrInstanceInitializer()) {
                         return MethodGrouping.INITIALIZER;
                     }
                     return header.ownership() == JigMemberOwnership.INSTANCE ? MethodGrouping.INSTANCE : MethodGrouping.CLASS;

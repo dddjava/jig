@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldFlag;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -55,7 +54,7 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
     public List<String> enumConstantNames() {
         return staticFields.stream()
                 .map(JigField::jigFieldHeader)
-                .filter(jigFieldHeader -> jigFieldHeader.jigFieldAttribute().flags().contains(JigFieldFlag.ENUM))
+                .filter(jigFieldHeader -> jigFieldHeader.isEnumConstant())
                 // TODO enumの順でソートしないと狂う可能性がある
                 .map(jigFieldHeader -> jigFieldHeader.name())
                 .toList();

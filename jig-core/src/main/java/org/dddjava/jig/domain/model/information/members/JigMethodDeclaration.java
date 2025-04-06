@@ -23,17 +23,17 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     }
 
     public JigMemberVisibility jigMemberVisibility() {
-        return header.jigMethodAttribute().jigMemberVisibility();
+        return header.jigMemberVisibility();
     }
 
     public boolean isAbstract() {
-        return header.jigMethodAttribute().isAbstract();
+        return header.isAbstract();
     }
 
     public Set<TypeIdentifier> associatedTypes() {
         return Stream.concat(
                 instructions.associatedTypeStream(),
-                header.jigMethodAttribute().associatedTypeStream()
+                header.associatedTypeStream()
         ).collect(Collectors.toSet());
     }
 
@@ -42,7 +42,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     }
 
     public Stream<JigTypeReference> argumentStream() {
-        return header.jigMethodAttribute().argumentList().stream();
+        return header.argumentList().stream();
     }
 
     public TypeIdentifier declaringTypeIdentifier() {

@@ -30,20 +30,20 @@ public class Validations {
 
     static Stream<Validation> validationAnnotatedMembers(JigType jigType) {
         Stream<Validation> methodStream = jigType.jigTypeMembers().jigMethodDeclarations().stream()
-                .flatMap(jigMethodDeclaration -> jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream()
+                .flatMap(jigMethodDeclaration -> jigMethodDeclaration.header().declarationAnnotationStream()
                         // TODO 正規表現の絞り込みをやめる
                         .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
                         .map(jigAnnotationReference -> {
                             return new Validation(
                                     jigType.id(),
                                     jigMethodDeclaration.header().nameAndArgumentSimpleText(),
-                                    jigMethodDeclaration.header().jigMethodAttribute().returnType().id(),
+                                    jigMethodDeclaration.header().returnType().id(),
                                     jigAnnotationReference.id(),
                                     jigAnnotationReference.asText()
                             );
                         }));
         Stream<Validation> fieldStream = jigType.jigTypeMembers().allJigFieldStream()
-                .flatMap(jigField -> jigField.jigFieldHeader().jigFieldAttribute().declarationAnnotations().stream()
+                .flatMap(jigField -> jigField.jigFieldHeader().declarationAnnotationStream()
                         // TODO 正規表現の絞り込みをやめる
                         .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
                         .map(jigAnnotationReference -> {

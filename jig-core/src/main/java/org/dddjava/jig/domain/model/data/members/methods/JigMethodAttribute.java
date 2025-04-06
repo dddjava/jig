@@ -17,9 +17,6 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
                           List<JigTypeReference> argumentList,
                           Collection<JigTypeReference> throwTypes,
                           EnumSet<JigMethodFlag> flags) {
-    public boolean isAbstract() {
-        return flags.contains(JigMethodFlag.ABSTRACT);
-    }
 
     public Stream<TypeIdentifier> associatedTypeStream() {
         return Stream.of(

@@ -65,7 +65,7 @@ class AsmFieldVisitorTest {
         var members = TestSupport.buildJigType(MemberAnnotatedClass.class).jigTypeMembers();
         JigField field = members.findFieldByName("field").orElseThrow();
 
-        JigAnnotationReference sut = field.jigFieldHeader().jigFieldAttribute().declarationAnnotations().stream().findFirst().orElseThrow();
+        JigAnnotationReference sut = field.jigFieldHeader().declarationAnnotationStream().findFirst().orElseThrow();
 
         assertEquals(TypeIdentifier.from(VariableAnnotation.class), sut.id());
 

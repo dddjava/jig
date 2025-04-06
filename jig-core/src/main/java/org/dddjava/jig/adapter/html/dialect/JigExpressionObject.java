@@ -75,11 +75,11 @@ class JigExpressionObject {
     }
 
     public String methodReturnLinkText(JigMethod jigMethod) {
-        return linkText(jigMethod.jigMethodDeclaration().header().jigMethodAttribute().returnType());
+        return linkText(jigMethod.jigMethodDeclaration().header().returnType());
     }
 
     public Iterator<String> methodArgumentLinkTexts(JigMethod jigMethod) {
-        return jigMethod.jigMethodDeclaration().header().jigMethodAttribute().argumentList().stream()
+        return jigMethod.jigMethodDeclaration().header().argumentList().stream()
                 .map(this::linkText)
                 .iterator();
     }

@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
@@ -10,7 +9,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
-import java.util.EnumSet;
 import java.util.stream.Stream;
 
 /**
@@ -31,7 +29,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
-        return jigMethodDeclaration.header().jigMethodAttribute().declarationAnnotations().stream();
+        return jigMethodDeclaration.header().declarationAnnotationStream();
     }
 
     public JigMemberVisibility visibility() {
@@ -128,7 +126,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public JigTypeReference methodReturnTypeReference() {
-        return jigMethodDeclaration.header().jigMethodAttribute().returnType();
+        return jigMethodDeclaration.header().returnType();
     }
 
     public String nameAndArgumentSimpleText() {
@@ -144,11 +142,10 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public boolean isProgrammerDefined() {
-        EnumSet<JigMethodFlag> flags = jigMethodDeclaration.header().jigMethodAttribute().flags();
-        return flags.stream().noneMatch(JigMethodFlag::compilerGenerated);
+        return jigMethodDeclaration.header().isProgrammerDefined();
     }
 
     public boolean isRecordComponent() {
-        return jigMethodDeclaration.header().jigMethodAttribute().flags().contains(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
+        return jigMethodDeclaration.header().isRecordComponentAccessor();
     }
 }

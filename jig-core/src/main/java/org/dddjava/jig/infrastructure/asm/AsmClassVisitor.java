@@ -1,13 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
-import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.Instruction;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
@@ -205,12 +202,8 @@ class AsmClassVisitor extends ClassVisitor {
     ClassDeclaration classDeclaration() {
         // lambda合成メソッドを名前でひけるように収集
         Map<String, List<Instruction>> lambdaMethodMap = methodCollector.stream()
-                // lambda合成メソッドは ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC なのでフィルタ
                 .filter(collectedMethod ->
-                        collectedMethod.header().jigMethodAttribute().jigMemberVisibility() == JigMemberVisibility.PRIVATE
-                                && collectedMethod.header().ownership() == JigMemberOwnership.CLASS
-                                && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.SYNTHETIC)
-                                && collectedMethod.header().jigMethodAttribute().flags().contains(JigMethodFlag.LAMBDA_SUPPORT))
+                        collectedMethod.header().isLambdaSyntheticMethod())
                 .collect(toMap(it -> it.header().name(), it -> it.body()));
 
         // method内でlambda式を実装している場合にLambda合成メソッドのInstructionを関連づける

@@ -45,4 +45,12 @@ public record JigFieldHeader(JigFieldIdentifier id,
     public boolean isDeprecated() {
         return jigFieldAttribute.isDeprecated();
     }
+
+    public boolean isEnumConstant() {
+        return jigFieldAttribute().flags().contains(JigFieldFlag.ENUM);
+    }
+
+    public Stream<JigAnnotationReference> declarationAnnotationStream() {
+        return jigFieldAttribute().declarationAnnotations().stream();
+    }
 }

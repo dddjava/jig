@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.*;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodAttribute;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
@@ -121,9 +120,8 @@ class AsmMethodVisitor extends MethodVisitor {
             }
         });
 
-        return new JigMethodHeader(jigMethodIdentifier, ownership,
-                new JigMethodAttribute(AsmUtils.resolveMethodVisibility(access), declarationAnnotationCollector, returnType, parameterList, throwsList, flags)
-        );
+        return JigMethodHeader.from(jigMethodIdentifier, ownership,
+                AsmUtils.resolveMethodVisibility(access), declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
     }
 
     @Override

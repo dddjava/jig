@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
-                                 Collection<JigAnnotationReference> declarationAnnotations,
-                                 JigTypeReference returnType,
-                                 List<JigTypeReference> argumentList,
-                                 Collection<JigTypeReference> throwTypes,
-                                 EnumSet<JigMethodFlag> flags) {
+record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
+                          Collection<JigAnnotationReference> declarationAnnotations,
+                          JigTypeReference returnType,
+                          List<JigTypeReference> argumentList,
+                          Collection<JigTypeReference> throwTypes,
+                          EnumSet<JigMethodFlag> flags) {
     public boolean isAbstract() {
         return flags.contains(JigMethodFlag.ABSTRACT);
     }

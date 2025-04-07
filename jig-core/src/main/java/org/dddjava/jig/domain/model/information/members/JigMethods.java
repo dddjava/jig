@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -38,12 +36,6 @@ public record JigMethods(Collection<JigMethod> methods) {
 
     public boolean empty() {
         return methods.isEmpty();
-    }
-
-    public List<TypeIdentifier> listUsingTypes() {
-        return methods.stream()
-                .flatMap(jigMethod -> jigMethod.usingTypes().list().stream())
-                .collect(Collectors.toList());
     }
 
     public JigMethods filterProgrammerDefined() {

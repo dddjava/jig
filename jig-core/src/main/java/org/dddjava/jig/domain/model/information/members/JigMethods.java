@@ -23,7 +23,7 @@ public record JigMethods(Collection<JigMethod> methods) {
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
                         .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<JigMethod> list() {
@@ -31,7 +31,7 @@ public record JigMethods(Collection<JigMethod> methods) {
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
                         .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public boolean empty() {
@@ -41,13 +41,13 @@ public record JigMethods(Collection<JigMethod> methods) {
     public JigMethods filterProgrammerDefined() {
         return new JigMethods(methods.stream()
                 .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     public JigMethods excludeNotNoteworthyObjectMethod() {
         return new JigMethods(methods.stream()
                 .filter(jigMethod -> !jigMethod.isObjectMethod() || jigMethod.documented())
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     public Stream<JigMethod> stream() {

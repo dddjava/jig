@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * メソッドのバイトコードから必要な情報を抽出するMethodVisitorの実装
@@ -221,7 +220,7 @@ class AsmMethodVisitor extends MethodVisitor {
                 var handleMethodName = handle.getName();
                 var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
                         .map(type1 -> asmType2TypeIdentifier(type1))
-                        .collect(Collectors.toList());
+                        .toList();
                 var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
                 var handleMethodCall = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
 

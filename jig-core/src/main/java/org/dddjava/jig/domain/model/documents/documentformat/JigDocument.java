@@ -5,7 +5,6 @@ import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /**
  * 取り扱うドキュメントの種類
@@ -153,7 +152,7 @@ public enum JigDocument {
 
     public static List<JigDocument> canonical() {
         return Arrays.stream(values())
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public String fileName() {
@@ -164,7 +163,7 @@ public enum JigDocument {
         return Arrays.stream(diagramTypes.split(","))
                 .map(
                         JigDocument::valueOf)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public String label() {

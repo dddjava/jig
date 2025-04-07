@@ -56,7 +56,7 @@ public record JigMethodIdentifier(String value) implements Comparable<JigMethodI
         }
 
         public List<TypeIdentifier> parameterTypeIdentifiers() {
-            return parameterTypeNames.stream().map(TypeIdentifier::valueOf).collect(Collectors.toList());
+            return parameterTypeNames.stream().map(TypeIdentifier::valueOf).toList();
         }
     }
 

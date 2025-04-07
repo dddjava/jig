@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -31,6 +30,6 @@ public class JavaSourceModel {
     }
 
     public JavaSourceModel merge(JavaSourceModel other) {
-        return new JavaSourceModel(Stream.concat(enumModels.stream(), other.enumModels.stream()).collect(Collectors.toList()));
+        return new JavaSourceModel(Stream.concat(enumModels.stream(), other.enumModels.stream()).toList());
     }
 }

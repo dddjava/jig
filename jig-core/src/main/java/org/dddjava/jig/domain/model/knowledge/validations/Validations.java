@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -24,7 +23,7 @@ public class Validations {
     public static Validations from(JigTypes jigTypes) {
         List<Validation> list = jigTypes.orderedStream()
                 .flatMap(Validations::validationAnnotatedMembers)
-                .collect(Collectors.toList());
+                .toList();
         return new Validations(list);
     }
 
@@ -61,6 +60,6 @@ public class Validations {
     public List<Validation> list() {
         return list.stream()
                 .sorted(Comparator.comparing(validation -> validation.typeIdentifier()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

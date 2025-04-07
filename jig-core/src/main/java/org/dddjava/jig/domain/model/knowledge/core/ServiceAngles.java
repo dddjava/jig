@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * サービスの切り口一覧
@@ -29,7 +28,7 @@ public class ServiceAngles {
     public List<ServiceAngle> list() {
         return list.stream()
                 .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodIdentifier().value()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ServiceAngles(List<ServiceAngle> list) {

@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 public class JigConfig {
 
@@ -31,21 +30,21 @@ public class JigConfig {
         List<JigDocument> toExclude = documentTypesToExclude();
         return documentTypesToInclude().stream()
                 .filter(each -> !toExclude.contains(each))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     List<JigDocument> documentTypesToExclude() {
         if (documentTypesExclude.isEmpty()) return List.of();
         return documentTypesExclude.stream()
                 .map(JigDocument::valueOf)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     List<JigDocument> documentTypesToInclude() {
         if (documentTypes.isEmpty()) return JigDocument.canonical();
         return documentTypes.stream()
                 .map(JigDocument::valueOf)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public JigProperties asProperties(Project project) {

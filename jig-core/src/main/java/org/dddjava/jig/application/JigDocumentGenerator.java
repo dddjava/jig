@@ -28,7 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
 
@@ -77,7 +76,7 @@ public class JigDocumentGenerator {
         List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
                 .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
-                .collect(Collectors.toList());
+                .toList();
         jigService.notifyReportInformation();
         return handleResults;
     }

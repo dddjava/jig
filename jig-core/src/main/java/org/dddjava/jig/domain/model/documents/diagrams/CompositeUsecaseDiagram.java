@@ -20,7 +20,7 @@ public class CompositeUsecaseDiagram implements DiagramSourceWriter {
     public CompositeUsecaseDiagram(ServiceAngles serviceAngles) {
         this.list = serviceAngles.list().stream()
                 .map(CompositeUsecases::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {

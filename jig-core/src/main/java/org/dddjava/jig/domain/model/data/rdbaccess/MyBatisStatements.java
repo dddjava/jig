@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * SQL一覧
@@ -45,7 +44,7 @@ public class MyBatisStatements {
     public MyBatisStatements filterRelationOn(List<MethodCall> methodCalls) {
         List<MyBatisStatement> myBatisStatements = list.stream()
                 .filter(myBatisStatement -> myBatisStatement.identifier().matches(methodCalls))
-                .collect(Collectors.toList());
+                .toList();
         return new MyBatisStatements(myBatisStatements, sqlReadStatus);
     }
 

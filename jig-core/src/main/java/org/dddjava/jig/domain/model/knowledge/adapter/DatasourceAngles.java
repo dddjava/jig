@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFa
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * データソースの切り口一覧
@@ -30,6 +29,6 @@ public class DatasourceAngles {
     public List<DatasourceAngle> list() {
         return list.stream()
                 .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodIdentifier().value()))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

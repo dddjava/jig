@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * メソッドの気になるところ
@@ -15,7 +14,7 @@ public record MethodWorries(List<MethodWorry> list) {
     public static MethodWorries from(JigMethod method, JigType contextJigType) {
         return new MethodWorries(Arrays.stream(MethodWorry.values())
                 .filter(methodWorry -> methodWorry.judge(method, contextJigType))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     public boolean contains(MethodWorry... methodWorries) {

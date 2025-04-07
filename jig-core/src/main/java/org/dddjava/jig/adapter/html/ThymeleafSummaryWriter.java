@@ -14,7 +14,8 @@ import org.thymeleaf.context.Context;
 import java.nio.file.Path;
 import java.util.*;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Thymeleafを使用して概要HTMLを出力する
@@ -48,7 +49,7 @@ public class ThymeleafSummaryWriter {
                 .flatMap(Set::stream)
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
                 .map(packageIdentifier -> jigPackage(packageIdentifier))
-                .collect(toList());
+                .toList();
 
         var contextMap = Map.of(
                 "baseComposite", baseComposite,

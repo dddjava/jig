@@ -9,8 +9,6 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * 文字列比較を行なっているメソッド
  *
@@ -44,7 +42,7 @@ public class StringComparingMethodList {
         );
         return new StringComparingMethodList(target
                 .filter(jigMethod -> jigMethod.isCall(jigMethodIdentifier))
-                .collect(toList()));
+                .toList());
     }
 
     public List<JigMethod> list() {

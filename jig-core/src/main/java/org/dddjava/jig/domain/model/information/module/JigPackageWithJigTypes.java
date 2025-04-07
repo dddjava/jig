@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * パッケージ単位のJigTypeのグループ
  */
@@ -22,6 +20,6 @@ public record JigPackageWithJigTypes(PackageIdentifier packageIdentifier, List<J
         return map.entrySet().stream()
                 .map(entity -> new JigPackageWithJigTypes(entity.getKey(), entity.getValue()))
                 .sorted(Comparator.comparing(jigPackageWithJigTypes -> jigPackageWithJigTypes.packageIdentifier().asText()))
-                .collect(toList());
+                .toList();
     }
 }

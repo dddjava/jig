@@ -15,7 +15,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
@@ -65,7 +64,7 @@ public class GradleProject {
         JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
         List<SourceSet> sourceSets = convention.getSourceSets().stream()
                 .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
-                .collect(Collectors.toList());
+                .toList();
         return sourceSets;
     }
 

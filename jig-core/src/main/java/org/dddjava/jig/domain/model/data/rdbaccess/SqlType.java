@@ -8,8 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * SQLの種類
  */
@@ -26,7 +24,7 @@ public enum SqlType {
     SqlType(String... patterns) {
         this.patterns = Stream.of(patterns)
                 .map(pattern -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
-                .collect(toList());
+                .toList();
     }
 
     public Table extractTable(String sql) {

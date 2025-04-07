@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class IndexView {
 
@@ -85,12 +84,12 @@ public class IndexView {
 
         public List<String> imageFileNames() {
             if (diagramFormat == JigDiagramFormat.DOT) return List.of();
-            return srcList.stream().filter(name -> name.endsWith(diagramFormat.extension())).collect(Collectors.toList());
+            return srcList.stream().filter(name -> name.endsWith(diagramFormat.extension())).toList();
         }
 
         public List<String> otherFileNames() {
             if (diagramFormat == JigDiagramFormat.DOT) return srcList;
-            return srcList.stream().filter(name -> !name.endsWith(diagramFormat.extension())).collect(Collectors.toList());
+            return srcList.stream().filter(name -> !name.endsWith(diagramFormat.extension())).toList();
         }
     }
 }

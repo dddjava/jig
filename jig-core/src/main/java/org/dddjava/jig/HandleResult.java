@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -78,7 +77,7 @@ public class HandleResult {
         return outputFilePaths.stream()
                 .map(Path::getFileName)
                 .map(Path::toString)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

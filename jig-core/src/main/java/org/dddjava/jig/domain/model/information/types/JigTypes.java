@@ -37,7 +37,7 @@ public class JigTypes {
     public List<JigType> listCollectionType() {
         return list.stream()
                 .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.コレクション)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<JigType> list() {
@@ -47,7 +47,7 @@ public class JigTypes {
     public List<JigType> listMatches(Predicate<JigType> predicate) {
         return list.stream()
                 .filter(predicate)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public JigTypes filter(Predicate<JigType> predicate) {

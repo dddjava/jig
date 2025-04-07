@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFa
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * サービスメソッド
@@ -52,7 +51,7 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
                 .filter(typeIdentifier -> primaryType().filter(primaryType -> primaryType.equals(typeIdentifier)).isEmpty())
                 .filter(typeIdentifier -> !requireTypes().contains(typeIdentifier))
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Optional<TypeIdentifier> primaryType() {

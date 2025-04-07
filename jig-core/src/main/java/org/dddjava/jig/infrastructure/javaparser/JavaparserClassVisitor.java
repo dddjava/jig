@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
@@ -52,8 +51,8 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         TypeIdentifier typeIdentifier = visitClassOrInterfaceOrEnumOrRecord(node, arg);
 
         List<EnumConstant> constants = node.getEntries().stream()
-                .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).collect(Collectors.toList())))
-                .collect(Collectors.toList());
+                .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
+                .toList();
         enumModel = new EnumModel(typeIdentifier, constants);
         super.visit(node, arg);
     }
@@ -62,7 +61,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     public void visit(ConstructorDeclaration n, GlossaryRepository arg) {
         // enumの時だけコンストラクタの引数名を取る
         if (enumModel != null) {
-            enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).collect(Collectors.toList()));
+            enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).toList());
         }
         super.visit(n, arg);
     }

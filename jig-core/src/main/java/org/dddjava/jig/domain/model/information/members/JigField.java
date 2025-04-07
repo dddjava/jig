@@ -31,6 +31,6 @@ public record JigField(JigFieldHeader jigFieldHeader, Term term) {
     }
 
     public String simpleNameWithGenerics() {
-        return jigFieldHeader().simpleNameWithGenerics();
+        return jigFieldHeader.simpleNameWithGenerics();
     }
 }

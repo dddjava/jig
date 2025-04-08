@@ -6,6 +6,12 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+/**
+ * メソッドからの情報の読み取り
+ *
+ * 1つのVisitorで色々やると、構造によって予期しない読み方をすることがあるので分けている。
+ * 現在はコメントしか読んでいないが、実装からしか取得できない情報を扱う場合はここで扱う。
+ */
 class JavaparserMethodVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     private final TypeIdentifier typeIdentifier;
 

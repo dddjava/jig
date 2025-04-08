@@ -22,6 +22,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * クラスからの情報の読み取り
+ *
+ * 主な役割はコメントを読むことだが、enumの情報はクラスファイルには残っていないのでここで取得している。
+ */
 class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 

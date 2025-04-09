@@ -25,6 +25,12 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * `#jig` で使用するExpressionObject
+ *
+ * Thymeleafではメソッド呼び出しを直接できるが、domainのメソッドを直接呼び出すとコンパイルチェックが効かず、
+ * リファクタリングや未使用の削除をする際のブレーキになってしまうため、極力このオブジェクト経由でアクセスするようにする。
+ */
 class JigExpressionObject {
     private static final Logger logger = LoggerFactory.getLogger(JigExpressionObject.class);
 

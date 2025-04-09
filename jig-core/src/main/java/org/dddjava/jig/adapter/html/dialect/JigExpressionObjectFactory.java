@@ -15,12 +15,12 @@ class JigExpressionObjectFactory implements IExpressionObjectFactory {
 
     @Override
     public Set<String> getAllExpressionObjectNames() {
-        return Set.of("jig", "jigEntrypoint");
+        return Set.of(JigExpressionObject.NAME, JigEntrypointExpressionObject.NAME);
     }
 
     @Override
     public Object buildObject(IExpressionContext context, String expressionObjectName) {
-        if (expressionObjectName.equals("jigEntrypoint")) {
+        if (expressionObjectName.equals(JigEntrypointExpressionObject.NAME)) {
             return new JigEntrypointExpressionObject(context);
         }
         return new JigExpressionObject(context, jigDocumentContext);

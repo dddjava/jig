@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  * リファクタリングや未使用の削除をする際のブレーキになってしまうため、極力このオブジェクト経由でアクセスするようにする。
  */
 class JigExpressionObject {
+    public static final String NAME = "jig";
     private static final Logger logger = LoggerFactory.getLogger(JigExpressionObject.class);
 
     private final IExpressionContext context;

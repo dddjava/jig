@@ -8,7 +8,7 @@ import org.thymeleaf.context.IExpressionContext;
  * entrypoint向けのExpressionObject
  */
 class JigEntrypointExpressionObject {
-
+    public static final String NAME = "jigEntrypoint";
     private final IExpressionContext context;
 
     public JigEntrypointExpressionObject(IExpressionContext context) {

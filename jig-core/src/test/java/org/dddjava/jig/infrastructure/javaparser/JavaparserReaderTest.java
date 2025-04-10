@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.application.GlossaryRepository;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
@@ -9,6 +10,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -95,6 +97,22 @@ class JavaparserReaderTest {
                 "method", List.of()).value(), TermKind.メソッド);
 
         assertEquals("メソッドコメント", term.title());
+    }
+
+    @Disabled("未実装")
+    @Test
+    void 典型的なクラスからフィールドを読み取れる() {
+        Path path = Path.of("ut", "ParseTargetCanonicalClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var term = glossary.termOf(JigFieldIdentifier.from(
+                TypeIdentifier.from(ParseTargetCanonicalClass.class),
+                "field").value(), TermKind.フィールド);
+
+        assertEquals("フィールドコメント", term.title());
     }
 
     private Path getJavaFilePath(Path requireJavaFilePath) {

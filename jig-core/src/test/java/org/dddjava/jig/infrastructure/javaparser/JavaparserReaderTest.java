@@ -1,9 +1,12 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.application.GlossaryRepository;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,7 @@ import testing.TestSupport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -63,6 +67,34 @@ class JavaparserReaderTest {
                 １行目がタイトルとして採用。２行目以降に書かれているものが本文として読み取られる。
                 ここに記述されている linkタグ や codeタグ はテキストとして可読な形に置き換えられる。
                 インラインでないJavadocタグは本文には含まれない。""", term.description());
+    }
+
+    @Test
+    void 典型的なクラスから読み取れる() {
+        Path path = Path.of("ut", "ParseTargetCanonicalClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var term = glossary.termOf(TypeIdentifier.from(ParseTargetCanonicalClass.class).value(), TermKind.クラス);
+
+        assertEquals("クラスコメント", term.title());
+    }
+
+    @Test
+    void 典型的なクラスからメソッドを読み取れる() {
+        Path path = Path.of("ut", "ParseTargetCanonicalClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var term = glossary.termOf(JigMethodIdentifier.from(
+                TypeIdentifier.from(ParseTargetCanonicalClass.class),
+                "method", List.of()).value(), TermKind.メソッド);
+
+        assertEquals("メソッドコメント", term.title());
     }
 
     private Path getJavaFilePath(Path requireJavaFilePath) {

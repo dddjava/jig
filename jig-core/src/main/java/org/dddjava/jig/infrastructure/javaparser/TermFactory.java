@@ -35,6 +35,12 @@ public class TermFactory {
         return new Term(identifier, title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
     }
 
+    public static Term fromField(TermIdentifier identifier, String javadocDescriptionText) {
+        var text = normalize(javadocDescriptionText);
+        var title = summaryText(text);
+        return new Term(identifier, title, bodyText(title, text), TermKind.フィールド, javadocDescriptionText);
+    }
+
     /**
      * インラインのlinkタグをテキストにするためのパターン
      */

@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.application.GlossaryRepository;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.term.Glossary;
@@ -64,5 +65,10 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     @Override
     public TermIdentifier fromMethodImplementationDeclarator(TypeIdentifier typeIdentifier, JavaMethodDeclarator methodImplementationDeclarator) {
         return new TermIdentifier(typeIdentifier.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
+    }
+
+    @Override
+    public TermIdentifier fromFieldIdentifier(JigFieldIdentifier jigFieldIdentifier) {
+        return new TermIdentifier(jigFieldIdentifier.fqn());
     }
 }

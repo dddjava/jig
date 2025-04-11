@@ -20,4 +20,8 @@ public record JigFieldIdentifier(String value) {
     public TypeIdentifier declaringTypeIdentifier() {
         return TypeIdentifier.valueOf(value.split("#")[0]);
     }
+
+    public String fqn() {
+        return value;
+    }
 }

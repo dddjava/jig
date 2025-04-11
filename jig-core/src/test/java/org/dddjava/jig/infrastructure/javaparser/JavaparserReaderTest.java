@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -99,7 +98,6 @@ class JavaparserReaderTest {
         assertEquals("メソッドコメント", term.title());
     }
 
-    @Disabled("未実装")
     @Test
     void 典型的なクラスからフィールドを読み取れる() {
         Path path = Path.of("ut", "ParseTargetCanonicalClass.java");

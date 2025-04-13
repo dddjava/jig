@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +27,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> TermFactory.fromClass(termIdentifier, typeIdentifier.asSimpleText()));
+                .orElseGet(() -> Term.simple(termIdentifier, typeIdentifier.asSimpleText(), TermKind.クラス));
     }
 
     @Override
@@ -39,7 +38,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> TermFactory.fromPackage(termIdentifier, packageIdentifier.simpleName()));
+                .orElseGet(() -> Term.simple(termIdentifier, packageIdentifier.simpleName(), TermKind.パッケージ));
     }
 
     @Override

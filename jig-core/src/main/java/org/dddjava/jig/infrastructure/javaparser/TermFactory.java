@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * Term自体は取り回し良くしておきたいので、Termには持たないことにした。
  * しかし生成過程はそれぞれに配置するには冗長なので、このクラスに分離しておく。
  */
-public class TermFactory {
+class TermFactory {
 
     public static Term fromPackage(TermIdentifier identifier, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);

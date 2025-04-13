@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
+import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
@@ -11,7 +13,6 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageRelatio
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
-import org.dddjava.jig.infrastructure.javaparser.TermFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -76,7 +77,7 @@ class PackageEdgeDiagramTest {
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageTerm(any()))
                 .thenAnswer(invocationOnMock ->
-                        TermFactory.fromPackage(new TermIdentifier("dummy"), "dummy"));
+                        Term.simple(new TermIdentifier("dummy"), "dummy", TermKind.パッケージ));
 
         var list = sut.listUnique().stream()
                 .map(packageRelation -> "\"%s\" -> \"%s\";".formatted(packageRelation.from().asText(), packageRelation.to().asText()))

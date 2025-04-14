@@ -9,6 +9,11 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import java.util.Set;
 
+/**
+ * カスタムDialect
+ *
+ * `jig:xxx` の形で使用する。
+ */
 public class JigDialect implements IExpressionObjectDialect, IProcessorDialect {
     JigDocumentContext jigDocumentContext;
 
@@ -34,7 +39,8 @@ public class JigDialect implements IExpressionObjectDialect, IProcessorDialect {
     }
 
     /**
-     * 属性のデフォルトプレフィックス。 `jig:xxx` の形で使用できる。
+     * 属性のデフォルトプレフィックス。
+     * TemplateEngineに登録する際に他のプレフィックスに変更できるので「デフォルト」となっている。
      * {@link IProcessorDialect}
      */
     @Override

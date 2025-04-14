@@ -10,6 +10,13 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 import java.util.Optional;
 
+/**
+ * Optionalを扱うためのProcessor
+ *
+ * `jig:opt-utext="${expression}"` として使用する。
+ * 値は `Object#toString()` で出力し、HTMLエスケープしない（utext相当）。
+ * `Optional#empty()` の場合はタグを削除する。
+ */
 class JigOptionalUtextAttributeProcessor extends AbstractAttributeTagProcessor {
 
     public static final String ATTR_NAME = "opt-utext";

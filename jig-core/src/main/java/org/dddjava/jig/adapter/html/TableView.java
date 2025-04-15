@@ -27,7 +27,7 @@ public class TableView {
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "terms", glossary,
+                "glossary", glossary,
                 "navigationLetters", navigationLetters(glossary)
         );
 

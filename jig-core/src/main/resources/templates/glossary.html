@@ -35,7 +35,7 @@
     </details>
 
     <section class="term-list">
-        <th-block th:each="term : ${terms.list()}">
+        <th-block th:each="term : ${#jig.termList(glossary)}">
             <nav class="letter-navigation class" th:id="${#jig.nearLetter(navigationLetters, term)}">
                 <a th:each="letter : ${navigationLetters}" th:href="'#' + ${letter}" th:text="${letter}">a</a>
             </nav>

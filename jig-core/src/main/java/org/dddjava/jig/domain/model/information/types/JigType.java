@@ -85,7 +85,7 @@ public class JigType {
 
     public TypeKind typeKind() {
         // 互換のためにTypeKindを返す形を維持するための実装。TypeKindはあまり活用できていないので、別の何かで再定義したい
-        return switch (jigTypeHeader.jigTypeKind()) {
+        return switch (jigTypeHeader.javaTypeDeclarationKind()) {
             case RECORD -> TypeKind.レコード型;
             case ENUM -> jigTypeHeader.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
                     ? TypeKind.抽象列挙型 : TypeKind.列挙型;

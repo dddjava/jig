@@ -82,9 +82,9 @@ class AsmClassVisitor extends ClassVisitor {
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }
 
-    private JigTypeHeader jigTypeHeader(JigTypeKind jigTypeKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
+    private JigTypeHeader jigTypeHeader(JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
         // アノテーションはまだ取得していないので空で作る
-        return new JigTypeHeader(this.typeIdentifier, jigTypeKind, new JigTypeAttributeData(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
+        return new JigTypeHeader(this.typeIdentifier, javaTypeDeclarationKind, new JigTypeAttributeData(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
     }
 
     @Override
@@ -140,7 +140,7 @@ class AsmClassVisitor extends ClassVisitor {
             if (isStaticNestedClass) {
                 jigTypeModifiers.add(JigTypeModifier.STATIC);
             }
-            jigTypeHeader = new JigTypeHeader(jigTypeHeader.id(), jigTypeHeader.jigTypeKind(),
+            jigTypeHeader = new JigTypeHeader(jigTypeHeader.id(), jigTypeHeader.javaTypeDeclarationKind(),
                     new JigTypeAttributeData(
                             jigTypeHeader.jigTypeAttributeData().jigTypeVisibility(),
                             jigTypeModifiers,
@@ -185,14 +185,14 @@ class AsmClassVisitor extends ClassVisitor {
     /**
      * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.1">The ClassFile Structure</a> のaccess_flag
      */
-    private JigTypeKind resolveTypeKind(int access) {
-        if ((access & Opcodes.ACC_ENUM) != 0) return JigTypeKind.ENUM;
-        if ((access & Opcodes.ACC_INTERFACE) != 0) return JigTypeKind.INTERFACE;
-        if ((access & Opcodes.ACC_ANNOTATION) != 0) return JigTypeKind.ANNOTATION;
+    private JavaTypeDeclarationKind resolveTypeKind(int access) {
+        if ((access & Opcodes.ACC_ENUM) != 0) return JavaTypeDeclarationKind.ENUM;
+        if ((access & Opcodes.ACC_INTERFACE) != 0) return JavaTypeDeclarationKind.INTERFACE;
+        if ((access & Opcodes.ACC_ANNOTATION) != 0) return JavaTypeDeclarationKind.ANNOTATION;
         // ASM独自
-        if ((access & Opcodes.ACC_RECORD) != 0) return JigTypeKind.RECORD;
+        if ((access & Opcodes.ACC_RECORD) != 0) return JavaTypeDeclarationKind.RECORD;
         // 不明なものはCLASSにしておく
-        return JigTypeKind.CLASS;
+        return JavaTypeDeclarationKind.CLASS;
     }
 
     public JigTypeHeader jigTypeHeader() {

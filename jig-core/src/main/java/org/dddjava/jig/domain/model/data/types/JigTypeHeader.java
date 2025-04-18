@@ -6,13 +6,13 @@ import java.util.*;
  * JSL`NormalClassDeclaration` の `ClassBody` 以外で得られる情報
  *
  * @param id                   完全修飾クラス名
- * @param jigTypeKind
+ * @param javaTypeDeclarationKind
  * @param jigTypeAttributeData
  * @param baseTypeDataBundle   親クラス及び実装インタフェース
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">jls/Chapter 8. Classes</a>
  */
 public record JigTypeHeader(TypeIdentifier id,
-                            JigTypeKind jigTypeKind,
+                            JavaTypeDeclarationKind javaTypeDeclarationKind,
                             JigTypeAttributeData jigTypeAttributeData,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
@@ -28,7 +28,7 @@ public record JigTypeHeader(TypeIdentifier id,
      * FQNのみで生成する。主にテスト用。
      */
     public static JigTypeHeader simple(String fqn) {
-        return new JigTypeHeader(TypeIdentifier.valueOf(fqn), JigTypeKind.CLASS, JigTypeAttributeData.simple(), JigBaseTypeDataBundle.simple());
+        return new JigTypeHeader(TypeIdentifier.valueOf(fqn), JavaTypeDeclarationKind.CLASS, JigTypeAttributeData.simple(), JigBaseTypeDataBundle.simple());
     }
 
     public String simpleName() {

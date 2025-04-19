@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.stream.Stream;
 
+/**
+ * フィールドの属性
+ */
 record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                                 Collection<JigAnnotationReference> declarationAnnotations,
                                 EnumSet<JigFieldFlag> flags) {

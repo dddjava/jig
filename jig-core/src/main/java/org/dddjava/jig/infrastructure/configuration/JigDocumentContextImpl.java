@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;

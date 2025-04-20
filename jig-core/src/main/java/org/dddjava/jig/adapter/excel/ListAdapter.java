@@ -4,7 +4,7 @@ import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigTypesWithRelationships;
-import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information;
 
 import org.dddjava.jig.application.JigDataProvider;
-import org.dddjava.jig.domain.model.data.term.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.List;

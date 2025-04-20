@@ -3,9 +3,9 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 /**

@@ -10,7 +10,7 @@ import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

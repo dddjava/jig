@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.information.types;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
-import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
-import org.dddjava.jig.domain.model.data.term.TermKind;
+import org.dddjava.jig.domain.model.data.terms.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Collection;

@@ -1,9 +1,9 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
-import org.dddjava.jig.domain.model.data.term.TermKind;
+import org.dddjava.jig.domain.model.data.terms.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;

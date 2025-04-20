@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.excel;
 
-import org.dddjava.jig.domain.model.data.term.Glossary;
-import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.terms.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.nio.file.Path;

@@ -1,6 +1,6 @@
 package testing;
 
-import org.dddjava.jig.domain.model.data.term.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;

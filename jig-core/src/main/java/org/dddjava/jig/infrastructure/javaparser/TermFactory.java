@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.term.Term;
-import org.dddjava.jig.domain.model.data.term.TermIdentifier;
-import org.dddjava.jig.domain.model.data.term.TermKind;
+import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermKind;
 
 import java.util.regex.Pattern;
 import java.util.stream.Stream;

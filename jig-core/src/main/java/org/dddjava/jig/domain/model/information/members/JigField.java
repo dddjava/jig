@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.term;
+package org.dddjava.jig.domain.model.data.terms;
 
 import java.util.Collection;
 import java.util.Comparator;

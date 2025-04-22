@@ -68,7 +68,7 @@ public class GradleProject {
     }
 
     public SourceBasePaths rawSourceLocations() {
-        SourceBasePaths sourceBasePaths = allDependencyProjectsFrom(project)
+        return allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
                 .map(gradleProject ->
                         new SourceBasePaths(
@@ -77,7 +77,6 @@ public class GradleProject {
                         ))
                 .reduce(SourceBasePaths::merge)
                 .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));
-        return sourceBasePaths;
     }
 
     private Stream<Project> allDependencyProjectsFrom(Project root) {

@@ -62,10 +62,9 @@ public class GradleProject {
     @SuppressWarnings("deprecation")
     private List<SourceSet> sourceSets() {
         JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
-        List<SourceSet> sourceSets = convention.getSourceSets().stream()
+        return convention.getSourceSets().stream()
                 .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
                 .toList();
-        return sourceSets;
     }
 
     public SourceBasePaths rawSourceLocations() {

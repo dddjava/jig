@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -47,23 +48,19 @@ public class GradleProject {
     }
 
     private boolean isNonJavaProject(Project root) {
-        JavaPluginExtension extension = findJavaPluginExtension(root);
-        return extension == null;
+        return findJavaPluginExtension(root).isEmpty();
     }
 
-    private static JavaPluginExtension findJavaPluginExtension(Project root) {
-        return root.getExtensions().findByType(JavaPluginExtension.class);
+    private static Optional<JavaPluginExtension> findJavaPluginExtension(Project root) {
+        return Optional.ofNullable(root.getExtensions().findByType(JavaPluginExtension.class));
     }
 
     private List<SourceSet> sourceSets() {
-        JavaPluginExtension extension = findJavaPluginExtension(project);
-        if (extension != null) {
-            return extension.getSourceSets().stream()
-                    .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
-                    .toList();
-        }
-        return List.of();
-
+        return findJavaPluginExtension(project)
+                .map(extension -> extension.getSourceSets().stream()
+                        .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
+                        .toList())
+                .orElse(List.of());
     }
 
     public SourceBasePaths rawSourceLocations() {

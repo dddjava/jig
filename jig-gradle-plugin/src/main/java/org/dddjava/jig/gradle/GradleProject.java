@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -33,7 +32,7 @@ public class GradleProject {
     }
 
     public Set<Path> classPaths() {
-        return sourceSets().stream()
+        return sourceSets()
                 .map(SourceSet::getOutput)
                 .flatMap(output -> Stream.concat(output.getClassesDirs().getFiles().stream(), Stream.of(output.getResourcesDir())))
                 .map(File::toPath)
@@ -41,7 +40,7 @@ public class GradleProject {
     }
 
     public Set<Path> sourcePaths() {
-        return sourceSets().stream()
+        return sourceSets()
                 .flatMap(set -> set.getJava().getSrcDirs().stream())
                 .map(File::toPath)
                 .collect(toSet());
@@ -55,12 +54,11 @@ public class GradleProject {
         return Optional.ofNullable(root.getExtensions().findByType(JavaPluginExtension.class));
     }
 
-    private List<SourceSet> sourceSets() {
+    private Stream<SourceSet> sourceSets() {
         return findJavaPluginExtension(project)
-                .map(extension -> extension.getSourceSets().stream()
-                        .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
-                        .toList())
-                .orElse(List.of());
+                .stream()
+                .flatMap(extension -> extension.getSourceSets().stream()
+                        .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME)));
     }
 
     public SourceBasePaths rawSourceLocations() {

@@ -66,7 +66,8 @@ public class JigConfig {
     private Path defaultOutputDirectory(Project project) {
         Path path = Paths.get(getOutputDirectory());
         if (path.isAbsolute()) return path;
-        return project.getBuildDir().toPath().resolve("jig");
+        var buildDirectory = project.getLayout().getBuildDirectory();
+        return buildDirectory.getAsFile().get().toPath().resolve("jig");
     }
 
     public String getModelPattern() {

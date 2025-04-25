@@ -93,14 +93,6 @@ public class GradleProject {
 
     private boolean implementationConfiguration(Configuration configuration) {
         String name = configuration.getName();
-        if ("implementation".equals(name)) return true;
-
-        // Gradle7でcompileスコープが削除されたが、後方互換のため対応しておく
-        if ("compile".equals(name)) {
-            logger.warn("Gradle7で削除された compile が使用されています。JIGでもこちらの対応は今後削除される予定です。 https://docs.gradle.org/current/userguide/upgrading_version_6.html#sec:configuration_removal");
-            return true;
-        }
-
-        return false;
+        return "implementation".equals(name);
     }
 }

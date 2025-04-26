@@ -14,9 +14,6 @@ jig:
   # Domain class pattern (regular expression)
   #pattern:
   #  domain: .+\.domain\.(model|type)\..+
-  # Diagram link prefix: Used when linking to source code (SVG only)
-  #link:
-  #  prefix: <disable>
 
 # Root directory to read information
 project:

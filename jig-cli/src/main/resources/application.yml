@@ -1,0 +1,29 @@
+logging:
+  level:
+    root: WARN
+    org.dddjava.jig: INFO
+
+jig:
+  # Output targets (multiple specifications with commas)
+  #document:
+  #  types: ServiceMethodCallHierarchyDiagram,PackageRelationDiagram,BusinessRuleList
+  output:
+    directory: ./build/jig
+    diagram:
+      format: svg
+  # Domain class pattern (regular expression)
+  #pattern:
+  #  domain: .+\.domain\.(model|type)\..+
+  # Diagram link prefix: Used when linking to source code (SVG only)
+  #link:
+  #  prefix: <disable>
+
+# Root directory to read information
+project:
+  path: ./
+
+# Directories to read information (Gradle standard)
+directory:
+  classes: build/classes/java/main
+  resources: build/resources/main
+  sources: src/main/java

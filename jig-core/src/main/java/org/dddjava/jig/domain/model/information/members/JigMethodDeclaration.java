@@ -48,4 +48,8 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     public TypeIdentifier declaringTypeIdentifier() {
         return header.id().tuple().declaringTypeIdentifier();
     }
+
+    public String sequenceText() {
+        return null;
+    }
 }

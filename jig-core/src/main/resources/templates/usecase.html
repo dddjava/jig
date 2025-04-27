@@ -36,6 +36,9 @@
                             b --> c
                     </pre>
 
+                    <pre class="mermaid" th:utext="${#jig.sequenceFor(method)}">
+                    </pre>
+
                     <dl class="depends" th:with="methodReturn=${method.methodReturnTypeReference().id()}">
                         <dt th:if="${#jig.hasArgument(method)}">要求するもの（引数）</dt>
                         <dd th:each="argText : ${#jig.methodArgumentLinkTexts(method)}" th:utext="${argText}">xxx</dd>

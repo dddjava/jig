@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.html.dialect;
 
+import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.TypeMermaidDiagram;
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
@@ -195,5 +196,9 @@ class JigExpressionObject {
             if (compared >= 0) return letter;
         }
         return letters.get(letters.size() - 1);
+    }
+
+    public String sequenceFor(JigMethod jigMethod) {
+        return SequenceMermaidDiagram.textFor(jigMethod);
     }
 }

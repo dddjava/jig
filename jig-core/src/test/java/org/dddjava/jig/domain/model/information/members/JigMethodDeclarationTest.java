@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.members;
 
+import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
@@ -31,7 +32,7 @@ class JigMethodDeclarationTest {
                 instructions
         );
 
-        String actual = sut.mermaidSequenceDiagram();
+        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(sut);
 
         assertEquals("""
                         sequenceDiagram

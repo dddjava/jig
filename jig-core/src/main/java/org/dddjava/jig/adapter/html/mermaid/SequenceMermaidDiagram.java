@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  */
 public class SequenceMermaidDiagram {
 
-    public String textFor(JigMethod jigMethod) {
+    public static String textFor(JigMethod jigMethod) {
         return mermaidSequenceDiagram(jigMethod.jigMethodDeclaration());
     }
 

@@ -50,6 +50,34 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     }
 
     public String sequenceText() {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append("sequenceDiagram\n");
+
+        TypeIdentifier caller = declaringTypeIdentifier();
+
+        instructions.methodCallStream().forEach(methodCall -> {
+            TypeIdentifier callee = methodCall.methodOwner();
+            String methodName = methodCall.methodName();
+            TypeIdentifier returnType = methodCall.returnType();
+
+            // Format arguments
+            String args = methodCall.argumentTypes().isEmpty() ? 
+                          "()" : 
+                          "(" + methodCall.argumentTypes().stream()
+                                .map(TypeIdentifier::asSimpleText)
+                                .collect(Collectors.joining(", ")) + ")";
+
+            // Add call line
+            sb.append("    ").append(caller.asSimpleText())
+              .append(" ->>+ ").append(callee.asSimpleText())
+              .append(": ").append(methodName).append(args).append("\n");
+
+            // Add return line
+            sb.append("    ").append(callee.asSimpleText())
+              .append(" -->>- ").append(caller.asSimpleText())
+              .append(": ").append(returnType.asSimpleText()).append("\n");
+        });
+
+        return sb.toString();
     }
 }

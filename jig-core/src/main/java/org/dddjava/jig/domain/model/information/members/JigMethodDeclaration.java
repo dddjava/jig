@@ -49,7 +49,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return header.id().tuple().declaringTypeIdentifier();
     }
 
-    public String sequenceText() {
+    public String mermaidSequenceDiagram() {
         StringBuilder sb = new StringBuilder();
         sb.append("sequenceDiagram\n");
 

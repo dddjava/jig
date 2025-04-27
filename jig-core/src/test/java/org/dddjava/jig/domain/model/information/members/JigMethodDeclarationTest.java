@@ -31,7 +31,7 @@ class JigMethodDeclarationTest {
                 instructions
         );
 
-        String actual = sut.sequenceText();
+        String actual = sut.mermaidSequenceDiagram();
 
         assertEquals("""
                         sequenceDiagram

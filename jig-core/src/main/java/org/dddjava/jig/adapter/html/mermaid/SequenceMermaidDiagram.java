@@ -50,10 +50,15 @@ public class SequenceMermaidDiagram {
 
             sb.append(args).append("\n");
 
-            // Add return line
-            sb.append("    ").append(callee.asSimpleText())
-                    .append(" -->>- ").append(caller.asSimpleText())
-                    .append(": ").append(returnType.asSimpleText()).append("\n");
+            // For void return types, use deactivate instead of return arrow
+            if (returnType.asSimpleText().equals("void")) {
+                sb.append("    deactivate ").append(callee.asSimpleText()).append("\n");
+            } else {
+                // Add return line for non-void return types
+                sb.append("    ").append(callee.asSimpleText())
+                        .append(" -->>- ").append(caller.asSimpleText())
+                        .append(": ").append(returnType.asSimpleText()).append("\n");
+            }
         });
 
         return sb.toString();

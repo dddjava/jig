@@ -65,7 +65,7 @@ class SequenceMermaidDiagramTest {
         assertEquals("""
                         sequenceDiagram
                             CallerClass ->>+ CalleeClass: new CalleeClass(Param1, Param2)
-                            CalleeClass -->>- CallerClass: void
+                            deactivate CalleeClass
                         """,
                 actual
         );

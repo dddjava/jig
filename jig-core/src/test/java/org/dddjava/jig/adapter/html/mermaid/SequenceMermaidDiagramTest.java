@@ -42,4 +42,32 @@ class SequenceMermaidDiagramTest {
                 actual
         );
     }
+
+    @Test
+    void コンストラクタ呼び出しのシーケンス図作成() {
+        // Create instructions with a constructor call
+        var instructions = new Instructions(List.of(
+                new MethodCall(TypeIdentifier.valueOf("CalleeClass"), "<init>", List.of(TypeIdentifier.valueOf("Param1"), TypeIdentifier.valueOf("Param2")), TypeIdentifier.valueOf("void"))
+        ));
+
+        var jigMethodDeclaration = new JigMethodDeclaration(
+                new JigMethodHeader(JigMethodIdentifier.from(
+                        TypeIdentifier.valueOf("CallerClass"),
+                        "callerMethod",
+                        List.of()),
+                        JigMemberOwnership.INSTANCE,
+                        null),
+                instructions
+        );
+
+        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(jigMethodDeclaration);
+
+        assertEquals("""
+                        sequenceDiagram
+                            CallerClass ->>+ CalleeClass: new CalleeClass(Param1, Param2)
+                            CalleeClass -->>- CallerClass: void
+                        """,
+                actual
+        );
+    }
 }

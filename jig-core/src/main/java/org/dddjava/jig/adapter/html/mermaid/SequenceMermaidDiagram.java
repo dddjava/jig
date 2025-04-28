@@ -39,7 +39,16 @@ public class SequenceMermaidDiagram {
             // Add call line
             sb.append("    ").append(caller.asSimpleText())
                     .append(" ->>+ ").append(callee.asSimpleText())
-                    .append(": ").append(methodName).append(args).append("\n");
+                    .append(": ");
+
+            // Format method name - for constructors, use "new ClassName" instead of "<init>"
+            if (methodCall.isConstructor()) {
+                sb.append("new ").append(callee.asSimpleText());
+            } else {
+                sb.append(methodName);
+            }
+
+            sb.append(args).append("\n");
 
             // Add return line
             sb.append("    ").append(callee.asSimpleText())

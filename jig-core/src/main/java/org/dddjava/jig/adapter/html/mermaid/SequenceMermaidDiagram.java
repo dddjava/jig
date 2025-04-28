@@ -24,7 +24,10 @@ public class SequenceMermaidDiagram {
 
         TypeIdentifier caller = jigMethodDeclaration.declaringTypeIdentifier();
 
-        jigMethodDeclaration.instructions().methodCallStream().forEach(methodCall -> {
+        jigMethodDeclaration.instructions().methodCallStream()
+                // Java標準ライブラリのクラスを除外
+                .filter(methodCall -> !methodCall.isJSL())
+                .forEach(methodCall -> {
             TypeIdentifier callee = methodCall.methodOwner();
             String methodName = methodCall.methodName();
             TypeIdentifier returnType = methodCall.returnType();

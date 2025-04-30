@@ -248,6 +248,12 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     @Override
+    public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
+        // TODO switchを対象にしたつもりだったけど抜けていた。不具合といえる。
+        super.visitTableSwitchInsn(min, max, dflt, labels);
+    }
+
+    @Override
     public void visitJumpInsn(int opcode, Label label) {
         logger.debug("visitJumpInsn {} {}", opcode, label);
         // if<cond> はJumpInsnにくるのでこのメソッドで判定があるかを検出するが、
@@ -261,6 +267,20 @@ class AsmMethodVisitor extends MethodVisitor {
             }
         }
         super.visitJumpInsn(opcode, label);
+    }
+
+    @Override
+    public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+        // TODO シーケンス図出力には必須なので扱うようにする
+        super.visitTryCatchBlock(start, end, handler, type);
+    }
+
+    /**
+     * JumpやSwitchのジャンプ先になるLabel
+     */
+    @Override
+    public void visitLabel(Label label) {
+        super.visitLabel(label);
     }
 
     @Override

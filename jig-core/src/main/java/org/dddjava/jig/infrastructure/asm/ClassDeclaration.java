@@ -8,6 +8,8 @@ import java.util.Collection;
 
 /**
  * ASMで読んだクラスの情報
+ *
+ * JigTypeに変換するまでの入れ物であり、infrastructureのみで使用する。
  */
 public record ClassDeclaration(JigTypeHeader jigTypeHeader,
                                Collection<JigFieldHeader> jigFieldHeaders,

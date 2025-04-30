@@ -10,6 +10,11 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * ASMを使用して*.classファイルを読むエントリーポイント
+ *
+ * ASMの設定などはこのクラスで行う。
+ */
 @Repository
 public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);

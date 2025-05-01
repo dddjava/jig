@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  * コードで実行される命令
  */
 public sealed interface Instruction
-        permits BasicInstruction, ClassReference, FieldAccess, MethodCall, DynamicMethodCall, LambdaExpressionCall {
+        permits BasicInstruction, ClassReference, DynamicMethodCall, FieldAccess, JumpOrBranchInstruction, LambdaExpressionCall, MethodCall {
 
     /**
      * メソッド呼び出しの場合に中身がある

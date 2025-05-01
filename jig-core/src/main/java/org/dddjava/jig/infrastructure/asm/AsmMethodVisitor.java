@@ -134,8 +134,11 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitInsn(int opcode) {
         logger.debug("visitInsn {}", opcode);
-        if (opcode == Opcodes.ACONST_NULL) {
-            methodInstructionCollector.add(BasicInstruction.NULL参照);
+        switch (opcode) {
+            case Opcodes.ACONST_NULL -> methodInstructionCollector.add(BasicInstruction.NULL参照);
+            case Opcodes.RETURN, Opcodes.ARETURN,
+                 Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN ->
+                    methodInstructionCollector.add(BasicInstruction.RETURN);
         }
         super.visitInsn(opcode);
     }
@@ -262,8 +265,10 @@ class AsmMethodVisitor extends MethodVisitor {
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
             if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
                 methodInstructionCollector.add(BasicInstruction.NULL判定);
+                methodInstructionCollector.add(JumpOrBranchInstruction.from(label.toString()));
             } else {
                 methodInstructionCollector.add(BasicInstruction.判定);
+                methodInstructionCollector.add(JumpOrBranchInstruction.from(label.toString()));
             }
         }
         super.visitJumpInsn(opcode, label);
@@ -280,6 +285,7 @@ class AsmMethodVisitor extends MethodVisitor {
      */
     @Override
     public void visitLabel(Label label) {
+        methodInstructionCollector.add(new TargetInstruction(label.toString()));
         super.visitLabel(label);
     }
 

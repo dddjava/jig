@@ -26,7 +26,9 @@ public enum BasicInstruction implements Instruction {
     /**
      * ACONST_NULL
      */
-    NULL参照;
+    NULL参照,
+
+    RETURN;
 
     public boolean isBranch() {
         return this == SWITCH || this == 判定 || this == NULL判定;

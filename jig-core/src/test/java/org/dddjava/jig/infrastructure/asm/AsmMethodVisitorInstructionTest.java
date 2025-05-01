@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
+import org.dddjava.jig.domain.model.data.members.instruction.JumpOrBranchInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -64,6 +65,20 @@ public class AsmMethodVisitorInstructionTest {
                     return Objects.requireNonNullElseGet(o, () -> "null".length());
                 };
             };
+        }
+
+        public String 分岐メソッド(Object arg) {
+            if (arg == null) {
+                return "args is null";
+            }
+            if (arg instanceof String stringArg) {
+                if (stringArg.isEmpty()) {
+                    return "args is empty";
+                } else if (stringArg.length() > 10) {
+                    return "args is too long";
+                }
+            }
+            return "args is ok";
         }
     }
 
@@ -141,7 +156,6 @@ public class AsmMethodVisitorInstructionTest {
         ).sorted().toList(), actual);
     }
 
-
     @CsvSource({
             // return, arg
             "自クラスメソッド参照メソッド, java.lang.Character",
@@ -163,5 +177,22 @@ public class AsmMethodVisitorInstructionTest {
 
         Set<TypeIdentifier> actual = jigMethod.jigMethodDeclaration().associatedTypes();
         assertTrue(actual.contains(TypeIdentifier.valueOf(expected)), actual.toString());
+    }
+
+    @Test
+    void 分岐メソッドからLabelが取得できる() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "分岐メソッド");
+
+        var instructions = jigMethod.instructions();
+
+        for (var instruction : instructions.instructions()) {
+            if (instruction instanceof JumpOrBranchInstruction jumpOrBranchInstruction) {
+
+                var target = jumpOrBranchInstruction.target();
+
+            }
+
+            System.out.println(instruction);
+        }
     }
 }

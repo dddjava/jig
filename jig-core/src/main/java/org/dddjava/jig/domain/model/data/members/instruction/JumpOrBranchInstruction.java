@@ -8,9 +8,20 @@ import java.util.stream.Stream;
  * 分岐
  * switchは含まない。
  *
- * jump or branch instruction = jsr, jsr_w, goto, goto_w, ifeq, ifne, ifle, iflt, ifge, ifgt, ifnull, ifnonnull, if_icmpeq, if_icmpne, if_icmple, if_icmplt, if_icmpge, if_icmpgt, if_acmpeq, if_acmpne
+ * ```
+ * jump or branch instruction =
+ *   jsr, jsr_w, goto, goto_w,
+ *   ifeq, ifne, ifle, iflt, ifge, ifgt,
+ *   ifnull, ifnonnull,
+ *   if_icmpeq, if_icmpne, if_icmple, if_icmplt, if_icmpge, if_icmpgt,
+ *   if_acmpeq, if_acmpne
+ * ```
  */
-public record JumpOrBranchInstruction(Instruction target) implements Instruction {
+public record JumpOrBranchInstruction(TargetInstruction target) implements Instruction {
+
+    public static Instruction from(String targetId) {
+        return new JumpOrBranchInstruction(new TargetInstruction(targetId));
+    }
 
     @Override
     public Stream<TypeIdentifier> streamAssociatedTypes() {

@@ -1,9 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.members.instruction.DynamicMethodCall;
-import org.dddjava.jig.domain.model.data.members.instruction.JumpOrBranchInstruction;
-import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCall;
-import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
+import org.dddjava.jig.domain.model.data.members.instruction.*;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.junit.jupiter.api.Test;
@@ -183,16 +180,22 @@ public class AsmMethodVisitorInstructionTest {
     void 分岐メソッドからLabelが取得できる() {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "分岐メソッド");
 
-        var instructions = jigMethod.instructions();
+        var instructionList = jigMethod.instructions().instructions();
 
-        for (var instruction : instructions.instructions()) {
-            if (instruction instanceof JumpOrBranchInstruction jumpOrBranchInstruction) {
+        List<JumpOrBranchInstruction> branchInstructions = instructionList.stream()
+                .filter(instruction -> instruction instanceof JumpOrBranchInstruction)
+                .map(instruction -> (JumpOrBranchInstruction) instruction)
+                .toList();
 
-                var target = jumpOrBranchInstruction.target();
+        assertEquals(4, branchInstructions.size(), "分岐命令がifの数だけ存在する");
 
-            }
+        var branchTargetInstructions = branchInstructions.stream().map(JumpOrBranchInstruction::target).toList();
 
-            System.out.println(instruction);
-        }
+        var targetInstructions = instructionList.stream()
+                .filter(instruction -> instruction instanceof TargetInstruction)
+                .map(instruction -> (TargetInstruction) instruction)
+                .toList();
+
+        assertTrue(branchTargetInstructions.containsAll(targetInstructions), "分岐命令のターゲットがすべて存在する");
     }
 }

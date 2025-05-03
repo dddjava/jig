@@ -276,7 +276,12 @@ class AsmMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
-        // TODO シーケンス図出力には必須なので扱うようにする
+        methodInstructionCollector.add(new TryCacthInstruction(
+                new TargetInstruction(start.toString()),
+                new TargetInstruction(end.toString()),
+                new TargetInstruction(handler.toString()),
+                type
+        ));
         super.visitTryCatchBlock(start, end, handler, type);
     }
 

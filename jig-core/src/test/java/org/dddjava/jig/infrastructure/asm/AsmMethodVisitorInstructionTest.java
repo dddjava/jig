@@ -77,6 +77,32 @@ public class AsmMethodVisitorInstructionTest {
             }
             return "args is ok";
         }
+
+        String tryCatchメソッド() {
+            try {
+                System.out.println("try-block");
+                return "try-block";
+            } catch (Exception e) {
+                return "catch-block-exception";
+            }
+        }
+
+        public String tryCatchネストメソッド() {
+            try {
+                try {
+                    System.out.println("nest-try-block");
+                } catch (RuntimeException e) {
+                    System.out.println("nest-catch-block-runtime-exception");
+                }
+                return "try-block";
+            } catch (RuntimeException e) {
+                return "catch-block-runtime-exception";
+            } catch (Exception e) {
+                return "catch-block-exception";
+            } finally {
+                System.out.printf("finally-block%n");
+            }
+        }
     }
 
     private static class AnotherClass {
@@ -197,5 +223,15 @@ public class AsmMethodVisitorInstructionTest {
                 .toList();
 
         assertTrue(branchTargetInstructions.containsAll(targetInstructions), "分岐命令のターゲットがすべて存在する");
+    }
+
+    @Test
+    void tryCatchブロックが取得できる() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "tryCatchメソッド");
+
+        assertTrue(
+                jigMethod.instructions().instructions().stream()
+                        .anyMatch(instruction -> instruction instanceof TryCacthInstruction)
+        );
     }
 }

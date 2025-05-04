@@ -252,7 +252,9 @@ class AsmMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
-        // TODO switchを対象にしたつもりだったけど抜けていた。不具合といえる。
+        logger.debug("visitTableSwitchInsn {} {} {} {}", min, max, dflt, labels);
+        // switchがある
+        methodInstructionCollector.add(BasicInstruction.SWITCH);
         super.visitTableSwitchInsn(min, max, dflt, labels);
     }
 

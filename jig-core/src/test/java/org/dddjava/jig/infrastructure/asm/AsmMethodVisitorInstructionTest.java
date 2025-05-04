@@ -78,6 +78,25 @@ public class AsmMethodVisitorInstructionTest {
             return "args is ok";
         }
 
+        String switchメソッド1(int i) {
+            // 続いているものはtable switchになる
+            return switch (i) {
+                case 1 -> "1";
+                case 2 -> "2";
+                case 3 -> "3";
+                default -> "default";
+            };
+        }
+
+        String switchメソッド2(int i) {
+            // 続いていないものはlookup switchになる
+            return switch (i) {
+                case 1 -> "1";
+                case 3 -> "3";
+                default -> "default";
+            };
+        }
+
         String tryCatchメソッド() {
             try {
                 System.out.println("try-block");
@@ -232,6 +251,36 @@ public class AsmMethodVisitorInstructionTest {
         assertTrue(
                 jigMethod.instructions().instructions().stream()
                         .anyMatch(instruction -> instruction instanceof TryCacthInstruction)
+        );
+    }
+
+    @Test
+    void switchが取得できる1() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "switchメソッド1");
+
+        assertTrue(
+                jigMethod.instructions().instructions().stream()
+                        .anyMatch(instruction -> {
+                            if (instruction instanceof BasicInstruction bi) {
+                                return bi.isBranch();
+                            }
+                            return false;
+                        })
+        );
+    }
+
+    @Test
+    void switchが取得できる2() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "switchメソッド2");
+
+        assertTrue(
+                jigMethod.instructions().instructions().stream()
+                        .anyMatch(instruction -> {
+                            if (instruction instanceof BasicInstruction bi) {
+                                return bi.isBranch();
+                            }
+                            return false;
+                        })
         );
     }
 }

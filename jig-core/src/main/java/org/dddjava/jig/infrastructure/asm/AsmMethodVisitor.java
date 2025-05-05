@@ -155,8 +155,8 @@ class AsmMethodVisitor extends MethodVisitor {
 
         JigFieldIdentifier jigFieldIdentifier = JigFieldIdentifier.from(declaringType, name);
         var fieldInstruction = switch (opcode) {
-            case Opcodes.H_GETFIELD, Opcodes.H_GETSTATIC -> FieldAccess.get(jigFieldIdentifier);
-            case Opcodes.H_PUTFIELD, Opcodes.H_PUTSTATIC -> FieldAccess.set(jigFieldIdentifier);
+            case Opcodes.GETFIELD, Opcodes.GETSTATIC -> FieldAccess.get(jigFieldIdentifier);
+            case Opcodes.PUTFIELD, Opcodes.PUTSTATIC -> FieldAccess.set(jigFieldIdentifier);
             // エラーにせず、ASMがFieldInsnを検出したことだけは記録しておく
             default -> FieldAccess.unknown(jigFieldIdentifier);
         };

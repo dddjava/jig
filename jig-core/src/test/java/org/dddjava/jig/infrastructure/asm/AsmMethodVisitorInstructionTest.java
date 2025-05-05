@@ -8,16 +8,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import testing.TestSupport;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AsmMethodVisitorInstructionTest {
 
@@ -125,8 +122,8 @@ public class AsmMethodVisitorInstructionTest {
 
         int instanceField;
 
-        void フィールドアクセス() {
-            System.out.println(++instanceField);
+        int フィールドアクセス() {
+            return ++instanceField;
         }
     }
 
@@ -298,6 +295,17 @@ public class AsmMethodVisitorInstructionTest {
         assertTrue(
                 actual.stream().anyMatch(instruction -> instruction instanceof FieldAccess),
                 "フィールドアクセス命令が含まれること"
+        );
+
+        Map<String, Long> collect = actual.stream()
+                .filter(instruction -> instruction instanceof FieldAccess)
+                .collect(Collectors.groupingBy(
+                        instruction -> instruction.getClass().getSimpleName(),
+                        Collectors.counting()));
+
+        assertAll(
+                () -> assertEquals(1, collect.get("GetAccess")),
+                () -> assertEquals(1, collect.get("SetAccess"))
         );
     }
 }

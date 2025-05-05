@@ -122,6 +122,12 @@ public class AsmMethodVisitorInstructionTest {
                 System.out.printf("finally-block%n");
             }
         }
+
+        int instanceField;
+
+        void フィールドアクセス() {
+            System.out.println(++instanceField);
+        }
     }
 
     private static class AnotherClass {
@@ -281,6 +287,17 @@ public class AsmMethodVisitorInstructionTest {
                             }
                             return false;
                         })
+        );
+    }
+
+    @Test
+    void フィールドアクセスが取得できる() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "フィールドアクセス");
+
+        List<Instruction> actual = jigMethod.instructions().instructions();
+        assertTrue(
+                actual.stream().anyMatch(instruction -> instruction instanceof FieldAccess),
+                "フィールドアクセス命令が含まれること"
         );
     }
 }

@@ -146,7 +146,12 @@ class AsmMethodVisitor extends MethodVisitor {
     /**
      * フィールドに関するinstruction
      * descriptorはフィールドの型だが、対象のフィールドの型自体にそれほど重要な意味はないので、
-     * JIGでは使用しないことにする。
+     * JIGでは使用していない。
+     * `field.xxxMethod()` や `xxxMethod(field)` は `xxxMethod` のmethodInsn、
+     * `return field` はメソッドの戻り型で扱える。
+     * `if (field)` はbooleanなので気にしなくて良い。
+     *
+     * TODO フィールドの型を扱わないと `field == xxx` や `switch (field)` の型が検出できない？
      */
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {

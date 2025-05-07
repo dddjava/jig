@@ -31,6 +31,11 @@ class AsmMethodVisitorTest {
     // <editor-fold desc="テスト用実装">
     private static class MethodVisitorSut {
 
+        // フィールドの型検出用
+        LocalDate localDateField1;
+        LocalDate localDateField2;
+        int intField;
+
         @SutAnnotations.A1
         Object メソッドで使用している基本的な型が取得できる(boolean b1, @SutAnnotations.B Boolean b2) throws @SutAnnotations.C NoSuchElementException {
             @SutAnnotations.D1 @SutAnnotations.D2 String str = String.valueOf('a');
@@ -51,6 +56,16 @@ class AsmMethodVisitorTest {
 
         @VariableAnnotation(string = "am", arrayString = {"bm1", "bm2"}, number = 23, clz = Method.class, enumValue = UseInAnnotation.DUMMY2)
         void メソッドに付与されているアノテーションと記述が取得できる() {
+        }
+
+        Object メソッドで使用しているフィールドの型が取得できる() {
+            if (localDateField1 != null) {
+                return null;
+            }
+            if (intField != 0) {
+                return "";
+            }
+            return null;
         }
     }
 
@@ -139,6 +154,25 @@ class AsmMethodVisitorTest {
         );
         assertEquals(expected, actual);
     }
+
+    @Test
+    void メソッドで使用している型が取得できる_フィールド() {
+        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているフィールドの型が取得できる");
+
+        Set<String> actual = method.usingTypes().list()
+                // アサーションのための名前でsetで収集する
+                .stream().map(TypeIdentifier::asSimpleName).collect(Collectors.toSet());
+
+        Set<String> expected = Set.of(
+                "MethodVisitorSut", // フィールドのオーナー
+                // FIXME 取得できていない
+                // "LocalDate", // eqで使用しているフィールド
+                // "int", // if-nullで使用しているフィールド
+                "Object" // return
+        );
+        assertEquals(expected, actual);
+    }
+
 
     @Test
     void メソッドで使用しているジェネリクスが取得できる() {

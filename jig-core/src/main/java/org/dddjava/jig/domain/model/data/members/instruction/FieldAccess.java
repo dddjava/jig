@@ -10,16 +10,16 @@ public sealed interface FieldAccess extends Instruction
 
     JigFieldIdentifier jigFieldIdentifier();
 
-    static FieldAccess set(JigFieldIdentifier jigFieldIdentifier) {
-        return new SetAccess(jigFieldIdentifier);
+    static FieldAccess set(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) {
+        return new SetAccess(typeIdentifier, jigFieldIdentifier);
     }
 
-    static FieldAccess get(JigFieldIdentifier jigFieldIdentifier) {
-        return new GetAccess(jigFieldIdentifier);
+    static FieldAccess get(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) {
+        return new GetAccess(typeIdentifier, jigFieldIdentifier);
     }
 
-    static FieldAccess unknown(JigFieldIdentifier jigFieldIdentifier) {
-        return new UnknownAccess(jigFieldIdentifier);
+    static FieldAccess unknown(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) {
+        return new UnknownAccess(typeIdentifier, jigFieldIdentifier);
     }
 
     @Override
@@ -28,11 +28,11 @@ public sealed interface FieldAccess extends Instruction
     }
 }
 
-record GetAccess(JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
+record GetAccess(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
 }
 
-record SetAccess(JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
+record SetAccess(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
 }
 
-record UnknownAccess(JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
+record UnknownAccess(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
 }

@@ -165,9 +165,8 @@ class AsmMethodVisitorTest {
 
         Set<String> expected = Set.of(
                 "MethodVisitorSut", // フィールドのオーナー
-                // FIXME 取得できていない
-                // "LocalDate", // eqで使用しているフィールド
-                // "int", // if-nullで使用しているフィールド
+                "LocalDate", // eqで使用しているフィールド
+                "int", // if-nullで使用しているフィールド
                 "Object" // return
         );
         assertEquals(expected, actual);

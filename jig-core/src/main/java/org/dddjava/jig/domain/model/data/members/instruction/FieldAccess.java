@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 public sealed interface FieldAccess extends Instruction
         permits GetAccess, SetAccess, UnknownAccess {
 
+    TypeIdentifier typeIdentifier();
+
     JigFieldIdentifier jigFieldIdentifier();
 
     static FieldAccess set(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) {
@@ -24,7 +26,7 @@ public sealed interface FieldAccess extends Instruction
 
     @Override
     default Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.of(jigFieldIdentifier().declaringTypeIdentifier());
+        return Stream.of(typeIdentifier(), jigFieldIdentifier().declaringTypeIdentifier());
     }
 }
 

@@ -148,9 +148,9 @@ class AsmMethodVisitor extends MethodVisitor {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
 
         var fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
-        TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
+        TypeIdentifier declaringTypeIdentifier = TypeIdentifier.valueOf(owner);
 
-        JigFieldIdentifier jigFieldIdentifier = JigFieldIdentifier.from(declaringType, name);
+        JigFieldIdentifier jigFieldIdentifier = JigFieldIdentifier.from(declaringTypeIdentifier, name);
         var fieldInstruction = switch (opcode) {
             case Opcodes.GETFIELD, Opcodes.GETSTATIC -> FieldAccess.get(fieldTypeIdentifier, jigFieldIdentifier);
             case Opcodes.PUTFIELD, Opcodes.PUTSTATIC -> FieldAccess.set(fieldTypeIdentifier, jigFieldIdentifier);

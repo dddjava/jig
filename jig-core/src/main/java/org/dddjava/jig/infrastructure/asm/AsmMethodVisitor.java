@@ -143,9 +143,6 @@ class AsmMethodVisitor extends MethodVisitor {
         super.visitInsn(opcode);
     }
 
-    /**
-     * フィールドに関するinstruction
-     */
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);

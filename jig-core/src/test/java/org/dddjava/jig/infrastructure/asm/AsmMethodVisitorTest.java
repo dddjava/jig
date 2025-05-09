@@ -21,7 +21,7 @@ import java.util.function.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * MethodVisitorはClassVisitor経由でテストする
@@ -66,6 +66,13 @@ class AsmMethodVisitorTest {
                 return "";
             }
             return null;
+        }
+
+        Supplier<?> lambdaメソッドを判定できる() {
+            return () -> null;
+        }
+
+        void lambda$hoge() {
         }
     }
 
@@ -247,5 +254,17 @@ class AsmMethodVisitorTest {
     void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
         JigMethod actual = TestSupport.JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
         assertEquals(expectedText, actual.nameArgumentsReturnSimpleText());
+    }
+
+    @Test
+    void lambdaで生成されるメソッドが判定できる() {
+        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambdaメソッドを判定できる$0");
+        assertTrue(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
+    }
+
+    @Test
+    void lambdaで生成されていないメソッドが判定できる() {
+        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$hoge");
+        assertFalse(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 }

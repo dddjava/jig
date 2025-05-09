@@ -68,11 +68,11 @@ class AsmMethodVisitorTest {
             return null;
         }
 
-        Supplier<?> lambdaメソッドを判定できる() {
+        Supplier<?> lambda合成メソッドを判定できる() {
             return () -> null;
         }
 
-        void lambda$hoge() {
+        private static void lambda$lambda合成メソッドに誤認しそうなメソッド$0() {
         }
     }
 
@@ -258,13 +258,13 @@ class AsmMethodVisitorTest {
 
     @Test
     void lambdaで生成されるメソッドが判定できる() {
-        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambdaメソッドを判定できる$0");
+        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambda合成メソッドを判定できる$0");
         assertTrue(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 
     @Test
     void lambdaで生成されていないメソッドが判定できる() {
-        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$hoge");
+        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambda合成メソッドに誤認しそうなメソッド$0");
         assertFalse(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 }

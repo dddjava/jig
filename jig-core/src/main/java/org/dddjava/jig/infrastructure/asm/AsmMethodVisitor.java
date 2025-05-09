@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
+import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.instruction.*;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
@@ -81,6 +82,7 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
+        var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
         JigMemberOwnership ownership = AsmUtils.jigMemberOwnership(access);
 
         EnumSet<JigMethodFlag> flags = EnumSet.noneOf(JigMethodFlag.class);
@@ -95,7 +97,15 @@ class AsmMethodVisitor extends MethodVisitor {
         String name = jigMethodIdentifier.name();
         if (name.equals("<init>")) flags.add(JigMethodFlag.INITIALIZER);
         if (name.equals("<clinit>")) flags.add(JigMethodFlag.STATIC_INITIALIZER);
-        if (name.startsWith("lambda$")) flags.add(JigMethodFlag.LAMBDA_SUPPORT);
+
+        // lambda合成メソッドの判定
+        // 名前だけ（lambda$ から始まる）は書こうと思えば書けるので、 ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC も条件とする。
+        if (name.startsWith("lambda$")
+                && jigMemberVisibility == JigMemberVisibility.PRIVATE
+                && ownership == JigMemberOwnership.CLASS
+                && flags.contains(JigMethodFlag.SYNTHETIC)) {
+            flags.add(JigMethodFlag.LAMBDA_SUPPORT);
+        }
 
         contextClass.jigTypeHeader().baseTypeDataBundle().superType().ifPresent(superType -> {
             // enumの場合に生成される以下をわかるようにしておく
@@ -120,7 +130,7 @@ class AsmMethodVisitor extends MethodVisitor {
         });
 
         return JigMethodHeader.from(jigMethodIdentifier, ownership,
-                AsmUtils.resolveMethodVisibility(access), declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
+                jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
     }
 
     @Override

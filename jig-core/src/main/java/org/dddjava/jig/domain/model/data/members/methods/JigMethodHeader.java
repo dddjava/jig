@@ -65,16 +65,8 @@ public record JigMethodHeader(JigMethodIdentifier id,
         return jigMethodAttribute.associatedTypeStream();
     }
 
-    /**
-     * lambda合成メソッドの判定
-     * バイトコード上のフラグはACC_PRIVATE, ACC_STATIC, ACC_SYNTHETICを持つ。
-     * TODO LAMBDA_SUPPORTだけで判定させられるはず（いまはLAMBDA_SUPPORTの条件が名前だけなので不足だが）
-     */
     public boolean isLambdaSyntheticMethod() {
-        return jigMemberVisibility() == JigMemberVisibility.PRIVATE
-                && ownership == JigMemberOwnership.CLASS
-                && jigMethodAttribute.flags().contains(JigMethodFlag.SYNTHETIC)
-                && jigMethodAttribute.flags().contains(JigMethodFlag.LAMBDA_SUPPORT);
+        return jigMethodAttribute.flags().contains(JigMethodFlag.LAMBDA_SUPPORT);
     }
 
     public List<JigTypeReference> argumentList() {

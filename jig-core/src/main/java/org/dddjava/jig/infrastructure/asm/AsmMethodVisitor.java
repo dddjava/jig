@@ -252,7 +252,6 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
-        // switchがある
         methodInstructionCollector.add(BasicInstruction.SWITCH);
         super.visitLookupSwitchInsn(dflt, keys, labels);
     }
@@ -260,7 +259,6 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
         logger.debug("visitTableSwitchInsn {} {} {} {}", min, max, dflt, labels);
-        // switchがある
         methodInstructionCollector.add(BasicInstruction.SWITCH);
         super.visitTableSwitchInsn(min, max, dflt, labels);
     }

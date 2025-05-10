@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  */
 public enum BasicInstruction implements Instruction {
     /**
-     * LOOKUPSWITCH
+     * LOOKUPSWITCH, TABLESWITCH
      */
     SWITCH,
     /**

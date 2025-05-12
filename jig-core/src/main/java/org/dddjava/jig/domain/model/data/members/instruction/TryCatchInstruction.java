@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.stream.Stream;
 
-public record TryCacthInstruction(TargetInstruction start,
+public record TryCatchInstruction(TargetInstruction start,
                                   TargetInstruction end,
                                   TargetInstruction handler,
                                   String type) implements Instruction {

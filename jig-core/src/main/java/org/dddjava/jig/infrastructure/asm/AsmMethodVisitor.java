@@ -272,10 +272,10 @@ class AsmMethodVisitor extends MethodVisitor {
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
             if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
                 methodInstructionCollector.add(BasicInstruction.NULL判定);
-                methodInstructionCollector.add(JumpOrBranchInstruction.from(label.toString()));
+                methodInstructionCollector.add(IfInstruction.from(label.toString()));
             } else {
                 methodInstructionCollector.add(BasicInstruction.判定);
-                methodInstructionCollector.add(JumpOrBranchInstruction.from(label.toString()));
+                methodInstructionCollector.add(IfInstruction.from(label.toString()));
             }
         }
         super.visitJumpInsn(opcode, label);

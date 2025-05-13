@@ -230,14 +230,14 @@ public class AsmMethodVisitorInstructionTest {
 
         var instructionList = jigMethod.instructions().instructions();
 
-        List<JumpOrBranchInstruction> branchInstructions = instructionList.stream()
-                .filter(instruction -> instruction instanceof JumpOrBranchInstruction)
-                .map(instruction -> (JumpOrBranchInstruction) instruction)
+        List<IfInstruction> ifInstructions = instructionList.stream()
+                .filter(instruction -> instruction instanceof IfInstruction)
+                .map(instruction -> (IfInstruction) instruction)
                 .toList();
 
-        assertEquals(4, branchInstructions.size(), "分岐命令がifの数だけ存在する");
+        assertEquals(4, ifInstructions.size(), "分岐命令がifの数だけ存在する");
 
-        var branchTargetInstructions = branchInstructions.stream().map(JumpOrBranchInstruction::target).toList();
+        var branchTargetInstructions = ifInstructions.stream().map(IfInstruction::target).toList();
 
         var targetInstructions = instructionList.stream()
                 .filter(instruction -> instruction instanceof TargetInstruction)

@@ -253,7 +253,7 @@ public class AsmMethodVisitorInstructionTest {
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()
-                        .anyMatch(instruction -> instruction instanceof TryCacthInstruction)
+                        .anyMatch(instruction -> instruction instanceof TryCatchInstruction)
         );
     }
 

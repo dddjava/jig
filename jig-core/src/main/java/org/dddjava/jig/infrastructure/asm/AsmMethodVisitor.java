@@ -283,7 +283,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
-        methodInstructionCollector.add(new TryCacthInstruction(
+        methodInstructionCollector.add(new TryCatchInstruction(
                 new TargetInstruction(start.toString()),
                 new TargetInstruction(end.toString()),
                 new TargetInstruction(handler.toString()),

@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AsmMethodVisitorTest {
 
     // <editor-fold desc="テスト用実装">
+    @SuppressWarnings("all")
     private static class MethodVisitorSut {
 
         // フィールドの型検出用
@@ -76,6 +77,7 @@ class AsmMethodVisitorTest {
         }
     }
 
+    @SuppressWarnings("all")
     static class SutAnnotations {
         @Target({ElementType.METHOD, ElementType.TYPE_USE})
         @interface A1 {
@@ -102,6 +104,7 @@ class AsmMethodVisitorTest {
         }
     }
 
+    @SuppressWarnings("all")
     private static class MethodReturnAndArgumentsSut {
 
         void returnsVoidMethod() {

@@ -270,13 +270,27 @@ class AsmMethodVisitor extends MethodVisitor {
         // GOTOやJSR（Java7で削除されたJump to Subroutine。ASMに存在するので一応。）は
         // 判定せずの移動だけなので、「判定」の記録からは除外する。
         if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
+            var kind = switch (opcode) {
+                case Opcodes.IFEQ, Opcodes.IFNE,
+                     Opcodes.IF_ACMPEQ, Opcodes.IF_ACMPNE,
+                     Opcodes.IFLT, Opcodes.IFLE, Opcodes.IFGE, Opcodes.IFGT,
+                     Opcodes.IF_ICMPEQ, Opcodes.IF_ICMPNE,
+                     Opcodes.IF_ICMPLT, Opcodes.IF_ICMPGE, Opcodes.IF_ICMPGT, Opcodes.IF_ICMPLE ->
+                        IfInstruction.Kind.比較;
+                case Opcodes.IFNULL, Opcodes.IFNONNULL -> IfInstruction.Kind.NULL判定;
+                default -> {
+                    // ここには来ないはずだが、来た場合に続行不能にしないためにログ出力しておく
+                    logger.warn("unknown opcode {} in visitJumpInsn.", opcode);
+                    yield IfInstruction.Kind.UNKNOWN;
+                }
+            };
+
             if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
                 methodInstructionCollector.add(BasicInstruction.NULL判定);
-                methodInstructionCollector.add(IfInstruction.from(label.toString()));
             } else {
                 methodInstructionCollector.add(BasicInstruction.判定);
-                methodInstructionCollector.add(IfInstruction.from(label.toString()));
             }
+            methodInstructionCollector.add(IfInstruction.from(kind, label.toString()));
         }
         super.visitJumpInsn(opcode, label);
     }

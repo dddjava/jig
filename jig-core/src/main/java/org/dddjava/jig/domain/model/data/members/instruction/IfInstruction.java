@@ -20,14 +20,13 @@ import java.util.stream.Stream;
 public record IfInstruction(Kind kind, TargetInstruction target) implements Instruction {
 
     public enum Kind {
-        EQ, NE,
-        NULL, NONNULL,
-        COMPARE,
+        比較,
+        NULL判定,
         UNKNOWN
     }
 
-    public static Instruction from(String targetId) {
-        return new IfInstruction(Kind.UNKNOWN, new TargetInstruction(targetId));
+    public static Instruction from(Kind kind, String targetId) {
+        return new IfInstruction(kind, new TargetInstruction(targetId));
     }
 
     @Override

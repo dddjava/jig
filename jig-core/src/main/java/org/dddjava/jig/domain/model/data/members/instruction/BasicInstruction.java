@@ -16,10 +16,6 @@ public enum BasicInstruction implements Instruction {
      */
     SWITCH,
     /**
-     * IFNONNULL, IFNULL
-     */
-    NULL判定,
-    /**
      * ACONST_NULL
      */
     NULL参照,

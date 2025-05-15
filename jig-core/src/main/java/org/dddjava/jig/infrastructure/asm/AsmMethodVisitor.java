@@ -285,9 +285,6 @@ class AsmMethodVisitor extends MethodVisitor {
                 }
             };
 
-            if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-                methodInstructionCollector.add(BasicInstruction.NULL判定);
-            }
             methodInstructionCollector.add(IfInstruction.from(kind, label.toString()));
         }
         super.visitJumpInsn(opcode, label);

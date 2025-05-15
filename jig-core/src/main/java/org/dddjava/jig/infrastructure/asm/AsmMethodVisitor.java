@@ -287,8 +287,6 @@ class AsmMethodVisitor extends MethodVisitor {
 
             if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
                 methodInstructionCollector.add(BasicInstruction.NULL判定);
-            } else {
-                methodInstructionCollector.add(BasicInstruction.判定);
             }
             methodInstructionCollector.add(IfInstruction.from(kind, label.toString()));
         }

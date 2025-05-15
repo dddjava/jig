@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.members.instruction.BasicInstruction;
+import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
@@ -46,7 +47,12 @@ public enum MethodWorry {
     NULL判定をしている {
         @Override
         boolean judge(JigMethod jigMethod) {
-            return jigMethod.instructions().containsAnyBasicInstruction(BasicInstruction.NULL判定);
+            return jigMethod.instructions().containsAny(instruction -> {
+                if (instruction instanceof IfInstruction ifInstruction) {
+                    return ifInstruction.kind() == IfInstruction.Kind.NULL判定;
+                }
+                return false;
+            });
         }
     },
     真偽値を返している {

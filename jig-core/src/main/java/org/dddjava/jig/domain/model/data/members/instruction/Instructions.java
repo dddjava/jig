@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -45,6 +46,10 @@ public record Instructions(List<Instruction> instructions) {
 
     public boolean containsAnyBasicInstruction(BasicInstruction... basicInstruction) {
         return Arrays.stream(basicInstruction).anyMatch(instructions::contains);
+    }
+
+    public boolean containsAny(Predicate<Instruction> predicate) {
+        return instructions.stream().anyMatch(predicate);
     }
 
     public Stream<MethodCall> lambdaInlinedMethodCallStream() {

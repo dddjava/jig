@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
 import org.dddjava.jig.domain.model.data.members.instruction.BasicInstruction;
+import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -72,9 +73,14 @@ public class ServiceAngle {
         return serviceMethod.method().usingMethods().containsStream();
     }
 
+    // TODO ミューテーションしても落ちなかったのでテストが必要
     public boolean useNull() {
-        return serviceMethod.method().instructions()
-                .containsAnyBasicInstruction(BasicInstruction.NULL参照, BasicInstruction.NULL判定);
+        return serviceMethod.method().instructions().containsAny(instruction -> {
+            if (instruction instanceof IfInstruction ifInstruction) {
+                return ifInstruction.kind() == IfInstruction.Kind.NULL判定;
+            }
+            return instruction == BasicInstruction.NULL参照;
+        });
     }
 
     public Collection<JigMethodIdentifier> userServiceMethods() {

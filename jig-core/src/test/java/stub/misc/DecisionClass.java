@@ -18,6 +18,12 @@ public class DecisionClass {
         System.out.println("hoge");
     }
 
+    void null判定があるメソッド(Object arg) {
+        if (arg == null) {
+            System.out.println("null");
+        }
+    }
+
     void switchがあるメソッド() {
         switch (condition) {
             case 1:

@@ -232,6 +232,7 @@ class AsmMethodVisitorTest {
     @CsvSource({
             "分岐なしメソッド, 0",
             "ifがあるメソッド, 1",
+            "null判定があるメソッド, 1",
             "switchがあるメソッド, 1",
             // forは ifeq と goto で構成されるある意味での分岐
             "forがあるメソッド, 1",

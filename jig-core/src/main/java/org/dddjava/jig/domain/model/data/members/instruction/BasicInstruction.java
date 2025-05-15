@@ -31,7 +31,7 @@ public enum BasicInstruction implements Instruction {
     RETURN;
 
     public boolean isBranch() {
-        return this == SWITCH || this == 判定 || this == NULL判定;
+        return this == SWITCH || this == NULL判定;
     }
 
     @Override

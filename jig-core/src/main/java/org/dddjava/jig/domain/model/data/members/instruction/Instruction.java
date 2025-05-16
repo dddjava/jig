@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  */
 public sealed interface Instruction
         permits BasicInstruction, ClassReference, DynamicMethodCall, FieldAccess,
-        IfInstruction,
+        IfInstruction, SwitchInstruction,
         TryCatchInstruction,
         TargetInstruction,
         LambdaExpressionCall, MethodCall {

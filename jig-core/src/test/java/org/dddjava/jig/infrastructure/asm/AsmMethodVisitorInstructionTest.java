@@ -263,12 +263,7 @@ public class AsmMethodVisitorInstructionTest {
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()
-                        .anyMatch(instruction -> {
-                            if (instruction instanceof BasicInstruction bi) {
-                                return bi.isBranch();
-                            }
-                            return false;
-                        })
+                        .anyMatch(instruction -> instruction instanceof SwitchInstruction)
         );
     }
 
@@ -278,12 +273,7 @@ public class AsmMethodVisitorInstructionTest {
 
         assertTrue(
                 jigMethod.instructions().instructions().stream()
-                        .anyMatch(instruction -> {
-                            if (instruction instanceof BasicInstruction bi) {
-                                return bi.isBranch();
-                            }
-                            return false;
-                        })
+                        .anyMatch(instruction -> instruction instanceof SwitchInstruction)
         );
     }
 

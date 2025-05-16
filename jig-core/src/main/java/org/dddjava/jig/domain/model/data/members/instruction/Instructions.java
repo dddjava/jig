@@ -22,7 +22,7 @@ public record Instructions(List<Instruction> instructions) {
                     if (instruction instanceof BasicInstruction bi) {
                         return bi.isBranch();
                     }
-                    return instruction instanceof IfInstruction;
+                    return instruction instanceof IfInstruction || instruction instanceof SwitchInstruction;
                 })
                 .count());
     }

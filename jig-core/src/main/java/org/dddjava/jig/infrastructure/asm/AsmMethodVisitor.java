@@ -252,14 +252,16 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         logger.debug("visitLookupSwitchInsn {} {} {}", dflt, keys, labels);
-        methodInstructionCollector.add(BasicInstruction.SWITCH);
+        List<String> caseTargets = Arrays.stream(labels).map(Label::toString).toList();
+        methodInstructionCollector.add(SwitchInstruction.lookup(dflt.toString(), caseTargets));
         super.visitLookupSwitchInsn(dflt, keys, labels);
     }
 
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
         logger.debug("visitTableSwitchInsn {} {} {} {}", min, max, dflt, labels);
-        methodInstructionCollector.add(BasicInstruction.SWITCH);
+        List<String> caseTargets = Arrays.stream(labels).map(Label::toString).toList();
+        methodInstructionCollector.add(SwitchInstruction.table(dflt.toString(), caseTargets));
         super.visitTableSwitchInsn(min, max, dflt, labels);
     }
 

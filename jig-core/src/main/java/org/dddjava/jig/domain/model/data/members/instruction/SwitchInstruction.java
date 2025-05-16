@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  */
 public record SwitchInstruction(Kind kind, TargetInstruction defaultTarget, List<TargetInstruction> caseTargets) implements Instruction {
 
-    public enum Kind {
+    private enum Kind {
         LOOKUP,
         TABLE
     }

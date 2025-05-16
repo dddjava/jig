@@ -19,9 +19,6 @@ public record Instructions(List<Instruction> instructions) {
     public int decisionCount() {
         return Math.toIntExact(instructions.stream()
                 .filter(instruction -> {
-                    if (instruction instanceof BasicInstruction bi) {
-                        return bi.isBranch();
-                    }
                     return instruction instanceof IfInstruction || instruction instanceof SwitchInstruction;
                 })
                 .count());

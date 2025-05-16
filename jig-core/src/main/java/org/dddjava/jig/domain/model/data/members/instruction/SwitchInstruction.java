@@ -8,18 +8,17 @@ import java.util.stream.Stream;
 /**
  * switch命令
  *
- * LOOKUPSWITCH, TABLESWITCH命令を表現する
+ * バイトコード上は lookupswitch と tableswitch があるが、
+ * 分岐条件をドキュメントで扱っていないのでこのクラス上での差はない。
+ *
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.tableswitch">tableswitch</a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.lookupswitch">lookupswitch</>a>
  */
-public record SwitchInstruction(Kind kind, TargetInstruction defaultTarget, List<TargetInstruction> caseTargets) implements Instruction {
-
-    private enum Kind {
-        LOOKUP,
-        TABLE
-    }
+public record SwitchInstruction(TargetInstruction defaultTarget,
+                                List<TargetInstruction> caseTargets) implements Instruction {
 
     public static SwitchInstruction lookup(String defaultTarget, List<String> caseTargets) {
         return new SwitchInstruction(
-                Kind.LOOKUP,
                 new TargetInstruction(defaultTarget),
                 caseTargets.stream().map(TargetInstruction::new).toList()
         );
@@ -27,7 +26,6 @@ public record SwitchInstruction(Kind kind, TargetInstruction defaultTarget, List
 
     public static SwitchInstruction table(String defaultTarget, List<String> caseTargets) {
         return new SwitchInstruction(
-                Kind.TABLE,
                 new TargetInstruction(defaultTarget),
                 caseTargets.stream().map(TargetInstruction::new).toList()
         );

@@ -18,9 +18,7 @@ public record Instructions(List<Instruction> instructions) {
 
     public int decisionCount() {
         return Math.toIntExact(instructions.stream()
-                .filter(instruction -> {
-                    return instruction instanceof IfInstruction || instruction instanceof SwitchInstruction;
-                })
+                .filter(instruction -> instruction instanceof IfInstruction || instruction instanceof SwitchInstruction)
                 .count());
     }
 

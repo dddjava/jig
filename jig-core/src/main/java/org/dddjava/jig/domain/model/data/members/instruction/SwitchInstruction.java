@@ -14,20 +14,20 @@ import java.util.stream.Stream;
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.tableswitch">tableswitch</a>
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.lookupswitch">lookupswitch</>a>
  */
-public record SwitchInstruction(TargetInstruction defaultTarget,
-                                List<TargetInstruction> caseTargets) implements Instruction {
+public record SwitchInstruction(JumpTarget defaultTarget,
+                                List<JumpTarget> caseTargets) implements Instruction {
 
     public static SwitchInstruction lookup(String defaultTarget, List<String> caseTargets) {
         return new SwitchInstruction(
-                new TargetInstruction(defaultTarget),
-                caseTargets.stream().map(TargetInstruction::new).toList()
+                new JumpTarget(defaultTarget),
+                caseTargets.stream().map(JumpTarget::new).toList()
         );
     }
 
     public static SwitchInstruction table(String defaultTarget, List<String> caseTargets) {
         return new SwitchInstruction(
-                new TargetInstruction(defaultTarget),
-                caseTargets.stream().map(TargetInstruction::new).toList()
+                new JumpTarget(defaultTarget),
+                caseTargets.stream().map(JumpTarget::new).toList()
         );
     }
 

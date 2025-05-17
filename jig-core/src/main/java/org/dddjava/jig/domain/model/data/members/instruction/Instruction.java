@@ -11,7 +11,7 @@ public sealed interface Instruction
         permits BasicInstruction, ClassReference, DynamicMethodCall, FieldAccess,
         IfInstruction, SwitchInstruction,
         TryCatchInstruction,
-        TargetInstruction,
+        JumpTarget,
         LambdaExpressionCall, MethodCall {
 
     /**

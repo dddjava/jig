@@ -240,8 +240,8 @@ public class AsmMethodVisitorInstructionTest {
         var branchTargetInstructions = ifInstructions.stream().map(IfInstruction::target).toList();
 
         var targetInstructions = instructionList.stream()
-                .filter(instruction -> instruction instanceof TargetInstruction)
-                .map(instruction -> (TargetInstruction) instruction)
+                .filter(instruction -> instruction instanceof JumpTarget)
+                .map(instruction -> (JumpTarget) instruction)
                 .toList();
 
         assertTrue(branchTargetInstructions.containsAll(targetInstructions), "分岐命令のターゲットがすべて存在する");

@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.stream.Stream;
 
-public record TryCatchInstruction(TargetInstruction start,
-                                  TargetInstruction end,
-                                  TargetInstruction handler,
+public record TryCatchInstruction(JumpTarget start,
+                                  JumpTarget end,
+                                  JumpTarget handler,
                                   String type) implements Instruction {
 
     @Override

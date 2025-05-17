@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * `jsr, jsr_w, goto, goto_w` は jump or branch instructionで括られるが、これには含まない。
  * switchはtargetが複数ある分岐なので別で扱う。
  */
-public record IfInstruction(Kind kind, TargetInstruction target) implements Instruction {
+public record IfInstruction(Kind kind, JumpTarget target) implements Instruction {
 
     public enum Kind {
         比較,
@@ -26,7 +26,7 @@ public record IfInstruction(Kind kind, TargetInstruction target) implements Inst
     }
 
     public static Instruction from(Kind kind, String targetId) {
-        return new IfInstruction(kind, new TargetInstruction(targetId));
+        return new IfInstruction(kind, new JumpTarget(targetId));
     }
 
     @Override

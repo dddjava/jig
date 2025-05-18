@@ -25,7 +25,9 @@ public sealed interface Instruction
     /**
      * この命令によって関連づけられる型のストリーム
      */
-    Stream<TypeIdentifier> streamAssociatedTypes();
+    default Stream<TypeIdentifier> streamAssociatedTypes() {
+        return Stream.empty();
+    }
 
     /**
      * lambdaのメソッド呼び出しをインライン化したもの

@@ -1,9 +1,5 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-
-import java.util.stream.Stream;
-
 /**
  * 基本的な命令
  *
@@ -19,9 +15,4 @@ public enum BasicInstruction implements Instruction {
     NULL参照,
 
     RETURN;
-
-    @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.empty();
-    }
 }

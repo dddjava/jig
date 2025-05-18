@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * switch命令
@@ -29,10 +26,5 @@ public record SwitchInstruction(JumpTarget defaultTarget,
                 new JumpTarget(defaultTarget),
                 caseTargets.stream().map(JumpTarget::new).toList()
         );
-    }
-
-    @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.empty();
     }
 }

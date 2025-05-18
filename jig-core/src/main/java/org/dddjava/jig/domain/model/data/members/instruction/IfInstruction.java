@@ -1,9 +1,5 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-
-import java.util.stream.Stream;
-
 /**
  * 分岐
  *
@@ -27,10 +23,5 @@ public record IfInstruction(Kind kind, JumpTarget target) implements Instruction
 
     public static Instruction from(Kind kind, String targetId) {
         return new IfInstruction(kind, new JumpTarget(targetId));
-    }
-
-    @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.empty();
     }
 }

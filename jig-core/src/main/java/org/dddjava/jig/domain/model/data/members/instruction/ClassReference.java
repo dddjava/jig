@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 /**
  * クラス参照
  *
- * .classなどでの使用。型引数は付かないので [TypeIdentifier] で扱う。
+ * .classなどでの使用。型引数は付かないので `TypeIdentifier` で扱う。
  */
 public record ClassReference(TypeIdentifier typeIdentifier) implements Instruction {
 

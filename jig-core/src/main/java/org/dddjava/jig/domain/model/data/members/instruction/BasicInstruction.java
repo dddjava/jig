@@ -9,9 +9,6 @@ package org.dddjava.jig.domain.model.data.members.instruction;
  */
 public enum BasicInstruction implements Instruction {
 
-    /**
-     * ACONST_NULL
-     */
     NULL参照,
 
     RETURN;

@@ -45,6 +45,8 @@ class AsmMethodVisitorTest {
         }
 
         void 引数なしで戻り値がvoidのメソッド() {
+            // 戻り値がvoidのメソッドを呼び出す。なんでもいいのでObject#notify()を使う。
+            this.notify();
         }
 
         Optional<Predicate<Function<Integer, Character>>> メソッドで使用しているジェネリクスが取得できる(Supplier<UnaryOperator<Consumer<Long>>> parameter) {

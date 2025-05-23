@@ -45,8 +45,11 @@ class AsmMethodVisitorTest {
         }
 
         void 引数なしで戻り値がvoidのメソッド() {
-            // 戻り値がvoidのメソッドを呼び出す。なんでもいいのでObject#notify()を使う。
+        }
+
+        Object 戻り値がvoidのメソッドを呼び出しているメソッド() {
             this.notify();
+            return null;
         }
 
         Optional<Predicate<Function<Integer, Character>>> メソッドで使用しているジェネリクスが取得できる(Supplier<UnaryOperator<Consumer<Long>>> parameter) {
@@ -154,6 +157,14 @@ class AsmMethodVisitorTest {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "引数なしで戻り値がvoidのメソッド");
 
         assertEquals(0, method.usingTypes().size(), () -> "using types: " + method.usingTypes());
+    }
+
+    @Test
+    void メソッドで使用している型にvoidは含まれない_void呼び出し() {
+        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのメソッドを呼び出しているメソッド");
+
+        assertEquals("[Object]", method.usingTypes().asSimpleText(),
+                () -> "using types: " + method.usingTypes());
     }
 
     @Test

@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,7 +48,7 @@ public record MethodCall(TypeIdentifier methodOwner, String methodName,
         return Stream.concat(
                 argumentTypes.stream(),
                 Stream.of(methodOwner, returnType)
-        );
+        ).filter(Predicate.not(TypeIdentifier::isVoid));
     }
 
     public boolean isLambda() {

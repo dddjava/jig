@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -32,8 +33,7 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
         return Stream.of(
                 origin.methodCall().streamAssociatedTypes(),
                 origin.argumentTypes().stream(),
-                // voidは返さなくていいと思うんだ
-                Stream.of(origin.returnType()),
+                Stream.of(origin.returnType()).filter(Predicate.not(TypeIdentifier::isVoid)),
                 // lambdaの中身
                 lambdaExpressionInstructions.associatedTypeStream()
         ).flatMap(stream -> stream);

@@ -52,6 +52,10 @@ class AsmMethodVisitorTest {
             return null;
         }
 
+        Consumer<?> 戻り値がvoidのlambda() {
+            return arg -> {};
+        }
+
         Optional<Predicate<Function<Integer, Character>>> メソッドで使用しているジェネリクスが取得できる(Supplier<UnaryOperator<Consumer<Long>>> parameter) {
             return Optional.empty();
         }
@@ -164,6 +168,14 @@ class AsmMethodVisitorTest {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのメソッドを呼び出しているメソッド");
 
         assertEquals("[Object]", method.usingTypes().asSimpleText(),
+                () -> "using types: " + method.usingTypes());
+    }
+
+    @Test
+    void メソッドで使用している型にvoidは含まれない_戻り値なしのlambda() {
+        JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのlambda");
+
+        assertEquals("[AsmMethodVisitorTest$MethodVisitorSut, Consumer, Object]", method.usingTypes().asSimpleText(),
                 () -> "using types: " + method.usingTypes());
     }
 

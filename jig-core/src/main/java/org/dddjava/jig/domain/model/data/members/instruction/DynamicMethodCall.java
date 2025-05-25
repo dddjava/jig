@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -25,8 +26,7 @@ public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType
         return Stream.of(
                 methodCall().streamAssociatedTypes(),
                 argumentTypes().stream(),
-                // voidは返さなくていいと思うんだ
-                Stream.of(returnType())
+                Stream.of(returnType()).filter(Predicate.not(TypeIdentifier::isVoid))
         ).flatMap(stream -> stream);
     }
 }

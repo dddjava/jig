@@ -310,7 +310,8 @@ class AsmMethodVisitorTest {
 
     @Test
     void lambdaで生成されるメソッドが判定できる() {
-        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambda合成メソッドを判定できる$0");
+        // MEMO: lambdaを書くたびにインクリメントされるのに追随するのが手間
+        var sut = TestSupport.JigMethod準備(MethodVisitorSut.class, "lambda$lambda合成メソッドを判定できる$1");
         assertTrue(sut.jigMethodDeclaration().header().isLambdaSyntheticMethod());
     }
 

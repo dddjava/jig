@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(JigTestExtension.class)
 public class PackageDependenciesTest {
@@ -19,18 +21,22 @@ public class PackageDependenciesTest {
         var sut = PackageRelations.from(jigTypes.typeRelationships());
 
         // パッケージの関連
-        assertThat(sut.listUnique())
-                .extracting(dependency -> {
+        var actual = sut.listUnique().stream()
+                .map(dependency -> {
                     PackageIdentifier from = dependency.from();
                     PackageIdentifier to = dependency.to();
                     return from.asText() + " -> " + to.asText();
                 })
-                .containsExactly(
-                        "stub.domain.model -> stub.domain.model.relation.annotation",
-                        "stub.domain.model.relation -> stub.domain.model.relation.clz",
-                        "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_wrapper_constant",
-                        "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
-                        "stub.domain.model.relation -> stub.domain.model.relation.method"
-                );
+                .toList();
+
+        var expected = List.of(
+                "stub.domain.model -> stub.domain.model.relation.annotation",
+                "stub.domain.model.relation -> stub.domain.model.relation.clz",
+                "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_wrapper_constant",
+                "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
+                "stub.domain.model.relation -> stub.domain.model.relation.method"
+        );
+
+        assertEquals(expected, actual);
     }
 }

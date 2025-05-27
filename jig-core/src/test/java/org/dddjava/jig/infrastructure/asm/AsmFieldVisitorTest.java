@@ -12,7 +12,6 @@ import testing.TestSupport;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -69,17 +68,15 @@ class AsmFieldVisitorTest {
 
         assertEquals(TypeIdentifier.from(VariableAnnotation.class), sut.id());
 
-        assertThat(sut.asText())
-                .contains(
-                        "string=af",
-                        "arrayString=bf",
-                        "number=13",
-                        "clz=Field",
-                        "arrayClz={Object, Object}",
-                        "enumValue=UseInAnnotation.DUMMY1",
-                        "annotation=@Deprecated(...)"
-                );
+        String text = sut.asText();
+        assertTrue(text.contains("string=af"), "Text should contain 'string=af'");
+        assertTrue(text.contains("arrayString=bf"), "Text should contain 'arrayString=bf'");
+        assertTrue(text.contains("number=13"), "Text should contain 'number=13'");
+        assertTrue(text.contains("clz=Field"), "Text should contain 'clz=Field'");
+        assertTrue(text.contains("arrayClz={Object, Object}"), "Text should contain 'arrayClz={Object, Object}'");
+        assertTrue(text.contains("enumValue=UseInAnnotation.DUMMY1"), "Text should contain 'enumValue=UseInAnnotation.DUMMY1'");
+        assertTrue(text.contains("annotation=@Deprecated(...)"), "Text should contain 'annotation=@Deprecated(...)'");
 
-        assertThat(sut.elementTextOf("arrayString").orElseThrow()).isEqualTo("bf");
+        assertEquals("bf", sut.elementTextOf("arrayString").orElseThrow());
     }
 }

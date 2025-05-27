@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -251,16 +250,14 @@ class AsmMethodVisitorTest {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
         JigAnnotationReference sut = method.declarationAnnotationStream().findFirst().orElseThrow();
 
-        assertThat(sut.id().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+        assertEquals(VariableAnnotation.class.getTypeName(), sut.id().fullQualifiedName());
 
-        assertThat(sut.asText())
-                .contains(
-                        "string=am",
-                        "arrayString={bm1, bm2}",
-                        "number=23",
-                        "clz=Method",
-                        "enumValue=UseInAnnotation.DUMMY2"
-                );
+        String text = sut.asText();
+        assertTrue(text.contains("string=am"), "Text should contain 'string=am'");
+        assertTrue(text.contains("arrayString={bm1, bm2}"), "Text should contain 'arrayString={bm1, bm2}'");
+        assertTrue(text.contains("number=23"), "Text should contain 'number=23'");
+        assertTrue(text.contains("clz=Method"), "Text should contain 'clz=Method'");
+        assertTrue(text.contains("enumValue=UseInAnnotation.DUMMY2"), "Text should contain 'enumValue=UseInAnnotation.DUMMY2'");
     }
 
     @Test

@@ -26,8 +26,8 @@ import testing.TestSupport;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class AsmClassSourceReaderTest {
@@ -37,14 +37,12 @@ public class AsmClassSourceReaderTest {
         JigType actual = TestSupport.buildJigType(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.usingTypes();
-        assertThat(identifiers.list())
-                .contains(
-                        TypeIdentifier.from(ClassAnnotation.class),
-                        TypeIdentifier.from(SuperClass.class),
-                        TypeIdentifier.from(ImplementA.class),
-                        TypeIdentifier.from(ImplementB.class),
-                        TypeIdentifier.from(GenericsParameter.class)
-                );
+        var list = identifiers.list();
+        assertTrue(list.contains(TypeIdentifier.from(ClassAnnotation.class)), "Should contain ClassAnnotation");
+        assertTrue(list.contains(TypeIdentifier.from(SuperClass.class)), "Should contain SuperClass");
+        assertTrue(list.contains(TypeIdentifier.from(ImplementA.class)), "Should contain ImplementA");
+        assertTrue(list.contains(TypeIdentifier.from(ImplementB.class)), "Should contain ImplementB");
+        assertTrue(list.contains(TypeIdentifier.from(GenericsParameter.class)), "Should contain GenericsParameter");
 
         JigTypeReference superTypeData = actual.jigTypeHeader().baseTypeDataBundle().superType().orElseThrow();
         assertEquals("SuperClass<Integer, Long>", superTypeData.simpleNameWithGenerics());
@@ -56,11 +54,9 @@ public class AsmClassSourceReaderTest {
         JigType actual = TestSupport.buildJigType(InterfaceDefinition.class);
 
         TypeIdentifiers identifiers = actual.usingTypes();
-        assertThat(identifiers.list())
-                .contains(
-                        TypeIdentifier.from(ClassAnnotation.class),
-                        TypeIdentifier.from(GenericsParameter.class)
-                );
+        var list = identifiers.list();
+        assertTrue(list.contains(TypeIdentifier.from(ClassAnnotation.class)), "Should contain ClassAnnotation");
+        assertTrue(list.contains(TypeIdentifier.from(GenericsParameter.class)), "Should contain GenericsParameter");
 
         String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
                 .map(JigTypeReference::fqnWithGenerics)
@@ -73,12 +69,10 @@ public class AsmClassSourceReaderTest {
         JigType actual = TestSupport.buildJigType(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.usingTypes();
-        assertThat(identifiers.list())
-                .contains(
-                        TypeIdentifier.from(EnumField.class),
-                        TypeIdentifier.from(ConstructorArgument.class),
-                        TypeIdentifier.from(ClassReference.class)
-                );
+        var list = identifiers.list();
+        assertTrue(list.contains(TypeIdentifier.from(EnumField.class)), "Should contain EnumField");
+        assertTrue(list.contains(TypeIdentifier.from(ConstructorArgument.class)), "Should contain ConstructorArgument");
+        assertTrue(list.contains(TypeIdentifier.from(ClassReference.class)), "Should contain ClassReference");
     }
 
     @MethodSource

@@ -81,7 +81,6 @@ dependencies {
 
     testRuntimeOnly libs.logback.classic
     testImplementation libs.mockito
-    testImplementation libs.assertj
 
     // テストで読み取るのに使用するアノテーションなど。
     testImplementation libs.spring.web

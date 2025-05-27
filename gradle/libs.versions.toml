@@ -25,7 +25,6 @@ spring-web = { module = "org.springframework:spring-web", version.ref = "spring"
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
 mockito = "org.mockito:mockito-core:5.18.0"
-assertj = "org.assertj:assertj-core:3.27.3"
 
 [bundles]
 poi = ['poi', 'poi-ooxml']

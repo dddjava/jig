@@ -37,6 +37,9 @@ public class JigService {
 
     private final Architecture architecture;
     private final JigEventRepository jigEventRepository;
+
+    // 何度も呼ばれる計算量の多いメソッドをキャッシュするためのフィールド
+    // 現状は引数に揺れがないので、キャッシュキーはメソッド名にしておく
     private final Cache<String, JigTypes> jigTypesCache;
     private final Cache<String, JigTypesWithRelationships> JigTypesWithRelationshipsCache;
 
@@ -70,7 +73,7 @@ public class JigService {
      * コアドメインは実行時に指定するパターンなどによって識別する。
      */
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("core", key -> {
+        return jigTypesCache.get("coreDomainJigTypes", key -> {
             JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(architecture::isCoreDomain);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes;
@@ -82,13 +85,13 @@ public class JigService {
     }
 
     public JigTypes categoryTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("category", key -> {
+        return jigTypesCache.get("categoryTypes", key -> {
             return coreDomainJigTypes(jigRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
         });
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("service", key -> {
+        return jigTypesCache.get("serviceTypes", key -> {
             return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
         });
     }
@@ -136,7 +139,7 @@ public class JigService {
     }
 
     public JigTypesWithRelationships coreDomainJigTypesWithRelationships(JigRepository jigRepository) {
-        return JigTypesWithRelationshipsCache.get("coreDomainInternalRelation", key -> {
+        return JigTypesWithRelationshipsCache.get("coreDomainJigTypesWithRelationships", key -> {
             JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
             TypeRelationships typeRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
             return new JigTypesWithRelationships(coreDomainJigTypes, typeRelationships);

@@ -79,6 +79,9 @@ dependencies {
 
     api libs.caffeine
 
+    api(platform(libs.micrometer.bom))
+    api 'io.micrometer:micrometer-core'
+
     testRuntimeOnly libs.logback.classic
     testImplementation libs.mockito
 

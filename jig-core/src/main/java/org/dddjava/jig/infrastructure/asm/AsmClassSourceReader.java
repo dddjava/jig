@@ -1,5 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.domain.model.sources.classsources.ClassFile;
 import org.dddjava.jig.domain.model.sources.classsources.ClassFiles;
@@ -19,6 +21,8 @@ import java.util.Optional;
 public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
+    private final Counter counter = Metrics.counter("files.class");
+
     public Collection<ClassDeclaration> readClasses(ClassFiles classFiles) {
         return classFiles.values().stream()
                 .map(classFile -> classDeclaration(classFile))
@@ -28,6 +32,7 @@ public class AsmClassSourceReader {
 
     public Optional<ClassDeclaration> classDeclaration(ClassFile classFile) {
         try {
+            counter.increment();
             AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
 
             ClassReader classReader = new ClassReader(classFile.bytes());

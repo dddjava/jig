@@ -1,5 +1,7 @@
 package org.dddjava.jig;
 
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -31,6 +33,9 @@ public class JigExecutor {
     }
 
     private List<HandleResult> execute(SourceBasePaths sourceBasePaths) {
+        var registry = Metrics.globalRegistry;
+        registry.add(new SimpleMeterRegistry());
+
         long startTime = System.currentTimeMillis();
 
         // configurationに従ってJigRepositoryの生成と初期化を行う。
@@ -47,6 +52,8 @@ public class JigExecutor {
         jigDocumentGenerator.generateIndex(results);
         long takenTime = System.currentTimeMillis() - startTime;
         logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
+
+        logger.debug("metrics: class files={}", Metrics.counter("files.class").count());
         return results;
     }
 

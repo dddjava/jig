@@ -1,8 +1,11 @@
 package org.dddjava.jig;
 
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.application.JigDocumentGenerator;
@@ -16,9 +19,6 @@ import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFact
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -35,29 +35,22 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        return new JigExecutor(configuration).execute(sourceBasePaths);
+        var registry = Metrics.globalRegistry;
+        registry.add(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
+
+        new UptimeMetrics().bindTo(registry);
+        new JvmMemoryMetrics().bindTo(registry);
+        new JvmThreadMetrics().bindTo(registry);
+        try (var jvmGcMetrics = new JvmGcMetrics()) {
+            jvmGcMetrics.bindTo(registry);
+            return new JigExecutor(configuration).execute(sourceBasePaths);
+        } finally {
+            registry.close();
+        }
     }
 
     private List<HandleResult> execute(SourceBasePaths sourceBasePaths) {
         var registry = Metrics.globalRegistry;
-        registry.add(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
-
-        // Register memory usage gauges
-        Gauge.builder("jig.memory.used", this, o -> getUsedMemory())
-                .description("JVM memory used by JIG")
-                .baseUnit("bytes")
-                .register(registry);
-
-        Gauge.builder("jig.memory.max", this, o -> getMaxMemory())
-                .description("Maximum memory available to JVM")
-                .baseUnit("bytes")
-                .register(registry);
-
-        Gauge.builder("jig.memory.total", this, o -> getTotalMemory())
-                .description("Total memory allocated to JVM")
-                .baseUnit("bytes")
-                .register(registry);
-
         Timer.Sample sample = Timer.start(registry);
 
         try {
@@ -122,25 +115,5 @@ public class JigExecutor {
     @Deprecated(since = "2025.1.1")
     public JigExecutor withSourcePaths(SourceBasePaths sourceBasePaths) {
         return new JigExecutor(configuration);
-    }
-
-    private long getUsedMemory() {
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
-        return heapMemoryUsage.getUsed() + nonHeapMemoryUsage.getUsed();
-    }
-
-    private long getMaxMemory() {
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        return heapMemoryUsage.getMax();
-    }
-
-    private long getTotalMemory() {
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
-        return heapMemoryUsage.getCommitted() + nonHeapMemoryUsage.getCommitted();
     }
 }

@@ -1,5 +1,7 @@
 package org.dddjava.jig.application;
 
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Timer;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
 import org.dddjava.jig.adapter.diagram.DiagramAdapter;
@@ -66,19 +68,35 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
-        indexView.render(results, outputDirectory);
-        copyAssets(outputDirectory);
+        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
+        try {
+            IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
+            indexView.render(results, outputDirectory);
+            copyAssets(outputDirectory);
+        } finally {
+            sample.stop(Timer.builder("jig.document.time")
+                    .description("Time taken for index generation")
+                    .tag("phase", "index_generation")
+                    .register(Metrics.globalRegistry));
+        }
     }
 
     public List<HandleResult> generateDocuments(JigRepository jigRepository) {
-        prepareOutputDirectory();
-        List<HandleResult> handleResults = jigDocuments
-                .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
-                .toList();
-        jigService.notifyReportInformation();
-        return handleResults;
+        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
+        try {
+            prepareOutputDirectory();
+            List<HandleResult> handleResults = jigDocuments
+                    .parallelStream()
+                    .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
+                    .toList();
+            jigService.notifyReportInformation();
+            return handleResults;
+        } finally {
+            sample.stop(Timer.builder("jig.document.time")
+                    .description("Time taken for document generation")
+                    .tag("phase", "document_generation_total")
+                    .register(Metrics.globalRegistry));
+        }
     }
 
     private void prepareOutputDirectory() {
@@ -106,6 +124,7 @@ public class JigDocumentGenerator {
 
     HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
         try {
+            Timer.Sample sample = Timer.start(Metrics.globalRegistry);
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
@@ -121,6 +140,11 @@ public class JigDocumentGenerator {
                      BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigRepository);
             };
 
+            sample.stop(Timer.builder("jig.document.time")
+                    .description("Time taken for individual document generation")
+                    .tag("phase", "document_generation")
+                    .tag("document", jigDocument.name())
+                    .register(Metrics.globalRegistry));
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);
             return new HandleResult(jigDocument, outputFilePaths);
@@ -156,4 +180,3 @@ public class JigDocumentGenerator {
         }
     }
 }
-

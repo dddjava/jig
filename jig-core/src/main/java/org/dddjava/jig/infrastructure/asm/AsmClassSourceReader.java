@@ -21,7 +21,7 @@ import java.util.Optional;
 public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
-    private final Counter counter = Metrics.counter("files.class");
+    private final Counter counter = Metrics.counter("jig.analysis.class.count");
 
     public Collection<ClassDeclaration> readClasses(ClassFiles classFiles) {
         return classFiles.values().stream()

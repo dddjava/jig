@@ -1,6 +1,8 @@
 package org.dddjava.jig;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -13,6 +15,9 @@ import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFact
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -36,25 +41,47 @@ public class JigExecutor {
         var registry = Metrics.globalRegistry;
         registry.add(new SimpleMeterRegistry());
 
-        long startTime = System.currentTimeMillis();
+        // Register memory usage gauges
+        Gauge.builder("jig.memory.used", this, o -> getUsedMemory())
+                .description("JVM memory used by JIG")
+                .baseUnit("bytes")
+                .register(registry);
 
-        // configurationに従ってJigRepositoryの生成と初期化を行う。
-        // 現状はローカルのJava/Classファイルを読む形なので固定実装だが雰囲気分けておく。
-        // JARなどを読み取る場合やJavaファイルのみなどはSourceBasePathsの形も変わる想定。いつやるかは未定。
-        // このフェーズで source -> data の変換を終え、以降は source は触らない。
-        DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
-        JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths);
+        Gauge.builder("jig.memory.max", this, o -> getMaxMemory())
+                .description("Maximum memory available to JVM")
+                .baseUnit("bytes")
+                .register(registry);
 
-        // JigRepositoryを参照してJIGドキュメントを生成する
-        JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
-        var results = jigDocumentGenerator.generateDocuments(jigRepository);
+        Gauge.builder("jig.memory.total", this, o -> getTotalMemory())
+                .description("Total memory allocated to JVM")
+                .baseUnit("bytes")
+                .register(registry);
 
-        jigDocumentGenerator.generateIndex(results);
-        long takenTime = System.currentTimeMillis() - startTime;
-        logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
+        Timer.Sample sample = Timer.start(registry);
 
-        logger.debug("metrics: class files={}", Metrics.counter("files.class").count());
-        return results;
+        try {
+            // configurationに従ってJigRepositoryの生成と初期化を行う。
+            // 現状はローカルのJava/Classファイルを読む形なので固定実装だが雰囲気分けておく。
+            // JARなどを読み取る場合やJavaファイルのみなどはSourceBasePathsの形も変わる想定。いつやるかは未定。
+            // このフェーズで source -> data の変換を終え、以降は source は触らない。
+            DefaultJigRepositoryFactory jigRepositoryFactory = DefaultJigRepositoryFactory.init(configuration);
+            JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths);
+
+            // JigRepositoryを参照してJIGドキュメントを生成する
+            JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
+            var results = jigDocumentGenerator.generateDocuments(jigRepository);
+
+            jigDocumentGenerator.generateIndex(results);
+
+            logger.debug("metrics: class files={}", Metrics.counter("jig.analysis.class.count").count());
+            return results;
+        } finally {
+            long takenTime = sample.stop(Timer.builder("jig.execution.time")
+                    .description("Total execution time for JIG")
+                    .tag("phase", "total_execution")
+                    .register(registry));
+            logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
+        }
     }
 
     /**
@@ -92,5 +119,25 @@ public class JigExecutor {
     @Deprecated(since = "2025.1.1")
     public JigExecutor withSourcePaths(SourceBasePaths sourceBasePaths) {
         return new JigExecutor(configuration);
+    }
+
+    private long getUsedMemory() {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
+        return heapMemoryUsage.getUsed() + nonHeapMemoryUsage.getUsed();
+    }
+
+    private long getMaxMemory() {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        return heapMemoryUsage.getMax();
+    }
+
+    private long getTotalMemory() {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
+        return heapMemoryUsage.getCommitted() + nonHeapMemoryUsage.getCommitted();
     }
 }

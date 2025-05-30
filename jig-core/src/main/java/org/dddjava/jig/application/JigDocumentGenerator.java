@@ -2,6 +2,7 @@ package org.dddjava.jig.application;
 
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
 import org.dddjava.jig.adapter.diagram.DiagramAdapter;
@@ -177,6 +178,27 @@ public class JigDocumentGenerator {
             Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    public void exportMetricsToFile() {
+        String metricsFilePath = "jig-metrics.txt";
+        var path = outputDirectory.resolve(metricsFilePath);
+        try (var outputStream = Files.newOutputStream(path)) {
+            var globalRegistry = Metrics.globalRegistry;
+            globalRegistry.getRegistries().forEach(registry -> {
+                if (registry instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
+                    try {
+                        prometheusMeterRegistry.scrape(outputStream);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+            });
+            logger.info("Metrics exported successfully");
+            globalRegistry.close();
+        } catch (IOException | UncheckedIOException e) {
+            logger.error("Failed to export metrics to file: {}", path, e);
         }
     }
 }

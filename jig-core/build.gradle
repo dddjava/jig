@@ -80,6 +80,7 @@ dependencies {
     api libs.caffeine
 
     api libs.micrometer
+    api libs.micrometer.prometheus
 
     testRuntimeOnly libs.logback.classic
     testImplementation libs.mockito

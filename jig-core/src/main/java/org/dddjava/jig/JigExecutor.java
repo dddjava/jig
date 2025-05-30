@@ -3,7 +3,8 @@ package org.dddjava.jig;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -39,7 +40,7 @@ public class JigExecutor {
 
     private List<HandleResult> execute(SourceBasePaths sourceBasePaths) {
         var registry = Metrics.globalRegistry;
-        registry.add(new SimpleMeterRegistry());
+        registry.add(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
 
         // Register memory usage gauges
         Gauge.builder("jig.memory.used", this, o -> getUsedMemory())
@@ -73,13 +74,15 @@ public class JigExecutor {
 
             jigDocumentGenerator.generateIndex(results);
 
-            logger.debug("metrics: class files={}", Metrics.counter("jig.analysis.class.count").count());
             return results;
         } finally {
             long takenTime = sample.stop(Timer.builder("jig.execution.time")
                     .description("Total execution time for JIG")
                     .tag("phase", "total_execution")
                     .register(registry));
+            JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
+            jigDocumentGenerator.exportMetricsToFile();
+
             logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
         }
     }

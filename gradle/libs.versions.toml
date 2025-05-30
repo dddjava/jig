@@ -16,6 +16,7 @@ mybatis = "org.mybatis:mybatis:3.5.19"
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.0"
 
 micrometer = "io.micrometer:micrometer-core:1.15.0"
+micrometer-prometheus = "io.micrometer:micrometer-registry-prometheus:1.15.0"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
@@ -30,6 +31,7 @@ mockito = "org.mockito:mockito-core:5.18.0"
 
 [bundles]
 poi = ['poi', 'poi-ooxml']
+micrometer = ['micrometer', 'micrometer-prometheus']
 
 [plugins]
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.3.1" }

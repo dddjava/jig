@@ -195,7 +195,6 @@ public class JigDocumentGenerator {
                     }
                 }
             });
-            logger.info("Metrics exported successfully");
             globalRegistry.close();
         } catch (IOException | UncheckedIOException e) {
             logger.error("Failed to export metrics to file: {}", path, e);

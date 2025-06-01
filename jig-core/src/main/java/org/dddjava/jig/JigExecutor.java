@@ -9,17 +9,13 @@ import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.application.JigDocumentGenerator;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.util.List;
 
 public class JigExecutor {
@@ -78,42 +74,5 @@ public class JigExecutor {
 
             logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
         }
-    }
-
-    /**
-     * 実装中
-     */
-    @Deprecated(since = "2025.1.1")
-    public static JigExecutor standard(JigOptions jigOptions) {
-        var targetRootPath = jigOptions.workingDirectory().toAbsolutePath();
-
-        var binarySourcePaths = switch (jigOptions.resolveBuildTool()) {
-            case MAVEN -> new SourceBasePath(List.of(
-                    targetRootPath.resolve(Path.of("target", "classes"))));
-            case GRADLE -> new SourceBasePath(List.of(
-                    targetRootPath.resolve(Path.of("build", "classes", "java", "main")),
-                    targetRootPath.resolve(Path.of("build", "resources", "main"))
-            ));
-        };
-        SourceBasePath sourceBasePath = new SourceBasePath(List.of(
-                targetRootPath.resolve(Path.of("src", "main", "java")),
-                targetRootPath.resolve(Path.of("src", "main", "resources"))
-        ));
-
-        return new JigExecutor(
-                new Configuration(new JigProperties(
-                        JigDocument.canonical(),
-                        jigOptions.domainPattern(),
-                        jigOptions.outputDirectory()
-                ))
-        );
-    }
-
-    /**
-     * 実装中
-     */
-    @Deprecated(since = "2025.1.1")
-    public JigExecutor withSourcePaths(SourceBasePaths sourceBasePaths) {
-        return new JigExecutor(configuration);
     }
 }

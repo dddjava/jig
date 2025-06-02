@@ -30,7 +30,7 @@ public class ClassOrJavaSourceCollector {
         this.jigEventRepository = jigEventRepository;
     }
 
-    ClassFiles collectClassSources(SourceBasePaths sourceBasePaths) {
+    private ClassFiles collectClassSources(SourceBasePaths sourceBasePaths) {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
                 .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
                 .flatMap(List::stream)
@@ -46,7 +46,7 @@ public class ClassOrJavaSourceCollector {
         return new ClassFiles(classSourceList);
     }
 
-    JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
+    private JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
         enum JavaFileType {PackageInfoFile, JavaFile}
 
         Map<JavaFileType, List<Path>> collected = sourceBasePaths.javaSourceBasePaths().stream()

@@ -66,7 +66,7 @@ public class ClassOrJavaSourceCollector {
                     .filter(path -> path.getFileName().toString().endsWith(suffix))
                     .toList();
         } catch (IOException e) {
-            logger.warn("skip collect java source '{}'. (type={}, message={})", basePath, e.getClass().getName(), e.getMessage(), e);
+            logger.warn("skip collect source '{}'. (type={}, message={})", basePath, e.getClass().getName(), e.getMessage(), e);
             return List.of();
         }
     }

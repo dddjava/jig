@@ -38,7 +38,6 @@ public class ClassOrJavaSourceCollector {
                     try {
                         return Stream.of(ClassFile.readFromPath(path));
                     } catch (IOException e) {
-                        // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
                         logger.warn("skip class source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage(), e);
                         return Stream.empty();
                     }
@@ -67,7 +66,6 @@ public class ClassOrJavaSourceCollector {
                     .filter(path -> path.getFileName().toString().endsWith(suffix))
                     .toList();
         } catch (IOException e) {
-            // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
             logger.warn("skip collect java source '{}'. (type={}, message={})", basePath, e.getClass().getName(), e.getMessage(), e);
             return List.of();
         }

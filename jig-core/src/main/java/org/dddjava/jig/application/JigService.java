@@ -134,10 +134,6 @@ public class JigService {
         return StringComparingMethodList.createFrom(entrypoints, serviceMethods);
     }
 
-    public void notifyReportInformation() {
-        jigEventRepository.notifyWithLogger();
-    }
-
     public JigTypesWithRelationships coreDomainJigTypesWithRelationships(JigRepository jigRepository) {
         return JigTypesWithRelationshipsCache.get("coreDomainJigTypesWithRelationships", key -> {
             JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);

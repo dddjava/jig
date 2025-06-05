@@ -86,12 +86,10 @@ public class JigDocumentGenerator {
         Timer.Sample sample = Timer.start(Metrics.globalRegistry);
         try {
             prepareOutputDirectory();
-            List<HandleResult> handleResults = jigDocuments
+            return jigDocuments
                     .parallelStream()
                     .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
                     .toList();
-            jigService.notifyReportInformation();
-            return handleResults;
         } finally {
             sample.stop(Timer.builder("jig.document.time")
                     .description("Time taken for document generation")

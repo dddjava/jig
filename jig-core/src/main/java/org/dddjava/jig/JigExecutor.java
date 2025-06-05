@@ -72,6 +72,7 @@ public class JigExecutor {
             JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
             jigDocumentGenerator.exportMetricsToFile();
 
+            configuration.jigEventRepository().notifyWithLogger();
             logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
         }
     }

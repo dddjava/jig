@@ -18,7 +18,7 @@ public record JigMethods(Collection<JigMethod> methods) {
      * 主に概要での出力に使用する。
      */
     public List<JigMethod> listRemarkable() {
-        return methods.stream()
+        return stream()
                 .filter(JigMethod::remarkable)
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
@@ -27,7 +27,7 @@ public record JigMethods(Collection<JigMethod> methods) {
     }
 
     public List<JigMethod> list() {
-        return methods.stream()
+        return stream()
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
                         .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
@@ -39,13 +39,13 @@ public record JigMethods(Collection<JigMethod> methods) {
     }
 
     public JigMethods filterProgrammerDefined() {
-        return new JigMethods(methods.stream()
+        return new JigMethods(stream()
                 .filter(jigMethod -> jigMethod.isProgrammerDefined())
                 .toList());
     }
 
     public JigMethods excludeNotNoteworthyObjectMethod() {
-        return new JigMethods(methods.stream()
+        return new JigMethods(stream()
                 .filter(jigMethod -> !jigMethod.isObjectMethod() || jigMethod.documented())
                 .toList());
     }
@@ -55,7 +55,7 @@ public record JigMethods(Collection<JigMethod> methods) {
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return methods.stream()
+        return stream()
                 .map(JigMethod::nameArgumentsReturnSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));

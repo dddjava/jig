@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -18,12 +17,6 @@ public class RepositoryMethods {
 
     RepositoryMethods(List<JigMethod> list) {
         this.list = list;
-    }
-
-    public String asSimpleText() {
-        return list.stream()
-                .map(JigMethod::nameAndArgumentSimpleText)
-                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public RepositoryMethods filter(List<MethodCall> methodCalls) {

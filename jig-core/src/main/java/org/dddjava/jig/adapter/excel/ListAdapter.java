@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -158,7 +159,9 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().typeNames()),
                         ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionCount()),
                         ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(Collectors.joining(", ", "[", "]"))),
-                        ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().asSimpleText()),
+                        ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()
+                                .map(JigMethod::nameAndArgumentSimpleText)
+                                .collect(Collectors.joining(", ", "[", "]"))),
                         ReportItem.ofString("null使用", item -> item.useNull() ? "◯" : ""),
                         ReportItem.ofString("stream使用", item -> item.useStream() ? "◯" : "")
                 ), serviceAngles.list()),

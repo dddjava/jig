@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.information.members;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -54,10 +53,4 @@ public record JigMethods(Collection<JigMethod> methods) {
         return methods.stream();
     }
 
-    public String asSignatureAndReturnTypeSimpleText() {
-        return stream()
-                .map(JigMethod::nameArgumentsReturnSimpleText)
-                .sorted()
-                .collect(Collectors.joining(", ", "[", "]"));
-    }
 }

@@ -93,7 +93,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         ReportItem.ofNumber("メソッド数", item -> item.instanceJigMethods().list().size()),
-                        ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().asSignatureAndReturnTypeSimpleText())
+                        ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::nameArgumentsReturnSimpleText).sorted().collect(Collectors.joining(", ", "[", "]")))
                 ), coreDomainJigTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),

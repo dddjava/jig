@@ -4,9 +4,11 @@ import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigTypesWithRelationships;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
+import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -134,7 +136,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("メソッドシグネチャ", item -> item.jigMethod().nameAndArgumentSimpleText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().methodReturnTypeReference().simpleName()),
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
-                        ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().typeNames()),
+                        ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().fieldIds().stream()
+                                .map(JigFieldIdentifier::declaringTypeIdentifier)
+                                .map(TypeIdentifier::asSimpleText)
+                                .sorted()
+                                .collect(Collectors.joining(", ", "[", "]"))),
                         ReportItem.ofNumber("分岐数", item -> item.jigMethod().instructions().decisionCount()),
                         ReportItem.ofString("パス", item -> HttpEndpoint.from(item).pathText())
                 ), entrypoints.listRequestHandlerMethods()),
@@ -156,7 +162,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(Term::title)
                                         .collect(Collectors.joining(", ", "[", "]"))
                         ),
-                        ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().typeNames()),
+                        ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().fieldIds().stream()
+                                .map(JigFieldIdentifier::declaringTypeIdentifier)
+                                .map(TypeIdentifier::asSimpleText)
+                                .sorted()
+                                .collect(Collectors.joining(", ", "[", "]"))),
                         ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionCount()),
                         ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(Collectors.joining(", ", "[", "]"))),
                         ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()

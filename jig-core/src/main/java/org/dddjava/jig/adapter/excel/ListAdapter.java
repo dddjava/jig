@@ -93,7 +93,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", item -> item.label()),
-                        ReportItem.ofString("フィールドの型", item -> item.jigTypeMembers().instanceFieldsSimpleTextWithGenerics()),
+                        ReportItem.ofString("フィールドの型", item -> {
+                            List<String> list = item.jigTypeMembers().instanceFields().stream()
+                                    .map(jigField -> jigField.jigTypeReference().simpleNameWithGenerics())
+                                    .toList();
+                            return list.size() == 1 ? list.get(0) : list.stream().collect(Collectors.joining(", ", "[", "]"));
+                        }),
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         ReportItem.ofNumber("メソッド数", item -> item.instanceJigMethods().list().size()),

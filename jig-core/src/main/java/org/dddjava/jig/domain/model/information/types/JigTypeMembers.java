@@ -25,13 +25,6 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
                 .map(jigMethod -> jigMethod.jigMethodDeclaration()).toList();
     }
 
-    public String instanceFieldsSimpleTextWithGenerics() {
-        List<String> list = instanceFields.stream()
-                .map(jigField -> jigField.jigTypeReference().simpleNameWithGenerics())
-                .toList();
-        return list.size() == 1 ? list.get(0) : list.stream().collect(Collectors.joining(", ", "[", "]"));
-    }
-
     public Set<TypeIdentifier> allTypeIdentifierSet() {
         return Stream.concat(
                 allJigFieldStream().flatMap(jigFields -> jigFields.jigFieldHeader().allTypeIdentifierStream()),

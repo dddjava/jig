@@ -16,7 +16,7 @@ mybatis = "org.mybatis:mybatis:3.5.19"
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.1"
 
 micrometer = "io.micrometer:micrometer-core:1.15.0"
-micrometer-prometheus = "io.micrometer:micrometer-registry-prometheus:1.15.0"
+micrometer-prometheus = "io.micrometer:micrometer-registry-prometheus:1.15.1"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }

@@ -15,7 +15,7 @@ javaparser = "com.github.javaparser:javaparser-core:3.26.4"
 mybatis = "org.mybatis:mybatis:3.5.19"
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.1"
 
-micrometer = "io.micrometer:micrometer-core:1.15.0"
+micrometer = "io.micrometer:micrometer-core:1.15.1"
 micrometer-prometheus = "io.micrometer:micrometer-registry-prometheus:1.15.1"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }

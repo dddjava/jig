@@ -78,7 +78,9 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", item -> item.label()),
                         ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(Collectors.joining(", ", "[", "]"))),
-                        ReportItem.ofString("フィールド", item -> item.jigTypeMembers().instanceFieldsSimpleText()),
+                        ReportItem.ofString("フィールド", item -> item.jigTypeMembers().instanceFields().stream()
+                                .map(jigField -> jigField.jigFieldHeader().simpleText())
+                                .collect(Collectors.joining(", ", "[", "]"))),
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない

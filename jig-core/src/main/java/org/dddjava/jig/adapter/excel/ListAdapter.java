@@ -28,10 +28,16 @@ import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @HandleDocument
 public class ListAdapter implements Adapter<ReportBook> {
+
+    /**
+     * 一覧出力で複数要素を文字列連結する際のコレクター
+     */
+    private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = Collectors.joining(", ", "[", "]");
 
     private final JigDocumentContext jigDocumentContext;
     private final JigService jigService;
@@ -77,10 +83,10 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", item -> item.label()),
-                        ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(Collectors.joining(", ", "[", "]"))),
+                        ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("フィールド", item -> item.jigTypeMembers().instanceFields().stream()
                                 .map(jigField -> jigField.jigFieldHeader().simpleText())
-                                .collect(Collectors.joining(", ", "[", "]"))),
+                                .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない
@@ -97,12 +103,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                             List<String> list = item.jigTypeMembers().instanceFields().stream()
                                     .map(jigField -> jigField.jigTypeReference().simpleNameWithGenerics())
                                     .toList();
-                            return list.size() == 1 ? list.get(0) : list.stream().collect(Collectors.joining(", ", "[", "]"));
+                            return list.size() == 1 ? list.get(0) : list.stream().collect(STREAM_COLLECTOR);
                         }),
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         ReportItem.ofNumber("メソッド数", item -> item.instanceJigMethods().list().size()),
-                        ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::nameArgumentsReturnSimpleText).sorted().collect(Collectors.joining(", ", "[", "]")))
+                        ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::nameArgumentsReturnSimpleText).sorted().collect(STREAM_COLLECTOR))
                 ), coreDomainJigTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
@@ -147,7 +153,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 .map(JigFieldIdentifier::declaringTypeIdentifier)
                                 .map(TypeIdentifier::asSimpleText)
                                 .sorted()
-                                .collect(Collectors.joining(", ", "[", "]"))),
+                                .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("分岐数", item -> item.jigMethod().instructions().decisionCount()),
                         ReportItem.ofString("パス", item -> HttpEndpoint.from(item).pathText())
                 ), entrypoints.listRequestHandlerMethods()),
@@ -167,18 +173,18 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(JigTypeReference::id)
                                         .map(jigDocumentContext::typeTerm)
                                         .map(Term::title)
-                                        .collect(Collectors.joining(", ", "[", "]"))
+                                        .collect(STREAM_COLLECTOR)
                         ),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().fieldIds().stream()
                                 .map(JigFieldIdentifier::declaringTypeIdentifier)
                                 .map(TypeIdentifier::asSimpleText)
                                 .sorted()
-                                .collect(Collectors.joining(", ", "[", "]"))),
+                                .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionCount()),
-                        ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(Collectors.joining(", ", "[", "]"))),
+                        ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()
                                 .map(JigMethod::nameAndArgumentSimpleText)
-                                .collect(Collectors.joining(", ", "[", "]"))),
+                                .collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("null使用", item -> item.useNull() ? "◯" : ""),
                         ReportItem.ofString("stream使用", item -> item.useStream() ? "◯" : "")
                 ), serviceAngles.list()),
@@ -196,7 +202,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(JigTypeReference::id)
                                         .map(jigDocumentContext::typeTerm)
                                         .map(Term::title)
-                                        .collect(Collectors.joining(", ", "[", "]"))
+                                        .collect(STREAM_COLLECTOR)
                         ),
                         ReportItem.ofNumber("分岐数", item -> item.concreteMethod().instructions().decisionCount()),
                         ReportItem.ofString("INSERT", item -> item.insertTables()),

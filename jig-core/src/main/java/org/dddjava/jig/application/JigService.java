@@ -17,7 +17,6 @@ import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.module.JigPackages;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -136,9 +135,7 @@ public class JigService {
 
     public JigTypesWithRelationships coreDomainJigTypesWithRelationships(JigRepository jigRepository) {
         return JigTypesWithRelationshipsCache.get("coreDomainJigTypesWithRelationships", key -> {
-            JigTypes coreDomainJigTypes = coreDomainJigTypes(jigRepository);
-            TypeRelationships typeRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
-            return new JigTypesWithRelationships(coreDomainJigTypes, typeRelationships);
+            return JigTypesWithRelationships.from(coreDomainJigTypes(jigRepository));
         });
     }
 

@@ -9,10 +9,10 @@ import java.util.stream.Stream;
  *
  * .classなどでの使用。型引数は付かないので `TypeIdentifier` で扱う。
  */
-public record ClassReference(TypeIdentifier typeIdentifier) implements Instruction {
+public record ClassReference(TypeIdentifier targetTypeIdentifier) implements Instruction {
 
     @Override
     public Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.of(typeIdentifier);
+        return Stream.of(targetTypeIdentifier);
     }
 }

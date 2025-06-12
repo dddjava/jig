@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public sealed interface FieldAccess extends Instruction
         permits GetAccess, SetAccess, UnknownAccess {
 
-    TypeIdentifier typeIdentifier();
+    TypeIdentifier fieldTypeIdentifier();
 
     JigFieldIdentifier jigFieldIdentifier();
 
@@ -29,15 +29,15 @@ public sealed interface FieldAccess extends Instruction
 
     @Override
     default Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.of(typeIdentifier(), jigFieldIdentifier().declaringTypeIdentifier());
+        return Stream.of(fieldTypeIdentifier(), jigFieldIdentifier().declaringTypeIdentifier());
     }
 }
 
-record GetAccess(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
+record GetAccess(TypeIdentifier fieldTypeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
 }
 
-record SetAccess(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
+record SetAccess(TypeIdentifier fieldTypeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
 }
 
-record UnknownAccess(TypeIdentifier typeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
+record UnknownAccess(TypeIdentifier fieldTypeIdentifier, JigFieldIdentifier jigFieldIdentifier) implements FieldAccess {
 }

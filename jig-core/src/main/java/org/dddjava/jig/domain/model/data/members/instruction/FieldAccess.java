@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.stream.Stream;
 
+/**
+ * フィールドの使用
+ */
 public sealed interface FieldAccess extends Instruction
         permits GetAccess, SetAccess, UnknownAccess {
 

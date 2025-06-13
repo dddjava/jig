@@ -70,7 +70,7 @@ public class DefaultJigRepositoryFactory {
                 return JigRepository.empty();
             }
 
-            return jigTypesRepository(sources);
+            return analyze(sources);
         } finally {
             sample.stop(Timer.builder("jig.analysis.time")
                     .description("Time taken for code analysis")
@@ -82,7 +82,7 @@ public class DefaultJigRepositoryFactory {
     /**
      * プロジェクト情報を読み取る
      */
-    private JigRepository jigTypesRepository(LocalSource sources) {
+    private JigRepository analyze(LocalSource sources) {
         Timer.Sample totalSample = Timer.start(Metrics.globalRegistry);
 
         JavaFilePaths javaFilePaths = sources.javaFilePaths();

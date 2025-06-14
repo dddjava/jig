@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,6 @@ import stub.domain.model.type.HogeRepository;
 import stub.domain.model.type.SimpleNumber;
 import testing.TestSupport;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,9 +35,7 @@ public class AsmClassSourceReaderTest {
     void クラス定義に使用している型が取得できる() throws Exception {
         JigType actual = TestSupport.buildJigType(ClassDefinition.class);
 
-        TypeIdentifiers identifiers = actual.usingTypes();
-        var list = identifiers.list();
-        assertListContainsAll(list,
+        assertUsingTypesContainsAll(actual,
                 ClassAnnotation.class, SuperClass.class,
                 ImplementA.class, ImplementB.class,
                 GenericsParameter.class);
@@ -53,9 +49,7 @@ public class AsmClassSourceReaderTest {
     void インタフェース定義に使用している型が取得できる() throws Exception {
         JigType actual = TestSupport.buildJigType(InterfaceDefinition.class);
 
-        TypeIdentifiers identifiers = actual.usingTypes();
-        var list = identifiers.list();
-        assertListContainsAll(list, ClassAnnotation.class, GenericsParameter.class);
+        assertUsingTypesContainsAll(actual, ClassAnnotation.class, GenericsParameter.class);
 
         String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
                 .map(JigTypeReference::fqnWithGenerics)
@@ -67,13 +61,11 @@ public class AsmClassSourceReaderTest {
     void enumで使用している型が取得できる() throws Exception {
         JigType actual = TestSupport.buildJigType(EnumDefinition.class);
 
-        TypeIdentifiers identifiers = actual.usingTypes();
-        var list = identifiers.list();
-
-        assertListContainsAll(list, EnumField.class, ConstructorArgument.class, ClassReference.class);
+        assertUsingTypesContainsAll(actual, EnumField.class, ConstructorArgument.class, ClassReference.class);
     }
 
-    private static void assertListContainsAll(List<TypeIdentifier> list, Class<?>... classes) {
+    private static void assertUsingTypesContainsAll(JigType jigType, Class<?>... classes) {
+        var list = jigType.usingTypes().list();
         assertTrue(list.containsAll(Stream.of(classes)
                 .map(TypeIdentifier::from)
                 .toList()), "UsingTypes " + list + " Should contain all");

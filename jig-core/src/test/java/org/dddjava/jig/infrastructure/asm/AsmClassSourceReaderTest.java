@@ -56,8 +56,9 @@ public class AsmClassSourceReaderTest {
 
         TypeIdentifiers identifiers = actual.usingTypes();
         var list = identifiers.list();
-        assertTrue(list.contains(TypeIdentifier.from(ClassAnnotation.class)), "Should contain ClassAnnotation");
-        assertTrue(list.contains(TypeIdentifier.from(GenericsParameter.class)), "Should contain GenericsParameter");
+        assertTrue(list.containsAll(Stream.of(ClassAnnotation.class, GenericsParameter.class)
+                .map(TypeIdentifier::from)
+                .toList()), "UsingTypes " + list + " Should contain all");
 
         String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
                 .map(JigTypeReference::fqnWithGenerics)
@@ -71,9 +72,11 @@ public class AsmClassSourceReaderTest {
 
         TypeIdentifiers identifiers = actual.usingTypes();
         var list = identifiers.list();
-        assertTrue(list.contains(TypeIdentifier.from(EnumField.class)), "Should contain EnumField");
-        assertTrue(list.contains(TypeIdentifier.from(ConstructorArgument.class)), "Should contain ConstructorArgument");
-        assertTrue(list.contains(TypeIdentifier.from(ClassReference.class)), "Should contain ClassReference");
+
+        assertTrue(list.containsAll(
+                Stream.of(EnumField.class, ConstructorArgument.class, ClassReference.class)
+                        .map(TypeIdentifier::from)
+                        .toList()), "UsingTypes " + list + " Should contain all");
     }
 
     @MethodSource

@@ -23,6 +23,7 @@ import stub.domain.model.type.HogeRepository;
 import stub.domain.model.type.SimpleNumber;
 import testing.TestSupport;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,12 +39,10 @@ public class AsmClassSourceReaderTest {
 
         TypeIdentifiers identifiers = actual.usingTypes();
         var list = identifiers.list();
-        assertTrue(list.containsAll(
-                Stream.of(ClassAnnotation.class, SuperClass.class,
-                                ImplementA.class, ImplementB.class,
-                                GenericsParameter.class)
-                        .map(TypeIdentifier::from)
-                        .toList()), "UsingTypes " + list + " Should contain all");
+        assertListContainsAll(list,
+                ClassAnnotation.class, SuperClass.class,
+                ImplementA.class, ImplementB.class,
+                GenericsParameter.class);
 
         JigTypeReference superTypeData = actual.jigTypeHeader().baseTypeDataBundle().superType().orElseThrow();
         assertEquals("SuperClass<Integer, Long>", superTypeData.simpleNameWithGenerics());
@@ -56,9 +55,7 @@ public class AsmClassSourceReaderTest {
 
         TypeIdentifiers identifiers = actual.usingTypes();
         var list = identifiers.list();
-        assertTrue(list.containsAll(Stream.of(ClassAnnotation.class, GenericsParameter.class)
-                .map(TypeIdentifier::from)
-                .toList()), "UsingTypes " + list + " Should contain all");
+        assertListContainsAll(list, ClassAnnotation.class, GenericsParameter.class);
 
         String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
                 .map(JigTypeReference::fqnWithGenerics)
@@ -73,10 +70,13 @@ public class AsmClassSourceReaderTest {
         TypeIdentifiers identifiers = actual.usingTypes();
         var list = identifiers.list();
 
-        assertTrue(list.containsAll(
-                Stream.of(EnumField.class, ConstructorArgument.class, ClassReference.class)
-                        .map(TypeIdentifier::from)
-                        .toList()), "UsingTypes " + list + " Should contain all");
+        assertListContainsAll(list, EnumField.class, ConstructorArgument.class, ClassReference.class);
+    }
+
+    private static void assertListContainsAll(List<TypeIdentifier> list, Class<?>... classes) {
+        assertTrue(list.containsAll(Stream.of(classes)
+                .map(TypeIdentifier::from)
+                .toList()), "UsingTypes " + list + " Should contain all");
     }
 
     @MethodSource

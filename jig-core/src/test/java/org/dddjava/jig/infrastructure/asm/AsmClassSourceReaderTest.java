@@ -38,11 +38,12 @@ public class AsmClassSourceReaderTest {
 
         TypeIdentifiers identifiers = actual.usingTypes();
         var list = identifiers.list();
-        assertTrue(list.contains(TypeIdentifier.from(ClassAnnotation.class)), "Should contain ClassAnnotation");
-        assertTrue(list.contains(TypeIdentifier.from(SuperClass.class)), "Should contain SuperClass");
-        assertTrue(list.contains(TypeIdentifier.from(ImplementA.class)), "Should contain ImplementA");
-        assertTrue(list.contains(TypeIdentifier.from(ImplementB.class)), "Should contain ImplementB");
-        assertTrue(list.contains(TypeIdentifier.from(GenericsParameter.class)), "Should contain GenericsParameter");
+        assertTrue(list.containsAll(
+                Stream.of(ClassAnnotation.class, SuperClass.class,
+                                ImplementA.class, ImplementB.class,
+                                GenericsParameter.class)
+                        .map(TypeIdentifier::from)
+                        .toList()), "UsingTypes " + list + " Should contain all");
 
         JigTypeReference superTypeData = actual.jigTypeHeader().baseTypeDataBundle().superType().orElseThrow();
         assertEquals("SuperClass<Integer, Long>", superTypeData.simpleNameWithGenerics());

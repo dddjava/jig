@@ -72,10 +72,10 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("関連元ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterTo(item.id()).size()),
                         ReportItem.ofNumber("関連先ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterFrom(item.id()).size()),
                         ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
-                        ReportItem.ofString("非PUBLIC", item -> item.visibility() != JigTypeVisibility.PUBLIC ? "◯" : ""),
+                        ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {
                             var identifiers = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().identifiers();
-                            return identifiers.equals(Set.of(item.packageIdentifier())) ? "◯" : "";
+                            return markIfTrue(identifiers.equals(Set.of(item.packageIdentifier())));
                         }),
                         ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText())
                 ), coreDomainJigTypes.list()),
@@ -90,10 +90,10 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない
-                        ReportItem.ofString("パラメーター有り", item -> item.hasInstanceField() ? "◯" : ""),
-                        ReportItem.ofString("振る舞い有り", item -> item.hasInstanceMethod() ? "◯" : ""),
+                        ReportItem.ofString("パラメーター有り", item -> markIfTrue(item.hasInstanceField())),
+                        ReportItem.ofString("振る舞い有り", item -> markIfTrue(item.hasInstanceMethod())),
                         // 抽象列挙型は継承クラスがコンパイラに作成されているもので、多態とみなすことにする
-                        ReportItem.ofString("多態", item -> item.typeKind() == TypeKind.抽象列挙型 ? "◯" : "")
+                        ReportItem.ofString("多態", item -> markIfTrue(item.typeKind() == TypeKind.抽象列挙型))
                 ), categoryTypes.list()),
                 new ReportSheet<>("COLLECTION", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
@@ -125,12 +125,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("メソッドシグネチャ", item -> item.method().nameAndArgumentSimpleText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnType().asSimpleText()),
                         ReportItem.ofString("クラス別名", item -> item.declaringJigType().label()),
-                        ReportItem.ofString("メンバを使用していない", item -> item.notUseMember() ? "◯" : ""),
-                        ReportItem.ofString("基本型の授受を行なっている", item -> item.primitiveInterface() ? "◯" : ""),
-                        ReportItem.ofString("NULLリテラルを使用している", item -> item.referenceNull() ? "◯" : ""),
-                        ReportItem.ofString("NULL判定をしている", item -> item.nullDecision() ? "◯" : ""),
-                        ReportItem.ofString("真偽値を返している", item -> item.returnsBoolean() ? "◯" : ""),
-                        ReportItem.ofString("voidを返している", item -> item.returnsVoid() ? "◯" : "")
+                        ReportItem.ofString("メンバを使用していない", item -> markIfTrue(item.notUseMember())),
+                        ReportItem.ofString("基本型の授受を行なっている", item -> markIfTrue(item.primitiveInterface())),
+                        ReportItem.ofString("NULLリテラルを使用している", item -> markIfTrue(item.referenceNull())),
+                        ReportItem.ofString("NULL判定をしている", item -> markIfTrue(item.nullDecision())),
+                        ReportItem.ofString("真偽値を返している", item -> markIfTrue(item.returnsBoolean())),
+                        ReportItem.ofString("voidを返している", item -> markIfTrue(item.returnsVoid()))
                 ), methodSmellList.list())
         );
     }
@@ -162,7 +162,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.serviceMethod().method().nameAndArgumentSimpleText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.serviceMethod().method().methodReturnTypeReference().simpleName()),
-                        ReportItem.ofString("イベントハンドラ", item -> item.usingFromController() ? "◯" : ""),
+                        ReportItem.ofString("イベントハンドラ", item -> markIfTrue(item.usingFromController())),
                         ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.serviceMethod().declaringType()).title()),
                         ReportItem.ofString("メソッド別名", item -> item.serviceMethod().method().aliasTextOrBlank()),
                         ReportItem.ofString("メソッド戻り値の型の別名", item ->
@@ -185,8 +185,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()
                                 .map(JigMethod::nameAndArgumentSimpleText)
                                 .collect(STREAM_COLLECTOR)),
-                        ReportItem.ofString("null使用", item -> item.useNull() ? "◯" : ""),
-                        ReportItem.ofString("stream使用", item -> item.useStream() ? "◯" : "")
+                        ReportItem.ofString("null使用", item -> markIfTrue(item.useNull())),
+                        ReportItem.ofString("stream使用", item -> markIfTrue(item.useStream()))
                 ), serviceAngles.list()),
                 new ReportSheet<>("REPOSITORY", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageText()),
@@ -218,6 +218,10 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText())
                 ), stringComparingMethodList.list())
         );
+    }
+
+    private static String markIfTrue(boolean b) {
+        return b ? "◯" : "";
     }
 
     @Override

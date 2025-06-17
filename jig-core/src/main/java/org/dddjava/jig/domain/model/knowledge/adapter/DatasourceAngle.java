@@ -50,6 +50,10 @@ public class DatasourceAngle {
         return interfaceMethod.methodArgumentTypeReferenceStream();
     }
 
+    public int decisionCount() {
+        return concreteMethod().instructions().decisionCount();
+    }
+
     public String insertTables() {
         return myBatisStatements.tables(SqlType.INSERT).asText();
     }

@@ -19,6 +19,7 @@ import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
+import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngle;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
@@ -189,11 +190,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("stream使用", item -> markIfTrue(item.useStream()))
                 ), serviceAngles.list()),
                 new ReportSheet<>("REPOSITORY", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.packageText()),
-                        ReportItem.ofString("クラス名", item -> item.typeSimpleName()),
-                        ReportItem.ofString("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText()),
+                        ReportItem.ofString("パッケージ名", DatasourceAngle::packageText),
+                        ReportItem.ofString("クラス名", DatasourceAngle::typeSimpleName),
+                        ReportItem.ofString("メソッドシグネチャ", DatasourceAngle::nameAndArgumentSimpleText),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnTypeReference().simpleNameWithGenerics()),
-                        ReportItem.ofString("クラス別名", item -> item.typeLabel()),
+                        ReportItem.ofString("クラス別名", DatasourceAngle::typeLabel),
                         ReportItem.ofString("メソッド戻り値の型の別名", item ->
                                 jigDocumentContext.typeTerm(item.methodReturnTypeReference().id()).title()
                         ),
@@ -204,11 +205,11 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(Term::title)
                                         .collect(STREAM_COLLECTOR)
                         ),
-                        ReportItem.ofNumber("分岐数", item -> item.concreteMethod().instructions().decisionCount()),
-                        ReportItem.ofString("INSERT", item -> item.insertTables()),
-                        ReportItem.ofString("SELECT", item -> item.selectTables()),
-                        ReportItem.ofString("UPDATE", item -> item.updateTables()),
-                        ReportItem.ofString("DELETE", item -> item.deleteTables()),
+                        ReportItem.ofNumber("分岐数", DatasourceAngle::decisionCount),
+                        ReportItem.ofString("INSERT", DatasourceAngle::insertTables),
+                        ReportItem.ofString("SELECT", DatasourceAngle::selectTables),
+                        ReportItem.ofString("UPDATE", DatasourceAngle::updateTables),
+                        ReportItem.ofString("DELETE", DatasourceAngle::deleteTables),
                         ReportItem.ofNumber("関連元クラス数", item -> item.callerMethods().typeCount()),
                         ReportItem.ofNumber("関連元メソッド数", item -> item.callerMethods().size())
                 ), datasourceAngles.list()),

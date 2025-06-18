@@ -73,7 +73,6 @@ public class JigDocumentGenerator {
         try {
             IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
-            copyAssets();
         } finally {
             sample.stop(Timer.builder("jig.document.time")
                     .description("Time taken for index generation")
@@ -153,7 +152,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    private void copyAssets() {
+    public void generateAssets() {
         Path assetsDirectory = createAssetsDirectory(this.outputDirectory);
         copyAsset("style.css", assetsDirectory);
         copyAsset("jig.js", assetsDirectory);

@@ -62,6 +62,7 @@ public class JigExecutor {
             var results = jigDocumentGenerator.generateDocuments(jigRepository);
 
             jigDocumentGenerator.generateIndex(results);
+            jigDocumentGenerator.generateAssets();
 
             return results;
         } finally {

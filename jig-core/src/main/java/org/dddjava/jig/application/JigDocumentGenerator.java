@@ -153,28 +153,21 @@ public class JigDocumentGenerator {
     }
 
     public void generateAssets() {
-        Path assetsDirectory = createAssetsDirectory(this.outputDirectory);
-        copyAsset("style.css", assetsDirectory);
-        copyAsset("jig.js", assetsDirectory);
-        copyAsset("favicon.ico", assetsDirectory);
-    }
-
-    private static Path createAssetsDirectory(Path outputDirectory) {
-        Path assetsPath = outputDirectory.resolve("assets");
         try {
+            Path assetsPath = this.outputDirectory.resolve("assets");
             Files.createDirectories(assetsPath);
+            copyAsset("style.css", assetsPath);
+            copyAsset("jig.js", assetsPath);
+            copyAsset("favicon.ico", assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return assetsPath;
     }
 
-    private void copyAsset(String fileName, Path distDirectory) {
+    private void copyAsset(String fileName, Path distDirectory) throws IOException {
         ClassLoader classLoader = this.getClass().getClassLoader();
         try (InputStream is = classLoader.getResourceAsStream("templates/assets/" + fileName)) {
             Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
         }
     }
 

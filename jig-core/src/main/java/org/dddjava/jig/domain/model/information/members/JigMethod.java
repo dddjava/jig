@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
     public JigMethodIdentifier jigMethodIdentifier() {
-        return jigMethodDeclaration.header().id();
+        return header().id();
     }
 
     public String simpleText() {
@@ -29,11 +30,11 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
-        return jigMethodDeclaration.header().declarationAnnotationStream();
+        return header().declarationAnnotationStream();
     }
 
     public JigMemberVisibility visibility() {
-        return jigMethodDeclaration.jigMemberVisibility();
+        return header().jigMemberVisibility();
     }
 
     public boolean isPublic() {
@@ -54,12 +55,12 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
     public String aliasTextOrBlank() {
         var title = term.title();
-        return jigMethodDeclaration.name().equals(title) ? "" : title;
+        return name().equals(title) ? "" : title;
     }
 
     public String aliasText() {
         if (aliasTextOrBlank().isEmpty()) {
-            return jigMethodDeclaration.declaringTypeIdentifier().asSimpleText() + "\\n" + name();
+            return declaringType().asSimpleText() + "\\n" + name();
         }
         return aliasTextOrBlank();
     }
@@ -84,7 +85,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
 
     public boolean isObjectMethod() {
-        return jigMethodDeclaration.header().isObjectMethod();
+        return header().isObjectMethod();
     }
 
     public boolean documented() {
@@ -102,7 +103,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public String name() {
-        return jigMethodDeclaration.name();
+        return header().name();
     }
 
     public boolean hasAnnotation(TypeIdentifier annotation) {
@@ -114,11 +115,11 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public boolean isAbstract() {
-        return jigMethodDeclaration.isAbstract();
+        return header().isAbstract();
     }
 
     public String nameArgumentsReturnSimpleText() {
-        return jigMethodDeclaration.header().nameArgumentsReturnSimpleText();
+        return header().nameArgumentsReturnSimpleText();
     }
 
     public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {
@@ -126,26 +127,36 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public JigTypeReference methodReturnTypeReference() {
-        return jigMethodDeclaration.header().returnType();
+        return header().returnType();
     }
 
     public String nameAndArgumentSimpleText() {
-        return jigMethodDeclaration.nameAndArgumentSimpleText();
+        return header().nameAndArgumentSimpleText();
     }
 
     public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
-        return jigMethodDeclaration.argumentStream();
+        return header().argumentList().stream();
     }
 
     public TypeIdentifier declaringType() {
-        return jigMethodDeclaration.declaringTypeIdentifier();
+        return header().id().tuple().declaringTypeIdentifier();
     }
 
     public boolean isProgrammerDefined() {
-        return jigMethodDeclaration.header().isProgrammerDefined();
+        return header().isProgrammerDefined();
     }
 
     public boolean isRecordComponent() {
-        return jigMethodDeclaration.header().isRecordComponentAccessor();
+        return header().isRecordComponentAccessor();
+    }
+
+    /**
+     * メソッド定義のヘッダにアクセスするヘルパーメソッド
+     *
+     * JigMethodに対する関心のほとんどはヘッダに由来する。
+     * すべての箇所でチェーンすると冗長なコードになるので、それを改善する。
+     */
+    private JigMethodHeader header() {
+        return jigMethodDeclaration.header();
     }
 }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.members;
 
-import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -22,23 +21,11 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return header.name();
     }
 
-    public JigMemberVisibility jigMemberVisibility() {
-        return header.jigMemberVisibility();
-    }
-
-    public boolean isAbstract() {
-        return header.isAbstract();
-    }
-
     public Set<TypeIdentifier> associatedTypes() {
         return Stream.concat(
                 instructions.associatedTypeStream(),
                 header.associatedTypeStream()
         ).collect(Collectors.toSet());
-    }
-
-    public String nameAndArgumentSimpleText() {
-        return header.nameAndArgumentSimpleText();
     }
 
     public Stream<JigTypeReference> argumentStream() {

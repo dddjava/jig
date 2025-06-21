@@ -28,7 +28,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     public static TypeRelationships internalRelation(JigTypes jigTypes) {
         return jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .filter(typeIdentifier -> jigTypes.contains(typeIdentifier))
+                        .filter(jigTypes::contains)
                         .flatMap(typeIdentifier -> TypeRelationship.of不明(jigType.id(), typeIdentifier).stream()))
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
     }

@@ -3,6 +3,7 @@ package org.dddjava.jig.adapter.html;
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.html.mermaid.EntrypointMermaidDiagram;
+import org.dddjava.jig.adapter.html.mermaid.TypeMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -29,7 +30,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.DomainSummary)
     public SummaryModel domainSummary(JigRepository jigRepository) {
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("relationships", jigService.coreDomainJigTypesWithRelationships(jigRepository)));
+        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(TypeMermaidDiagram.CONTEXT_KEY, jigService.coreDomainJigTypesWithRelationships(jigRepository)));
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)

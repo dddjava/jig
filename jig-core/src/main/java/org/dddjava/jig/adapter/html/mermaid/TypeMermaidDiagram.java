@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 public class TypeMermaidDiagram {
 
+    public static final String CONTEXT_KEY = "relationships";
+
     public Optional<String> write(JigPackage jigPackage, JigTypesWithRelationships jigTypesWithRelationships) {
         PackageIdentifier packageIdentifier = jigPackage.packageIdentifier();
         TypeRelationships typeRelationships = jigTypesWithRelationships.typeRelationships();

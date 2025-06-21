@@ -177,7 +177,7 @@ class JigExpressionObject {
     }
 
     public Optional<String> relationDiagram(JigPackage jigPackage) {
-        if (context.getVariable("relationships") instanceof JigTypesWithRelationships jigTypesWithRelationships) {
+        if (context.getVariable(TypeMermaidDiagram.CONTEXT_KEY) instanceof JigTypesWithRelationships jigTypesWithRelationships) {
             return new TypeMermaidDiagram().write(jigPackage, jigTypesWithRelationships);
         }
         return Optional.empty();

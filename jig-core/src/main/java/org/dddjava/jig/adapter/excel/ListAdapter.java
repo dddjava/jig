@@ -17,6 +17,7 @@ import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
+import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngle;
@@ -68,7 +69,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("ALL", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
-                        ReportItem.ofString("クラス別名", item -> item.label()),
+                        ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("ビジネスルールの種類", item -> item.toValueKind().toString()),
                         ReportItem.ofNumber("関連元ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterTo(item.id()).size()),
                         ReportItem.ofNumber("関連先ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterFrom(item.id()).size()),
@@ -83,7 +84,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("ENUM", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
-                        ReportItem.ofString("クラス別名", item -> item.label()),
+                        ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("フィールド", item -> item.jigTypeMembers().instanceFields().stream()
                                 .map(jigField -> jigField.jigFieldHeader().simpleText())
@@ -99,7 +100,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                 new ReportSheet<>("COLLECTION", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
-                        ReportItem.ofString("クラス別名", item -> item.label()),
+                        ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("フィールドの型", item -> {
                             List<String> list = item.jigTypeMembers().instanceFields().stream()
                                     .map(jigField -> jigField.jigTypeReference().simpleNameWithGenerics())

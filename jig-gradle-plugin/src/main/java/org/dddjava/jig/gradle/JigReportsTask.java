@@ -22,7 +22,7 @@ public class JigReportsTask extends DefaultTask {
             return;
         }
 
-        Configuration configuration = new Configuration(config.asProperties(getProject()));
+        Configuration configuration = Configuration.from(config.asProperties(getProject()));
 
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 

@@ -25,7 +25,7 @@ public class JigTestExtension implements ParameterResolver {
 
     public JigTestExtension() throws Exception {
         Path tempDir = Files.createTempDirectory("jig");
-        configuration = new Configuration(
+        configuration = Configuration.from(
                 new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir));
     }
 

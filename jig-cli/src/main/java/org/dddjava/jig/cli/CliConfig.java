@@ -74,7 +74,7 @@ class CliConfig {
             modelPattern = ".*";
         }
 
-        return new Configuration(
+        return Configuration.from(
                 new JigProperties(
                         jigDocuments(),
                         modelPattern, Paths.get(this.outputDirectory),

@@ -54,12 +54,4 @@ public record Configuration(
                 jigDocumentContext
         );
     }
-
-    /**
-     * Returns the JigDocumentGenerator.
-     * This method is kept for backward compatibility.
-     */
-    public JigDocumentGenerator documentGenerator() {
-        return jigDocumentGenerator;
-    }
 }

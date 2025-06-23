@@ -58,7 +58,7 @@ public class JigExecutor {
             JigRepository jigRepository = jigRepositoryFactory.createJigRepository(sourceBasePaths);
 
             // JigRepositoryを参照してJIGドキュメントを生成する
-            JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
+            JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
             var results = jigDocumentGenerator.generateDocuments(jigRepository);
 
             jigDocumentGenerator.generateIndex(results);
@@ -70,7 +70,7 @@ public class JigExecutor {
                     .description("Total execution time for JIG")
                     .tag("phase", "total_execution")
                     .register(registry));
-            JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
+            JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
             jigDocumentGenerator.exportMetricsToFile();
 
             configuration.jigEventRepository().notifyWithLogger();

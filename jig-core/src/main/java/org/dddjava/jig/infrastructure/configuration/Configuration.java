@@ -16,31 +16,25 @@ public record Configuration(
         JigService jigService,
         JigDocumentContext jigDocumentContext
 ) {
-    /**
-     * Factory constructor that creates a fully initialized Configuration.
-     */
+
+    @Deprecated(since = "2025.6.1", forRemoval = true)
     public Configuration(JigProperties jigProperties) {
-        this(createFromProperties(jigProperties));
+        this(from(jigProperties));
     }
 
-    /**
-     * Private constructor that takes a pre-built Configuration.
-     */
+    // Configuration(JigProperties)の使用箇所がなくなれば廃止する
     private Configuration(Configuration config) {
         this(
-            config.glossaryRepository,
-            config.jigEventRepository,
-            config.properties,
-            config.jigDocumentGenerator,
-            config.jigService,
-            config.jigDocumentContext
+                config.glossaryRepository,
+                config.jigEventRepository,
+                config.properties,
+                config.jigDocumentGenerator,
+                config.jigService,
+                config.jigDocumentContext
         );
     }
 
-    /**
-     * Factory method to create a fully initialized Configuration.
-     */
-    private static Configuration createFromProperties(JigProperties jigProperties) {
+    public static Configuration from(JigProperties jigProperties) {
         JigProperties properties = new JigPropertyLoader(jigProperties).load();
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
         JigEventRepository jigEventRepository = new JigEventRepository();
@@ -52,12 +46,12 @@ public record Configuration(
         JigDocumentGenerator jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
 
         return new Configuration(
-            glossaryRepository,
-            jigEventRepository,
-            properties,
-            jigDocumentGenerator,
-            jigService,
-            jigDocumentContext
+                glossaryRepository,
+                jigEventRepository,
+                properties,
+                jigDocumentGenerator,
+                jigService,
+                jigDocumentContext
         );
     }
 

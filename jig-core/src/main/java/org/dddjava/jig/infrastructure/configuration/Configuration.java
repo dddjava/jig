@@ -43,15 +43,7 @@ public record Configuration(
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
         JigEventRepository jigEventRepository = new JigEventRepository();
 
-        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
-        Pattern businessRulePattern = Pattern.compile(properties.getDomainPattern());
-
-        Architecture architecture = jigType -> {
-            String fqn = jigType.id().fullQualifiedName();
-            if (fqn.endsWith(".package-info")) return false;
-            return businessRulePattern.matcher(fqn).matches()
-                    && !compilerGeneratedClassPattern.matcher(fqn).matches();
-        };
+        var architecture = createArchitecture(properties);
         JigService jigService = new JigService(architecture, jigEventRepository);
 
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
@@ -65,5 +57,18 @@ public record Configuration(
                 jigService,
                 jigDocumentContext
         );
+    }
+
+    // パッケージ名でCoreDomainを判定するArchitectureを作成する
+    private static Architecture createArchitecture(JigProperties properties) {
+        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+        Pattern businessRulePattern = Pattern.compile(properties.getDomainPattern());
+
+        return jigType -> {
+            String fqn = jigType.id().fullQualifiedName();
+            if (fqn.endsWith(".package-info")) return false;
+            return businessRulePattern.matcher(fqn).matches()
+                    && !compilerGeneratedClassPattern.matcher(fqn).matches();
+        };
     }
 }

@@ -10,6 +10,7 @@ import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryReposit
 
 import java.util.regex.Pattern;
 
+// Configurationという名前だけど実態は設定されたインスタンスを管理している（SpringのApplicationContextみたいな感じになっている）
 public record Configuration(
         GlossaryRepository glossaryRepository,
         JigEventRepository jigEventRepository,

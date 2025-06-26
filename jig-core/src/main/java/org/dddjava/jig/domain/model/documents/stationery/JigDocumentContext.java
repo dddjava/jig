@@ -15,13 +15,28 @@ import java.util.List;
  */
 public interface JigDocumentContext {
 
+    /**
+     * パッケージに対応する用語
+     */
     Term packageTerm(PackageIdentifier packageIdentifier);
 
+    /**
+     * 型に対応する用語
+     */
     Term typeTerm(TypeIdentifier typeIdentifier);
 
+    /**
+     * ドキュメント出力先ディレクトリ
+     */
     Path outputDirectory();
 
+    /**
+     * 処理対象となるJigDocument
+     */
     List<JigDocument> jigDocuments();
 
+    /**
+     * ドキュメント内容にかかわるオプション
+     */
     JigDiagramOption diagramOption();
 }

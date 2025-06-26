@@ -8,6 +8,8 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
+import java.util.regex.Pattern;
+
 public record Configuration(
         GlossaryRepository glossaryRepository,
         JigEventRepository jigEventRepository,
@@ -39,7 +41,15 @@ public record Configuration(
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
         JigEventRepository jigEventRepository = new JigEventRepository();
 
-        Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
+        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+        Pattern businessRulePattern = Pattern.compile(properties.getDomainPattern());
+
+        Architecture architecture = jigType -> {
+            String fqn = jigType.id().fullQualifiedName();
+            if (fqn.endsWith(".package-info")) return false;
+            return businessRulePattern.matcher(fqn).matches()
+                    && !compilerGeneratedClassPattern.matcher(fqn).matches();
+        };
         JigService jigService = new JigService(architecture, jigEventRepository);
 
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);

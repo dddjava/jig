@@ -8,28 +8,11 @@ import static java.util.stream.Collectors.joining;
 
 public sealed interface JigAnnotationReferenceElementValue permits
         JigAnnotationReferenceElementNormalValue,
-        JigAnnotationReferenceElementClassValue,
         JigAnnotationReferenceElementEnumValue,
-        JigAnnotationInstanceElementAnnotationValue,
-        JigAnnotationReferenceElementArray {
+        JigAnnotationReferenceElementClassValue,
+        JigAnnotationReferenceElementArray,
+        JigAnnotationInstanceElementAnnotationValue {
     String valueText();
-}
-
-/**
- * アノテーションの要素値が配列
- *
- * <code>@Hoge(value = {...})</code>
- */
-record JigAnnotationReferenceElementArray(List<JigAnnotationReferenceElementValue> values)
-        implements JigAnnotationReferenceElementValue {
-    @Override
-    public String valueText() {
-        // Java言語では配列と定義されていても、1件の場合は `{}` を書いても書かなくてもよい。
-        // コンパイル後にはどちらで書かれていたか白別できないが、一般的に1件の場合には記述しないのでそちらの表記に近づける。
-        if (values.size() == 1) return values.get(0).valueText();
-
-        return values.stream().map(JigAnnotationReferenceElementValue::valueText).collect(joining(", ", "{", "}"));
-    }
 }
 
 /**
@@ -42,6 +25,22 @@ record JigAnnotationReferenceElementNormalValue(Object value)
     @Override
     public String valueText() {
         return Objects.toString(value);
+    }
+}
+
+/**
+ * アノテーションの要素値がenumの定数
+ *
+ * <code>@Hoge(value = MyEnum.HOGE)</code>
+ *
+ * @param typeIdentifier enumの型
+ * @param constantName   列挙値のname
+ */
+record JigAnnotationReferenceElementEnumValue(TypeIdentifier typeIdentifier, String constantName)
+        implements JigAnnotationReferenceElementValue {
+    @Override
+    public String valueText() {
+        return typeIdentifier.asSimpleName() + "." + constantName;
     }
 }
 
@@ -59,18 +58,19 @@ record JigAnnotationReferenceElementClassValue(TypeIdentifier value)
 }
 
 /**
- * アノテーションの要素値がenumの定数
+ * アノテーションの要素値が配列
  *
- * <code>@Hoge(value = MyEnum.HOGE)</code>
- *
- * @param typeIdentifier enumの型
- * @param constantName   列挙値のname
+ * <code>@Hoge(value = {...})</code>
  */
-record JigAnnotationReferenceElementEnumValue(TypeIdentifier typeIdentifier, String constantName)
+record JigAnnotationReferenceElementArray(List<JigAnnotationReferenceElementValue> values)
         implements JigAnnotationReferenceElementValue {
     @Override
     public String valueText() {
-        return typeIdentifier.asSimpleName() + "." + constantName;
+        // Java言語では配列と定義されていても、1件の場合は `{}` を書いても書かなくてもよい。
+        // コンパイル後にはどちらで書かれていたか白別できないが、一般的に1件の場合には記述しないのでそちらの表記に近づける。
+        if (values.size() == 1) return values.get(0).valueText();
+
+        return values.stream().map(JigAnnotationReferenceElementValue::valueText).collect(joining(", ", "{", "}"));
     }
 }
 

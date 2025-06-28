@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * 宣言アノテーションや型アノテーションとして記述されたアノテーション
  *
  * @param id アノテーションの型を示すID
- * @param elements 要素
+ * @param elements 要素のコレクション
  */
 public record JigAnnotationReference(TypeIdentifier id,
                                      Collection<JigAnnotationInstanceElement> elements) {

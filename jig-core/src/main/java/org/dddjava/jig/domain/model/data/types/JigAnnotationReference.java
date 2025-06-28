@@ -13,7 +13,7 @@ import java.util.stream.Stream;
  * @param elements 要素のコレクション
  */
 public record JigAnnotationReference(TypeIdentifier id,
-                                     Collection<JigAnnotationInstanceElement> elements) {
+                                     Collection<JigAnnotationElementValuePair> elements) {
 
     public static JigAnnotationReference from(TypeIdentifier typeIdentifier) {
         return new JigAnnotationReference(typeIdentifier, List.of());

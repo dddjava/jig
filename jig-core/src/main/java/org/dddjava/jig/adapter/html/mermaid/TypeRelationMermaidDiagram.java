@@ -78,9 +78,14 @@ public class TypeRelationMermaidDiagram {
         // クリックでジャンプ
         targetTypes.stream().map(id -> "click %s \"#%s\"".formatted(mermaidId(id), id.fullQualifiedName())).forEach(diagramText::add);
 
-        targetRelationships.stream()
-                .map(relationship -> "%s --> %s".formatted(mermaidId(relationship.from()), mermaidId(relationship.to())))
+        // 推移簡約して出力
+        // （ここで関連数が減るので閾値と一致しなくなっている）
+        new TypeRelationships(targetRelationships).toEdges()
+                .transitiveReduction()
+                .list().stream()
+                .map(edge -> "%s --> %s".formatted(mermaidId(edge.from()), mermaidId(edge.to())))
                 .forEach(diagramText::add);
+
         if (omitExternalRelations) {
             diagramText.add("A@{ shape: braces, label: \"関連数が%dを超えるため、外部への関連は省略されました。\" }".formatted(threshold));
         }

@@ -6,11 +6,11 @@ import java.util.Objects;
 
 import static java.util.stream.Collectors.joining;
 
-public sealed interface JigAnnotationReferenceElementValue permits
-        JigAnnotationReferenceElementNormalValue,
-        JigAnnotationReferenceElementEnumValue,
-        JigAnnotationReferenceElementClassValue,
-        JigAnnotationReferenceElementArray,
+public sealed interface JigAnnotationElementValue permits
+        JigAnnotationElementNormalValue,
+        JigAnnotationElementEnumValue,
+        JigAnnotationElementClassValue,
+        JigAnnotationElementArray,
         JigAnnotationInstanceElementAnnotationValue {
     String valueText();
 }
@@ -20,8 +20,8 @@ public sealed interface JigAnnotationReferenceElementValue permits
  *
  * <code>@Hoge(value = "hoge")</code>
  */
-record JigAnnotationReferenceElementNormalValue(Object value)
-        implements JigAnnotationReferenceElementValue {
+record JigAnnotationElementNormalValue(Object value)
+        implements JigAnnotationElementValue {
     @Override
     public String valueText() {
         return Objects.toString(value);
@@ -36,8 +36,8 @@ record JigAnnotationReferenceElementNormalValue(Object value)
  * @param typeIdentifier enumの型
  * @param constantName   列挙値のname
  */
-record JigAnnotationReferenceElementEnumValue(TypeIdentifier typeIdentifier, String constantName)
-        implements JigAnnotationReferenceElementValue {
+record JigAnnotationElementEnumValue(TypeIdentifier typeIdentifier, String constantName)
+        implements JigAnnotationElementValue {
     @Override
     public String valueText() {
         return typeIdentifier.asSimpleName() + "." + constantName;
@@ -49,8 +49,8 @@ record JigAnnotationReferenceElementEnumValue(TypeIdentifier typeIdentifier, Str
  *
  * <code>@Hoge(value = Hoge.class)</code>
  */
-record JigAnnotationReferenceElementClassValue(TypeIdentifier value)
-        implements JigAnnotationReferenceElementValue {
+record JigAnnotationElementClassValue(TypeIdentifier value)
+        implements JigAnnotationElementValue {
     @Override
     public String valueText() {
         return value.asSimpleName();
@@ -62,15 +62,15 @@ record JigAnnotationReferenceElementClassValue(TypeIdentifier value)
  *
  * <code>@Hoge(value = {...})</code>
  */
-record JigAnnotationReferenceElementArray(List<JigAnnotationReferenceElementValue> values)
-        implements JigAnnotationReferenceElementValue {
+record JigAnnotationElementArray(List<JigAnnotationElementValue> values)
+        implements JigAnnotationElementValue {
     @Override
     public String valueText() {
         // Java言語では配列と定義されていても、1件の場合は `{}` を書いても書かなくてもよい。
         // コンパイル後にはどちらで書かれていたか白別できないが、一般的に1件の場合には記述しないのでそちらの表記に近づける。
         if (values.size() == 1) return values.get(0).valueText();
 
-        return values.stream().map(JigAnnotationReferenceElementValue::valueText).collect(joining(", ", "{", "}"));
+        return values.stream().map(JigAnnotationElementValue::valueText).collect(joining(", ", "{", "}"));
     }
 }
 
@@ -81,7 +81,7 @@ record JigAnnotationReferenceElementArray(List<JigAnnotationReferenceElementValu
  */
 record JigAnnotationInstanceElementAnnotationValue(TypeIdentifier typeIdentifier,
                                                    Collection<JigAnnotationElementValuePair> elements)
-        implements JigAnnotationReferenceElementValue {
+        implements JigAnnotationElementValue {
     @Override
     public String valueText() {
         // どこまでも深くなるので必要になるまで簡略出力としておく

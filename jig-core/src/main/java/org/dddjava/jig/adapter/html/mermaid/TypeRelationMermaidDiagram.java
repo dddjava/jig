@@ -47,7 +47,7 @@ public class TypeRelationMermaidDiagram {
         int externalRelationNumber = partitioningRelations.get(false).size();
         boolean omitExternalRelations = externalRelationNumber > 0 && partitioningRelations.get(true).size() + externalRelationNumber > threshold;
         List<TypeRelationship> targetRelationships = omitExternalRelations
-                ? partitioningRelations.get(true) // パッケージ外への関連の方が多い場合はパッケージ内のみにする
+                ? partitioningRelations.get(true)
                 : partitioningRelations.values().stream().flatMap(Collection::stream).toList();
 
         // 関連に含まれるnodeをパッケージの内側と外側に仕分け＆ラベル付け

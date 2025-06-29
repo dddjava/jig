@@ -52,6 +52,7 @@ public class TypeRelationMermaidDiagram {
         Set<TypeIdentifier> targetTypes = targetRelationships.stream()
                 .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
                 .collect(Collectors.toSet());
+        // 内側:true, 外側:false のMapに振り分ける
         Map<Boolean, List<String>> nodeMap = targetTypes.stream()
                 .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageIdentifier().equals(packageIdentifier),
                         Collectors.mapping(typeIdentifier -> {

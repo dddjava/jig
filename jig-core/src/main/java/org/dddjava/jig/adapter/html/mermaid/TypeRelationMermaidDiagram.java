@@ -35,13 +35,14 @@ public class TypeRelationMermaidDiagram {
                 // fromがこのパッケージを対象とし、このパッケージのクラスから外のクラスへの関連を出力する。
                 // toを対象にすると広く使われるクラス（たとえばIDなど）があるパッケージは見れたものではなくなるので出さない。
                 .filter(typeRelationship -> typeRelationship.from().packageIdentifier().equals(packageIdentifier))
+                // パッケージ内の関連とパッケージ外の関連を仕分ける
                 .collect(Collectors.partitioningBy(typeRelationship -> typeRelationship.to().packageIdentifier().equals(packageIdentifier)));
         if (partitioningRelations.get(true).isEmpty()) {
-            // 指定パッケージ内のクラスを起点とする関連がない場合は出力をしない
+            // パッケージ内の関連がない場合は出力しない
             return Optional.empty();
         }
 
-        // 外部関連を表示する閾値
+        // 外部関連を表示する合計関連数の閾値
         int threshold = 20;
         int externalRelationNumber = partitioningRelations.get(false).size();
         boolean omitExternalRelations = externalRelationNumber > 0 && partitioningRelations.get(true).size() + externalRelationNumber > threshold;

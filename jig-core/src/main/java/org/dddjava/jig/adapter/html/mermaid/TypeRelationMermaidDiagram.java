@@ -37,6 +37,7 @@ public class TypeRelationMermaidDiagram {
                 .filter(typeRelationship -> typeRelationship.from().packageIdentifier().equals(packageIdentifier))
                 .collect(Collectors.partitioningBy(typeRelationship -> typeRelationship.to().packageIdentifier().equals(packageIdentifier)));
         if (partitioningRelations.get(true).isEmpty()) {
+            // 指定パッケージ内のクラスを起点とする関連がない場合は出力をしない
             return Optional.empty();
         }
 

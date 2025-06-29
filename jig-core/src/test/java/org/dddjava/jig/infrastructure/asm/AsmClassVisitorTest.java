@@ -29,7 +29,7 @@ class AsmClassVisitorTest {
         assertEquals("MyClass<X, Y>", typeData.simpleNameWithGenerics());
 
         // MyDeclarationAnnotationForSourceは含まれない
-        assertEquals(List.of("MyDeclarationAnnotationForClass", "MyDeclarationAnnotationForRuntime"), typeData.jigTypeAttributeData()
+        assertEquals(List.of("MyDeclarationAnnotationForClass", "MyDeclarationAnnotationForRuntime"), typeData.jigTypeAttributes()
                 .declarationAnnotationList().stream().map(JigAnnotationReference::simpleTypeName).toList());
 
         assertEquals("MySuperClass", typeData.superType().orElseThrow().simpleName());
@@ -65,7 +65,7 @@ class AsmClassVisitorTest {
     void 修飾子が取得できる(Class<?> target) throws IOException {
         JigTypeHeader jigTypeHeader = TestSupport.getJigTypeHeader(target);
 
-        Collection<JigTypeModifier> jigTypeModifiers = jigTypeHeader.jigTypeAttributeData().jigTypeModifiers();
+        Collection<JigTypeModifier> jigTypeModifiers = jigTypeHeader.jigTypeAttributes().jigTypeModifiers();
         assertEquals(1, jigTypeModifiers.size());
 
         assertEquals(
@@ -77,12 +77,12 @@ class AsmClassVisitorTest {
     @Test
     void 多重ネスト_static_inner() throws IOException {
         JigTypeHeader header = TestSupport.getJigTypeHeader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class);
-        assertFalse(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
+        assertFalse(header.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }
 
     @Test
     void 多重ネスト_static_static() throws IOException {
         JigTypeHeader header = TestSupport.getJigTypeHeader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class);
-        assertTrue(header.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.STATIC));
+        assertTrue(header.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }
 }

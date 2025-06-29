@@ -54,7 +54,7 @@ class AsmAnnotationVisitorTest {
     @Test
     void name() {
         var sut = TestSupport.buildJigType(AnnotatedSut.class)
-                .jigTypeHeader().jigTypeAttributeData().declarationAnnotationList();
+                .jigTypeHeader().jigTypeAttributes().declarationAnnotationList();
 
         assertEquals(2, sut.size());
 

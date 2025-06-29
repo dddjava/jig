@@ -7,19 +7,19 @@ import java.util.*;
  *
  * @param id                   完全修飾クラス名
  * @param javaTypeDeclarationKind
- * @param jigTypeAttributeData
+ * @param jigTypeAttributes
  * @param baseTypeDataBundle   親クラス及び実装インタフェース
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">jls/Chapter 8. Classes</a>
  */
 public record JigTypeHeader(TypeIdentifier id,
                             JavaTypeDeclarationKind javaTypeDeclarationKind,
-                            JigTypeAttributeData jigTypeAttributeData,
+                            JigTypeAttributes jigTypeAttributes,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
     public Set<TypeIdentifier> containedIds() {
         Set<TypeIdentifier> ids = new HashSet<>();
         ids.add(id);
-        ids.addAll(jigTypeAttributeData.typeIdSet());
+        ids.addAll(jigTypeAttributes.typeIdSet());
         ids.addAll(baseTypeDataBundle.typeIdSet());
         return ids;
     }
@@ -28,7 +28,7 @@ public record JigTypeHeader(TypeIdentifier id,
      * FQNのみで生成する。主にテスト用。
      */
     public static JigTypeHeader simple(String fqn) {
-        return new JigTypeHeader(TypeIdentifier.valueOf(fqn), JavaTypeDeclarationKind.CLASS, JigTypeAttributeData.simple(), JigBaseTypeDataBundle.simple());
+        return new JigTypeHeader(TypeIdentifier.valueOf(fqn), JavaTypeDeclarationKind.CLASS, JigTypeAttributes.simple(), JigBaseTypeDataBundle.simple());
     }
 
     public String simpleName() {
@@ -40,7 +40,7 @@ public record JigTypeHeader(TypeIdentifier id,
     }
 
     public String simpleNameWithGenerics() {
-        return simpleName() + jigTypeAttributeData.typeParametersSimpleName();
+        return simpleName() + jigTypeAttributes.typeParametersSimpleName();
     }
 
     public Optional<JigTypeReference> superType() {

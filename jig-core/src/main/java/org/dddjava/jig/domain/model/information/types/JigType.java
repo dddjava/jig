@@ -42,7 +42,7 @@ public class JigType {
     }
 
     public JigTypeVisibility visibility() {
-        return jigTypeHeader.jigTypeAttributeData().jigTypeVisibility();
+        return jigTypeHeader.jigTypeAttributes().jigTypeVisibility();
     }
 
     public Term term() {
@@ -67,7 +67,7 @@ public class JigType {
     }
 
     public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
-        return jigTypeHeader.jigTypeAttributeData().declaredAnnotation(typeIdentifier);
+        return jigTypeHeader.jigTypeAttributes().declaredAnnotation(typeIdentifier);
     }
 
     public boolean isDeprecated() {
@@ -75,7 +75,7 @@ public class JigType {
     }
 
     public Optional<String> annotationValueOf(TypeIdentifier typeIdentifier, String... elementNames) {
-        return jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances().stream()
+        return jigTypeHeader.jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().equals(typeIdentifier))
                 .flatMap(annotation -> annotation.elements().stream())
                 .filter(element -> element.matchName(elementNames))
@@ -87,7 +87,7 @@ public class JigType {
         // 互換のためにTypeKindを返す形を維持するための実装。TypeKindはあまり活用できていないので、別の何かで再定義したい
         return switch (jigTypeHeader.javaTypeDeclarationKind()) {
             case RECORD -> TypeKind.レコード型;
-            case ENUM -> jigTypeHeader.jigTypeAttributeData().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
+            case ENUM -> jigTypeHeader.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.ABSTRACT)
                     ? TypeKind.抽象列挙型 : TypeKind.列挙型;
             default -> TypeKind.通常型;
         };

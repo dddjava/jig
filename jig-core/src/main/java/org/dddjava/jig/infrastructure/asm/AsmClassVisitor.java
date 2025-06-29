@@ -84,7 +84,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     private JigTypeHeader jigTypeHeader(JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
         // アノテーションはまだ取得していないので空で作る
-        return new JigTypeHeader(this.typeIdentifier, javaTypeDeclarationKind, new JigTypeAttributeData(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
+        return new JigTypeHeader(this.typeIdentifier, javaTypeDeclarationKind, new JigTypeAttributes(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
     }
 
     @Override
@@ -136,16 +136,16 @@ class AsmClassVisitor extends ClassVisitor {
         // 変更要因があったら作り直す
         if (isStaticNestedClass || !declarationAnnotationCollector.isEmpty()) {
             EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
-            jigTypeModifiers.addAll(jigTypeHeader.jigTypeAttributeData().jigTypeModifiers());
+            jigTypeModifiers.addAll(jigTypeHeader.jigTypeAttributes().jigTypeModifiers());
             if (isStaticNestedClass) {
                 jigTypeModifiers.add(JigTypeModifier.STATIC);
             }
             jigTypeHeader = new JigTypeHeader(jigTypeHeader.id(), jigTypeHeader.javaTypeDeclarationKind(),
-                    new JigTypeAttributeData(
-                            jigTypeHeader.jigTypeAttributeData().jigTypeVisibility(),
+                    new JigTypeAttributes(
+                            jigTypeHeader.jigTypeAttributes().jigTypeVisibility(),
                             jigTypeModifiers,
                             List.copyOf(declarationAnnotationCollector),
-                            jigTypeHeader.jigTypeAttributeData().typeParameters()
+                            jigTypeHeader.jigTypeAttributes().typeParameters()
                     ),
                     jigTypeHeader.baseTypeDataBundle()
             );

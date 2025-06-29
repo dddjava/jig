@@ -41,7 +41,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
     public MyBatisStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         // Mapperアノテーションがついているクラスを対象にする
         Collection<String> classNames = jigTypeHeaders.stream()
-                .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributeData()
+                .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributes()
                         .declaredAnnotation(TypeIdentifier.valueOf("org.apache.ibatis.annotations.Mapper")))
                 .map(JigTypeHeader::fqn)
                 .toList();

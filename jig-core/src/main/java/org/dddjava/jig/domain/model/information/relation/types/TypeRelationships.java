@@ -44,12 +44,12 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
 
     private static Stream<TypeRelationship> headerTypeRelationshipStream(JigTypeHeader jigTypeHeader, TypeIdentifier id) {
         // 自身の型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
-        Stream<TypeRelationship> typeParameterStream = jigTypeHeader.jigTypeAttributeData().typeParameters().stream()
+        Stream<TypeRelationship> typeParameterStream = jigTypeHeader.jigTypeAttributes().typeParameters().stream()
                 // 型パラメタ自体は型ではないが、型パラメタの境界は型引数なので取得する
                 .flatMap(jigTypeParameter -> jigTypeParameter.bounds().stream())
                 .map(typeArg -> TypeRelationship.of型引数(id, typeArg.typeIdentifier()));
         // 自身のアノテーション
-        Stream<TypeRelationship> annotationStream = annotationTypeRelationshipStream(jigTypeHeader.jigTypeAttributeData().declarationAnnotationInstances(), id);
+        Stream<TypeRelationship> annotationStream = annotationTypeRelationshipStream(jigTypeHeader.jigTypeAttributes().declarationAnnotationInstances(), id);
 
         // superとinterface
         Stream<TypeRelationship> superStream = jigTypeHeader.superType().stream()

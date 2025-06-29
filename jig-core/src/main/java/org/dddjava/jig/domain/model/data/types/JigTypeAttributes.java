@@ -5,13 +5,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record JigTypeAttributeData(JigTypeVisibility jigTypeVisibility,
-                                   Collection<JigTypeModifier> jigTypeModifiers,
-                                   Collection<JigAnnotationReference> declarationAnnotationInstances,
-                                   List<JigTypeParameter> typeParameters) {
+public record JigTypeAttributes(JigTypeVisibility jigTypeVisibility,
+                                Collection<JigTypeModifier> jigTypeModifiers,
+                                Collection<JigAnnotationReference> declarationAnnotationInstances,
+                                List<JigTypeParameter> typeParameters) {
 
-    public static JigTypeAttributeData simple() {
-        return new JigTypeAttributeData(JigTypeVisibility.PUBLIC, List.of(), List.of(), List.of());
+    public static JigTypeAttributes simple() {
+        return new JigTypeAttributes(JigTypeVisibility.PUBLIC, List.of(), List.of(), List.of());
     }
 
     public String typeParametersSimpleName() {

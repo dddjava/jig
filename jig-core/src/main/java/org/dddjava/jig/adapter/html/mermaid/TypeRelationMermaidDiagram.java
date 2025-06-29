@@ -12,10 +12,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 型関連図
+ *
+ * 指定パッケージ内の関連を出力する。
+ * パッケージ外との関連は20個未満の場合のみ出力する。
+ */
 public class TypeRelationMermaidDiagram {
 
     public static final String CONTEXT_KEY = "relationships";
 
+    /**
+     * @param jigPackage                出力対象パッケージ
+     * @param jigTypesWithRelationships 出力コンテキスト
+     * @return Mermaidテキスト
+     */
     public Optional<String> write(JigPackage jigPackage, JigTypesWithRelationships jigTypesWithRelationships) {
         PackageIdentifier packageIdentifier = jigPackage.packageIdentifier();
         TypeRelationships typeRelationships = jigTypesWithRelationships.typeRelationships();

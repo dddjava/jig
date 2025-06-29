@@ -13,10 +13,6 @@ public record JigTypeAttributes(JigTypeVisibility jigTypeVisibility,
                                 Collection<JigAnnotationReference> declarationAnnotationInstances,
                                 List<JigTypeParameter> typeParameters) {
 
-    public static JigTypeAttributes simple() {
-        return new JigTypeAttributes(JigTypeVisibility.PUBLIC, List.of(), List.of(), List.of());
-    }
-
     public String typeParametersSimpleName() {
         if (typeParameters.isEmpty()) return "";
         return typeParameters.stream()

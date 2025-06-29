@@ -24,13 +24,6 @@ public record JigTypeHeader(TypeIdentifier id,
         return ids;
     }
 
-    /**
-     * FQNのみで生成する。主にテスト用。
-     */
-    public static JigTypeHeader simple(String fqn) {
-        return new JigTypeHeader(TypeIdentifier.valueOf(fqn), JavaTypeDeclarationKind.CLASS, JigTypeAttributes.simple(), JigBaseTypeDataBundle.simple());
-    }
-
     public String simpleName() {
         return id.asSimpleText();
     }

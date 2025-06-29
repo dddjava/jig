@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 型の属性セット
+ */
 public record JigTypeAttributes(JigTypeVisibility jigTypeVisibility,
                                 Collection<JigTypeModifier> jigTypeModifiers,
                                 Collection<JigAnnotationReference> declarationAnnotationInstances,

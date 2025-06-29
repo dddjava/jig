@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
-import org.dddjava.jig.adapter.html.mermaid.TypeMermaidDiagram;
+import org.dddjava.jig.adapter.html.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
@@ -177,8 +177,8 @@ class JigExpressionObject {
     }
 
     public Optional<String> relationDiagram(JigPackage jigPackage) {
-        if (context.getVariable(TypeMermaidDiagram.CONTEXT_KEY) instanceof JigTypesWithRelationships jigTypesWithRelationships) {
-            return new TypeMermaidDiagram().write(jigPackage, jigTypesWithRelationships);
+        if (context.getVariable(TypeRelationMermaidDiagram.CONTEXT_KEY) instanceof JigTypesWithRelationships jigTypesWithRelationships) {
+            return new TypeRelationMermaidDiagram().write(jigPackage, jigTypesWithRelationships);
         }
         return Optional.empty();
     }

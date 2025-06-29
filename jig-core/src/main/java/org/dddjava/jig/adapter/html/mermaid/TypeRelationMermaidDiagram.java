@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class TypeMermaidDiagram {
+public class TypeRelationMermaidDiagram {
 
     public static final String CONTEXT_KEY = "relationships";
 

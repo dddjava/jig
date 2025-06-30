@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,9 +13,6 @@ import java.util.stream.Stream;
 public record JigBaseTypeDataBundle(
         Optional<JigTypeReference> superType,
         Collection<JigTypeReference> interfaceTypes) {
-    public static JigBaseTypeDataBundle simple() {
-        return new JigBaseTypeDataBundle(Optional.of(JigTypeReference.fromId(TypeIdentifier.from(Object.class))), List.of());
-    }
 
     public Set<TypeIdentifier> typeIdSet() {
         return Stream.concat(superType.stream(), interfaceTypes.stream())

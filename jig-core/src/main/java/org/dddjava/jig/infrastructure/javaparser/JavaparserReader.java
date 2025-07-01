@@ -50,7 +50,7 @@ public class JavaparserReader {
             cu.accept(classVisitor, glossaryRepository);
             return classVisitor.javaSourceModel();
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
-            logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
+            logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。このエラーはローカルenumが存在する場合などに発生します。処理は続行します。", path, e);
             return JavaSourceModel.empty();
         }
     }

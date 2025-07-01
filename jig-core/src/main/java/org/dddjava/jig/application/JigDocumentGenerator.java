@@ -77,6 +77,7 @@ public class JigDocumentGenerator {
             sample.stop(Timer.builder("jig.document.time")
                     .description("Time taken for index generation")
                     .tag("phase", "index_generation")
+                    .tag("document", "index")
                     .register(Metrics.globalRegistry));
         }
     }
@@ -93,6 +94,7 @@ public class JigDocumentGenerator {
             sample.stop(Timer.builder("jig.document.time")
                     .description("Time taken for document generation")
                     .tag("phase", "document_generation_total")
+                    .tag("document", "all")
                     .register(Metrics.globalRegistry));
         }
     }

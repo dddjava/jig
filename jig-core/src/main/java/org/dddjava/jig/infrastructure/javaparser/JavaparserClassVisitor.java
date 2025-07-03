@@ -8,6 +8,7 @@ import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
+import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
@@ -88,7 +89,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         super.visit(n, arg);
     }
 
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
         var fqcn = packageName + node.getNameAsString();
 
         if (typeIdentifier != null) {
@@ -105,6 +106,12 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeIdentifier(typeIdentifier), javadocText));
         });
         node.accept(new JavaparserMemberVisitor(typeIdentifier), glossaryRepository);
+
+        node.getMembers().forEach(member -> {
+            if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration ) {
+                logger.debug("nested class or interface: {}", classOrInterfaceDeclaration.getFullyQualifiedName());
+            }
+        });
 
         return typeIdentifier;
     }

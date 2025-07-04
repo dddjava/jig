@@ -14,7 +14,6 @@ import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
 import org.dddjava.jig.domain.model.sources.LocalSource;
 import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFiles;
 import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
@@ -22,6 +21,7 @@ import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
+import org.dddjava.jig.infrastructure.metrics.TimerSupport;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 
 import java.nio.file.Path;
@@ -83,80 +83,50 @@ public class DefaultJigRepositoryFactory {
      * プロジェクト情報を読み取る
      */
     private JigRepository analyze(LocalSource sources) {
-        Timer.Sample totalSample = Timer.start(Metrics.globalRegistry);
+        return TimerSupport.measure("code_analysis_total", "Total time taken for code analysis", () -> {
+            JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
-        JavaFilePaths javaFilePaths = sources.javaFilePaths();
+            TimerSupport.measureVoid("package_info_parsing", "Time taken for Package info parsing", () ->
+                    javaFilePaths.packageInfoPaths().forEach(
+                            path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
+            );
 
-        // Package info parsing
-        Timer.Sample packageInfoSample = Timer.start(Metrics.globalRegistry);
-        javaFilePaths.packageInfoPaths().forEach(
-                path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository));
-        packageInfoSample.stop(Timer.builder("jig.analysis.time")
-                .description("Time taken for package info analysis")
-                .tag("phase", "package_info_parsing")
-                .register(Metrics.globalRegistry));
+            JavaSourceModel javaSourceModel = TimerSupport.measure("java_source_parsing", "Time taken for Java source parsing", () ->
+                    javaFilePaths.javaPaths().stream()
+                            .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
+                            .reduce(JavaSourceModel::merge)
+                            .orElseGet(JavaSourceModel::empty)
+            );
 
-        // Java source parsing
-        Timer.Sample javaSample = Timer.start(Metrics.globalRegistry);
-        JavaSourceModel javaSourceModel = javaFilePaths.javaPaths().stream()
-                .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
-                .reduce(JavaSourceModel::merge)
-                .orElseGet(JavaSourceModel::empty);
-        javaSample.stop(Timer.builder("jig.analysis.time")
-                .description("Time taken for Java source analysis")
-                .tag("phase", "java_source_parsing")
-                .register(Metrics.globalRegistry));
+            Collection<ClassDeclaration> classDeclarations = TimerSupport.measure("class_file_parsing", "Time taken for Class file parsing", () ->
+                    asmClassSourceReader.readClasses(sources.classFiles())
+            );
 
-        // Class file parsing
-        Timer.Sample classSample = Timer.start(Metrics.globalRegistry);
-        ClassFiles classFiles = sources.classFiles();
-        Collection<ClassDeclaration> classDeclarations = asmClassSourceReader.readClasses(classFiles);
-        classSample.stop(Timer.builder("jig.analysis.time")
-                .description("Time taken for class file analysis")
-                .tag("phase", "class_file_parsing")
-                .register(Metrics.globalRegistry));
+            MyBatisStatements myBatisStatements = TimerSupport.measure("mybatis_reading", "Time taken for MyBatis statements reading", () ->
+                    readMyBatisStatements(sources, classDeclarations)
+            );
 
-        // MyBatis statements reading
-        Timer.Sample mybatisSample = Timer.start(Metrics.globalRegistry);
-        MyBatisStatements myBatisStatements = readMyBatisStatements(sources, classDeclarations);
-        mybatisSample.stop(Timer.builder("jig.analysis.time")
-                .description("Time taken for MyBatis statements reading")
-                .tag("phase", "mybatis_reading")
-                .register(Metrics.globalRegistry));
+            return TimerSupport.measure("jig_repository_creation", "Time taken for initialize JigRepository", () -> {
+                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
+                JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
+                return new JigRepository() {
+                    @Override
+                    public JigTypes fetchJigTypes() {
+                        return jigTypes;
+                    }
 
-        // JigTypes creation
-        Timer.Sample jigTypesSample = Timer.start(Metrics.globalRegistry);
-        DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
-        JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
-        jigTypesSample.stop(Timer.builder("jig.analysis.time")
-                .description("Time taken for JigTypes creation")
-                .tag("phase", "jig_types_creation")
-                .register(Metrics.globalRegistry));
+                    @Override
+                    public JigDataProvider jigDataProvider() {
+                        return defaultJigDataProvider;
+                    }
 
-        // Create repository
-        JigRepository repository = new JigRepository() {
-            @Override
-            public JigTypes fetchJigTypes() {
-                return jigTypes;
-            }
-
-            @Override
-            public JigDataProvider jigDataProvider() {
-                return defaultJigDataProvider;
-            }
-
-            @Override
-            public Glossary fetchGlossary() {
-                return glossaryRepository.all();
-            }
-        };
-
-        totalSample.stop(Timer.builder("jig.analysis.time")
-                .description("Total time taken for code analysis")
-                .tag("phase", "code_analysis_total")
-                .register(Metrics.globalRegistry));
-
-        return repository;
+                    @Override
+                    public Glossary fetchGlossary() {
+                        return glossaryRepository.all();
+                    }
+                };
+            });
+        });
     }
 
     private MyBatisStatements readMyBatisStatements(LocalSource sources, Collection<ClassDeclaration> classDeclarations) {

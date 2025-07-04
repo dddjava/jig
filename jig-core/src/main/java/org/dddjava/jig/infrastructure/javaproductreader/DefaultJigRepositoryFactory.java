@@ -83,30 +83,30 @@ public class DefaultJigRepositoryFactory {
      * プロジェクト情報を読み取る
      */
     private JigRepository analyze(LocalSource sources) {
-        return TimerSupport.measure("code_analysis_total", "Total time taken for code analysis", () -> {
+        return TimerSupport.measure("code_analysis_total", () -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
-            TimerSupport.measureVoid("package_info_parsing", "Time taken for Package info parsing", () ->
+            TimerSupport.measureVoid("package_info_parsing", () ->
                     javaFilePaths.packageInfoPaths().forEach(
                             path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
             );
 
-            JavaSourceModel javaSourceModel = TimerSupport.measure("java_source_parsing", "Time taken for Java source parsing", () ->
+            JavaSourceModel javaSourceModel = TimerSupport.measure("java_source_parsing", () ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                             .reduce(JavaSourceModel::merge)
                             .orElseGet(JavaSourceModel::empty)
             );
 
-            Collection<ClassDeclaration> classDeclarations = TimerSupport.measure("class_file_parsing", "Time taken for Class file parsing", () ->
+            Collection<ClassDeclaration> classDeclarations = TimerSupport.measure("class_file_parsing", () ->
                     asmClassSourceReader.readClasses(sources.classFiles())
             );
 
-            MyBatisStatements myBatisStatements = TimerSupport.measure("mybatis_reading", "Time taken for MyBatis statements reading", () ->
+            MyBatisStatements myBatisStatements = TimerSupport.measure("mybatis_reading", () ->
                     readMyBatisStatements(sources, classDeclarations)
             );
 
-            return TimerSupport.measure("jig_repository_creation", "Time taken for initialize JigRepository", () -> {
+            return TimerSupport.measure("jig_repository_creation", () -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
                 return new JigRepository() {

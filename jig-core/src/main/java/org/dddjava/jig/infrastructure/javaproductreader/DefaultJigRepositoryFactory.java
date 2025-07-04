@@ -83,30 +83,31 @@ public class DefaultJigRepositoryFactory {
      * プロジェクト情報を読み取る
      */
     private JigRepository analyze(LocalSource sources) {
-        return TimerSupport.measure("code_analysis_total", () -> {
+        var timer = TimerSupport.of("jig.analysis.time");
+        return timer.measure("code_analysis_total", () -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
-            TimerSupport.measureVoid("package_info_parsing", () ->
+            timer.measureVoid("package_info_parsing", () ->
                     javaFilePaths.packageInfoPaths().forEach(
                             path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
             );
 
-            JavaSourceModel javaSourceModel = TimerSupport.measure("java_source_parsing", () ->
+            JavaSourceModel javaSourceModel = timer.measure("java_source_parsing", () ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                             .reduce(JavaSourceModel::merge)
                             .orElseGet(JavaSourceModel::empty)
             );
 
-            Collection<ClassDeclaration> classDeclarations = TimerSupport.measure("class_file_parsing", () ->
+            Collection<ClassDeclaration> classDeclarations = timer.measure("class_file_parsing", () ->
                     asmClassSourceReader.readClasses(sources.classFiles())
             );
 
-            MyBatisStatements myBatisStatements = TimerSupport.measure("mybatis_reading", () ->
+            MyBatisStatements myBatisStatements = timer.measure("mybatis_reading", () ->
                     readMyBatisStatements(sources, classDeclarations)
             );
 
-            return TimerSupport.measure("jig_repository_creation", () -> {
+            return timer.measure("jig_repository_creation", () -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
                 return new JigRepository() {

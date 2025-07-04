@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.metrics;
 
 import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.Timer;
 
 import java.util.function.Supplier;
 
@@ -18,24 +17,10 @@ public class TimerSupport {
     }
 
     public <T> T measure(String phase, Supplier<T> operation) {
-        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
-        try {
-            return operation.get();
-        } finally {
-            sample.stop(Timer.builder(metricName)
-                    .tag("phase", phase)
-                    .register(Metrics.globalRegistry));
-        }
+        return Metrics.globalRegistry.timer(metricName, "phase", phase).record(operation);
     }
 
     public void measureVoid(String phase, Runnable operation) {
-        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
-        try {
-            operation.run();
-        } finally {
-            sample.stop(Timer.builder(metricName)
-                    .tag("phase", phase)
-                    .register(Metrics.globalRegistry));
-        }
+        Metrics.globalRegistry.timer(metricName, "phase", phase).record(operation);
     }
 }

@@ -1,7 +1,6 @@
 package org.dddjava.jig.application;
 
 import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.Timer;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
@@ -15,6 +14,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.infrastructure.metrics.TimerSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -69,34 +69,18 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
-        try {
+        TimerSupport.of("jig.document.time").measureVoid("index", () -> {
             IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
-        } finally {
-            sample.stop(Timer.builder("jig.document.time")
-                    .description("Time taken for index generation")
-                    .tag("phase", "index_generation")
-                    .tag("document", "index")
-                    .register(Metrics.globalRegistry));
-        }
+        });
     }
 
     public List<HandleResult> generateDocuments(JigRepository jigRepository) {
-        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
-        try {
-            prepareOutputDirectory();
-            return jigDocuments
-                    .parallelStream()
-                    .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
-                    .toList();
-        } finally {
-            sample.stop(Timer.builder("jig.document.time")
-                    .description("Time taken for document generation")
-                    .tag("phase", "document_generation_total")
-                    .tag("document", "all")
-                    .register(Metrics.globalRegistry));
-        }
+        prepareOutputDirectory();
+        return jigDocuments
+                .parallelStream()
+                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
+                .toList();
     }
 
     private void prepareOutputDirectory() {
@@ -123,35 +107,32 @@ public class JigDocumentGenerator {
     }
 
     HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
-        try {
-            Timer.Sample sample = Timer.start(Metrics.globalRegistry);
-            long startTime = System.currentTimeMillis();
+        return TimerSupport.of("jig.document.time").measure(jigDocument.name(), () -> {
+            try {
+                long startTime = System.currentTimeMillis();
 
-            var outputFilePaths = switch (jigDocument) {
-                case Glossary -> new TableView(jigDocument, thymeleafTemplateEngine)
-                        .write(outputDirectory, jigService.glossary(jigRepository));
-                case TermList ->
-                        GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);
-                case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
-                        .write(outputDirectory, jigService.packages(jigRepository));
-                case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
-                     PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
-                     ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,
-                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigRepository);
-            };
+                var outputFilePaths = switch (jigDocument) {
+                    case Glossary -> new TableView(jigDocument, thymeleafTemplateEngine)
+                            .write(outputDirectory, jigService.glossary(jigRepository));
+                    case TermList ->
+                            GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);
+                    case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
+                            .write(outputDirectory, jigService.packages(jigRepository));
+                    case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
+                         PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
+                         ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,
+                         BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigRepository);
+                };
 
-            sample.stop(Timer.builder("jig.document.time")
-                    .description("Time taken for individual document generation")
-                    .tag("phase", "document_generation")
-                    .tag("document", jigDocument.name())
-                    .register(Metrics.globalRegistry));
-            long takenTime = System.currentTimeMillis() - startTime;
-            logger.info("[{}] completed: {} ms", jigDocument, takenTime);
-            return new HandleResult(jigDocument, outputFilePaths);
-        } catch (Exception e) {
-            logger.warn("[{}] failed to write document.", jigDocument, e);
-            return new HandleResult(jigDocument, e.getMessage());
-        }
+                long takenTime = System.currentTimeMillis() - startTime;
+                logger.info("[{}] completed: {} ms", jigDocument, takenTime);
+                return new HandleResult(jigDocument, outputFilePaths);
+            } catch (Exception e) {
+                // ドキュメント出力に失敗しても例外を伝播させない
+                logger.warn("[{}] failed to write document.", jigDocument, e);
+                return new HandleResult(jigDocument, e.getMessage());
+            }
+        });
     }
 
     public void generateAssets() {

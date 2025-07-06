@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.Timer;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
+import org.dddjava.jig.application.metrics.TimerSupport;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -21,7 +22,6 @@ import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
-import org.dddjava.jig.infrastructure.metrics.TimerSupport;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 
 import java.nio.file.Path;

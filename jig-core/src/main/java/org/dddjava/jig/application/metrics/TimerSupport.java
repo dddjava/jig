@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.metrics;
+package org.dddjava.jig.application.metrics;
 
 import io.micrometer.core.instrument.Metrics;
 

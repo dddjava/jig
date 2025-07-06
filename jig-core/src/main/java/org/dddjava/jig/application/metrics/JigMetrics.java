@@ -2,16 +2,16 @@ package org.dddjava.jig.application.metrics;
 
 import java.util.function.Supplier;
 
-public class Metrics {
+public class JigMetrics {
 
     private final String metricName;
 
-    private Metrics(String metricName) {
+    private JigMetrics(String metricName) {
         this.metricName = metricName;
     }
 
-    public static Metrics of(String metricName) {
-        return new Metrics(metricName);
+    public static JigMetrics of(String metricName) {
+        return new JigMetrics(metricName);
     }
 
     public <T> T measure(String phase, Supplier<T> operation) {

@@ -9,7 +9,7 @@ import org.dddjava.jig.adapter.excel.GlossaryAdapter;
 import org.dddjava.jig.adapter.excel.ListAdapter;
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.html.dialect.JigDialect;
-import org.dddjava.jig.application.metrics.Metrics;
+import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -68,7 +68,7 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        Metrics.of("jig.document.time").measureVoid("index", () -> {
+        JigMetrics.of("jig.document.time").measureVoid("index", () -> {
             IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
         });
@@ -106,7 +106,7 @@ public class JigDocumentGenerator {
     }
 
     HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
-        return Metrics.of("jig.document.time").measure(jigDocument.name(), () -> {
+        return JigMetrics.of("jig.document.time").measure(jigDocument.name(), () -> {
             try {
                 long startTime = System.currentTimeMillis();
 

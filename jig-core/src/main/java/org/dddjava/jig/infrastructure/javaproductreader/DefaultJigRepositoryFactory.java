@@ -4,7 +4,7 @@ import io.micrometer.core.instrument.Timer;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.application.metrics.Metrics;
+import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -82,7 +82,7 @@ public class DefaultJigRepositoryFactory {
      * プロジェクト情報を読み取る
      */
     private JigRepository analyze(LocalSource sources) {
-        var timer = Metrics.of("jig.analysis.time");
+        var timer = JigMetrics.of("jig.analysis.time");
         return timer.measure("code_analysis_total", () -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 

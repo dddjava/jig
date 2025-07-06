@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
 import org.dddjava.jig.adapter.diagram.DiagramAdapter;
@@ -30,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class JigDocumentGenerator {
 
@@ -153,23 +153,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    public void exportMetricsToFile() {
-        String metricsFilePath = "jig-metrics.txt";
-        var path = outputDirectory.resolve(metricsFilePath);
-        try (var outputStream = Files.newOutputStream(path)) {
-            var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
-            globalRegistry.getRegistries().forEach(registry -> {
-                if (registry instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
-                    try {
-                        prometheusMeterRegistry.scrape(outputStream);
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                }
-            });
-            globalRegistry.close();
-        } catch (IOException | UncheckedIOException e) {
-            logger.error("Failed to export metrics to file: {}", path, e);
-        }
+    public void close(Consumer<Path> pathConsumer) {
+        pathConsumer.accept(outputDirectory);
     }
 }

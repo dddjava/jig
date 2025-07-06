@@ -1,12 +1,5 @@
 package org.dddjava.jig;
 
-import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
-import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import io.micrometer.prometheusmetrics.PrometheusConfig;
-import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -16,9 +9,6 @@ import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFact
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.util.List;
 
 public class JigExecutor {
@@ -34,45 +24,14 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        var registry = Metrics.globalRegistry;
-        registry.add(new PrometheusMeterRegistry(PrometheusConfig.DEFAULT));
-
-        new UptimeMetrics().bindTo(registry);
-        new JvmMemoryMetrics().bindTo(registry);
-        new JvmThreadMetrics().bindTo(registry);
-        try (var jvmGcMetrics = new JvmGcMetrics()) {
-            jvmGcMetrics.bindTo(registry);
-            return JigMetrics.of("jig.execution.time").measure("total_execution", () -> {
-                return new JigExecutor(configuration).execute(sourceBasePaths);
-            });
-        } finally {
-            // メトリクスを出力して終了する
-            JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
-            jigDocumentGenerator.close(outputDirectory -> {
-                String metricsFilePath = "jig-metrics.txt";
-                var path = outputDirectory.resolve(metricsFilePath);
-                try (var outputStream = Files.newOutputStream(path)) {
-                    var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
-                    globalRegistry.getRegistries().forEach(it -> {
-                        if (it instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
-                            try {
-                                prometheusMeterRegistry.scrape(outputStream);
-                            } catch (IOException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        }
-                    });
-                    globalRegistry.close();
-                } catch (IOException | UncheckedIOException e) {
-                    logger.error("Failed to export metrics to file: {}", path, e);
-                }
-            });
+        try (var __ = JigMetrics.init(configuration)) {
+            return JigMetrics.of("jig.execution.time").measure("total_execution", () ->
+                    new JigExecutor(configuration).execute(sourceBasePaths));
         }
     }
 
     private List<HandleResult> execute(SourceBasePaths sourceBasePaths) {
         var startTime = System.currentTimeMillis();
-
         try {
             // configurationに従ってJigRepositoryの生成と初期化を行う。
             // 現状はローカルのJava/Classファイルを読む形なので固定実装だが雰囲気分けておく。

@@ -1,11 +1,10 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.application.metrics.TimerSupport;
+import org.dddjava.jig.application.metrics.Metrics;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -59,7 +58,7 @@ public class DefaultJigRepositoryFactory {
     }
 
     public JigRepository createJigRepository(SourceBasePaths sourceBasePaths) {
-        Timer.Sample sample = Timer.start(Metrics.globalRegistry);
+        Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
         try {
             LocalSource sources = sourceCollector.collectSources(sourceBasePaths);
             if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
@@ -75,7 +74,7 @@ public class DefaultJigRepositoryFactory {
             sample.stop(Timer.builder("jig.analysis.time")
                     .description("Time taken for code analysis")
                     .tag("phase", "repository_creation")
-                    .register(Metrics.globalRegistry));
+                    .register(io.micrometer.core.instrument.Metrics.globalRegistry));
         }
     }
 
@@ -83,7 +82,7 @@ public class DefaultJigRepositoryFactory {
      * プロジェクト情報を読み取る
      */
     private JigRepository analyze(LocalSource sources) {
-        var timer = TimerSupport.of("jig.analysis.time");
+        var timer = Metrics.of("jig.analysis.time");
         return timer.measure("code_analysis_total", () -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 

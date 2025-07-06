@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import io.micrometer.core.instrument.Metrics;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
@@ -10,7 +9,7 @@ import org.dddjava.jig.adapter.excel.GlossaryAdapter;
 import org.dddjava.jig.adapter.excel.ListAdapter;
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.html.dialect.JigDialect;
-import org.dddjava.jig.application.metrics.TimerSupport;
+import org.dddjava.jig.application.metrics.Metrics;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -69,7 +68,7 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        TimerSupport.of("jig.document.time").measureVoid("index", () -> {
+        Metrics.of("jig.document.time").measureVoid("index", () -> {
             IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
         });
@@ -107,7 +106,7 @@ public class JigDocumentGenerator {
     }
 
     HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
-        return TimerSupport.of("jig.document.time").measure(jigDocument.name(), () -> {
+        return Metrics.of("jig.document.time").measure(jigDocument.name(), () -> {
             try {
                 long startTime = System.currentTimeMillis();
 
@@ -158,7 +157,7 @@ public class JigDocumentGenerator {
         String metricsFilePath = "jig-metrics.txt";
         var path = outputDirectory.resolve(metricsFilePath);
         try (var outputStream = Files.newOutputStream(path)) {
-            var globalRegistry = Metrics.globalRegistry;
+            var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
             globalRegistry.getRegistries().forEach(registry -> {
                 if (registry instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
                     try {

@@ -151,7 +151,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         String summaryText = "summary[shape=note,label=\""
                 + labeler.contextDescription() + "\\l"
-                + allPackages.number().localizedLabel() + "\\l"
+                + allPackages.countDescriptionText() + "\\l"
                 + packageRelationText(filteredRelations) + "\\l"
                 + "\"]";
 

@@ -8,12 +8,10 @@ import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 型のメンバ一式　
+ * 型のメンバ一式
  * おもにフィールドおよびメソッド。コンストラクタやイニシャライザも入る。
  */
 public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigField> instanceFields,
@@ -25,11 +23,11 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
                 .map(jigMethod -> jigMethod.jigMethodDeclaration()).toList();
     }
 
-    public Set<TypeId> allTypeIdentifierSet() {
+    public Stream<TypeId> toTypeIdStream() {
         return Stream.concat(
                 allJigFieldStream().flatMap(jigFields -> jigFields.jigFieldHeader().toTypeIdStream()),
                 allJigMethodStream().flatMap(jigMethod -> jigMethod.jigMethodDeclaration().associatedTypes().stream())
-        ).collect(Collectors.toSet());
+        );
     }
 
     public Optional<JigField> findFieldByName(String name) {

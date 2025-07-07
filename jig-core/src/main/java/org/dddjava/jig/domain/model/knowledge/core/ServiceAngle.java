@@ -97,7 +97,7 @@ public class ServiceAngle {
 
     public Set<TypeId> userControllerTypeIdentifiers() {
         return entrypointMethods.stream()
-                .map(entrypointMethod -> entrypointMethod.typeIdentifier())
+                .map(entrypointMethod -> entrypointMethod.typeId())
                 .collect(Collectors.toSet());
     }
 

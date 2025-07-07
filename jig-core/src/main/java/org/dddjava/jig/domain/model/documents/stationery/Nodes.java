@@ -24,7 +24,7 @@ public class Nodes {
                 .label(jigMethod.aliasText())
                 .tooltip(jigMethod.simpleText())
                 .as(NodeRole.準主役)
-                .url(jigMethod.jigMethodDeclaration().declaringTypeIdentifier(), JigDocument.ApplicationSummary);
+                .url(jigMethod.jigMethodDeclaration().declaringTypeId(), JigDocument.ApplicationSummary);
     }
 
     public static Node lambda(JigMethod method) {

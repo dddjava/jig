@@ -56,8 +56,9 @@ public class JigType {
     public TypeIds usingTypes() {
         var collect = Stream.concat(
                         jigTypeHeader.containedIds().stream(),
-                        jigTypeMembers.allTypeIdentifierSet().stream()
+                        jigTypeMembers.toTypeIdStream()
                 )
+                .distinct()
                 // [L からはじまるarrayが別になるのは嬉しくないので。水際的にここで処置しておくが、源泉近くで対応したい。
                 .map(TypeId::unarray)
                 // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。水際的にここで処置しておくが、源泉近くで対応したい。

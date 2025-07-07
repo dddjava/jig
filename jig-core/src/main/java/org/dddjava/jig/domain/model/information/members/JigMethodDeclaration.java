@@ -32,7 +32,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return header.argumentList().stream();
     }
 
-    public TypeId declaringTypeIdentifier() {
+    public TypeId declaringTypeId() {
         return header.id().tuple().declaringTypeId();
     }
 

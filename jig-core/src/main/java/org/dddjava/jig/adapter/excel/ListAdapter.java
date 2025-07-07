@@ -146,8 +146,8 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
-                        ReportItem.ofString("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
+                        ReportItem.ofString("クラス名", item -> item.typeId().asSimpleText()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.jigMethod().nameAndArgumentSimpleText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().methodReturnTypeReference().simpleName()),
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
@@ -215,8 +215,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("関連元メソッド数", item -> item.callerMethods().size())
                 ), datasourceAngles.list()),
                 new ReportSheet<>("文字列比較箇所", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.jigMethodDeclaration().declaringTypeIdentifier().packageId().asText()),
-                        ReportItem.ofString("クラス名", item -> item.jigMethodDeclaration().declaringTypeIdentifier().asSimpleText()),
+                        ReportItem.ofString("パッケージ名", item -> item.jigMethodDeclaration().declaringTypeId().packageId().asText()),
+                        ReportItem.ofString("クラス名", item -> item.jigMethodDeclaration().declaringTypeId().asSimpleText()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText())
                 ), stringComparingMethodList.list())
         );

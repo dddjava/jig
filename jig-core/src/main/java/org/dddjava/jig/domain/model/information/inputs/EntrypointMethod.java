@@ -18,11 +18,11 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
         return callerMethods.contains(jigMethod.jigMethodId());
     }
 
-    public TypeId typeIdentifier() {
+    public TypeId typeId() {
         return jigType.id();
     }
 
-    public PackageId packageIdentifier() {
+    public PackageId packageId() {
         return jigType.packageId();
     }
 }

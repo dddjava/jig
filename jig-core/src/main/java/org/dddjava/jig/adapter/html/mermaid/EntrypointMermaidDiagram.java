@@ -77,7 +77,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
                                     });
                         } else {
                             // controllerと同じクラスのメソッドはメソッド名だけ
-                            if (entrypointMethod.typeIdentifier().equals(declaringTypeIdentifier)) {
+                            if (entrypointMethod.typeId().equals(declaringTypeIdentifier)) {
                                 methodLabelMap.put(htmlIdText(jigMethodIdentifier), jigMethodIdentifier.name());
                             } else {
                                 // 他はクラス名+メソッド名

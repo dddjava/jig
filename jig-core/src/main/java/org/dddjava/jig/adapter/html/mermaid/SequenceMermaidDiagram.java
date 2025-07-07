@@ -22,7 +22,7 @@ public class SequenceMermaidDiagram {
         StringBuilder sb = new StringBuilder();
         sb.append("sequenceDiagram\n");
 
-        TypeId caller = jigMethodDeclaration.declaringTypeIdentifier();
+        TypeId caller = jigMethodDeclaration.declaringTypeId();
 
         jigMethodDeclaration.instructions().methodCallStream()
                 // Java標準ライブラリのクラスを除外

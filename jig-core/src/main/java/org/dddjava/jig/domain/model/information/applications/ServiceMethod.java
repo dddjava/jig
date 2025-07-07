@@ -47,9 +47,9 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     public List<TypeId> internalUsingTypes() {
         return usingMethods().invokedMethodStream()
                 .flatMap(invokedMethod -> invokedMethod.streamAssociatedTypes())
-                .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
-                .filter(typeIdentifier -> primaryType().filter(primaryType -> primaryType.equals(typeIdentifier)).isEmpty())
-                .filter(typeIdentifier -> !requireTypes().contains(typeIdentifier))
+                .filter(typeId -> !typeId.isJavaLanguageType())
+                .filter(typeId -> primaryType().filter(primaryType -> primaryType.equals(typeId)).isEmpty())
+                .filter(typeId -> !requireTypes().contains(typeId))
                 .distinct()
                 .toList();
     }

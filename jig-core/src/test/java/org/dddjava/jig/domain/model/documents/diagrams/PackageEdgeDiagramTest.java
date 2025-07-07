@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
+import org.dddjava.jig.domain.model.data.packages.PackageIds;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
@@ -88,26 +88,26 @@ class PackageEdgeDiagramTest {
 
     @Test
     void PackageIdentifiersのapplyDepth検証() {
-        PackageIdentifiers sut = new PackageIdentifiers(Set.of(
-                PackageIdentifier.valueOf("a.a.a.a"),
-                PackageIdentifier.valueOf("a.a.b"),
-                PackageIdentifier.valueOf("a"),
-                PackageIdentifier.valueOf("a.b.c.d.e.f"),
-                PackageIdentifier.valueOf("a.b.c.d"),
-                PackageIdentifier.valueOf("x")
+        PackageIds sut = new PackageIds(Set.of(
+                PackageId.valueOf("a.a.a.a"),
+                PackageId.valueOf("a.a.b"),
+                PackageId.valueOf("a"),
+                PackageId.valueOf("a.b.c.d.e.f"),
+                PackageId.valueOf("a.b.c.d"),
+                PackageId.valueOf("x")
         ));
-        assertEquals(6, sut.identifiers().size());
+        assertEquals(6, sut.values().size());
         assertEquals(6, sut.maxDepth().value());
 
-        PackageIdentifiers depth3 = sut.applyDepth(new PackageDepth(3));
-        assertEquals(5, depth3.identifiers().size());
+        PackageIds depth3 = sut.applyDepth(new PackageDepth(3));
+        assertEquals(5, depth3.values().size());
         assertEquals(3, depth3.maxDepth().value());
 
-        PackageIdentifiers depth2 = sut.applyDepth(new PackageDepth(2));
-        assertEquals(4, depth2.identifiers().size());
+        PackageIds depth2 = sut.applyDepth(new PackageDepth(2));
+        assertEquals(4, depth2.values().size());
 
-        PackageIdentifiers depth1 = sut.applyDepth(new PackageDepth(1));
-        assertEquals(2, depth1.identifiers().size());
+        PackageIds depth1 = sut.applyDepth(new PackageDepth(1));
+        assertEquals(2, depth1.values().size());
     }
 
     @Test

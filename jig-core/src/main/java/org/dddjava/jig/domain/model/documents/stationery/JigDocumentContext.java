@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -18,7 +18,7 @@ public interface JigDocumentContext {
     /**
      * パッケージに対応する用語
      */
-    Term packageTerm(PackageIdentifier packageIdentifier);
+    Term packageTerm(PackageId packageId);
 
     /**
      * 型に対応する用語

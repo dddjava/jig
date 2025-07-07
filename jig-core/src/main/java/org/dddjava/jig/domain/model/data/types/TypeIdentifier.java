@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.types;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -70,11 +70,11 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return value.contains(".");
     }
 
-    public PackageIdentifier packageIdentifier() {
+    public PackageId packageIdentifier() {
         if (!hasPackage()) {
-            return PackageIdentifier.defaultPackage();
+            return PackageId.defaultPackage();
         }
-        return PackageIdentifier.valueOf(value.substring(0, value.lastIndexOf(".")));
+        return PackageId.valueOf(value.substring(0, value.lastIndexOf(".")));
     }
 
     @Override

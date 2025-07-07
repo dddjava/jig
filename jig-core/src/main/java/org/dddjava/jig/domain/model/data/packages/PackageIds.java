@@ -8,18 +8,18 @@ import java.util.stream.Collectors;
 /**
  * パッケージ識別子一覧
  */
-public record PackageIdentifiers(Set<PackageIdentifier> identifiers) {
+public record PackageIds(Set<PackageId> values) {
 
-    public PackageIdentifiers applyDepth(PackageDepth packageDepth) {
-        Set<PackageIdentifier> set = identifiers.stream()
+    public PackageIds applyDepth(PackageDepth packageDepth) {
+        Set<PackageId> set = values.stream()
                 .map(identifier -> identifier.applyDepth(packageDepth))
                 .collect(Collectors.toSet());
-        return new PackageIdentifiers(set);
+        return new PackageIds(set);
     }
 
     public PackageDepth maxDepth() {
-        return identifiers.stream()
-                .map(PackageIdentifier::depth)
+        return values.stream()
+                .map(PackageId::depth)
                 .max(Comparator.comparing(PackageDepth::value))
                 .orElseGet(() -> new PackageDepth(0));
     }
@@ -27,6 +27,6 @@ public record PackageIdentifiers(Set<PackageIdentifier> identifiers) {
     public String countDescriptionText() {
         Locale locale = Locale.getDefault();
         boolean isEnglish = locale.getLanguage().equals("en");
-        return (isEnglish ? "Packages: " : "パッケージ数: ") + identifiers.size();
+        return (isEnglish ? "Packages: " : "パッケージ数: ") + values.size();
     }
 }

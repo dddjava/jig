@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.application.JigTypesWithRelationships;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
@@ -49,9 +49,9 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .typeIdentifiers();
 
         for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(jigTypesWithRelationships.jigTypes())) {
-            PackageIdentifier packageIdentifier = jigPackageWithJigTypes.packageIdentifier();
+            PackageId packageId = jigPackageWithJigTypes.packageId();
 
-            String fqn = packageIdentifier.asText();
+            String fqn = packageId.asText();
             Subgraph subgraph = new Subgraph(fqn)
                     .label(fqn)
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);

@@ -3,7 +3,7 @@ package org.dddjava.jig.application;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.dddjava.jig.annotation.Service;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
@@ -143,7 +143,7 @@ public class JigService {
         JigTypes jigTypes = jigTypes(jigRepository);
         Glossary glossary = glossary(jigRepository);
 
-        Map<PackageIdentifier, List<JigType>> packageAndJigTypes = jigTypes.stream()
+        Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.stream()
                 .collect(Collectors.groupingBy(JigType::packageIdentifier));
 
         List<Term> packageTerms = glossary.terms().stream()
@@ -152,7 +152,7 @@ public class JigService {
 
         List<JigPackage> jigPackages = Stream.concat(
                         packageAndJigTypes.keySet().stream(),
-                        packageTerms.stream().map(Term::identifier).map(TermIdentifier::asText).map(PackageIdentifier::valueOf))
+                        packageTerms.stream().map(Term::identifier).map(TermIdentifier::asText).map(PackageId::valueOf))
                 .distinct()
                 .map(packageIdentifier -> {
                     var packageTerm = glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ);

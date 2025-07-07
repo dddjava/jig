@@ -1,19 +1,19 @@
 package org.dddjava.jig.domain.model.information.relation.packages;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 
 /**
  * パッケージの相互依存
  */
-public record PackageMutualDependency(PackageIdentifier left, PackageIdentifier right) {
+public record PackageMutualDependency(PackageId left, PackageId right) {
 
     public static PackageMutualDependency from(PackageRelation packageRelation) {
         return new PackageMutualDependency(packageRelation.from(), packageRelation.to());
     }
 
     public boolean matches(PackageRelation packageRelation) {
-        PackageIdentifier fromPackage = packageRelation.from();
-        PackageIdentifier toPackage = packageRelation.to();
+        PackageId fromPackage = packageRelation.from();
+        PackageId toPackage = packageRelation.to();
         if (fromPackage.equals(toPackage)) return false; // 上位との相互依存の場合、containsが一致してしまうので回避
         return (left.contains(fromPackage) && right.contains(toPackage)) ||
                 (left.contains(toPackage) && right.contains(fromPackage));

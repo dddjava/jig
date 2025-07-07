@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
@@ -48,7 +48,7 @@ public class RelationText {
         return list.stream().sorted().distinct().collect(Collectors.joining("\n"));
     }
 
-    public void add(PackageIdentifier from, PackageIdentifier to) {
+    public void add(PackageId from, PackageId to) {
         add(from.asText(), to.asText());
     }
 

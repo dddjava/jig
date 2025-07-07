@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
@@ -27,7 +27,7 @@ public class Node {
         return new Node(identifier.fullQualifiedName());
     }
 
-    public static Node packageOf(PackageIdentifier identifier) {
+    public static Node packageOf(PackageId identifier) {
         return new Node(identifier.asText());
     }
 
@@ -66,9 +66,9 @@ public class Node {
         return this;
     }
 
-    public Node url(PackageIdentifier packageIdentifier, JigDocument jigDocument) {
+    public Node url(PackageId packageId, JigDocument jigDocument) {
         String ref = jigDocument.fileName() + ".html";
-        attributeMap.put("URL", "./" + ref + "#" + packageIdentifier.asText());
+        attributeMap.put("URL", "./" + ref + "#" + packageId.asText());
         return this;
     }
 

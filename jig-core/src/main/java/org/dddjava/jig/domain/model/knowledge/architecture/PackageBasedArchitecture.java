@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.architecture;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -16,10 +16,10 @@ import static java.util.stream.Collectors.groupingBy;
  */
 public class PackageBasedArchitecture {
 
-    List<PackageIdentifier> architecturePackages;
+    List<PackageId> architecturePackages;
     private final TypeRelationships typeRelationships;
 
-    PackageBasedArchitecture(List<PackageIdentifier> architecturePackages, TypeRelationships typeRelationships) {
+    PackageBasedArchitecture(List<PackageId> architecturePackages, TypeRelationships typeRelationships) {
         this.architecturePackages = architecturePackages;
         this.typeRelationships = typeRelationships;
     }
@@ -32,13 +32,13 @@ public class PackageBasedArchitecture {
         return new PackageBasedArchitecture(getArchitecturePackages(jigTypes), TypeRelationships.from(jigTypes));
     }
 
-    private static List<PackageIdentifier> getArchitecturePackages(JigTypes jigTypes) {
-        Map<PackageIdentifier, List<JigType>> packageIdentifierListMap = jigTypes.orderedStream()
+    private static List<PackageId> getArchitecturePackages(JigTypes jigTypes) {
+        Map<PackageId, List<JigType>> packageIdentifierListMap = jigTypes.orderedStream()
                 .collect(groupingBy(JigType::packageIdentifier));
         // depth単位にリストにする
-        Map<Integer, List<PackageIdentifier>> depthMap = packageIdentifierListMap.keySet().stream()
+        Map<Integer, List<PackageId>> depthMap = packageIdentifierListMap.keySet().stream()
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
-                .sorted(Comparator.comparing(PackageIdentifier::asText))
+                .sorted(Comparator.comparing(PackageId::asText))
                 .distinct()
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.depth().value()));
 
@@ -51,9 +51,9 @@ public class PackageBasedArchitecture {
                 .orElse(Collections.emptyList());
     }
 
-    public PackageIdentifier packageIdentifier(TypeIdentifier arg) {
+    public PackageId packageIdentifier(TypeIdentifier arg) {
         TypeIdentifier typeIdentifier = arg.normalize().unarray();
-        for (PackageIdentifier architecturePackage : architecturePackages) {
+        for (PackageId architecturePackage : architecturePackages) {
             if (typeIdentifier.fullQualifiedName().startsWith(architecturePackage.asText())) {
                 return architecturePackage;
             }
@@ -66,10 +66,10 @@ public class PackageBasedArchitecture {
         String name = Arrays.stream(split)
                 .limit(split.length <= depth ? split.length - 1 : depth)
                 .collect(Collectors.joining("."));
-        return PackageIdentifier.valueOf(name);
+        return PackageId.valueOf(name);
     }
 
-    public List<PackageIdentifier> architecturePackages() {
+    public List<PackageId> architecturePackages() {
         return architecturePackages;
     }
 }

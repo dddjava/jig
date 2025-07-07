@@ -1,6 +1,6 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.junit.jupiter.api.Test;
@@ -23,8 +23,8 @@ public class PackageDependenciesTest {
         // パッケージの関連
         var actual = sut.listUnique().stream()
                 .map(dependency -> {
-                    PackageIdentifier from = dependency.from();
-                    PackageIdentifier to = dependency.to();
+                    PackageId from = dependency.from();
+                    PackageId to = dependency.to();
                     return from.asText() + " -> " + to.asText();
                 })
                 .toList();

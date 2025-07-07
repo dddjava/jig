@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -22,8 +22,8 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     }
 
     @Override
-    public Term packageTerm(PackageIdentifier packageIdentifier) {
-        return glossaryRepository.get(packageIdentifier);
+    public Term packageTerm(PackageId packageId) {
+        return glossaryRepository.get(packageId);
     }
 
     @Override

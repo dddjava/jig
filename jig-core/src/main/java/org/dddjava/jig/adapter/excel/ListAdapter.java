@@ -62,8 +62,8 @@ public class ListAdapter implements Adapter<ReportBook> {
         List<JigPackageWithJigTypes> jigTypePackages = JigPackageWithJigTypes.from(coreDomainJigTypes);
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
-                        ReportItem.ofString("パッケージ別名", item -> jigDocumentContext.packageTerm(item.packageIdentifier()).title()),
+                        ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
+                        ReportItem.ofString("パッケージ別名", item -> jigDocumentContext.packageTerm(item.packageId()).title()),
                         ReportItem.ofNumber("クラス数", item -> item.jigTypes().size())
                 ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(
@@ -76,7 +76,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {
-                            var identifiers = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().identifiers();
+                            var identifiers = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().values();
                             return markIfTrue(identifiers.equals(Set.of(item.packageIdentifier())));
                         }),
                         ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText())

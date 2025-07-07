@@ -1,6 +1,6 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -34,7 +34,7 @@ class ReadableLabelTest {
 
     @Test
     void パッケージ別名取得() {
-        assertEquals("テストでJIGに読み取らせる実装", sut.packageTerm(PackageIdentifier.valueOf("stub")).title());
+        assertEquals("テストでJIGに読み取らせる実装", sut.packageTerm(PackageId.valueOf("stub")).title());
     }
 
     @ParameterizedTest

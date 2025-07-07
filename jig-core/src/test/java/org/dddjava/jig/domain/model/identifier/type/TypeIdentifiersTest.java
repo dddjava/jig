@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.identifier.type;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +56,7 @@ class TypeIdentifiersTest {
     void typeIdentifier_packageIdentifier(String fullName, String packageName) {
         TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
 
-        assertEquals(PackageIdentifier.valueOf(packageName), hoge.packageIdentifier());
+        assertEquals(PackageId.valueOf(packageName), hoge.packageIdentifier());
     }
 
     static Stream<Arguments> typeIdentifier_packageIdentifier() {

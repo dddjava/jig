@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
@@ -27,13 +27,13 @@ public class ArchitectureRelations {
             TypeIdentifier from = typeRelationship.from();
             TypeIdentifier to = typeRelationship.to();
 
-            PackageIdentifier fromPackage = packageBasedArchitecture.packageIdentifier(from);
+            PackageId fromPackage = packageBasedArchitecture.packageIdentifier(from);
 
             if (to.isJavaLanguageType()) {
                 // 興味のない関連
                 continue;
             }
-            PackageIdentifier toPackage = packageBasedArchitecture.packageIdentifier(to);
+            PackageId toPackage = packageBasedArchitecture.packageIdentifier(to);
 
             if (fromPackage.equals(toPackage)) {
                 // 自己参照

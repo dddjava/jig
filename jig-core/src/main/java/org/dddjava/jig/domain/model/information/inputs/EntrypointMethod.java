@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -22,7 +22,7 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
         return jigType.id();
     }
 
-    public PackageIdentifier packageIdentifier() {
+    public PackageId packageIdentifier() {
         return jigType.packageIdentifier();
     }
 }

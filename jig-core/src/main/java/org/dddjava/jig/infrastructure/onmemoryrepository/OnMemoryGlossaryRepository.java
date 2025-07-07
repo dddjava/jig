@@ -4,7 +4,7 @@ import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
@@ -31,14 +31,14 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public Term get(PackageIdentifier packageIdentifier) {
-        TermIdentifier termIdentifier = fromPackageIdentifier(packageIdentifier);
+    public Term get(PackageId packageId) {
+        TermIdentifier termIdentifier = fromPackageIdentifier(packageId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termIdentifier, packageIdentifier.simpleName(), TermKind.パッケージ));
+                .orElseGet(() -> Term.simple(termIdentifier, packageId.simpleName(), TermKind.パッケージ));
     }
 
     @Override
@@ -52,8 +52,8 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public TermIdentifier fromPackageIdentifier(PackageIdentifier packageIdentifier) {
-        return new TermIdentifier(packageIdentifier.asText());
+    public TermIdentifier fromPackageIdentifier(PackageId packageId) {
+        return new TermIdentifier(packageId.asText());
     }
 
     @Override

@@ -9,25 +9,25 @@ import java.util.stream.Collectors;
 /**
  * パッケージ識別子
  */
-public class PackageIdentifier implements Comparable<PackageIdentifier> {
+public class PackageId implements Comparable<PackageId> {
 
     private final String value;
 
-    private PackageIdentifier(String value) {
+    private PackageId(String value) {
         this.value = value;
     }
 
-    private static final Map<String, PackageIdentifier> cache = new ConcurrentHashMap<>();
+    private static final Map<String, PackageId> cache = new ConcurrentHashMap<>();
 
-    public static PackageIdentifier valueOf(String value) {
+    public static PackageId valueOf(String value) {
         if (cache.containsKey(value)) return cache.get(value);
 
-        var instance = new PackageIdentifier(value);
+        var instance = new PackageId(value);
         cache.put(value, instance);
         return instance;
     }
 
-    public PackageIdentifier applyDepth(PackageDepth packageDepth) {
+    public PackageId applyDepth(PackageDepth packageDepth) {
         String[] split = value.split("\\.");
         if (split.length < packageDepth.value()) return this;
 
@@ -42,19 +42,19 @@ public class PackageIdentifier implements Comparable<PackageIdentifier> {
         return new PackageDepth(value.split("\\.").length);
     }
 
-    public static PackageIdentifier defaultPackage() {
+    public static PackageId defaultPackage() {
         return valueOf("(default)");
     }
 
-    public boolean contains(PackageIdentifier packageIdentifier) {
-        return this.equals(packageIdentifier) || packageIdentifier.value.startsWith(this.value + ".");
+    public boolean contains(PackageId packageId) {
+        return this.equals(packageId) || packageId.value.startsWith(this.value + ".");
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PackageIdentifier that = (PackageIdentifier) o;
+        PackageId that = (PackageId) o;
         return Objects.equals(value, that.value);
     }
 
@@ -67,14 +67,14 @@ public class PackageIdentifier implements Comparable<PackageIdentifier> {
         return value;
     }
 
-    public Optional<PackageIdentifier> parentIfExist() {
-        PackageIdentifier parent = parent();
+    public Optional<PackageId> parentIfExist() {
+        PackageId parent = parent();
         if (parent.value.equals("(default)")) return Optional.empty();
         return Optional.of(parent);
     }
 
     // TODO (default) がでてきた場合にを型で識別できないので、使わないようにした方が良さそう
-    public PackageIdentifier parent() {
+    public PackageId parent() {
         String[] split = value.split("\\.");
 
         if (split.length == 1) {
@@ -91,14 +91,14 @@ public class PackageIdentifier implements Comparable<PackageIdentifier> {
     /**
      * @return hoge.fuga.piyo => [hoge, hoge.fuga, hoge.fuga.piyo]
      */
-    public List<PackageIdentifier> genealogical() {
+    public List<PackageId> genealogical() {
         if (!hasName()) {
             return Collections.emptyList();
         }
 
         // 最上位パッケージから全てのリスト
         String[] split = value.split("\\.");
-        ArrayList<PackageIdentifier> list = new ArrayList<>();
+        ArrayList<PackageId> list = new ArrayList<>();
         StringJoiner currentPackageName = new StringJoiner(".");
         for (String packageParts : split) {
             currentPackageName.add(packageParts);
@@ -160,12 +160,12 @@ public class PackageIdentifier implements Comparable<PackageIdentifier> {
         }
     }
 
-    public PackageIdentifier subpackageOf(String... packages) {
-        return PackageIdentifier.valueOf(value + "." + String.join(".", packages));
+    public PackageId subpackageOf(String... packages) {
+        return PackageId.valueOf(value + "." + String.join(".", packages));
     }
 
     @Override
-    public int compareTo(PackageIdentifier o) {
+    public int compareTo(PackageId o) {
         return value.compareTo(o.value);
     }
 }

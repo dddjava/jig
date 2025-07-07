@@ -29,7 +29,7 @@ package-infoのJavadocコメントが表示されます
 </pre>
         </section>
 
-        <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
+        <th:block th:with="composite=${baseComposite.findComposite(item.packageId())}">
             <section th:if="${composite.hasChild()}">
                 <table>
                     <thead>

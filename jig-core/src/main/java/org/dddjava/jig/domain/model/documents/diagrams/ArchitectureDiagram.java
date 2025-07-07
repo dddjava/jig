@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -26,7 +26,7 @@ public class ArchitectureDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        Function<PackageIdentifier, String> architectureLabel =
+        Function<PackageId, String> architectureLabel =
                 packageIdentifier -> jigDocumentContext.packageTerm(packageIdentifier).title();
 
         DocumentName documentName = DocumentName.of(JigDocument.ArchitectureDiagram);
@@ -41,10 +41,10 @@ public class ArchitectureDiagram implements DiagramSourceWriter {
                 .add("label=\"\";")
                 .add("graph[style=filled,color=lightgoldenrod,fillcolor=lightyellow];")
                 .add("node [fillcolor=lightgoldenrod,fontsize=20];");
-        for (PackageIdentifier packageIdentifier : packageBasedArchitecture.architecturePackages()) {
+        for (PackageId packageId : packageBasedArchitecture.architecturePackages()) {
             graph.add(Node
-                    .packageOf(packageIdentifier)
-                    .label(architectureLabel.apply(packageIdentifier))
+                    .packageOf(packageId)
+                    .label(architectureLabel.apply(packageId))
                     .asText());
         }
         graph.add("}");

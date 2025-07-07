@@ -9,7 +9,7 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class JavaparserReader {
         // packageIdentifierがPackageCommentで必要になるのでここはネストにしておく
         cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
-                .map(PackageIdentifier::valueOf)
+                .map(PackageId::valueOf)
                 .flatMap(packageIdentifier -> {
                     TermIdentifier termIdentifier = glossaryRepository.fromPackageIdentifier(packageIdentifier);
                     return getJavadoc(cu)

@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -45,9 +45,9 @@ class JavaparserReaderTest {
 
         sut.loadPackageInfoJavaFile(targetPath, glossaryRepository);
 
-        PackageIdentifier packageIdentifier = TypeIdentifier.from(this.getClass())
+        PackageId packageId = TypeIdentifier.from(this.getClass())
                 .packageIdentifier().subpackageOf(packagePathText.split("/"));
-        Term term = glossaryRepository.get(packageIdentifier);
+        Term term = glossaryRepository.get(packageId);
 
         assertEquals(expected, term.title());
     }
@@ -59,9 +59,9 @@ class JavaparserReaderTest {
 
         sut.loadPackageInfoJavaFile(getJavaFilePath(path), glossaryRepository);
 
-        PackageIdentifier packageIdentifier = TypeIdentifier.from(this.getClass())
+        PackageId packageId = TypeIdentifier.from(this.getClass())
                 .packageIdentifier().subpackageOf("ut", "package_info_typical");
-        Term term = glossaryRepository.get(packageIdentifier);
+        Term term = glossaryRepository.get(packageId);
 
         assertEquals("色々書いているpackage-info", term.title());
         assertEquals("""

@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
+import org.dddjava.jig.domain.model.data.packages.PackageIds;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -63,7 +63,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     /**
      * 関連なしも含むすべてのパッケージ
      */
-    public PackageIdentifiers allPackages() {
+    public PackageIds allPackages() {
         return contextJigTypes.jigTypes().typeIdentifiers().packageIdentifiers().applyDepth(appliedDepth);
     }
 
@@ -97,22 +97,22 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         var allPackages = allPackages();
         PackageDepth maxDepth = allPackages.maxDepth();
         // 最下層を一つ上でグルーピング
-        Map<PackageIdentifier, List<PackageIdentifier>> groupingPackages = new HashMap<>();
+        Map<PackageId, List<PackageId>> groupingPackages = new HashMap<>();
         // 最下層以外
-        List<PackageIdentifier> standalonePackages = new ArrayList<>();
+        List<PackageId> standalonePackages = new ArrayList<>();
 
-        for (PackageIdentifier packageIdentifier : allPackages.identifiers()) {
-            if (packageIdentifier.depth().just(maxDepth)) {
-                groupingPackages.computeIfAbsent(packageIdentifier.parent(), k -> new ArrayList<>())
-                        .add(packageIdentifier);
+        for (PackageId packageId : allPackages.values()) {
+            if (packageId.depth().just(maxDepth)) {
+                groupingPackages.computeIfAbsent(packageId.parent(), k -> new ArrayList<>())
+                        .add(packageId);
             } else {
-                standalonePackages.add(packageIdentifier);
+                standalonePackages.add(packageId);
             }
         }
         // 全体が1つにグルーピングされている場合、背景色が変わるだけの意味のない構造となるので、groupingPackagesはなくす
         if (standalonePackages.isEmpty() && groupingPackages.size() == 1) {
             // 1件しかないけど全部移動するという意図でfor
-            for (List<PackageIdentifier> value : groupingPackages.values()) {
+            for (List<PackageId> value : groupingPackages.values()) {
                 standalonePackages.addAll(value);
             }
             groupingPackages.clear();
@@ -120,11 +120,11 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         // groupingしたパッケージ直下にクラスがある場合、standalonePackageとgroupingPackageのkeyが一致する。
         // これをgroupingの中に編入する。
-        Iterator<PackageIdentifier> iterator = standalonePackages.iterator();
+        Iterator<PackageId> iterator = standalonePackages.iterator();
         while (iterator.hasNext()) {
-            PackageIdentifier packageIdentifier = iterator.next();
-            if (groupingPackages.containsKey(packageIdentifier)) {
-                groupingPackages.get(packageIdentifier).add(packageIdentifier);
+            PackageId packageId = iterator.next();
+            if (groupingPackages.containsKey(packageId)) {
+                groupingPackages.get(packageId).add(packageId);
                 iterator.remove();
             }
         }

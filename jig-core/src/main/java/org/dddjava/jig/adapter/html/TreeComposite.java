@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
 
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ public class TreeComposite implements TreeComponent {
         return "#" + jigPackage.fqn();
     }
 
-    public PackageIdentifier packageIdentifier() {
-        return jigPackage.packageIdentifier();
+    public PackageId packageIdentifier() {
+        return jigPackage.packageId();
     }
 
     public boolean hasChild() {
@@ -53,20 +53,20 @@ public class TreeComposite implements TreeComponent {
         return root;
     }
 
-    public TreeComposite findComposite(PackageIdentifier packageIdentifier) {
-        return findCompositeInternal(packageIdentifier)
+    public TreeComposite findComposite(PackageId packageId) {
+        return findCompositeInternal(packageId)
                 // 通常は見つかる
                 // これが発生するのはこのインスタンスの子階層にないパッケージを引数にした場合
-                .orElseThrow(() -> new IllegalStateException(packageIdentifier.asText() + " is not found in " + this.jigPackage.fqn()));
+                .orElseThrow(() -> new IllegalStateException(packageId.asText() + " is not found in " + this.jigPackage.fqn()));
     }
 
-    private Optional<TreeComposite> findCompositeInternal(PackageIdentifier packageIdentifier) {
-        if (packageIdentifier.equals(this.jigPackage.packageIdentifier())) {
+    private Optional<TreeComposite> findCompositeInternal(PackageId packageId) {
+        if (packageId.equals(this.jigPackage.packageId())) {
             return Optional.of(this);
         }
         for (TreeComponent child : list) {
             if (child instanceof TreeComposite) {
-                Optional<TreeComposite> composite = ((TreeComposite) child).findCompositeInternal(packageIdentifier);
+                Optional<TreeComposite> composite = ((TreeComposite) child).findCompositeInternal(packageId);
                 if (composite.isPresent()) return composite;
             }
         }

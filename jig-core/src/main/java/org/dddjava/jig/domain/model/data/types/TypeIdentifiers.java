@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data.types;
 
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
+import org.dddjava.jig.domain.model.data.packages.PackageIds;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,11 +40,11 @@ public record TypeIdentifiers(Set<TypeIdentifier> identifiers) {
         return identifiers.isEmpty();
     }
 
-    public PackageIdentifiers packageIdentifiers() {
-        Set<PackageIdentifier> availablePackages = identifiers.stream()
+    public PackageIds packageIdentifiers() {
+        Set<PackageId> availablePackages = identifiers.stream()
                 .map(TypeIdentifier::packageIdentifier)
                 .collect(Collectors.toSet());
-        return new PackageIdentifiers(availablePackages);
+        return new PackageIds(availablePackages);
     }
 
     public TypeIdentifiers normalize() {

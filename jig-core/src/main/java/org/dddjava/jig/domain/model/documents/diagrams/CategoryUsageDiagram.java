@@ -21,9 +21,9 @@ import static java.util.stream.Collectors.joining;
  */
 public class CategoryUsageDiagram implements DiagramSourceWriter {
 
-    ServiceMethods serviceMethods;
+    private final ServiceMethods serviceMethods;
     private final JigTypes coreDomainJigTypes;
-    private TypeRelationships relationships;
+    private final TypeRelationships relationships;
 
     public CategoryUsageDiagram(ServiceMethods serviceMethods, JigTypesWithRelationships jigTypesWithRelationships) {
         this.serviceMethods = serviceMethods;

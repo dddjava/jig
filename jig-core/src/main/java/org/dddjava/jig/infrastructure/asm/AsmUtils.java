@@ -25,7 +25,7 @@ class AsmUtils {
      */
     static TypeId typeDescriptorToTypeId(String typeDescriptor) {
         Type type = Type.getType(typeDescriptor);
-        return TypeId.valueOf(type.getClassName());
+        return type2TypeId(type);
     }
 
     public static TypeId type2TypeId(Type typeValue) {

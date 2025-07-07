@@ -4,7 +4,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
@@ -30,7 +30,7 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             variables.forEach(v -> {
                 glossaryRepository.register(
                         TermFactory.fromField(
-                                glossaryRepository.fromFieldIdentifier(JigFieldIdentifier.from(typeIdentifier, v.getNameAsString())),
+                                glossaryRepository.fromFieldIdentifier(JigFieldId.from(typeIdentifier, v.getNameAsString())),
                                 javadoc.getDescription().toText()
                         ));
             });

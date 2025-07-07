@@ -7,10 +7,10 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
  *
  * `{クラスの完全修飾名}#{フィールド名}`
  */
-public record JigFieldIdentifier(String value) {
+public record JigFieldId(String value) {
 
-    public static JigFieldIdentifier from(TypeIdentifier declaringTypeIdentifier, String name) {
-        return new JigFieldIdentifier("%s#%s".formatted(declaringTypeIdentifier.fullQualifiedName(), name));
+    public static JigFieldId from(TypeIdentifier declaringTypeIdentifier, String name) {
+        return new JigFieldId("%s#%s".formatted(declaringTypeIdentifier.fullQualifiedName(), name));
     }
 
     public String name() {

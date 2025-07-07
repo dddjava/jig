@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
@@ -106,7 +106,7 @@ class JavaparserReaderTest {
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var term = glossary.termOf(JigFieldIdentifier.from(
+        var term = glossary.termOf(JigFieldId.from(
                 TypeIdentifier.from(ParseTargetCanonicalClass.class),
                 "field").value(), TermKind.フィールド);
 

@@ -1,6 +1,6 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -27,5 +27,5 @@ public interface GlossaryRepository {
 
     TermIdentifier fromMethodImplementationDeclarator(TypeIdentifier typeIdentifier, JavaMethodDeclarator methodImplementationDeclarator);
 
-    TermIdentifier fromFieldIdentifier(JigFieldIdentifier from);
+    TermIdentifier fromFieldIdentifier(JigFieldId from);
 }

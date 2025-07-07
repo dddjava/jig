@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.Arrays;
@@ -27,11 +27,11 @@ public record Instructions(List<Instruction> instructions) {
                 .flatMap(Instruction::streamAssociatedTypes);
     }
 
-    public Stream<JigFieldIdentifier> fieldReferenceStream() {
+    public Stream<JigFieldId> fieldReferenceStream() {
         return instructions.stream()
                 .filter(instruction -> instruction instanceof FieldAccess)
                 .map(instruction -> (FieldAccess) instruction)
-                .map(FieldAccess::jigFieldIdentifier);
+                .map(FieldAccess::jigFieldId);
     }
 
     public Stream<MethodCall> methodCallStream() {

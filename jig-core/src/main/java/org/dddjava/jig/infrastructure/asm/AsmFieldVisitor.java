@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldFlag;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -45,7 +45,7 @@ class AsmFieldVisitor extends FieldVisitor {
         if ((access & Opcodes.ACC_ENUM) != 0) flags.add(JigFieldFlag.ENUM);
 
         return new AsmFieldVisitor(contextClass.api(), it -> {
-            contextClass.addJigFieldHeader(JigFieldHeader.from(JigFieldIdentifier.from(contextClass.jigTypeHeader().id(), name),
+            contextClass.addJigFieldHeader(JigFieldHeader.from(JigFieldId.from(contextClass.jigTypeHeader().id(), name),
                     AsmUtils.jigMemberOwnership(access),
                     resolveFieldTypeReference(contextClass.api(), descriptor, signature),
                     AsmUtils.resolveMethodVisibility(access),

@@ -16,11 +16,11 @@ import java.util.stream.Stream;
  * フィールドには本体がないためヘッダだけで完全な定義になるが、
  * JigTypeHeaderやJigMethodHeaderに合わせてこの名前にしておく。
  */
-public record JigFieldHeader(JigFieldIdentifier id,
+public record JigFieldHeader(JigFieldId id,
                              JigMemberOwnership ownership,
                              JigTypeReference jigTypeReference,
                              JigFieldAttribute jigFieldAttribute) {
-    public static JigFieldHeader from(JigFieldIdentifier id, JigMemberOwnership jigMemberOwnership, JigTypeReference jigTypeReference,
+    public static JigFieldHeader from(JigFieldId id, JigMemberOwnership jigMemberOwnership, JigTypeReference jigTypeReference,
                                       JigMemberVisibility jigMemberVisibility, Collection<JigAnnotationReference> declarationAnnotations, EnumSet<JigFieldFlag> flags) {
         return new JigFieldHeader(id, jigMemberOwnership, jigTypeReference,
                 new JigFieldAttribute(jigMemberVisibility, declarationAnnotations, flags));

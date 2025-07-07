@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
-import org.dddjava.jig.domain.model.data.members.fields.JigFieldIdentifier;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.instruction.*;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
@@ -160,7 +160,7 @@ class AsmMethodVisitor extends MethodVisitor {
         var fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
         var declaringTypeIdentifier = TypeIdentifier.valueOf(owner);
 
-        var jigFieldIdentifier = JigFieldIdentifier.from(declaringTypeIdentifier, name);
+        var jigFieldIdentifier = JigFieldId.from(declaringTypeIdentifier, name);
         var fieldInstruction = switch (opcode) {
             case Opcodes.GETFIELD, Opcodes.GETSTATIC -> FieldAccess.get(fieldTypeIdentifier, jigFieldIdentifier);
             case Opcodes.PUTFIELD, Opcodes.PUTSTATIC -> FieldAccess.set(fieldTypeIdentifier, jigFieldIdentifier);

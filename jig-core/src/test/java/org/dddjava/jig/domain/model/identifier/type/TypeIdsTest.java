@@ -53,13 +53,13 @@ class TypeIdsTest {
 
     @ParameterizedTest
     @MethodSource
-    void typeIdentifier_packageIdentifier(String fullName, String packageName) {
+    void typeIdentifier_packageId(String fullName, String packageName) {
         TypeId hoge = TypeId.valueOf(fullName);
 
-        assertEquals(PackageId.valueOf(packageName), hoge.packageIdentifier());
+        assertEquals(PackageId.valueOf(packageName), hoge.packageId());
     }
 
-    static Stream<Arguments> typeIdentifier_packageIdentifier() {
+    static Stream<Arguments> typeIdentifier_packageId() {
         return Stream.of(
                 Arguments.of("hoge", "(default)"),
                 Arguments.of("hoge.fuga", "hoge"),

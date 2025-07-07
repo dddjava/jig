@@ -46,7 +46,7 @@ class JavaparserReaderTest {
         sut.loadPackageInfoJavaFile(targetPath, glossaryRepository);
 
         PackageId packageId = TypeId.from(this.getClass())
-                .packageIdentifier().subpackageOf(packagePathText.split("/"));
+                .packageId().subpackageOf(packagePathText.split("/"));
         Term term = glossaryRepository.get(packageId);
 
         assertEquals(expected, term.title());
@@ -60,7 +60,7 @@ class JavaparserReaderTest {
         sut.loadPackageInfoJavaFile(getJavaFilePath(path), glossaryRepository);
 
         PackageId packageId = TypeId.from(this.getClass())
-                .packageIdentifier().subpackageOf("ut", "package_info_typical");
+                .packageId().subpackageOf("ut", "package_info_typical");
         Term term = glossaryRepository.get(packageId);
 
         assertEquals("色々書いているpackage-info", term.title());

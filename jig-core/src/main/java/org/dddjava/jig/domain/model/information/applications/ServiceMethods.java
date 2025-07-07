@@ -25,6 +25,6 @@ public record ServiceMethods(List<ServiceMethod> list) {
 
     public boolean contains(JigMethodId jigMethodId) {
         return list().stream()
-                .anyMatch(serviceMethod -> serviceMethod.method().jigMethodIdentifier().equals(jigMethodId));
+                .anyMatch(serviceMethod -> serviceMethod.method().jigMethodId().equals(jigMethodId));
     }
 }

@@ -48,7 +48,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         String serviceMethodText = angles.stream()
                 .map(serviceAngle -> {
                     JigMethod method = serviceAngle.serviceMethod().method();
-                    if (method.jigMethodIdentifier().isLambda()) {
+                    if (method.jigMethodId().isLambda()) {
                         return Nodes.lambda(method).asText();
                     }
                     Usecase usecase = new Usecase(serviceAngle);
@@ -107,7 +107,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         RelationText repositoryRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
             for (JigMethod repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {
-                repositoryRelation.add(serviceAngle.serviceMethod().method().jigMethodIdentifier(), repositoryMethod.declaringType());
+                repositoryRelation.add(serviceAngle.serviceMethod().method().jigMethodId(), repositoryMethod.declaringType());
                 repositories.add(repositoryMethod.declaringType());
             }
         }

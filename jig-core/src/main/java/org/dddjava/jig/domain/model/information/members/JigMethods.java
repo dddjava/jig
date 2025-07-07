@@ -21,7 +21,7 @@ public record JigMethods(Collection<JigMethod> methods) {
                 .filter(JigMethod::remarkable)
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
-                        .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
+                        .thenComparing(jigMethod -> jigMethod.jigMethodId().value()))
                 .toList();
     }
 
@@ -29,7 +29,7 @@ public record JigMethods(Collection<JigMethod> methods) {
         return stream()
                 .sorted(Comparator
                         .comparing(JigMethod::visibility)
-                        .thenComparing(jigMethod -> jigMethod.jigMethodIdentifier().value()))
+                        .thenComparing(jigMethod -> jigMethod.jigMethodId().value()))
                 .toList();
     }
 

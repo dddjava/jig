@@ -58,7 +58,7 @@ public class JigTypes {
         // 全くラスの全メソッドを舐めるので効率化が必要かもしれないが、一旦これで
         return list.stream()
                 .flatMap(jigType -> jigType.allJigMethodStream())
-                .filter(jigMethod -> jigMethod.jigMethodIdentifier().equals(jigMethodId))
+                .filter(jigMethod -> jigMethod.jigMethodId().equals(jigMethodId))
                 // 複数件Hitすることはないが、実装上はありえるのでany
                 .findAny();
     }

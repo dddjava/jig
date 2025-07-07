@@ -143,13 +143,13 @@ class JigExpressionObject {
     }
 
     public static String htmlIdText(JigMethod jigMethod) {
-        return htmlIdText(jigMethod.jigMethodIdentifier());
+        return htmlIdText(jigMethod.jigMethodId());
     }
 
     public static String htmlIdText(JigMethodId jigMethodId) {
         var tuple = jigMethodId.tuple();
 
-        var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
+        var typeText = tuple.declaringTypeId().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()
                 .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));

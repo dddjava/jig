@@ -19,7 +19,7 @@ public class Nodes {
 
     public static Node usecase(ServiceMethod serviceMethod) {
         JigMethod jigMethod = serviceMethod.method();
-        return new Node(jigMethod.jigMethodIdentifier().value())
+        return new Node(jigMethod.jigMethodId().value())
                 .shape("ellipse")
                 .label(jigMethod.aliasText())
                 .tooltip(jigMethod.simpleText())
@@ -28,7 +28,7 @@ public class Nodes {
     }
 
     public static Node lambda(JigMethod method) {
-        return new Node(method.jigMethodIdentifier().value())
+        return new Node(method.jigMethodId().value())
                 .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
     }
 

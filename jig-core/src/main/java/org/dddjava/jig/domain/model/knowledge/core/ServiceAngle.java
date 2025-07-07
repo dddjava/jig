@@ -102,7 +102,7 @@ public class ServiceAngle {
     }
 
     public JigMethodId jigMethodIdentifier() {
-        return serviceMethod().method().jigMethodIdentifier();
+        return serviceMethod().method().jigMethodId();
     }
 
     public TypeId declaringType() {

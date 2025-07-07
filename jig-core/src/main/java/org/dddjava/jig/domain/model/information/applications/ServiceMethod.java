@@ -20,7 +20,7 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     public static ServiceMethod from(JigMethod jigMethod, CallerMethodsFactory callerMethodsFactory) {
         return new ServiceMethod(
                 jigMethod,
-                callerMethodsFactory.callerMethodsOf(jigMethod.jigMethodIdentifier())
+                callerMethodsFactory.callerMethodsOf(jigMethod.jigMethodId())
         );
     }
 

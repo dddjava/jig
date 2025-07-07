@@ -26,10 +26,10 @@ public record MethodRelation(Edge<JigMethodId> edge) {
     }
 
     public TypeId toType() {
-        return to().tuple().declaringTypeIdentifier();
+        return to().tuple().declaringTypeId();
     }
 
     public TypeId fromType() {
-        return from().tuple().declaringTypeIdentifier();
+        return from().tuple().declaringTypeId();
     }
 }

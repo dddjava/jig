@@ -79,7 +79,7 @@ public class DatasourceAngle {
     }
 
     public String packageText() {
-        return declaringType().packageIdentifier().asText();
+        return declaringType().packageId().asText();
     }
     public String typeSimpleName() {
         return declaringType().asSimpleText();

@@ -30,7 +30,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                     return instructions.lambdaInlinedMethodCallStream()
                             .filter(methodCall -> !methodCall.isJSL()) // JSLを除く
                             .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く
-                            .map(methodCall -> MethodRelation.from(jigMethod.jigMethodIdentifier(), methodCall.jigMethodId()));
+                            .map(methodCall -> MethodRelation.from(jigMethod.jigMethodId(), methodCall.jigMethodId()));
                 }).toList());
     }
 
@@ -40,7 +40,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                         .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                                 .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                                .map(toMethod -> MethodRelation.from(jigMethod.jigMethodIdentifier(), toMethod.jigMethodId()))))
+                                .map(toMethod -> MethodRelation.from(jigMethod.jigMethodId(), toMethod.jigMethodId()))))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
@@ -80,9 +80,9 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     public MethodRelations filterFromRecursive(JigMethodId baseMethod) {
         var processedMethodId = new HashSet<JigMethodId>();
 
-        return filterFromRecursiveInternal(baseMethod, (jigMethodIdentifier -> {
-            if (processedMethodId.contains(jigMethodIdentifier)) return true;
-            processedMethodId.add(jigMethodIdentifier);
+        return filterFromRecursiveInternal(baseMethod, (jigMethodId -> {
+            if (processedMethodId.contains(jigMethodId)) return true;
+            processedMethodId.add(jigMethodId);
             return false;
         })).collect(collectingAndThen(toList(), MethodRelations::new));
     }
@@ -90,9 +90,9 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     public MethodRelations filterFromRecursive(JigMethodId baseMethod, Predicate<JigMethodId> stopper) {
         var processedMethodId = new HashSet<JigMethodId>();
 
-        return filterFromRecursiveInternal(baseMethod, stopper.or(jigMethodIdentifier -> {
-            if (processedMethodId.contains(jigMethodIdentifier)) return true;
-            processedMethodId.add(jigMethodIdentifier);
+        return filterFromRecursiveInternal(baseMethod, stopper.or(jigMethodId -> {
+            if (processedMethodId.contains(jigMethodId)) return true;
+            processedMethodId.add(jigMethodId);
             return false;
         })).collect(collectingAndThen(toList(), MethodRelations::new));
     }
@@ -165,7 +165,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
         return new MethodRelations(inlined);
     }
 
-    public Stream<JigMethodId> jigMethodIdentifierStream() {
+    public Stream<JigMethodId> toJigMethodIdStream() {
         return list.stream()
                 .flatMap(methodRelation -> Stream.of(methodRelation.from(), methodRelation.to()))
                 .distinct();

@@ -27,7 +27,7 @@ public class ServiceAngles {
 
     public List<ServiceAngle> list() {
         return list.stream()
-                .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodIdentifier().value()))
+                .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodId().value()))
                 .toList();
     }
 

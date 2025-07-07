@@ -34,9 +34,9 @@ public class TypeRelationMermaidDiagram {
         Map<Boolean, List<TypeRelationship>> partitioningRelations = typeRelationships.list().stream()
                 // fromがこのパッケージを対象とし、このパッケージのクラスから外のクラスへの関連を出力する。
                 // toを対象にすると広く使われるクラス（たとえばIDなど）があるパッケージは見れたものではなくなるので出さない。
-                .filter(typeRelationship -> typeRelationship.from().packageIdentifier().equals(packageId))
+                .filter(typeRelationship -> typeRelationship.from().packageId().equals(packageId))
                 // パッケージ内の関連とパッケージ外の関連を仕分ける
-                .collect(Collectors.partitioningBy(typeRelationship -> typeRelationship.to().packageIdentifier().equals(packageId)));
+                .collect(Collectors.partitioningBy(typeRelationship -> typeRelationship.to().packageId().equals(packageId)));
         if (partitioningRelations.get(true).isEmpty()) {
             // パッケージ内の関連がない場合は出力しない
             return Optional.empty();
@@ -56,7 +56,7 @@ public class TypeRelationMermaidDiagram {
                 .collect(Collectors.toSet());
         // 内側:true, 外側:false のMapに振り分ける
         Map<Boolean, List<String>> nodeMap = targetTypes.stream()
-                .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageIdentifier().equals(packageId),
+                .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageId().equals(packageId),
                         Collectors.mapping(typeIdentifier -> {
                                     String label = jigTypesWithRelationships.jigTypes()
                                             .resolveJigType(typeIdentifier).map(JigType::label)

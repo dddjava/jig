@@ -20,7 +20,7 @@ public class DatasourceAngles {
     public DatasourceAngles(DatasourceMethods datasourceMethods, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
         List<DatasourceAngle> list = new ArrayList<>();
         for (DatasourceMethod datasourceMethod : datasourceMethods.list()) {
-            CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(datasourceMethod.repositoryMethod().jigMethodIdentifier());
+            CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(datasourceMethod.repositoryMethod().jigMethodId());
             list.add(new DatasourceAngle(datasourceMethod, myBatisStatements, callerMethods));
         }
         this.list = list;
@@ -28,7 +28,7 @@ public class DatasourceAngles {
 
     public List<DatasourceAngle> list() {
         return list.stream()
-                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodIdentifier().value()))
+                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodId().value()))
                 .toList();
     }
 }

@@ -70,7 +70,7 @@ public class TypeId implements Comparable<TypeId> {
         return value.contains(".");
     }
 
-    public PackageId packageIdentifier() {
+    public PackageId packageId() {
         if (!hasPackage()) {
             return PackageId.defaultPackage();
         }
@@ -154,7 +154,7 @@ public class TypeId implements Comparable<TypeId> {
     }
 
     public String packageAbbreviationText() {
-        return packageIdentifier().abbreviationText() + "." + asSimpleText();
+        return packageId().abbreviationText() + "." + asSimpleText();
     }
 
     public TypeId convertArray() {

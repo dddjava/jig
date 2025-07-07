@@ -23,20 +23,20 @@ public record UsecaseMermaidDiagram(
         mermaidText.add("graph LR");
 
         // 基点からの呼び出し全部 + 直近の呼び出し元
-        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.jigMethodIdentifier())
-                .merge(methodRelations.filterTo(jigMethod.jigMethodIdentifier()));
+        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.jigMethodId())
+                .merge(methodRelations.filterTo(jigMethod.jigMethodId()));
 
         // 解決済み（Usecaseメソッドに含まれるもの）を識別するためのコレクション
         // filteredRelationsに問い合わせればいい気もする
         Set<JigMethodId> resolved = new HashSet<>();
 
         // メソッドのスタイル
-        filteredRelations.jigMethodIdentifierStream().forEach(jigMethodIdentifier -> {
+        filteredRelations.toJigMethodIdStream().forEach(jigMethodIdentifier -> {
             // 自分は太字にする
-            if (jigMethodIdentifier.equals(jigMethod.jigMethodIdentifier())) {
+            if (jigMethodIdentifier.equals(jigMethod.jigMethodId())) {
                 resolved.add(jigMethodIdentifier);
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
-                mermaidText.add("style %s font-weight:bold".formatted(htmlIdText(jigMethod.jigMethodIdentifier())));
+                mermaidText.add("style %s font-weight:bold".formatted(htmlIdText(jigMethod.jigMethodId())));
             } else {
                 contextJigTypes.resolveJigMethod(jigMethodIdentifier)
                         .ifPresent(method -> {
@@ -44,7 +44,7 @@ public record UsecaseMermaidDiagram(
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 mermaidText.add(usecaseMermaidNodeText(method));
-                                var htmlIdText = htmlIdText(method.jigMethodIdentifier());
+                                var htmlIdText = htmlIdText(method.jigMethodId());
                                 mermaidText.add("click %s \"#%s\"".formatted(htmlIdText, htmlIdText));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。　
@@ -62,8 +62,8 @@ public record UsecaseMermaidDiagram(
                 return Optional.of(htmlIdText(jigMethodIdentifier));
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
-            var typeIdentifier = jigMethodIdentifier.tuple().declaringTypeIdentifier();
-            if (typeIdentifier.packageIdentifier().equals(jigMethod.declaringType().packageIdentifier())) {
+            var typeIdentifier = jigMethodIdentifier.tuple().declaringTypeId();
+            if (typeIdentifier.packageId().equals(jigMethod.declaringType().packageId())) {
                 // 暫定的に同じパッケージのもののみ出力する
                 // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
                 others.add(typeIdentifier);
@@ -85,7 +85,7 @@ public record UsecaseMermaidDiagram(
     }
 
     private String normalMermaidNodeText(JigMethod jigMethod) {
-        var jigMethodIdentifier = jigMethod.jigMethodIdentifier();
+        var jigMethodIdentifier = jigMethod.jigMethodId();
         var string = htmlIdText(jigMethodIdentifier);
         if (jigMethodIdentifier.isLambda()) {
             return "%s[\"%s\"]:::lambda".formatted(string, "(lambda)");
@@ -94,13 +94,13 @@ public record UsecaseMermaidDiagram(
     }
 
     private String usecaseMermaidNodeText(JigMethod jigMethod) {
-        return "%s([\"%s\"])".formatted(htmlIdText(jigMethod.jigMethodIdentifier()), jigMethod.labelTextOrLambda());
+        return "%s([\"%s\"])".formatted(htmlIdText(jigMethod.jigMethodId()), jigMethod.labelTextOrLambda());
     }
 
     private static String htmlIdText(JigMethodId jigMethodId) {
         var tuple = jigMethodId.tuple();
 
-        var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
+        var typeText = tuple.declaringTypeId().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()
                 .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));

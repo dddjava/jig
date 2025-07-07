@@ -30,7 +30,7 @@ public class JigType {
     }
 
     public PackageId packageId() {
-        return id().packageIdentifier();
+        return id().packageId();
     }
 
     public String fqn() {

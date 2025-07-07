@@ -42,7 +42,7 @@ public record TypeIds(Set<TypeId> values) {
 
     public PackageIds packageIdentifiers() {
         Set<PackageId> availablePackages = values.stream()
-                .map(TypeId::packageIdentifier)
+                .map(TypeId::packageId)
                 .collect(Collectors.toSet());
         return new PackageIds(availablePackages);
     }

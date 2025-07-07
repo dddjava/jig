@@ -190,8 +190,8 @@ class AsmMethodVisitor extends MethodVisitor {
         logger.debug("visitLdcInsn {}", value);
         if (value instanceof Type typeValue) {
             // `Xxx.class` などのクラス参照を読み込む
-            var typeIdentifier = AsmUtils.type2TypeId(typeValue);
-            methodInstructionCollector.add(new ClassReference(typeIdentifier));
+            var typeId = AsmUtils.type2TypeId(typeValue);
+            methodInstructionCollector.add(new ClassReference(typeId));
         }
 
         super.visitLdcInsn(value);

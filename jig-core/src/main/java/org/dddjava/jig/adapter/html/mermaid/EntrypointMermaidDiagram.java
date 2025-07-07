@@ -38,7 +38,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         entrypointGroup.entrypointMethods().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
-            var apiMethodMmdId = htmlIdText(entrypointMethod.jigMethod().jigMethodIdentifier());
+            var apiMethodMmdId = htmlIdText(entrypointMethod.jigMethod().jigMethodId());
             String apiMethodLabel = entrypointMethod.jigMethod().labelText();
 
             var description = switch (entrypointMethod.entrypointType()) {
@@ -57,7 +57,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
             entryPointText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
 
             // apiMethod -> others...
-            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodIdentifier(),
+            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodId(),
                     // @Serviceのクラスについたら終了
                     jigMethodIdentifier -> jigTypes.isService(jigMethodIdentifier)
             );
@@ -68,7 +68,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
                     .stream()
                     .map(MethodRelation::to)
                     .forEach(jigMethodIdentifier -> {
-                        var declaringTypeIdentifier = jigMethodIdentifier.tuple().declaringTypeIdentifier();
+                        var declaringTypeIdentifier = jigMethodIdentifier.tuple().declaringTypeId();
                         if (jigTypes.isService(jigMethodIdentifier)) {
                             jigTypes.resolveJigMethod(jigMethodIdentifier)
                                     .ifPresent(jigMethod -> {
@@ -95,7 +95,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
             values.forEach(jigMethod -> {
-                var htmlIdText = htmlIdText(jigMethod.jigMethodIdentifier());
+                var htmlIdText = htmlIdText(jigMethod.jigMethodId());
                 mermaidText.add("    %s([\"%s\"])".formatted(htmlIdText, jigMethod.labelText()));
                 mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(htmlIdText, htmlIdText));
             });
@@ -119,7 +119,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
     private static String htmlIdText(JigMethodId jigMethodId) {
         var tuple = jigMethodId.tuple();
 
-        var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
+        var typeText = tuple.declaringTypeId().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()
                 .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));

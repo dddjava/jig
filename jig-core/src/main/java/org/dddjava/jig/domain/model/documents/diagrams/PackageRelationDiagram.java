@@ -181,7 +181,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());
             for (TypeRelationship typeRelationship : contextJigTypes.typeRelationships().list()) {
-                PackageRelation packageRelation = PackageRelation.from(typeRelationship.from().packageIdentifier(), typeRelationship.to().packageIdentifier());
+                PackageRelation packageRelation = PackageRelation.from(typeRelationship.from().packageId(), typeRelationship.to().packageId());
                 if (packageMutualDependency.matches(packageRelation)) {
                     sj.add("- " + typeRelationship.formatText());
                 }

@@ -25,7 +25,7 @@ public record PackageRelations(Collection<PackageRelation> relations) {
     public static PackageRelations from(TypeRelationships typeRelationships) {
         return new PackageRelations(typeRelationships.typeRelationships().stream()
                 .map(classRelation -> PackageRelation.from(
-                        classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
+                        classRelation.from().packageId(), classRelation.to().packageId()))
                 .toList());
     }
 

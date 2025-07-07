@@ -17,16 +17,16 @@ import java.util.stream.Stream;
  */
 public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
-    public JigMethodId jigMethodIdentifier() {
+    public JigMethodId jigMethodId() {
         return header().id();
     }
 
     public String simpleText() {
-        return jigMethodIdentifier().simpleText();
+        return jigMethodId().simpleText();
     }
 
     public String fqn() {
-        return jigMethodIdentifier().value();
+        return jigMethodId().value();
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {
@@ -77,7 +77,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public String labelTextOrLambda() {
-        if (jigMethodIdentifier().isLambda()) {
+        if (jigMethodId().isLambda()) {
             return "lambda";
         }
         return labelText();
@@ -139,7 +139,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public TypeId declaringType() {
-        return header().id().tuple().declaringTypeIdentifier();
+        return header().id().tuple().declaringTypeId();
     }
 
     public boolean isProgrammerDefined() {

@@ -31,7 +31,7 @@ public record JavaMethodDeclarator(
      */
     public boolean possiblyMatches(JigMethodId jigMethodId) {
         var tuple = jigMethodId.tuple();
-        if (typeId.equals(tuple.declaringTypeIdentifier())) {
+        if (typeId.equals(tuple.declaringTypeId())) {
             if (identifier.equals(tuple.name())) {
                 // 引数の数が一致しない場合は不一致と判断する。
                 // TODO インナークラスではreceiverの存在により一致しない気がする。挙動を確認するテストを追加する必要がある。不一致で対応しないなら警告を出したり、どこかに制限事項として書く。

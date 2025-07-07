@@ -45,13 +45,13 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
     public String simpleText() {
         Tuple tuple = tuple();
         return "%s.%s(%s)".formatted(
-                tuple.declaringTypeIdentifier().asSimpleName(),
+                tuple.declaringTypeId().asSimpleName(),
                 tuple.name(),
                 tuple.parameterTypeIdentifiers().stream().map(TypeId::asSimpleName).collect(Collectors.joining(",")));
     }
 
     public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNames) {
-        public TypeId declaringTypeIdentifier() {
+        public TypeId declaringTypeId() {
             return TypeId.valueOf(declaringTypeName);
         }
 

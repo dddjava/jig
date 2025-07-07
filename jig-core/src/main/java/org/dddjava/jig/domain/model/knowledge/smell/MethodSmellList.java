@@ -21,7 +21,7 @@ public record MethodSmellList(Collection<MethodSmell> smells) {
 
     public List<MethodSmell> list() {
         return smells.stream()
-                .sorted(Comparator.comparing(methodSmell -> methodSmell.method().jigMethodIdentifier().value()))
+                .sorted(Comparator.comparing(methodSmell -> methodSmell.method().jigMethodId().value()))
                 .toList();
     }
 }

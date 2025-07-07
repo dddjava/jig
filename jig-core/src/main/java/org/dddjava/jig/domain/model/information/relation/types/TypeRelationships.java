@@ -5,7 +5,10 @@ import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -117,7 +120,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
             size = set.size();
             toTypeIds = temp.fromTypeIds();
         }
-        return new TypeRelationships(new ArrayList<>(set));
+        return new TypeRelationships(set);
     }
 
     private TypeRelationships filterRelationsTo(TypeIds toTypeIds) {

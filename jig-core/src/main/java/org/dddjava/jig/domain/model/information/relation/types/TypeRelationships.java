@@ -24,7 +24,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     public static TypeRelationships from(JigTypes jigTypes) {
         return new TypeRelationships(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .flatMap(usingType -> TypeRelationship.of不明(jigType.id(), usingType).stream()))
+                        .flatMap(typeId -> TypeRelationship.of不明(jigType.id(), typeId).stream()))
                 .toList());
     }
 

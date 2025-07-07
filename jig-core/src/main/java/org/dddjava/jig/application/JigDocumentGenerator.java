@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.adapter.CompositeAdapter;
 import org.dddjava.jig.adapter.diagram.DiagramAdapter;
@@ -8,7 +9,6 @@ import org.dddjava.jig.adapter.excel.GlossaryAdapter;
 import org.dddjava.jig.adapter.excel.ListAdapter;
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.html.dialect.JigDialect;
-import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -68,7 +68,7 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        JigMetrics.of("jig.document.time").measureVoid("index", () -> {
+        Metrics.timer("jig.document.time", "record", "index").record(() -> {
             IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
         });
@@ -106,7 +106,7 @@ public class JigDocumentGenerator {
     }
 
     HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
-        return JigMetrics.of("jig.document.time").measure(jigDocument.name(), () -> {
+        return Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
             try {
                 long startTime = System.currentTimeMillis();
 

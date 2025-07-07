@@ -1,5 +1,6 @@
 package org.dddjava.jig;
 
+import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -25,7 +26,7 @@ public class JigExecutor {
      */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
         try (var __ = JigMetrics.init(configuration)) {
-            return JigMetrics.of("jig.execution.time").measure("total_execution", () ->
+            return Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
                     new JigExecutor(configuration).execute(sourceBasePaths));
         }
     }

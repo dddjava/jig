@@ -15,20 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
-import java.util.function.Supplier;
 
 public class JigMetrics {
     private static final Logger logger = LoggerFactory.getLogger(JigMetrics.class);
-
-    private final String metricName;
-
-    private JigMetrics(String metricName) {
-        this.metricName = metricName;
-    }
-
-    public static JigMetrics of(String metricName) {
-        return new JigMetrics(metricName);
-    }
 
     public static Closeable init(Configuration configuration) {
         var registry = Metrics.globalRegistry;
@@ -85,13 +74,5 @@ public class JigMetrics {
                 }
             });
         }
-    }
-
-    public <T> T measure(String phase, Supplier<T> operation) {
-        return Metrics.timer(metricName, "phase", phase).record(operation);
-    }
-
-    public void measureVoid(String phase, Runnable operation) {
-        Metrics.timer(metricName, "phase", phase).record(operation);
     }
 }

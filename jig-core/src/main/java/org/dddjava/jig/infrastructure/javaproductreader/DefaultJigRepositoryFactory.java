@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
+import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -26,6 +26,7 @@ import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 public class DefaultJigRepositoryFactory {
 
@@ -82,31 +83,29 @@ public class DefaultJigRepositoryFactory {
      * プロジェクト情報を読み取る
      */
     private JigRepository analyze(LocalSource sources) {
-        var timer = JigMetrics.of("jig.analysis.time");
-        return timer.measure("code_analysis_total", () -> {
+        var metricName = "jig.analysis.time";
+        return Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
-            timer.measureVoid("package_info_parsing", () ->
+            Metrics.timer(metricName, "phase", "package_info_parsing").record(() ->
                     javaFilePaths.packageInfoPaths().forEach(
                             path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
             );
 
-            JavaSourceModel javaSourceModel = timer.measure("java_source_parsing", () ->
+            JavaSourceModel javaSourceModel = Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                             .reduce(JavaSourceModel::merge)
-                            .orElseGet(JavaSourceModel::empty)
-            );
+                            .orElseGet(JavaSourceModel::empty));
 
-            Collection<ClassDeclaration> classDeclarations = timer.measure("class_file_parsing", () ->
-                    asmClassSourceReader.readClasses(sources.classFiles())
-            );
+            Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(
+                    Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
+                            asmClassSourceReader.readClasses(sources.classFiles())));
 
-            MyBatisStatements myBatisStatements = timer.measure("mybatis_reading", () ->
-                    readMyBatisStatements(sources, classDeclarations)
-            );
+            MyBatisStatements myBatisStatements = Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
+                    readMyBatisStatements(sources, classDeclarations));
 
-            return timer.measure("jig_repository_creation", () -> {
+            return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
                 return new JigRepository() {

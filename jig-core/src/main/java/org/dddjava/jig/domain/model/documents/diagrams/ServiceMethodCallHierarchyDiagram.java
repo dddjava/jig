@@ -40,7 +40,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         RelationText relationText = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
             for (JigMethodId jigMethodId : serviceAngle.userServiceMethods()) {
-                relationText.add(jigMethodId, serviceAngle.jigMethodIdentifier());
+                relationText.add(jigMethodId, serviceAngle.jigMethodId());
             }
         }
 
@@ -73,7 +73,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                                 + "style=solid;"
                                 + "label=\"" + jigDocumentContext.typeTerm(entry.getKey()).title() + "\";"
                                 + entry.getValue().stream()
-                                .map(serviceAngle -> serviceAngle.jigMethodIdentifier().value())
+                                .map(serviceAngle -> serviceAngle.jigMethodId().value())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")

@@ -38,7 +38,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
+        TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIds());
         TypeIds categoryRelatedTypes = relations.toTypeIds();
 
         StringJoiner useCaseText = new StringJoiner("\n");
@@ -49,7 +49,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             for (TypeId usingTypeId : serviceMethodUsingTypes.list()) {
                 if (categoryRelatedTypes.contains(usingTypeId)
                         // ビジネスルールとの関連を持たないCategoryも対象にするためのor条件
-                        || categoryJigTypes.typeIdentifiers().contains(usingTypeId)) {
+                        || categoryJigTypes.typeIds().contains(usingTypeId)) {
                     // サービスメソッドからBusinessRule（Category含む）への関連を追加する
                     // この関連は[クラス->クラス]でなく[メソッド -> クラス]の関連になる
                     serviceRelationText.add(serviceMethod.method().jigMethodId(), usingTypeId);

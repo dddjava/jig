@@ -33,14 +33,14 @@ public class PackageBasedArchitecture {
     }
 
     private static List<PackageId> getArchitecturePackages(JigTypes jigTypes) {
-        Map<PackageId, List<JigType>> packageIdentifierListMap = jigTypes.orderedStream()
+        Map<PackageId, List<JigType>> packageIdTypeListMap = jigTypes.orderedStream()
                 .collect(groupingBy(JigType::packageId));
         // depth単位にリストにする
-        Map<Integer, List<PackageId>> depthMap = packageIdentifierListMap.keySet().stream()
-                .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
+        Map<Integer, List<PackageId>> depthMap = packageIdTypeListMap.keySet().stream()
+                .flatMap(packageId -> packageId.genealogical().stream())
                 .sorted(Comparator.comparing(PackageId::asText))
                 .distinct()
-                .collect(groupingBy(packageIdentifier -> packageIdentifier.depth().value()));
+                .collect(groupingBy(packageId -> packageId.depth().value()));
 
         // 最初に同じ深さに2件以上入っているものが出てきたらアーキテクチャパッケージとして扱う
         return depthMap.entrySet().stream()
@@ -51,7 +51,7 @@ public class PackageBasedArchitecture {
                 .orElse(Collections.emptyList());
     }
 
-    public PackageId packageIdentifier(TypeId arg) {
+    public PackageId packageId(TypeId arg) {
         TypeId typeId = arg.normalize().unarray();
         for (PackageId architecturePackage : architecturePackages) {
             if (typeId.fullQualifiedName().startsWith(architecturePackage.asText())) {

@@ -88,7 +88,7 @@ public class JigTypes {
         return list.stream();
     }
 
-    public TypeIds typeIdentifiers() {
+    public TypeIds typeIds() {
         return new TypeIds(map.keySet());
     }
 

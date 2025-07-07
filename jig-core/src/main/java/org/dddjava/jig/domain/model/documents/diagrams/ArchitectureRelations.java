@@ -27,13 +27,13 @@ public class ArchitectureRelations {
             TypeId from = typeRelationship.from();
             TypeId to = typeRelationship.to();
 
-            PackageId fromPackage = packageBasedArchitecture.packageIdentifier(from);
+            PackageId fromPackage = packageBasedArchitecture.packageId(from);
 
             if (to.isJavaLanguageType()) {
                 // 興味のない関連
                 continue;
             }
-            PackageId toPackage = packageBasedArchitecture.packageIdentifier(to);
+            PackageId toPackage = packageBasedArchitecture.packageId(to);
 
             if (fromPackage.equals(toPackage)) {
                 // 自己参照

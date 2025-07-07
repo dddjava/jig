@@ -46,7 +46,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         // 関連のないものだけ抽出する
         TypeIds isolatedTypes = jigTypesWithRelationships.jigTypes()
                 .filter(jigType -> internalClassRelations.filterFrom(jigType.id()).isEmpty() && internalClassRelations.filterTo(jigType.id()).isEmpty())
-                .typeIdentifiers();
+                .typeIds();
 
         for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(jigTypesWithRelationships.jigTypes())) {
             PackageId packageId = jigPackageWithJigTypes.packageId();

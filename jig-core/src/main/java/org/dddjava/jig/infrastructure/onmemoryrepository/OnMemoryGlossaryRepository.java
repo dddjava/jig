@@ -24,7 +24,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
         TermId termId = fromTypeIdentifier(typeId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)
-                .filter(term -> term.identifier().equals(termId))
+                .filter(term -> term.id().equals(termId))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> Term.simple(termId, typeId.asSimpleText(), TermKind.クラス));
@@ -35,7 +35,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
         TermId termId = fromPackageIdentifier(packageId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
-                .filter(term -> term.identifier().equals(termId))
+                .filter(term -> term.id().equals(termId))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> Term.simple(termId, packageId.simpleName(), TermKind.パッケージ));

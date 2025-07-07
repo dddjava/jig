@@ -152,7 +152,7 @@ public class JigService {
 
         List<JigPackage> jigPackages = Stream.concat(
                         packageAndJigTypes.keySet().stream(),
-                        packageTerms.stream().map(Term::identifier).map(TermId::asText).map(PackageId::valueOf))
+                        packageTerms.stream().map(Term::id).map(TermId::asText).map(PackageId::valueOf))
                 .distinct()
                 .map(packageIdentifier -> {
                     var packageTerm = glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ);

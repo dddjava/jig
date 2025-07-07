@@ -15,7 +15,7 @@ public class GlossaryAdapter {
                 ReportItem.ofString("用語", term -> term.title()),
                 ReportItem.ofString("説明", term -> term.description()),
                 ReportItem.ofString("種類", term -> term.termKind().name()),
-                ReportItem.ofString("識別子", term -> term.identifier().asText())
+                ReportItem.ofString("識別子", term -> term.id().asText())
         );
     }
 

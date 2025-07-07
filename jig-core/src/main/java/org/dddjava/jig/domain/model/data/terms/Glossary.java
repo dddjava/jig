@@ -11,7 +11,7 @@ public record Glossary(Collection<Term> terms) {
 
     public List<Term> list() {
         return terms.stream()
-                .sorted(Comparator.comparing(Term::title).thenComparing(term -> term.identifier().asText()))
+                .sorted(Comparator.comparing(Term::title).thenComparing(term -> term.id().asText()))
                 .toList();
     }
 
@@ -25,7 +25,7 @@ public record Glossary(Collection<Term> terms) {
         TermId termId = new TermId(idText);
         return terms.stream()
                 .filter(term -> term.termKind() == termKind)
-                .filter(term -> term.identifier().equals(termId))
+                .filter(term -> term.id().equals(termId))
                 .findAny()
                 .orElseGet(() -> Term.simple(termId, termId.simpleText(), termKind));
     }

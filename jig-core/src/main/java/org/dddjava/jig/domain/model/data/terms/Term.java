@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.data.terms;
 /**
  * 用語
  */
-public record Term(TermId identifier,
+public record Term(TermId id,
                    String title,
                    String description,
                    TermKind termKind,
                    Object additionalInformation) {
     public Term {
-        title = title.isEmpty() ? identifier.simpleText() : title;
+        title = title.isEmpty() ? id.simpleText() : title;
     }
 
     public Term(TermId identifier, String title, String description, TermKind termKind) {
@@ -21,7 +21,7 @@ public record Term(TermId identifier,
     }
 
     public String simpleText() {
-        return identifier.simpleText();
+        return id.simpleText();
     }
 
     public String titleAndSimpleName(String delimiter) {
@@ -36,6 +36,6 @@ public record Term(TermId identifier,
      * 前方一致していれば関連していると見做す
      */
     public boolean relatesTo(TermId otherIdentifier) {
-        return identifier().asText().startsWith(otherIdentifier.asText());
+        return id().asText().startsWith(otherIdentifier.asText());
     }
 }

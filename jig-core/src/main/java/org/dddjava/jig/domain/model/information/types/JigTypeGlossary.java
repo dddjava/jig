@@ -23,7 +23,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
         Term typeTerm = terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)
                 // termsにはネストクラスも含まれるため、完全一致に絞り込む
-                .filter(term -> term.identifier().equals(termId))
+                .filter(term -> term.id().equals(termId))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
                 .orElseGet(() -> Term.simple(termId, typeId.asSimpleName(), TermKind.クラス));
@@ -57,7 +57,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
         TermId termId = new TermId(id.value());
         return memberTerms.stream()
                 .filter(term -> term.termKind() == TermKind.フィールド)
-                .filter(term -> term.identifier().equals(termId))
+                .filter(term -> term.id().equals(termId))
                 .findAny()
                 .orElseGet(() -> Term.simple(termId, id.name(), TermKind.フィールド));
     }

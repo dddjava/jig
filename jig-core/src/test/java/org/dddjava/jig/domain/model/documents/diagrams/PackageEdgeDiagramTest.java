@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.packages.PackageIds;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -77,7 +77,7 @@ class PackageEdgeDiagramTest {
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageTerm(any()))
                 .thenAnswer(invocationOnMock ->
-                        Term.simple(new TermIdentifier("dummy"), "dummy", TermKind.パッケージ));
+                        Term.simple(new TermId("dummy"), "dummy", TermKind.パッケージ));
 
         var list = sut.listUnique().stream()
                 .map(packageRelation -> "\"%s\" -> \"%s\";".formatted(packageRelation.from().asText(), packageRelation.to().asText()))

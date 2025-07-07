@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
@@ -21,24 +21,24 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     @Override
     public Term get(TypeId typeId) {
-        TermIdentifier termIdentifier = fromTypeIdentifier(typeId);
+        TermId termId = fromTypeIdentifier(typeId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)
-                .filter(term -> term.identifier().equals(termIdentifier))
+                .filter(term -> term.identifier().equals(termId))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termIdentifier, typeId.asSimpleText(), TermKind.クラス));
+                .orElseGet(() -> Term.simple(termId, typeId.asSimpleText(), TermKind.クラス));
     }
 
     @Override
     public Term get(PackageId packageId) {
-        TermIdentifier termIdentifier = fromPackageIdentifier(packageId);
+        TermId termId = fromPackageIdentifier(packageId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
-                .filter(term -> term.identifier().equals(termIdentifier))
+                .filter(term -> term.identifier().equals(termId))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termIdentifier, packageId.simpleName(), TermKind.パッケージ));
+                .orElseGet(() -> Term.simple(termId, packageId.simpleName(), TermKind.パッケージ));
     }
 
     @Override
@@ -52,22 +52,22 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public TermIdentifier fromPackageIdentifier(PackageId packageId) {
-        return new TermIdentifier(packageId.asText());
+    public TermId fromPackageIdentifier(PackageId packageId) {
+        return new TermId(packageId.asText());
     }
 
     @Override
-    public TermIdentifier fromTypeIdentifier(TypeId typeId) {
-        return new TermIdentifier(typeId.fullQualifiedName());
+    public TermId fromTypeIdentifier(TypeId typeId) {
+        return new TermId(typeId.fullQualifiedName());
     }
 
     @Override
-    public TermIdentifier fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator) {
-        return new TermIdentifier(typeId.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
+    public TermId fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator) {
+        return new TermId(typeId.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
     }
 
     @Override
-    public TermIdentifier fromFieldIdentifier(JigFieldId jigFieldId) {
-        return new TermIdentifier(jigFieldId.fqn());
+    public TermId fromFieldIdentifier(JigFieldId jigFieldId) {
+        return new TermId(jigFieldId.fqn());
     }
 }

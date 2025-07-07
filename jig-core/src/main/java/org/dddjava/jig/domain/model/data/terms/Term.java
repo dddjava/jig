@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.data.terms;
 /**
  * 用語
  */
-public record Term(TermIdentifier identifier,
+public record Term(TermId identifier,
                    String title,
                    String description,
                    TermKind termKind,
@@ -12,12 +12,12 @@ public record Term(TermIdentifier identifier,
         title = title.isEmpty() ? identifier.simpleText() : title;
     }
 
-    public Term(TermIdentifier identifier, String title, String description, TermKind termKind) {
+    public Term(TermId identifier, String title, String description, TermKind termKind) {
         this(identifier, title, description.trim(), termKind, null);
     }
 
-    public static Term simple(TermIdentifier termIdentifier, String title, TermKind termKind) {
-        return new Term(termIdentifier, title, "", termKind);
+    public static Term simple(TermId termId, String title, TermKind termKind) {
+        return new Term(termId, title, "", termKind);
     }
 
     public String simpleText() {
@@ -35,7 +35,7 @@ public record Term(TermIdentifier identifier,
      *
      * 前方一致していれば関連していると見做す
      */
-    public boolean relatesTo(TermIdentifier otherIdentifier) {
+    public boolean relatesTo(TermId otherIdentifier) {
         return identifier().asText().startsWith(otherIdentifier.asText());
     }
 }

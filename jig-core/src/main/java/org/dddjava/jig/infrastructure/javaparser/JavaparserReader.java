@@ -10,7 +10,7 @@ import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,12 +72,12 @@ public class JavaparserReader {
                 .map(NodeWithName::getNameAsString)
                 .map(PackageId::valueOf)
                 .flatMap(packageIdentifier -> {
-                    TermIdentifier termIdentifier = glossaryRepository.fromPackageIdentifier(packageIdentifier);
+                    TermId termId = glossaryRepository.fromPackageIdentifier(packageIdentifier);
                     return getJavadoc(cu)
                             .map(Javadoc::getDescription)
                             .map(JavadocDescription::toText)
                             .filter(text -> !text.isBlank())
-                            .map(javadocText -> TermFactory.fromPackage(termIdentifier, javadocText));
+                            .map(javadocText -> TermFactory.fromPackage(termId, javadocText));
                 })
                 .ifPresent(glossaryRepository::register);
     }

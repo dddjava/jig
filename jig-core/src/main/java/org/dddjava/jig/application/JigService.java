@@ -6,7 +6,7 @@ import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -152,7 +152,7 @@ public class JigService {
 
         List<JigPackage> jigPackages = Stream.concat(
                         packageAndJigTypes.keySet().stream(),
-                        packageTerms.stream().map(Term::identifier).map(TermIdentifier::asText).map(PackageId::valueOf))
+                        packageTerms.stream().map(Term::identifier).map(TermId::asText).map(PackageId::valueOf))
                 .distinct()
                 .map(packageIdentifier -> {
                     var packageTerm = glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ);

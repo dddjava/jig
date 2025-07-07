@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.data.terms;
 /**
  * 用語の識別子
  */
-public record TermIdentifier(String value) {
+public record TermId(String value) {
 
     public String asText() {
         return value;

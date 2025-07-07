@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 
 import java.util.regex.Pattern;
@@ -17,25 +17,25 @@ import java.util.stream.Stream;
  */
 class TermFactory {
 
-    public static Term fromPackage(TermIdentifier identifier, String javadocDescriptionText) {
+    public static Term fromPackage(TermId identifier, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
         return new Term(identifier, title, bodyText(title, text), TermKind.パッケージ);
     }
 
-    public static Term fromClass(TermIdentifier identifier, String javadocDescriptionText) {
+    public static Term fromClass(TermId identifier, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
         return new Term(identifier, title, bodyText(title, text), TermKind.クラス);
     }
 
-    public static Term fromMethod(TermIdentifier identifier, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
+    public static Term fromMethod(TermId identifier, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
         return new Term(identifier, title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
     }
 
-    public static Term fromField(TermIdentifier identifier, String javadocDescriptionText) {
+    public static Term fromField(TermId identifier, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
         return new Term(identifier, title, bodyText(title, text), TermKind.フィールド, javadocDescriptionText);

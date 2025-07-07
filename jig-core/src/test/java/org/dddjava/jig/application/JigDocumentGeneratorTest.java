@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -28,8 +28,8 @@ class JigDocumentGeneratorTest {
     void 用語一覧がtermをもとに出力できる() throws IOException {
         // data
         var terms = new Glossary(List.of(
-                new Term(new TermIdentifier("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
-                new Term(new TermIdentifier("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
+                new Term(new TermId("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
+                new Term(new TermId("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
         ));
         var jigDataProvider = mock(JigRepository.class); // termはmockで返すようにしているのでここは同じインスタンスであればいいので
         // environment

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
+import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
@@ -21,11 +21,11 @@ public interface GlossaryRepository {
 
     Glossary all();
 
-    TermIdentifier fromPackageIdentifier(PackageId packageId);
+    TermId fromPackageIdentifier(PackageId packageId);
 
-    TermIdentifier fromTypeIdentifier(TypeId typeId);
+    TermId fromTypeIdentifier(TypeId typeId);
 
-    TermIdentifier fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator);
+    TermId fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator);
 
-    TermIdentifier fromFieldIdentifier(JigFieldId from);
+    TermId fromFieldIdentifier(JigFieldId from);
 }

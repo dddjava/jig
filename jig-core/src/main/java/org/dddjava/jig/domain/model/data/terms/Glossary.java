@@ -15,18 +15,18 @@ public record Glossary(Collection<Term> terms) {
                 .toList();
     }
 
-    public Collection<Term> findRelated(TermIdentifier termIdentifier) {
+    public Collection<Term> findRelated(TermId termId) {
         return terms.stream()
-                .filter(term -> term.relatesTo(termIdentifier))
+                .filter(term -> term.relatesTo(termId))
                 .toList();
     }
 
     public Term termOf(String idText, TermKind termKind) {
-        TermIdentifier termIdentifier = new TermIdentifier(idText);
+        TermId termId = new TermId(idText);
         return terms.stream()
                 .filter(term -> term.termKind() == termKind)
-                .filter(term -> term.identifier().equals(termIdentifier))
+                .filter(term -> term.identifier().equals(termId))
                 .findAny()
-                .orElseGet(() -> Term.simple(termIdentifier, termIdentifier.simpleText(), termKind));
+                .orElseGet(() -> Term.simple(termId, termId.simpleText(), termKind));
     }
 }

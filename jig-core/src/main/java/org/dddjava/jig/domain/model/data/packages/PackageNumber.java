@@ -5,12 +5,7 @@ import java.util.Locale;
 /**
  * パッケージ数
  */
-public class PackageNumber {
-    long value;
-
-    public PackageNumber(long value) {
-        this.value = value;
-    }
+public record PackageNumber(long value) {
 
     public String asText() {
         return Long.toString(value);

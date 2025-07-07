@@ -26,8 +26,4 @@ public record PackageIdentifiers(Set<PackageIdentifier> identifiers) {
     public PackageNumber number() {
         return new PackageNumber(identifiers.size());
     }
-
-    public boolean isEmpty() {
-        return identifiers.isEmpty();
-    }
 }

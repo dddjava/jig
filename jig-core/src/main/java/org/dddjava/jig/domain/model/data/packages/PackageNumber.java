@@ -5,10 +5,10 @@ import java.util.Locale;
 /**
  * パッケージ数
  */
-public record PackageNumber(long value) {
+public record PackageNumber(int value) {
 
     public String asText() {
-        return Long.toString(value);
+        return Integer.toString(value);
     }
 
     public String localizedLabel() {

@@ -36,16 +36,17 @@ public class JigTypeFactory {
         return new JigType(classDeclaration.jigTypeHeader(), jigTypeMembers, jigTypeGlossary);
     }
 
+    private enum MethodGrouping {
+        INITIALIZER,
+        INSTANCE,
+        CLASS
+    }
+
     private static JigTypeMembers createJigMember(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
         var fields = classDeclaration.jigFieldHeaders().stream()
                 .map(jigFieldHeader -> JigField.from(jigFieldHeader, jigTypeGlossary.fieldTerm(jigFieldHeader.id())))
                 .collect(groupingBy(jigField -> jigField.jigFieldHeader().ownership()));
 
-        enum MethodGrouping {
-            INITIALIZER,
-            INSTANCE,
-            CLASS;
-        }
         var methods = classDeclaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> createJigMethod(jigMethodDeclaration, jigTypeGlossary))
                 .collect(groupingBy(jigMethod -> {

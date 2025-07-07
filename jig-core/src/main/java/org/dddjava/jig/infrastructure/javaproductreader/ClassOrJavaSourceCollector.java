@@ -46,9 +46,9 @@ public class ClassOrJavaSourceCollector {
         return new ClassFiles(classSourceList);
     }
 
-    private JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
-        enum JavaFileType {PackageInfoFile, JavaFile}
+    private enum JavaFileType {PackageInfoFile, JavaFile}
 
+    private JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
         Map<JavaFileType, List<Path>> collected = sourceBasePaths.javaSourceBasePaths().stream()
                 .map(basePath -> collectSourcePathList(basePath, ".java"))
                 .flatMap(List::stream)

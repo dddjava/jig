@@ -84,11 +84,11 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList());
     }
 
-    public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeId typeId) {
+    public TypeIds collectTypeIdentifierWhichRelationTo(TypeId typeId) {
         return typeRelationships.stream()
                 .filter(classRelation -> classRelation.toIs(typeId))
                 .map(TypeRelationship::from)
-                .collect(TypeIdentifiers.collector())
+                .collect(TypeIds.collector())
                 .normalize();
     }
 
@@ -98,30 +98,30 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList();
     }
 
-    public TypeIdentifiers allTypeIdentifiers() {
+    public TypeIds allTypeIdentifiers() {
         return typeRelationships.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
                 .map(TypeId::normalize)
-                .collect(TypeIdentifiers.collector());
+                .collect(TypeIds.collector());
     }
 
-    public TypeRelationships relationsFromRootTo(TypeIdentifiers toTypeIdentifiers) {
+    public TypeRelationships relationsFromRootTo(TypeIds toTypeIds) {
         HashSet<TypeRelationship> set = new HashSet<>();
 
         int size = 0;
         while (true) {
-            TypeRelationships temp = filterRelationsTo(toTypeIdentifiers);
+            TypeRelationships temp = filterRelationsTo(toTypeIds);
             set.addAll(temp.typeRelationships());
 
             if (size == set.size()) break;
             size = set.size();
-            toTypeIdentifiers = temp.fromTypeIdentifiers();
+            toTypeIds = temp.fromTypeIdentifiers();
         }
         return new TypeRelationships(new ArrayList<>(set));
     }
 
-    private TypeRelationships filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
-        return filterRelationships(classRelation -> toTypeIdentifiers.contains(classRelation.to()));
+    private TypeRelationships filterRelationsTo(TypeIds toTypeIds) {
+        return filterRelationships(classRelation -> toTypeIds.contains(classRelation.to()));
     }
 
     public TypeRelationships filterFrom(TypeId typeId) {
@@ -139,10 +139,10 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList());
     }
 
-    public TypeIdentifiers fromTypeIdentifiers() {
+    public TypeIds fromTypeIdentifiers() {
         return typeRelationships.stream()
                 .map(classRelation -> classRelation.from())
-                .collect(TypeIdentifiers.collector());
+                .collect(TypeIds.collector());
     }
 
     public int size() {

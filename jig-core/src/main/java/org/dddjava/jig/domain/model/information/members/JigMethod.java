@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIds;
 
 import java.util.stream.Stream;
 
@@ -49,8 +49,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return UsingMethods.from(instructions());
     }
 
-    public TypeIdentifiers usingTypes() {
-        return new TypeIdentifiers(jigMethodDeclaration.associatedTypes());
+    public TypeIds usingTypes() {
+        return new TypeIds(jigMethodDeclaration.associatedTypes());
     }
 
     public String aliasTextOrBlank() {

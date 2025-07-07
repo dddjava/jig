@@ -13,45 +13,45 @@ import java.util.stream.Collectors;
 /**
  * 型の識別子一覧
  */
-public record TypeIdentifiers(Set<TypeId> identifiers) {
+public record TypeIds(Set<TypeId> values) {
 
     public List<TypeId> list() {
-        ArrayList<TypeId> list = new ArrayList<>(this.identifiers);
+        ArrayList<TypeId> list = new ArrayList<>(this.values);
         list.sort(Comparator.comparing(TypeId::fullQualifiedName));
         return list;
     }
 
-    public static Collector<TypeId, ?, TypeIdentifiers> collector() {
-        return Collectors.collectingAndThen(Collectors.toSet(), TypeIdentifiers::new);
+    public static Collector<TypeId, ?, TypeIds> collector() {
+        return Collectors.collectingAndThen(Collectors.toSet(), TypeIds::new);
     }
 
     public String asSimpleText() {
-        return identifiers.stream().distinct().toList().stream()
+        return values.stream().distinct().toList().stream()
                 .map(TypeId::asSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public boolean contains(TypeId typeId) {
-        return identifiers.contains(typeId);
+        return values.contains(typeId);
     }
 
     public boolean empty() {
-        return identifiers.isEmpty();
+        return values.isEmpty();
     }
 
     public PackageIds packageIdentifiers() {
-        Set<PackageId> availablePackages = identifiers.stream()
+        Set<PackageId> availablePackages = values.stream()
                 .map(TypeId::packageIdentifier)
                 .collect(Collectors.toSet());
         return new PackageIds(availablePackages);
     }
 
-    public TypeIdentifiers normalize() {
-        return identifiers.stream().map(TypeId::normalize).distinct().collect(collector());
+    public TypeIds normalize() {
+        return values.stream().map(TypeId::normalize).distinct().collect(collector());
     }
 
     public int size() {
-        return identifiers.size();
+        return values.size();
     }
 }

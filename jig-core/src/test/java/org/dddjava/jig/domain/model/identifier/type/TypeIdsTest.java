@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.identifier.type;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,12 +14,12 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TypeIdentifiersTest {
+class TypeIdsTest {
 
     @ParameterizedTest
     @MethodSource
     void test(List<String> identifiers, String simpleText) {
-        TypeIdentifiers sut = identifiers.stream().map(TypeId::valueOf).collect(TypeIdentifiers.collector());
+        TypeIds sut = identifiers.stream().map(TypeId::valueOf).collect(TypeIds.collector());
 
         assertEquals(simpleText, sut.asSimpleText());
     }

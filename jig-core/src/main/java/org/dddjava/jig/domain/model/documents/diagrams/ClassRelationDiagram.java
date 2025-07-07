@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -44,7 +44,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         var internalClassRelations = jigTypesWithRelationships.typeRelationships();
 
         // 関連のないものだけ抽出する
-        TypeIdentifiers isolatedTypes = jigTypesWithRelationships.jigTypes()
+        TypeIds isolatedTypes = jigTypesWithRelationships.jigTypes()
                 .filter(jigType -> internalClassRelations.filterFrom(jigType.id()).isEmpty() && internalClassRelations.filterTo(jigType.id()).isEmpty())
                 .typeIdentifiers();
 

@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
@@ -69,7 +69,7 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
                 .toList();
     }
 
-    public TypeIdentifiers usingTypes() {
+    public TypeIds usingTypes() {
         return method().usingTypes();
     }
 }

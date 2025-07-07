@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -39,13 +39,13 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         }
 
         TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
-        TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
+        TypeIds categoryRelatedTypes = relations.allTypeIdentifiers();
 
         StringJoiner useCaseText = new StringJoiner("\n");
         RelationText serviceRelationText = new RelationText();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
             boolean related = false;
-            TypeIdentifiers serviceMethodUsingTypes = serviceMethod.usingTypes();
+            TypeIds serviceMethodUsingTypes = serviceMethod.usingTypes();
             for (TypeId usingTypeId : serviceMethodUsingTypes.list()) {
                 if (categoryRelatedTypes.contains(usingTypeId)
                         // ビジネスルールとの関連を持たないCategoryも対象にするためのor条件
@@ -85,7 +85,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .toString());
     }
 
-    private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes) {
+    private String nonCategoryNodeTexts(TypeIds categoryRelatedTypes) {
         return coreDomainJigTypes.orderedStream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.id()))

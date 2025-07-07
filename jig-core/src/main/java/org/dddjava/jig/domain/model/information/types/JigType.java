@@ -53,7 +53,7 @@ public class JigType {
         return term().title();
     }
 
-    public TypeIdentifiers usingTypes() {
+    public TypeIds usingTypes() {
         var collect = Stream.concat(
                         jigTypeHeader.containedIds().stream(),
                         jigTypeMembers.allTypeIdentifierSet().stream()
@@ -63,7 +63,7 @@ public class JigType {
                 // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。水際的にここで処置しておくが、源泉近くで対応したい。
                 .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
                 .collect(Collectors.toSet());
-        return new TypeIdentifiers(collect);
+        return new TypeIds(collect);
     }
 
     public boolean hasAnnotation(TypeId typeId) {

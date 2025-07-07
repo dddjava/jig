@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +88,8 @@ public class JigTypes {
         return list.stream();
     }
 
-    public TypeIdentifiers typeIdentifiers() {
-        return new TypeIdentifiers(map.keySet());
+    public TypeIds typeIdentifiers() {
+        return new TypeIds(map.keySet());
     }
 
     public boolean contains(TypeId typeId) {

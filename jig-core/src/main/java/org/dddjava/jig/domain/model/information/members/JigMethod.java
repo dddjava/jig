@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.members;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  */
 public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
 
-    public JigMethodIdentifier jigMethodIdentifier() {
+    public JigMethodId jigMethodIdentifier() {
         return header().id();
     }
 
@@ -122,8 +122,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().nameArgumentsReturnSimpleText();
     }
 
-    public boolean isCall(JigMethodIdentifier jigMethodIdentifier) {
-        return usingMethods().contains(jigMethodIdentifier);
+    public boolean isCall(JigMethodId jigMethodId) {
+        return usingMethods().contains(jigMethodId);
     }
 
     public JigTypeReference methodReturnTypeReference() {

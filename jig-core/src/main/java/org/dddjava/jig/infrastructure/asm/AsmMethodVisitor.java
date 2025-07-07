@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.instruction.*;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
@@ -56,7 +56,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
-        var jigMethodIdentifier = JigMethodIdentifier.from(contextClass.jigTypeHeader().id(), name,
+        var jigMethodIdentifier = JigMethodId.from(contextClass.jigTypeHeader().id(), name,
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeIdentifier(type)).toList());
 
         return new AsmMethodVisitor(contextClass,
@@ -67,21 +67,21 @@ class AsmMethodVisitor extends MethodVisitor {
         );
     }
 
-    private JigMethodHeader jigMethodHeader(int access, String signature, JigMethodIdentifier jigMethodIdentifier, Type methodType, List<JigTypeReference> throwsList) {
+    private JigMethodHeader jigMethodHeader(int access, String signature, JigMethodId jigMethodId, Type methodType, List<JigTypeReference> throwsList) {
         if (signature != null) {
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
             var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();
             var parameters = methodSignatureVisitor.parameterVisitors.stream().map(visitor -> visitor.jigTypeReference()).toList();
-            return jigMethodHeader(access, jigMethodIdentifier, jigTypeReference, parameters, throwsList);
+            return jigMethodHeader(access, jigMethodId, jigTypeReference, parameters, throwsList);
         }
 
-        return jigMethodHeader(access, jigMethodIdentifier, JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
+        return jigMethodHeader(access, jigMethodId, JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
                 .map(AsmMethodVisitor::asmType2TypeIdentifier)
                 .map(JigTypeReference::fromId)
                 .toList(), throwsList);
     }
 
-    private JigMethodHeader jigMethodHeader(int access, JigMethodIdentifier jigMethodIdentifier, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
+    private JigMethodHeader jigMethodHeader(int access, JigMethodId jigMethodId, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
         var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
         JigMemberOwnership ownership = AsmUtils.jigMemberOwnership(access);
 
@@ -94,7 +94,7 @@ class AsmMethodVisitor extends MethodVisitor {
         if ((access & Opcodes.ACC_STRICT) != 0) flags.add(JigMethodFlag.STRICT);
         if ((access & Opcodes.ACC_SYNTHETIC) != 0) flags.add(JigMethodFlag.SYNTHETIC);
 
-        String name = jigMethodIdentifier.name();
+        String name = jigMethodId.name();
         if (name.equals("<init>")) flags.add(JigMethodFlag.INITIALIZER);
         if (name.equals("<clinit>")) flags.add(JigMethodFlag.STATIC_INITIALIZER);
 
@@ -123,13 +123,13 @@ class AsmMethodVisitor extends MethodVisitor {
             }
             // recordの場合にcomponentをわかるようにしておく
             if (superType.typeIs(Record.class)) {
-                if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodIdentifier.name())) {
+                if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
                     flags.add(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
                 }
             }
         });
 
-        return JigMethodHeader.from(jigMethodIdentifier, ownership,
+        return JigMethodHeader.from(jigMethodId, ownership,
                 jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
     }
 

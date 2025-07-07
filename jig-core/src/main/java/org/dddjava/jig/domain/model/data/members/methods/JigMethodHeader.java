@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 /**
  * メソッドのヘッダ
  */
-public record JigMethodHeader(JigMethodIdentifier id,
+public record JigMethodHeader(JigMethodId id,
                               JigMemberOwnership ownership,
                               JigMethodAttribute jigMethodAttribute) {
-    public static JigMethodHeader from(JigMethodIdentifier id,
+    public static JigMethodHeader from(JigMethodId id,
                                        JigMemberOwnership ownership,
                                        JigMemberVisibility jigMemberVisibility,
                                        Collection<JigAnnotationReference> declarationAnnotations,

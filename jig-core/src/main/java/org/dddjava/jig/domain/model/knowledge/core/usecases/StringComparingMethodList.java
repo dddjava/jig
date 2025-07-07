@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.core.usecases;
 
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
@@ -35,13 +35,13 @@ public class StringComparingMethodList {
 
     static StringComparingMethodList createFrom(Stream<JigMethod> target) {
         // String#equals(Object)
-        JigMethodIdentifier jigMethodIdentifier = JigMethodIdentifier.from(
+        JigMethodId jigMethodId = JigMethodId.from(
                 TypeIdentifier.from(String.class),
                 "equals",
                 List.of(TypeIdentifier.from(Object.class))
         );
         return new StringComparingMethodList(target
-                .filter(jigMethod -> jigMethod.isCall(jigMethodIdentifier))
+                .filter(jigMethod -> jigMethod.isCall(jigMethodId))
                 .toList());
     }
 

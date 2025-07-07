@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.applications;
 
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -23,8 +23,8 @@ public record ServiceMethods(List<ServiceMethod> list) {
         return list().isEmpty();
     }
 
-    public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
+    public boolean contains(JigMethodId jigMethodId) {
         return list().stream()
-                .anyMatch(serviceMethod -> serviceMethod.method().jigMethodIdentifier().equals(jigMethodIdentifier));
+                .anyMatch(serviceMethod -> serviceMethod.method().jigMethodIdentifier().equals(jigMethodId));
     }
 }

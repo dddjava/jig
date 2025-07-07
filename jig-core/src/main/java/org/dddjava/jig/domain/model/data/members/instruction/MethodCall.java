@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
@@ -15,12 +15,12 @@ public record MethodCall(TypeIdentifier methodOwner, String methodName,
                          List<TypeIdentifier> argumentTypes,
                          TypeIdentifier returnType) implements Instruction {
 
-    public boolean jigMethodIdentifierIs(JigMethodIdentifier jigMethodIdentifier) {
-        return jigMethodIdentifier.equals(jigMethodIdentifier());
+    public boolean jigMethodIdentifierIs(JigMethodId jigMethodId) {
+        return jigMethodId.equals(jigMethodIdentifier());
     }
 
-    public JigMethodIdentifier jigMethodIdentifier() {
-        return JigMethodIdentifier.from(methodOwner, methodName, argumentTypes);
+    public JigMethodId jigMethodIdentifier() {
+        return JigMethodId.from(methodOwner, methodName, argumentTypes);
     }
 
     public String asSignatureAndReturnTypeSimpleText() {

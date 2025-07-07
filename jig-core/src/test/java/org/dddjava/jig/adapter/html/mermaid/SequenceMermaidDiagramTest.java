@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class SequenceMermaidDiagramTest {
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(
-                new JigMethodHeader(JigMethodIdentifier.from(
+                new JigMethodHeader(JigMethodId.from(
                         TypeIdentifier.valueOf("CallerClass"),
                         "callerMethod",
                         List.of()),
@@ -52,7 +52,7 @@ class SequenceMermaidDiagramTest {
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(
-                new JigMethodHeader(JigMethodIdentifier.from(
+                new JigMethodHeader(JigMethodId.from(
                         TypeIdentifier.valueOf("CallerClass"),
                         "callerMethod",
                         List.of()),
@@ -83,7 +83,7 @@ class SequenceMermaidDiagramTest {
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(
-                new JigMethodHeader(JigMethodIdentifier.from(
+                new JigMethodHeader(JigMethodId.from(
                         TypeIdentifier.valueOf("CallerClass"),
                         "callerMethod",
                         List.of()),

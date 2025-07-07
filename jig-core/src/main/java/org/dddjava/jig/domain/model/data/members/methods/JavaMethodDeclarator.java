@@ -8,7 +8,7 @@ import java.util.List;
  * Java言語で記述したメソッドの名前と引数部分。
  *
  * Java言語仕様のMethodDeclaratorは `Identifier(FormalParameterList)` であり、メソッド名と引数リストを指す。
- * {@link JigMethodIdentifier} は引数型もFQNで持ち、そちらが正しいが、javaソースコードはコンパイル時の環境によってFQNは変わりうる。
+ * {@link JigMethodId} は引数型もFQNで持ち、そちらが正しいが、javaソースコードはコンパイル時の環境によってFQNは変わりうる。
  * JigMethodIdentifierを使用すると誤った突き合わせをする可能性があるため、別の型としている。
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4">JLS/Chapter 8. Classes/8.4. Method Declarations</a>
@@ -29,8 +29,8 @@ public record JavaMethodDeclarator(
     /**
      * 一致する可能性があるかを判定する
      */
-    public boolean possiblyMatches(JigMethodIdentifier jigMethodIdentifier) {
-        var tuple = jigMethodIdentifier.tuple();
+    public boolean possiblyMatches(JigMethodId jigMethodId) {
+        var tuple = jigMethodId.tuple();
         if (typeIdentifier.equals(tuple.declaringTypeIdentifier())) {
             if (identifier.equals(tuple.name())) {
                 // 引数の数が一致しない場合は不一致と判断する。

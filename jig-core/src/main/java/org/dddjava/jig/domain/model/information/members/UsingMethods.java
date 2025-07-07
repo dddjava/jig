@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 
 import java.util.List;
@@ -29,9 +29,9 @@ public record UsingMethods(List<MethodCall> methodCalls) {
         return methodCalls.stream();
     }
 
-    public boolean contains(JigMethodIdentifier jigMethodIdentifier) {
+    public boolean contains(JigMethodId jigMethodId) {
         return methodCalls.stream()
-                .anyMatch(invokedMethod -> invokedMethod.jigMethodIdentifierIs(jigMethodIdentifier));
+                .anyMatch(invokedMethod -> invokedMethod.jigMethodIdentifierIs(jigMethodId));
     }
 
     public String asSimpleTextSorted() {

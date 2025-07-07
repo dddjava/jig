@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.core;
 import org.dddjava.jig.domain.model.data.members.instruction.BasicInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
@@ -25,13 +25,13 @@ public class ServiceAngle {
 
     ServiceMethod serviceMethod;
 
-    Collection<JigMethodIdentifier> userServiceMethods;
+    Collection<JigMethodId> userServiceMethods;
     Collection<EntrypointMethod> entrypointMethods;
 
     Collection<MethodCall> usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    private ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, Collection<MethodCall> usingServiceMethods, Collection<EntrypointMethod> entrypointMethods, Collection<JigMethodIdentifier> userServiceMethods) {
+    private ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, Collection<MethodCall> usingServiceMethods, Collection<EntrypointMethod> entrypointMethods, Collection<JigMethodId> userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
         this.usingRepositoryMethods = usingRepositoryMethods;
@@ -44,7 +44,7 @@ public class ServiceAngle {
     public static ServiceAngle from(ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods, ServiceMethod serviceMethod) {
         List<MethodCall> usingMethods = serviceMethod.usingMethods().methodCalls();
 
-        Collection<JigMethodIdentifier> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodIdentifier -> serviceMethods.contains(jigMethodIdentifier));
+        Collection<JigMethodId> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodIdentifier -> serviceMethods.contains(jigMethodIdentifier));
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodIdentifier()))
                 .toList();
@@ -83,7 +83,7 @@ public class ServiceAngle {
         });
     }
 
-    public Collection<JigMethodIdentifier> userServiceMethods() {
+    public Collection<JigMethodId> userServiceMethods() {
         return userServiceMethods;
     }
 
@@ -101,7 +101,7 @@ public class ServiceAngle {
                 .collect(Collectors.toSet());
     }
 
-    public JigMethodIdentifier jigMethodIdentifier() {
+    public JigMethodId jigMethodIdentifier() {
         return serviceMethod().method().jigMethodIdentifier();
     }
 

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 
 import java.util.List;
 import java.util.Objects;
@@ -58,11 +58,11 @@ public class MyBatisStatementId {
             var id = value.substring(value.lastIndexOf('.') + 1);
 
             for (MethodCall methodCall : methodCalls) {
-                JigMethodIdentifier jigMethodIdentifier = methodCall.jigMethodIdentifier();
+                JigMethodId jigMethodId = methodCall.jigMethodIdentifier();
 
                 // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                if (namespace.equals(jigMethodIdentifier.namespace())
-                        && id.equals(jigMethodIdentifier.name())) {
+                if (namespace.equals(jigMethodId.namespace())
+                        && id.equals(jigMethodId.name())) {
                     return true;
                 }
             }

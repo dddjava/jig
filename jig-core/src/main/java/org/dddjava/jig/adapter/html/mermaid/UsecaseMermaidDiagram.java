@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -28,7 +28,7 @@ public record UsecaseMermaidDiagram(
 
         // 解決済み（Usecaseメソッドに含まれるもの）を識別するためのコレクション
         // filteredRelationsに問い合わせればいい気もする
-        Set<JigMethodIdentifier> resolved = new HashSet<>();
+        Set<JigMethodId> resolved = new HashSet<>();
 
         // メソッドのスタイル
         filteredRelations.jigMethodIdentifierStream().forEach(jigMethodIdentifier -> {
@@ -56,7 +56,7 @@ public record UsecaseMermaidDiagram(
 
         Set<TypeIdentifier> others = new HashSet<>();
 
-        Function<JigMethodIdentifier, Optional<String>> converter = jigMethodIdentifier -> {
+        Function<JigMethodId, Optional<String>> converter = jigMethodIdentifier -> {
             // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
             if (resolved.contains(jigMethodIdentifier)) {
                 return Optional.of(htmlIdText(jigMethodIdentifier));
@@ -97,8 +97,8 @@ public record UsecaseMermaidDiagram(
         return "%s([\"%s\"])".formatted(htmlIdText(jigMethod.jigMethodIdentifier()), jigMethod.labelTextOrLambda());
     }
 
-    private static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {
-        var tuple = jigMethodIdentifier.tuple();
+    private static String htmlIdText(JigMethodId jigMethodId) {
+        var tuple = jigMethodId.tuple();
 
         var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()

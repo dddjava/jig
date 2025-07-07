@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointGroup;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
@@ -116,8 +116,8 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         return "%s --> %s".formatted(htmlIdText(methodRelation.from()), htmlIdText(methodRelation.to()));
     }
 
-    private static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {
-        var tuple = jigMethodIdentifier.tuple();
+    private static String htmlIdText(JigMethodId jigMethodId) {
+        var tuple = jigMethodId.tuple();
 
         var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()

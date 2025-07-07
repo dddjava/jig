@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
@@ -39,18 +39,18 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
         return term;
     }
 
-    public Term getMethodTermPossiblyMatches(JigMethodIdentifier jigMethodIdentifier) {
+    public Term getMethodTermPossiblyMatches(JigMethodId jigMethodId) {
         return memberTerms.stream()
                 .filter(term -> term.termKind() == TermKind.メソッド)
                 .filter(term -> {
                     if (term.additionalInformation() instanceof JavaMethodDeclarator javaMethodDeclarator) {
-                        return javaMethodDeclarator.possiblyMatches(jigMethodIdentifier);
+                        return javaMethodDeclarator.possiblyMatches(jigMethodId);
                     } else {
                         return false;
                     }
                 })
                 .findAny()
-                .orElseGet(() -> new Term(new TermIdentifier(jigMethodIdentifier.value()), jigMethodIdentifier.name(), "", TermKind.メソッド));
+                .orElseGet(() -> new Term(new TermIdentifier(jigMethodId.value()), jigMethodId.name(), "", TermKind.メソッド));
     }
 
     public Term fieldTerm(JigFieldId id) {

@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 /**
  * メソッドのID
  */
-public record JigMethodIdentifier(String value) implements Comparable<JigMethodIdentifier> {
+public record JigMethodId(String value) implements Comparable<JigMethodId> {
 
     /**
      * 完全なIDを生成するファクトリ
      */
-    public static JigMethodIdentifier from(TypeIdentifier declaringType, String methodName, List<TypeIdentifier> parameterTypeIdentifiers) {
-        return new JigMethodIdentifier("%s#%s(%s)".formatted(declaringType.fullQualifiedName(), methodName,
+    public static JigMethodId from(TypeIdentifier declaringType, String methodName, List<TypeIdentifier> parameterTypeIdentifiers) {
+        return new JigMethodId("%s#%s(%s)".formatted(declaringType.fullQualifiedName(), methodName,
                 parameterTypeIdentifiers.stream().map(TypeIdentifier::fullQualifiedName).collect(Collectors.joining(","))));
     }
 
@@ -61,7 +61,7 @@ public record JigMethodIdentifier(String value) implements Comparable<JigMethodI
     }
 
     @Override
-    public int compareTo(JigMethodIdentifier o) {
+    public int compareTo(JigMethodId o) {
         return this.value.compareTo(o.value());
     }
 }

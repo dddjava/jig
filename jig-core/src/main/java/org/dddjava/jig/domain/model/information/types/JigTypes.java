@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -54,11 +54,11 @@ public class JigTypes {
         return new JigTypes(listMatches(predicate));
     }
 
-    public Optional<JigMethod> resolveJigMethod(JigMethodIdentifier jigMethodIdentifier) {
+    public Optional<JigMethod> resolveJigMethod(JigMethodId jigMethodId) {
         // 全くラスの全メソッドを舐めるので効率化が必要かもしれないが、一旦これで
         return list.stream()
                 .flatMap(jigType -> jigType.allJigMethodStream())
-                .filter(jigMethod -> jigMethod.jigMethodIdentifier().equals(jigMethodIdentifier))
+                .filter(jigMethod -> jigMethod.jigMethodIdentifier().equals(jigMethodId))
                 // 複数件Hitすることはないが、実装上はありえるのでany
                 .findAny();
     }
@@ -67,8 +67,8 @@ public class JigTypes {
         return Optional.ofNullable(map.get(typeIdentifier));
     }
 
-    public boolean isService(JigMethodIdentifier jigMethodIdentifier) {
-        return resolveJigMethod(jigMethodIdentifier)
+    public boolean isService(JigMethodId jigMethodId) {
+        return resolveJigMethod(jigMethodId)
                 .flatMap(jigMethod -> resolveJigType(jigMethod.declaringType()))
                 .filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase)
                 .isPresent();

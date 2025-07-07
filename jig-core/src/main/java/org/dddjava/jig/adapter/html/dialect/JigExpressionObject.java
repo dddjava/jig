@@ -4,7 +4,7 @@ import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodIdentifier;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
@@ -146,8 +146,8 @@ class JigExpressionObject {
         return htmlIdText(jigMethod.jigMethodIdentifier());
     }
 
-    public static String htmlIdText(JigMethodIdentifier jigMethodIdentifier) {
-        var tuple = jigMethodIdentifier.tuple();
+    public static String htmlIdText(JigMethodId jigMethodId) {
+        var tuple = jigMethodId.tuple();
 
         var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()

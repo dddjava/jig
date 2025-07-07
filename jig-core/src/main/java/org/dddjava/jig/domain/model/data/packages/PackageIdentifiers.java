@@ -30,8 +30,4 @@ public record PackageIdentifiers(Set<PackageIdentifier> identifiers) {
     public boolean isEmpty() {
         return identifiers.isEmpty();
     }
-
-    public PackageIdentifiers parent() {
-        return applyDepth(new PackageDepth(maxDepth().value() - 1));
-    }
 }

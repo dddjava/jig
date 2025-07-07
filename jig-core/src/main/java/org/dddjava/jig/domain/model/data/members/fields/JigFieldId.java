@@ -17,7 +17,7 @@ public record JigFieldId(String value) {
         return value.split("#")[1];
     }
 
-    public TypeId declaringTypeIdentifier() {
+    public TypeId declaringTypeId() {
         return TypeId.valueOf(value.split("#")[0]);
     }
 

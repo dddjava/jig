@@ -27,7 +27,7 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
 
     public Set<TypeId> allTypeIdentifierSet() {
         return Stream.concat(
-                allJigFieldStream().flatMap(jigFields -> jigFields.jigFieldHeader().allTypeIdentifierStream()),
+                allJigFieldStream().flatMap(jigFields -> jigFields.jigFieldHeader().toTypeIdStream()),
                 allJigMethodStream().flatMap(jigMethod -> jigMethod.jigMethodDeclaration().associatedTypes().stream())
         ).collect(Collectors.toSet());
     }

@@ -19,12 +19,16 @@ class AsmUtils {
         return ((access & Opcodes.ACC_STATIC) == 0) ? JigMemberOwnership.INSTANCE : JigMemberOwnership.CLASS;
     }
 
-    static TypeId typeDescriptorToIdentifier(String descriptor) {
-        Type type = Type.getType(descriptor);
+    /**
+     * TypeのdescriptorをTypeIdに変換する。
+     * Type以外のdescriptorでは例外が発生する。
+     */
+    static TypeId typeDescriptorToTypeId(String typeDescriptor) {
+        Type type = Type.getType(typeDescriptor);
         return TypeId.valueOf(type.getClassName());
     }
 
-    public static TypeId type2TypeIdentifier(Type typeValue) {
+    public static TypeId type2TypeId(Type typeValue) {
         return TypeId.valueOf(typeValue.getClassName());
     }
 }

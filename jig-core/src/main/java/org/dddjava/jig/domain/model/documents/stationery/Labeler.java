@@ -49,7 +49,7 @@ public class Labeler {
     }
 
     public void applyContext(Collection<PackageId> groupingPackages, List<PackageId> allStandalonePackageIds) {
-        // groupingPackagesとallStandalonePackageIdentifiersをまとめる
+        // groupingPackagesとallStandalonePackageIdをまとめる
         Collection<PackageId> collection = new HashSet<>();
         collection.addAll(groupingPackages);
         collection.addAll(allStandalonePackageIds);

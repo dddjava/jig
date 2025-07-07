@@ -96,7 +96,7 @@ public class TypeRelationMermaidDiagram {
     /**
      * mermaidのidに使用するテキストへの変換
      *
-     * PackageIdentifierで使用できる文字は使用できそうなのと、
+     * PackageIdで使用できる文字は使用できそうなのと、
      * このダイアグラムでは種類も多くないのでFQNをそのまま使用する。
      */
     private Object mermaidId(PackageId packageId) {
@@ -106,7 +106,7 @@ public class TypeRelationMermaidDiagram {
     /**
      * mermaidのidに使用するテキストへの変換
      *
-     * TypeIdentifierで使用できる文字は使用できそうなのと、
+     * TypeIdで使用できる文字は使用できそうなのと、
      * このダイアグラムでは種類も多くないのでFQNをそのまま使用する。
      */
     private String mermaidId(TypeId typeId) {

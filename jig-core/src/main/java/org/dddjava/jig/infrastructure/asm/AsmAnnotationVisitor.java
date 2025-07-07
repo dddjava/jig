@@ -34,7 +34,7 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     }
 
     public static AsmAnnotationVisitor from(int api, String descriptor, Consumer<AsmAnnotationVisitor> finisher) {
-        TypeId typeId = AsmUtils.typeDescriptorToIdentifier(descriptor);
+        TypeId typeId = AsmUtils.typeDescriptorToTypeId(descriptor);
         return new AsmAnnotationVisitor(api, typeId, finisher);
     }
 
@@ -42,7 +42,7 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     public void visit(String name, Object value) {
         logger.debug("visit: {}, {}", name, value);
         if (value instanceof org.objectweb.asm.Type typeValue) {
-            TypeId typeId = AsmUtils.type2TypeIdentifier(typeValue);
+            TypeId typeId = AsmUtils.type2TypeId(typeValue);
             elementList.add(JigAnnotationElementValuePair.classElement(name, typeId));
         } else {
             elementList.add(JigAnnotationElementValuePair.element(name, value));
@@ -52,7 +52,7 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visitEnum(String name, String descriptor, String value) {
         logger.debug("visitEnum: {}, {}, {}", name, descriptor, value);
-        TypeId typeId = AsmUtils.typeDescriptorToIdentifier(descriptor);
+        TypeId typeId = AsmUtils.typeDescriptorToTypeId(descriptor);
         elementList.add(JigAnnotationElementValuePair.enumElement(name, typeId, value));
     }
 

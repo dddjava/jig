@@ -23,6 +23,6 @@ public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, J
     }
 
     public PackageId packageIdentifier() {
-        return jigType.packageIdentifier();
+        return jigType.packageId();
     }
 }

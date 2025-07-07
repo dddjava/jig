@@ -41,7 +41,7 @@ public class TypeId implements Comparable<TypeId> {
     }
 
     /**
-     * @return "org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier"
+     * @return "org.dddjava.jig.domain.model.data.types.TypeId"
      */
     public String fullQualifiedName() {
         return value;
@@ -50,7 +50,7 @@ public class TypeId implements Comparable<TypeId> {
     /**
      * パッケージなしのクラス名
      *
-     * @return "TypeIdentifier"
+     * @return "TypeId"
      */
     public String asSimpleText() {
         int lastDotIndex = value.lastIndexOf('.');
@@ -92,7 +92,7 @@ public class TypeId implements Comparable<TypeId> {
 
     @Override
     public String toString() {
-        return "TypeIdentifier{" +
+        return "TypeId{" +
                 "value='" + value + '\'' +
                 '}';
     }

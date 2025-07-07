@@ -34,7 +34,7 @@ public class PackageBasedArchitecture {
 
     private static List<PackageId> getArchitecturePackages(JigTypes jigTypes) {
         Map<PackageId, List<JigType>> packageIdentifierListMap = jigTypes.orderedStream()
-                .collect(groupingBy(JigType::packageIdentifier));
+                .collect(groupingBy(JigType::packageId));
         // depth単位にリストにする
         Map<Integer, List<PackageId>> depthMap = packageIdentifierListMap.keySet().stream()
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())

@@ -29,7 +29,7 @@ public sealed interface FieldAccess extends Instruction
 
     @Override
     default Stream<TypeId> streamAssociatedTypes() {
-        return Stream.of(fieldTypeId(), jigFieldId().declaringTypeIdentifier());
+        return Stream.of(fieldTypeId(), jigFieldId().declaringTypeId());
     }
 }
 

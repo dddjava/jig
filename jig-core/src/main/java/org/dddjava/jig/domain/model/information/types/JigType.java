@@ -29,7 +29,7 @@ public class JigType {
         return jigTypeHeader.id();
     }
 
-    public PackageId packageIdentifier() {
+    public PackageId packageId() {
         return id().packageIdentifier();
     }
 

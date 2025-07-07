@@ -67,12 +67,12 @@ public class JavaparserReader {
     }
 
     void loadPackageInfoJavaFile(CompilationUnit cu, GlossaryRepository glossaryRepository) {
-        // packageIdentifierがPackageCommentで必要になるのでここはネストにしておく
+        // packageIdがPackageCommentで必要になるのでここはネストにしておく
         cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
                 .map(PackageId::valueOf)
-                .flatMap(packageIdentifier -> {
-                    TermId termId = glossaryRepository.fromPackageIdentifier(packageIdentifier);
+                .flatMap(packageId -> {
+                    TermId termId = glossaryRepository.fromPackageId(packageId);
                     return getJavadoc(cu)
                             .map(Javadoc::getDescription)
                             .map(JavadocDescription::toText)

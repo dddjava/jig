@@ -30,8 +30,8 @@ public record JigFieldHeader(JigFieldId id,
         return jigTypeReference.simpleName() + ' ' + id.name();
     }
 
-    public Stream<TypeId> allTypeIdentifierStream() {
-        return Stream.concat(jigTypeReference.allTypeIentifierStream(), jigFieldAttribute().allTypeIdentifierStream());
+    public Stream<TypeId> toTypeIdStream() {
+        return Stream.concat(jigTypeReference.toTypeIdStream(), jigFieldAttribute().toTypeIdStream());
     }
 
     public String simpleNameWithGenerics() {

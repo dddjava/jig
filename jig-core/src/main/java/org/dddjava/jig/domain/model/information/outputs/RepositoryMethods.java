@@ -21,7 +21,7 @@ public class RepositoryMethods {
 
     public RepositoryMethods filter(List<MethodCall> methodCalls) {
         return list.stream()
-                .filter(method -> methodCalls.stream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdentifierIs(method.jigMethodIdentifier())))
+                .filter(method -> methodCalls.stream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(method.jigMethodIdentifier())))
                 .collect(collectingAndThen(toList(), RepositoryMethods::new));
     }
 

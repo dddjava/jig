@@ -144,7 +144,7 @@ public class JigService {
         Glossary glossary = glossary(jigRepository);
 
         Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.stream()
-                .collect(Collectors.groupingBy(JigType::packageIdentifier));
+                .collect(Collectors.groupingBy(JigType::packageId));
 
         List<Term> packageTerms = glossary.terms().stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
@@ -154,9 +154,9 @@ public class JigService {
                         packageAndJigTypes.keySet().stream(),
                         packageTerms.stream().map(Term::id).map(TermId::asText).map(PackageId::valueOf))
                 .distinct()
-                .map(packageIdentifier -> {
-                    var packageTerm = glossary.termOf(packageIdentifier.asText(), TermKind.パッケージ);
-                    return new JigPackage(packageIdentifier, packageTerm, packageAndJigTypes.getOrDefault(packageIdentifier, List.of()));
+                .map(packageId -> {
+                    var packageTerm = glossary.termOf(packageId.asText(), TermKind.パッケージ);
+                    return new JigPackage(packageId, packageTerm, packageAndJigTypes.getOrDefault(packageId, List.of()));
                 })
                 .toList();
 

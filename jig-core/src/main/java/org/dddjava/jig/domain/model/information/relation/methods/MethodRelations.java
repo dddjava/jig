@@ -30,7 +30,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                     return instructions.lambdaInlinedMethodCallStream()
                             .filter(methodCall -> !methodCall.isJSL()) // JSLを除く
                             .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く
-                            .map(methodCall -> MethodRelation.from(jigMethod.jigMethodIdentifier(), methodCall.jigMethodIdentifier()));
+                            .map(methodCall -> MethodRelation.from(jigMethod.jigMethodIdentifier(), methodCall.jigMethodId()));
                 }).toList());
     }
 
@@ -40,7 +40,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                         .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                                 .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                                .map(toMethod -> MethodRelation.from(jigMethod.jigMethodIdentifier(), toMethod.jigMethodIdentifier()))))
+                                .map(toMethod -> MethodRelation.from(jigMethod.jigMethodIdentifier(), toMethod.jigMethodId()))))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 

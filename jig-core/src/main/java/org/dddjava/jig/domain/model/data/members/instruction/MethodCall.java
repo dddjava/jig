@@ -15,11 +15,11 @@ public record MethodCall(TypeId methodOwner, String methodName,
                          List<TypeId> argumentTypes,
                          TypeId returnType) implements Instruction {
 
-    public boolean jigMethodIdentifierIs(JigMethodId jigMethodId) {
-        return jigMethodId.equals(jigMethodIdentifier());
+    public boolean jigMethodIdIs(JigMethodId jigMethodId) {
+        return jigMethodId.equals(jigMethodId());
     }
 
-    public JigMethodId jigMethodIdentifier() {
+    public JigMethodId jigMethodId() {
         return JigMethodId.from(methodOwner, methodName, argumentTypes);
     }
 
@@ -52,6 +52,6 @@ public record MethodCall(TypeId methodOwner, String methodName,
     }
 
     public boolean isLambda() {
-        return jigMethodIdentifier().isLambda();
+        return jigMethodId().isLambda();
     }
 }

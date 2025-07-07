@@ -58,7 +58,7 @@ public class MyBatisStatementId {
             var id = value.substring(value.lastIndexOf('.') + 1);
 
             for (MethodCall methodCall : methodCalls) {
-                JigMethodId jigMethodId = methodCall.jigMethodIdentifier();
+                JigMethodId jigMethodId = methodCall.jigMethodId();
 
                 // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
                 if (namespace.equals(jigMethodId.namespace())

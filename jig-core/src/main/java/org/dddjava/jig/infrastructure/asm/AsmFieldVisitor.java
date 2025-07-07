@@ -57,7 +57,7 @@ class AsmFieldVisitor extends FieldVisitor {
 
     private static JigTypeReference resolveFieldTypeReference(int api, String descriptor, String signature) {
         if (signature == null) {
-            TypeId fieldTypeId = AsmUtils.typeDescriptorToIdentifier(descriptor);
+            TypeId fieldTypeId = AsmUtils.typeDescriptorToTypeId(descriptor);
             return JigTypeReference.fromId(fieldTypeId);
         }
         AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);

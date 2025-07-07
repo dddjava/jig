@@ -58,12 +58,12 @@ public record JigTypeReference(TypeId id,
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 
-    public Stream<TypeId> allTypeIentifierStream() {
+    public Stream<TypeId> toTypeIdStream() {
         return Stream.of(
                 // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
                 id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
                 typeAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
-                typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().allTypeIentifierStream())
+                typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().toTypeIdStream())
         ).flatMap(identity -> identity);
     }
 

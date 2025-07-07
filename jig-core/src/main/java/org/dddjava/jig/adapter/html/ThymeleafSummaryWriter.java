@@ -41,14 +41,14 @@ public class ThymeleafSummaryWriter {
         List<JigPackageWithJigTypes> jigPackageWithJigTypes = JigPackageWithJigTypes.from(jigTypes);
         Map<PackageId, Set<PackageId>> packageMap = jigPackageWithJigTypes.stream()
                 .map(JigPackageWithJigTypes::packageId)
-                .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
-                .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
+                .flatMap(packageId -> packageId.genealogical().stream())
+                .collect(groupingBy(packageId -> packageId.parent(), toSet()));
         var baseComposite = createTreeBaseComposite(jigTypes, packageMap);
 
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
                 .sorted(Comparator.comparing(PackageId::asText))
-                .map(packageIdentifier -> jigPackage(packageIdentifier))
+                .map(packageId -> jigPackage(packageId))
                 .toList();
 
         var contextMap = Map.of(
@@ -78,12 +78,12 @@ public class ThymeleafSummaryWriter {
     private void createTree(JigTypes jigTypes,
                             Map<PackageId, Set<PackageId>> packageMap,
                             TreeComposite baseComposite) {
-        for (PackageId current : packageMap.getOrDefault(baseComposite.packageIdentifier(), Collections.emptySet())) {
+        for (PackageId current : packageMap.getOrDefault(baseComposite.packageId(), Collections.emptySet())) {
             TreeComposite composite = new TreeComposite(jigPackage(current));
             // add package
             baseComposite.addComponent(composite);
             // add class
-            for (JigType jigType : jigTypes.listMatches(jigType -> jigType.packageIdentifier().equals(current))) {
+            for (JigType jigType : jigTypes.listMatches(jigType -> jigType.packageId().equals(current))) {
                 composite.addComponent(new TreeLeaf(jigType));
             }
             createTree(jigTypes, packageMap, composite);

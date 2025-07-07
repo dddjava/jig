@@ -11,34 +11,34 @@ import java.util.stream.Stream;
 /**
  * 用語生成の共通処理
  *
- * Termを生成する過程をTermに持つと、TermがPackageIdentifierなどに依存してしまう。
+ * Termを生成する過程をTermに持つと、TermがPackageIdなどに依存してしまう。
  * Term自体は取り回し良くしておきたいので、Termには持たないことにした。
  * しかし生成過程はそれぞれに配置するには冗長なので、このクラスに分離しておく。
  */
 class TermFactory {
 
-    public static Term fromPackage(TermId identifier, String javadocDescriptionText) {
+    public static Term fromPackage(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(identifier, title, bodyText(title, text), TermKind.パッケージ);
+        return new Term(termId, title, bodyText(title, text), TermKind.パッケージ);
     }
 
-    public static Term fromClass(TermId identifier, String javadocDescriptionText) {
+    public static Term fromClass(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(identifier, title, bodyText(title, text), TermKind.クラス);
+        return new Term(termId, title, bodyText(title, text), TermKind.クラス);
     }
 
-    public static Term fromMethod(TermId identifier, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
+    public static Term fromMethod(TermId termId, JavaMethodDeclarator javaMethodDeclarator, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(identifier, title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
+        return new Term(termId, title, bodyText(title, text), TermKind.メソッド, javaMethodDeclarator);
     }
 
-    public static Term fromField(TermId identifier, String javadocDescriptionText) {
+    public static Term fromField(TermId termId, String javadocDescriptionText) {
         var text = normalize(javadocDescriptionText);
         var title = summaryText(text);
-        return new Term(identifier, title, bodyText(title, text), TermKind.フィールド, javadocDescriptionText);
+        return new Term(termId, title, bodyText(title, text), TermKind.フィールド, javadocDescriptionText);
     }
 
     /**

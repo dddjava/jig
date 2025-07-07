@@ -16,7 +16,7 @@ public record JigPackageWithJigTypes(PackageId packageId, List<JigType> jigTypes
 
     public static List<JigPackageWithJigTypes> from(JigTypes jigTypes) {
         Map<PackageId, List<JigType>> map = jigTypes.orderedStream()
-                .collect(Collectors.groupingBy(JigType::packageIdentifier));
+                .collect(Collectors.groupingBy(JigType::packageId));
         return map.entrySet().stream()
                 .map(entity -> new JigPackageWithJigTypes(entity.getKey(), entity.getValue()))
                 .sorted(Comparator.comparing(jigPackageWithJigTypes -> jigPackageWithJigTypes.packageId().asText()))

@@ -21,7 +21,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     @Override
     public Term get(TypeId typeId) {
-        TermId termId = fromTypeIdentifier(typeId);
+        TermId termId = fromTypeId(typeId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)
                 .filter(term -> term.id().equals(termId))
@@ -32,7 +32,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     @Override
     public Term get(PackageId packageId) {
-        TermId termId = fromPackageIdentifier(packageId);
+        TermId termId = fromPackageId(packageId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
                 .filter(term -> term.id().equals(termId))
@@ -52,12 +52,12 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public TermId fromPackageIdentifier(PackageId packageId) {
+    public TermId fromPackageId(PackageId packageId) {
         return new TermId(packageId.asText());
     }
 
     @Override
-    public TermId fromTypeIdentifier(TypeId typeId) {
+    public TermId fromTypeId(TypeId typeId) {
         return new TermId(typeId.fullQualifiedName());
     }
 
@@ -67,7 +67,7 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public TermId fromFieldIdentifier(JigFieldId jigFieldId) {
+    public TermId fromFieldId(JigFieldId jigFieldId) {
         return new TermId(jigFieldId.fqn());
     }
 }

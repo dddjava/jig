@@ -31,7 +31,7 @@ public record UsingMethods(List<MethodCall> methodCalls) {
 
     public boolean contains(JigMethodId jigMethodId) {
         return methodCalls.stream()
-                .anyMatch(invokedMethod -> invokedMethod.jigMethodIdentifierIs(jigMethodId));
+                .anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(jigMethodId));
     }
 
     public String asSimpleTextSorted() {

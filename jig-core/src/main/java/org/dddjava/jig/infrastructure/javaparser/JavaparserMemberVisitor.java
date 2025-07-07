@@ -30,7 +30,7 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             variables.forEach(v -> {
                 glossaryRepository.register(
                         TermFactory.fromField(
-                                glossaryRepository.fromFieldIdentifier(JigFieldId.from(typeId, v.getNameAsString())),
+                                glossaryRepository.fromFieldId(JigFieldId.from(typeId, v.getNameAsString())),
                                 javadoc.getDescription().toText()
                         ));
             });

@@ -21,11 +21,11 @@ public interface GlossaryRepository {
 
     Glossary all();
 
-    TermId fromPackageIdentifier(PackageId packageId);
+    TermId fromPackageId(PackageId packageId);
 
-    TermId fromTypeIdentifier(TypeId typeId);
+    TermId fromTypeId(TypeId typeId);
 
     TermId fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator);
 
-    TermId fromFieldIdentifier(JigFieldId from);
+    TermId fromFieldId(JigFieldId from);
 }

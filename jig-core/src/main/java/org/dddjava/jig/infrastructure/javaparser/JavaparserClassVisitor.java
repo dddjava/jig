@@ -103,7 +103,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeIdentifier(typeId), javadocText));
+            glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeId(typeId), javadocText));
         });
         node.accept(new JavaparserMemberVisitor(typeId), glossaryRepository);
 

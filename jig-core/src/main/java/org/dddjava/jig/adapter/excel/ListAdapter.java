@@ -67,7 +67,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("クラス数", item -> item.jigTypes().size())
                 ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
+                        ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("ビジネスルールの種類", item -> item.toValueKind().toString()),
@@ -77,12 +77,12 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {
                             var identifiers = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().values();
-                            return markIfTrue(identifiers.equals(Set.of(item.packageIdentifier())));
+                            return markIfTrue(identifiers.equals(Set.of(item.packageId())));
                         }),
                         ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText())
                 ), coreDomainJigTypes.list()),
                 new ReportSheet<>("ENUM", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
+                        ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(STREAM_COLLECTOR)),
@@ -98,7 +98,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("多態", item -> markIfTrue(item.typeKind() == TypeKind.抽象列挙型))
                 ), categoryTypes.list()),
                 new ReportSheet<>("COLLECTION", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.packageIdentifier().asText()),
+                        ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("フィールドの型", item -> {
@@ -152,7 +152,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().methodReturnTypeReference().simpleName()),
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().jigFieldIds().stream()
-                                .map(JigFieldId::declaringTypeIdentifier)
+                                .map(JigFieldId::declaringTypeId)
                                 .map(TypeId::asSimpleText)
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),
@@ -178,7 +178,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .collect(STREAM_COLLECTOR)
                         ),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().jigFieldIds().stream()
-                                .map(JigFieldId::declaringTypeIdentifier)
+                                .map(JigFieldId::declaringTypeId)
                                 .map(TypeId::asSimpleText)
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),

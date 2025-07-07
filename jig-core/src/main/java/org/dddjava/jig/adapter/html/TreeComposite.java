@@ -27,7 +27,7 @@ public class TreeComposite implements TreeComponent {
         return "#" + jigPackage.fqn();
     }
 
-    public PackageId packageIdentifier() {
+    public PackageId packageId() {
         return jigPackage.packageId();
     }
 

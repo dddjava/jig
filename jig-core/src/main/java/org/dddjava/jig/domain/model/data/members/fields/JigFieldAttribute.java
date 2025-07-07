@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                                 Collection<JigAnnotationReference> declarationAnnotations,
                                 EnumSet<JigFieldFlag> flags) {
-    Stream<TypeId> allTypeIdentifierStream() {
+    Stream<TypeId> toTypeIdStream() {
         return declarationAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id());
     }
 

@@ -192,7 +192,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        var maxDepth = packageRelations.packageIdentifiers().maxDepth();
+        var maxDepth = packageRelations.packageIds().maxDepth();
 
         return DiagramSource.createDiagramSource(
                 IntStream.rangeClosed(1, maxDepth.value())

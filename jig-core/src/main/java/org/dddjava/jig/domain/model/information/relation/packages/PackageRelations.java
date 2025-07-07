@@ -65,10 +65,9 @@ public record PackageRelations(Collection<PackageRelation> relations) {
         return !relations.isEmpty();
     }
 
-    public PackageIds packageIdentifiers() {
-        var packageIdentifiers = relations.stream()
+    public PackageIds packageIds() {
+        return new PackageIds(relations.stream()
                 .flatMap(relation -> Stream.of(relation.from(), relation.to()))
-                .collect(Collectors.toSet());
-        return new PackageIds(packageIdentifiers);
+                .collect(Collectors.toSet()));
     }
 }

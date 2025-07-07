@@ -105,7 +105,7 @@ class JigExpressionObject {
 
         // 型パラメータあり
         String typeParameterText = typeArgumentList.stream()
-                .map(JigTypeArgument::typeIdentifier)
+                .map(JigTypeArgument::typeId)
                 .map(argumentTypeIdentifier -> {
                     if (argumentTypeIdentifier.isJavaLanguageType()) {
                         return unlinkText(argumentTypeIdentifier);

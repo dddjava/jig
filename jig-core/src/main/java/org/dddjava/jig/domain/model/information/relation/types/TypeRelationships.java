@@ -29,7 +29,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
                         .filter(jigTypes::contains)
-                        .flatMap(typeIdentifier -> TypeRelationship.of不明(jigType.id(), typeIdentifier).stream()))
+                        .flatMap(typeId -> TypeRelationship.of不明(jigType.id(), typeId).stream()))
                 .collect(collectingAndThen(toList(), TypeRelationships::new));
     }
 
@@ -47,7 +47,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         Stream<TypeRelationship> typeParameterStream = jigTypeHeader.jigTypeAttributes().typeParameters().stream()
                 // 型パラメタ自体は型ではないが、型パラメタの境界は型引数なので取得する
                 .flatMap(jigTypeParameter -> jigTypeParameter.bounds().stream())
-                .map(typeArg -> TypeRelationship.of型引数(id, typeArg.typeIdentifier()));
+                .map(typeArg -> TypeRelationship.of型引数(id, typeArg.typeId()));
         // 自身のアノテーション
         Stream<TypeRelationship> annotationStream = annotationTypeRelationshipStream(jigTypeHeader.jigTypeAttributes().declarationAnnotationInstances(), id);
 
@@ -66,7 +66,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                         Stream.of(TypeRelationship.of(id, jigTypeReference.id(), typeRelationKind)),
                         // 型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
                         jigTypeReference.typeArgumentList().stream()
-                                .map(typeArg -> TypeRelationship.of型引数(id, typeArg.typeIdentifier())),
+                                .map(typeArg -> TypeRelationship.of型引数(id, typeArg.typeId())),
                         // 型アノテーション
                         annotationTypeRelationshipStream(jigTypeReference.typeAnnotations(), id))
                 .flatMap(Function.identity());
@@ -84,7 +84,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList());
     }
 
-    public TypeIds collectTypeIdentifierWhichRelationTo(TypeId typeId) {
+    public TypeIds collectTypeIdWhichRelationTo(TypeId typeId) {
         return typeRelationships.stream()
                 .filter(classRelation -> classRelation.toIs(typeId))
                 .map(TypeRelationship::from)
@@ -98,10 +98,10 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList();
     }
 
-    public TypeIds allTypeIdentifiers() {
+    public TypeIds toTypeIds() {
         return typeRelationships.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
-                .map(TypeId::normalize)
+                .map(TypeId::normalize) // ここでnormalizeいる？？
                 .collect(TypeIds.collector());
     }
 
@@ -115,7 +115,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
 
             if (size == set.size()) break;
             size = set.size();
-            toTypeIds = temp.fromTypeIdentifiers();
+            toTypeIds = temp.fromTypeIds();
         }
         return new TypeRelationships(new ArrayList<>(set));
     }
@@ -139,7 +139,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .toList());
     }
 
-    public TypeIds fromTypeIdentifiers() {
+    public TypeIds fromTypeIds() {
         return typeRelationships.stream()
                 .map(classRelation -> classRelation.from())
                 .collect(TypeIds.collector());

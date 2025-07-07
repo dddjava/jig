@@ -39,7 +39,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         }
 
         TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIdentifiers());
-        TypeIds categoryRelatedTypes = relations.allTypeIdentifiers();
+        TypeIds categoryRelatedTypes = relations.toTypeIds();
 
         StringJoiner useCaseText = new StringJoiner("\n");
         RelationText serviceRelationText = new RelationText();

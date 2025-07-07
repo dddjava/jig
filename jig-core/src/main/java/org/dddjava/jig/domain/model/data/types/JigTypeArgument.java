@@ -32,7 +32,7 @@ public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard
         return !"java.lang.Object".equals(value());
     }
 
-    public TypeId typeIdentifier() {
+    public TypeId typeId() {
         return TypeId.valueOf(value());
     }
 

@@ -73,13 +73,13 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("ビジネスルールの種類", item -> item.toValueKind().toString()),
                         ReportItem.ofNumber("関連元ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterTo(item.id()).size()),
                         ReportItem.ofNumber("関連先ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterFrom(item.id()).size()),
-                        ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
+                        ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {
-                            var identifiers = allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).packageIdentifiers().values();
+                            var identifiers = allClassRelations.collectTypeIdWhichRelationTo(item.id()).packageIdentifiers().values();
                             return markIfTrue(identifiers.equals(Set.of(item.packageId())));
                         }),
-                        ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText())
+                        ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).asSimpleText())
                 ), coreDomainJigTypes.list()),
                 new ReportSheet<>("ENUM", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
@@ -89,8 +89,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("フィールド", item -> item.jigTypeMembers().instanceFields().stream()
                                 .map(jigField -> jigField.jigFieldHeader().simpleText())
                                 .collect(STREAM_COLLECTOR)),
-                        ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).list().size()),
-                        ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
+                        ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).list().size()),
+                        ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).asSimpleText()),
                         // TODO: パラメータあり＝フィールドありは直接はつながらない
                         ReportItem.ofString("パラメーター有り", item -> markIfTrue(item.hasInstanceField())),
                         ReportItem.ofString("振る舞い有り", item -> markIfTrue(item.hasInstanceMethod())),
@@ -107,8 +107,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                                     .toList();
                             return list.size() == 1 ? list.get(0) : list.stream().collect(STREAM_COLLECTOR);
                         }),
-                        ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).size()),
-                        ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.id()).asSimpleText()),
+                        ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).size()),
+                        ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).asSimpleText()),
                         ReportItem.ofNumber("メソッド数", item -> item.instanceJigMethods().list().size()),
                         ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::nameArgumentsReturnSimpleText).sorted().collect(STREAM_COLLECTOR))
                 ), coreDomainJigTypes.listCollectionType()),

@@ -88,10 +88,10 @@ public class JigMetrics {
     }
 
     public <T> T measure(String phase, Supplier<T> operation) {
-        return io.micrometer.core.instrument.Metrics.globalRegistry.timer(metricName, "phase", phase).record(operation);
+        return Metrics.timer(metricName, "phase", phase).record(operation);
     }
 
     public void measureVoid(String phase, Runnable operation) {
-        io.micrometer.core.instrument.Metrics.globalRegistry.timer(metricName, "phase", phase).record(operation);
+        Metrics.timer(metricName, "phase", phase).record(operation);
     }
 }

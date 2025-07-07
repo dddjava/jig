@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.data.members.methods;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -18,7 +18,7 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
                           Collection<JigTypeReference> throwTypes,
                           EnumSet<JigMethodFlag> flags) {
 
-    public Stream<TypeIdentifier> associatedTypeStream() {
+    public Stream<TypeId> associatedTypeStream() {
         return Stream.of(
                         declarationAnnotations.stream().flatMap(JigAnnotationReference::allTypeIentifierStream),
                         returnType.allTypeIentifierStream().filter(typeIdentifier -> !typeIdentifier.isVoid()),

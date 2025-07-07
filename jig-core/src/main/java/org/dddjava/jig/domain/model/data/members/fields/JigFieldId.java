@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.fields;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
  * フィールドのID
@@ -9,16 +9,16 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
  */
 public record JigFieldId(String value) {
 
-    public static JigFieldId from(TypeIdentifier declaringTypeIdentifier, String name) {
-        return new JigFieldId("%s#%s".formatted(declaringTypeIdentifier.fullQualifiedName(), name));
+    public static JigFieldId from(TypeId declaringTypeId, String name) {
+        return new JigFieldId("%s#%s".formatted(declaringTypeId.fullQualifiedName(), name));
     }
 
     public String name() {
         return value.split("#")[1];
     }
 
-    public TypeIdentifier declaringTypeIdentifier() {
-        return TypeIdentifier.valueOf(value.split("#")[0]);
+    public TypeId declaringTypeIdentifier() {
+        return TypeId.valueOf(value.split("#")[0]);
     }
 
     public String fqn() {

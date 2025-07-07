@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.util.LinkedHashMap;
@@ -23,7 +23,7 @@ public class Node {
         this.identifier = identifier;
     }
 
-    public static Node typeOf(TypeIdentifier identifier) {
+    public static Node typeOf(TypeId identifier) {
         return new Node(identifier.fullQualifiedName());
     }
 
@@ -72,9 +72,9 @@ public class Node {
         return this;
     }
 
-    public Node url(TypeIdentifier typeIdentifier, JigDocument jigDocument) {
+    public Node url(TypeId typeId, JigDocument jigDocument) {
         String ref = jigDocument.fileName() + ".html";
-        attributeMap.put("URL", "./" + ref + "#" + typeIdentifier.fullQualifiedName());
+        attributeMap.put("URL", "./" + ref + "#" + typeId.fullQualifiedName());
         return this;
     }
 

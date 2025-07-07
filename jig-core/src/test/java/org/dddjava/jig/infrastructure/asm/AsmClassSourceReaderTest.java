@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ public class AsmClassSourceReaderTest {
     private static void assertUsingTypesContainsAll(JigType jigType, Class<?>... classes) {
         var list = jigType.usingTypes().list();
         assertTrue(list.containsAll(Stream.of(classes)
-                .map(TypeIdentifier::from)
+                .map(TypeId::from)
                 .toList()), "UsingTypes " + list + " Should contain all");
     }
 

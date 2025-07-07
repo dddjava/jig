@@ -6,7 +6,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.methods.JavaMethodDeclarator;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
  * メソッドやフィールドからの情報の読み取り
@@ -15,10 +15,10 @@ import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
  * 現在はコメントしか読んでいないが、実装からしか取得できない情報を扱う場合はここで扱う。
  */
 class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
-    private final TypeIdentifier typeIdentifier;
+    private final TypeId typeId;
 
-    public JavaparserMemberVisitor(TypeIdentifier typeIdentifier) {
-        this.typeIdentifier = typeIdentifier;
+    public JavaparserMemberVisitor(TypeId typeId) {
+        this.typeId = typeId;
     }
 
     @Override
@@ -30,7 +30,7 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             variables.forEach(v -> {
                 glossaryRepository.register(
                         TermFactory.fromField(
-                                glossaryRepository.fromFieldIdentifier(JigFieldId.from(typeIdentifier, v.getNameAsString())),
+                                glossaryRepository.fromFieldIdentifier(JigFieldId.from(typeId, v.getNameAsString())),
                                 javadoc.getDescription().toText()
                         ));
             });
@@ -40,7 +40,7 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     @Override
     public void visit(MethodDeclaration n, GlossaryRepository glossaryRepository) {
         var methodImplementationDeclarator = new JavaMethodDeclarator(
-                typeIdentifier,
+                typeId,
                 n.getNameAsString(),
                 n.getParameters().stream()
                         .map(parameter -> {
@@ -55,7 +55,7 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         );
 
         n.getJavadoc().ifPresent(javadoc ->
-                glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeIdentifier, methodImplementationDeclarator), methodImplementationDeclarator, javadoc.getDescription().toText()))
+                glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeId, methodImplementationDeclarator), methodImplementationDeclarator, javadoc.getDescription().toText()))
         );
     }
 }

@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.adapter;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
@@ -30,7 +30,7 @@ public class DatasourceAngle {
         this.concreteMethod = datasourceMethod.concreteMethod();
     }
 
-    public TypeIdentifier declaringType() {
+    public TypeId declaringType() {
         return datasourceMethod.interfaceJigType().id();
     }
 

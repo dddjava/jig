@@ -1,7 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class BusinessRuleServiceTest {
      */
     @Test
     void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigRepository jigRepository) {
-        var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
+        var typeIdentifier = TypeId.valueOf("stub.domain.model.annotation.package-info");
 
         var jigTypes = jigService.jigTypes(jigRepository);
 

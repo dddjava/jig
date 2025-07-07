@@ -1,7 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -41,7 +41,7 @@ class ReadableLabelTest {
     @MethodSource
     void クラスコメント取得(Class<?> targetClass, String expectedText, JigRepository jigRepository) {
         var jigTypes = jigRepository.fetchJigTypes();
-        String label = jigTypes.resolveJigType(TypeIdentifier.from(targetClass))
+        String label = jigTypes.resolveJigType(TypeId.from(targetClass))
                 .map(jigType -> jigType.label())
                 .orElseThrow(AssertionError::new);
 
@@ -59,7 +59,7 @@ class ReadableLabelTest {
     @Test
     void メソッド別名取得(JigRepository jigRepository) {
         JigTypes jigTypes = jigRepository.fetchJigTypes();
-        TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
+        TypeId テスト対象クラス = TypeId.from(MethodJavadocStub.class);
         JigType jigType = jigTypes.listMatches(item -> item.id().equals(テスト対象クラス)).get(0);
 
         JigMethod method = resolveMethodBySignature(jigType, "method()");

@@ -16,7 +16,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     private final String packageName;
     EnumModel enumModel;
-    TypeIdentifier typeIdentifier;
+    TypeId typeId;
 
     public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
@@ -54,12 +54,12 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     @Override
     public void visit(EnumDeclaration node, GlossaryRepository arg) {
-        TypeIdentifier typeIdentifier = visitClassOrInterfaceOrEnumOrRecord(node, arg);
+        TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(node, arg);
 
         List<EnumConstant> constants = node.getEntries().stream()
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
                 .toList();
-        enumModel = new EnumModel(typeIdentifier, constants);
+        enumModel = new EnumModel(typeId, constants);
         super.visit(node, arg);
     }
 
@@ -89,23 +89,23 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         super.visit(n, arg);
     }
 
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeId visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
         var fqcn = packageName + node.getNameAsString();
 
-        if (typeIdentifier != null) {
+        if (typeId != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum/record には対応していません。{} のロードはスキップされます。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。",
                     fqcn
             );
-            return typeIdentifier;
+            return typeId;
         }
 
-        typeIdentifier = TypeIdentifier.valueOf(fqcn);
+        typeId = TypeId.valueOf(fqcn);
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeIdentifier(typeIdentifier), javadocText));
+            glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeIdentifier(typeId), javadocText));
         });
-        node.accept(new JavaparserMemberVisitor(typeIdentifier), glossaryRepository);
+        node.accept(new JavaparserMemberVisitor(typeId), glossaryRepository);
 
         node.getMembers().forEach(member -> {
             if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration ) {
@@ -113,7 +113,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             }
         });
 
-        return typeIdentifier;
+        return typeId;
     }
 
     public JavaSourceModel javaSourceModel() {

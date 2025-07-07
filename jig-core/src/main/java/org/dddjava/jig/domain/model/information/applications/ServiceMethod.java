@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -40,11 +40,11 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
         return method;
     }
 
-    public TypeIdentifier declaringType() {
+    public TypeId declaringType() {
         return method().declaringType();
     }
 
-    public List<TypeIdentifier> internalUsingTypes() {
+    public List<TypeId> internalUsingTypes() {
         return usingMethods().invokedMethodStream()
                 .flatMap(invokedMethod -> invokedMethod.streamAssociatedTypes())
                 .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
@@ -54,14 +54,14 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
                 .toList();
     }
 
-    public Optional<TypeIdentifier> primaryType() {
+    public Optional<TypeId> primaryType() {
         // 戻り値型が主要な関心
-        TypeIdentifier typeIdentifier = method().methodReturnTypeReference().id();
-        if (typeIdentifier.isVoid()) return Optional.empty();
-        return Optional.of(typeIdentifier);
+        TypeId typeId = method().methodReturnTypeReference().id();
+        if (typeId.isVoid()) return Optional.empty();
+        return Optional.of(typeId);
     }
 
-    public List<TypeIdentifier> requireTypes() {
+    public List<TypeId> requireTypes() {
         return method.jigMethodDeclaration().argumentStream()
                 .map(JigTypeReference::id)
                 // primaryTypeは除く

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.stream.Stream;
 
@@ -9,10 +9,10 @@ import java.util.stream.Stream;
  *
  * .classなどでの使用。型引数は付かないので `TypeIdentifier` で扱う。
  */
-public record ClassReference(TypeIdentifier targetTypeIdentifier) implements Instruction {
+public record ClassReference(TypeId targetTypeId) implements Instruction {
 
     @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.of(targetTypeIdentifier);
+    public Stream<TypeId> streamAssociatedTypes() {
+        return Stream.of(targetTypeId);
     }
 }

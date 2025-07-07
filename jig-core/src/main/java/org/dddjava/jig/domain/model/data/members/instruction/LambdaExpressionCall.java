@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -29,11 +29,11 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
     }
 
     @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
+    public Stream<TypeId> streamAssociatedTypes() {
         return Stream.of(
                 origin.methodCall().streamAssociatedTypes(),
                 origin.argumentTypes().stream(),
-                Stream.of(origin.returnType()).filter(Predicate.not(TypeIdentifier::isVoid)),
+                Stream.of(origin.returnType()).filter(Predicate.not(TypeId::isVoid)),
                 // lambdaの中身
                 lambdaExpressionInstructions.associatedTypeStream()
         ).flatMap(stream -> stream);

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 
@@ -54,12 +54,12 @@ public enum JigTypeValueKind {
     private static boolean matchFieldType(JigFields jigFields, Class<?> clz) {
         Collection<JigField> fields = jigFields.fields();
         if (fields.size() != 1) return false;
-        return fields.stream().anyMatch(field -> field.typeIdentifier().equals(TypeIdentifier.from(clz)));
+        return fields.stream().anyMatch(field -> field.typeId().equals(TypeId.from(clz)));
     }
 
     private static boolean isDateRange(JigFields jigFields) {
         Collection<JigField> fields = jigFields.fields();
         if (fields.size() != 2) return false;
-        return fields.stream().anyMatch(field -> field.typeIdentifier().equals(TypeIdentifier.from(LocalDate.class)));
+        return fields.stream().anyMatch(field -> field.typeId().equals(TypeId.from(LocalDate.class)));
     }
 }

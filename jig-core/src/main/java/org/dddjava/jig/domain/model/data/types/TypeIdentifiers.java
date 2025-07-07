@@ -13,27 +13,27 @@ import java.util.stream.Collectors;
 /**
  * 型の識別子一覧
  */
-public record TypeIdentifiers(Set<TypeIdentifier> identifiers) {
+public record TypeIdentifiers(Set<TypeId> identifiers) {
 
-    public List<TypeIdentifier> list() {
-        ArrayList<TypeIdentifier> list = new ArrayList<>(this.identifiers);
-        list.sort(Comparator.comparing(TypeIdentifier::fullQualifiedName));
+    public List<TypeId> list() {
+        ArrayList<TypeId> list = new ArrayList<>(this.identifiers);
+        list.sort(Comparator.comparing(TypeId::fullQualifiedName));
         return list;
     }
 
-    public static Collector<TypeIdentifier, ?, TypeIdentifiers> collector() {
+    public static Collector<TypeId, ?, TypeIdentifiers> collector() {
         return Collectors.collectingAndThen(Collectors.toSet(), TypeIdentifiers::new);
     }
 
     public String asSimpleText() {
         return identifiers.stream().distinct().toList().stream()
-                .map(TypeIdentifier::asSimpleText)
+                .map(TypeId::asSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    public boolean contains(TypeIdentifier typeIdentifier) {
-        return identifiers.contains(typeIdentifier);
+    public boolean contains(TypeId typeId) {
+        return identifiers.contains(typeId);
     }
 
     public boolean empty() {
@@ -42,13 +42,13 @@ public record TypeIdentifiers(Set<TypeIdentifier> identifiers) {
 
     public PackageIds packageIdentifiers() {
         Set<PackageId> availablePackages = identifiers.stream()
-                .map(TypeIdentifier::packageIdentifier)
+                .map(TypeId::packageIdentifier)
                 .collect(Collectors.toSet());
         return new PackageIds(availablePackages);
     }
 
     public TypeIdentifiers normalize() {
-        return identifiers.stream().map(TypeIdentifier::normalize).distinct().collect(collector());
+        return identifiers.stream().map(TypeId::normalize).distinct().collect(collector());
     }
 
     public int size() {

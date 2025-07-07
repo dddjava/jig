@@ -33,14 +33,14 @@ record JigAnnotationElementNormalValue(Object value)
  *
  * <code>@Hoge(value = MyEnum.HOGE)</code>
  *
- * @param typeIdentifier enumの型
+ * @param typeId enumの型
  * @param constantName   列挙値のname
  */
-record JigAnnotationElementEnumValue(TypeIdentifier typeIdentifier, String constantName)
+record JigAnnotationElementEnumValue(TypeId typeId, String constantName)
         implements JigAnnotationElementValue {
     @Override
     public String valueText() {
-        return typeIdentifier.asSimpleName() + "." + constantName;
+        return typeId.asSimpleName() + "." + constantName;
     }
 }
 
@@ -49,7 +49,7 @@ record JigAnnotationElementEnumValue(TypeIdentifier typeIdentifier, String const
  *
  * <code>@Hoge(value = Hoge.class)</code>
  */
-record JigAnnotationElementClassValue(TypeIdentifier value)
+record JigAnnotationElementClassValue(TypeId value)
         implements JigAnnotationElementValue {
     @Override
     public String valueText() {
@@ -79,12 +79,12 @@ record JigAnnotationElementArray(List<JigAnnotationElementValue> values)
  *
  * <code>@Hoge(value = @Fuga)</code>
  */
-record JigAnnotationInstanceElementAnnotationValue(TypeIdentifier typeIdentifier,
+record JigAnnotationInstanceElementAnnotationValue(TypeId typeId,
                                                    Collection<JigAnnotationElementValuePair> elements)
         implements JigAnnotationElementValue {
     @Override
     public String valueText() {
         // どこまでも深くなるので必要になるまで簡略出力としておく
-        return "@" + typeIdentifier.asSimpleName() + "(...)";
+        return "@" + typeId.asSimpleName() + "(...)";
     }
 }

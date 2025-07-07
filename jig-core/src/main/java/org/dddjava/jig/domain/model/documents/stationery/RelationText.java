@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 
@@ -52,7 +52,7 @@ public class RelationText {
         add(from.asText(), to.asText());
     }
 
-    public void add(JigMethodId from, TypeIdentifier to) {
+    public void add(JigMethodId from, TypeId to) {
         add(from.value(), to.fullQualifiedName());
     }
 

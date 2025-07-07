@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter.html.mermaid;
 
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
@@ -51,7 +51,7 @@ public class TypeRelationMermaidDiagram {
                 : partitioningRelations.values().stream().flatMap(Collection::stream).toList();
 
         // 関連に含まれるnodeをパッケージの内側と外側に仕分け＆ラベル付け
-        Set<TypeIdentifier> targetTypes = targetRelationships.stream()
+        Set<TypeId> targetTypes = targetRelationships.stream()
                 .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
                 .collect(Collectors.toSet());
         // 内側:true, 外側:false のMapに振り分ける
@@ -109,7 +109,7 @@ public class TypeRelationMermaidDiagram {
      * TypeIdentifierで使用できる文字は使用できそうなのと、
      * このダイアグラムでは種類も多くないのでFQNをそのまま使用する。
      */
-    private String mermaidId(TypeIdentifier typeIdentifier) {
-        return typeIdentifier.fullQualifiedName();
+    private String mermaidId(TypeId typeId) {
+        return typeId.fullQualifiedName();
     }
 }

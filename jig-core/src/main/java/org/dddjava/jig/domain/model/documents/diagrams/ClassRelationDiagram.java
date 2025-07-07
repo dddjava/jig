@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -70,10 +70,10 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
             graph.add(subgraph.toString());
         }
 
-        Edges<TypeIdentifier> edges = jigDiagramOption.transitiveReduction()
+        Edges<TypeId> edges = jigDiagramOption.transitiveReduction()
                 ? internalClassRelations.toEdges().transitiveReduction()
                 : internalClassRelations.toEdges();
-        for (Edge<TypeIdentifier> edge : edges.list()) {
+        for (Edge<TypeId> edge : edges.list()) {
             graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }
 

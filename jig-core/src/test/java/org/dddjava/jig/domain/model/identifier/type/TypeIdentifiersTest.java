@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.identifier.type;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,7 +19,7 @@ class TypeIdentifiersTest {
     @ParameterizedTest
     @MethodSource
     void test(List<String> identifiers, String simpleText) {
-        TypeIdentifiers sut = identifiers.stream().map(TypeIdentifier::valueOf).collect(TypeIdentifiers.collector());
+        TypeIdentifiers sut = identifiers.stream().map(TypeId::valueOf).collect(TypeIdentifiers.collector());
 
         assertEquals(simpleText, sut.asSimpleText());
     }
@@ -37,7 +37,7 @@ class TypeIdentifiersTest {
     @ParameterizedTest
     @MethodSource
     void typeIdentifier_asSimpleText(String fullName, String simpleText) {
-        TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
+        TypeId hoge = TypeId.valueOf(fullName);
 
         assertEquals(simpleText, hoge.asSimpleText());
     }
@@ -54,7 +54,7 @@ class TypeIdentifiersTest {
     @ParameterizedTest
     @MethodSource
     void typeIdentifier_packageIdentifier(String fullName, String packageName) {
-        TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
+        TypeId hoge = TypeId.valueOf(fullName);
 
         assertEquals(PackageId.valueOf(packageName), hoge.packageIdentifier());
     }

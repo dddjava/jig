@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.stream.Stream;
 
@@ -11,33 +11,33 @@ import java.util.stream.Stream;
 public sealed interface FieldAccess extends Instruction
         permits GetAccess, SetAccess, UnknownAccess {
 
-    TypeIdentifier fieldTypeIdentifier();
+    TypeId fieldTypeId();
 
     JigFieldId jigFieldId();
 
-    static FieldAccess set(TypeIdentifier typeIdentifier, JigFieldId jigFieldId) {
-        return new SetAccess(typeIdentifier, jigFieldId);
+    static FieldAccess set(TypeId typeId, JigFieldId jigFieldId) {
+        return new SetAccess(typeId, jigFieldId);
     }
 
-    static FieldAccess get(TypeIdentifier typeIdentifier, JigFieldId jigFieldId) {
-        return new GetAccess(typeIdentifier, jigFieldId);
+    static FieldAccess get(TypeId typeId, JigFieldId jigFieldId) {
+        return new GetAccess(typeId, jigFieldId);
     }
 
-    static FieldAccess unknown(TypeIdentifier typeIdentifier, JigFieldId jigFieldId) {
-        return new UnknownAccess(typeIdentifier, jigFieldId);
+    static FieldAccess unknown(TypeId typeId, JigFieldId jigFieldId) {
+        return new UnknownAccess(typeId, jigFieldId);
     }
 
     @Override
-    default Stream<TypeIdentifier> streamAssociatedTypes() {
-        return Stream.of(fieldTypeIdentifier(), jigFieldId().declaringTypeIdentifier());
+    default Stream<TypeId> streamAssociatedTypes() {
+        return Stream.of(fieldTypeId(), jigFieldId().declaringTypeIdentifier());
     }
 }
 
-record GetAccess(TypeIdentifier fieldTypeIdentifier, JigFieldId jigFieldId) implements FieldAccess {
+record GetAccess(TypeId fieldTypeId, JigFieldId jigFieldId) implements FieldAccess {
 }
 
-record SetAccess(TypeIdentifier fieldTypeIdentifier, JigFieldId jigFieldId) implements FieldAccess {
+record SetAccess(TypeId fieldTypeId, JigFieldId jigFieldId) implements FieldAccess {
 }
 
-record UnknownAccess(TypeIdentifier fieldTypeIdentifier, JigFieldId jigFieldId) implements FieldAccess {
+record UnknownAccess(TypeId fieldTypeId, JigFieldId jigFieldId) implements FieldAccess {
 }

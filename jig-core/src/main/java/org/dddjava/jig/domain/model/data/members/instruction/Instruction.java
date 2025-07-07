@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.stream.Stream;
 
@@ -25,7 +25,7 @@ public sealed interface Instruction
     /**
      * この命令によって関連づけられる型のストリーム
      */
-    default Stream<TypeIdentifier> streamAssociatedTypes() {
+    default Stream<TypeId> streamAssociatedTypes() {
         return Stream.empty();
     }
 

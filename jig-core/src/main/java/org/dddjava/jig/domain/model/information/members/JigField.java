@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.members;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
  * フィールド　
@@ -18,7 +18,7 @@ public record JigField(JigFieldHeader jigFieldHeader, Term term) {
         return jigFieldHeader.jigTypeReference();
     }
 
-    public TypeIdentifier typeIdentifier() {
+    public TypeId typeId() {
         return jigFieldHeader.jigTypeReference().id();
     }
 

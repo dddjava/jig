@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.members;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,7 +21,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return header.name();
     }
 
-    public Set<TypeIdentifier> associatedTypes() {
+    public Set<TypeId> associatedTypes() {
         return Stream.concat(
                 instructions.associatedTypeStream(),
                 header.associatedTypeStream()
@@ -32,7 +32,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return header.argumentList().stream();
     }
 
-    public TypeIdentifier declaringTypeIdentifier() {
+    public TypeId declaringTypeIdentifier() {
         return header.id().tuple().declaringTypeIdentifier();
     }
 

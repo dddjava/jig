@@ -59,7 +59,7 @@ public class Validations {
 
     public List<Validation> list() {
         return list.stream()
-                .sorted(Comparator.comparing(validation -> validation.typeIdentifier()))
+                .sorted(Comparator.comparing(validation -> validation.typeId()))
                 .toList();
     }
 }

@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.instruction.*;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -220,8 +220,8 @@ public class AsmMethodVisitorInstructionTest {
     void メソッド参照やLambda式で使用している型が検出できる(String methodName, String expected) {
         JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, methodName);
 
-        Set<TypeIdentifier> actual = jigMethod.jigMethodDeclaration().associatedTypes();
-        assertTrue(actual.contains(TypeIdentifier.valueOf(expected)), actual.toString());
+        Set<TypeId> actual = jigMethod.jigMethodDeclaration().associatedTypes();
+        assertTrue(actual.contains(TypeId.valueOf(expected)), actual.toString());
     }
 
     @Test

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ public class JigTypes {
     private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
 
     private final List<JigType> list;
-    private final Map<TypeIdentifier, JigType> map;
+    private final Map<TypeId, JigType> map;
 
     public JigTypes(List<JigType> list) {
         this.list = list.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
@@ -63,8 +63,8 @@ public class JigTypes {
                 .findAny();
     }
 
-    public Optional<JigType> resolveJigType(TypeIdentifier typeIdentifier) {
-        return Optional.ofNullable(map.get(typeIdentifier));
+    public Optional<JigType> resolveJigType(TypeId typeId) {
+        return Optional.ofNullable(map.get(typeId));
     }
 
     public boolean isService(JigMethodId jigMethodId) {
@@ -74,8 +74,8 @@ public class JigTypes {
                 .isPresent();
     }
 
-    public boolean isApplicationComponent(TypeIdentifier typeIdentifier) {
-        return resolveJigType(typeIdentifier)
+    public boolean isApplicationComponent(TypeId typeId) {
+        return resolveJigType(typeId)
                 .stream()
                 .anyMatch(jigType -> jigType.typeCategory().isApplicationComponent());
     }
@@ -92,8 +92,8 @@ public class JigTypes {
         return new TypeIdentifiers(map.keySet());
     }
 
-    public boolean contains(TypeIdentifier typeIdentifier) {
-        return map.containsKey(typeIdentifier);
+    public boolean contains(TypeId typeId) {
+        return map.containsKey(typeId);
     }
 
     public Stream<JigType> stream() {

@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 
@@ -22,21 +22,21 @@ public class SequenceMermaidDiagram {
         StringBuilder sb = new StringBuilder();
         sb.append("sequenceDiagram\n");
 
-        TypeIdentifier caller = jigMethodDeclaration.declaringTypeIdentifier();
+        TypeId caller = jigMethodDeclaration.declaringTypeIdentifier();
 
         jigMethodDeclaration.instructions().methodCallStream()
                 // Java標準ライブラリのクラスを除外
                 .filter(methodCall -> !methodCall.isJSL())
                 .forEach(methodCall -> {
-            TypeIdentifier callee = methodCall.methodOwner();
+            TypeId callee = methodCall.methodOwner();
             String methodName = methodCall.methodName();
-            TypeIdentifier returnType = methodCall.returnType();
+            TypeId returnType = methodCall.returnType();
 
             // Format arguments
             String args = methodCall.argumentTypes().isEmpty() ?
                     "()" :
                     "(" + methodCall.argumentTypes().stream()
-                            .map(TypeIdentifier::asSimpleText)
+                            .map(TypeId::asSimpleText)
                             .collect(Collectors.joining(", ")) + ")";
 
             // Add call line

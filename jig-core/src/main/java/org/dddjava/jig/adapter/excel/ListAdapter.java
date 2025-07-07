@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -113,9 +113,9 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::nameArgumentsReturnSimpleText).sorted().collect(STREAM_COLLECTOR))
                 ), coreDomainJigTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
-                        ReportItem.ofString("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
-                        ReportItem.ofString("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                        ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.typeIdentifier()).title()),
+                        ReportItem.ofString("パッケージ名", item -> item.typeId().packageIdentifier().asText()),
+                        ReportItem.ofString("クラス名", item -> item.typeId().asSimpleText()),
+                        ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.typeId()).title()),
                         ReportItem.ofString("メンバ名", item -> item.memberName()),
                         ReportItem.ofString("メンバクラス名", item -> item.memberType().asSimpleText()),
                         ReportItem.ofString("アノテーションクラス名", item -> item.annotationType().asSimpleText()),
@@ -153,7 +153,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().jigFieldIds().stream()
                                 .map(JigFieldId::declaringTypeIdentifier)
-                                .map(TypeIdentifier::asSimpleText)
+                                .map(TypeId::asSimpleText)
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("分岐数", item -> item.jigMethod().instructions().decisionCount()),
@@ -179,7 +179,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.usingFields().jigFieldIds().stream()
                                 .map(JigFieldId::declaringTypeIdentifier)
-                                .map(TypeIdentifier::asSimpleText)
+                                .map(TypeId::asSimpleText)
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionCount()),

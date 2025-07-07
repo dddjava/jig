@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.architecture;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -51,15 +51,15 @@ public class PackageBasedArchitecture {
                 .orElse(Collections.emptyList());
     }
 
-    public PackageId packageIdentifier(TypeIdentifier arg) {
-        TypeIdentifier typeIdentifier = arg.normalize().unarray();
+    public PackageId packageIdentifier(TypeId arg) {
+        TypeId typeId = arg.normalize().unarray();
         for (PackageId architecturePackage : architecturePackages) {
-            if (typeIdentifier.fullQualifiedName().startsWith(architecturePackage.asText())) {
+            if (typeId.fullQualifiedName().startsWith(architecturePackage.asText())) {
                 return architecturePackage;
             }
         }
 
-        String fqn = typeIdentifier.fullQualifiedName();
+        String fqn = typeId.fullQualifiedName();
         // 2階層までに丸める
         int depth = 2;
         String[] split = fqn.split("\\.");

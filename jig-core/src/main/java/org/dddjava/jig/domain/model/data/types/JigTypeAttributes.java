@@ -26,12 +26,12 @@ public record JigTypeAttributes(JigTypeVisibility jigTypeVisibility,
                 .toList();
     }
 
-    public boolean declaredAnnotation(TypeIdentifier typeIdentifier) {
+    public boolean declaredAnnotation(TypeId typeId) {
         return declarationAnnotationInstances.stream()
-                .anyMatch(jigAnnotationInstance -> jigAnnotationInstance.id().equals(typeIdentifier));
+                .anyMatch(jigAnnotationInstance -> jigAnnotationInstance.id().equals(typeId));
     }
 
-    public Collection<? extends TypeIdentifier> typeIdSet() {
+    public Collection<? extends TypeId> typeIdSet() {
         // アノテーションのelementの型がまだはいっていない
         // 型パラメタ（の境界型）がまだはいっていない
         return declarationAnnotationInstances.stream()

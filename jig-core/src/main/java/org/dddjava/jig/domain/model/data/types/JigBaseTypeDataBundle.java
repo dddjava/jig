@@ -14,13 +14,13 @@ public record JigBaseTypeDataBundle(
         Optional<JigTypeReference> superType,
         Collection<JigTypeReference> interfaceTypes) {
 
-    public Set<TypeIdentifier> typeIdSet() {
+    public Set<TypeId> typeIdSet() {
         return Stream.concat(superType.stream(), interfaceTypes.stream())
                 .flatMap(jigBaseTypeData -> Stream.concat(
                         Stream.of(jigBaseTypeData.id()),
                         jigBaseTypeData.typeArgumentList().stream()
                                 .map(JigTypeArgument::value)
-                                .map(value -> TypeIdentifier.valueOf(value))
+                                .map(value -> TypeId.valueOf(value))
                 ))
                 // "." の含まれていないものは型パラメタとして扱う。デフォルトパッケージのクラスも該当してしまうが、良しとする。
                 .filter(jigTypeHeaderJigObjectId -> jigTypeHeaderJigObjectId.value().contains("."))

@@ -11,11 +11,11 @@ import java.util.stream.Stream;
 /**
  * *型の識別子
  */
-public class TypeIdentifier implements Comparable<TypeIdentifier> {
+public class TypeId implements Comparable<TypeId> {
 
     private final String value;
 
-    protected TypeIdentifier(String value) {
+    protected TypeId(String value) {
         this.value = value.replace('/', '.');
     }
 
@@ -23,19 +23,19 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return value;
     }
 
-    public static TypeIdentifier fromJvmBinaryName(String jvmBinaryName) {
-        return new TypeIdentifier(jvmBinaryName.replace('/', '.'));
+    public static TypeId fromJvmBinaryName(String jvmBinaryName) {
+        return new TypeId(jvmBinaryName.replace('/', '.'));
     }
 
-    private static final Map<String, TypeIdentifier> cache = new ConcurrentHashMap<>();
+    private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
 
-    public static TypeIdentifier from(Class<?> clz) {
+    public static TypeId from(Class<?> clz) {
         return valueOf(clz.getName());
     }
 
-    public static TypeIdentifier valueOf(String value) {
+    public static TypeId valueOf(String value) {
         if (cache.containsKey(value)) return cache.get(value);
-        var instance = new TypeIdentifier(value);
+        var instance = new TypeId(value);
         cache.put(value, instance);
         return instance;
     }
@@ -81,7 +81,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TypeIdentifier that = (TypeIdentifier) o;
+        TypeId that = (TypeId) o;
         return Objects.equals(value, that.value);
     }
 
@@ -97,7 +97,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
                 '}';
     }
 
-    public TypeIdentifier normalize() {
+    public TypeId normalize() {
         // コンパイラが生成する継承クラス名を元の名前にする
         // enumで Hoge$1 などになっているものが対象
         if (value.indexOf('$') == -1) {
@@ -129,11 +129,11 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     }
 
     @Override
-    public int compareTo(TypeIdentifier others) {
+    public int compareTo(TypeId others) {
         return value.compareTo(others.value);
     }
 
-    public TypeIdentifier unarray() {
+    public TypeId unarray() {
         return valueOf(value.replace("[L", "").replace(";", "").replace("[]", ""));
     }
 
@@ -157,7 +157,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return packageIdentifier().abbreviationText() + "." + asSimpleText();
     }
 
-    public TypeIdentifier convertArray() {
+    public TypeId convertArray() {
         return valueOf(value + "[]");
     }
 }

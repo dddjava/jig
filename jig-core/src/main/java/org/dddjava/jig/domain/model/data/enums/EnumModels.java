@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.enums;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
 import java.util.Map;
@@ -16,8 +16,8 @@ public class EnumModels {
         this.list = list;
     }
 
-    public Map<TypeIdentifier, EnumModel> toMap() {
+    public Map<TypeId, EnumModel> toMap() {
         return list.stream()
-                .collect(Collectors.toMap(enumModel -> enumModel.typeIdentifier, enumModel -> enumModel));
+                .collect(Collectors.toMap(enumModel -> enumModel.typeId, enumModel -> enumModel));
     }
 }

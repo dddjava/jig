@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;
@@ -57,8 +57,8 @@ class AsmFieldVisitor extends FieldVisitor {
 
     private static JigTypeReference resolveFieldTypeReference(int api, String descriptor, String signature) {
         if (signature == null) {
-            TypeIdentifier fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
-            return JigTypeReference.fromId(fieldTypeIdentifier);
+            TypeId fieldTypeId = AsmUtils.typeDescriptorToIdentifier(descriptor);
+            return JigTypeReference.fromId(fieldTypeId);
         }
         AsmTypeSignatureVisitor typeSignatureVisitor = new AsmTypeSignatureVisitor(api);
         new SignatureReader(signature).accept(typeSignatureVisitor);

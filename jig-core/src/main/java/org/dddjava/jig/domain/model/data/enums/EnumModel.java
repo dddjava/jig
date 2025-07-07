@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.enums;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +10,7 @@ import java.util.List;
  * Enum固有で取得するモデル
  */
 public class EnumModel {
-    TypeIdentifier typeIdentifier;
+    TypeId typeId;
 
     /**
      * 列挙定数
@@ -18,8 +18,8 @@ public class EnumModel {
     List<EnumConstant> enumConstants;
     List<List<String>> constructorArgumentNamesList = new ArrayList<>();
 
-    public EnumModel(TypeIdentifier typeIdentifier, List<EnumConstant> enumConstants) {
-        this.typeIdentifier = typeIdentifier;
+    public EnumModel(TypeId typeId, List<EnumConstant> enumConstants) {
+        this.typeId = typeId;
         this.enumConstants = enumConstants;
     }
 

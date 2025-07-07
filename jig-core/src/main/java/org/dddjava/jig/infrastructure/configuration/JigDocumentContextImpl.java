@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -27,8 +27,8 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     }
 
     @Override
-    public Term typeTerm(TypeIdentifier typeIdentifier) {
-        return glossaryRepository.get(typeIdentifier);
+    public Term typeTerm(TypeId typeId) {
+        return glossaryRepository.get(typeId);
     }
 
     @Override

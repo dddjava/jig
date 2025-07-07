@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
@@ -25,19 +25,19 @@ class ServiceMethodTest {
     void name(JigService jigService, JigRepository jigRepository) {
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
 
-        var targetType = jigTypes.resolveJigType(TypeIdentifier.from(CanonicalService.class)).orElseThrow();
+        var targetType = jigTypes.resolveJigType(TypeId.from(CanonicalService.class)).orElseThrow();
         ServiceMethod sut = targetType.allJigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals("fuga"))
                 .findAny()
                 .map(jigMethod -> new ServiceMethod(jigMethod, new CallerMethods(Set.of())))
                 .orElseThrow();
 
-        Optional<TypeIdentifier> primaryType = sut.primaryType();
-        assertEquals(TypeIdentifier.from(Fuga.class), primaryType.orElseThrow());
+        Optional<TypeId> primaryType = sut.primaryType();
+        assertEquals(TypeId.from(Fuga.class), primaryType.orElseThrow());
 
-        List<TypeIdentifier> requireTypes = sut.requireTypes();
+        List<TypeId> requireTypes = sut.requireTypes();
         assertEquals(1, requireTypes.size());
-        assertEquals(TypeIdentifier.from(FugaIdentifier.class), requireTypes.get(0));
+        assertEquals(TypeId.from(FugaIdentifier.class), requireTypes.get(0));
 
         UsingMethods usingMethods = sut.usingMethods();
         assertEquals(2, usingMethods.methodCalls().size());

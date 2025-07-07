@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 
 import java.util.List;
@@ -19,15 +19,15 @@ public class Usecase {
         this.usecaseCategory = UsecaseCategory.resolver(serviceAngle);
     }
 
-    public List<TypeIdentifier> internalUsingTypes() {
+    public List<TypeId> internalUsingTypes() {
         return serviceMethod.internalUsingTypes();
     }
 
-    public Optional<TypeIdentifier> primaryType() {
+    public Optional<TypeId> primaryType() {
         return serviceMethod.primaryType();
     }
 
-    public List<TypeIdentifier> requireTypes() {
+    public List<TypeId> requireTypes() {
         return serviceMethod.requireTypes();
     }
 
@@ -47,7 +47,7 @@ public class Usecase {
         return usecaseCategory.handler();
     }
 
-    public TypeIdentifier declaringType() {
+    public TypeId declaringType() {
         return serviceMethod.declaringType();
     }
 }

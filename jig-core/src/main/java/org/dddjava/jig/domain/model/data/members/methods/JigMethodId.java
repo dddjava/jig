@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.methods;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,9 +14,9 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
     /**
      * 完全なIDを生成するファクトリ
      */
-    public static JigMethodId from(TypeIdentifier declaringType, String methodName, List<TypeIdentifier> parameterTypeIdentifiers) {
+    public static JigMethodId from(TypeId declaringType, String methodName, List<TypeId> parameterTypeIds) {
         return new JigMethodId("%s#%s(%s)".formatted(declaringType.fullQualifiedName(), methodName,
-                parameterTypeIdentifiers.stream().map(TypeIdentifier::fullQualifiedName).collect(Collectors.joining(","))));
+                parameterTypeIds.stream().map(TypeId::fullQualifiedName).collect(Collectors.joining(","))));
     }
 
     public String name() {
@@ -47,16 +47,16 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
         return "%s.%s(%s)".formatted(
                 tuple.declaringTypeIdentifier().asSimpleName(),
                 tuple.name(),
-                tuple.parameterTypeIdentifiers().stream().map(TypeIdentifier::asSimpleName).collect(Collectors.joining(",")));
+                tuple.parameterTypeIdentifiers().stream().map(TypeId::asSimpleName).collect(Collectors.joining(",")));
     }
 
     public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNames) {
-        public TypeIdentifier declaringTypeIdentifier() {
-            return TypeIdentifier.valueOf(declaringTypeName);
+        public TypeId declaringTypeIdentifier() {
+            return TypeId.valueOf(declaringTypeName);
         }
 
-        public List<TypeIdentifier> parameterTypeIdentifiers() {
-            return parameterTypeNames.stream().map(TypeIdentifier::valueOf).toList();
+        public List<TypeId> parameterTypeIdentifiers() {
+            return parameterTypeNames.stream().map(TypeId::valueOf).toList();
         }
     }
 

@@ -11,7 +11,7 @@ import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.data.rdbaccess.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
         // Mapperアノテーションがついているクラスを対象にする
         Collection<String> classNames = jigTypeHeaders.stream()
                 .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributes()
-                        .declaredAnnotation(TypeIdentifier.valueOf("org.apache.ibatis.annotations.Mapper")))
+                        .declaredAnnotation(TypeId.valueOf("org.apache.ibatis.annotations.Mapper")))
                 .map(JigTypeHeader::fqn)
                 .toList();
 

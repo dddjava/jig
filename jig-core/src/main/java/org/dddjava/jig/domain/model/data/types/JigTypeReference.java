@@ -13,19 +13,19 @@ import java.util.stream.Stream;
  * @param typeAnnotations  参照時に指定された型アノテーション
  * @param typeArgumentList 参照した型が型パラメタを持つ場合に指定される型引数
  */
-public record JigTypeReference(TypeIdentifier id,
+public record JigTypeReference(TypeId id,
                                Collection<JigAnnotationReference> typeAnnotations,
                                List<JigTypeArgument> typeArgumentList) {
-    public static JigTypeReference fromId(TypeIdentifier id) {
+    public static JigTypeReference fromId(TypeId id) {
         return new JigTypeReference(id, List.of(), List.of());
     }
 
     public static JigTypeReference fromId(String id) {
-        return fromId(TypeIdentifier.valueOf(id));
+        return fromId(TypeId.valueOf(id));
     }
 
     public static JigTypeReference fromJvmBinaryName(String jvmBinaryName) {
-        return fromId(TypeIdentifier.fromJvmBinaryName(jvmBinaryName));
+        return fromId(TypeId.fromJvmBinaryName(jvmBinaryName));
     }
 
     public String simpleName() {
@@ -58,7 +58,7 @@ public record JigTypeReference(TypeIdentifier id,
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 
-    public Stream<TypeIdentifier> allTypeIentifierStream() {
+    public Stream<TypeId> allTypeIentifierStream() {
         return Stream.of(
                 // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
                 id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
@@ -72,6 +72,6 @@ public record JigTypeReference(TypeIdentifier id,
     }
 
     public boolean typeIs(Class<?> clz) {
-        return id.equals(TypeIdentifier.from(clz));
+        return id.equals(TypeId.from(clz));
     }
 }

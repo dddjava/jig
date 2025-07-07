@@ -14,20 +14,20 @@ public record JigAnnotationElementValuePair(String name, JigAnnotationElementVal
         return new JigAnnotationElementValuePair(name, new JigAnnotationElementNormalValue(value));
     }
 
-    public static JigAnnotationElementValuePair enumElement(String name, TypeIdentifier typeIdentifier, String value) {
-        return new JigAnnotationElementValuePair(name, new JigAnnotationElementEnumValue(typeIdentifier, value));
+    public static JigAnnotationElementValuePair enumElement(String name, TypeId typeId, String value) {
+        return new JigAnnotationElementValuePair(name, new JigAnnotationElementEnumValue(typeId, value));
     }
 
-    public static JigAnnotationElementValuePair annotationElement(String name, TypeIdentifier typeIdentifier, Collection<JigAnnotationElementValuePair> elements) {
-        return new JigAnnotationElementValuePair(name, new JigAnnotationInstanceElementAnnotationValue(typeIdentifier, elements));
+    public static JigAnnotationElementValuePair annotationElement(String name, TypeId typeId, Collection<JigAnnotationElementValuePair> elements) {
+        return new JigAnnotationElementValuePair(name, new JigAnnotationInstanceElementAnnotationValue(typeId, elements));
     }
 
     public static JigAnnotationElementValuePair arrayElement(String name, List<JigAnnotationElementValue> values) {
         return new JigAnnotationElementValuePair(name, new JigAnnotationElementArray(values));
     }
 
-    public static JigAnnotationElementValuePair classElement(String name, TypeIdentifier typeIdentifier) {
-        return new JigAnnotationElementValuePair(name, new JigAnnotationElementClassValue(typeIdentifier));
+    public static JigAnnotationElementValuePair classElement(String name, TypeId typeId) {
+        return new JigAnnotationElementValuePair(name, new JigAnnotationElementClassValue(typeId));
     }
 
     public boolean matchName(String[] elementNames) {

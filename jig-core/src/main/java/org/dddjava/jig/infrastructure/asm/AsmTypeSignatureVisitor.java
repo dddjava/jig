@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,14 +170,14 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
      */
     public JigTypeReference jigTypeReference() {
         if (baseTypeIdentifier != null) {
-            return JigTypeReference.fromId(TypeIdentifier.valueOf(baseTypeIdentifier));
+            return JigTypeReference.fromId(TypeId.valueOf(baseTypeIdentifier));
         } else if (typeVariableIdentifier != null) {
-            return JigTypeReference.fromId(TypeIdentifier.valueOf(typeVariableIdentifier));
+            return JigTypeReference.fromId(TypeId.valueOf(typeVariableIdentifier));
         } else if (arrayAsmTypeSignatureVisitor != null) {
             return arrayAsmTypeSignatureVisitor.jigTypeReference().convertArray();
         } else if (classType != null) {
             return new JigTypeReference(
-                    TypeIdentifier.fromJvmBinaryName(classType.name()),
+                    TypeId.fromJvmBinaryName(classType.name()),
                     List.of(), // 型アノテーション未対応
                     classType.arguments().stream()
                             .map(visitor -> visitor.typeArgument())

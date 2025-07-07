@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -54,7 +54,7 @@ public record UsecaseMermaidDiagram(
             }
         });
 
-        Set<TypeIdentifier> others = new HashSet<>();
+        Set<TypeId> others = new HashSet<>();
 
         Function<JigMethodId, Optional<String>> converter = jigMethodIdentifier -> {
             // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
@@ -102,7 +102,7 @@ public record UsecaseMermaidDiagram(
 
         var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()
-                .map(TypeIdentifier::packageAbbreviationText)
+                .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }

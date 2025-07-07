@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,19 +20,19 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
         // org.springframework.core.annotation.AbstractAliasAwareAnnotationAttributeExtractor.getAttributeValue
         // 複数（ @RequestMapping({"a", "b"}) など）への対応は、そのうち。
         String classPath = entrypointMethod.jigType()
-                .annotationValueOf(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
+                .annotationValueOf(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
                 .filter(value -> !"/".equals(value)).orElse("");
 
         String methodPath;
         List<JigAnnotationReference> methodAnnotations = jigMethod.declarationAnnotationStream()
                 .filter(jigAnnotationReference -> {
-                    TypeIdentifier typeIdentifier = jigAnnotationReference.id();
-                    return typeIdentifier.equals(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"))
-                            || typeIdentifier.equals(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.GetMapping"))
-                            || typeIdentifier.equals(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.PostMapping"))
-                            || typeIdentifier.equals(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.PutMapping"))
-                            || typeIdentifier.equals(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.DeleteMapping"))
-                            || typeIdentifier.equals(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.PatchMapping"));
+                    TypeId typeId = jigAnnotationReference.id();
+                    return typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"))
+                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.GetMapping"))
+                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.PostMapping"))
+                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.PutMapping"))
+                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.DeleteMapping"))
+                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.PatchMapping"));
                 })
                 .toList();
         if (methodAnnotations.isEmpty()) {
@@ -52,7 +52,7 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
 
         // インタフェースラベルとしてはSwaggerアノテーションから概要を取得できる場合はそれを採用する。取得できない場合はJigMethodとしてのラベル。
         var optOperationSummary = jigMethod.declarationAnnotationStream()
-                .filter(methodAnnotation -> methodAnnotation.id().equals(TypeIdentifier.valueOf("io.swagger.v3.oas.annotations.Operation")))
+                .filter(methodAnnotation -> methodAnnotation.id().equals(TypeId.valueOf("io.swagger.v3.oas.annotations.Operation")))
                 .flatMap(methodAnnotation -> methodAnnotation.elementTextOf("summary").stream())
                 .findAny();
         String interfaceLabel = optOperationSummary.orElseGet(jigMethod::labelText);

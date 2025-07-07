@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.nio.file.Path;
@@ -23,7 +23,7 @@ public interface JigDocumentContext {
     /**
      * 型に対応する用語
      */
-    Term typeTerm(TypeIdentifier typeIdentifier);
+    Term typeTerm(TypeId typeId);
 
     /**
      * ドキュメント出力先ディレクトリ

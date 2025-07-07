@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.application.JigTypesWithRelationships;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -46,13 +46,13 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
             boolean related = false;
             TypeIdentifiers serviceMethodUsingTypes = serviceMethod.usingTypes();
-            for (TypeIdentifier usingTypeIdentifier : serviceMethodUsingTypes.list()) {
-                if (categoryRelatedTypes.contains(usingTypeIdentifier)
+            for (TypeId usingTypeId : serviceMethodUsingTypes.list()) {
+                if (categoryRelatedTypes.contains(usingTypeId)
                         // ビジネスルールとの関連を持たないCategoryも対象にするためのor条件
-                        || categoryJigTypes.typeIdentifiers().contains(usingTypeIdentifier)) {
+                        || categoryJigTypes.typeIdentifiers().contains(usingTypeId)) {
                     // サービスメソッドからBusinessRule（Category含む）への関連を追加する
                     // この関連は[クラス->クラス]でなく[メソッド -> クラス]の関連になる
-                    serviceRelationText.add(serviceMethod.method().jigMethodIdentifier(), usingTypeIdentifier);
+                    serviceRelationText.add(serviceMethod.method().jigMethodIdentifier(), usingTypeId);
                     related = true;
                 }
             }

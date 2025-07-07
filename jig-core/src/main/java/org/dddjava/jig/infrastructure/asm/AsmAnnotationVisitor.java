@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationElementValuePair;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.objectweb.asm.AnnotationVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,27 +23,27 @@ import java.util.function.Consumer;
 class AsmAnnotationVisitor extends AnnotationVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmAnnotationVisitor.class);
 
-    private final TypeIdentifier annotationType;
+    private final TypeId annotationType;
     private final List<JigAnnotationElementValuePair> elementList = new ArrayList<>();
     private final Consumer<AsmAnnotationVisitor> finisher;
 
-    private AsmAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<AsmAnnotationVisitor> finisher) {
+    private AsmAnnotationVisitor(int api, TypeId annotationType, Consumer<AsmAnnotationVisitor> finisher) {
         super(api);
         this.annotationType = annotationType;
         this.finisher = finisher;
     }
 
     public static AsmAnnotationVisitor from(int api, String descriptor, Consumer<AsmAnnotationVisitor> finisher) {
-        TypeIdentifier typeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
-        return new AsmAnnotationVisitor(api, typeIdentifier, finisher);
+        TypeId typeId = AsmUtils.typeDescriptorToIdentifier(descriptor);
+        return new AsmAnnotationVisitor(api, typeId, finisher);
     }
 
     @Override
     public void visit(String name, Object value) {
         logger.debug("visit: {}, {}", name, value);
         if (value instanceof org.objectweb.asm.Type typeValue) {
-            TypeIdentifier typeIdentifier = AsmUtils.type2TypeIdentifier(typeValue);
-            elementList.add(JigAnnotationElementValuePair.classElement(name, typeIdentifier));
+            TypeId typeId = AsmUtils.type2TypeIdentifier(typeValue);
+            elementList.add(JigAnnotationElementValuePair.classElement(name, typeId));
         } else {
             elementList.add(JigAnnotationElementValuePair.element(name, value));
         }
@@ -52,8 +52,8 @@ class AsmAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visitEnum(String name, String descriptor, String value) {
         logger.debug("visitEnum: {}, {}, {}", name, descriptor, value);
-        TypeIdentifier typeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
-        elementList.add(JigAnnotationElementValuePair.enumElement(name, typeIdentifier, value));
+        TypeId typeId = AsmUtils.typeDescriptorToIdentifier(descriptor);
+        elementList.add(JigAnnotationElementValuePair.enumElement(name, typeId, value));
     }
 
     @Override

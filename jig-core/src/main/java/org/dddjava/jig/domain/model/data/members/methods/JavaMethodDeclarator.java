@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.methods;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4">JLS/Chapter 8. Classes/8.4. Method Declarations</a>
  */
 public record JavaMethodDeclarator(
-        TypeIdentifier typeIdentifier,
+        TypeId typeId,
         String identifier,
         List<String> formalParameterList
 ) {
@@ -31,7 +31,7 @@ public record JavaMethodDeclarator(
      */
     public boolean possiblyMatches(JigMethodId jigMethodId) {
         var tuple = jigMethodId.tuple();
-        if (typeIdentifier.equals(tuple.declaringTypeIdentifier())) {
+        if (typeId.equals(tuple.declaringTypeIdentifier())) {
             if (identifier.equals(tuple.name())) {
                 // 引数の数が一致しない場合は不一致と判断する。
                 // TODO インナークラスではreceiverの存在により一致しない気がする。挙動を確認するテストを追加する必要がある。不一致で対応しないなら警告を出したり、どこかに制限事項として書く。

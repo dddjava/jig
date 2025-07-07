@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 
 /**
@@ -25,11 +25,11 @@ public record MethodRelation(Edge<JigMethodId> edge) {
         return to().equals(jigMethodId);
     }
 
-    public TypeIdentifier toType() {
+    public TypeId toType() {
         return to().tuple().declaringTypeIdentifier();
     }
 
-    public TypeIdentifier fromType() {
+    public TypeId fromType() {
         return from().tuple().declaringTypeIdentifier();
     }
 }

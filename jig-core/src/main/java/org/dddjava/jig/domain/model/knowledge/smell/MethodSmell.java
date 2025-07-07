@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
@@ -24,7 +24,7 @@ public record MethodSmell(JigMethod method, MethodWorries methodWorries, JigType
         return Optional.of(instance);
     }
 
-    public TypeIdentifier methodReturnType() {
+    public TypeId methodReturnType() {
         return method().methodReturnTypeReference().id();
     }
 

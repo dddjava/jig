@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 public record QueueListener(EntrypointMethod entrypointMethod) {
 
@@ -10,7 +10,7 @@ public record QueueListener(EntrypointMethod entrypointMethod) {
 
     public String queueName() {
         return entrypointMethod.jigMethod().declarationAnnotationStream()
-                .filter(jigAnnotationReference -> jigAnnotationReference.id().equals(TypeIdentifier.valueOf("org.springframework.amqp.rabbit.annotation.RabbitListener")))
+                .filter(jigAnnotationReference -> jigAnnotationReference.id().equals(TypeId.valueOf("org.springframework.amqp.rabbit.annotation.RabbitListener")))
                 .map(jigAnnotationReference -> {
                     // queueは複数記述できるが、たぶんしないので一件目をとってくる
                     return jigAnnotationReference.elementTextOf("queues").orElse("???");

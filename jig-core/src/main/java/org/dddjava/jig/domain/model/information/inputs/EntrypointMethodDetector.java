@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.Collection;
@@ -50,10 +50,10 @@ public class EntrypointMethodDetector {
     Collection<EntrypointMethod> collectMethod(JigType jigType) {
         return detectorConditions.stream()
                 .flatMap(detectorCondition -> {
-                    if (detectorCondition.classAnnotations().stream().map(TypeIdentifier::valueOf)
+                    if (detectorCondition.classAnnotations().stream().map(TypeId::valueOf)
                             .anyMatch(jigType::hasAnnotation)) {
                         return jigType.instanceJigMethodStream().filter(jigMethod ->
-                                        detectorCondition.methodAnnotations().stream().map(TypeIdentifier::valueOf)
+                                        detectorCondition.methodAnnotations().stream().map(TypeId::valueOf)
                                                 .anyMatch(jigMethod::hasAnnotation))
                                 .map(jigMethod -> new EntrypointMethod(detectorCondition.entrypointType(), jigType, jigMethod));
                     }

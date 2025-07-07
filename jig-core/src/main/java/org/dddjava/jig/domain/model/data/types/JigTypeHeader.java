@@ -11,13 +11,13 @@ import java.util.*;
  * @param baseTypeDataBundle   親クラス及び実装インタフェース
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">jls/Chapter 8. Classes</a>
  */
-public record JigTypeHeader(TypeIdentifier id,
+public record JigTypeHeader(TypeId id,
                             JavaTypeDeclarationKind javaTypeDeclarationKind,
                             JigTypeAttributes jigTypeAttributes,
                             JigBaseTypeDataBundle baseTypeDataBundle) {
 
-    public Set<TypeIdentifier> containedIds() {
-        Set<TypeIdentifier> ids = new HashSet<>();
+    public Set<TypeId> containedIds() {
+        Set<TypeId> ids = new HashSet<>();
         ids.add(id);
         ids.addAll(jigTypeAttributes.typeIdSet());
         ids.addAll(baseTypeDataBundle.typeIdSet());

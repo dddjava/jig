@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 
@@ -16,8 +16,8 @@ import java.util.Collection;
  */
 public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
 
-    public static JigTypeGlossary from(Glossary glossary, TypeIdentifier typeIdentifier) {
-        TermIdentifier termIdentifier = new TermIdentifier(typeIdentifier.fullQualifiedName());
+    public static JigTypeGlossary from(Glossary glossary, TypeId typeId) {
+        TermIdentifier termIdentifier = new TermIdentifier(typeId.fullQualifiedName());
         Collection<Term> terms = glossary.findRelated(termIdentifier);
 
         Term typeTerm = terms.stream()
@@ -26,7 +26,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termIdentifier, typeIdentifier.asSimpleName(), TermKind.クラス));
+                .orElseGet(() -> Term.simple(termIdentifier, typeId.asSimpleName(), TermKind.クラス));
 
         return new JigTypeGlossary(typeTerm, terms);
     }

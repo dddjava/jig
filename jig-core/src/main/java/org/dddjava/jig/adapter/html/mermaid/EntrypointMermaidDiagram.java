@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointGroup;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
@@ -29,7 +29,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         var entryPointText = new StringJoiner("\n");
 
-        Map<TypeIdentifier, Set<JigMethod>> serviceMethodMap = new HashMap<>();
+        Map<TypeId, Set<JigMethod>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
         MethodRelations springComponentMethodRelations = methodRelations.filterApplicationComponent(jigTypes).inlineLambda();
@@ -121,7 +121,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()
-                .map(TypeIdentifier::packageAbbreviationText)
+                .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }

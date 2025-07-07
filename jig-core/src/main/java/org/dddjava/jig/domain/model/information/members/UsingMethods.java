@@ -4,7 +4,7 @@ package org.dddjava.jig.domain.model.information.members;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public record UsingMethods(List<MethodCall> methodCalls) {
     public boolean containsStream() {
         return methodCalls.stream()
                 .map(MethodCall::returnType)
-                .anyMatch(TypeIdentifier::isStream);
+                .anyMatch(TypeId::isStream);
     }
 
     public Stream<MethodCall> invokedMethodStream() {
@@ -38,7 +38,7 @@ public record UsingMethods(List<MethodCall> methodCalls) {
         return methodCalls.stream()
                 .map(invokedMethod -> {
                     return invokedMethod.methodOwner().asSimpleText() + "." + invokedMethod.methodName() +
-                            invokedMethod.argumentTypes().stream().map(TypeIdentifier::asSimpleText).collect(Collectors.joining(", ", "(", ")"));
+                            invokedMethod.argumentTypes().stream().map(TypeId::asSimpleText).collect(Collectors.joining(", ", "(", ")"));
                 })
                 .sorted() // 出力の安定のために名前順にしている
                 .collect(Collectors.joining(", ", "[", "]"));

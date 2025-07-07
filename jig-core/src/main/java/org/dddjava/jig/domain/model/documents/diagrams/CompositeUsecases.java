@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Node;
 import org.dddjava.jig.domain.model.documents.stationery.NodeRole;
@@ -17,7 +17,7 @@ import java.util.Set;
  */
 class CompositeUsecases {
     Usecase usecase;
-    Set<TypeIdentifier> controllerTypes;
+    Set<TypeId> controllerTypes;
 
     public CompositeUsecases(ServiceAngle serviceAngle) {
         this.usecase = new Usecase(serviceAngle);
@@ -30,10 +30,10 @@ class CompositeUsecases {
         StringBuilder sb = new StringBuilder()
                 .append(Nodes.usecase(usecase).asText());
 
-        Set<TypeIdentifier> otherTypes = new HashSet<>();
+        Set<TypeId> otherTypes = new HashSet<>();
 
         // 戻り値へのEdge
-        Optional<TypeIdentifier> primaryType = usecase.primaryType();
+        Optional<TypeId> primaryType = usecase.primaryType();
         primaryType.ifPresent(typeIdentifier -> {
                     sb.append(String.format("\"%s\" -> \"%s\"[style=bold];\n", typeIdentifier.fullQualifiedName(), usecaseIdentifier));
                     otherTypes.add(typeIdentifier);
@@ -41,19 +41,19 @@ class CompositeUsecases {
         );
 
         // 引数へのEdge
-        for (TypeIdentifier requireType : usecase.requireTypes()) {
+        for (TypeId requireType : usecase.requireTypes()) {
             sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", usecaseIdentifier, requireType.fullQualifiedName()));
             otherTypes.add(requireType);
         }
 
         // 内部使用クラスへのEdge
-        for (TypeIdentifier usingType : usecase.internalUsingTypes()) {
+        for (TypeId usingType : usecase.internalUsingTypes()) {
             sb.append(String.format("\"%s\" -> \"%s\"[style=dotted];\n", usecaseIdentifier, usingType.fullQualifiedName()));
             otherTypes.add(usingType);
         }
 
         // Usecaseが使用しているクラスのNode
-        for (TypeIdentifier otherType : otherTypes) {
+        for (TypeId otherType : otherTypes) {
             var term = jigDocumentContext.typeTerm(otherType);
             sb.append(
                     new Node(otherType.fullQualifiedName())
@@ -65,7 +65,7 @@ class CompositeUsecases {
         }
 
         // controllerのNodeおよびedge
-        for (TypeIdentifier controllerType : controllerTypes) {
+        for (TypeId controllerType : controllerTypes) {
             sb.append(
                     new Node(controllerType.fullQualifiedName())
                             .label(jigDocumentContext.typeTerm(controllerType).title())

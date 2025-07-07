@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +22,7 @@ public record Instructions(List<Instruction> instructions) {
                 .count());
     }
 
-    public Stream<TypeIdentifier> associatedTypeStream() {
+    public Stream<TypeId> associatedTypeStream() {
         return instructions.stream()
                 .flatMap(Instruction::streamAssociatedTypes);
     }

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -61,7 +61,7 @@ public record JigMethodHeader(JigMethodId id,
         return jigMethodAttribute.flags().contains(JigMethodFlag.ABSTRACT);
     }
 
-    public Stream<TypeIdentifier> associatedTypeStream() {
+    public Stream<TypeId> associatedTypeStream() {
         return jigMethodAttribute.associatedTypeStream();
     }
 

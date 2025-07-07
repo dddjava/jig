@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.infrastructure.asm.ut.field.MyEnumFieldSut;
 import org.dddjava.jig.infrastructure.asm.ut.field.MySutClass;
@@ -66,7 +66,7 @@ class AsmFieldVisitorTest {
 
         JigAnnotationReference sut = field.jigFieldHeader().declarationAnnotationStream().findFirst().orElseThrow();
 
-        assertEquals(TypeIdentifier.from(VariableAnnotation.class), sut.id());
+        assertEquals(TypeId.from(VariableAnnotation.class), sut.id());
 
         String text = sut.asText();
         assertTrue(text.contains("string=af"), "Text should contain 'string=af'");

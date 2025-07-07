@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.junit.jupiter.api.Test;
 
@@ -20,12 +20,12 @@ class SequenceMermaidDiagramTest {
     void シーケンス図作成() {
 
         var instructions = new Instructions(List.of(
-                new MethodCall(TypeIdentifier.valueOf("CalleeClass"), "method", List.of(), TypeIdentifier.valueOf("ReturnType"))
+                new MethodCall(TypeId.valueOf("CalleeClass"), "method", List.of(), TypeId.valueOf("ReturnType"))
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(
                 new JigMethodHeader(JigMethodId.from(
-                        TypeIdentifier.valueOf("CallerClass"),
+                        TypeId.valueOf("CallerClass"),
                         "callerMethod",
                         List.of()),
                         JigMemberOwnership.INSTANCE,
@@ -48,12 +48,12 @@ class SequenceMermaidDiagramTest {
     void コンストラクタ呼び出しのシーケンス図作成() {
         // Create instructions with a constructor call
         var instructions = new Instructions(List.of(
-                new MethodCall(TypeIdentifier.valueOf("CalleeClass"), "<init>", List.of(TypeIdentifier.valueOf("Param1"), TypeIdentifier.valueOf("Param2")), TypeIdentifier.valueOf("void"))
+                new MethodCall(TypeId.valueOf("CalleeClass"), "<init>", List.of(TypeId.valueOf("Param1"), TypeId.valueOf("Param2")), TypeId.valueOf("void"))
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(
                 new JigMethodHeader(JigMethodId.from(
-                        TypeIdentifier.valueOf("CallerClass"),
+                        TypeId.valueOf("CallerClass"),
                         "callerMethod",
                         List.of()),
                         JigMemberOwnership.INSTANCE,
@@ -77,14 +77,14 @@ class SequenceMermaidDiagramTest {
         // Create instructions with calls to both regular and Java standard library classes
         var instructions = new Instructions(List.of(
                 // Regular class call
-                new MethodCall(TypeIdentifier.valueOf("CalleeClass"), "method", List.of(), TypeIdentifier.valueOf("ReturnType")),
+                new MethodCall(TypeId.valueOf("CalleeClass"), "method", List.of(), TypeId.valueOf("ReturnType")),
                 // Java standard library class call (ArrayList)
-                new MethodCall(TypeIdentifier.from(ArrayList.class), "add", List.of(TypeIdentifier.valueOf("Object")), TypeIdentifier.valueOf("boolean"))
+                new MethodCall(TypeId.from(ArrayList.class), "add", List.of(TypeId.valueOf("Object")), TypeId.valueOf("boolean"))
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(
                 new JigMethodHeader(JigMethodId.from(
-                        TypeIdentifier.valueOf("CallerClass"),
+                        TypeId.valueOf("CallerClass"),
                         "callerMethod",
                         List.of()),
                         JigMemberOwnership.INSTANCE,

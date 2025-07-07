@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
@@ -32,7 +32,7 @@ public class JigTypeRelationshipCreateTest {
         assertEquals(1, sut.size());
         assertEquals(
                 TypeRelationship.of(
-                        TypeIdentifier.from(SimpleClass.class), TypeIdentifier.from(Object.class),
+                        TypeId.from(SimpleClass.class), TypeId.from(Object.class),
                         TypeRelationKind.継承クラス),
                 sut.typeRelationships().stream().findFirst().orElseThrow());
     }
@@ -44,13 +44,13 @@ public class JigTypeRelationshipCreateTest {
 
         assertEquals(5, sut.size());
         Comparator<TypeRelationship> comparing = Comparator.comparing(TypeRelationship::to);
-        TypeIdentifier from = TypeIdentifier.from(ComplexClass.class);
+        TypeId from = TypeId.from(ComplexClass.class);
         assertEquals(Stream.of(
-                        TypeRelationship.of(from, TypeIdentifier.from(CharSequence.class), TypeRelationKind.型引数),
-                        TypeRelationship.of(from, TypeIdentifier.from(ComplexSubClass.class), TypeRelationKind.継承クラス),
-                        TypeRelationship.of(from, TypeIdentifier.from(String.class), TypeRelationKind.型引数),
-                        TypeRelationship.of(from, TypeIdentifier.from(ComplexInterface.class), TypeRelationKind.実装インタフェース),
-                        TypeRelationship.of(from, TypeIdentifier.from(Integer.class), TypeRelationKind.型引数)
+                        TypeRelationship.of(from, TypeId.from(CharSequence.class), TypeRelationKind.型引数),
+                        TypeRelationship.of(from, TypeId.from(ComplexSubClass.class), TypeRelationKind.継承クラス),
+                        TypeRelationship.of(from, TypeId.from(String.class), TypeRelationKind.型引数),
+                        TypeRelationship.of(from, TypeId.from(ComplexInterface.class), TypeRelationKind.実装インタフェース),
+                        TypeRelationship.of(from, TypeId.from(Integer.class), TypeRelationKind.型引数)
                 ).sorted(comparing).toList(),
                 sut.list().stream().sorted(comparing).toList());
     }

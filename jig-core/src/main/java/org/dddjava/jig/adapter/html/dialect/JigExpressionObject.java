@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -45,12 +45,12 @@ class JigExpressionObject {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    public String labelText(TypeIdentifier typeIdentifier) {
-        return jigDocumentContext.typeTerm(typeIdentifier).title();
+    public String labelText(TypeId typeId) {
+        return jigDocumentContext.typeTerm(typeId).title();
     }
 
-    public String fieldLinkType(TypeIdentifier typeIdentifier) {
-        if (typeIdentifier.isJavaLanguageType()) {
+    public String fieldLinkType(TypeId typeId) {
+        if (typeId.isJavaLanguageType()) {
             return "none";
         }
         return "other";
@@ -94,13 +94,13 @@ class JigExpressionObject {
     }
 
     private String linkText(JigTypeReference jigTypeReference) {
-        TypeIdentifier typeIdentifier = jigTypeReference.id();
+        TypeId typeId = jigTypeReference.id();
         var typeArgumentList = jigTypeReference.typeArgumentList();
         if (typeArgumentList.isEmpty()) {
-            if (typeIdentifier.isJavaLanguageType()) {
-                return unlinkText(typeIdentifier);
+            if (typeId.isJavaLanguageType()) {
+                return unlinkText(typeId);
             }
-            return linkTypeText(typeIdentifier);
+            return linkTypeText(typeId);
         }
 
         // 型パラメータあり
@@ -114,18 +114,18 @@ class JigExpressionObject {
                 })
                 .collect(Collectors.joining(", ", "&lt;", "&gt;"));
 
-        if (typeIdentifier.isJavaLanguageType()) {
-            return unlinkText(typeIdentifier) + typeParameterText;
+        if (typeId.isJavaLanguageType()) {
+            return unlinkText(typeId) + typeParameterText;
         }
-        return linkTypeText(typeIdentifier) + typeParameterText;
+        return linkTypeText(typeId) + typeParameterText;
     }
 
-    private String unlinkText(TypeIdentifier typeIdentifier) {
-        return String.format("<span class=\"weak\">%s</span>", typeIdentifier.asSimpleText());
+    private String unlinkText(TypeId typeId) {
+        return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
     }
 
-    private String linkTypeText(TypeIdentifier typeIdentifier) {
-        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeIdentifier.fullQualifiedName(), labelText(typeIdentifier));
+    private String linkTypeText(TypeId typeId) {
+        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fullQualifiedName(), labelText(typeId));
     }
 
     public List<JigMethod> listRemarkableInstanceMethods(JigType jigType) {
@@ -151,7 +151,7 @@ class JigExpressionObject {
 
         var typeText = tuple.declaringTypeIdentifier().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdentifiers().stream()
-                .map(TypeIdentifier::packageAbbreviationText)
+                .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }

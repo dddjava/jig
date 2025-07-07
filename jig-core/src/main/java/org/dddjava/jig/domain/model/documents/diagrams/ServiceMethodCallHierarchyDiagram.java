@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -103,7 +103,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
      * [ServiceMethod] --> [Repository]
      */
     private String repositoryText(List<ServiceAngle> angles) {
-        Set<TypeIdentifier> repositories = new HashSet<>();
+        Set<TypeId> repositories = new HashSet<>();
         RelationText repositoryRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
             for (JigMethod repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {

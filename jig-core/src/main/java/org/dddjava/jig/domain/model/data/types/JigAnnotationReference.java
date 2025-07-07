@@ -12,18 +12,18 @@ import java.util.stream.Stream;
  * @param id アノテーションの型を示すID
  * @param elements 要素のコレクション
  */
-public record JigAnnotationReference(TypeIdentifier id,
+public record JigAnnotationReference(TypeId id,
                                      Collection<JigAnnotationElementValuePair> elements) {
 
-    public static JigAnnotationReference from(TypeIdentifier typeIdentifier) {
-        return new JigAnnotationReference(typeIdentifier, List.of());
+    public static JigAnnotationReference from(TypeId typeId) {
+        return new JigAnnotationReference(typeId, List.of());
     }
 
     public String simpleTypeName() {
         return id.asSimpleText();
     }
 
-    public Stream<TypeIdentifier> allTypeIentifierStream() {
+    public Stream<TypeId> allTypeIentifierStream() {
         // TODO elementがclassやannotationの場合に追加する
         return Stream.of(id);
     }

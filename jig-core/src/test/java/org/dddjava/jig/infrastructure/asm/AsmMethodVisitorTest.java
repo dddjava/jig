@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -196,7 +196,7 @@ class AsmMethodVisitorTest {
 
         Set<String> actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
-                .stream().map(TypeIdentifier::asSimpleName).collect(Collectors.toSet());
+                .stream().map(TypeId::asSimpleName).collect(Collectors.toSet());
 
         // "A2", "B", "C" などのTypeAnnotationは取得できていない
         // メソッド内のアノテーションは取得できていない
@@ -218,7 +218,7 @@ class AsmMethodVisitorTest {
 
         Set<String> actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
-                .stream().map(TypeIdentifier::asSimpleName).collect(Collectors.toSet());
+                .stream().map(TypeId::asSimpleName).collect(Collectors.toSet());
 
         Set<String> expected = Set.of(
                 "MethodVisitorSut", // フィールドのオーナー
@@ -236,7 +236,7 @@ class AsmMethodVisitorTest {
 
         var actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
-                .stream().map(TypeIdentifier::asSimpleName).collect(Collectors.toSet());
+                .stream().map(TypeId::asSimpleName).collect(Collectors.toSet());
 
         var expected = Set.of(
                 "Optional", "Predicate", "Function", "Integer", "Character", // 戻り値

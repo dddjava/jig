@@ -35,14 +35,14 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
 
     public static TypeRelationships from(JigType jigType) {
         JigTypeHeader jigTypeHeader = jigType.jigTypeHeader();
-        TypeIdentifier id = jigTypeHeader.id();
+        TypeId id = jigTypeHeader.id();
 
         Stream<TypeRelationship> typeRelationshipStream = headerTypeRelationshipStream(jigTypeHeader, id);
 
         return new TypeRelationships(typeRelationshipStream.toList());
     }
 
-    private static Stream<TypeRelationship> headerTypeRelationshipStream(JigTypeHeader jigTypeHeader, TypeIdentifier id) {
+    private static Stream<TypeRelationship> headerTypeRelationshipStream(JigTypeHeader jigTypeHeader, TypeId id) {
         // 自身の型パラメタ（型パラメタのアノテーション、型パラメタの型パラメタは未対応）
         Stream<TypeRelationship> typeParameterStream = jigTypeHeader.jigTypeAttributes().typeParameters().stream()
                 // 型パラメタ自体は型ではないが、型パラメタの境界は型引数なので取得する
@@ -60,7 +60,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return Stream.of(typeParameterStream, annotationStream, superStream, interfaceStream).flatMap(Function.identity());
     }
 
-    private static Stream<TypeRelationship> typeReferenceRelationshipStream(TypeIdentifier id, JigTypeReference jigTypeReference, TypeRelationKind typeRelationKind) {
+    private static Stream<TypeRelationship> typeReferenceRelationshipStream(TypeId id, JigTypeReference jigTypeReference, TypeRelationKind typeRelationKind) {
         return Stream.of(
                         // 自身
                         Stream.of(TypeRelationship.of(id, jigTypeReference.id(), typeRelationKind)),
@@ -72,21 +72,21 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .flatMap(Function.identity());
     }
 
-    private static Stream<TypeRelationship> annotationTypeRelationshipStream(Collection<JigAnnotationReference> jigTypeReference, TypeIdentifier id) {
+    private static Stream<TypeRelationship> annotationTypeRelationshipStream(Collection<JigAnnotationReference> jigTypeReference, TypeId id) {
         // アノテーション（アノテーション引数は未対応）
         return jigTypeReference.stream()
                 .map(annoRef -> TypeRelationship.of使用アノテーション(id, annoRef.id()));
     }
 
-    public Edges<TypeIdentifier> toEdges() {
+    public Edges<TypeId> toEdges() {
         return new Edges<>(typeRelationships.stream()
                 .map(TypeRelationship::edge)
                 .toList());
     }
 
-    public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {
+    public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeId typeId) {
         return typeRelationships.stream()
-                .filter(classRelation -> classRelation.toIs(typeIdentifier))
+                .filter(classRelation -> classRelation.toIs(typeId))
                 .map(TypeRelationship::from)
                 .collect(TypeIdentifiers.collector())
                 .normalize();
@@ -101,7 +101,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     public TypeIdentifiers allTypeIdentifiers() {
         return typeRelationships.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
-                .map(TypeIdentifier::normalize)
+                .map(TypeId::normalize)
                 .collect(TypeIdentifiers.collector());
     }
 
@@ -124,13 +124,13 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return filterRelationships(classRelation -> toTypeIdentifiers.contains(classRelation.to()));
     }
 
-    public TypeRelationships filterFrom(TypeIdentifier typeIdentifier) {
-        return filterRelationships(classRelation -> classRelation.from().equals(typeIdentifier));
+    public TypeRelationships filterFrom(TypeId typeId) {
+        return filterRelationships(classRelation -> classRelation.from().equals(typeId));
     }
 
 
-    public TypeRelationships filterTo(TypeIdentifier typeIdentifier) {
-        return filterRelationships(classRelation -> classRelation.to().equals(typeIdentifier));
+    public TypeRelationships filterTo(TypeId typeId) {
+        return filterRelationships(classRelation -> classRelation.to().equals(typeId));
     }
 
     private TypeRelationships filterRelationships(Predicate<TypeRelationship> typeRelationshipPredicate) {

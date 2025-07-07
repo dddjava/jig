@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIdentifiers;
 
 import java.util.stream.Stream;
@@ -106,7 +106,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().name();
     }
 
-    public boolean hasAnnotation(TypeIdentifier annotation) {
+    public boolean hasAnnotation(TypeId annotation) {
         return declarationAnnotationStream().anyMatch(it -> it.id().equals(annotation));
     }
 
@@ -138,7 +138,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().argumentList().stream();
     }
 
-    public TypeIdentifier declaringType() {
+    public TypeId declaringType() {
         return header().id().tuple().declaringTypeIdentifier();
     }
 

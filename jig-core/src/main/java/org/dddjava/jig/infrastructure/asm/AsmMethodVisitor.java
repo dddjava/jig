@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.objectweb.asm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,7 +158,7 @@ class AsmMethodVisitor extends MethodVisitor {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
 
         var fieldTypeIdentifier = AsmUtils.typeDescriptorToIdentifier(descriptor);
-        var declaringTypeIdentifier = TypeIdentifier.valueOf(owner);
+        var declaringTypeIdentifier = TypeId.valueOf(owner);
 
         var jigFieldIdentifier = JigFieldId.from(declaringTypeIdentifier, name);
         var fieldInstruction = switch (opcode) {
@@ -175,12 +175,12 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         logger.debug("visitMethodInsn {} {} {} {}", opcode, owner, name, descriptor);
-        List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+        List<TypeId> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(type -> asmType2TypeIdentifier(type))
                 .toList();
-        TypeIdentifier returnType = methodDescriptorToReturnIdentifier(descriptor);
+        TypeId returnType = methodDescriptorToReturnIdentifier(descriptor);
 
-        MethodCall methodCall = new MethodCall(TypeIdentifier.valueOf(owner), name, argumentTypes, returnType);
+        MethodCall methodCall = new MethodCall(TypeId.valueOf(owner), name, argumentTypes, returnType);
         methodInstructionCollector.add(methodCall);
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
@@ -226,7 +226,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     && (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
                     && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD)) {
                 // 実際に呼び出されるメソッド
-                var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
+                var handleOwnerType = TypeId.valueOf(handle.getOwner());
                 var handleMethodName = handle.getName();
                 var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
                         .map(type1 -> asmType2TypeIdentifier(type1))
@@ -340,11 +340,11 @@ class AsmMethodVisitor extends MethodVisitor {
         };
     }
 
-    private static TypeIdentifier asmType2TypeIdentifier(Type type) {
-        return TypeIdentifier.valueOf(type.getClassName());
+    private static TypeId asmType2TypeIdentifier(Type type) {
+        return TypeId.valueOf(type.getClassName());
     }
 
-    private static TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+    private static TypeId methodDescriptorToReturnIdentifier(String descriptor) {
         return asmType2TypeIdentifier(Type.getReturnType(descriptor));
     }
 }

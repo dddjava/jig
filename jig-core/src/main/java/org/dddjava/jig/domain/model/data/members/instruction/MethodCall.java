@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -11,9 +11,9 @@ import java.util.stream.Stream;
 /**
  * メソッド呼び出し
  */
-public record MethodCall(TypeIdentifier methodOwner, String methodName,
-                         List<TypeIdentifier> argumentTypes,
-                         TypeIdentifier returnType) implements Instruction {
+public record MethodCall(TypeId methodOwner, String methodName,
+                         List<TypeId> argumentTypes,
+                         TypeId returnType) implements Instruction {
 
     public boolean jigMethodIdentifierIs(JigMethodId jigMethodId) {
         return jigMethodId.equals(jigMethodIdentifier());
@@ -25,7 +25,7 @@ public record MethodCall(TypeIdentifier methodOwner, String methodName,
 
     public String asSignatureAndReturnTypeSimpleText() {
         return "%s(%s):%s".formatted(methodName,
-                argumentTypes.stream().map(TypeIdentifier::asSimpleText).collect(Collectors.joining(", ")),
+                argumentTypes.stream().map(TypeId::asSimpleText).collect(Collectors.joining(", ")),
                 returnType.asSimpleText());
     }
 
@@ -44,11 +44,11 @@ public record MethodCall(TypeIdentifier methodOwner, String methodName,
     }
 
     @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
+    public Stream<TypeId> streamAssociatedTypes() {
         return Stream.concat(
                 argumentTypes.stream(),
                 Stream.of(methodOwner, returnType)
-        ).filter(Predicate.not(TypeIdentifier::isVoid));
+        ).filter(Predicate.not(TypeId::isVoid));
     }
 
     public boolean isLambda() {

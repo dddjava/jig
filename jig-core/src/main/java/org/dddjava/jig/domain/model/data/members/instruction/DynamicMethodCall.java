@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -13,8 +13,8 @@ import java.util.stream.Stream;
  *
  * @param methodCall 呼び出すメソッド
  */
-public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType,
-                                List<TypeIdentifier> argumentTypes) implements Instruction {
+public record DynamicMethodCall(MethodCall methodCall, TypeId returnType,
+                                List<TypeId> argumentTypes) implements Instruction {
 
     @Override
     public Stream<MethodCall> findMethodCall() {
@@ -22,11 +22,11 @@ public record DynamicMethodCall(MethodCall methodCall, TypeIdentifier returnType
     }
 
     @Override
-    public Stream<TypeIdentifier> streamAssociatedTypes() {
+    public Stream<TypeId> streamAssociatedTypes() {
         return Stream.of(
                 methodCall().streamAssociatedTypes(),
                 argumentTypes().stream(),
-                Stream.of(returnType()).filter(Predicate.not(TypeIdentifier::isVoid))
+                Stream.of(returnType()).filter(Predicate.not(TypeId::isVoid))
         ).flatMap(stream -> stream);
     }
 }

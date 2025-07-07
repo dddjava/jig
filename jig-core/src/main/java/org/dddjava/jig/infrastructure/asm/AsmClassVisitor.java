@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.toMap;
 class AsmClassVisitor extends ClassVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
-    private TypeIdentifier typeIdentifier;
+    private TypeId typeId;
     private JigTypeHeader jigTypeHeader;
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
@@ -62,7 +62,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
-        this.typeIdentifier = TypeIdentifier.fromJvmBinaryName(classInternalName);
+        this.typeId = TypeId.fromJvmBinaryName(classInternalName);
         var jigTypeModifiers = resolveTypeModifiers(access);
         var jigTypeKind = resolveTypeKind(access);
         var jigTypeVisibility = resolveVisibility(access);
@@ -84,7 +84,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     private JigTypeHeader jigTypeHeader(JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
         // アノテーションはまだ取得していないので空で作る
-        return new JigTypeHeader(this.typeIdentifier, javaTypeDeclarationKind, new JigTypeAttributes(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
+        return new JigTypeHeader(this.typeId, javaTypeDeclarationKind, new JigTypeAttributes(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
     }
 
     @Override
@@ -101,7 +101,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // nameが一致するもののみ、このクラスの情報として採用する
-        if (TypeIdentifier.fromJvmBinaryName(name).equals(this.typeIdentifier)) {
+        if (TypeId.fromJvmBinaryName(name).equals(this.typeId)) {
             if ((access & Opcodes.ACC_STATIC) != 0) {
                 isStaticNestedClass = true;
             }

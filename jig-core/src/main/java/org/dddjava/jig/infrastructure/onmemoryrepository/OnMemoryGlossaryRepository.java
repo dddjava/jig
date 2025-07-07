@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermIdentifier;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
-import org.dddjava.jig.domain.model.data.types.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,14 +20,14 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     private final Collection<Term> terms = new ArrayList<>();
 
     @Override
-    public Term get(TypeIdentifier typeIdentifier) {
-        TermIdentifier termIdentifier = fromTypeIdentifier(typeIdentifier);
+    public Term get(TypeId typeId) {
+        TermIdentifier termIdentifier = fromTypeIdentifier(typeId);
         return terms.stream()
                 .filter(term -> term.termKind() == TermKind.クラス)
                 .filter(term -> term.identifier().equals(termIdentifier))
                 .findAny()
                 // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termIdentifier, typeIdentifier.asSimpleText(), TermKind.クラス));
+                .orElseGet(() -> Term.simple(termIdentifier, typeId.asSimpleText(), TermKind.クラス));
     }
 
     @Override
@@ -57,13 +57,13 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     }
 
     @Override
-    public TermIdentifier fromTypeIdentifier(TypeIdentifier typeIdentifier) {
-        return new TermIdentifier(typeIdentifier.fullQualifiedName());
+    public TermIdentifier fromTypeIdentifier(TypeId typeId) {
+        return new TermIdentifier(typeId.fullQualifiedName());
     }
 
     @Override
-    public TermIdentifier fromMethodImplementationDeclarator(TypeIdentifier typeIdentifier, JavaMethodDeclarator methodImplementationDeclarator) {
-        return new TermIdentifier(typeIdentifier.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
+    public TermIdentifier fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator) {
+        return new TermIdentifier(typeId.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
     }
 
     @Override

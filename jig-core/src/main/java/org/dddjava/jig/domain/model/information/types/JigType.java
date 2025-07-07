@@ -25,7 +25,7 @@ public class JigType {
         this.jigTypeMembers = jigTypeMembers;
     }
 
-    public TypeIdentifier id() {
+    public TypeId id() {
         return jigTypeHeader.id();
     }
 
@@ -59,24 +59,24 @@ public class JigType {
                         jigTypeMembers.allTypeIdentifierSet().stream()
                 )
                 // [L からはじまるarrayが別になるのは嬉しくないので。水際的にここで処置しておくが、源泉近くで対応したい。
-                .map(TypeIdentifier::unarray)
+                .map(TypeId::unarray)
                 // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。水際的にここで処置しておくが、源泉近くで対応したい。
                 .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
                 .collect(Collectors.toSet());
         return new TypeIdentifiers(collect);
     }
 
-    public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
-        return jigTypeHeader.jigTypeAttributes().declaredAnnotation(typeIdentifier);
+    public boolean hasAnnotation(TypeId typeId) {
+        return jigTypeHeader.jigTypeAttributes().declaredAnnotation(typeId);
     }
 
     public boolean isDeprecated() {
-        return hasAnnotation(TypeIdentifier.from(Deprecated.class));
+        return hasAnnotation(TypeId.from(Deprecated.class));
     }
 
-    public Optional<String> annotationValueOf(TypeIdentifier typeIdentifier, String... elementNames) {
+    public Optional<String> annotationValueOf(TypeId typeId, String... elementNames) {
         return jigTypeHeader.jigTypeAttributes().declarationAnnotationInstances().stream()
-                .filter(annotation -> annotation.id().equals(typeIdentifier))
+                .filter(annotation -> annotation.id().equals(typeId))
                 .flatMap(annotation -> annotation.elements().stream())
                 .filter(element -> element.matchName(elementNames))
                 .map(element -> element.valueAsString())
@@ -99,21 +99,21 @@ public class JigType {
 
     public TypeCategory typeCategory() {
         // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))
-                || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Service.class))) {
+        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Service"))
+                || hasAnnotation(TypeId.from(org.dddjava.jig.annotation.Service.class))) {
             return TypeCategory.Usecase;
         }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
-                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
-                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
-                || hasAnnotation(TypeIdentifier.valueOf("org.dddjava.jig.adapter.HandleDocument"))) {
+        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Controller"))
+                || hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.RestController"))
+                || hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
+                || hasAnnotation(TypeId.valueOf("org.dddjava.jig.adapter.HandleDocument"))) {
             return TypeCategory.InputAdapter;
         }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))
-                || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Repository.class))) {
+        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Repository"))
+                || hasAnnotation(TypeId.from(org.dddjava.jig.annotation.Repository.class))) {
             return TypeCategory.OutputAdapter;
         }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
+        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Component"))) {
             return TypeCategory.OtherApplicationComponent;
         }
 

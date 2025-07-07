@@ -341,7 +341,7 @@ class AsmMethodVisitor extends MethodVisitor {
     }
 
     private static TypeId asmType2TypeId(Type type) {
-        return TypeId.valueOf(type.getClassName());
+        return AsmUtils.type2TypeId(type);
     }
 
     private static TypeId methodDescriptorToReturnTypeId(String descriptor) {

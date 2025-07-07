@@ -57,7 +57,7 @@ class AsmMethodVisitor extends MethodVisitor {
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
         var jigMethodIdentifier = JigMethodId.from(contextClass.jigTypeHeader().id(), name,
-                Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeIdentifier(type)).toList());
+                Arrays.stream(methodType.getArgumentTypes()).map(type -> asmType2TypeId(type)).toList());
 
         return new AsmMethodVisitor(contextClass,
                 it -> {
@@ -75,8 +75,8 @@ class AsmMethodVisitor extends MethodVisitor {
             return jigMethodHeader(access, jigMethodId, jigTypeReference, parameters, throwsList);
         }
 
-        return jigMethodHeader(access, jigMethodId, JigTypeReference.fromId(asmType2TypeIdentifier(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
-                .map(AsmMethodVisitor::asmType2TypeIdentifier)
+        return jigMethodHeader(access, jigMethodId, JigTypeReference.fromId(asmType2TypeId(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
+                .map(AsmMethodVisitor::asmType2TypeId)
                 .map(JigTypeReference::fromId)
                 .toList(), throwsList);
     }
@@ -176,9 +176,9 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         logger.debug("visitMethodInsn {} {} {} {}", opcode, owner, name, descriptor);
         List<TypeId> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(type -> asmType2TypeIdentifier(type))
+                .map(type -> asmType2TypeId(type))
                 .toList();
-        TypeId returnType = methodDescriptorToReturnIdentifier(descriptor);
+        TypeId returnType = methodDescriptorToReturnTypeId(descriptor);
 
         MethodCall methodCall = new MethodCall(TypeId.valueOf(owner), name, argumentTypes, returnType);
         methodInstructionCollector.add(methodCall);
@@ -190,7 +190,7 @@ class AsmMethodVisitor extends MethodVisitor {
         logger.debug("visitLdcInsn {}", value);
         if (value instanceof Type typeValue) {
             // `Xxx.class` などのクラス参照を読み込む
-            var typeIdentifier = asmType2TypeIdentifier(typeValue);
+            var typeIdentifier = asmType2TypeId(typeValue);
             methodInstructionCollector.add(new ClassReference(typeIdentifier));
         }
 
@@ -229,15 +229,15 @@ class AsmMethodVisitor extends MethodVisitor {
                 var handleOwnerType = TypeId.valueOf(handle.getOwner());
                 var handleMethodName = handle.getName();
                 var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
-                        .map(type1 -> asmType2TypeIdentifier(type1))
+                        .map(type1 -> asmType2TypeId(type1))
                         .toList();
-                var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
+                var handleReturnType = methodDescriptorToReturnTypeId(handle.getDesc());
                 var handleMethodCall = new MethodCall(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
 
                 // returnType/argumentTypesは呼び出し側としての型。同じになることも多いが、違うこともある。
                 // たとえば　int method() をメソッド参照で呼び出すと ()Ljava/lang/Integer; になったりする。
-                var returnType = asmType2TypeIdentifier(type.getReturnType());
-                var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(AsmMethodVisitor::asmType2TypeIdentifier).toList();
+                var returnType = asmType2TypeId(type.getReturnType());
+                var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(AsmMethodVisitor::asmType2TypeId).toList();
                 DynamicMethodCall dynamicMethodCall = new DynamicMethodCall(handleMethodCall, returnType, argumentTypes);
 
                 methodInstructionCollector.add(dynamicMethodCall);
@@ -340,11 +340,11 @@ class AsmMethodVisitor extends MethodVisitor {
         };
     }
 
-    private static TypeId asmType2TypeIdentifier(Type type) {
+    private static TypeId asmType2TypeId(Type type) {
         return TypeId.valueOf(type.getClassName());
     }
 
-    private static TypeId methodDescriptorToReturnIdentifier(String descriptor) {
-        return asmType2TypeIdentifier(Type.getReturnType(descriptor));
+    private static TypeId methodDescriptorToReturnTypeId(String descriptor) {
+        return asmType2TypeId(Type.getReturnType(descriptor));
     }
 }

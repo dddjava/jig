@@ -75,8 +75,8 @@ public record UsecaseMermaidDiagram(
         mermaidText.add(filteredRelations.mermaidEdgeText(converter));
 
         // JigMethodにならないものはクラスノードとして出力する
-        others.forEach(typeIdentifier ->
-                mermaidText.add("%s[%s]:::others".formatted(typeIdentifier.htmlIdText(), typeIdentifier.asSimpleText())));
+        others.forEach(typeId ->
+                mermaidText.add("%s[%s]:::others".formatted(typeId.htmlIdText(), typeId.asSimpleText())));
 
         mermaidText.add("classDef others fill:#AAA,font-size:90%;");
         mermaidText.add("classDef lambda fill:#999,font-size:80%;");

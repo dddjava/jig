@@ -106,11 +106,11 @@ class JigExpressionObject {
         // 型パラメータあり
         String typeParameterText = typeArgumentList.stream()
                 .map(JigTypeArgument::typeId)
-                .map(argumentTypeIdentifier -> {
-                    if (argumentTypeIdentifier.isJavaLanguageType()) {
-                        return unlinkText(argumentTypeIdentifier);
+                .map(argumentTypeId -> {
+                    if (argumentTypeId.isJavaLanguageType()) {
+                        return unlinkText(argumentTypeId);
                     }
-                    return linkTypeText(argumentTypeIdentifier);
+                    return linkTypeText(argumentTypeId);
                 })
                 .collect(Collectors.joining(", ", "&lt;", "&gt;"));
 
@@ -162,18 +162,18 @@ class JigExpressionObject {
     }
 
     public EnumModel selectEnumModel(JigType jigType) {
-        var typeIdentifier = jigType.id();
+        var typeId = jigType.id();
         // これを使用するテンプレートは "enumModelMap" をcontextにputしておく
         // ・・・ならexpressionにしなくてもいいのでは？？？？
         Object variable = context.getVariable("enumModelMap");
         if (variable instanceof Map<?, ?> map) {
-            if (map.get(typeIdentifier) instanceof EnumModel enumModel) {
+            if (map.get(typeId) instanceof EnumModel enumModel) {
                 return enumModel;
             }
         }
-        logger.warn("cannot find enum model for {}. Try to create empty model.", typeIdentifier.fullQualifiedName());
+        logger.warn("cannot find enum model for {}. Try to create empty model.", typeId.fullQualifiedName());
         // 落ちないように
-        return new EnumModel(typeIdentifier, List.of());
+        return new EnumModel(typeId, List.of());
     }
 
     public Optional<String> relationDiagram(JigPackage jigPackage) {

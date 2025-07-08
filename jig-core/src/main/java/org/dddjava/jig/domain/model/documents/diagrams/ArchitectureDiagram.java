@@ -26,8 +26,7 @@ public class ArchitectureDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        Function<PackageId, String> architectureLabel =
-                packageIdentifier -> jigDocumentContext.packageTerm(packageIdentifier).title();
+        Function<PackageId, String> architectureLabel = packageId -> jigDocumentContext.packageTerm(packageId).title();
 
         DocumentName documentName = DocumentName.of(JigDocument.ArchitectureDiagram);
 

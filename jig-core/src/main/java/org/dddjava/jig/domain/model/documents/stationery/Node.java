@@ -23,8 +23,8 @@ public class Node {
         this.identifier = identifier;
     }
 
-    public static Node typeOf(TypeId identifier) {
-        return new Node(identifier.fullQualifiedName());
+    public static Node typeOf(TypeId typeId) {
+        return new Node(typeId.fullQualifiedName());
     }
 
     public static Node packageOf(PackageId identifier) {

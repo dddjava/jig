@@ -85,9 +85,9 @@ public record UsecaseMermaidDiagram(
     }
 
     private String normalMermaidNodeText(JigMethod jigMethod) {
-        var jigMethodIdentifier = jigMethod.jigMethodId();
-        var string = htmlIdText(jigMethodIdentifier);
-        if (jigMethodIdentifier.isLambda()) {
+        var jigMethodId = jigMethod.jigMethodId();
+        var string = htmlIdText(jigMethodId);
+        if (jigMethodId.isLambda()) {
             return "%s[\"%s\"]:::lambda".formatted(string, "(lambda)");
         }
         return "%s[\"%s\"]".formatted(string, jigMethod.labelText());

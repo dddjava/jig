@@ -12,8 +12,8 @@ public record Term(TermId id,
         title = title.isEmpty() ? id.simpleText() : title;
     }
 
-    public Term(TermId identifier, String title, String description, TermKind termKind) {
-        this(identifier, title, description.trim(), termKind, null);
+    public Term(TermId termId, String title, String description, TermKind termKind) {
+        this(termId, title, description.trim(), termKind, null);
     }
 
     public static Term simple(TermId termId, String title, TermKind termKind) {

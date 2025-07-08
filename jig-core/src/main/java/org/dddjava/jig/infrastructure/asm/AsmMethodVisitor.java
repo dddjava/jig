@@ -56,12 +56,12 @@ class AsmMethodVisitor extends MethodVisitor {
 
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
-        var jigMethodIdentifier = JigMethodId.from(contextClass.jigTypeHeader().id(), name,
+        var jigMethodId = JigMethodId.from(contextClass.jigTypeHeader().id(), name,
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> AsmUtils.type2TypeId(type)).toList());
 
         return new AsmMethodVisitor(contextClass,
                 it -> {
-                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodIdentifier, methodType, throwsList);
+                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodId, methodType, throwsList);
                     contextClass.finishVisitMethod(jigMethodHeader, it.methodInstructionCollector);
                 }
         );

@@ -157,15 +157,15 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
 
-        var fieldTypeIdentifier = AsmUtils.typeDescriptorToTypeId(descriptor);
-        var declaringTypeIdentifier = TypeId.valueOf(owner);
+        var fieldTypeId = AsmUtils.typeDescriptorToTypeId(descriptor);
+        var declaringTypeId = TypeId.valueOf(owner);
 
-        var jigFieldIdentifier = JigFieldId.from(declaringTypeIdentifier, name);
+        var jigFieldId = JigFieldId.from(declaringTypeId, name);
         var fieldInstruction = switch (opcode) {
-            case Opcodes.GETFIELD, Opcodes.GETSTATIC -> FieldAccess.get(fieldTypeIdentifier, jigFieldIdentifier);
-            case Opcodes.PUTFIELD, Opcodes.PUTSTATIC -> FieldAccess.set(fieldTypeIdentifier, jigFieldIdentifier);
+            case Opcodes.GETFIELD, Opcodes.GETSTATIC -> FieldAccess.get(fieldTypeId, jigFieldId);
+            case Opcodes.PUTFIELD, Opcodes.PUTSTATIC -> FieldAccess.set(fieldTypeId, jigFieldId);
             // エラーにせず、ASMがFieldInsnを検出したことだけは記録しておく
-            default -> FieldAccess.unknown(fieldTypeIdentifier, jigFieldIdentifier);
+            default -> FieldAccess.unknown(fieldTypeId, jigFieldId);
         };
 
         methodInstructionCollector.add(fieldInstruction);

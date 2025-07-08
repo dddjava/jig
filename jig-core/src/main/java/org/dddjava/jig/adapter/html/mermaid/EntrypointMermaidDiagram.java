@@ -59,7 +59,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodId(),
                     // @Serviceのクラスについたら終了
-                    jigMethodIdentifier -> jigTypes.isService(jigMethodIdentifier)
+                    jigMethodId -> jigTypes.isService(jigMethodId)
             );
             methodRelationSet.addAll(decraleMethodRelations.list());
 
@@ -67,21 +67,21 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
             decraleMethodRelations.list()
                     .stream()
                     .map(MethodRelation::to)
-                    .forEach(jigMethodIdentifier -> {
-                        var declaringTypeIdentifier = jigMethodIdentifier.tuple().declaringTypeId();
-                        if (jigTypes.isService(jigMethodIdentifier)) {
-                            jigTypes.resolveJigMethod(jigMethodIdentifier)
+                    .forEach(jigMethodId -> {
+                        var declaringTypeId = jigMethodId.tuple().declaringTypeId();
+                        if (jigTypes.isService(jigMethodId)) {
+                            jigTypes.resolveJigMethod(jigMethodId)
                                     .ifPresent(jigMethod -> {
-                                        serviceMethodMap.computeIfAbsent(declaringTypeIdentifier, k -> new HashSet<>());
-                                        serviceMethodMap.get(declaringTypeIdentifier).add(jigMethod);
+                                        serviceMethodMap.computeIfAbsent(declaringTypeId, k -> new HashSet<>());
+                                        serviceMethodMap.get(declaringTypeId).add(jigMethod);
                                     });
                         } else {
                             // controllerと同じクラスのメソッドはメソッド名だけ
-                            if (entrypointMethod.typeId().equals(declaringTypeIdentifier)) {
-                                methodLabelMap.put(htmlIdText(jigMethodIdentifier), jigMethodIdentifier.name());
+                            if (entrypointMethod.typeId().equals(declaringTypeId)) {
+                                methodLabelMap.put(htmlIdText(jigMethodId), jigMethodId.name());
                             } else {
                                 // 他はクラス名+メソッド名
-                                methodLabelMap.put(htmlIdText(jigMethodIdentifier), declaringTypeIdentifier.asSimpleName() + '.' + jigMethodIdentifier.name());
+                                methodLabelMap.put(htmlIdText(jigMethodId), declaringTypeId.asSimpleName() + '.' + jigMethodId.name());
                             }
                         }
                     });

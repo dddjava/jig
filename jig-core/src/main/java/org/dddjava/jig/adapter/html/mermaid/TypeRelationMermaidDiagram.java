@@ -56,12 +56,12 @@ public class TypeRelationMermaidDiagram {
                 .collect(Collectors.toSet());
         // 内側:true, 外側:false のMapに振り分ける
         Map<Boolean, List<String>> nodeMap = targetTypes.stream()
-                .collect(Collectors.partitioningBy(typeIdentifier -> typeIdentifier.packageId().equals(packageId),
-                        Collectors.mapping(typeIdentifier -> {
+                .collect(Collectors.partitioningBy(typeId -> typeId.packageId().equals(packageId),
+                        Collectors.mapping(typeId -> {
                                     String label = jigTypesWithRelationships.jigTypes()
-                                            .resolveJigType(typeIdentifier).map(JigType::label)
-                                            .orElseGet(typeIdentifier::asSimpleName);
-                                    return Mermaid.BOX.of(mermaidId(typeIdentifier), label);
+                                            .resolveJigType(typeId).map(JigType::label)
+                                            .orElseGet(typeId::asSimpleName);
+                                    return Mermaid.BOX.of(mermaidId(typeId), label);
                                 },
                                 Collectors.toList())));
 

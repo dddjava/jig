@@ -14,17 +14,18 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TypeIdsTest {
+class TypeIdTest {
 
     @ParameterizedTest
     @MethodSource
-    void test(List<String> identifiers, String simpleText) {
-        TypeIds sut = identifiers.stream().map(TypeId::valueOf).collect(TypeIds.collector());
+    void TypeIdsを単純文字列表現する(List<String> idTexts, String simpleText) {
+        TypeIds sut = idTexts.stream().map(TypeId::valueOf).collect(TypeIds.collector());
 
         assertEquals(simpleText, sut.asSimpleText());
     }
 
-    static Stream<Arguments> test() {
+    static Stream<Arguments> TypeIdsを単純文字列表現する() {
+        // 単純文字列表現は [] で囲われる。
         return Stream.of(
                 Arguments.of(Collections.emptyList(), "[]"),
                 Arguments.of(Collections.singletonList("a.Hoge"), "[Hoge]"),
@@ -36,13 +37,13 @@ class TypeIdsTest {
 
     @ParameterizedTest
     @MethodSource
-    void typeIdentifier_asSimpleText(String fullName, String simpleText) {
+    void TypeIdを単純文字列表現する(String fullName, String simpleText) {
         TypeId hoge = TypeId.valueOf(fullName);
 
         assertEquals(simpleText, hoge.asSimpleText());
     }
 
-    static Stream<Arguments> typeIdentifier_asSimpleText() {
+    static Stream<Arguments> TypeIdを単純文字列表現する() {
         return Stream.of(
                 Arguments.of("hoge", "hoge"),
                 Arguments.of("hoge.fuga", "fuga"),
@@ -53,13 +54,13 @@ class TypeIdsTest {
 
     @ParameterizedTest
     @MethodSource
-    void typeIdentifier_packageId(String fullName, String packageName) {
+    void TypeIdからPackageIdを取得する(String fullName, String packageName) {
         TypeId hoge = TypeId.valueOf(fullName);
 
         assertEquals(PackageId.valueOf(packageName), hoge.packageId());
     }
 
-    static Stream<Arguments> typeIdentifier_packageId() {
+    static Stream<Arguments> TypeIdからPackageIdを取得する() {
         return Stream.of(
                 Arguments.of("hoge", "(default)"),
                 Arguments.of("hoge.fuga", "hoge"),

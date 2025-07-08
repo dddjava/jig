@@ -31,16 +31,16 @@ public record UsecaseMermaidDiagram(
         Set<JigMethodId> resolved = new HashSet<>();
 
         // メソッドのスタイル
-        filteredRelations.toJigMethodIdStream().forEach(jigMethodIdentifier -> {
+        filteredRelations.toJigMethodIdStream().forEach(jigMethodId -> {
             // 自分は太字にする
-            if (jigMethodIdentifier.equals(jigMethod.jigMethodId())) {
-                resolved.add(jigMethodIdentifier);
+            if (jigMethodId.equals(jigMethod.jigMethodId())) {
+                resolved.add(jigMethodId);
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
                 mermaidText.add("style %s font-weight:bold".formatted(htmlIdText(jigMethod.jigMethodId())));
             } else {
-                contextJigTypes.resolveJigMethod(jigMethodIdentifier)
+                contextJigTypes.resolveJigMethod(jigMethodId)
                         .ifPresent(method -> {
-                            resolved.add(jigMethodIdentifier);
+                            resolved.add(jigMethodId);
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 mermaidText.add(usecaseMermaidNodeText(method));

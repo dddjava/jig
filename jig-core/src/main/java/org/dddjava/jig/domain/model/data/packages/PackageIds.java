@@ -12,7 +12,7 @@ public record PackageIds(Set<PackageId> values) {
 
     public PackageIds applyDepth(PackageDepth packageDepth) {
         Set<PackageId> set = values.stream()
-                .map(identifier -> identifier.applyDepth(packageDepth))
+                .map(packageId -> packageId.applyDepth(packageDepth))
                 .collect(Collectors.toSet());
         return new PackageIds(set);
     }

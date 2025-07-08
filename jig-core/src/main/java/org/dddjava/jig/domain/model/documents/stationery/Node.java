@@ -27,8 +27,8 @@ public class Node {
         return new Node(typeId.fullQualifiedName());
     }
 
-    public static Node packageOf(PackageId identifier) {
-        return new Node(identifier.asText());
+    public static Node packageOf(PackageId packageId) {
+        return new Node(packageId.asText());
     }
 
     public Node as(NodeRole nodeRole) {

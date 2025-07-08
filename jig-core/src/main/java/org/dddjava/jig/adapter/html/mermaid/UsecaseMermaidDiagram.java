@@ -56,13 +56,13 @@ public record UsecaseMermaidDiagram(
 
         Set<TypeId> others = new HashSet<>();
 
-        Function<JigMethodId, Optional<String>> converter = jigMethodIdentifier -> {
+        Function<JigMethodId, Optional<String>> converter = jigMethodId -> {
             // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
-            if (resolved.contains(jigMethodIdentifier)) {
-                return Optional.of(htmlIdText(jigMethodIdentifier));
+            if (resolved.contains(jigMethodId)) {
+                return Optional.of(htmlIdText(jigMethodId));
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
-            var typeIdentifier = jigMethodIdentifier.tuple().declaringTypeId();
+            var typeIdentifier = jigMethodId.tuple().declaringTypeId();
             if (typeIdentifier.packageId().equals(jigMethod.declaringType().packageId())) {
                 // 暫定的に同じパッケージのもののみ出力する
                 // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする

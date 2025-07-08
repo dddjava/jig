@@ -66,13 +66,13 @@ public class Labeler {
         // 全てで共通する部分を抜き出す
         String commonPrefix = null;
         for (PackageId currentPackageId : contextPackages) {
-            Optional<PackageId> packageIdentifier = currentPackageId.parentIfExist();
-            if (packageIdentifier.isEmpty()) {
+            Optional<PackageId> packageId = currentPackageId.parentIfExist();
+            if (packageId.isEmpty()) {
                 continue;
             }
-            String currentText = packageIdentifier.orElseThrow().asText();
+            String currentText = packageId.orElseThrow().asText();
 
-            packageIdentifier.map(PackageId::asText);
+            packageId.map(PackageId::asText);
             if (commonPrefix == null) {
                 commonPrefix = currentText;
                 continue;

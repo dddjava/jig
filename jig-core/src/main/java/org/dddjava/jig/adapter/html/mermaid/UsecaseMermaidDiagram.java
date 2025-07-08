@@ -101,7 +101,7 @@ public record UsecaseMermaidDiagram(
         var tuple = jigMethodId.tuple();
 
         var typeText = tuple.declaringTypeId().packageAbbreviationText();
-        var parameterText = tuple.parameterTypeIdentifiers().stream()
+        var parameterText = tuple.parameterTypeIdList().stream()
                 .map(TypeId::packageAbbreviationText)
                 .collect(Collectors.joining(", ", "(", ")"));
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");

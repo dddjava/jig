@@ -35,10 +35,10 @@ public record JavaMethodDeclarator(
             if (identifier.equals(tuple.name())) {
                 // 引数の数が一致しない場合は不一致と判断する。
                 // TODO インナークラスではreceiverの存在により一致しない気がする。挙動を確認するテストを追加する必要がある。不一致で対応しないなら警告を出したり、どこかに制限事項として書く。
-                if (tuple.parameterTypeIdentifiers().size() != formalParameterList.size()) return false;
+                if (tuple.parameterTypeIdList().size() != formalParameterList.size()) return false;
 
-                for (int i = 0; i < tuple.parameterTypeIdentifiers().size(); i++) {
-                    var parameterizedArgumentType = tuple.parameterTypeIdentifiers().get(i);
+                for (int i = 0; i < tuple.parameterTypeIdList().size(); i++) {
+                    var parameterizedArgumentType = tuple.parameterTypeIdList().get(i);
                     var formalParameter = formalParameterList.get(i);
                     // FQNが一致すればOK。
                     // TODO 引数型がネストクラスの場合、コードで書かれるFQNは pkg.Hoge.Fuga となるのに対し、バイトコードでは pkg.Hoge$Fuga となり一致しない可能性がある。要テスト。

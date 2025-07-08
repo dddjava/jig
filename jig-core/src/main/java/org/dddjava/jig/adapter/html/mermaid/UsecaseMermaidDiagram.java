@@ -62,12 +62,12 @@ public record UsecaseMermaidDiagram(
                 return Optional.of(htmlIdText(jigMethodId));
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
-            var typeIdentifier = jigMethodId.tuple().declaringTypeId();
-            if (typeIdentifier.packageId().equals(jigMethod.declaringType().packageId())) {
+            var typeId = jigMethodId.tuple().declaringTypeId();
+            if (typeId.packageId().equals(jigMethod.declaringType().packageId())) {
                 // 暫定的に同じパッケージのもののみ出力する
                 // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
-                others.add(typeIdentifier);
-                return Optional.of(typeIdentifier.htmlIdText());
+                others.add(typeId);
+                return Optional.of(typeId.htmlIdText());
             } else {
                 return Optional.empty();
             }

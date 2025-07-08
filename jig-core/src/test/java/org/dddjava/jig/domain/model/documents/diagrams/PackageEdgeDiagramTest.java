@@ -87,7 +87,7 @@ class PackageEdgeDiagramTest {
     }
 
     @Test
-    void PackageIdentifiersのapplyDepth検証() {
+    void PackageIdsのapplyDepth検証() {
         PackageIds sut = new PackageIds(Set.of(
                 PackageId.valueOf("a.a.a.a"),
                 PackageId.valueOf("a.a.b"),

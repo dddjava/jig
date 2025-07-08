@@ -135,18 +135,18 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         String groupingSubgraphAndInternalNodeText = groupingPackages.entrySet().stream()
                 .map(entry -> new Subgraph(entry.getKey().asText())
                         .addNodes(entry.getValue().stream()
-                                .map(packageIdentifier -> Node.packageOf(packageIdentifier)
-                                        .label(labeler.label(packageIdentifier, entry.getKey()))
-                                        .url(packageIdentifier, JigDocument.DomainSummary)))
+                                .map(packageId -> Node.packageOf(packageId)
+                                        .label(labeler.label(packageId, entry.getKey()))
+                                        .url(packageId, JigDocument.DomainSummary)))
                         .label(labeler.label(entry.getKey()))
                         .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2))
                 .map(Subgraph::toString)
                 .collect(joining("\n"));
 
         String standalonePackageNodeText = standalonePackages.stream()
-                .map(packageIdentifier -> Node.packageOf(packageIdentifier)
-                        .label(labeler.label(packageIdentifier))
-                        .url(packageIdentifier, JigDocument.DomainSummary).asText())
+                .map(packageId -> Node.packageOf(packageId)
+                        .label(labeler.label(packageId))
+                        .url(packageId, JigDocument.DomainSummary).asText())
                 .collect(joining("\n"));
 
         String summaryText = "summary[shape=note,label=\""

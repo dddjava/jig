@@ -21,7 +21,7 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
     public Stream<TypeId> associatedTypeStream() {
         return Stream.of(
                         declarationAnnotations.stream().flatMap(JigAnnotationReference::allTypeIentifierStream),
-                        returnType.toTypeIdStream().filter(typeIdentifier -> !typeIdentifier.isVoid()),
+                        returnType.toTypeIdStream().filter(typeId -> !typeId.isVoid()),
                         argumentList.stream().flatMap(JigTypeReference::toTypeIdStream),
                         throwTypes.stream().flatMap(JigTypeReference::toTypeIdStream))
                 .flatMap(Function.identity());

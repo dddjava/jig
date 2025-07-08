@@ -34,9 +34,9 @@ class CompositeUsecases {
 
         // 戻り値へのEdge
         Optional<TypeId> primaryType = usecase.primaryType();
-        primaryType.ifPresent(typeIdentifier -> {
-                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold];\n", typeIdentifier.fullQualifiedName(), usecaseIdentifier));
-                    otherTypes.add(typeIdentifier);
+        primaryType.ifPresent(typeId -> {
+                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold];\n", typeId.fullQualifiedName(), usecaseIdentifier));
+                    otherTypes.add(typeId);
                 }
         );
 

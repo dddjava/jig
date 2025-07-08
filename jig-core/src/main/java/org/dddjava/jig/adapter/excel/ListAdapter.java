@@ -76,7 +76,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {
-                            var identifiers = allClassRelations.collectTypeIdWhichRelationTo(item.id()).packageIdentifiers().values();
+                            var identifiers = allClassRelations.collectTypeIdWhichRelationTo(item.id()).packageIds().values();
                             return markIfTrue(identifiers.equals(Set.of(item.packageId())));
                         }),
                         ReportItem.ofString("関連元クラス", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).asSimpleText())

@@ -35,7 +35,7 @@ public record Term(TermId id,
      *
      * 前方一致していれば関連していると見做す
      */
-    public boolean relatesTo(TermId otherIdentifier) {
-        return id().asText().startsWith(otherIdentifier.asText());
+    public boolean relatesTo(TermId otherTermId) {
+        return id().asText().startsWith(otherTermId.asText());
     }
 }

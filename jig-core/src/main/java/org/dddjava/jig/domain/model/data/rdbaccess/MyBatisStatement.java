@@ -5,12 +5,12 @@ package org.dddjava.jig.domain.model.data.rdbaccess;
  */
 public class MyBatisStatement {
 
-    MyBatisStatementId identifier;
+    MyBatisStatementId myBatisStatementId;
     Query query;
     SqlType sqlType;
 
-    public MyBatisStatement(MyBatisStatementId identifier, Query query, SqlType sqlType) {
-        this.identifier = identifier;
+    public MyBatisStatement(MyBatisStatementId myBatisStatementId, Query query, SqlType sqlType) {
+        this.myBatisStatementId = myBatisStatementId;
         this.query = query;
         this.sqlType = sqlType;
     }
@@ -24,7 +24,7 @@ public class MyBatisStatement {
 
     }
 
-    public MyBatisStatementId identifier() {
-        return identifier;
+    public MyBatisStatementId myBatisStatementId() {
+        return myBatisStatementId;
     }
 }

@@ -43,7 +43,7 @@ public class MyBatisStatements {
      */
     public MyBatisStatements filterRelationOn(List<MethodCall> methodCalls) {
         List<MyBatisStatement> myBatisStatements = list.stream()
-                .filter(myBatisStatement -> myBatisStatement.identifier().matches(methodCalls))
+                .filter(myBatisStatement -> myBatisStatement.myBatisStatementId().matches(methodCalls))
                 .toList();
         return new MyBatisStatements(myBatisStatements, sqlReadStatus);
     }

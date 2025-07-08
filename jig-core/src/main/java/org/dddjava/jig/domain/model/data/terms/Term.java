@@ -25,9 +25,9 @@ public record Term(TermId id,
     }
 
     public String titleAndSimpleName(String delimiter) {
-        String identifierSimpleText = simpleText();
-        if (title.isEmpty() || title.equals(identifierSimpleText)) return identifierSimpleText;
-        return title + delimiter + identifierSimpleText;
+        String simpleText = simpleText();
+        if (title.isEmpty() || title.equals(simpleText)) return simpleText;
+        return title + delimiter + simpleText;
     }
 
     /**

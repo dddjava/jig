@@ -2,8 +2,8 @@ package org.dddjava.jig.adapter.diagram;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
@@ -32,7 +32,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.PackageRelationDiagram)
     public DiagramSourceWriter packageRelation(JigRepository jigRepository) {
-        return PackageRelationDiagram.from(jigService.coreDomainJigTypesWithRelationships(jigRepository));
+        return PackageRelationDiagram.from(jigService.coreTypesAndRelations(jigRepository));
     }
 
     @HandleDocument(JigDocument.CompositeUsecaseDiagram)
@@ -48,7 +48,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)
     public DiagramSourceWriter businessRuleRelation(JigRepository jigRepository) {
-        return new ClassRelationDiagram(jigService.coreDomainJigTypesWithRelationships(jigRepository));
+        return new ClassRelationDiagram(jigService.coreTypesAndRelations(jigRepository));
     }
 
     @HandleDocument(JigDocument.CategoryDiagram)
@@ -59,8 +59,8 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
     @HandleDocument(JigDocument.CategoryUsageDiagram)
     public DiagramSourceWriter categoryUsages(JigRepository jigRepository) {
         ServiceMethods serviceMethods = jigService.serviceMethods(jigRepository);
-        JigTypesWithRelationships jigTypesWithRelationships = jigService.coreDomainJigTypesWithRelationships(jigRepository);
-        return new CategoryUsageDiagram(serviceMethods, jigTypesWithRelationships);
+        CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
+        return new CategoryUsageDiagram(serviceMethods, coreTypesAndRelations);
     }
 
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)

@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
-import org.dddjava.jig.application.JigTypesWithRelationships;
+import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
@@ -24,12 +24,12 @@ public class TypeRelationMermaidDiagram {
 
     /**
      * @param jigPackage                出力対象パッケージ
-     * @param jigTypesWithRelationships 出力コンテキスト
+     * @param coreTypesAndRelations 出力コンテキスト
      * @return Mermaidテキスト
      */
-    public Optional<String> write(JigPackage jigPackage, JigTypesWithRelationships jigTypesWithRelationships) {
+    public Optional<String> write(JigPackage jigPackage, CoreTypesAndRelations coreTypesAndRelations) {
         PackageId packageId = jigPackage.packageId();
-        TypeRelationships typeRelationships = jigTypesWithRelationships.typeRelationships();
+        TypeRelationships typeRelationships = coreTypesAndRelations.typeRelationships();
 
         Map<Boolean, List<TypeRelationship>> partitioningRelations = typeRelationships.list().stream()
                 // fromがこのパッケージを対象とし、このパッケージのクラスから外のクラスへの関連を出力する。
@@ -58,7 +58,7 @@ public class TypeRelationMermaidDiagram {
         Map<Boolean, List<String>> nodeMap = targetTypes.stream()
                 .collect(Collectors.partitioningBy(typeId -> typeId.packageId().equals(packageId),
                         Collectors.mapping(typeId -> {
-                                    String label = jigTypesWithRelationships.jigTypes()
+                                    String label = coreTypesAndRelations.jigTypes()
                                             .resolveJigType(typeId).map(JigType::label)
                                             .orElseGet(typeId::asSimpleName);
                                     return Mermaid.BOX.of(mermaidId(typeId), label);

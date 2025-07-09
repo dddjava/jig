@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.application.JigTypesWithRelationships;
+import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIds;
@@ -19,10 +19,10 @@ import java.util.StringJoiner;
  */
 public class ClassRelationDiagram implements DiagramSourceWriter {
 
-    JigTypesWithRelationships jigTypesWithRelationships;
+    CoreTypesAndRelations coreTypesAndRelations;
 
-    public ClassRelationDiagram(JigTypesWithRelationships jigTypesWithRelationships) {
-        this.jigTypesWithRelationships = jigTypesWithRelationships;
+    public ClassRelationDiagram(CoreTypesAndRelations coreTypesAndRelations) {
+        this.coreTypesAndRelations = coreTypesAndRelations;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
     }
 
     DiagramSources sources(JigDiagramOption jigDiagramOption, DocumentName documentName) {
-        if (jigTypesWithRelationships.jigTypes().empty()) {
+        if (coreTypesAndRelations.jigTypes().empty()) {
             return DiagramSource.empty();
         }
 
@@ -41,14 +41,14 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         // 出力対象の内部だけの関連
-        var internalClassRelations = jigTypesWithRelationships.typeRelationships();
+        var internalClassRelations = coreTypesAndRelations.typeRelationships();
 
         // 関連のないものだけ抽出する
-        TypeIds isolatedTypes = jigTypesWithRelationships.jigTypes()
+        TypeIds isolatedTypes = coreTypesAndRelations.jigTypes()
                 .filter(jigType -> internalClassRelations.filterFrom(jigType.id()).isEmpty() && internalClassRelations.filterTo(jigType.id()).isEmpty())
                 .typeIds();
 
-        for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(jigTypesWithRelationships.jigTypes())) {
+        for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(coreTypesAndRelations.jigTypes())) {
             PackageId packageId = jigPackageWithJigTypes.packageId();
 
             String fqn = packageId.asText();

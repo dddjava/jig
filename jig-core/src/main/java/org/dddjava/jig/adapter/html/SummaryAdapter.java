@@ -30,7 +30,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.DomainSummary)
     public SummaryModel domainSummary(JigRepository jigRepository) {
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreDomainJigTypesWithRelationships(jigRepository)));
+        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreTypesAndRelations(jigRepository)));
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)

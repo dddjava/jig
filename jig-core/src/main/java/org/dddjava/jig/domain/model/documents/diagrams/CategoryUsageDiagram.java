@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.application.JigTypesWithRelationships;
+import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
@@ -25,10 +25,10 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     private final JigTypes coreDomainJigTypes;
     private final TypeRelationships relationships;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, JigTypesWithRelationships jigTypesWithRelationships) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, CoreTypesAndRelations coreTypesAndRelations) {
         this.serviceMethods = serviceMethods;
-        this.coreDomainJigTypes = jigTypesWithRelationships.jigTypes();
-        this.relationships = jigTypesWithRelationships.typeRelationships();
+        this.coreDomainJigTypes = coreTypesAndRelations.jigTypes();
+        this.relationships = coreTypesAndRelations.typeRelationships();
     }
 
     public DiagramSources sources() {

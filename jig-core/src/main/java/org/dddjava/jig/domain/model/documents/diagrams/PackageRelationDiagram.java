@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.application.JigTypesWithRelationships;
+import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.packages.PackageIds;
@@ -34,14 +34,14 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
      * コンテキストとなるJigType
      * 依存なしのパッケージや相互参照場合の原因となるクラス関連を出力するため
      */
-    private final JigTypesWithRelationships contextJigTypes;
+    private final CoreTypesAndRelations contextJigTypes;
 
     /**
      * 現在適用されている深さ
      */
     private final PackageDepth appliedDepth;
 
-    public PackageRelationDiagram(PackageRelations packageRelations, JigTypesWithRelationships contextJigTypes, PackageDepth appliedDepth) {
+    public PackageRelationDiagram(PackageRelations packageRelations, CoreTypesAndRelations contextJigTypes, PackageDepth appliedDepth) {
         this.packageRelations = packageRelations;
         this.contextJigTypes = contextJigTypes;
         this.appliedDepth = appliedDepth;
@@ -55,9 +55,9 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         );
     }
 
-    public static DiagramSourceWriter from(JigTypesWithRelationships jigTypesWithRelationships) {
-        var packageRelations = PackageRelations.from(jigTypesWithRelationships.typeRelationships());
-        return new PackageRelationDiagram(packageRelations, jigTypesWithRelationships, new PackageDepth(-1));
+    public static DiagramSourceWriter from(CoreTypesAndRelations coreTypesAndRelations) {
+        var packageRelations = PackageRelations.from(coreTypesAndRelations.typeRelationships());
+        return new PackageRelationDiagram(packageRelations, coreTypesAndRelations, new PackageDepth(-1));
     }
 
     /**

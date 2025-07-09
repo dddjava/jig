@@ -2,8 +2,8 @@ package org.dddjava.jig.adapter.excel;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigTypesWithRelationships;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -56,8 +56,8 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
         var allClassRelations = TypeRelationships.from(jigTypes);
 
-        JigTypesWithRelationships jigTypesWithRelationships = jigService.coreDomainJigTypesWithRelationships(jigRepository);
-        JigTypes coreDomainJigTypes = jigTypesWithRelationships.jigTypes();
+        CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
+        JigTypes coreDomainJigTypes = coreTypesAndRelations.jigTypes();
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
         List<JigPackageWithJigTypes> jigTypePackages = JigPackageWithJigTypes.from(coreDomainJigTypes);
         return new ReportBook(
@@ -71,8 +71,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        ReportItem.ofNumber("関連元ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterTo(item.id()).size()),
-                        ReportItem.ofNumber("関連先ビジネスルール数", item -> jigTypesWithRelationships.typeRelationships().filterFrom(item.id()).size()),
+                        ReportItem.ofNumber("関連元ビジネスルール数", item -> coreTypesAndRelations.typeRelationships().filterTo(item.id()).size()),
+                        ReportItem.ofNumber("関連先ビジネスルール数", item -> coreTypesAndRelations.typeRelationships().filterFrom(item.id()).size()),
                         ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {

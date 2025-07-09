@@ -17,6 +17,7 @@ import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.module.JigPackages;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -40,7 +41,7 @@ public class JigService {
     // 何度も呼ばれる計算量の多いメソッドをキャッシュするためのフィールド
     // 現状は引数に揺れがないので、キャッシュキーはメソッド名にしておく
     private final Cache<String, JigTypes> jigTypesCache;
-    private final Cache<String, JigTypesWithRelationships> JigTypesWithRelationshipsCache;
+    private final Cache<String, CoreTypesAndRelations> JigTypesWithRelationshipsCache;
 
     public JigService(Architecture architecture, JigEventRepository jigEventRepository) {
         this.architecture = architecture;
@@ -133,9 +134,11 @@ public class JigService {
         return StringComparingMethodList.createFrom(entrypoints, serviceMethods);
     }
 
-    public JigTypesWithRelationships coreDomainJigTypesWithRelationships(JigRepository jigRepository) {
-        return JigTypesWithRelationshipsCache.get("coreDomainJigTypesWithRelationships", key -> {
-            return JigTypesWithRelationships.from(coreDomainJigTypes(jigRepository));
+    public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {
+        return JigTypesWithRelationshipsCache.get("coreTypesAndRelations", key -> {
+            JigTypes jigTypes = coreDomainJigTypes(jigRepository);
+            TypeRelationships typeRelationships = TypeRelationships.internalRelation(jigTypes);
+            return new CoreTypesAndRelations(jigTypes, typeRelationships);
         });
     }
 

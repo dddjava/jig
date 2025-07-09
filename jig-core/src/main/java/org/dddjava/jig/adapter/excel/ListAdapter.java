@@ -57,7 +57,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         var allClassRelations = TypeRelationships.from(jigTypes);
 
         CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
-        JigTypes coreDomainJigTypes = coreTypesAndRelations.jigTypes();
+        JigTypes coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
         List<JigPackageWithJigTypes> jigTypePackages = JigPackageWithJigTypes.from(coreDomainJigTypes);
         return new ReportBook(
@@ -71,8 +71,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", JigType::label),
                         ReportItem.ofString("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        ReportItem.ofNumber("関連元ビジネスルール数", item -> coreTypesAndRelations.typeRelationships().filterTo(item.id()).size()),
-                        ReportItem.ofNumber("関連先ビジネスルール数", item -> coreTypesAndRelations.typeRelationships().filterFrom(item.id()).size()),
+                        ReportItem.ofNumber("関連元ビジネスルール数", item -> coreTypesAndRelations.internalTypeRelationships().filterTo(item.id()).size()),
+                        ReportItem.ofNumber("関連先ビジネスルール数", item -> coreTypesAndRelations.internalTypeRelationships().filterFrom(item.id()).size()),
                         ReportItem.ofNumber("関連元クラス数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).list().size()),
                         ReportItem.ofString("非PUBLIC", item -> markIfTrue(item.visibility() != JigTypeVisibility.PUBLIC)),
                         ReportItem.ofString("同パッケージからのみ参照", item -> {

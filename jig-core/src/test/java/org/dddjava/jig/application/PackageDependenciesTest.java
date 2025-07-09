@@ -18,7 +18,7 @@ public class PackageDependenciesTest {
     void パッケージ依存(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.coreTypesAndRelations(jigRepository);
 
-        var sut = PackageRelations.from(jigTypes.typeRelationships());
+        var sut = PackageRelations.from(jigTypes.internalTypeRelationships());
 
         // パッケージの関連
         var actual = sut.listUnique().stream()

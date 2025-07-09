@@ -27,8 +27,8 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     public CategoryUsageDiagram(ServiceMethods serviceMethods, CoreTypesAndRelations coreTypesAndRelations) {
         this.serviceMethods = serviceMethods;
-        this.coreDomainJigTypes = coreTypesAndRelations.jigTypes();
-        this.relationships = coreTypesAndRelations.typeRelationships();
+        this.coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
+        this.relationships = coreTypesAndRelations.internalTypeRelationships();
     }
 
     public DiagramSources sources() {

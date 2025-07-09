@@ -29,7 +29,7 @@ public class TypeRelationMermaidDiagram {
      */
     public Optional<String> write(JigPackage jigPackage, CoreTypesAndRelations coreTypesAndRelations) {
         PackageId packageId = jigPackage.packageId();
-        TypeRelationships typeRelationships = coreTypesAndRelations.typeRelationships();
+        TypeRelationships typeRelationships = coreTypesAndRelations.internalTypeRelationships();
 
         Map<Boolean, List<TypeRelationship>> partitioningRelations = typeRelationships.list().stream()
                 // fromがこのパッケージを対象とし、このパッケージのクラスから外のクラスへの関連を出力する。
@@ -58,7 +58,7 @@ public class TypeRelationMermaidDiagram {
         Map<Boolean, List<String>> nodeMap = targetTypes.stream()
                 .collect(Collectors.partitioningBy(typeId -> typeId.packageId().equals(packageId),
                         Collectors.mapping(typeId -> {
-                                    String label = coreTypesAndRelations.jigTypes()
+                                    String label = coreTypesAndRelations.coreJigTypes()
                                             .resolveJigType(typeId).map(JigType::label)
                                             .orElseGet(typeId::asSimpleName);
                                     return Mermaid.BOX.of(mermaidId(typeId), label);

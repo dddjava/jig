@@ -31,7 +31,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
     }
 
     DiagramSources sources(JigDiagramOption jigDiagramOption, DocumentName documentName) {
-        if (coreTypesAndRelations.jigTypes().empty()) {
+        if (coreTypesAndRelations.coreJigTypes().empty()) {
             return DiagramSource.empty();
         }
 
@@ -41,14 +41,14 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         // 出力対象の内部だけの関連
-        var internalClassRelations = coreTypesAndRelations.typeRelationships();
+        var internalClassRelations = coreTypesAndRelations.internalTypeRelationships();
 
         // 関連のないものだけ抽出する
-        TypeIds isolatedTypes = coreTypesAndRelations.jigTypes()
+        TypeIds isolatedTypes = coreTypesAndRelations.coreJigTypes()
                 .filter(jigType -> internalClassRelations.filterFrom(jigType.id()).isEmpty() && internalClassRelations.filterTo(jigType.id()).isEmpty())
                 .typeIds();
 
-        for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(coreTypesAndRelations.jigTypes())) {
+        for (JigPackageWithJigTypes jigPackageWithJigTypes : JigPackageWithJigTypes.from(coreTypesAndRelations.coreJigTypes())) {
             PackageId packageId = jigPackageWithJigTypes.packageId();
 
             String fqn = packageId.asText();

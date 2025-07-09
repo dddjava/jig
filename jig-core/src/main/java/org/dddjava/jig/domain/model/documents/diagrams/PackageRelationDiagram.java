@@ -56,7 +56,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     }
 
     public static DiagramSourceWriter from(CoreTypesAndRelations coreTypesAndRelations) {
-        var packageRelations = PackageRelations.from(coreTypesAndRelations.typeRelationships());
+        var packageRelations = PackageRelations.from(coreTypesAndRelations.internalTypeRelationships());
         return new PackageRelationDiagram(packageRelations, coreTypesAndRelations, new PackageDepth(-1));
     }
 
@@ -64,7 +64,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
      * 関連なしも含むすべてのパッケージ
      */
     public PackageIds allPackages() {
-        return contextJigTypes.jigTypes().typeIds().packageIds().applyDepth(appliedDepth);
+        return contextJigTypes.coreJigTypes().typeIds().packageIds().applyDepth(appliedDepth);
     }
 
     public PackageRelationDiagram applyDepth(PackageDepth depth) {
@@ -180,7 +180,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         StringJoiner sj = new StringJoiner("\n");
         for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());
-            for (TypeRelationship typeRelationship : contextJigTypes.typeRelationships().list()) {
+            for (TypeRelationship typeRelationship : contextJigTypes.internalTypeRelationships().list()) {
                 PackageRelation packageRelation = PackageRelation.from(typeRelationship.from().packageId(), typeRelationship.to().packageId());
                 if (packageMutualDependency.matches(packageRelation)) {
                     sj.add("- " + typeRelationship.formatText());

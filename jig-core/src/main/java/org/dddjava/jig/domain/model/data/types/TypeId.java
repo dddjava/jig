@@ -144,11 +144,6 @@ public class TypeId implements Comparable<TypeId> {
         return false;
     }
 
-    public String htmlIdText() {
-        // 英数字以外を_に置換する
-        return value.replaceAll("[^a-zA-Z0-9]", "_");
-    }
-
     public boolean isArray() {
         return value.endsWith("[]");
     }

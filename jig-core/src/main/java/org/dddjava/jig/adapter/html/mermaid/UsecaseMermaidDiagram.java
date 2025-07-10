@@ -18,6 +18,11 @@ public record UsecaseMermaidDiagram(
         MethodRelations methodRelations
 ) {
 
+    private static String htmlIdText(TypeId typeId) {
+        // 英数字以外を_に置換する
+        return typeId.value().replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
     public String textFor(JigMethod jigMethod) {
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
@@ -67,7 +72,7 @@ public record UsecaseMermaidDiagram(
                 // 暫定的に同じパッケージのもののみ出力する
                 // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
                 others.add(typeId);
-                return Optional.of(typeId.htmlIdText());
+                return Optional.of(htmlIdText(typeId));
             } else {
                 return Optional.empty();
             }
@@ -76,7 +81,7 @@ public record UsecaseMermaidDiagram(
 
         // JigMethodにならないものはクラスノードとして出力する
         others.forEach(typeId ->
-                mermaidText.add("%s[%s]:::others".formatted(typeId.htmlIdText(), typeId.asSimpleText())));
+                mermaidText.add("%s[%s]:::others".formatted(htmlIdText(typeId), typeId.asSimpleText())));
 
         mermaidText.add("classDef others fill:#AAA,font-size:90%;");
         mermaidText.add("classDef lambda fill:#999,font-size:80%;");

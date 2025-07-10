@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.html.dialect;
 
+import org.dddjava.jig.adapter.html.HtmlSupport;
 import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.CoreTypesAndRelations;
@@ -147,13 +148,7 @@ class JigExpressionObject {
     }
 
     public static String htmlIdText(JigMethodId jigMethodId) {
-        var tuple = jigMethodId.tuple();
-
-        var typeText = tuple.declaringTypeId().packageAbbreviationText();
-        var parameterText = tuple.parameterTypeIdList().stream()
-                .map(TypeId::packageAbbreviationText)
-                .collect(Collectors.joining(", ", "(", ")"));
-        return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
+        return HtmlSupport.htmlMethodIdText(jigMethodId);
     }
 
     public Optional<String> descriptionText(JigType jigType) {

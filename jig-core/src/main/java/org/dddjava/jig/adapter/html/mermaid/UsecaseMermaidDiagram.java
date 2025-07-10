@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
+import org.dddjava.jig.adapter.html.HtmlSupport;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -11,7 +12,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public record UsecaseMermaidDiagram(
         JigTypes contextJigTypes,
@@ -103,12 +103,6 @@ public record UsecaseMermaidDiagram(
     }
 
     private static String htmlIdText(JigMethodId jigMethodId) {
-        var tuple = jigMethodId.tuple();
-
-        var typeText = tuple.declaringTypeId().packageAbbreviationText();
-        var parameterText = tuple.parameterTypeIdList().stream()
-                .map(TypeId::packageAbbreviationText)
-                .collect(Collectors.joining(", ", "(", ")"));
-        return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
+        return HtmlSupport.htmlMethodIdText(jigMethodId);
     }
 }

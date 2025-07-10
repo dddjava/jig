@@ -5,7 +5,6 @@ import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
@@ -144,11 +143,7 @@ class JigExpressionObject {
     }
 
     public static String htmlIdText(JigMethod jigMethod) {
-        return htmlIdText(jigMethod.jigMethodId());
-    }
-
-    public static String htmlIdText(JigMethodId jigMethodId) {
-        return HtmlSupport.htmlMethodIdText(jigMethodId);
+        return HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId());
     }
 
     public Optional<String> descriptionText(JigType jigType) {

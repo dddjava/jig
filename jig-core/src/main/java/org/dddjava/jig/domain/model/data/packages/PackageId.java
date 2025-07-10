@@ -121,11 +121,6 @@ public class PackageId implements Comparable<PackageId> {
         return value;
     }
 
-    public String htmlIdText() {
-        // 英数字以外を_に置換する
-        return value.replaceAll("[^a-zA-Z0-9]", "_");
-    }
-
     /**
      * 省略表記フィールド
      * FQNは長くなりすぎるため省略表記が必要な場合がある。

@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
+import org.dddjava.jig.adapter.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;

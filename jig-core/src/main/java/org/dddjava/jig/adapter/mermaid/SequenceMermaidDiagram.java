@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html.mermaid;
+package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;

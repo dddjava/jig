@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html.mermaid;
+package org.dddjava.jig.adapter.mermaid;
 
 /**
  * Mermaid表記

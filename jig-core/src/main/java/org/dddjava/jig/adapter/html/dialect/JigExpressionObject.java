@@ -1,8 +1,8 @@
 package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.adapter.html.HtmlSupport;
-import org.dddjava.jig.adapter.html.mermaid.SequenceMermaidDiagram;
-import org.dddjava.jig.adapter.html.mermaid.TypeRelationMermaidDiagram;
+import org.dddjava.jig.adapter.mermaid.SequenceMermaidDiagram;
+import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.terms.Glossary;

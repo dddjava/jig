@@ -2,9 +2,9 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
-import org.dddjava.jig.adapter.html.mermaid.EntrypointMermaidDiagram;
-import org.dddjava.jig.adapter.html.mermaid.TypeRelationMermaidDiagram;
-import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
+import org.dddjava.jig.adapter.mermaid.EntrypointMermaidDiagram;
+import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
+import org.dddjava.jig.adapter.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;

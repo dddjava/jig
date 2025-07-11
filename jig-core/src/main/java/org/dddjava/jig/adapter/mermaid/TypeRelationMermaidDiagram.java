@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html.mermaid;
+package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageId;

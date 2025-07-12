@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.adapter.html.HtmlSupport;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointGroup;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
@@ -38,7 +37,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         entrypointGroup.entrypointMethods().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
-            var apiMethodMmdId = htmlIdText(entrypointMethod.jigMethod().jigMethodId());
+            var apiMethodMmdId = MermaidSupport.mermaidIdText(entrypointMethod.jigMethod().jigMethodId());
             String apiMethodLabel = entrypointMethod.jigMethod().labelText();
 
             var description = switch (entrypointMethod.entrypointType()) {
@@ -78,10 +77,10 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
                         } else {
                             // controllerと同じクラスのメソッドはメソッド名だけ
                             if (entrypointMethod.typeId().equals(declaringTypeId)) {
-                                methodLabelMap.put(htmlIdText(jigMethodId), jigMethodId.name());
+                                methodLabelMap.put(MermaidSupport.mermaidIdText(jigMethodId), jigMethodId.name());
                             } else {
                                 // 他はクラス名+メソッド名
-                                methodLabelMap.put(htmlIdText(jigMethodId), declaringTypeId.asSimpleName() + '.' + jigMethodId.name());
+                                methodLabelMap.put(MermaidSupport.mermaidIdText(jigMethodId), declaringTypeId.asSimpleName() + '.' + jigMethodId.name());
                             }
                         }
                     });
@@ -95,9 +94,11 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
             values.forEach(jigMethod -> {
-                var htmlIdText = htmlIdText(jigMethod.jigMethodId());
-                mermaidText.add("    %s([\"%s\"])".formatted(htmlIdText, jigMethod.labelText()));
-                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(htmlIdText, htmlIdText));
+                var methodId = MermaidSupport.mermaidIdText(jigMethod.jigMethodId());
+                // JigMethodIdをリンク先となるHTMLに書き出しているIDと同じルールで変換する
+                var linkTargetId = HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId());
+                mermaidText.add("    %s([\"%s\"])".formatted(methodId, jigMethod.labelText()));
+                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(methodId, linkTargetId));
             });
             mermaidText.add("    end");
         });
@@ -113,10 +114,6 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
     }
 
     private static String methodRelationEdgeText(MethodRelation methodRelation) {
-        return "%s --> %s".formatted(htmlIdText(methodRelation.from()), htmlIdText(methodRelation.to()));
-    }
-
-    private static String htmlIdText(JigMethodId jigMethodId) {
-        return HtmlSupport.htmlMethodIdText(jigMethodId);
+        return "%s --> %s".formatted(MermaidSupport.mermaidIdText(methodRelation.from()), MermaidSupport.mermaidIdText(methodRelation.to()));
     }
 }

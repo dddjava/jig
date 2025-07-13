@@ -41,7 +41,7 @@ public record UsecaseMermaidDiagram(
             if (jigMethodId.equals(jigMethod.jigMethodId())) {
                 resolved.add(jigMethodId);
                 mermaidText.add(usecaseMermaidNodeText(jigMethod));
-                mermaidText.add("style %s font-weight:bold".formatted(htmlIdText(jigMethod.jigMethodId())));
+                mermaidText.add("style %s font-weight:bold".formatted(MermaidSupport.mermaidIdText(jigMethod.jigMethodId())));
             } else {
                 contextJigTypes.resolveJigMethod(jigMethodId)
                         .ifPresent(method -> {
@@ -49,8 +49,10 @@ public record UsecaseMermaidDiagram(
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 mermaidText.add(usecaseMermaidNodeText(method));
-                                var htmlIdText = htmlIdText(method.jigMethodId());
-                                mermaidText.add("click %s \"#%s\"".formatted(htmlIdText, htmlIdText));
+                                var mermaidId = MermaidSupport.mermaidIdText(method.jigMethodId());
+                                // JigMethodIdをリンク先となるHTMLに書き出しているIDと同じルールで変換する
+                                var linkTargetId = HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId());
+                                mermaidText.add("click %s \"#%s\"".formatted(mermaidId, linkTargetId));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。　
                                 mermaidText.add(normalMermaidNodeText(method));
@@ -64,7 +66,7 @@ public record UsecaseMermaidDiagram(
         Function<JigMethodId, Optional<String>> converter = jigMethodId -> {
             // 解決済みのメソッドは出力済みなので、Mermaid上のIDだけでよい
             if (resolved.contains(jigMethodId)) {
-                return Optional.of(htmlIdText(jigMethodId));
+                return Optional.of(MermaidSupport.mermaidIdText(jigMethodId));
             }
             // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
             var typeId = jigMethodId.tuple().declaringTypeId();
@@ -91,7 +93,7 @@ public record UsecaseMermaidDiagram(
 
     private String normalMermaidNodeText(JigMethod jigMethod) {
         var jigMethodId = jigMethod.jigMethodId();
-        var string = htmlIdText(jigMethodId);
+        var string = MermaidSupport.mermaidIdText(jigMethodId);
         if (jigMethodId.isLambda()) {
             return "%s[\"%s\"]:::lambda".formatted(string, "(lambda)");
         }
@@ -99,10 +101,6 @@ public record UsecaseMermaidDiagram(
     }
 
     private String usecaseMermaidNodeText(JigMethod jigMethod) {
-        return "%s([\"%s\"])".formatted(htmlIdText(jigMethod.jigMethodId()), jigMethod.labelTextOrLambda());
-    }
-
-    private static String htmlIdText(JigMethodId jigMethodId) {
-        return HtmlSupport.htmlMethodIdText(jigMethodId);
+        return "%s([\"%s\"])".formatted(MermaidSupport.mermaidIdText(jigMethod.jigMethodId()), jigMethod.labelTextOrLambda());
     }
 }

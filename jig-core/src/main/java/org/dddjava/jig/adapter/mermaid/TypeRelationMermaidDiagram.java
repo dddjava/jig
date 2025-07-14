@@ -61,7 +61,7 @@ public class TypeRelationMermaidDiagram {
                                     String label = coreTypesAndRelations.coreJigTypes()
                                             .resolveJigType(typeId).map(JigType::label)
                                             .orElseGet(typeId::asSimpleName);
-                                    return Mermaid.BOX.of(mermaidId(typeId), label);
+                                    return Mermaid.box(mermaidId(typeId), label);
                                 },
                                 Collectors.toList())));
 

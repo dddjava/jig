@@ -59,12 +59,15 @@ public record JigTypeReference(TypeId id,
     }
 
     public Stream<TypeId> toTypeIdStream() {
+        if (id.isVoid()) return Stream.empty();
+
         return Stream.of(
-                // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
-                id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
-                typeAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
-                typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().toTypeIdStream())
-        ).flatMap(identity -> identity);
+                        // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
+                        id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
+                        typeAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
+                        typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().toTypeIdStream())
+                )
+                .flatMap(identity -> identity);
     }
 
     public JigTypeReference convertArray() {

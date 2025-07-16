@@ -137,13 +137,6 @@ public class TypeId implements Comparable<TypeId> {
         return valueOf(value.replace("[L", "").replace(";", "").replace("[]", ""));
     }
 
-    public boolean anyEquals(String... ids) {
-        for (String id : ids) {
-            if (fullQualifiedName().equals(id)) return true;
-        }
-        return false;
-    }
-
     public boolean isArray() {
         return value.endsWith("[]");
     }

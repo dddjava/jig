@@ -6,13 +6,14 @@ import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
 /**
  * サービスの切り口一覧
  */
-public record ServiceAngles(List<ServiceAngle> list) {
+public record ServiceAngles(Collection<ServiceAngle> values) {
 
     public static ServiceAngles from(ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods) {
         List<ServiceAngle> list = new ArrayList<>();
@@ -24,7 +25,7 @@ public record ServiceAngles(List<ServiceAngle> list) {
     }
 
     public List<ServiceAngle> list() {
-        return list.stream()
+        return values.stream()
                 .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodId().value()))
                 .toList();
     }

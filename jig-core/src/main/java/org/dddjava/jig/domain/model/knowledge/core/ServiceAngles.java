@@ -12,9 +12,7 @@ import java.util.List;
 /**
  * サービスの切り口一覧
  */
-public class ServiceAngles {
-
-    List<ServiceAngle> list;
+public record ServiceAngles(List<ServiceAngle> list) {
 
     public static ServiceAngles from(ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods) {
         List<ServiceAngle> list = new ArrayList<>();
@@ -29,10 +27,6 @@ public class ServiceAngles {
         return list.stream()
                 .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodId().value()))
                 .toList();
-    }
-
-    private ServiceAngles(List<ServiceAngle> list) {
-        this.list = list;
     }
 
     public boolean none() {

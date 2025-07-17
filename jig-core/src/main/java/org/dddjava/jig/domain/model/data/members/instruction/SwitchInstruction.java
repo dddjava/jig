@@ -27,4 +27,9 @@ public record SwitchInstruction(JumpTarget defaultTarget,
                 caseTargets.stream().map(JumpTarget::new).toList()
         );
     }
+
+    @Override
+    public int cyclomaticComplexity() {
+        return caseTargets.size();
+    }
 }

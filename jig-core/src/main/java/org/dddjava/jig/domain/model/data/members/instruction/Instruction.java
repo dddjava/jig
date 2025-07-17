@@ -35,4 +35,14 @@ public sealed interface Instruction
     default Stream<MethodCall> lambdaInlinedMethodCallStream() {
         return findMethodCall();
     }
+
+    /**
+     * 循環的複雑度
+     *
+     * instructionレベルでは内部的な情報なのでintで扱う。
+     * 通常のinstructionは0なのでdefault=0としておく。
+     */
+    default int cyclomaticComplexity() {
+        return 0;
+    }
 }

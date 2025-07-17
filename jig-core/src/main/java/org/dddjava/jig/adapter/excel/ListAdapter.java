@@ -156,7 +156,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 .map(TypeId::asSimpleText)
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),
-                        ReportItem.ofNumber("分岐数", item -> item.jigMethod().instructions().decisionCount()),
+                        ReportItem.ofNumber("循環的複雑度", item -> item.jigMethod().instructions().cyclomaticComplexity()),
                         ReportItem.ofString("パス", item -> HttpEndpoint.from(item).pathText())
                 ), entrypoints.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
@@ -182,7 +182,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 .map(TypeId::asSimpleText)
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),
-                        ReportItem.ofNumber("分岐数", item -> item.serviceMethod().method().instructions().decisionCount()),
+                        ReportItem.ofNumber("循環的複雑度", item -> item.serviceMethod().method().instructions().cyclomaticComplexity()),
                         ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()
                                 .map(JigMethod::nameAndArgumentSimpleText)
@@ -206,7 +206,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                         .map(Term::title)
                                         .collect(STREAM_COLLECTOR)
                         ),
-                        ReportItem.ofNumber("分岐数", DatasourceAngle::decisionCount),
+                        ReportItem.ofNumber("循環的複雑度", DatasourceAngle::cyclomaticComplexity),
                         ReportItem.ofString("INSERT", DatasourceAngle::insertTables),
                         ReportItem.ofString("SELECT", DatasourceAngle::selectTables),
                         ReportItem.ofString("UPDATE", DatasourceAngle::updateTables),

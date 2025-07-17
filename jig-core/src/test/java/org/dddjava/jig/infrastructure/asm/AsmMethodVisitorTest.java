@@ -275,17 +275,17 @@ class AsmMethodVisitorTest {
     }
 
     @CsvSource({
-            "分岐なしメソッド, 0",
-            "ifがあるメソッド, 1",
-            "null判定があるメソッド, 1",
-            "switchがあるメソッド, 1",
+            "分岐なしメソッド, 1",
+            "ifがあるメソッド, 2",
+            "null判定があるメソッド, 2",
+            "switchがあるメソッド, 3",
             // forは ifeq と goto で構成されるある意味での分岐
-            "forがあるメソッド, 1",
+            "forがあるメソッド, 2",
     })
     @ParameterizedTest
     void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
         JigMethod actual = TestSupport.JigMethod準備(DecisionClass.class, name);
-        assertEquals(number, actual.instructions().decisionCount());
+        assertEquals(number, actual.instructions().cyclomaticComplexity());
     }
 
     @CsvSource({

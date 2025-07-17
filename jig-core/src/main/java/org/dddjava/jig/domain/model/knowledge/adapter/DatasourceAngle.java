@@ -50,8 +50,8 @@ public class DatasourceAngle {
         return interfaceMethod.methodArgumentTypeReferenceStream();
     }
 
-    public int decisionCount() {
-        return concreteMethod().instructions().decisionCount();
+    public int cyclomaticComplexity() {
+        return concreteMethod().instructions().cyclomaticComplexity();
     }
 
     public String insertTables() {

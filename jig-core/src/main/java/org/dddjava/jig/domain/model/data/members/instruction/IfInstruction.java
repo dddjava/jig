@@ -24,4 +24,9 @@ public record IfInstruction(Kind kind, JumpTarget target) implements Instruction
     public static Instruction from(Kind kind, String targetId) {
         return new IfInstruction(kind, new JumpTarget(targetId));
     }
+
+    @Override
+    public int cyclomaticComplexity() {
+        return 1;
+    }
 }

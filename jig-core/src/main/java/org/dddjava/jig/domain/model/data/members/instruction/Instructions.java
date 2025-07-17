@@ -16,10 +16,10 @@ import java.util.stream.Stream;
  */
 public record Instructions(List<Instruction> instructions) {
 
-    public int decisionCount() {
-        return Math.toIntExact(instructions.stream()
-                .filter(instruction -> instruction instanceof IfInstruction || instruction instanceof SwitchInstruction)
-                .count());
+    public int cyclomaticComplexity() {
+        return 1 + instructions.stream()
+                .mapToInt(Instruction::cyclomaticComplexity)
+                .sum();
     }
 
     public Stream<TypeId> associatedTypeStream() {

@@ -30,11 +30,10 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        if (serviceAngles.none()) {
+        List<ServiceAngle> angles = serviceAngles.list();
+        if (angles.isEmpty()) {
             return DiagramSource.empty();
         }
-
-        List<ServiceAngle> angles = serviceAngles.list();
 
         // メソッド間の関連
         RelationText relationText = new RelationText();

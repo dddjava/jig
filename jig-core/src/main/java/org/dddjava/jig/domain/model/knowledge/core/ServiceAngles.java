@@ -28,8 +28,4 @@ public record ServiceAngles(List<ServiceAngle> list) {
                 .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodId().value()))
                 .toList();
     }
-
-    public boolean none() {
-        return list.isEmpty();
-    }
 }

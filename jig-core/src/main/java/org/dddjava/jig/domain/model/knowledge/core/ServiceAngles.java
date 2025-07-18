@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * サービスの切り口一覧
@@ -28,5 +29,9 @@ public record ServiceAngles(Collection<ServiceAngle> values) {
         return values.stream()
                 .sorted(Comparator.comparing(serviceAngle -> serviceAngle.serviceMethod().method().jigMethodId().value()))
                 .toList();
+    }
+
+    public Stream<ServiceAngle> stream() {
+        return values.stream();
     }
 }

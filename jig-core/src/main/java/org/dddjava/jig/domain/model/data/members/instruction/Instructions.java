@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * 命令リスト
  *
- * 主にメソッドで記述されるもの。コンストラクタやイニシャライザも含まれる。
+ * メソッド（コンストラクタやイニシャライザも含まれる。）で実装される一塊。
  * バイトコード上の順番を維持するため、Listで保持する。
  */
 public record Instructions(List<Instruction> instructions) {

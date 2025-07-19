@@ -145,10 +145,10 @@ class AsmMethodVisitor extends MethodVisitor {
     public void visitInsn(int opcode) {
         logger.debug("visitInsn {}", opcode);
         switch (opcode) {
-            case Opcodes.ACONST_NULL -> methodInstructionCollector.add(BasicInstruction.NULL参照);
+            case Opcodes.ACONST_NULL -> methodInstructionCollector.add(SimpleInstruction.NULL参照);
             case Opcodes.RETURN, Opcodes.ARETURN,
                  Opcodes.IRETURN, Opcodes.LRETURN, Opcodes.FRETURN, Opcodes.DRETURN ->
-                    methodInstructionCollector.add(BasicInstruction.RETURN);
+                    methodInstructionCollector.add(SimpleInstruction.RETURN);
         }
         super.visitInsn(opcode);
     }

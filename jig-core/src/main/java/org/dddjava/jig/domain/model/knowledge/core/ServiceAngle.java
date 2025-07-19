@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.data.members.instruction.BasicInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
+import org.dddjava.jig.domain.model.data.members.instruction.SimpleInstruction;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
@@ -79,7 +79,7 @@ public class ServiceAngle {
             if (instruction instanceof IfInstruction ifInstruction) {
                 return ifInstruction.kind() == IfInstruction.Kind.NULL判定;
             }
-            return instruction == BasicInstruction.NULL参照;
+            return instruction == SimpleInstruction.NULL参照;
         });
     }
 

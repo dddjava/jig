@@ -39,8 +39,8 @@ public record Instructions(List<Instruction> instructions) {
                 .flatMap(Instruction::findMethodCall);
     }
 
-    public boolean containsAnyBasicInstruction(BasicInstruction... basicInstruction) {
-        return Arrays.stream(basicInstruction).anyMatch(instructions::contains);
+    public boolean containsAnyBasicInstruction(SimpleInstruction... simpleInstruction) {
+        return Arrays.stream(simpleInstruction).anyMatch(instructions::contains);
     }
 
     public boolean containsAny(Predicate<Instruction> predicate) {

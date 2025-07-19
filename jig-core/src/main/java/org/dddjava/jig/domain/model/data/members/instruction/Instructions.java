@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.data.members.instruction;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -39,8 +38,8 @@ public record Instructions(List<Instruction> instructions) {
                 .flatMap(Instruction::findMethodCall);
     }
 
-    public boolean containsAnyBasicInstruction(SimpleInstruction... simpleInstruction) {
-        return Arrays.stream(simpleInstruction).anyMatch(instructions::contains);
+    public boolean containsSimpleInstruction(SimpleInstruction simpleInstruction) {
+        return instructions.contains(simpleInstruction);
     }
 
     public boolean containsAny(Predicate<Instruction> predicate) {

@@ -22,13 +22,13 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 
 @JigServiceTest
-class MethodSmellListTest {
+class MethodSmellsTest {
 
     @Test
     void 注意メソッドの抽出(JigService jigService, JigRepository jigRepository) {
-        MethodSmellList methodSmellList = jigService.methodSmells(jigRepository);
+        MethodSmells methodSmells = jigService.methodSmells(jigRepository);
 
-        var detectedSmells = methodSmellList.list().stream()
+        var detectedSmells = methodSmells.list().stream()
                 .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeId.from(SmelledClass.class)))
                 .toList();
 
@@ -58,10 +58,10 @@ class MethodSmellListTest {
     @ParameterizedTest(name = "{index} {1} :: {0}")
     void メンバ未使用の判定(Class<?> clz, String name, boolean expected) {
         var jigType = TestSupport.buildJigType(clz);
-        MethodSmellList methodSmellList = MethodSmellList.from(new JigTypes(List.of(jigType)));
+        MethodSmells methodSmells = MethodSmells.from(new JigTypes(List.of(jigType)));
 
         // smellListに入っていないものは警告なしの判定になるのでfilterとanyMatchで検証
-        assertEquals(expected, methodSmellList.list().stream()
+        assertEquals(expected, methodSmells.list().stream()
                 .filter(methodSmell -> methodSmell.method().name().equals(name))
                 .anyMatch(MethodSmell::notUseMember)
         );
@@ -103,9 +103,9 @@ class MethodSmellListTest {
      */
     @Test
     void 注意メソッドの抽出_record(JigService jigService, JigRepository jigRepository) {
-        MethodSmellList methodSmellList = jigService.methodSmells(jigRepository);
+        MethodSmells methodSmells = jigService.methodSmells(jigRepository);
 
-        var detectedSmells = methodSmellList.list().stream()
+        var detectedSmells = methodSmells.list().stream()
                 .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeId.from(SmelledRecord.class)))
                 .toList();
 

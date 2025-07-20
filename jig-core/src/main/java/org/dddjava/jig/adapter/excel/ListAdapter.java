@@ -24,7 +24,7 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngle;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
-import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 
 import java.nio.file.Path;
@@ -52,7 +52,7 @@ public class ListAdapter implements Adapter<ReportBook> {
     @HandleDocument(JigDocument.BusinessRuleList)
     public ReportBook businessRuleReports(JigRepository jigRepository) {
 
-        MethodSmellList methodSmellList = jigService.methodSmells(jigRepository);
+        MethodSmells methodSmells = jigService.methodSmells(jigRepository);
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
         var allClassRelations = TypeRelationships.from(jigTypes);
 
@@ -133,7 +133,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         ReportItem.ofString("NULL判定をしている", item -> markIfTrue(item.nullDecision())),
                         ReportItem.ofString("真偽値を返している", item -> markIfTrue(item.returnsBoolean())),
                         ReportItem.ofString("voidを返している", item -> markIfTrue(item.returnsVoid()))
-                ), methodSmellList.list())
+                ), methodSmells.list())
         );
     }
 

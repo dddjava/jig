@@ -25,7 +25,7 @@ import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
-import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 
 import java.util.List;
 import java.util.Map;
@@ -80,8 +80,8 @@ public class JigService {
         });
     }
 
-    public MethodSmellList methodSmells(JigRepository jigRepository) {
-        return MethodSmellList.from(coreDomainJigTypes(jigRepository));
+    public MethodSmells methodSmells(JigRepository jigRepository) {
+        return MethodSmells.from(coreDomainJigTypes(jigRepository));
     }
 
     public JigTypes categoryTypes(JigRepository jigRepository) {

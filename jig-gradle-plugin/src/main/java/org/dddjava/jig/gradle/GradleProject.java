@@ -8,8 +8,7 @@ import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.gradle.util.GradleVersion;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -20,8 +19,6 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toSet;
 
 public class GradleProject {
-    private static final Logger logger = LoggerFactory.getLogger(GradleProject.class);
-
     final Project project;
 
     public GradleProject(Project project) {
@@ -88,7 +85,13 @@ public class GradleProject {
                         .flatMap(DependencySet::stream)
                         .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))
                         .map(ProjectDependency.class::cast)
-                        .map(ProjectDependency::getDependencyProject)
+                        .map(projectDependency -> {
+                            if (GradleVersion.current().compareTo(GradleVersion.version("8.11")) < 0) {
+                                // Gradle9.0で削除されるが、代替のgetPathはGradle8.11以降なのでGradle7をサポートしているうちは使用できない。
+                                return projectDependency.getDependencyProject();
+                            }
+                            return project.project(projectDependency.getPath());
+                        })
                         .flatMap(this::allDependencyProjectsFrom);
 
         return Stream.concat(Stream.of(currentProject), descendantStream);

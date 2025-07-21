@@ -1,5 +1,5 @@
 plugins {
-    id 'groovy-gradle-plugin'
+    `kotlin-dsl`
 }
 
 repositories {
@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-    implementation libs.spring.boot.plugin
+    implementation(libs.spring.boot.plugin)
 }

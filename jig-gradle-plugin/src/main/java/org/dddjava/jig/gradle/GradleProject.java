@@ -73,13 +73,13 @@ public class GradleProject {
                 .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));
     }
 
-    private Stream<Project> allDependencyProjectsFrom(Project root) {
-        if (isNonJavaProject(root)) {
+    private Stream<Project> allDependencyProjectsFrom(Project currentProject) {
+        if (isNonJavaProject(currentProject)) {
             return Stream.empty();
         }
 
         Stream<Project> descendantStream =
-                root.getConfigurations().stream()
+                currentProject.getConfigurations().stream()
                         .filter(configuration -> {
                             String name = configuration.getName();
                             return "implementation".equals(name);
@@ -91,6 +91,6 @@ public class GradleProject {
                         .map(ProjectDependency::getDependencyProject)
                         .flatMap(this::allDependencyProjectsFrom);
 
-        return Stream.concat(Stream.of(root), descendantStream);
+        return Stream.concat(Stream.of(currentProject), descendantStream);
     }
 }

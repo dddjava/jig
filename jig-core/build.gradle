@@ -8,9 +8,9 @@ plugins {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.name
-            version project.version
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
             from components.java
             pom {
                 name = "jig-core"

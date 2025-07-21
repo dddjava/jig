@@ -32,9 +32,9 @@ gradlePlugin {
 publishing {
     publications {
         puluginPublication(MavenPublication) {
-            groupId project.group
-            artifactId project.name
-            version project.version
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
             from components.java
         }
     }

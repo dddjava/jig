@@ -80,7 +80,10 @@ public class GradleProject {
 
         Stream<Project> descendantStream =
                 root.getConfigurations().stream()
-                        .filter(this::implementationConfiguration)
+                        .filter(configuration -> {
+                            String name = configuration.getName();
+                            return "implementation".equals(name);
+                        })
                         .map(Configuration::getAllDependencies)
                         .flatMap(DependencySet::stream)
                         .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))
@@ -89,10 +92,5 @@ public class GradleProject {
                         .flatMap(this::allDependencyProjectsFrom);
 
         return Stream.concat(Stream.of(root), descendantStream);
-    }
-
-    private boolean implementationConfiguration(Configuration configuration) {
-        String name = configuration.getName();
-        return "implementation".equals(name);
     }
 }

@@ -23,7 +23,7 @@ public class ArchitectureDiagram implements DiagramSourceWriter {
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         ArchitectureRelations architectureRelations = ArchitectureRelations.from(packageBasedArchitecture);
         if (architectureRelations.worthless()) {
-            return DiagramSource.empty();
+            return DiagramSources.empty();
         }
 
         Function<PackageId, String> architectureLabel = packageId -> jigDocumentContext.packageTerm(packageId).title();

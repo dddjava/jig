@@ -27,7 +27,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
 
     public DiagramSources sources() {
         if (jigTypes.empty()) {
-            return DiagramSource.empty();
+            return DiagramSources.empty();
         }
 
         String structureText = jigTypes.list().stream()

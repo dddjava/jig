@@ -35,7 +35,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         JigTypes categoryJigTypes = coreDomainJigTypes.filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
 
         if (categoryJigTypes.empty()) {
-            return DiagramSource.empty();
+            return DiagramSources.empty();
         }
 
         TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIds());

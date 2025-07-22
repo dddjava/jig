@@ -32,7 +32,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
 
     DiagramSources sources(JigDiagramOption jigDiagramOption, DocumentName documentName) {
         if (coreTypesAndRelations.coreJigTypes().empty()) {
-            return DiagramSource.empty();
+            return DiagramSources.empty();
         }
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")

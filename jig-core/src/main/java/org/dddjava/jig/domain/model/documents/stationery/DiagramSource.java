@@ -36,8 +36,4 @@ public record DiagramSource(DocumentName documentName, String text, AdditionalTe
     public boolean noValue() {
         return text == null;
     }
-
-    public static DiagramSources empty() {
-        return DiagramSources.empty();
-    }
 }

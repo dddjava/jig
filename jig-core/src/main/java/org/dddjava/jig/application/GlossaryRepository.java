@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
- * 別名リポジトリ
+ * 用語リポジトリ
  */
 public interface GlossaryRepository {
 

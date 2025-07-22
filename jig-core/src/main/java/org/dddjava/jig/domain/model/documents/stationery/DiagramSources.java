@@ -4,22 +4,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DiagramSources {
-    List<DiagramSource> diagramSources;
-
-    public DiagramSources(List<DiagramSource> diagramSources) {
-        this.diagramSources = diagramSources;
-    }
+public record DiagramSources(List<DiagramSource> list) {
 
     public static DiagramSources empty() {
         return new DiagramSources(Collections.emptyList());
     }
 
     public boolean noEntity() {
-        return diagramSources.isEmpty();
+        return list.isEmpty();
     }
 
     public void each(Consumer<DiagramSource> consumer) {
-        diagramSources.forEach(consumer);
+        list.forEach(consumer);
     }
 }

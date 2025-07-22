@@ -16,6 +16,10 @@ public record DiagramSources(List<DiagramSource> list) {
         return new DiagramSources(Collections.singletonList(new DiagramSource(documentName, text, AdditionalText.empty())));
     }
 
+    public static DiagramSources of(List<DiagramSource> diagramSources) {
+        return new DiagramSources(diagramSources);
+    }
+
     public boolean noEntity() {
         return list.isEmpty();
     }

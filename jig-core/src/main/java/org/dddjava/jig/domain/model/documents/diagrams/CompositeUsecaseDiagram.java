@@ -51,7 +51,7 @@ public class CompositeUsecaseDiagram implements DiagramSourceWriter {
             diagramList.add(handlersDiagramSource);
         }
 
-        return DiagramSource.createDiagramSource(diagramList);
+        return DiagramSources.of(diagramList);
     }
 
     private static String graphHeader(DocumentName documentName) {

@@ -64,7 +64,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         }
 
         DocumentName documentName = DocumentName.of(JigDocument.CategoryUsageDiagram);
-        return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+        return DiagramSources.singleDiagramSource(documentName, new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,fillcolor=white];")

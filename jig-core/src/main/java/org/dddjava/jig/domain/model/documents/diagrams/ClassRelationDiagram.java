@@ -77,6 +77,6 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
             graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }
 
-        return DiagramSource.createDiagramSource(documentName, graph.toString());
+        return DiagramSources.singleDiagramSource(documentName, graph.toString());
     }
 }

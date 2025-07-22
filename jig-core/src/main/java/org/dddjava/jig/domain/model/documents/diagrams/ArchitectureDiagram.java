@@ -51,6 +51,6 @@ public class ArchitectureDiagram implements DiagramSourceWriter {
         // 関連
         graph.add(RelationText.fromPackageRelations(architectureRelations.packageRelations()).asText());
 
-        return DiagramSource.createDiagramSource(documentName, graph.toString());
+        return DiagramSources.singleDiagramSource(documentName, graph.toString());
     }
 }

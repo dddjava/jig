@@ -2,7 +2,10 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.*;
+import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
+import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
+import org.dddjava.jig.domain.model.documents.stationery.Node;
+import org.dddjava.jig.domain.model.documents.stationery.NodeRole;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.List;
@@ -54,7 +57,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
                 .collect(joining("\n"));
 
         DocumentName documentName = DocumentName.of(JigDocument.CategoryDiagram);
-        return DiagramSource.createDiagramSource(
+        return DiagramSources.singleDiagramSource(
                 documentName, new StringJoiner("\n", "graph \"" + documentName.label() + "\" {", "}")
                         .add("label=\"" + documentName.label() + "\";")
                         .add("layout=fdp;")

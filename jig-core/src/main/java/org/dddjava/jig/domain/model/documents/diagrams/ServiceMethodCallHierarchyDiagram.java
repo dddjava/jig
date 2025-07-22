@@ -93,7 +93,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .add(serviceMethodText)
                 .add(repositoryText(angles))
                 .toString();
-        return DiagramSource.createDiagramSource(documentName, graphText);
+        return DiagramSources.singleDiagramSource(documentName, graphText);
     }
 
     /**

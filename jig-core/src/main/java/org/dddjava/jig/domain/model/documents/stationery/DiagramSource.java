@@ -5,17 +5,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import java.util.Collections;
 import java.util.List;
 
-public class DiagramSource {
-
-    DocumentName documentName;
-    String text;
-    AdditionalText additionalText;
-
-    private DiagramSource(DocumentName documentName, String text, AdditionalText additionalText) {
-        this.documentName = documentName;
-        this.text = text;
-        this.additionalText = additionalText;
-    }
+public record DiagramSource(DocumentName documentName, String text, AdditionalText additionalText) {
 
     public static DiagramSources createDiagramSource(DocumentName documentName, String text) {
         return createDiagramSource(documentName, text, AdditionalText.empty());
@@ -41,17 +31,10 @@ public class DiagramSource {
         return new DiagramSource(documentName, text, AdditionalText.empty());
     }
 
+    @Override
     public String text() {
         if (noValue()) throw new NullPointerException();
         return text;
-    }
-
-    public AdditionalText additionalText() {
-        return additionalText;
-    }
-
-    public DocumentName documentName() {
-        return documentName;
     }
 
     public boolean noValue() {

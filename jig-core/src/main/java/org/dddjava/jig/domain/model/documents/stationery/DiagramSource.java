@@ -23,10 +23,6 @@ public record DiagramSource(DocumentName documentName, String text, AdditionalTe
         return new DiagramSource(documentName, text, additionalText);
     }
 
-    public static DiagramSource emptyUnit() {
-        return new DiagramSource(null, null, AdditionalText.empty());
-    }
-
     public static DiagramSource createDiagramSourceUnit(DocumentName documentName, String text) {
         return new DiagramSource(documentName, text, AdditionalText.empty());
     }

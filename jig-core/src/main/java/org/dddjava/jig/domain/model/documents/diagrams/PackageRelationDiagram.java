@@ -75,11 +75,11 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         );
     }
 
-    public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext) {
+    private Optional<DiagramSource> dependencyDotText(JigDocumentContext jigDocumentContext) {
         var relationList = packageRelations.listUnique();
 
         if (relationList.isEmpty()) {
-            return DiagramSource.emptyUnit();
+            return Optional.empty();
         }
 
         PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(relationList);
@@ -166,7 +166,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(standalonePackageNodeText)
                 .toString();
 
-        return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText(packageMutualDependencies));
+        return Optional.of(DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText(packageMutualDependencies)));
     }
 
     private AdditionalText additionalText(PackageMutualDependencies packageMutualDependencies) {
@@ -198,8 +198,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 IntStream.rangeClosed(1, maxDepth.value())
                         .mapToObj(PackageDepth::new)
                         .map(this::applyDepth)
-                        .map(packageRelationDiagram -> packageRelationDiagram.dependencyDotText(jigDocumentContext))
-                        .filter(diagramSource -> !diagramSource.noValue())
+                        .flatMap(packageRelationDiagram -> packageRelationDiagram.dependencyDotText(jigDocumentContext).stream())
                         .toList());
     }
 

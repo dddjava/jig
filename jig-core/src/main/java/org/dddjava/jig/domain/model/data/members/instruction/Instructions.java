@@ -27,6 +27,7 @@ public record Instructions(List<Instruction> instructions) {
     }
 
     public Stream<JigFieldId> fieldReferenceStream() {
+        // lambdaを展開する？
         return instructions.stream()
                 .filter(instruction -> instruction instanceof FieldAccess)
                 .map(instruction -> (FieldAccess) instruction)

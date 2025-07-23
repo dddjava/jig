@@ -38,4 +38,10 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
                 lambdaExpressionInstructions.associatedTypeStream()
         ).flatMap(stream -> stream);
     }
+
+    @Override
+    public int cyclomaticComplexity() {
+        // lambdaの中身の分岐数を合算。1+分岐数になるが合算時は過剰になるのでとりあえず1を引く。
+        return lambdaExpressionInstructions.cyclomaticComplexity() - 1;
+    }
 }

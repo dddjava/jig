@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head th:replace="~{fragment-base::head(${title})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>インサイト</title>
+</head>
+<body class="insight">
+<header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
+<main>
+    <table id="insight-list" class="zebra">
+        <thead>
+        <tr>
+            <th onclick="sortTable('insight-list', 0)">完全修飾名</th>
+            <th onclick="sortTable('insight-list', 1)">名称</th>
+            <th onclick="sortTable('insight-list', 2)">循環的複雑度</th>
+            <th onclick="sortTable('insight-list', 3)">使用クラス数</th>
+            <th onclick="sortTable('insight-list', 4)">使用メソッド数</th>
+            <th onclick="sortTable('insight-list', 5)">使用フィールド数</th>
+            <th onclick="sortTable('insight-list', 6)">規模</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="insight: ${list}">
+            <td th:text="${insight.fqn()}">com.example</td>
+            <td th:text="${insight.label()}"></td>
+            <td th:text="${insight.cyclomaticComplexity()}"></td>
+            <td th:text="${insight.numberOfUsingClasses()}"></td>
+            <td th:text="${insight.numberOfUsingMethods()}"></td>
+            <td th:text="${insight.numberOfUsingFields()}"></td>
+            <td th:text="${insight.size()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<th:block th:replace="~{fragment-base::scripts}">
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
+</th:block>
+</body>
+</html>

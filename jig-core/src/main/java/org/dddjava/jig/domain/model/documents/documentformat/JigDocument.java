@@ -133,6 +133,13 @@ public enum JigDocument {
             "enum"),
 
     /**
+     * インサイト
+     */
+    Insight(JigDocumentLabel.of("インサイト", "insight"),
+            "insight"
+    ),
+
+    /**
      * 用語集
      */
     TermList(

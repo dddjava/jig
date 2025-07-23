@@ -46,20 +46,29 @@ function filterTable(tableId, filterInputId) {
     }
 }
 
-function sortTable(tableId, columnIndex) {
-    var table = document.getElementById(tableId);
-    var rows = Array.from(table.getElementsByTagName("tbody")[0].getElementsByTagName("tr"));
+let sortState = {};
+function sortTable(tableId, columnIndex, type = "number") {
+    const table = document.getElementById(tableId);
+    const tbody = table.getElementsByTagName("tbody")[0];
+    const rows = Array.from(table.getElementsByTagName("tbody")[0].getElementsByTagName("tr"));
+
+    const isAscending = sortState[tableId]?.[columnIndex] !== true;
 
     rows.sort(function (a, b) {
-        var aValue = a.getElementsByTagName("td")[columnIndex].textContent;
-        var bValue = b.getElementsByTagName("td")[columnIndex].textContent;
-        return aValue.localeCompare(bValue);
+        const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
+        const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
+
+        if (type === "number") {
+            const aNumber = parseFloat(aValue) || 0;
+            const bNumber = parseFloat(bValue) || 0;
+            return isAscending ? aNumber - bNumber : bNumber - aNumber;
+        }
+        return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
     });
 
-    var tbody = table.getElementsByTagName("tbody")[0];
-    rows.forEach(function (row) {
-        tbody.appendChild(row);
-    });
+    rows.forEach(row => tbody.appendChild(row));
+
+    sortState[tableId] = { ...sortState[tableId], [columnIndex]: isAscending };
 }
 
 // ブラウザバックなどで該当要素に移動する

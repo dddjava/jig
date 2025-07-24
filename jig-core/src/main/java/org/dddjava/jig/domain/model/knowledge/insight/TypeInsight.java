@@ -21,7 +21,7 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
 
     public int numberOfUsingTypes() {
         return Math.toIntExact(methodInsights.stream()
-                .map(MethodInsight::typeId)
+                .flatMap(methodInsight -> methodInsight.jigMethod().usingTypes().values().stream())
                 .filter(not(TypeId::isJavaLanguageType))
                 .distinct()
                 .count());

@@ -302,11 +302,11 @@ label {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
-    table-layout: fixed;
 }
 .insight table tr td {
     white-space: nowrap;
     overflow: scroll;
+    max-width: 20em;
 }
 
 /* テーブルの行をゼブラスタイルにする */

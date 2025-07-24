@@ -47,6 +47,7 @@ function filterTable(tableId, filterInputId) {
 }
 
 let sortState = {};
+
 function sortTable(tableId, columnIndex) {
     const table = document.getElementById(tableId);
     const tbody = table.getElementsByTagName("tbody")[0];
@@ -80,7 +81,7 @@ function sortTable(tableId, columnIndex) {
 
     rows.forEach(row => tbody.appendChild(row));
 
-    sortState[tableId] = { ...sortState[tableId], [columnIndex]: isAscending };
+    sortState[tableId] = {...sortState[tableId], [columnIndex]: isAscending};
 }
 
 // ブラウザバックなどで該当要素に移動する
@@ -198,7 +199,7 @@ function setupSortableTables() {
                 return;
             }
 
-            header.addEventListener("click", function() {
+            header.addEventListener("click", function () {
                 sortTable(table.id, index);
             });
             header.style.cursor = "pointer";
@@ -213,13 +214,14 @@ function setupZoomIcons() {
     zoomIcons.forEach(icon => {
         icon.style.cursor = "pointer";
 
-        icon.addEventListener("click", function() {
+        icon.addEventListener("click", function () {
             const row = this.closest("tr");
             const table = this.closest("table");
             const tbody = table.querySelector("tbody");
             const allRows = tbody.querySelectorAll("tr");
+            const fqn = row.querySelector("td.fqn").textContent;
 
-            // すでに1行だけ表示されている場合は全ての行を表示する
+            // zoomされているものがあれば解除して終了
             const hiddenRows = tbody.querySelectorAll("tr.hidden-by-zoom");
             if (hiddenRows.length > 0) {
                 allRows.forEach(r => {
@@ -230,17 +232,40 @@ function setupZoomIcons() {
 
             // クリックされた行以外を非表示にする
             allRows.forEach(r => {
-                if (r !== row && !isAssociated(row, r)) {
+                if (r !== row && !fqnStartsWith(fqn + '.', r)) {
                     r.classList.add("hidden-by-zoom");
                 }
             });
+
+            zoomFamilyTables(table, fqn);
         });
     });
 }
 
-function isAssociated(baseRow, targetRow) {
-    const searchString = baseRow.querySelector("td.fqn").textContent + '.';
-    return targetRow.querySelector("td.fqn").textContent.startsWith(searchString)
+function fqnStartsWith(prefix, targetRow) {
+    return targetRow.querySelector("td.fqn").textContent.startsWith(prefix);
+}
+
+function zoomFamilyTables(baseTable, baseFqn) {
+    baseTable.parentElement.querySelectorAll("table").forEach(table => {
+        if (table === baseTable) return;
+
+        const allRows = table.querySelectorAll("tbody tr");
+
+        // zoomされているものがあったら一旦解除して
+        const hiddenRows = table.querySelectorAll("tbody tr.hidden-by-zoom");
+        if (hiddenRows.length > 0) {
+            allRows.forEach(r => {
+                r.classList.remove("hidden-by-zoom");
+            });
+        }
+
+        // 関係するもの以外を非表示にする
+        // MEMO: 前方一致なので現状は上からの絞り込みしかできない。下階層のzoomで上階層の絞り込み（メソッドをzoomしたらpackageもzoomするとか）したい。
+        allRows.forEach(r => {
+            if (!fqnStartsWith(baseFqn + '.', r)) r.classList.add("hidden-by-zoom");
+        });
+    })
 }
 
 // ページ読み込み時のイベント

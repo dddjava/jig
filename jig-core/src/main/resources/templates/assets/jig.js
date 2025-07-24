@@ -146,14 +146,14 @@ function updateLetterNavigationVisibility() {
     const letterNavigations = Array.from(document.getElementsByClassName("letter-navigation"));
     const showNavigation = document.getElementById("show-letter-navigation").checked;
     if (!showNavigation) {
-        letterNavigations.forEach(nav => nav.classList.add("hidden"));
+        letterNavigations.forEach(nav => nav.classList.add("invisible"));
         return;
     }
 
     letterNavigations.forEach((nav, index) => {
         // 1件目は無視
         if (index === 0) {
-            nav.classList.remove("hidden");
+            nav.classList.remove("invisible");
             return;
         }
 
@@ -161,7 +161,7 @@ function updateLetterNavigationVisibility() {
         let sibling = nav.previousElementSibling;
         while (sibling) {
             // 表示しているものだけ対象にする
-            if (!sibling.classList.contains("hidden")) {
+            if (!sibling.classList.contains("invisible")) {
                 // letter-navigationはカウント対象外
                 if (sibling.classList.contains("letter-navigation")) break;
                 visibleCount++;
@@ -173,9 +173,9 @@ function updateLetterNavigationVisibility() {
 
         // 10個以上表示するものがあったら表示する
         if (visibleCount >= 10) {
-            nav.classList.remove("hidden");
+            nav.classList.remove("invisible");
         } else {
-            nav.classList.add("hidden");
+            nav.classList.add("invisible");
         }
     });
 }

@@ -220,7 +220,7 @@ label {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
-.glossary .letter-navigation.hidden {
+.glossary .letter-navigation.invisible {
     /* display:none にするとid指定で移動できなくなるので、出しつつ見えないようにする */
     visibility: hidden;
     margin: 0;

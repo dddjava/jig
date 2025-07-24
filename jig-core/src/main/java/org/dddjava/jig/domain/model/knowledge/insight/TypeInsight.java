@@ -19,18 +19,18 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
         return methodInsights.size();
     }
 
-    public int cyclomaticComplexity() {
-        return methodInsights.stream()
-                .mapToInt(MethodInsight::cyclomaticComplexity)
-                .sum();
-    }
-
-    public int numberOfUsingClasses() {
+    public int numberOfUsingTypes() {
         return Math.toIntExact(methodInsights.stream()
                 .map(MethodInsight::typeId)
                 .filter(not(TypeId::isJavaLanguageType))
                 .distinct()
                 .count());
+    }
+
+    public int cyclomaticComplexity() {
+        return methodInsights.stream()
+                .mapToInt(MethodInsight::cyclomaticComplexity)
+                .sum();
     }
 
     public int size() {

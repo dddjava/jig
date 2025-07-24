@@ -10,6 +10,32 @@
 <body class="insight">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
+    <h2>パッケージ (<span th:text="${packageInsightList.size()}">1</span>)</h2>
+    <table id="package-insight-list" class="zebra sortable">
+        <thead>
+        <tr>
+            <th>完全修飾名</th>
+            <th>名称</th>
+            <th>クラス数</th>
+            <th>メソッド数</th>
+            <th>使用クラス数</th>
+            <th>循環的複雑度（メソッド合計）</th>
+            <th>規模（メソッド合計）</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="insight: ${packageInsightList}">
+            <td th:text="${insight.fqn()}">com.example</td>
+            <td th:text="${insight.label()}">えぐざんぷる</td>
+            <td th:text="${insight.numberOfTypes()}" class="number">11</td>
+            <td th:text="${insight.numberOfMethods()}" class="number">11</td>
+            <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
+            <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
+            <td th:text="${insight.size()}" class="number">129</td>
+        </tr>
+        </tbody>
+    </table>
+
     <h2>クラス (<span th:text="${typeInsightList.size()}">1</span>)</h2>
     <table id="type-insight-list" class="zebra sortable">
         <thead>
@@ -27,7 +53,7 @@
             <td th:text="${insight.fqn()}">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.numberOfMethods()}" class="number">11</td>
-            <td th:text="${insight.numberOfUsingClasses()}" class="number">2</td>
+            <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
             <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
             <td th:text="${insight.size()}" class="number">129</td>
         </tr>
@@ -52,7 +78,7 @@
             <td th:text="${insight.fqn()}">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
-            <td th:text="${insight.numberOfUsingClasses()}" class="number">2</td>
+            <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
             <td th:text="${insight.numberOfUsingMethods()}" class="number">11</td>
             <td th:text="${insight.numberOfUsingFields()}" class="number">6</td>
             <td th:text="${insight.size()}" class="number">129</td>

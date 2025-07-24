@@ -18,7 +18,7 @@ public record MethodInsight(
         return jigMethod.instructions().cyclomaticComplexity();
     }
 
-    public int numberOfUsingClasses() {
+    public int numberOfUsingTypes() {
         return Math.toIntExact(jigMethod.usingTypes()
                 // この除外はusingのほうに持って行った方がいい気はする
                 .values()

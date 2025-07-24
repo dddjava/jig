@@ -28,6 +28,9 @@ header a {
 }
 
 /* 一般 */
+.hidden {
+    display: none;
+}
 .weak {
     font-size: 0.9em;
     color: gray;
@@ -170,10 +173,6 @@ main table.fields thead {
     white-space: nowrap;
 }
 
-.terms #termTable .hidden {
-    display: none;
-}
-
 /* Mermaidで画像が表示される前のテキストを表示しない */
 pre.mermaid {
     font-size: 0;
@@ -252,9 +251,6 @@ label {
     padding: 1em;
     border-bottom: 1px solid #ccc;
 }
-.glossary .term.hidden {
-    display: none;
-}
 .glossary .term h2 {
     margin: 0;
     color: #0073e6;
@@ -293,9 +289,6 @@ label {
 }
 .package-list tr:nth-child(even) {
     background-color: #f9f9f9;
-}
-.package-list .hidden {
-    display: none;
 }
 
 .insight table {

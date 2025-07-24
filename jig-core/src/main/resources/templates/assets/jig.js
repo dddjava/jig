@@ -221,15 +221,6 @@ function setupZoomIcons() {
             const allRows = tbody.querySelectorAll("tr");
             const fqn = row.querySelector("td.fqn").textContent;
 
-            // zoomされているものがあれば解除して終了
-            const hiddenRows = tbody.querySelectorAll("tr.hidden-by-zoom");
-            if (hiddenRows.length > 0) {
-                allRows.forEach(r => {
-                    r.classList.remove("hidden-by-zoom");
-                });
-                return;
-            }
-
             // クリックされた行以外を非表示にする
             allRows.forEach(r => {
                 if (r !== row && !fqnStartsWith(fqn + '.', r)) {
@@ -238,7 +229,17 @@ function setupZoomIcons() {
             });
 
             zoomFamilyTables(table, fqn);
+            // ズーム解除ボタンを表示
+            document.getElementById("cancel-zoom").classList.remove("hidden");
         });
+    });
+}
+
+// ズームを解除する
+function cancelZoom() {
+    // すべてのテーブルからhidden-by-zoomクラスを削除
+    document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
+        row.classList.remove("hidden-by-zoom");
     });
 }
 
@@ -286,5 +287,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();
         setupZoomIcons();
+        document.getElementById("cancel-zoom").addEventListener("click", cancelZoom);
     }
 });

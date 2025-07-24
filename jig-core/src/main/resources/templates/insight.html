@@ -10,6 +10,8 @@
 <body class="insight">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
+    <button id="cancel-zoom" class="hidden">ズーム解除</button>
+
     <h2>パッケージ (<span th:text="${packageInsightList.size()}">1</span>)</h2>
     <table id="package-insight-list" class="zebra sortable">
         <thead>

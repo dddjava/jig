@@ -197,7 +197,7 @@ function setupSortableTables() {
             if (header.hasAttribute("onclick")) {
                 return;
             }
-            
+
             header.addEventListener("click", function() {
                 sortTable(table.id, index);
             });
@@ -209,16 +209,16 @@ function setupSortableTables() {
 // 拡大アイコンをクリックしたときに、その行以外を非表示にする
 function setupZoomIcons() {
     const zoomIcons = document.querySelectorAll("i.zoom");
-    
+
     zoomIcons.forEach(icon => {
         icon.style.cursor = "pointer";
-        
+
         icon.addEventListener("click", function() {
             const row = this.closest("tr");
             const table = this.closest("table");
             const tbody = table.querySelector("tbody");
             const allRows = tbody.querySelectorAll("tr");
-            
+
             // すでに1行だけ表示されている場合は全ての行を表示する
             const hiddenRows = tbody.querySelectorAll("tr.hidden-by-zoom");
             if (hiddenRows.length > 0) {
@@ -227,10 +227,10 @@ function setupZoomIcons() {
                 });
                 return;
             }
-            
+
             // クリックされた行以外を非表示にする
             allRows.forEach(r => {
-                if (r !== row) {
+                if (r !== row && !isAssociated(row, r)) {
                     r.classList.add("hidden-by-zoom");
                 }
             });
@@ -238,6 +238,10 @@ function setupZoomIcons() {
     });
 }
 
+function isAssociated(baseRow, targetRow) {
+    const searchString = baseRow.querySelector("td.fqn").textContent + '.';
+    return targetRow.querySelector("td.fqn").textContent.startsWith(searchString)
+}
 
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる

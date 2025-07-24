@@ -10,6 +10,31 @@
 <body class="insight">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
+    <h2>クラス (<span th:text="${typeInsightList.size()}">1</span>)</h2>
+    <table id="type-insight-list" class="zebra sortable">
+        <thead>
+        <tr>
+            <th>完全修飾名</th>
+            <th>名称</th>
+            <th>メソッド数</th>
+            <th>使用クラス数</th>
+            <th>循環的複雑度（メソッド合計）</th>
+            <th>規模（メソッド合計）</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="insight: ${typeInsightList}">
+            <td th:text="${insight.fqn()}">com.example</td>
+            <td th:text="${insight.label()}">えぐざんぷる</td>
+            <td th:text="${insight.numberOfMethods()}" class="number">11</td>
+            <td th:text="${insight.numberOfUsingClasses()}" class="number">2</td>
+            <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
+            <td th:text="${insight.size()}" class="number">129</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>メソッド (<span th:text="${methodInsightList.size()}">1</span>)</h2>
     <table id="method-insight-list" class="zebra sortable">
         <thead>
         <tr>
@@ -23,7 +48,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="insight: ${methodList}">
+        <tr th:each="insight: ${methodInsightList}">
             <td th:text="${insight.fqn()}">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>

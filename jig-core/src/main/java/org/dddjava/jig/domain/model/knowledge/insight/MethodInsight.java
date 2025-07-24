@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.insight;
 
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 public record MethodInsight(
@@ -42,5 +43,9 @@ public record MethodInsight(
     public int size() {
         // lambdaが展開できていない
         return jigMethod.instructions().instructions().size();
+    }
+
+    public TypeId typeId() {
+        return jigMethod.declaringType();
     }
 }

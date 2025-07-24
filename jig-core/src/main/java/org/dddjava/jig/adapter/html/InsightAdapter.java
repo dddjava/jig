@@ -41,7 +41,8 @@ public class InsightAdapter implements Adapter<Insights> {
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "methodList", result.methodList()
+                "typeInsightList", result.typeInsightList(),
+                "methodInsightList", result.methodInsightList()
         );
 
         Context context = new Context(Locale.ROOT, contextMap);

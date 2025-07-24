@@ -223,7 +223,7 @@ function setupZoomIcons() {
 
             // クリックされた行以外を非表示にする
             allRows.forEach(r => {
-                if (r !== row && !fqnStartsWith(fqn + '.', r)) {
+                if (r !== row && !fqnStartsWith(fqn, r)) {
                     r.classList.add("hidden-by-zoom");
                 }
             });
@@ -264,7 +264,7 @@ function zoomFamilyTables(baseTable, baseFqn) {
         // 関係するもの以外を非表示にする
         // MEMO: 前方一致なので現状は上からの絞り込みしかできない。下階層のzoomで上階層の絞り込み（メソッドをzoomしたらpackageもzoomするとか）したい。
         allRows.forEach(r => {
-            if (!fqnStartsWith(baseFqn + '.', r)) r.classList.add("hidden-by-zoom");
+            if (!fqnStartsWith(baseFqn, r)) r.classList.add("hidden-by-zoom");
         });
     })
 }

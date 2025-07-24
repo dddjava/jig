@@ -3,6 +3,8 @@ package org.dddjava.jig.domain.model.knowledge.insight;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
+import static java.util.function.Predicate.not;
+
 public record MethodInsight(
         JigMethod jigMethod
 ) {
@@ -23,7 +25,7 @@ public record MethodInsight(
                 // この除外はusingのほうに持って行った方がいい気はする
                 .values()
                 .stream()
-                .filter(typeId -> typeId.isJavaLanguageType())
+                .filter(not(TypeId::isJavaLanguageType))
                 .count());
     }
 

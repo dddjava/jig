@@ -10,27 +10,27 @@
 <body class="insight">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
-    <table id="insight-list" class="zebra">
+    <table id="insight-list" class="zebra sortable">
         <thead>
         <tr>
-            <th onclick="sortTable('insight-list', 0, 'text')">完全修飾名</th>
-            <th onclick="sortTable('insight-list', 1, 'text')">名称</th>
-            <th onclick="sortTable('insight-list', 2)">循環的複雑度</th>
-            <th onclick="sortTable('insight-list', 3)">使用クラス数</th>
-            <th onclick="sortTable('insight-list', 4)">使用メソッド数</th>
-            <th onclick="sortTable('insight-list', 5)">使用フィールド数</th>
-            <th onclick="sortTable('insight-list', 6)">規模</th>
+            <th>完全修飾名</th>
+            <th>名称</th>
+            <th>循環的複雑度</th>
+            <th>使用クラス数</th>
+            <th>使用メソッド数</th>
+            <th>使用フィールド数</th>
+            <th>規模</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="insight: ${list}">
             <td th:text="${insight.fqn()}">com.example</td>
-            <td th:text="${insight.label()}"></td>
-            <td th:text="${insight.cyclomaticComplexity()}"></td>
-            <td th:text="${insight.numberOfUsingClasses()}"></td>
-            <td th:text="${insight.numberOfUsingMethods()}"></td>
-            <td th:text="${insight.numberOfUsingFields()}"></td>
-            <td th:text="${insight.size()}"></td>
+            <td th:text="${insight.label()}">えぐざんぷる</td>
+            <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
+            <td th:text="${insight.numberOfUsingClasses()}" class="number">2</td>
+            <td th:text="${insight.numberOfUsingMethods()}" class="number">11</td>
+            <td th:text="${insight.numberOfUsingFields()}" class="number">6</td>
+            <td th:text="${insight.size()}" class="number">129</td>
         </tr>
         </tbody>
     </table>

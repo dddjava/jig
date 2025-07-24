@@ -316,3 +316,6 @@ table.zebra tbody tr:nth-child(odd) {
 table.zebra tbody tr:nth-child(even) {
     /* background-color: #ffffff; */
 }
+table td.number {
+    text-align: right;
+}

@@ -47,12 +47,24 @@ function filterTable(tableId, filterInputId) {
 }
 
 let sortState = {};
-function sortTable(tableId, columnIndex, type = "number") {
+function sortTable(tableId, columnIndex) {
     const table = document.getElementById(tableId);
     const tbody = table.getElementsByTagName("tbody")[0];
     const rows = Array.from(table.getElementsByTagName("tbody")[0].getElementsByTagName("tr"));
 
     const isAscending = sortState[tableId]?.[columnIndex] !== true;
+
+    // デフォルトでは辞書順でソート
+    let type = "string";
+
+    // 1行目を見てclass=numberがあれば数値としてソート
+    const firstRow = rows[0];
+    if (firstRow) {
+        const cell = firstRow.cells[columnIndex];
+        if (cell && cell.classList.contains("number")) {
+            type = "number";
+        }
+    }
 
     rows.sort(function (a, b) {
         const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
@@ -178,9 +190,27 @@ function toggleDescription() {
     });
 }
 
+function setupSortableTables() {
+    document.querySelectorAll("table.sortable").forEach(table => {
+        const headers = table.querySelectorAll("thead th");
+        headers.forEach((header, index) => {
+            if (header.hasAttribute("onclick")) {
+                return;
+            }
+            
+            header.addEventListener("click", function() {
+                sortTable(table.id, index);
+            });
+            header.style.cursor = "pointer";
+        });
+    });
+}
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
+    setupSortableTables();
+    
     if (document.body.classList.contains("glossary")) {
         document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
         document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);

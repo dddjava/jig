@@ -25,8 +25,8 @@ import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
-import org.dddjava.jig.domain.model.knowledge.insight.Insight;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
+import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 
 import java.util.List;
@@ -172,7 +172,7 @@ public class JigService {
         return new Insights(
                 jigTypes(repository).stream()
                         .flatMap(JigType::allJigMethodStream)
-                        .map(Insight::new)
+                        .map(MethodInsight::new)
                         .toList()
         );
     }

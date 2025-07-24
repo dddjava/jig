@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.insight;
 
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
-public record Insight(
+public record MethodInsight(
         JigMethod jigMethod
 ) {
     public String fqn() {

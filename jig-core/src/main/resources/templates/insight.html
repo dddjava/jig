@@ -23,7 +23,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="insight: ${list}">
+        <tr th:each="insight: ${methodList}">
             <td th:text="${insight.fqn()}">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>

@@ -14,6 +14,7 @@
     <table id="package-insight-list" class="zebra sortable">
         <thead>
         <tr>
+            <th></th>
             <th>完全修飾名</th>
             <th>名称</th>
             <th>クラス数</th>
@@ -25,7 +26,8 @@
         </thead>
         <tbody>
         <tr th:each="insight: ${packageInsightList}">
-            <td th:text="${insight.fqn()}">com.example</td>
+            <td><i class="zoom">🔍</i></td>
+            <td th:text="${insight.fqn()}" class="fqn">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.numberOfTypes()}" class="number">11</td>
             <td th:text="${insight.numberOfMethods()}" class="number">11</td>
@@ -40,6 +42,7 @@
     <table id="type-insight-list" class="zebra sortable">
         <thead>
         <tr>
+            <th></th>
             <th>完全修飾名</th>
             <th>名称</th>
             <th>メソッド数</th>
@@ -50,7 +53,8 @@
         </thead>
         <tbody>
         <tr th:each="insight: ${typeInsightList}">
-            <td th:text="${insight.fqn()}">com.example</td>
+            <td><i class="zoom">🔍</i></td>
+            <td th:text="${insight.fqn()}" class="fqn">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.numberOfMethods()}" class="number">11</td>
             <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
@@ -64,6 +68,7 @@
     <table id="method-insight-list" class="zebra sortable">
         <thead>
         <tr>
+            <th></th>
             <th>完全修飾名</th>
             <th>名称</th>
             <th>循環的複雑度</th>
@@ -75,7 +80,8 @@
         </thead>
         <tbody>
         <tr th:each="insight: ${methodInsightList}">
-            <td th:text="${insight.fqn()}">com.example</td>
+            <td><i class="zoom">🔍</i></td>
+            <td th:text="${insight.fqn()}" class="fqn">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
             <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
             <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>

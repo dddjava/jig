@@ -309,6 +309,11 @@ label {
     max-width: 20em;
 }
 
+/* 拡大アイコンをクリックしたときに非表示にする行のスタイル */
+.insight table tr.hidden-by-zoom {
+    display: none;
+}
+
 /* テーブルの行をゼブラスタイルにする */
 table.zebra tbody tr:nth-child(odd) {
     background-color: #f9f9f9;

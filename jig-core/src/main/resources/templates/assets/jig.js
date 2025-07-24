@@ -206,11 +206,42 @@ function setupSortableTables() {
     });
 }
 
+// 拡大アイコンをクリックしたときに、その行以外を非表示にする
+function setupZoomIcons() {
+    const zoomIcons = document.querySelectorAll("i.zoom");
+    
+    zoomIcons.forEach(icon => {
+        icon.style.cursor = "pointer";
+        
+        icon.addEventListener("click", function() {
+            const row = this.closest("tr");
+            const table = this.closest("table");
+            const tbody = table.querySelector("tbody");
+            const allRows = tbody.querySelectorAll("tr");
+            
+            // すでに1行だけ表示されている場合は全ての行を表示する
+            const hiddenRows = tbody.querySelectorAll("tr.hidden-by-zoom");
+            if (hiddenRows.length > 0) {
+                allRows.forEach(r => {
+                    r.classList.remove("hidden-by-zoom");
+                });
+                return;
+            }
+            
+            // クリックされた行以外を非表示にする
+            allRows.forEach(r => {
+                if (r !== row) {
+                    r.classList.add("hidden-by-zoom");
+                }
+            });
+        });
+    });
+}
+
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
-    setupSortableTables();
-    
     if (document.body.classList.contains("glossary")) {
         document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
         document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);
@@ -223,5 +254,8 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLetterNavigationVisibility();
     } else if (document.body.classList.contains("package-list")) {
         document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
+    } else if (document.body.classList.contains("insight")) {
+        setupSortableTables();
+        setupZoomIcons();
     }
 });

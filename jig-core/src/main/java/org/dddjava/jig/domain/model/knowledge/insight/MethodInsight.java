@@ -50,4 +50,12 @@ public record MethodInsight(
     public TypeId typeId() {
         return jigMethod.declaringType();
     }
+
+    public String packageFqn() {
+        return typeId().packageId().asText();
+    }
+
+    public String typeFqn() {
+        return typeId().fullQualifiedName();
+    }
 }

@@ -27,7 +27,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="insight: ${packageInsightList}">
+        <tr th:each="insight: ${packageInsightList}" th:data-fqn="${insight.fqn()}">
             <td><i class="zoom">🔍</i></td>
             <td th:text="${insight.fqn()}" class="fqn">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
@@ -54,7 +54,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="insight: ${typeInsightList}">
+        <tr th:each="insight: ${typeInsightList}" th:data-fqn="${insight.fqn()}" th:data-package-fqn="${insight.packageFqn()}">
             <td><i class="zoom">🔍</i></td>
             <td th:text="${insight.fqn()}" class="fqn">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>
@@ -81,7 +81,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="insight: ${methodInsightList}">
+        <tr th:each="insight: ${methodInsightList}" th:data-fqn="${insight.fqn()}" th:data-package-fqn="${insight.packageFqn()}" th:data-type-fqn="${insight.typeFqn()}">
             <td><i class="zoom">🔍</i></td>
             <td th:text="${insight.fqn()}" class="fqn">com.example</td>
             <td th:text="${insight.label()}">えぐざんぷる</td>

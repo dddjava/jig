@@ -38,4 +38,8 @@ public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsight
                 .mapToInt(MethodInsight::size)
                 .sum();
     }
+
+    public String packageFqn() {
+        return typeId.packageId().asText();
+    }
 }

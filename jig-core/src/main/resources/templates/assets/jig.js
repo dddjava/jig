@@ -228,7 +228,7 @@ function setupZoomIcons() {
                 }
             });
 
-            zoomFamilyTables(table, fqn);
+            zoomFamilyTables(table, row);
             // ズーム解除ボタンを表示
             document.getElementById("cancel-zoom").classList.remove("hidden");
         });
@@ -247,7 +247,7 @@ function fqnStartsWith(prefix, targetRow) {
     return targetRow.querySelector("td.fqn").textContent.startsWith(prefix);
 }
 
-function zoomFamilyTables(baseTable, baseFqn) {
+function zoomFamilyTables(baseTable, baseRow) {
     baseTable.parentElement.querySelectorAll("table").forEach(table => {
         if (table === baseTable) return;
 
@@ -262,9 +262,26 @@ function zoomFamilyTables(baseTable, baseFqn) {
         }
 
         // 関係するもの以外を非表示にする
-        // MEMO: 前方一致なので現状は上からの絞り込みしかできない。下階層のzoomで上階層の絞り込み（メソッドをzoomしたらpackageもzoomするとか）したい。
+        // 元テーブルと対象テーブルの組み合わせでprefixが変わる
+        let prefix = baseRow.dataset.fqn;
+        if (baseTable.id.includes("package")) {
+            prefix = prefix + '.';
+        } else if (baseTable.id.includes("type")) {
+            if (table.id.includes("package")) {
+                prefix =  baseRow.dataset.packageFqn;
+            } else if (table.id.includes("method")) {
+                prefix =  prefix + '#';
+            }
+        } else if (baseTable.id.includes("method")) {
+            if (table.id.includes("package")) {
+                prefix =  baseRow.dataset.packageFqn;
+            }
+            if (table.id.includes("type")) {
+                prefix =  baseRow.dataset.typeFqn;
+            }
+        }
         allRows.forEach(r => {
-            if (!fqnStartsWith(baseFqn, r)) r.classList.add("hidden-by-zoom");
+            if (!fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
         });
     })
 }

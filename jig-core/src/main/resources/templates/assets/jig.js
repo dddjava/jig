@@ -48,12 +48,13 @@ function filterTable(tableId, filterInputId) {
 
 let sortState = {};
 
-function sortTable(tableId, columnIndex) {
-    const table = document.getElementById(tableId);
-    const tbody = table.getElementsByTagName("tbody")[0];
-    const rows = Array.from(table.getElementsByTagName("tbody")[0].getElementsByTagName("tr"));
+function sortTable(event) {
+    const headerColumn = event.target;
+    const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
 
-    const isAscending = sortState[tableId]?.[columnIndex] !== true;
+    const rows = Array.from(headerColumn.closest("table").querySelectorAll("tbody tr"));
+
+    const orderFlag = headerColumn.dataset.orderFlag === "true";
 
     // デフォルトでは辞書順でソート
     let type = "string";
@@ -71,17 +72,18 @@ function sortTable(tableId, columnIndex) {
         const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
         const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
 
+        // 数値は降順、文字は昇順
         if (type === "number") {
             const aNumber = parseFloat(aValue) || 0;
             const bNumber = parseFloat(bValue) || 0;
-            return isAscending ? aNumber - bNumber : bNumber - aNumber;
+            return (aNumber - bNumber) * (orderFlag ? 1 : -1);
         }
-        return isAscending ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
     });
 
-    rows.forEach(row => tbody.appendChild(row));
+    rows.forEach(row => headerColumn.closest("table").getElementsByTagName("tbody")[0].appendChild(row));
 
-    sortState[tableId] = {...sortState[tableId], [columnIndex]: isAscending};
+    headerColumn.dataset.orderFlag = (!orderFlag).toString();
 }
 
 // ブラウザバックなどで該当要素に移動する
@@ -199,9 +201,7 @@ function setupSortableTables() {
                 return;
             }
 
-            header.addEventListener("click", function () {
-                sortTable(table.id, index);
-            });
+            header.addEventListener("click", sortTable);
             header.style.cursor = "pointer";
         });
     });
@@ -269,16 +269,16 @@ function zoomFamilyTables(baseTable, baseRow) {
             prefix = prefix + '.';
         } else if (baseTable.id.includes("type")) {
             if (table.id.includes("package")) {
-                prefix =  baseRow.dataset.packageFqn;
+                prefix = baseRow.dataset.packageFqn;
             } else if (table.id.includes("method")) {
-                prefix =  prefix + '#';
+                prefix = prefix + '#';
             }
         } else if (baseTable.id.includes("method")) {
             if (table.id.includes("package")) {
-                prefix =  baseRow.dataset.packageFqn;
+                prefix = baseRow.dataset.packageFqn;
             }
             if (table.id.includes("type")) {
-                prefix =  baseRow.dataset.typeFqn;
+                prefix = baseRow.dataset.typeFqn;
             }
         }
         allRows.forEach(r => {

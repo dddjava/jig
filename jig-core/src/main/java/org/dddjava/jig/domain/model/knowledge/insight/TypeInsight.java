@@ -1,18 +1,19 @@
 package org.dddjava.jig.domain.model.knowledge.insight;
 
+import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 
 import static java.util.function.Predicate.not;
 
-public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsights) {
+public record TypeInsight(TypeId typeId, Term term, Collection<MethodInsight> methodInsights) {
     public String fqn() {
         return typeId.value();
     }
 
     public String label() {
-        return typeId.asSimpleText();
+        return term.title();
     }
 
     public int numberOfMethods() {

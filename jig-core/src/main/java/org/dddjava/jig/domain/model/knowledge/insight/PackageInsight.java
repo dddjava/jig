@@ -7,13 +7,13 @@ import java.util.Collection;
 
 import static java.util.function.Predicate.not;
 
-public record PackageInsight(PackageId packageId, Collection<TypeInsight> typeInsights) {
+public record PackageInsight(PackageId packageId, org.dddjava.jig.domain.model.data.terms.Term term, Collection<TypeInsight> typeInsights) {
     public String fqn() {
         return packageId.asText();
     }
 
     public String label() {
-        return packageId.simpleName();
+        return term.title();
     }
 
     public int numberOfTypes() {

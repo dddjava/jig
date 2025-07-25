@@ -173,7 +173,8 @@ public class JigService {
                 jigTypes(repository).stream()
                         .flatMap(JigType::allJigMethodStream)
                         .map(MethodInsight::new)
-                        .toList()
+                        .toList(),
+                glossary(repository)
         );
     }
 }

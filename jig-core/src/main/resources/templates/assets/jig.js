@@ -236,11 +236,12 @@ function setupZoomIcons() {
 }
 
 // ズームを解除する
-function cancelZoom() {
+function cancelZoom(event) {
     // すべてのテーブルからhidden-by-zoomクラスを削除
     document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
         row.classList.remove("hidden-by-zoom");
     });
+    event.target.classList.add("hidden");
 }
 
 function fqnStartsWith(prefix, targetRow) {

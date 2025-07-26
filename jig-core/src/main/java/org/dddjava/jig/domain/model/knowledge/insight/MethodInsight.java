@@ -5,9 +5,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 import static java.util.function.Predicate.not;
 
-public record MethodInsight(
-        JigMethod jigMethod
-) {
+public record MethodInsight(JigMethod jigMethod) {
     public String fqn() {
         return jigMethod.fqn();
     }

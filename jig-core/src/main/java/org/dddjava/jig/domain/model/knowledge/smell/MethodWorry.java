@@ -20,7 +20,7 @@ public enum MethodWorry {
                     .anyMatch(fieldReference -> fieldReference.declaringTypeId().equals(contextJigType.id()))) {
                 return false;
             }
-            if (instructions.methodCallStream()
+            if (jigMethod.usingMethods().invokedMethodStream()
                     .filter(methodCall -> !methodCall.isLambda()) // lambdaの合成メソッドのownerは自身になるので除外しないと「使用している」になってしまう
                     .anyMatch(methodCall -> methodCall.methodOwner().equals(contextJigType.id()))) {
                 return false;

@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ class SequenceMermaidDiagramTest {
                 instructions
         );
 
-        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(jigMethodDeclaration);
+        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(new JigMethod(jigMethodDeclaration, null));
 
         assertEquals("""
                         sequenceDiagram
@@ -62,7 +63,7 @@ class SequenceMermaidDiagramTest {
                 instructions
         );
 
-        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(jigMethodDeclaration);
+        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(new JigMethod(jigMethodDeclaration, null));
 
         assertEquals("""
                         sequenceDiagram
@@ -93,7 +94,7 @@ class SequenceMermaidDiagramTest {
                 instructions
         );
 
-        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(jigMethodDeclaration);
+        String actual = SequenceMermaidDiagram.mermaidSequenceDiagram(new JigMethod(jigMethodDeclaration, null));
 
         // Only the regular class call should be included in the diagram
         assertEquals("""

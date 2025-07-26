@@ -2,7 +2,6 @@ package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 
 import java.util.stream.Collectors;
 
@@ -12,19 +11,19 @@ import java.util.stream.Collectors;
 public class SequenceMermaidDiagram {
 
     public static String textFor(JigMethod jigMethod) {
-        return mermaidSequenceDiagram(jigMethod.jigMethodDeclaration());
+        return mermaidSequenceDiagram(jigMethod);
     }
 
     /**
      * メソッド定義からMermaid形式のシーケンス図を生成する
      */
-    public static String mermaidSequenceDiagram(JigMethodDeclaration jigMethodDeclaration) {
+    public static String mermaidSequenceDiagram(JigMethod jigMethod) {
         StringBuilder sb = new StringBuilder();
         sb.append("sequenceDiagram\n");
 
-        TypeId caller = jigMethodDeclaration.declaringTypeId();
+        TypeId caller = jigMethod.declaringType();
 
-        jigMethodDeclaration.instructions().methodCallStream()
+        jigMethod.usingMethods().invokedMethodStream()
                 // Java標準ライブラリのクラスを除外
                 .filter(methodCall -> !methodCall.isJSL())
                 .forEach(methodCall -> {

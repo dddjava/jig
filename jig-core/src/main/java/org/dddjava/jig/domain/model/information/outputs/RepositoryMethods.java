@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.members.UsingMethods;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ public class RepositoryMethods {
         this.list = list;
     }
 
-    public RepositoryMethods filter(List<MethodCall> methodCalls) {
+    public RepositoryMethods filter(UsingMethods usingMethods) {
         return list.stream()
-                .filter(method -> methodCalls.stream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(method.jigMethodId())))
+                .filter(method -> usingMethods.invokedMethodStream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(method.jigMethodId())))
                 .collect(collectingAndThen(toList(), RepositoryMethods::new));
     }
 

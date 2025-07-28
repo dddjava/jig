@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
-import org.dddjava.jig.domain.model.information.members.UsingMethods;
-
 import java.util.Objects;
 
 /**
@@ -58,11 +56,6 @@ public class MyBatisStatementId {
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    boolean matches(UsingMethods usingMethods) {
-        // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace()) && methodCall.methodName().equals(id()));
     }
 
     public String namespace() {

@@ -43,7 +43,11 @@ public class MyBatisStatements {
      */
     public MyBatisStatements filterRelationOn(UsingMethods usingMethods) {
         List<MyBatisStatement> myBatisStatements = list.stream()
-                .filter(myBatisStatement -> myBatisStatement.myBatisStatementId().matches(usingMethods))
+                .filter(myBatisStatement -> {
+                    MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
+                    // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
+                    return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(myBatisStatementId.namespace()) && methodCall.methodName().equals(myBatisStatementId.id()));
+                })
                 .toList();
         return new MyBatisStatements(myBatisStatements, sqlReadStatus);
     }

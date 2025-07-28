@@ -61,13 +61,7 @@ public class MyBatisStatementId {
     }
 
     boolean matches(UsingMethods usingMethods) {
-        if (value.contains(".")) {
-            // 連結されているnamespaceとidを分離する
-
-            // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-            return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace) && methodCall.methodName().equals(id));
-        }
-        // statementIdが . 連結されていないものは対象外
-        return false;
+        // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
+        return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace) && methodCall.methodName().equals(id));
     }
 }

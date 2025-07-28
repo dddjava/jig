@@ -49,7 +49,7 @@ public class MyBatisStatementId {
         return Objects.hash(value);
     }
 
-    public boolean matches(UsingMethods usingMethods) {
+    boolean matches(UsingMethods usingMethods) {
         if (value.contains(".")) {
             // 連結されているnamespaceとidを分離する
             var namespace = value.substring(0, value.lastIndexOf('.'));

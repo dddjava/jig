@@ -62,6 +62,14 @@ public class MyBatisStatementId {
 
     boolean matches(UsingMethods usingMethods) {
         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace) && methodCall.methodName().equals(id));
+        return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace()) && methodCall.methodName().equals(id()));
+    }
+
+    public String namespace() {
+        return namespace;
+    }
+
+    public String id() {
+        return id;
     }
 }

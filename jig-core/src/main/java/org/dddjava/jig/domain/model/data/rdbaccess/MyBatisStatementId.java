@@ -30,10 +30,21 @@ import java.util.Objects;
  */
 public class MyBatisStatementId {
 
-    String value;
+    private final String value;
+    private final String namespace;
+    private final String id;
 
     public MyBatisStatementId(String value) {
         this.value = value;
+
+        var namespaceIdSeparateIndex = value.lastIndexOf('.');
+        if (namespaceIdSeparateIndex != -1) {
+            this.namespace = value.substring(0, namespaceIdSeparateIndex);
+            this.id = value.substring(namespaceIdSeparateIndex + 1);
+        } else {
+            this.namespace = "<unknown namespace>";
+            this.id = value;
+        }
     }
 
     @Override
@@ -52,8 +63,6 @@ public class MyBatisStatementId {
     boolean matches(UsingMethods usingMethods) {
         if (value.contains(".")) {
             // 連結されているnamespaceとidを分離する
-            var namespace = value.substring(0, value.lastIndexOf('.'));
-            var id = value.substring(value.lastIndexOf('.') + 1);
 
             // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
             return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace) && methodCall.methodName().equals(id));

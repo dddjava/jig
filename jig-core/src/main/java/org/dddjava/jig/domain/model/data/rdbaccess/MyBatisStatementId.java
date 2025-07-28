@@ -1,9 +1,7 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
-import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.information.members.UsingMethods;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -51,22 +49,16 @@ public class MyBatisStatementId {
         return Objects.hash(value);
     }
 
-    public boolean matches(List<MethodCall> methodCalls) {
+    public boolean matches(UsingMethods usingMethods) {
         if (value.contains(".")) {
             // 連結されているnamespaceとidを分離する
             var namespace = value.substring(0, value.lastIndexOf('.'));
             var id = value.substring(value.lastIndexOf('.') + 1);
 
-            for (MethodCall methodCall : methodCalls) {
-                JigMethodId jigMethodId = methodCall.jigMethodId();
-
-                // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                if (namespace.equals(jigMethodId.namespace())
-                        && id.equals(jigMethodId.name())) {
-                    return true;
-                }
-            }
+            // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
+            return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(namespace) && methodCall.methodName().equals(id));
         }
+        // statementIdが . 連結されていないものは対象外
         return false;
     }
 }

@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,5 +43,9 @@ public record UsingMethods(List<MethodCall> methodCalls) {
                 })
                 .sorted() // 出力の安定のために名前順にしている
                 .collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    public boolean containsAny(Predicate<MethodCall> predicate) {
+        return methodCalls.stream().anyMatch(predicate);
     }
 }

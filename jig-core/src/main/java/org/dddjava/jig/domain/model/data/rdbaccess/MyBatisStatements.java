@@ -1,9 +1,8 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
-import org.dddjava.jig.domain.model.information.members.UsingMethods;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * SQL一覧
@@ -41,13 +40,9 @@ public class MyBatisStatements {
     /**
      * 引数のメソッドに関連するステートメントに絞り込む
      */
-    public MyBatisStatements filterRelationOn(UsingMethods usingMethods) {
+    public MyBatisStatements filterRelationOn(Predicate<MyBatisStatement> myBatisStatementPredicate) {
         List<MyBatisStatement> myBatisStatements = list.stream()
-                .filter(myBatisStatement -> {
-                    MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
-                    // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                    return usingMethods.containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(myBatisStatementId.namespace()) && methodCall.methodName().equals(myBatisStatementId.id()));
-                })
+                .filter(myBatisStatementPredicate)
                 .toList();
         return new MyBatisStatements(myBatisStatements, sqlReadStatus);
     }

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.adapter;
 
+import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
@@ -26,7 +27,13 @@ public class DatasourceAngle {
         this.interfaceMethod = datasourceMethod.repositoryMethod();
         this.datasourceMethod = datasourceMethod;
         this.callerMethods = callerMethods;
-        this.myBatisStatements = allMyBatisStatements.filterRelationOn(datasourceMethod.usingMethods());
+        this.myBatisStatements = allMyBatisStatements.filterRelationOn(myBatisStatement -> {
+            MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
+            // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
+            return datasourceMethod.usingMethods()
+                    .containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(myBatisStatementId.namespace())
+                            && methodCall.methodName().equals(myBatisStatementId.id()));
+        });
         this.concreteMethod = datasourceMethod.concreteMethod();
     }
 
@@ -81,9 +88,11 @@ public class DatasourceAngle {
     public String packageText() {
         return declaringType().packageId().asText();
     }
+
     public String typeSimpleName() {
         return declaringType().asSimpleText();
     }
+
     public String typeLabel() {
         return datasourceMethod.interfaceJigType().label();
     }

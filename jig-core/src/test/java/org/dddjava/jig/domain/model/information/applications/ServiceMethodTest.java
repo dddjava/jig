@@ -40,7 +40,7 @@ class ServiceMethodTest {
         assertEquals(TypeId.from(FugaIdentifier.class), requireTypes.get(0));
 
         UsingMethods usingMethods = sut.usingMethods();
-        assertEquals(2, usingMethods.methodCalls().size());
+        assertEquals(2, usingMethods.invokedMethodStream().count());
 
         // 使用しているフィールドの型などはカウントされないので0になる。
         // TODO これまではMethodのシグネチャからとっていたので０になっていたが、InternalUsingTypesでInvokedMethodがとれるようになり、

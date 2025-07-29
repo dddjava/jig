@@ -2,6 +2,8 @@ package org.dddjava.jig.application;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -48,8 +50,17 @@ public class JigService {
     public JigService(Architecture architecture, JigEventRepository jigEventRepository) {
         this.architecture = architecture;
         this.jigEventRepository = jigEventRepository;
-        this.jigTypesCache = Caffeine.newBuilder().build();
-        this.JigTypesWithRelationshipsCache = Caffeine.newBuilder().build();
+
+        if (System.getProperty("jig.debug", "false").equals("true")) {
+            this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
+            this.JigTypesWithRelationshipsCache = Caffeine.newBuilder().recordStats().build();
+
+            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
+            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, JigTypesWithRelationshipsCache, "JigTypesWithRelationshipsCache");
+        } else {
+            this.jigTypesCache = Caffeine.newBuilder().build();
+            this.JigTypesWithRelationshipsCache = Caffeine.newBuilder().build();
+        }
     }
 
     /**

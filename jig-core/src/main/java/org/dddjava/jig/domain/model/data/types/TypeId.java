@@ -16,10 +16,10 @@ public record TypeId(String value) implements Comparable<TypeId> {
 
     public static TypeId valueOf(String value) {
         if (cache.containsKey(value)) {
-            Metrics.counter("jig.process.type.cache.hit").increment();
+            Metrics.counter("cache.gets", "cache", "typeId", "result", "hit").increment();
             return cache.get(value);
         }
-        Metrics.counter("jig.process.type.cache.miss").increment();
+        Metrics.counter("cache.gets", "cache", "typeId", "result", "miss").increment();
         var instance = new TypeId(value);
         cache.put(value, instance);
         return instance;

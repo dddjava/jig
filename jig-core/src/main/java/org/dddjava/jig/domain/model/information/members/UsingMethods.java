@@ -23,7 +23,7 @@ public record UsingMethods(List<MethodCall> methodCalls) {
     public boolean containsStreamAPI() {
         return methodCalls.stream()
                 .map(MethodCall::returnType)
-                .anyMatch(TypeId::isStream);
+                .anyMatch(TypeId::isStreamAPI);
     }
 
     public Stream<MethodCall> invokedMethodStream() {

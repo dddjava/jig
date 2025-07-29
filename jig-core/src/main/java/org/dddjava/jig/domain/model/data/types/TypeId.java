@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 /**
  * *型の識別子
@@ -115,9 +114,8 @@ public class TypeId implements Comparable<TypeId> {
         return value.matches("(int|long|boolean|double|float|byte|char|short)(\\[])?");
     }
 
-    public boolean isStream() {
-        // java.util.streamパッケージかで見たほうがいいかも？
-        return equals(from(Stream.class));
+    public boolean isStreamAPI() {
+        return value.startsWith("java.util.stream.");
     }
 
     public boolean isVoid() {

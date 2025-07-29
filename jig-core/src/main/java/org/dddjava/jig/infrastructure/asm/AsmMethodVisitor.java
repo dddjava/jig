@@ -158,7 +158,7 @@ class AsmMethodVisitor extends MethodVisitor {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
 
         var fieldTypeId = AsmUtils.typeDescriptorToTypeId(descriptor);
-        var declaringTypeId = TypeId.valueOf(owner);
+        var declaringTypeId = TypeId.fromJvmBinaryName(owner);
 
         var jigFieldId = JigFieldId.from(declaringTypeId, name);
         var fieldInstruction = switch (opcode) {
@@ -180,7 +180,7 @@ class AsmMethodVisitor extends MethodVisitor {
                 .toList();
         TypeId returnType = methodDescriptorToReturnTypeId(descriptor);
 
-        MethodCall methodCall = new MethodCall(TypeId.valueOf(owner), name, argumentTypes, returnType);
+        MethodCall methodCall = new MethodCall(TypeId.fromJvmBinaryName(owner), name, argumentTypes, returnType);
         methodInstructionCollector.add(methodCall);
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
@@ -226,7 +226,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     && (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
                     && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD)) {
                 // 実際に呼び出されるメソッド
-                var handleOwnerType = TypeId.valueOf(handle.getOwner());
+                var handleOwnerType = TypeId.fromJvmBinaryName(handle.getOwner());
                 var handleMethodName = handle.getName();
                 var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
                         .map(type1 -> AsmUtils.type2TypeId(type1))

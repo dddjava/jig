@@ -4,39 +4,28 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * *型の識別子
  */
-public class TypeId implements Comparable<TypeId> {
-
-    private final String value;
-
-    protected TypeId(String value) {
-        this.value = value.replace('/', '.');
-    }
-
-    public String value() {
-        return value;
-    }
-
-    public static TypeId fromJvmBinaryName(String jvmBinaryName) {
-        return new TypeId(jvmBinaryName.replace('/', '.'));
-    }
+public record TypeId(String value) implements Comparable<TypeId> {
 
     private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
-
-    public static TypeId from(Class<?> clz) {
-        return valueOf(clz.getName());
-    }
 
     public static TypeId valueOf(String value) {
         if (cache.containsKey(value)) return cache.get(value);
         var instance = new TypeId(value);
         cache.put(value, instance);
         return instance;
+    }
+
+    public static TypeId from(Class<?> clz) {
+        return valueOf(clz.getName());
+    }
+
+    public static TypeId fromJvmBinaryName(String jvmBinaryName) {
+        return valueOf(jvmBinaryName.replace('/', '.'));
     }
 
     /**
@@ -74,26 +63,6 @@ public class TypeId implements Comparable<TypeId> {
             return PackageId.defaultPackage();
         }
         return PackageId.valueOf(value.substring(0, value.lastIndexOf(".")));
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TypeId that = (TypeId) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
-
-    @Override
-    public String toString() {
-        return "TypeId{" +
-                "value='" + value + '\'' +
-                '}';
     }
 
     public TypeId normalize() {

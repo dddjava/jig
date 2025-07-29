@@ -70,7 +70,7 @@ public class ServiceAngle {
     }
 
     public boolean useStream() {
-        return serviceMethod.method().usingMethods().containsStream();
+        return serviceMethod.method().usingMethods().containsStreamAPI();
     }
 
     // TODO ミューテーションしても落ちなかったのでテストが必要

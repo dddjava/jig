@@ -20,7 +20,7 @@ public record UsingMethods(List<MethodCall> methodCalls) {
         return new UsingMethods(instructions.methodCallStream().toList());
     }
 
-    public boolean containsStream() {
+    public boolean containsStreamAPI() {
         return methodCalls.stream()
                 .map(MethodCall::returnType)
                 .anyMatch(TypeId::isStream);

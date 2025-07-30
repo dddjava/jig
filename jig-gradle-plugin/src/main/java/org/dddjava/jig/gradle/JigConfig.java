@@ -24,6 +24,7 @@ public class JigConfig {
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
     JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
+    Duration diagramTimeout = Duration.ofSeconds(10);
 
     boolean diagramTransitiveReduction = true;
 
@@ -54,7 +55,7 @@ public class JigConfig {
                 modelPattern, resolveOutputDirectory(project),
                 diagramFormat,
                 diagramTransitiveReduction,
-                Duration.ofSeconds(10)
+                diagramTimeout
         );
     }
 
@@ -107,6 +108,14 @@ public class JigConfig {
         this.diagramFormat = diagramFormat;
     }
 
+    public Duration getDiagramTimeout() {
+        return diagramTimeout;
+    }
+
+    public void setDiagramTimeout(Duration diagramTimeout) {
+        this.diagramTimeout = diagramTimeout;
+    }
+
     public boolean isDiagramTransitiveReduction() {
         return diagramTransitiveReduction;
     }
@@ -129,6 +138,7 @@ public class JigConfig {
                 .add("modelPattern = '" + modelPattern + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("diagramFormat= '" + diagramFormat + '\'')
+                .add("diagramTimeout= '" + diagramTimeout.toString() + '\'')
                 .add("diagramTransitiveReduction= '" + diagramTransitiveReduction + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
                 .toString();

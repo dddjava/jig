@@ -12,13 +12,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.logging.Logger;
 
 public class DotCommandRunner {
-    Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
+    private static final Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
 
     private final JigDiagramOption diagramOption;
-
-    ProcessExecutor processExecutor;
-
-    ThreadLocal<Path> workDirectory;
+    private final ProcessExecutor processExecutor;
+    private final ThreadLocal<Path> workDirectory;
 
     public DotCommandRunner(JigDiagramOption diagramOption) {
         this.diagramOption = diagramOption;

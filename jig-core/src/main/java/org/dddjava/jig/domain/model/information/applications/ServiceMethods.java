@@ -9,12 +9,18 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 /**
  * サービスメソッド一覧
  */
 public record ServiceMethods(List<Entry> entries) {
-    private record Entry(JigType jigType, List<ServiceMethod> serviceMethods) {
+    public <T> Stream<T> streamAndMap(BiFunction<JigType, List<ServiceMethod>, T> biFunction) {
+        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.serviceMethodList));
+    }
+
+    private record Entry(JigType jigType, List<ServiceMethod> serviceMethodList) {
     }
 
     public static ServiceMethods from(JigTypes serviceJigTypes, CallerMethodsFactory callerMethodsFactory) {
@@ -41,7 +47,7 @@ public record ServiceMethods(List<Entry> entries) {
 
     public List<ServiceMethod> list() {
         return entries.stream()
-                .map(Entry::serviceMethods)
+                .map(Entry::serviceMethodList)
                 .flatMap(Collection::stream)
                 .toList();
     }

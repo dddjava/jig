@@ -18,7 +18,7 @@ public class CompositeUsecaseDiagram implements DiagramSourceWriter {
     private final List<CompositeUsecases> list;
 
     public CompositeUsecaseDiagram(ServiceAngles serviceAngles) {
-        this.list = serviceAngles.stream()
+        this.list = serviceAngles.list().stream()
                 .map(CompositeUsecases::new)
                 .toList();
     }

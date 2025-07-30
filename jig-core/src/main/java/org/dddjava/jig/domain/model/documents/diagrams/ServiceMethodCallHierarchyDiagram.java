@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -62,24 +61,17 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                     return useCaseNode.asText();
                 }).collect(joining("\n"));
 
-        // クラス名でグルーピングする
-        String subgraphText = angles.stream()
-                .collect(groupingBy(serviceAngle -> serviceAngle.declaringType()))
-                .entrySet().stream()
-                .map(entry ->
-                        "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
+        String subgraphText = serviceAngles.streamAndMap((jigType, serviceAngleList) ->
+                        "subgraph \"cluster_" + jigType.fqn() + "\""
                                 + "{"
                                 + "style=solid;"
-                                + "label=\"" + jigDocumentContext.typeTerm(entry.getKey()).title() + "\";"
-                                + entry.getValue().stream()
+                                + "label=\"" + jigType.label() + "\";"
+                                + serviceAngleList.stream()
                                 .map(serviceAngle -> serviceAngle.jigMethodId().value())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")
-                .collect(joining("\n"
-                        // TODO #852 暫定対処
-                        // , "subgraph cluster_usecases {style=invis;", "}"
-                ));
+                .collect(joining("\n"));
 
         DocumentName documentName = DocumentName.of(JigDocument.ServiceMethodCallHierarchyDiagram);
 

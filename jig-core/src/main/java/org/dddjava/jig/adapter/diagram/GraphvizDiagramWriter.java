@@ -23,11 +23,38 @@ public class GraphvizDiagramWriter {
 
     public List<Path> write(DiagramSourceWriter model, JigDocument jigDocument) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-        DiagramSources diagramSources = model.sources(jigDocumentContext);
 
-        if (diagramSources.noEntity()) {
+        int count = model.write(diagramSource -> {
+            DocumentName documentName = diagramSource.documentName();
+
+            jigDocumentWriter.writePath((directory, outputPaths) -> {
+                Path resultPath = dotCommandRunner.run(diagramSource, directory);
+                outputPaths.add(resultPath);
+            });
+
+            // 追加のテキストファイル
+            AdditionalText additionalText = diagramSource.additionalText();
+            if (additionalText.enable()) {
+                jigDocumentWriter.write(
+                        outputStream -> {
+                            try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                                writer.write(additionalText.value());
+                            }
+                        },
+                        documentName.fileName() + ".additional.txt"
+                );
+            }
+        });
+
+        if (count == 0) {
             jigDocumentWriter.markSkip();
-        } else {
+        } else if (count == -1) {
+            // -1: 未実装なので従来の処理を行う
+            DiagramSources diagramSources = model.sources(jigDocumentContext);
+            if (diagramSources.noEntity()) {
+                jigDocumentWriter.markSkip();
+            }
+
             diagramSources.each(diagramSource -> {
                 DocumentName documentName = diagramSource.documentName();
 

@@ -1,22 +1,33 @@
 package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
+import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * サービスメソッド一覧
  */
-public record ServiceMethods(JigTypes serviceJigTypes, List<ServiceMethod> list) {
+public record ServiceMethods(List<Entry> entries) {
+    private record Entry(JigType jigType, List<ServiceMethod> serviceMethods) {
+    }
 
     public static ServiceMethods from(JigTypes serviceJigTypes, CallerMethodsFactory callerMethodsFactory) {
         var list = serviceJigTypes.orderedStream()
-                .flatMap(jigType -> jigType.instanceJigMethodStream())
-                .map(method -> ServiceMethod.from(method, callerMethodsFactory))
+                .map(jigType -> {
+                    var serviceMethods = jigType.instanceJigMethodStream()
+                            .sorted(Comparator.comparing(JigMethod::fqn))
+                            .map(method -> ServiceMethod.from(method, callerMethodsFactory))
+                            .toList();
+                    return new Entry(jigType, serviceMethods);
+                })
                 .toList();
-        return new ServiceMethods(serviceJigTypes, list);
+        return new ServiceMethods(list);
     }
 
     public boolean empty() {
@@ -26,5 +37,12 @@ public record ServiceMethods(JigTypes serviceJigTypes, List<ServiceMethod> list)
     public boolean contains(JigMethodId jigMethodId) {
         return list().stream()
                 .anyMatch(serviceMethod -> serviceMethod.method().jigMethodId().equals(jigMethodId));
+    }
+
+    public List<ServiceMethod> list() {
+        return entries.stream()
+                .map(Entry::serviceMethods)
+                .flatMap(Collection::stream)
+                .toList();
     }
 }

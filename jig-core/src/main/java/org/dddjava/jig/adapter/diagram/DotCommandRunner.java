@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter.diagram;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;
+import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -12,6 +13,8 @@ import java.util.logging.Logger;
 
 public class DotCommandRunner {
     Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
+
+    private final JigDiagramOption diagramOption;
 
     ProcessExecutor processExecutor = new ProcessExecutor();
     ThreadLocal<Path> workDirectory = ThreadLocal.withInitial(() -> {
@@ -24,7 +27,12 @@ public class DotCommandRunner {
         }
     });
 
-    public Path run(JigDiagramFormat documentFormat, Path inputPath, Path outputPath) {
+    public DotCommandRunner(JigDiagramOption diagramOption) {
+        this.diagramOption = diagramOption;
+    }
+
+    public Path run(Path inputPath, Path outputPath) {
+        var documentFormat = diagramOption.graphvizOutputFormat();
         try {
             if (documentFormat == JigDiagramFormat.DOT) {
                 Files.move(inputPath, outputPath, StandardCopyOption.REPLACE_EXISTING);

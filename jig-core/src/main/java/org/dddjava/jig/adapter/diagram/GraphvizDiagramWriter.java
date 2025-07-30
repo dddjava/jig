@@ -17,7 +17,7 @@ public class GraphvizDiagramWriter {
 
     public GraphvizDiagramWriter(JigDocumentContext jigDocumentContext) {
         this.diagramOption = jigDocumentContext.diagramOption();
-        this.dotCommandRunner = new DotCommandRunner();
+        this.dotCommandRunner = new DotCommandRunner(diagramOption);
         this.jigDocumentContext = jigDocumentContext;
     }
 
@@ -34,7 +34,7 @@ public class GraphvizDiagramWriter {
 
                 jigDocumentWriter.writePath((directory, outputPaths) -> {
                     String fileName = documentName.withExtension(diagramOption.graphvizOutputFormat());
-                    Path resultPath = dotCommandRunner.run(diagramOption.graphvizOutputFormat(), sourcePath, directory.resolve(fileName));
+                    Path resultPath = dotCommandRunner.run(sourcePath, directory.resolve(fileName));
                     outputPaths.add(resultPath);
                 });
 

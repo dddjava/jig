@@ -4,7 +4,9 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import testing.xlsx.XlsxAssertions;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +37,9 @@ class JigDocumentGeneratorTest {
         var jigDataProvider = mock(JigRepository.class); // termはmockで返すようにしているのでここは同じインスタンスであればいいので
         // environment
         var jigDocumentContextMock = mock(JigDocumentContext.class);
+        when(jigDocumentContextMock.diagramOption()).thenReturn(new JigDiagramOption(
+                JigDiagramFormat.DOT, Duration.ZERO, false
+        ));
         var jigServiceMock = mock(JigService.class);
         when(jigServiceMock.glossary(any())).thenReturn(terms);
 

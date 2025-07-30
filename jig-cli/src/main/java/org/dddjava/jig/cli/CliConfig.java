@@ -27,6 +27,8 @@ class CliConfig {
     String outputDirectory;
     @Value("${jig.output.diagram.format:svg}")
     JigDiagramFormat diagramFormat;
+    @Value("${jig.output.diagram.timeout:10s}")
+    Duration diagramTimeout;
     @Value("${jig.output.diagram.transitiveReduction:true}")
     boolean diagramTransitiveReduction;
 
@@ -49,6 +51,7 @@ class CliConfig {
                 .add("jig.pattern.domain=" + modelPattern)
                 .add("jig.output.directory=" + outputDirectory)
                 .add("jig.output.diagram.format=" + diagramFormat)
+                .add("jig.output.diagram.timeout=" + diagramTimeout.toString())
                 .add("jig.output.diagram.transitiveReduction=" + diagramTransitiveReduction)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
@@ -81,7 +84,7 @@ class CliConfig {
                         modelPattern, Paths.get(this.outputDirectory),
                         diagramFormat,
                         diagramTransitiveReduction,
-                        Duration.ofSeconds(10)
+                        diagramTimeout
                 ));
     }
 

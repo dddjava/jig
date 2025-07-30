@@ -91,11 +91,12 @@ public class GradleProject {
         return Stream.concat(Stream.of(currentProject), descendantStream);
     }
 
-    @SuppressWarnings("deprecation")
     private Project resolveDependencyProject(ProjectDependency projectDependency) {
         if (GradleVersion.current().compareTo(GradleVersion.version("8.11")) < 0) {
             // Gradle9.0で削除されるが、代替のgetPathはGradle8.11以降なのでGradle7をサポートしているうちは使用できない。
-            return projectDependency.getDependencyProject();
+            @SuppressWarnings("deprecation")
+            var dependencyProject = projectDependency.getDependencyProject();
+            return dependencyProject;
         }
         return project.project(projectDependency.getPath());
     }

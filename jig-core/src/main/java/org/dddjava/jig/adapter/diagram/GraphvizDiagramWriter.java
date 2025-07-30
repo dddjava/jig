@@ -30,11 +30,10 @@ public class GraphvizDiagramWriter {
         } else {
             diagramSources.each(diagramSource -> {
                 DocumentName documentName = diagramSource.documentName();
-                Path sourcePath = dotCommandRunner.writeSource(diagramSource);
 
                 jigDocumentWriter.writePath((directory, outputPaths) -> {
                     String fileName = documentName.withExtension(diagramOption.graphvizOutputFormat());
-                    Path resultPath = dotCommandRunner.run(sourcePath, directory.resolve(fileName));
+                    Path resultPath = dotCommandRunner.run(dotCommandRunner.writeSource(diagramSource), directory.resolve(fileName));
                     outputPaths.add(resultPath);
                 });
 

@@ -9,14 +9,14 @@ import java.util.List;
 /**
  * サービスメソッド一覧
  */
-public record ServiceMethods(List<ServiceMethod> list) {
+public record ServiceMethods(JigTypes serviceJigTypes, List<ServiceMethod> list) {
 
     public static ServiceMethods from(JigTypes serviceJigTypes, CallerMethodsFactory callerMethodsFactory) {
         var list = serviceJigTypes.orderedStream()
                 .flatMap(jigType -> jigType.instanceJigMethodStream())
                 .map(method -> ServiceMethod.from(method, callerMethodsFactory))
                 .toList();
-        return new ServiceMethods(list);
+        return new ServiceMethods(serviceJigTypes, list);
     }
 
     public boolean empty() {

@@ -32,7 +32,14 @@ public class DotCommandRunner {
         });
     }
 
-    public Path run(Path inputPath, Path outputPath) {
+    public Path run(DiagramSource diagramSource, Path outputDirectory) {
+        var sourcePath = writeSourceToTemporaryDirectory(diagramSource);
+        return executeDot(diagramSource, sourcePath, outputDirectory);
+    }
+
+    private Path executeDot(DiagramSource diagramSource, Path inputPath, Path outputDirectory) {
+        var documentName = diagramSource.documentName();
+        var outputPath = outputDirectory.resolve(documentName.withExtension(diagramOption.graphvizOutputFormat()));
         var documentFormat = diagramOption.graphvizOutputFormat();
         try {
             if (documentFormat == JigDiagramFormat.DOT) {
@@ -70,7 +77,7 @@ public class DotCommandRunner {
         return processExecutor.isWin() ? "dot.exe" : "dot";
     }
 
-    public Path writeSource(DiagramSource diagramSource) {
+    private Path writeSourceToTemporaryDirectory(DiagramSource diagramSource) {
         try {
             String fileName = diagramSource.documentName().withExtension(JigDiagramFormat.DOT);
             Path sourcePath = workDirectory.get().resolve(fileName);

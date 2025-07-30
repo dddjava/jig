@@ -7,10 +7,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -22,9 +19,9 @@ public class JigTypes {
     private final List<JigType> list;
     private final Map<TypeId, JigType> map;
 
-    public JigTypes(List<JigType> list) {
-        this.list = list.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
-        this.map = list.stream().collect(Collectors.toMap(
+    public JigTypes(Collection<JigType> jigTypes) {
+        this.list = jigTypes.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
+        this.map = jigTypes.stream().collect(Collectors.toMap(
                 jigType -> jigType.id(),
                 Function.identity(),
                 (left, right) -> {

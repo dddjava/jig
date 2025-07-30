@@ -70,11 +70,11 @@ public class DotCommandRunner {
         return processExecutor.isWin() ? "dot.exe" : "dot";
     }
 
-    public Path writeSource(DiagramSource element) {
+    public Path writeSource(DiagramSource diagramSource) {
         try {
-            String fileName = element.documentName().withExtension(JigDiagramFormat.DOT);
+            String fileName = diagramSource.documentName().withExtension(JigDiagramFormat.DOT);
             Path sourcePath = workDirectory.get().resolve(fileName);
-            Files.writeString(sourcePath, element.text());
+            Files.writeString(sourcePath, diagramSource.text());
             logger.fine("temporary DOT file: " + sourcePath.toAbsolutePath());
             return sourcePath;
         } catch (IOException e) {

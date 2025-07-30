@@ -69,7 +69,7 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        Metrics.timer("jig.document.time", "record", "index").record(() -> {
+        Metrics.timer("jig.document.time", "phase", "index").record(() -> {
             IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
         });

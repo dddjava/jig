@@ -28,9 +28,9 @@ public class GraphvizDiagramWriter {
         if (diagramSources.noEntity()) {
             jigDocumentWriter.markSkip();
         } else {
-            diagramSources.each(element -> {
-                DocumentName documentName = element.documentName();
-                Path sourcePath = dotCommandRunner.writeSource(element);
+            diagramSources.each(diagramSource -> {
+                DocumentName documentName = diagramSource.documentName();
+                Path sourcePath = dotCommandRunner.writeSource(diagramSource);
 
                 jigDocumentWriter.writePath((directory, outputPaths) -> {
                     String fileName = documentName.withExtension(diagramOption.graphvizOutputFormat());
@@ -39,7 +39,7 @@ public class GraphvizDiagramWriter {
                 });
 
                 // 追加のテキストファイル
-                AdditionalText additionalText = element.additionalText();
+                AdditionalText additionalText = diagramSource.additionalText();
                 if (additionalText.enable()) {
                     jigDocumentWriter.write(
                             outputStream -> {

@@ -53,27 +53,12 @@ public class DotCommandRunner {
         }
     }
 
-    public ProcessResult runVersion() {
-        ProcessResult result = processExecutor.execute(dotCommand(processExecutor), "-V");
-        if (result.failed()) {
-            return result.withMessage("Graphvizのバージョン取得に失敗しました。Graphvizがインストールできていない可能性があります。");
-        }
-        return result;
-    }
-
     private String dotCommand(ProcessExecutor processExecutor) {
         // TODO DOTコマンドを設定可能にする（暫定対応）
         if (System.getenv().containsKey("JIG_DOT_COMMAND")) {
             return System.getenv("JIG_DOT_COMMAND");
         }
         return processExecutor.isWin() ? "dot.exe" : "dot";
-    }
-
-    public void verify() {
-        ProcessResult processResult = runVersion();
-        if (processResult.failed()) {
-            throw new IllegalStateException(processResult.message());
-        }
     }
 
     public Path writeSource(DiagramSource element) {

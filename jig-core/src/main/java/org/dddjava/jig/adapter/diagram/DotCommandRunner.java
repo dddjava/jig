@@ -20,7 +20,7 @@ public class DotCommandRunner {
 
     public DotCommandRunner(JigDiagramOption diagramOption) {
         this.diagramOption = diagramOption;
-        this.processExecutor = new ProcessExecutor();
+        this.processExecutor = new ProcessExecutor(diagramOption.graphvizTimeout());
         this.workDirectory = ThreadLocal.withInitial(() -> {
             try {
                 Path tempDirectory = Files.createTempDirectory("jig");

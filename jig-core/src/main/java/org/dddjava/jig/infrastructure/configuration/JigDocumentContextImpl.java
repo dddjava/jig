@@ -45,6 +45,7 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     public JigDiagramOption diagramOption() {
         return new JigDiagramOption(
                 properties.outputDiagramFormat,
+                properties.outputDiagramTimeout,
                 properties.diagramTransitiveReduction
         );
     }

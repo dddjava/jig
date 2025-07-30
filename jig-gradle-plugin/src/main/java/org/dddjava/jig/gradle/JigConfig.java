@@ -7,6 +7,7 @@ import org.gradle.api.Project;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -52,7 +53,8 @@ public class JigConfig {
                 documentTypes(),
                 modelPattern, resolveOutputDirectory(project),
                 diagramFormat,
-                diagramTransitiveReduction
+                diagramTransitiveReduction,
+                Duration.ofSeconds(10)
         );
     }
 

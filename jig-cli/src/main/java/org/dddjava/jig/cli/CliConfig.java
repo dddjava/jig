@@ -13,6 +13,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -79,7 +80,8 @@ class CliConfig {
                         jigDocuments(),
                         modelPattern, Paths.get(this.outputDirectory),
                         diagramFormat,
-                        diagramTransitiveReduction
+                        diagramTransitiveReduction,
+                        Duration.ofSeconds(10)
                 ));
     }
 

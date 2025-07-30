@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -32,6 +33,11 @@ public class JigProperties {
     JigDiagramFormat outputDiagramFormat;
 
     /**
+     * 図のタイムアウト
+     */
+    Duration outputDiagramTimeout;
+
+    /**
      * 出力対象となるJigDocumentのリスト。
      * 全部出ると邪魔／時間がかかる時に指定。
      */
@@ -53,7 +59,8 @@ public class JigProperties {
                 domainPattern,
                 outputDirectory,
                 JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue()),
-                true
+                true,
+                Duration.ofSeconds(10)
         );
     }
 
@@ -64,13 +71,15 @@ public class JigProperties {
                          String domainPattern,
                          Path outputDirectory,
                          JigDiagramFormat outputDiagramFormat,
-                         boolean diagramTransitiveReduction) {
+                         boolean diagramTransitiveReduction,
+                         Duration outputDiagramTimeout) {
         this.jigDocuments = jigDocuments;
 
         this.domainPattern = domainPattern;
 
         this.outputDirectory = outputDirectory;
         this.outputDiagramFormat = outputDiagramFormat;
+        this.outputDiagramTimeout = outputDiagramTimeout;
         this.diagramTransitiveReduction = diagramTransitiveReduction;
     }
 

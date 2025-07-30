@@ -10,7 +10,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProcessExecutor {
-    Logger logger = Logger.getLogger(ProcessExecutor.class.getName());
+    private static final Logger logger = Logger.getLogger(ProcessExecutor.class.getName());
+    private final Duration timeout;
+
+    public ProcessExecutor(Duration timeout) {
+        this.timeout = timeout;
+    }
 
     public boolean isWin() {
         String osName = System.getProperty("os.name");
@@ -37,11 +42,8 @@ public class ProcessExecutor {
                     .redirectErrorStream(true)
                     .start();
 
-            // TODO タイムアウト時間を設定可能にする
-            Duration commandTimeout = Duration.ofSeconds(10);
-
             Future<String> firstLine = executorService.submit(firstLineReader(process));
-            Future<ProcessResult> result = executorService.submit(resultCodeReader(process, commandTimeout));
+            Future<ProcessResult> result = executorService.submit(resultCodeReader(process));
 
             return result.get().withMessage(firstLine.get());
         } catch (ExecutionException | InterruptedException | IOException e) {
@@ -56,9 +58,9 @@ public class ProcessExecutor {
     /**
      * プロセスの終了を待って結果を返す
      */
-    private Callable<ProcessResult> resultCodeReader(Process process, Duration commandTimeout) {
+    private Callable<ProcessResult> resultCodeReader(Process process) {
         return () -> {
-            boolean finished = process.waitFor(commandTimeout.toMillis(), TimeUnit.MILLISECONDS);
+            boolean finished = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
             if (!finished) {
                 logger.warning("command timeout");
                 process.destroy();

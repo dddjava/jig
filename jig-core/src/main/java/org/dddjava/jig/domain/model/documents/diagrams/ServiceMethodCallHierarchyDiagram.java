@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
@@ -28,10 +29,11 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         this.serviceAngles = serviceAngles;
     }
 
-    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+    @Override
+    public int write(Consumer<DiagramSource> diagramSourceWriteProcess) {
         List<ServiceAngle> angles = serviceAngles.list();
         if (angles.isEmpty()) {
-            return DiagramSources.empty();
+            return 0;
         }
 
         // メソッド間の関連
@@ -85,7 +87,8 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .add(serviceMethodText)
                 .add(repositoryText(angles))
                 .toString();
-        return DiagramSources.singleDiagramSource(documentName, graphText);
+        diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, graphText));
+        return 1;
     }
 
     /**

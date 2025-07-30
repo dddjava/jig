@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 /**
  * JigTypeの関連図
@@ -26,13 +27,10 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
     }
 
     @Override
-    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        return sources(jigDocumentContext.diagramOption(), DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
-    }
-
-    DiagramSources sources(JigDiagramOption jigDiagramOption, DocumentName documentName) {
+    public int write(JigDiagramOption jigDiagramOption, Consumer<DiagramSource> diagramSourceWriteProcess) {
+        var documentName = DocumentName.of(JigDocument.BusinessRuleRelationDiagram);
         if (coreTypesAndRelations.coreJigTypes().empty()) {
-            return DiagramSources.empty();
+            return 0;
         }
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
@@ -77,6 +75,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
             graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
         }
 
-        return DiagramSources.singleDiagramSource(documentName, graph.toString());
+        diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, graph.toString()));
+        return 1;
     }
 }

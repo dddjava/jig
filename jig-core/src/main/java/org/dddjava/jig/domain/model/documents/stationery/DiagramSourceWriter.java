@@ -11,6 +11,10 @@ public interface DiagramSourceWriter {
         throw new UnsupportedOperationException();
     }
 
+    default int write(JigDiagramOption jigDiagramOption, Consumer<DiagramSource> diagramSourceWriteProcess) {
+        return write(diagramSourceWriteProcess);
+    }
+
     default int write(Consumer<DiagramSource> diagramSourceWriteProcess) {
         // no-op
         return -1;

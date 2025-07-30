@@ -24,7 +24,7 @@ public class GraphvizDiagramWriter {
     public List<Path> write(DiagramSourceWriter model, JigDocument jigDocument) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        int count = model.write(diagramSource -> {
+        int count = model.write(diagramOption, diagramSource -> {
             DocumentName documentName = diagramSource.documentName();
 
             jigDocumentWriter.writePath((directory, outputPaths) -> {

@@ -16,19 +16,22 @@ public class DotCommandRunner {
 
     private final JigDiagramOption diagramOption;
 
-    ProcessExecutor processExecutor = new ProcessExecutor();
-    ThreadLocal<Path> workDirectory = ThreadLocal.withInitial(() -> {
-        try {
-            Path tempDirectory = Files.createTempDirectory("jig");
-            tempDirectory.toFile().deleteOnExit();
-            return tempDirectory;
-        } catch (IOException e) {
-            throw new UncheckedIOException("テンポラリディレクトリの作成に失敗しました。", e);
-        }
-    });
+    ProcessExecutor processExecutor;
+
+    ThreadLocal<Path> workDirectory;
 
     public DotCommandRunner(JigDiagramOption diagramOption) {
         this.diagramOption = diagramOption;
+        this.processExecutor = new ProcessExecutor();
+        this.workDirectory = ThreadLocal.withInitial(() -> {
+            try {
+                Path tempDirectory = Files.createTempDirectory("jig");
+                tempDirectory.toFile().deleteOnExit();
+                return tempDirectory;
+            } catch (IOException e) {
+                throw new UncheckedIOException("テンポラリディレクトリの作成に失敗しました。", e);
+            }
+        });
     }
 
     public Path run(Path inputPath, Path outputPath) {

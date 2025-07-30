@@ -24,7 +24,7 @@ public class JigConfig {
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
     JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
-    Duration diagramTimeout = Duration.ofSeconds(10);
+    String diagramTimeout = "10s";
 
     boolean diagramTransitiveReduction = true;
 
@@ -55,8 +55,18 @@ public class JigConfig {
                 modelPattern, resolveOutputDirectory(project),
                 diagramFormat,
                 diagramTransitiveReduction,
-                diagramTimeout
+                parseDiagramTimeout()
         );
+    }
+
+    private Duration parseDiagramTimeout() {
+        if (diagramTimeout.endsWith("ms")) {
+            return Duration.ofMillis(Long.parseLong(diagramTimeout.substring(0, diagramTimeout.length() - 2)));
+        }
+        if (diagramTimeout.endsWith("s")) {
+            return Duration.ofSeconds(Long.parseLong(diagramTimeout.substring(0, diagramTimeout.length() - 1)));
+        }
+        throw new IllegalArgumentException("diagramTimeout must be end with ms or s. " + diagramTimeout + " is invalid.");
     }
 
     private Path resolveOutputDirectory(Project project) {
@@ -108,11 +118,11 @@ public class JigConfig {
         this.diagramFormat = diagramFormat;
     }
 
-    public Duration getDiagramTimeout() {
+    public String getDiagramTimeout() {
         return diagramTimeout;
     }
 
-    public void setDiagramTimeout(Duration diagramTimeout) {
+    public void setDiagramTimeout(String diagramTimeout) {
         this.diagramTimeout = diagramTimeout;
     }
 
@@ -138,7 +148,7 @@ public class JigConfig {
                 .add("modelPattern = '" + modelPattern + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("diagramFormat= '" + diagramFormat + '\'')
-                .add("diagramTimeout= '" + diagramTimeout.toString() + '\'')
+                .add("diagramTimeout= '" + diagramTimeout + '\'')
                 .add("diagramTransitiveReduction= '" + diagramTransitiveReduction + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
                 .toString();

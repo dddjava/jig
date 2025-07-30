@@ -85,6 +85,36 @@ public class JigPluginFunctionalTest {
 
     @ParameterizedTest
     @MethodSource("supportGradleVersion")
+    void オプションを指定して実行できる(String version) throws IOException {
+        settingsGradle("""
+                rootProject.name = 'my-test'
+                """);
+        buildGradle("""
+                plugins {
+                    id 'java'
+                    id 'org.dddjava.jig-gradle-plugin'
+                }
+                jig {
+                    modelPattern = "a"
+                    documentTypes = []
+                    documentTypesExclude = []
+                    diagramFormat = 'png'
+                    diagramTimeout = '100ms'
+                    diagramTransitiveReduction = false
+                }
+                """);
+
+        var result = runner(version).build();
+
+        var taskResult = Objects.requireNonNull(result.task(":jigReports"));
+        assertEquals(TaskOutcome.SUCCESS, taskResult.getOutcome());
+        assertTrue(result.getOutput().contains("[JIG] all JIG documents completed: "), result.getOutput());
+
+        assertTrue(testProjectDir.resolve(Path.of("build", "jig", "index.html")).toFile().isFile());
+    }
+
+    @ParameterizedTest
+    @MethodSource("supportGradleVersion")
     void 複数のソースセットを収集できる(String version) throws IOException {
         settingsGradle("rootProject.name = 'my-test'");
         buildGradle("""

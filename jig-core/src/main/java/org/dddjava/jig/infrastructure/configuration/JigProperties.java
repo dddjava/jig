@@ -33,9 +33,9 @@ public class JigProperties {
     JigDiagramFormat outputDiagramFormat;
 
     /**
-     * 図のタイムアウト
+     * dotコマンドのタイムアウト
      */
-    Duration outputDiagramTimeout;
+    Duration outputDotTimeout;
 
     /**
      * 出力対象となるJigDocumentのリスト。
@@ -72,14 +72,14 @@ public class JigProperties {
                          Path outputDirectory,
                          JigDiagramFormat outputDiagramFormat,
                          boolean diagramTransitiveReduction,
-                         Duration outputDiagramTimeout) {
+                         Duration outputDotTimeout) {
         this.jigDocuments = jigDocuments;
 
         this.domainPattern = domainPattern;
 
         this.outputDirectory = outputDirectory;
         this.outputDiagramFormat = outputDiagramFormat;
-        this.outputDiagramTimeout = outputDiagramTimeout;
+        this.outputDotTimeout = outputDotTimeout;
         this.diagramTransitiveReduction = diagramTransitiveReduction;
     }
 

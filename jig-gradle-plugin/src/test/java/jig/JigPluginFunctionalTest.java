@@ -99,8 +99,8 @@ public class JigPluginFunctionalTest {
                     documentTypes = []
                     documentTypesExclude = []
                     diagramFormat = 'png'
-                    diagramTimeout = '100ms'
                     diagramTransitiveReduction = false
+                    dotTimeout = '100ms'
                 }
                 """);
 

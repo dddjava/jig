@@ -2,14 +2,15 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
-import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.documents.stationery.Node;
 import org.dddjava.jig.domain.model.documents.stationery.NodeRole;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
@@ -28,9 +29,10 @@ public class CategoryDiagram implements DiagramSourceWriter {
         return new CategoryDiagram(jigTypes);
     }
 
-    public DiagramSources sources() {
+    @Override
+    public int write(Consumer<DiagramSource> diagramSourceWriteProcess) {
         if (jigTypes.empty()) {
-            return DiagramSources.empty();
+            return 0;
         }
 
         String structureText = jigTypes.list().stream()
@@ -57,13 +59,15 @@ public class CategoryDiagram implements DiagramSourceWriter {
                 .collect(joining("\n"));
 
         DocumentName documentName = DocumentName.of(JigDocument.CategoryDiagram);
-        return DiagramSources.singleDiagramSource(
-                documentName, new StringJoiner("\n", "graph \"" + documentName.label() + "\" {", "}")
-                        .add("label=\"" + documentName.label() + "\";")
-                        .add("layout=fdp;")
-                        .add("rankdir=LR;")
-                        .add(Node.DEFAULT)
-                        .add(structureText)
-                        .toString());
+        var dotText = new StringJoiner("\n", "graph \"" + documentName.label() + "\" {", "}")
+                .add("label=\"" + documentName.label() + "\";")
+                .add("layout=fdp;")
+                .add("rankdir=LR;")
+                .add(Node.DEFAULT)
+                .add(structureText)
+                .toString();
+
+        diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, dotText));
+        return 1;
     }
 }

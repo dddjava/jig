@@ -8,10 +8,6 @@ import java.util.function.Consumer;
 public interface DiagramSourceWriter {
 
     default DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        return sources();
-    }
-
-    default DiagramSources sources() {
         throw new UnsupportedOperationException();
     }
 

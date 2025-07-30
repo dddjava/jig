@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.StringJoiner;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.joining;
 
@@ -31,11 +32,12 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         this.relationships = coreTypesAndRelations.internalTypeRelationships();
     }
 
-    public DiagramSources sources() {
+    @Override
+    public int write(Consumer<DiagramSource> diagramSourceWriteProcess) {
         JigTypes categoryJigTypes = coreDomainJigTypes.filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
 
         if (categoryJigTypes.empty()) {
-            return DiagramSources.empty();
+            return 0;
         }
 
         TypeRelationships relations = relationships.relationsFromRootTo(categoryJigTypes.typeIds());
@@ -64,7 +66,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         }
 
         DocumentName documentName = DocumentName.of(JigDocument.CategoryUsageDiagram);
-        return DiagramSources.singleDiagramSource(documentName, new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+        var dotText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,fillcolor=white];")
@@ -82,7 +84,10 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                         .map(edge -> "\"%s\" -> \"%s\"".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()))
                         .collect(joining("\n")))
                 .add(serviceRelationText.asText())
-                .toString());
+                .toString();
+
+        diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, dotText));
+        return 1;
     }
 
     private String nonCategoryNodeTexts(TypeIds categoryRelatedTypes) {

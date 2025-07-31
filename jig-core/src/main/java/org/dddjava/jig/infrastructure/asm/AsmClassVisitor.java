@@ -230,6 +230,7 @@ class AsmClassVisitor extends ClassVisitor {
                 return LambdaExpressionCall.from(dynamicMethodCall, new Instructions(instructionList));
             }
         }
+        // 置き換えないものは何もしない
         return instruction;
     }
 

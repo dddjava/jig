@@ -220,7 +220,7 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     private static Instruction resolveInstruction(Instruction instruction, Map<String, List<Instruction>> lambdaMethodMap) {
-        // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallに展開する
+        // dynamicMethodCallの呼び出しメソッドと合致するものがあればLambdaExpressionCallにラップする
         if (instruction instanceof DynamicMethodCall dynamicMethodCall) {
             String name = dynamicMethodCall.methodCall().methodName();
             if (lambdaMethodMap.containsKey(name)) {

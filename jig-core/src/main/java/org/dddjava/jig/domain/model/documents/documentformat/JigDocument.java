@@ -88,13 +88,6 @@ public enum JigDocument {
             "service-method-call-hierarchy"),
 
     /**
-     * ユースケース複合図
-     */
-    CompositeUsecaseDiagram(
-            JigDocumentLabel.of("ユースケース複合図", "CompositeUsecaseDiagram"),
-            "composite-usecase"),
-
-    /**
      * ドメイン概要
      */
     DomainSummary(

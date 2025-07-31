@@ -120,7 +120,7 @@ public class JigDocumentGenerator {
                             .write(outputDirectory, jigService.packages(jigRepository));
                     case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
-                         ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram,
+                         ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList,
                          Insight -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };

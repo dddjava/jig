@@ -34,11 +34,6 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
         return PackageRelationDiagram.from(jigService.coreTypesAndRelations(jigRepository));
     }
 
-    @HandleDocument(JigDocument.CompositeUsecaseDiagram)
-    public DiagramSourceWriter CompositeUsecaseDiagram(JigRepository jigRepository) {
-        return new CompositeUsecaseDiagram(jigService.serviceAngles(jigRepository));
-    }
-
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)
     public DiagramSourceWriter businessRuleRelation(JigRepository jigRepository) {
         return new ClassRelationDiagram(jigService.coreTypesAndRelations(jigRepository));

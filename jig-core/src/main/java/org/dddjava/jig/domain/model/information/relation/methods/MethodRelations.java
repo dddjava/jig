@@ -35,13 +35,13 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     }
 
     public static MethodRelations from(JigTypes jigTypes) {
-        return jigTypes.orderedStream()
+        return new MethodRelations(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream()
                         .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
                                 .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                                 .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
                                 .map(toMethod -> MethodRelation.from(jigMethod.jigMethodId(), toMethod.jigMethodId()))))
-                .collect(collectingAndThen(toList(), MethodRelations::new));
+                .toList());
     }
 
     public MethodRelations filterApplicationComponent(JigTypes jigTypes) {

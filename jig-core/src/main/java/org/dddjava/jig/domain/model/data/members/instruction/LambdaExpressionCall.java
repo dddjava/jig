@@ -24,7 +24,7 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
 
     @Override
     public Stream<MethodCall> lambdaInlinedMethodCallStream() {
-        // methodCallは合成メソッドなので使用しない
+        // originは合成メソッドなので使用せず、lambdaのInstructionsに移譲する
         return lambdaExpressionInstructions.lambdaInlinedMethodCallStream();
     }
 

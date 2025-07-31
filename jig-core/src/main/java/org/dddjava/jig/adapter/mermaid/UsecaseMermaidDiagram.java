@@ -51,7 +51,7 @@ public record UsecaseMermaidDiagram(
                                 mermaidText.add(usecaseMermaidNodeText(method));
                                 var mermaidId = MermaidSupport.mermaidIdText(method.jigMethodId());
                                 // JigMethodIdをリンク先となるHTMLに書き出しているIDと同じルールで変換する
-                                var linkTargetId = HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId());
+                                var linkTargetId = HtmlSupport.htmlMethodIdText(method.jigMethodId());
                                 mermaidText.add("click %s \"#%s\"".formatted(mermaidId, linkTargetId));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。　

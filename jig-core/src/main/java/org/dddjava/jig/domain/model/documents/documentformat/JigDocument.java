@@ -95,13 +95,6 @@ public enum JigDocument {
             "composite-usecase"),
 
     /**
-     * アーキテクチャ図
-     */
-    ArchitectureDiagram(
-            JigDocumentLabel.of("アーキテクチャ図", "ArchitectureDiagram"),
-            "architecture"),
-
-    /**
      * ドメイン概要
      */
     DomainSummary(

@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -38,12 +37,6 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
     @HandleDocument(JigDocument.CompositeUsecaseDiagram)
     public DiagramSourceWriter CompositeUsecaseDiagram(JigRepository jigRepository) {
         return new CompositeUsecaseDiagram(jigService.serviceAngles(jigRepository));
-    }
-
-    @HandleDocument(JigDocument.ArchitectureDiagram)
-    public DiagramSourceWriter architectureDiagram(JigRepository jigRepository) {
-        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigService.jigTypes(jigRepository));
-        return new ArchitectureDiagram(packageBasedArchitecture);
     }
 
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)

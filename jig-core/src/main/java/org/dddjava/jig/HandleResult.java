@@ -36,8 +36,7 @@ public class HandleResult {
                  CategoryDiagram,
                  CategoryUsageDiagram,
                  ServiceMethodCallHierarchyDiagram,
-                 CompositeUsecaseDiagram,
-                 ArchitectureDiagram -> true;
+                 CompositeUsecaseDiagram -> true;
             case ApplicationList,
                  BusinessRuleList,
                  DomainSummary,

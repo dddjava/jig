@@ -159,7 +159,7 @@ public class JigService {
         JigTypes jigTypes = jigTypes(jigRepository);
         Glossary glossary = glossary(jigRepository);
 
-        Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.stream()
+        Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.orderedStream()
                 .collect(Collectors.groupingBy(JigType::packageId));
 
         List<Term> packageTerms = glossary.terms().stream()
@@ -181,7 +181,7 @@ public class JigService {
 
     public Insights insights(JigRepository repository) {
         return new Insights(
-                jigTypes(repository).stream()
+                jigTypes(repository).orderedStream()
                         .flatMap(JigType::allJigMethodStream)
                         .map(MethodInsight::new)
                         .toList(),

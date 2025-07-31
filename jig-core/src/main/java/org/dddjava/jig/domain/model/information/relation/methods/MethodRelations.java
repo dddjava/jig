@@ -23,7 +23,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
     public static MethodRelations lambdaInlined(JigTypes jigTypes) {
-        return new MethodRelations(jigTypes.stream()
+        return new MethodRelations(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream())
                 .flatMap(jigMethod -> {
                     Instructions instructions = jigMethod.instructions();

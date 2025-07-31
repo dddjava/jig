@@ -92,8 +92,4 @@ public class JigTypes {
     public boolean contains(TypeId typeId) {
         return map.containsKey(typeId);
     }
-
-    public Stream<JigType> stream() {
-        return list.stream();
-    }
 }

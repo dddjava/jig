@@ -210,9 +210,7 @@ class AsmClassVisitor extends ClassVisitor {
         Collection<JigMethodDeclaration> methodDeclarations = methodCollector.stream()
                 .map(it -> {
                     List<Instruction> instructions = it.body().stream()
-                            .map(instruction -> {
-                                return resolveInstruction(instruction, lambdaMethodMap);
-                            })
+                            .map(instruction -> resolveInstruction(instruction, lambdaMethodMap))
                             .toList();
                     return new JigMethodDeclaration(it.header(), new Instructions(instructions));
                 })

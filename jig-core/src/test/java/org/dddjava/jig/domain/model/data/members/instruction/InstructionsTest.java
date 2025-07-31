@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.members.instruction;
 
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -19,8 +20,8 @@ class InstructionsTest {
     @Test
     void 通常のメソッド呼び出し() {
         var instructions = new Instructions(List.of(
-                new MethodCall(null, null, null, null),
-                new MethodCall(null, null, null, null)
+                new MethodCall(TypeId.valueOf("MyClass"), "a", List.of(), TypeId.valueOf("void")),
+                new MethodCall(TypeId.valueOf("MyClass"), "b", List.of(), TypeId.valueOf("void"))
         ));
 
         assertEquals(2, instructions.methodCallStream().count());
@@ -42,17 +43,17 @@ class InstructionsTest {
     void lambda() {
         var lambdaInstruction1 = new LambdaExpressionCall(new DynamicMethodCall(null, null, null),
                 new Instructions(List.of(
-                        new MethodCall(null, null, null, null),
-                        new MethodCall(null, null, null, null)
+                        new MethodCall(TypeId.valueOf("MyClass"), "a", List.of(), TypeId.valueOf("void")),
+                        new MethodCall(TypeId.valueOf("MyClass"), "b", List.of(), TypeId.valueOf("void"))
                 )));
         var lambdaInstruction2 = new LambdaExpressionCall(new DynamicMethodCall(null, null, null),
                 new Instructions(List.of(
-                        new MethodCall(null, null, null, null),
+                        new MethodCall(TypeId.valueOf("MyClass2"), "a", List.of(), TypeId.valueOf("void")),
                         new LambdaExpressionCall(new DynamicMethodCall(null, null, null),
                                 new Instructions(List.of(
-                                        new MethodCall(null, null, null, null),
-                                        new MethodCall(null, null, null, null),
-                                        new MethodCall(null, null, null, null)
+                                        new MethodCall(TypeId.valueOf("MyClass3"), "a", List.of(), TypeId.valueOf("void")),
+                                        new MethodCall(TypeId.valueOf("MyClass3"), "b", List.of(), TypeId.valueOf("void")),
+                                        new MethodCall(TypeId.valueOf("MyClass3"), "c", List.of(), TypeId.valueOf("void"))
                                 )))
                 )));
 

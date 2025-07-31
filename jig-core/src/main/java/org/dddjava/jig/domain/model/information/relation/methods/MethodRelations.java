@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.relation.methods;
 
-import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -25,22 +24,20 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     public static MethodRelations lambdaInlined(JigTypes jigTypes) {
         return new MethodRelations(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream())
-                .flatMap(jigMethod -> {
-                    Instructions instructions = jigMethod.instructions();
-                    return instructions.lambdaInlinedMethodCallStream()
-                            .filter(methodCall -> !methodCall.isJSL()) // JSLを除く
-                            .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く
-                            .map(methodCall -> MethodRelation.from(jigMethod.jigMethodId(), methodCall.jigMethodId()));
-                }).toList());
+                .flatMap(jigMethod -> jigMethod.instructions().lambdaInlinedMethodCallStream()
+                        .filter(methodCall -> !methodCall.isJSL()) // JSLを除く
+                        .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く
+                        .map(methodCall -> MethodRelation.from(jigMethod.jigMethodId(), methodCall.jigMethodId())))
+                .toList());
     }
 
     public static MethodRelations from(JigTypes jigTypes) {
         return new MethodRelations(jigTypes.orderedStream()
-                .flatMap(jigType -> jigType.allJigMethodStream()
-                        .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
-                                .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
-                                .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                                .map(toMethod -> MethodRelation.from(jigMethod.jigMethodId(), toMethod.jigMethodId()))))
+                .flatMap(jigType -> jigType.allJigMethodStream())
+                .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
+                        .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
+                        .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
+                        .map(toMethod -> MethodRelation.from(jigMethod.jigMethodId(), toMethod.jigMethodId())))
                 .toList());
     }
 

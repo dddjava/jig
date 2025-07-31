@@ -49,6 +49,6 @@ public record Instructions(List<Instruction> instructions) {
 
     public Stream<MethodCall> lambdaInlinedMethodCallStream() {
         return instructions.stream()
-                .flatMap(instruction -> instruction.lambdaInlinedMethodCallStream());
+                .flatMap(Instruction::lambdaInlinedMethodCallStream);
     }
 }

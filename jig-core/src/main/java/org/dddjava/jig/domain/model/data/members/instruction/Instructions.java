@@ -34,17 +34,17 @@ public record Instructions(List<Instruction> instructions) {
                 .map(FieldAccess::jigFieldId);
     }
 
-    public Stream<MethodCall> methodCallStream() {
-        return instructions.stream()
-                .flatMap(Instruction::findMethodCall);
-    }
-
     public boolean containsSimpleInstruction(SimpleInstruction simpleInstruction) {
         return instructions.contains(simpleInstruction);
     }
 
     public boolean containsAny(Predicate<Instruction> predicate) {
         return instructions.stream().anyMatch(predicate);
+    }
+
+    public Stream<MethodCall> methodCallStream() {
+        return instructions.stream()
+                .flatMap(Instruction::findMethodCall);
     }
 
     public Stream<MethodCall> lambdaInlinedMethodCallStream() {

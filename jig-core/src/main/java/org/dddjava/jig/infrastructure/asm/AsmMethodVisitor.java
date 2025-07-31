@@ -99,10 +99,10 @@ class AsmMethodVisitor extends MethodVisitor {
         if (name.equals("<clinit>")) flags.add(JigMethodFlag.STATIC_INITIALIZER);
 
         // lambda合成メソッドの判定
-        // 名前だけ（lambda$ から始まる）は書こうと思えば書けるので、 ACC_PRIVATE, ACC_STATIC, ACC_SYNTHETIC も条件とする。
+        // 名前だけ（lambda$ から始まる）は書こうと思えば書けるので、 ACC_PRIVATE, ACC_SYNTHETIC も条件とする。
+        // ACC_STATICはlambdaでインスタンスメソッドを呼ばない場合に付与されるので条件にしてはいけない
         if (name.startsWith("lambda$")
                 && jigMemberVisibility == JigMemberVisibility.PRIVATE
-                && ownership == JigMemberOwnership.CLASS
                 && flags.contains(JigMethodFlag.SYNTHETIC)) {
             flags.add(JigMethodFlag.LAMBDA_SUPPORT);
         }

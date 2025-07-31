@@ -44,6 +44,13 @@ public class AsmMethodVisitorInstructionTest {
                     .close();
         }
 
+        private void lambda式で呼ばれるインスタンスメソッド() {
+        }
+
+        public void lambda式メソッド_インスタンスメソッド呼び出し() {
+            Stream.empty().forEach(i -> lambda式で呼ばれるインスタンスメソッド());
+        }
+
         public void lambda式の多段メソッド() {
             Supplier<Object> s = () -> {
                 return UUID.randomUUID();
@@ -182,6 +189,22 @@ public class AsmMethodVisitorInstructionTest {
         assertEquals(Stream.of(
                 "of", "map", "close", "valueOf", // lambda式の外（valueOfはオートボクシング）
                 "randomUUID", "variant", "toString" // lambda式の内側
+        ).sorted().toList(), actual);
+    }
+
+    @Test
+    void Lambda式で呼び出しているメソッドがlambda式を記述したメソッドから取得できる_インスタンスメソッド呼び出し() {
+        JigMethod jigMethod = TestSupport.JigMethod準備(SutClass.class, "lambda式メソッド_インスタンスメソッド呼び出し");
+
+        List<String> actual = jigMethod.instructions().lambdaInlinedMethodCallStream()
+                .map(MethodCall::methodName)
+                // バイトコードの順番は記述順と異なるので名前順にしておく
+                .sorted()
+                .toList();
+
+        assertEquals(Stream.of(
+                "empty", "forEach", // lambda式の外
+                "lambda式で呼ばれるインスタンスメソッド" // lambda式の内側
         ).sorted().toList(), actual);
     }
 

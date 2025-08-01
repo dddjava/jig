@@ -47,14 +47,6 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         this.appliedDepth = appliedDepth;
     }
 
-    public static PackageRelationDiagram empty() {
-        return new PackageRelationDiagram(
-                new PackageRelations(Collections.emptyList()),
-                null,
-                new PackageDepth(-1)
-        );
-    }
-
     public static DiagramSourceWriter from(CoreTypesAndRelations coreTypesAndRelations) {
         var packageRelations = PackageRelations.from(coreTypesAndRelations.internalTypeRelationships());
         return new PackageRelationDiagram(packageRelations, coreTypesAndRelations, new PackageDepth(-1));

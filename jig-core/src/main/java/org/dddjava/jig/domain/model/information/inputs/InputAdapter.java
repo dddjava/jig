@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * 入力ポートとなるクラス。
+ * 入力アダプタとなるクラス。
  * 複数のエントリーポイントを持つ。
  *
  * - SpringMVCのControllerのRequestMapping

@@ -41,7 +41,7 @@ public class ServiceAngle {
         this.userServiceMethods = userServiceMethods;
     }
 
-    public static ServiceAngle from(ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods, ServiceMethod serviceMethod) {
+    public static ServiceAngle from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, Entrypoints entrypoints, DatasourceMethods datasourceMethods) {
         UsingMethods usingMethods = serviceMethod.usingMethods();
 
         Collection<JigMethodId> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodId -> serviceMethods.contains(jigMethodId));

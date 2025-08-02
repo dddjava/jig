@@ -22,7 +22,7 @@ public record ServiceAngles(Collection<Entry> entries) {
         return new ServiceAngles(serviceMethods
                 .streamAndMap((jigType, serviceMethodList) -> {
                     var serviceAngleList = serviceMethodList.stream()
-                            .map(serviceMethod -> ServiceAngle.from(serviceMethods, entrypoints, datasourceMethods, serviceMethod))
+                            .map(serviceMethod -> ServiceAngle.from(serviceMethod, serviceMethods, entrypoints, datasourceMethods))
                             .toList();
                     return new Entry(jigType, serviceAngleList);
                 }).toList());

@@ -9,20 +9,20 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
- * リポジトリインタフェースメソッド
+ * 出力ポートのゲートウェイ
  */
-public class RepositoryMethods {
+public class Gateways {
 
     List<JigMethod> list;
 
-    RepositoryMethods(List<JigMethod> list) {
+    Gateways(List<JigMethod> list) {
         this.list = list;
     }
 
-    public RepositoryMethods filter(UsingMethods usingMethods) {
+    public Gateways filter(UsingMethods usingMethods) {
         return list.stream()
                 .filter(method -> usingMethods.invokedMethodStream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(method.jigMethodId())))
-                .collect(collectingAndThen(toList(), RepositoryMethods::new));
+                .collect(collectingAndThen(toList(), Gateways::new));
     }
 
     public List<JigMethod> list() {

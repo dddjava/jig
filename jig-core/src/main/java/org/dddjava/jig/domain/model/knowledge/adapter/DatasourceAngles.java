@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.knowledge.adapter;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
-import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
-import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
+import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
+import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 
 import java.util.ArrayList;
@@ -17,11 +17,11 @@ public class DatasourceAngles {
 
     List<DatasourceAngle> list;
 
-    public DatasourceAngles(DatasourceMethods datasourceMethods, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
+    public DatasourceAngles(OutputImplementations outputImplementations, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
         List<DatasourceAngle> list = new ArrayList<>();
-        for (DatasourceMethod datasourceMethod : datasourceMethods.list()) {
-            CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(datasourceMethod.repositoryMethod().jigMethodId());
-            list.add(new DatasourceAngle(datasourceMethod, myBatisStatements, callerMethods));
+        for (OutputImplementation outputImplementation : outputImplementations.list()) {
+            CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortGateway().jigMethodId());
+            list.add(new DatasourceAngle(outputImplementation, myBatisStatements, callerMethods));
         }
         this.list = list;
     }

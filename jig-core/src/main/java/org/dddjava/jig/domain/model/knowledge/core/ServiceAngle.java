@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
-import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
-import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;
+import org.dddjava.jig.domain.model.information.outputs.Gateways;
+import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 
 import java.util.Collection;
 import java.util.Set;
@@ -29,28 +29,28 @@ public class ServiceAngle {
     Collection<Entrypoint> entrypoints;
 
     Collection<MethodCall> usingServiceMethods;
-    RepositoryMethods usingRepositoryMethods;
+    Gateways usingGateways;
 
-    private ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, Collection<MethodCall> usingServiceMethods, Collection<Entrypoint> entrypoints, Collection<JigMethodId> userServiceMethods) {
+    private ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways, Collection<MethodCall> usingServiceMethods, Collection<Entrypoint> entrypoints, Collection<JigMethodId> userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
-        this.usingRepositoryMethods = usingRepositoryMethods;
+        this.usingGateways = usingGateways;
         this.usingServiceMethods = usingServiceMethods;
 
         this.entrypoints = entrypoints;
         this.userServiceMethods = userServiceMethods;
     }
 
-    public static ServiceAngle from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, DatasourceMethods datasourceMethods) {
+    public static ServiceAngle from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutputImplementations outputImplementations) {
         UsingMethods usingMethods = serviceMethod.usingMethods();
 
         Collection<JigMethodId> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodId -> serviceMethods.contains(jigMethodId));
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
-        RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
+        Gateways usingGateways = outputImplementations.repositoryMethods().filter(usingMethods);
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
-        return new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, entrypointMethods, userServiceMethods);
+        return new ServiceAngle(serviceMethod, usingGateways, usingServiceMethods, entrypointMethods, userServiceMethods);
     }
 
     public ServiceMethod serviceMethod() {
@@ -65,8 +65,8 @@ public class ServiceAngle {
         return serviceMethod.methodUsingFields();
     }
 
-    public RepositoryMethods usingRepositoryMethods() {
-        return usingRepositoryMethods;
+    public Gateways usingRepositoryMethods() {
+        return usingGateways;
     }
 
     public boolean useStream() {

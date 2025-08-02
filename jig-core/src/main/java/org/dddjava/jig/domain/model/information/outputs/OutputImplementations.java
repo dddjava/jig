@@ -10,19 +10,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * データソースメソッド一覧
- *
- * TODO Datasourceといいながら扱っているのはRepository全般っぽい？データソースとよんだりリポジトリと呼んだりの混乱がある
+ * 出力ポート／アダプタの実装群
  */
-public class DatasourceMethods {
+public class OutputImplementations {
 
-    List<DatasourceMethod> list;
+    List<OutputImplementation> list;
 
-    public DatasourceMethods(List<DatasourceMethod> list) {
+    public OutputImplementations(List<OutputImplementation> list) {
         this.list = list;
     }
 
-    public List<DatasourceMethod> list() {
+    public List<OutputImplementation> list() {
         return list;
     }
 
@@ -30,14 +28,14 @@ public class DatasourceMethods {
         return list.isEmpty();
     }
 
-    public RepositoryMethods repositoryMethods() {
-        return list.stream().map(DatasourceMethod::repositoryMethod)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), RepositoryMethods::new));
+    public Gateways repositoryMethods() {
+        return list.stream().map(OutputImplementation::outputPortGateway)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), Gateways::new));
     }
 
     // FIXME これのテストがない
-    public static DatasourceMethods from(JigTypes jigTypes) {
-        List<DatasourceMethod> list = new ArrayList<>();
+    public static OutputImplementations from(JigTypes jigTypes) {
+        List<OutputImplementation> list = new ArrayList<>();
         // backend実装となる@RepositoryのついているJigTypeを抽出
         for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.typeCategory() == TypeCategory.OutputAdapter)) {
             // インタフェースを抽出（通常1件）
@@ -49,11 +47,11 @@ public class DatasourceMethods {
                             // 名前と引数型が一致するもの
                             .filter(implJigMethod -> interfaceJigMethod.jigMethodId().name().equals(implJigMethod.jigMethodId().name()))
                             .filter(implJigMethod -> interfaceJigMethod.jigMethodId().tuple().parameterTypeNameList().equals(implJigMethod.jigMethodId().tuple().parameterTypeNameList()))
-                            .map(implJigMethod -> new DatasourceMethod(interfaceJigMethod, implJigMethod, interfaceJigType))
-                            .forEach(datasourceMethod -> list.add(datasourceMethod));
+                            .map(implJigMethod -> new OutputImplementation(interfaceJigMethod, implJigMethod, interfaceJigType))
+                            .forEach(outputImplementation -> list.add(outputImplementation));
                 }
             }
         }
-        return new DatasourceMethods(list);
+        return new OutputImplementations(list);
     }
 }

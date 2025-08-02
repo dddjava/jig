@@ -17,7 +17,7 @@ import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.module.JigPackages;
-import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
+import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -116,10 +116,10 @@ public class JigService {
         return serviceMethods;
     }
 
-    private DatasourceMethods repositoryMethods(JigRepository jigRepository) {
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigRepository));
-        if (datasourceMethods.empty()) jigEventRepository.registerリポジトリが見つからない();
-        return datasourceMethods;
+    private OutputImplementations repositoryMethods(JigRepository jigRepository) {
+        OutputImplementations outputImplementations = OutputImplementations.from(jigTypes(jigRepository));
+        if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
+        return outputImplementations;
     }
 
     public InputAdapters entrypoint(JigRepository jigRepository) {
@@ -131,14 +131,14 @@ public class JigService {
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {
         ServiceMethods serviceMethods = serviceMethods(jigRepository);
-        DatasourceMethods datasourceMethods = repositoryMethods(jigRepository);
-        return ServiceAngles.from(serviceMethods, entrypoint(jigRepository), datasourceMethods);
+        OutputImplementations outputImplementations = repositoryMethods(jigRepository);
+        return ServiceAngles.from(serviceMethods, entrypoint(jigRepository), outputImplementations);
     }
 
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
         JigTypes jigTypes = jigTypes(jigRepository);
-        DatasourceMethods datasourceMethods = repositoryMethods(jigRepository);
-        return new DatasourceAngles(datasourceMethods, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
+        OutputImplementations outputImplementations = repositoryMethods(jigRepository);
+        return new DatasourceAngles(outputImplementations, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {

@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.information.members.UsingMethods;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
- * データソースの構造
+ * 出力ポート／アダプタの実装
  */
-public record DatasourceMethod(JigMethod repositoryMethod, JigMethod concreteMethod, JigType interfaceJigType) {
+public record OutputImplementation(JigMethod outputPortGateway, JigMethod concreteMethod, JigType interfaceJigType) {
 
     public UsingMethods usingMethods() {
         return concreteMethod().usingMethods();

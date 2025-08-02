@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
+import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
 
 import java.util.stream.Stream;
 
@@ -16,29 +16,29 @@ import java.util.stream.Stream;
  */
 public class DatasourceAngle {
 
-    private final DatasourceMethod datasourceMethod;
+    private final OutputImplementation outputImplementation;
     private final JigMethod interfaceMethod;
     MyBatisStatements myBatisStatements;
     JigMethod concreteMethod;
 
     CallerMethods callerMethods;
 
-    public DatasourceAngle(DatasourceMethod datasourceMethod, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
-        this.interfaceMethod = datasourceMethod.repositoryMethod();
-        this.datasourceMethod = datasourceMethod;
+    public DatasourceAngle(OutputImplementation outputImplementation, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
+        this.interfaceMethod = outputImplementation.outputPortGateway();
+        this.outputImplementation = outputImplementation;
         this.callerMethods = callerMethods;
         this.myBatisStatements = allMyBatisStatements.filterRelationOn(myBatisStatement -> {
             MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
             // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-            return datasourceMethod.usingMethods()
+            return outputImplementation.usingMethods()
                     .containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(myBatisStatementId.namespace())
                             && methodCall.methodName().equals(myBatisStatementId.id()));
         });
-        this.concreteMethod = datasourceMethod.concreteMethod();
+        this.concreteMethod = outputImplementation.concreteMethod();
     }
 
     public TypeId declaringType() {
-        return datasourceMethod.interfaceJigType().id();
+        return outputImplementation.interfaceJigType().id();
     }
 
     public JigMethod interfaceMethod() {
@@ -94,6 +94,6 @@ public class DatasourceAngle {
     }
 
     public String typeLabel() {
-        return datasourceMethod.interfaceJigType().label();
+        return outputImplementation.interfaceJigType().label();
     }
 }

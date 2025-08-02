@@ -55,11 +55,11 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     /**
      * 関連なしも含むすべてのパッケージ
      */
-    public PackageIds allPackages() {
+    private PackageIds allPackages() {
         return contextJigTypes.coreJigTypes().typeIds().packageIds().applyDepth(appliedDepth);
     }
 
-    public PackageRelationDiagram applyDepth(PackageDepth depth) {
+    private PackageRelationDiagram applyDepth(PackageDepth depth) {
         return new PackageRelationDiagram(
                 packageRelations.applyDepth(depth),
                 contextJigTypes,

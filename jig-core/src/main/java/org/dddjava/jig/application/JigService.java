@@ -17,6 +17,7 @@ import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.module.JigPackages;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
@@ -117,7 +118,9 @@ public class JigService {
     }
 
     private OutputImplementations repositoryMethods(JigRepository jigRepository) {
-        OutputImplementations outputImplementations = OutputImplementations.from(jigTypes(jigRepository));
+        var jigTypes = jigTypes(jigRepository);
+        var outputPorts = OutputAdapters.from(jigTypes);
+        OutputImplementations outputImplementations = OutputImplementations.from(jigTypes, outputPorts);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;
     }

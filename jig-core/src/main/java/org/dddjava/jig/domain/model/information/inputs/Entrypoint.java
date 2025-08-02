@@ -7,12 +7,14 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
- * ハンドラ
+ * 入力アダプタのエントリーポイント
  *
  * 外部からのリクエストを受け取る起点となるメソッドです。
+ * リクエストハンドラメソッドやリスナーメソッド、スケジュールメソッドなどが該当します。
+ *
  * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、ハンドラとして扱われません。
  */
-public record EntrypointMethod(EntrypointType entrypointType, JigType jigType, JigMethod jigMethod) {
+public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMethod jigMethod) {
 
     public boolean anyMatch(CallerMethods callerMethods) {
         return callerMethods.contains(jigMethod.jigMethodId());

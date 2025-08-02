@@ -1,0 +1,29 @@
+package org.dddjava.jig.domain.model.information.inputs;
+
+import org.dddjava.jig.domain.model.information.types.JigType;
+
+import java.util.Collection;
+import java.util.Optional;
+
+/**
+ * 入力ポートとなるクラス。
+ * 複数のエントリーポイントを持つ。
+ *
+ * - SpringMVCのControllerのRequestMapping
+ * - SpringRabbitのRabbitListener
+ */
+public record InputAdapter(JigType jigType, Collection<Entrypoint> entrypoints) {
+    public InputAdapter {
+        if (entrypoints.isEmpty()) throw new IllegalArgumentException("entrypointMethods is empty");
+    }
+
+    static Optional<InputAdapter> from(EntrypointMethodDetector entrypointMethodDetector, JigType jigType) {
+        var entrypointMethods = entrypointMethodDetector.collectMethod(jigType);
+        if (!entrypointMethods.isEmpty()) {
+            return Optional.of(new InputAdapter(jigType, entrypointMethods));
+        }
+        // not entrypoint
+        return Optional.empty();
+    }
+
+}

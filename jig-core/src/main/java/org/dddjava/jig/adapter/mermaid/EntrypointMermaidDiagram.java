@@ -2,10 +2,10 @@ package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.adapter.html.HtmlSupport;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.inputs.EntrypointGroup;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
-import org.dddjava.jig.domain.model.information.inputs.QueueListener;
+import org.dddjava.jig.domain.model.information.inputs.InputAdapter;
+import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
+import org.dddjava.jig.domain.model.information.inputs.MessageListener;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelation;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -14,17 +14,17 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
 
-public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes contextJigTypes) {
+public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes contextJigTypes) {
 
     public String textFor(JigType jigType) {
-        return entrypoints().groups().stream()
-                .filter(entrypointGroup -> entrypointGroup.jigType() == jigType)
+        return inputAdapters().groups().stream()
+                .filter(inputAdapter -> inputAdapter.jigType() == jigType)
                 .findAny()
-                .map(entrypointGroup -> mermaid(entrypointGroup, entrypoints().methodRelations(), contextJigTypes))
+                .map(inputAdapter -> mermaid(inputAdapter, inputAdapters().methodRelations(), contextJigTypes))
                 .orElse("");
     }
 
-    private static String mermaid(EntrypointGroup entrypointGroup, MethodRelations methodRelations, JigTypes jigTypes) {
+    private static String mermaid(InputAdapter inputAdapter, MethodRelations methodRelations, JigTypes jigTypes) {
 
         var entryPointText = new StringJoiner("\n");
 
@@ -35,7 +35,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
 
         var methodRelationSet = new HashSet<MethodRelation>();
 
-        entrypointGroup.entrypointMethods().forEach(entrypointMethod -> {
+        inputAdapter.entrypoints().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
             var apiMethodMmdId = MermaidSupport.mermaidIdText(entrypointMethod.jigMethod().jigMethodId());
             String apiMethodLabel = entrypointMethod.jigMethod().labelText();
@@ -46,7 +46,7 @@ public record EntrypointMermaidDiagram(Entrypoints entrypoints, JigTypes context
                     apiMethodLabel = httpEndpoint.interfaceLabel();
                     yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
                 }
-                case QUEUE_LISTENER -> "queue: %s".formatted(QueueListener.from(entrypointMethod).queueName());
+                case QUEUE_LISTENER -> "queue: %s".formatted(MessageListener.from(entrypointMethod).queueName());
                 default -> entrypointMethod.entrypointType().toString();
             };
             // apiMethod

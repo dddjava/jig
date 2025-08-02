@@ -11,24 +11,24 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public record Entrypoints(List<EntrypointGroup> groups, MethodRelations methodRelations) {
+public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRelations) {
 
-    public static Entrypoints from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
-        return new Entrypoints(
+    public static InputAdapters from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
+        return new InputAdapters(
                 jigTypes.orderedStream()
-                        .flatMap(jigType -> EntrypointGroup.from(entrypointMethodDetector, jigType).stream())
+                        .flatMap(jigType -> InputAdapter.from(entrypointMethodDetector, jigType).stream())
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 MethodRelations.from(jigTypes));
     }
 
-    public List<EntrypointMethod> listRequestHandlerMethods() {
+    public List<Entrypoint> listRequestHandlerMethods() {
         return requetHandlerMethodStream().toList();
     }
 
-    private Stream<EntrypointMethod> requetHandlerMethodStream() {
+    private Stream<Entrypoint> requetHandlerMethodStream() {
         return groups.stream()
-                .flatMap(entrypointGroup -> entrypointGroup.entrypointMethods().stream())
+                .flatMap(inputAdapter -> inputAdapter.entrypoints().stream())
                 .filter(entrypointMethod -> entrypointMethod.entrypointType() == EntrypointType.HTTP_API);
     }
 
@@ -36,13 +36,13 @@ public record Entrypoints(List<EntrypointGroup> groups, MethodRelations methodRe
         return groups.isEmpty();
     }
 
-    public Collection<EntrypointMethod> collectEntrypointMethodOf(CallerMethods callerMethods) {
+    public Collection<Entrypoint> collectEntrypointMethodOf(CallerMethods callerMethods) {
         return requetHandlerMethodStream()
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();
     }
 
     public JigTypes jigTypes() {
-        return groups().stream().map(EntrypointGroup::jigType).collect(collectingAndThen(toList(), JigTypes::new));
+        return groups().stream().map(InputAdapter::jigType).collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

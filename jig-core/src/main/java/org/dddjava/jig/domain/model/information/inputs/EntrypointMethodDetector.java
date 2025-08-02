@@ -47,7 +47,7 @@ public class EntrypointMethodDetector {
                              List<String> classAnnotations, List<String> methodAnnotations) {
     }
 
-    Collection<EntrypointMethod> collectMethod(JigType jigType) {
+    Collection<Entrypoint> collectMethod(JigType jigType) {
         return detectorConditions.stream()
                 .flatMap(detectorCondition -> {
                     if (detectorCondition.classAnnotations().stream().map(TypeId::valueOf)
@@ -55,7 +55,7 @@ public class EntrypointMethodDetector {
                         return jigType.instanceJigMethodStream().filter(jigMethod ->
                                         detectorCondition.methodAnnotations().stream().map(TypeId::valueOf)
                                                 .anyMatch(jigMethod::hasAnnotation))
-                                .map(jigMethod -> new EntrypointMethod(detectorCondition.entrypointType(), jigType, jigMethod));
+                                .map(jigMethod -> new Entrypoint(detectorCondition.entrypointType(), jigType, jigMethod));
                     }
                     return Stream.empty();
                 })

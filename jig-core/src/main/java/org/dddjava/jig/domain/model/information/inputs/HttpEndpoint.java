@@ -10,16 +10,21 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+/**
+ * HTTPリクエストのエンドポイント
+ *
+ * エントリーポイントから情報を抜き出したもの。
+ */
 public record HttpEndpoint(String method, String interfaceLabel, String classPath, String methodPath) {
     private static final Logger logger = LoggerFactory.getLogger(HttpEndpoint.class);
 
-    public static HttpEndpoint from(EntrypointMethod entrypointMethod) {
-        var jigMethod = entrypointMethod.jigMethod();
+    public static HttpEndpoint from(Entrypoint entrypoint) {
+        var jigMethod = entrypoint.jigMethod();
 
         // NOTE: valueとpathの両方が指定されている場合は起動失敗（AnnotationConfigurationException）になるので、単純に合わせる
         // org.springframework.core.annotation.AbstractAliasAwareAnnotationAttributeExtractor.getAttributeValue
         // 複数（ @RequestMapping({"a", "b"}) など）への対応は、そのうち。
-        String classPath = entrypointMethod.jigType()
+        String classPath = entrypoint.jigType()
                 .annotationValueOf(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
                 .filter(value -> !"/".equals(value)).orElse("");
 

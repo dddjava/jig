@@ -12,8 +12,8 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoints;
 import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
+import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
@@ -142,7 +142,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         ServiceAngles serviceAngles = jigService.serviceAngles(jigRepository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigRepository);
         StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigRepository);
-        Entrypoints entrypoints = jigService.entrypoint(jigRepository);
+        InputAdapters inputAdapters = jigService.entrypoint(jigRepository);
 
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(
@@ -158,7 +158,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("循環的複雑度", item -> item.jigMethod().instructions().cyclomaticComplexity()),
                         ReportItem.ofString("パス", item -> HttpEndpoint.from(item).pathText())
-                ), entrypoints.listRequestHandlerMethods()),
+                ), inputAdapters.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.serviceMethod().declaringType().packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),

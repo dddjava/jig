@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
+import org.dddjava.jig.domain.model.information.inputs.HttpEntrypointPath;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
@@ -157,7 +157,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 .sorted()
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("循環的複雑度", item -> item.jigMethod().instructions().cyclomaticComplexity()),
-                        ReportItem.ofString("パス", item -> HttpEndpoint.from(item).pathText())
+                        ReportItem.ofString("パス", item -> HttpEntrypointPath.from(item).pathText())
                 ), inputAdapters.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.serviceMethod().declaringType().packageId().asText()),

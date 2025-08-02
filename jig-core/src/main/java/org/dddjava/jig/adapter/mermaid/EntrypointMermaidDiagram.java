@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.adapter.html.HtmlSupport;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.inputs.HttpEndpoint;
+import org.dddjava.jig.domain.model.information.inputs.HttpEntrypointPath;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapter;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.inputs.MessageListener;
@@ -42,7 +42,7 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
 
             var description = switch (entrypointMethod.entrypointType()) {
                 case HTTP_API -> {
-                    var httpEndpoint = HttpEndpoint.from(entrypointMethod);
+                    var httpEndpoint = HttpEntrypointPath.from(entrypointMethod);
                     apiMethodLabel = httpEndpoint.interfaceLabel();
                     yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
                 }

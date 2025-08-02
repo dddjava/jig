@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
  *
  * エントリーポイントから情報を抜き出したもの。
  */
-public record HttpEndpoint(String method, String interfaceLabel, String classPath, String methodPath) {
-    private static final Logger logger = LoggerFactory.getLogger(HttpEndpoint.class);
+public record HttpEntrypointPath(String method, String interfaceLabel, String classPath, String methodPath) {
+    private static final Logger logger = LoggerFactory.getLogger(HttpEntrypointPath.class);
 
-    public static HttpEndpoint from(Entrypoint entrypoint) {
+    public static HttpEntrypointPath from(Entrypoint entrypoint) {
         var jigMethod = entrypoint.jigMethod();
 
         // NOTE: valueとpathの両方が指定されている場合は起動失敗（AnnotationConfigurationException）になるので、単純に合わせる
@@ -42,7 +42,7 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
                 .toList();
         if (methodAnnotations.isEmpty()) {
             logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
-            return new HttpEndpoint("???", jigMethod.labelText(), classPath, "");
+            return new HttpEntrypointPath("???", jigMethod.labelText(), classPath, "");
         }
         // メソッドにアノテーションが複数指定されている場合、最初の一つが優先される（SpringMVCの挙動）
         var requestMappingForMethod = methodAnnotations.get(0);
@@ -63,7 +63,7 @@ public record HttpEndpoint(String method, String interfaceLabel, String classPat
         String interfaceLabel = optOperationSummary.orElseGet(jigMethod::labelText);
 
         if (methodPath == null || methodPath.isEmpty()) methodPath = "/";
-        return new HttpEndpoint(method, interfaceLabel, classPath, methodPath);
+        return new HttpEntrypointPath(method, interfaceLabel, classPath, methodPath);
     }
 
     public String pathText() {

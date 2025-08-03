@@ -1,0 +1,34 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title th:text="${title}">出力</title>
+</head>
+<body class="output">
+<header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
+<main>
+
+    <table id="output-list" class="zebra sortable">
+        <thead>
+        <tr>
+            <th>OutputPort</th>
+            <th>Gateway</th>
+            <th>OutputAdapter</th>
+            <th>Invocation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${outputs}">
+            <td th:text="${item.port()}"></td>
+            <td th:text="${item.gateway()}"></td>
+            <td th:text="${item.adapter()}"></td>
+            <td th:text="${item.invocation()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+<th:block th:replace="~{fragment-base::scripts}"></th:block>
+</body>
+</html>

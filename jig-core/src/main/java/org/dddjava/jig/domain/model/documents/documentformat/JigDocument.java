@@ -111,6 +111,10 @@ public enum JigDocument {
             JigDocumentLabel.of("エントリーポイント概要", "entrypoint"),
             "entrypoint"),
 
+    OutputSummary(
+            JigDocumentLabel.of("出力概要", "output"),
+            "output"),
+
     /**
      * 区分概要
      */

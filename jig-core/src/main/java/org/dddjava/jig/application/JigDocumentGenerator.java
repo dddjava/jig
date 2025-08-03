@@ -66,6 +66,7 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
         compositeAdapter.register(new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext)));
         compositeAdapter.register(new InsightAdapter(jigService, templateEngine, jigDocumentContext));
+        compositeAdapter.register(new OutputSummaryAdapter(jigService, templateEngine, jigDocumentContext));
     }
 
     public void generateIndex(List<HandleResult> results) {
@@ -122,7 +123,7 @@ public class JigDocumentGenerator {
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                          ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList,
-                         Insight -> compositeAdapter.invoke(jigDocument, jigRepository);
+                         OutputSummary, Insight -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
                 long takenTime = System.currentTimeMillis() - startTime;

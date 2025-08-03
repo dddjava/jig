@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
+/**
+ * 出力ポートのゲートウェイ
+ */
 public record Gateway(JigMethod jigMethod) {
 
     public boolean matches(JigMethod invocationJigMethod) {

@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 出力アダプタ群
+ */
 public record OutputAdapters(Collection<OutputAdapter> values) {
 
     public static OutputAdapters from(JigTypes jigTypes) {

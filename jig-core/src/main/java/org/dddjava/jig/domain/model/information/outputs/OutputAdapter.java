@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * 出力アダプタとなるクラス
+ */
 public record OutputAdapter(JigType jigType) {
 
     public Stream<OutputPort> implementsPortStream(JigTypes contextJigTypes) {

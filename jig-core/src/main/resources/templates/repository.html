@@ -5,11 +5,11 @@
     <link rel="icon" href="./assets/favicon.ico">
     <title th:text="${title}">出力</title>
 </head>
-<body class="output">
+<body class="repository">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
 <main>
 
-    <table id="output-list" class="zebra sortable">
+    <table id="repository-list" class="zebra sortable">
         <thead>
         <tr>
             <th>OutputPort</th>

@@ -306,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function () {
         setupSortableTables();
         setupZoomIcons();
         document.getElementById("cancel-zoom").addEventListener("click", cancelZoom);
-    } else if (document.body.classList.contains("output")) {
+    } else if (document.body.classList.contains("repository")) {
         setupSortableTables();
     }
 });

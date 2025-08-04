@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class OutputSummaryAdapter implements Adapter<List<OutputSummaryAdapter.OutputSummaryItem>> {
+public class RepositoryListAdapter implements Adapter<List<RepositoryListAdapter.OutputSummaryItem>> {
     private final JigService jigService;
     private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
 
-    public OutputSummaryAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public RepositoryListAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
@@ -30,7 +30,7 @@ public class OutputSummaryAdapter implements Adapter<List<OutputSummaryAdapter.O
     public record OutputSummaryItem(String port, String gateway, String adapter, String invocation) {
     }
 
-    @HandleDocument(JigDocument.OutputSummary)
+    @HandleDocument(JigDocument.RepositorySummary)
     public List<OutputSummaryItem> invoke(JigRepository repository) {
         var jigTypes = jigService.jigTypes(repository);
         var outputAdapters = OutputAdapters.from(jigTypes);
@@ -49,7 +49,7 @@ public class OutputSummaryAdapter implements Adapter<List<OutputSummaryAdapter.O
     }
 
     @Override
-    public List<Path> write(List<OutputSummaryAdapter.OutputSummaryItem> result, JigDocument jigDocument) {
+    public List<Path> write(List<RepositoryListAdapter.OutputSummaryItem> result, JigDocument jigDocument) {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(

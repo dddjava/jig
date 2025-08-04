@@ -42,7 +42,7 @@ public class HandleResult {
                  ApplicationSummary,
                  UsecaseSummary,
                  EntrypointSummary,
-                 OutputSummary,
+                 RepositorySummary,
                  EnumSummary,
                  TermList,
                  Insight,

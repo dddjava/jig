@@ -19,8 +19,8 @@ jig:
 project:
   path: ./
 
-# Directories to read information (Gradle standard)
-directory:
-  classes: build/classes/java/main
-  resources: build/resources/main
-  sources: src/main/java
+# Directories to read information
+#directory:
+#  classes: build/classes/java/main
+#  resources: build/resources/main
+#  sources: src/main/java

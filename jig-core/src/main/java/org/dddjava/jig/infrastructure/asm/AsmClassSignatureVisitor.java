@@ -3,6 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.types.JigBaseTypeDataBundle;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeParameter;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 
@@ -55,8 +56,9 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     }
 
     private final List<JigTypeParameterBuilder> jigTypeParameterBuilders = new ArrayList<>();
+    @Nullable
     private transient JigTypeParameterBuilder currentJigTypeParameterBuilder;
-
+    @Nullable
     private AsmTypeSignatureVisitor superclassAsmTypeSignatureVisitor;
     private final List<AsmTypeSignatureVisitor> interfaceAsmTypeSignatureVisitors = new ArrayList<>();
 

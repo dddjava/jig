@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -75,6 +76,8 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     @Override
     public SignatureVisitor visitClassBound() {
         logger.debug("visitClassBound");
+        Objects.requireNonNull(currentJigTypeParameterBuilder,
+                "visitFormalTypeParameterが実行されていない？asmの実装変わった？");
         AsmTypeSignatureVisitor visitor = new AsmTypeSignatureVisitor(this.api);
         List<AsmTypeSignatureVisitor> list = currentJigTypeParameterBuilder.classBound();
         if (!list.isEmpty()) {
@@ -87,6 +90,8 @@ class AsmClassSignatureVisitor extends SignatureVisitor {
     @Override
     public SignatureVisitor visitInterfaceBound() {
         logger.debug("visitInterfaceBound");
+        Objects.requireNonNull(currentJigTypeParameterBuilder,
+                "visitFormalTypeParameterが実行されていない？asmの実装変わった？");
         AsmTypeSignatureVisitor visitor = new AsmTypeSignatureVisitor(this.api);
         currentJigTypeParameterBuilder.interfaceBounds().add(visitor);
         return visitor;

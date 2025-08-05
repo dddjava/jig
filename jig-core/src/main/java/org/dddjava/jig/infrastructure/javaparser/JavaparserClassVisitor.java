@@ -18,10 +18,12 @@ import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * クラスからの情報の読み取り
@@ -32,8 +34,10 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
-    EnumModel enumModel;
-    TypeId typeId;
+    @Nullable
+    private TypeId typeId;
+
+    private Optional<EnumModel> enumModel = Optional.empty();
 
     public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
@@ -59,16 +63,14 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         List<EnumConstant> constants = node.getEntries().stream()
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
                 .toList();
-        enumModel = new EnumModel(typeId, constants);
+        enumModel = Optional.of(new EnumModel(typeId, constants));
         super.visit(node, arg);
     }
 
     @Override
     public void visit(ConstructorDeclaration n, GlossaryRepository arg) {
         // enumの時だけコンストラクタの引数名を取る
-        if (enumModel != null) {
-            enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).toList());
-        }
+        enumModel.ifPresent(it -> it.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).toList()));
         super.visit(n, arg);
     }
 
@@ -108,7 +110,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         node.accept(new JavaparserMemberVisitor(typeId), glossaryRepository);
 
         node.getMembers().forEach(member -> {
-            if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration ) {
+            if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
                 logger.debug("nested class or interface: {}", classOrInterfaceDeclaration.getFullyQualifiedName());
             }
         });
@@ -117,6 +119,6 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     public JavaSourceModel javaSourceModel() {
-        return JavaSourceModel.from(enumModel != null ? List.of(enumModel) : List.of());
+        return JavaSourceModel.from(enumModel.map(List::of).orElseGet(List::of));
     }
 }

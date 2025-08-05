@@ -1,6 +1,7 @@
 package org.dddjava.jig;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -12,9 +13,10 @@ public class HandleResult {
 
     JigDocument jigDocument;
     List<Path> outputFilePaths;
+    @Nullable
     String failureMessage;
 
-    HandleResult(JigDocument jigDocument, List<Path> outputFilePaths, String failureMessage) {
+    HandleResult(JigDocument jigDocument, List<Path> outputFilePaths, @Nullable String failureMessage) {
         this.jigDocument = jigDocument;
         this.outputFilePaths = outputFilePaths;
         this.failureMessage = failureMessage;
@@ -54,7 +56,7 @@ public class HandleResult {
     boolean failure() {
         return !success()
                 // 現状、skipかどうかはfailureMessageで見るしかない
-                && !failureMessage.equals("skip");
+                && !"skip".equals(failureMessage);
     }
 
     public String outputFilePathsText() {

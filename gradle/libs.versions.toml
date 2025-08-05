@@ -29,6 +29,8 @@ spring-test = { module = "org.springframework:spring-test", version.ref = "sprin
 
 mockito = "org.mockito:mockito-core:5.18.0"
 
+jspecify = "org.jspecify:jspecify:1.0.0"
+
 [bundles]
 poi = ['poi', 'poi-ooxml']
 micrometer = ['micrometer', 'micrometer-prometheus']

@@ -1,9 +1,9 @@
 package org.dddjava.jig.cli;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +35,8 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     @Override
-    @Nonnull
-    public FileVisitResult preVisitDirectory(@Nonnull Path path, @Nonnull BasicFileAttributes attrs) {
+    @NonNull
+    public FileVisitResult preVisitDirectory(@NonNull Path path, @NonNull BasicFileAttributes attrs) {
         visitCounter.incrementAndGet();
 
         // pathの名前を取得する
@@ -64,16 +64,16 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     @Override
-    @Nonnull
-    public FileVisitResult visitFile(@Nonnull Path file, @Nonnull BasicFileAttributes attrs) {
+    @NonNull
+    public FileVisitResult visitFile(@NonNull Path file, @NonNull BasicFileAttributes attrs) {
         visitCounter.incrementAndGet();
         // ファイルに対しては何もしない
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    @Nonnull
-    public FileVisitResult postVisitDirectory(@Nonnull Path dir, @Nullable IOException exc) {
+    @NonNull
+    public FileVisitResult postVisitDirectory(@NonNull Path dir, @Nullable IOException exc) {
         if (exc != null) {
             logger.warn("skipped '{}'. (type={}, message={})", dir, exc.getClass().getName(), exc.getMessage());
         }
@@ -81,8 +81,8 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     @Override
-    @Nonnull
-    public FileVisitResult visitFileFailed(@Nonnull Path file, @Nonnull IOException exc) {
+    @NonNull
+    public FileVisitResult visitFileFailed(@NonNull Path file, @NonNull IOException exc) {
         logger.warn("skipped '{}'. (type={}, message={})", file, exc.getClass().getName(), exc.getMessage());
         return FileVisitResult.CONTINUE;
     }

@@ -82,6 +82,8 @@ dependencies {
     api libs.micrometer
     api libs.micrometer.prometheus
 
+    api libs.jspecify
+
     testRuntimeOnly libs.logback.classic
     testImplementation libs.mockito
 

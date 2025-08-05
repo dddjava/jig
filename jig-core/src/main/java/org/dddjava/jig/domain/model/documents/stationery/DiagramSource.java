@@ -14,11 +14,6 @@ public record DiagramSource(DocumentName documentName, String text, AdditionalTe
 
     @Override
     public String text() {
-        if (noValue()) throw new NullPointerException();
         return text;
-    }
-
-    public boolean noValue() {
-        return text == null;
     }
 }

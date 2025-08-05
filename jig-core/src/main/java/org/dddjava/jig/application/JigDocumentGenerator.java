@@ -108,7 +108,7 @@ public class JigDocumentGenerator {
     }
 
     HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
-        return Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
+        return Objects.requireNonNull(Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
             try {
                 long startTime = System.currentTimeMillis();
 
@@ -134,7 +134,7 @@ public class JigDocumentGenerator {
                 logger.warn("[{}] failed to write document.", jigDocument, e);
                 return new HandleResult(jigDocument, e.getMessage());
             }
-        });
+        }));
     }
 
     public void generateAssets() {

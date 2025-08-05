@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.packages;
 
 import org.dddjava.jig.JigContext;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -127,6 +128,7 @@ public class PackageId implements Comparable<PackageId> {
      * 全てのパッケージで必要なものでもなく、それなりの計算量となるため、生成時にキャッシュする形とするためフィールドで持つ。
      * このインスタンス自体に持たせない方がいい気はする。
      */
+    @Nullable
     private String abbreviationText = null;
 
     /**

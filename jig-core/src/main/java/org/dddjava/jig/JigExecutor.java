@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 public class JigExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JigExecutor.class);
@@ -26,8 +27,8 @@ public class JigExecutor {
      */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
         try (var __ = JigMetrics.init(configuration)) {
-            return Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
-                    new JigExecutor(configuration).execute(sourceBasePaths));
+            return Objects.requireNonNull(Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
+                    new JigExecutor(configuration).execute(sourceBasePaths)));
         }
     }
 

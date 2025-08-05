@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.terms;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * 用語
  */
@@ -7,7 +9,7 @@ public record Term(TermId id,
                    String title,
                    String description,
                    TermKind termKind,
-                   Object additionalInformation) {
+                   @Nullable Object additionalInformation) {
     public Term {
         title = title.isEmpty() ? id.simpleText() : title;
     }

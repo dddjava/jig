@@ -92,16 +92,16 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeId visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
-        var fqcn = packageName + node.getNameAsString();
+        var fqn = packageName + node.getNameAsString();
 
         if (typeId != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum/record には対応していません。{} のロードはスキップされます。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。",
-                    fqcn
+                    fqn
             );
             return typeId;
         }
 
-        typeId = TypeId.valueOf(fqcn);
+        typeId = TypeId.valueOf(fqn);
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();

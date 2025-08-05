@@ -124,12 +124,12 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     @Override
-    public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+    public FieldVisitor visitField(int access, String name, String descriptor, @Nullable String signature, @Nullable Object value) {
         return AsmFieldVisitor.from(this, access, name, descriptor, signature);
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(int access, String name, String descriptor, @Nullable String signature, @Nullable String[] exceptions) {
         logger.debug("visitMethod: {}, {}, {}, {}, {}", access, name, descriptor, signature, exceptions);
         return AsmMethodVisitor.from(this, access, name, descriptor, signature, exceptions);
     }

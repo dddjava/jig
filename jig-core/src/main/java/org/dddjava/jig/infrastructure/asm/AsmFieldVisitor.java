@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ class AsmFieldVisitor extends FieldVisitor {
         this.finisher = finisher;
     }
 
-    static AsmFieldVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, String signature) {
+    static AsmFieldVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, @Nullable String signature) {
         logger.debug("field: name={}, descriptor={}, signature={}", name, descriptor, signature);
 
         EnumSet<JigFieldFlag> flags = EnumSet.noneOf(JigFieldFlag.class);
@@ -55,7 +56,7 @@ class AsmFieldVisitor extends FieldVisitor {
         });
     }
 
-    private static JigTypeReference resolveFieldTypeReference(int api, String descriptor, String signature) {
+    private static JigTypeReference resolveFieldTypeReference(int api, String descriptor, @Nullable String signature) {
         if (signature == null) {
             TypeId fieldTypeId = AsmUtils.typeDescriptorToTypeId(descriptor);
             return JigTypeReference.fromId(fieldTypeId);

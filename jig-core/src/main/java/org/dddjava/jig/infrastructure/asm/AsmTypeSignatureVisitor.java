@@ -3,12 +3,14 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * JVMSのシグネチャのうち、型シグネチャから情報を取得するSignatureVisitorの実装。
@@ -24,7 +26,7 @@ import java.util.List;
  *
  * ```
  * TypeSignature =
- *   visitBaseType
+ * visitBaseType
  * | visitTypeVariable
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
@@ -47,6 +49,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
      * 型と型引数（のVisitor）をひとまとめにする内部構造体
      *
      * 型引数が登場するとネストする構造になっているため、関連づけるために
+     *
      * @param name         asmの認識している型の名前
      * @param arguments    visitTypeArgumentのsignatureを処理するAsmTypeSignatureVisitorを出てきた順に保持するためのリスト
      * @param innerClasses visitInnerClassのsignatureを処理するAsmTypeSignatureVisitor
@@ -72,21 +75,25 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     /**
      * ClassTypeSignature
      */
+    @Nullable
     private ClassType classType = null;
 
     /**
      * VoidDescriptor or BaseType
      */
+    @Nullable
     private String baseTypeIdentifier = null;
 
     /**
      * TypeVariableSignature
      */
+    @Nullable
     private String typeVariableIdentifier = null;
 
     /**
      * ArrayTypeSignature
      */
+    @Nullable
     private AsmTypeSignatureVisitor arrayAsmTypeSignatureVisitor = null; // 配列の時だけ入る
 
     @Override
@@ -141,7 +148,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         // 一旦考慮しないことにする
 
         var typeSignatureVisitor = new AsmTypeSignatureVisitor(this.api);
-        // この時点でClassTypeがnullの場合は落ちて良い。
+        Objects.requireNonNull(classType, "classType未解決で型引数を扱おうとしている");
         classType.addCurrentTypeArgumentSignatureVisitor(typeSignatureVisitor);
         return typeSignatureVisitor;
     }
@@ -149,6 +156,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     @Override
     public void visitInnerClassType(String name) {
         logger.debug("visitInnerClassType:{}", name);
+        Objects.requireNonNull(classType, "classType未解決でインナークラスを扱おうとしている");
         classType.innerClasses().add(new ClassType(name));
     }
 

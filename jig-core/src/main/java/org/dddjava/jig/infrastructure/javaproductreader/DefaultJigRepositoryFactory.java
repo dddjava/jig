@@ -84,7 +84,7 @@ public class DefaultJigRepositoryFactory {
      */
     private JigRepository analyze(LocalSource sources) {
         var metricName = "jig.analysis.time";
-        return Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
+        return Objects.requireNonNull(Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
 
             Metrics.timer(metricName, "phase", "package_info_parsing").record(() ->
@@ -92,18 +92,18 @@ public class DefaultJigRepositoryFactory {
                             path -> javaparserReader.loadPackageInfoJavaFile(path, glossaryRepository))
             );
 
-            JavaSourceModel javaSourceModel = Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
+            JavaSourceModel javaSourceModel = Objects.requireNonNull(Metrics.timer(metricName, "phase", "java_source_parsing").record(() ->
                     javaFilePaths.javaPaths().stream()
                             .map(path -> javaparserReader.parseJavaFile(path, glossaryRepository))
                             .reduce(JavaSourceModel::merge)
-                            .orElseGet(JavaSourceModel::empty));
+                            .orElseGet(JavaSourceModel::empty)));
 
             Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(
                     Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
                             asmClassSourceReader.readClasses(sources.classFiles())));
 
-            MyBatisStatements myBatisStatements = Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
-                    readMyBatisStatements(sources, classDeclarations));
+            MyBatisStatements myBatisStatements = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
+                    readMyBatisStatements(sources, classDeclarations)));
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
@@ -125,7 +125,7 @@ public class DefaultJigRepositoryFactory {
                     }
                 };
             });
-        });
+        }));
     }
 
     private MyBatisStatements readMyBatisStatements(LocalSource sources, Collection<ClassDeclaration> classDeclarations) {

@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ class AsmMethodVisitor extends MethodVisitor {
         this.finisher = finisher;
     }
 
-    public static MethodVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, String signature, String[] exceptions) {
+    public static MethodVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, @Nullable String signature, @Nullable String[] exceptions) {
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
         // throwsのアノテーションが必要になったら別途考える
         var throwsList = Optional.ofNullable(exceptions).stream().flatMap(Arrays::stream)
@@ -67,7 +68,7 @@ class AsmMethodVisitor extends MethodVisitor {
         );
     }
 
-    private JigMethodHeader jigMethodHeader(int access, String signature, JigMethodId jigMethodId, Type methodType, List<JigTypeReference> throwsList) {
+    private JigMethodHeader jigMethodHeader(int access, @Nullable String signature, JigMethodId jigMethodId, Type methodType, List<JigTypeReference> throwsList) {
         if (signature != null) {
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
             var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();

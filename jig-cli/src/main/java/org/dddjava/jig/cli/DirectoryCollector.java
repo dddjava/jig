@@ -2,7 +2,7 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+@NullMarked
 public class DirectoryCollector implements FileVisitor<Path> {
     private static final Logger logger = LoggerFactory.getLogger(DirectoryCollector.class);
 
@@ -35,8 +36,7 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     @Override
-    @NonNull
-    public FileVisitResult preVisitDirectory(@NonNull Path path, @NonNull BasicFileAttributes attrs) {
+    public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) {
         visitCounter.incrementAndGet();
 
         // pathの名前を取得する
@@ -64,16 +64,14 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     @Override
-    @NonNull
-    public FileVisitResult visitFile(@NonNull Path file, @NonNull BasicFileAttributes attrs) {
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
         visitCounter.incrementAndGet();
         // ファイルに対しては何もしない
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    @NonNull
-    public FileVisitResult postVisitDirectory(@NonNull Path dir, @Nullable IOException exc) {
+    public FileVisitResult postVisitDirectory(Path dir, @Nullable IOException exc) {
         if (exc != null) {
             logger.warn("skipped '{}'. (type={}, message={})", dir, exc.getClass().getName(), exc.getMessage());
         }
@@ -81,8 +79,7 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     @Override
-    @NonNull
-    public FileVisitResult visitFileFailed(@NonNull Path file, @NonNull IOException exc) {
+    public FileVisitResult visitFileFailed(Path file, IOException exc) {
         logger.warn("skipped '{}'. (type={}, message={})", file, exc.getClass().getName(), exc.getMessage());
         return FileVisitResult.CONTINUE;
     }

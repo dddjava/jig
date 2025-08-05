@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.LambdaExpressionCal
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
+import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.slf4j.Logger;
@@ -43,7 +44,9 @@ import static java.util.stream.Collectors.toMap;
 class AsmClassVisitor extends ClassVisitor {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
+    @Nullable
     private TypeId typeId;
+    @Nullable
     private JigTypeHeader jigTypeHeader;
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
@@ -61,8 +64,8 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     @Override
-    public void visit(int version, int access, String classInternalName, String signature, String superName, String[] interfaces) {
-        this.typeId = TypeId.fromJvmBinaryName(classInternalName);
+    public void visit(int version, int access, String classInternalName, @Nullable String signature, String superName, String[] interfaces) {
+        var typeId = this.typeId = TypeId.fromJvmBinaryName(classInternalName);
         var jigTypeModifiers = resolveTypeModifiers(access);
         var jigTypeKind = resolveTypeKind(access);
         var jigTypeVisibility = resolveVisibility(access);
@@ -70,10 +73,10 @@ class AsmClassVisitor extends ClassVisitor {
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
-            jigTypeHeader = jigTypeHeader(jigTypeKind, jigTypeVisibility, jigTypeModifiers, asmClassSignatureVisitor.jigTypeParameters(), asmClassSignatureVisitor.jigBaseTypeDataBundle());
+            this.jigTypeHeader = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, asmClassSignatureVisitor.jigTypeParameters(), asmClassSignatureVisitor.jigBaseTypeDataBundle());
         } else {
             // 非総称型で作成
-            jigTypeHeader = jigTypeHeader(jigTypeKind, jigTypeVisibility, jigTypeModifiers, List.of(),
+            this.jigTypeHeader = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, List.of(),
                     new JigBaseTypeDataBundle(
                             Optional.of(JigTypeReference.fromJvmBinaryName(superName)),
                             Arrays.stream(interfaces).map(JigTypeReference::fromJvmBinaryName).toList()
@@ -82,9 +85,9 @@ class AsmClassVisitor extends ClassVisitor {
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }
 
-    private JigTypeHeader jigTypeHeader(JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
+    private JigTypeHeader jigTypeHeader(TypeId typeId, JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
         // アノテーションはまだ取得していないので空で作る
-        return new JigTypeHeader(this.typeId, javaTypeDeclarationKind, new JigTypeAttributes(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
+        return new JigTypeHeader(typeId, javaTypeDeclarationKind, new JigTypeAttributes(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
     }
 
     @Override
@@ -136,6 +139,7 @@ class AsmClassVisitor extends ClassVisitor {
         // 変更要因があったら作り直す
         if (isStaticNestedClass || !declarationAnnotationCollector.isEmpty()) {
             EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
+            Objects.requireNonNull(jigTypeHeader);
             jigTypeModifiers.addAll(jigTypeHeader.jigTypeAttributes().jigTypeModifiers());
             if (isStaticNestedClass) {
                 jigTypeModifiers.add(JigTypeModifier.STATIC);
@@ -196,7 +200,7 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     public JigTypeHeader jigTypeHeader() {
-        return jigTypeHeader;
+        return Objects.requireNonNull(jigTypeHeader);
     }
 
     ClassDeclaration classDeclaration() {

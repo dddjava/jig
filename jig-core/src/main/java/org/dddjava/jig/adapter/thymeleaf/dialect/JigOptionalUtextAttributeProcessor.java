@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html.dialect;
+package org.dddjava.jig.adapter.thymeleaf.dialect;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html.dialect;
+package org.dddjava.jig.adapter.thymeleaf.dialect;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigType;

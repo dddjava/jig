@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html.mermaid;
+package org.dddjava.jig.adapter.thymeleaf.mermaid;
 
 import org.dddjava.jig.adapter.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;

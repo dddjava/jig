@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;

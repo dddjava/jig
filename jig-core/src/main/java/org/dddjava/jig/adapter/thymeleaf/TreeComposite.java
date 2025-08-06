@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.module.JigPackage;

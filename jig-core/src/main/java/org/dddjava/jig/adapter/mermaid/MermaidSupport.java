@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.mermaid;
 
-import org.dddjava.jig.adapter.html.HtmlSupport;
+import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 
 public class MermaidSupport {

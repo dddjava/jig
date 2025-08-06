@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter.thymeleaf;
 
 public interface TreeComponent extends Comparable<TreeComponent> {
 

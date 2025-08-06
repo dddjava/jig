@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;

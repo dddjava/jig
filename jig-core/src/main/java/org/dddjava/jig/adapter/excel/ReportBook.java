@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter.excel;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.io.IOException;

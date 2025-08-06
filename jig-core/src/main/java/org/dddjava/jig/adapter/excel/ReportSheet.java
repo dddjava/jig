@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter.excel;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

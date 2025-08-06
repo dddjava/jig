@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;

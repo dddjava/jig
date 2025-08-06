@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.diagram;
+package org.dddjava.jig.adapter.graphviz;
 
 import java.io.*;
 import java.time.Duration;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.diagram;
+package org.dddjava.jig.adapter.graphviz;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;

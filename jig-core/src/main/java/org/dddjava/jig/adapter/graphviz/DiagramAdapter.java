@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.diagram;
+package org.dddjava.jig.adapter.graphviz;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;

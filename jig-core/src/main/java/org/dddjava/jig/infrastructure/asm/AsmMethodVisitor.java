@@ -62,24 +62,27 @@ class AsmMethodVisitor extends MethodVisitor {
 
         return new AsmMethodVisitor(contextClass,
                 it -> {
-                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, signature, jigMethodId, methodType, throwsList);
+                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, Optional.ofNullable(signature), jigMethodId, methodType, throwsList);
                     contextClass.finishVisitMethod(jigMethodHeader, it.methodInstructionCollector);
                 }
         );
     }
 
-    private JigMethodHeader jigMethodHeader(int access, @Nullable String signature, JigMethodId jigMethodId, Type methodType, List<JigTypeReference> throwsList) {
-        if (signature != null) {
+    private JigMethodHeader jigMethodHeader(int access, Optional<String> optSignature, JigMethodId jigMethodId, Type methodType, List<JigTypeReference> throwsList) {
+        return optSignature.map(signature -> {
+            // signatureが使える場合はsignatureから型や引数を解釈する
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
-            var jigTypeReference = methodSignatureVisitor.returnVisitor.jigTypeReference();
-            var parameters = methodSignatureVisitor.parameterVisitors.stream().map(visitor -> visitor.jigTypeReference()).toList();
-            return jigMethodHeader(access, jigMethodId, jigTypeReference, parameters, throwsList);
-        }
-
-        return jigMethodHeader(access, jigMethodId, JigTypeReference.fromId(AsmUtils.type2TypeId(methodType.getReturnType())), Arrays.stream(methodType.getArgumentTypes())
-                .map(type -> AsmUtils.type2TypeId(type))
-                .map(JigTypeReference::fromId)
-                .toList(), throwsList);
+            var returnType = methodSignatureVisitor.returnVisitor.jigTypeReference();
+            var parameterTypeList = methodSignatureVisitor.parameterVisitors.stream().map(AsmTypeSignatureVisitor::jigTypeReference).toList();
+            return jigMethodHeader(access, jigMethodId, returnType, parameterTypeList, throwsList);
+        }).orElseGet(() -> {
+            var returnType = JigTypeReference.fromId(AsmUtils.type2TypeId(methodType.getReturnType()));
+            var parameterTypeList = Arrays.stream(methodType.getArgumentTypes())
+                    .map(type -> AsmUtils.type2TypeId(type))
+                    .map(JigTypeReference::fromId)
+                    .toList();
+            return jigMethodHeader(access, jigMethodId, returnType, parameterTypeList, throwsList);
+        });
     }
 
     private JigMethodHeader jigMethodHeader(int access, JigMethodId jigMethodId, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {

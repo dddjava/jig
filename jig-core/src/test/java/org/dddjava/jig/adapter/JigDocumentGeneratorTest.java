@@ -1,5 +1,6 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig.adapter;
 
+import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;

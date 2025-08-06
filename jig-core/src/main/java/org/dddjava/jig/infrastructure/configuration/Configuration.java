@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;

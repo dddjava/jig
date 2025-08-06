@@ -7,7 +7,7 @@ import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
-import org.dddjava.jig.application.JigDocumentGenerator;
+import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

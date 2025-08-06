@@ -62,13 +62,13 @@ class AsmMethodVisitor extends MethodVisitor {
 
         return new AsmMethodVisitor(contextClass,
                 it -> {
-                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(access, Optional.ofNullable(signature), jigMethodId, methodType, throwsList);
+                    JigMethodHeader jigMethodHeader = it.jigMethodHeader(jigMethodId, access, methodType, throwsList, Optional.ofNullable(signature));
                     contextClass.finishVisitMethod(jigMethodHeader, it.methodInstructionCollector);
                 }
         );
     }
 
-    private JigMethodHeader jigMethodHeader(int access, Optional<String> optSignature, JigMethodId jigMethodId, Type methodType, List<JigTypeReference> throwsList) {
+    private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, Type methodType, List<JigTypeReference> throwsList, Optional<String> optSignature) {
         return optSignature.map(signature -> {
             // signatureが使える場合はsignatureから型や引数を解釈する
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);

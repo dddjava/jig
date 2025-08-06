@@ -1,4 +1,4 @@
-package org.dddjava.jig.application.metrics;
+package org.dddjava.jig.infrastructure.configuration;
 
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
@@ -8,7 +8,6 @@ import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.dddjava.jig.adapter.JigDocumentGenerator;
-import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

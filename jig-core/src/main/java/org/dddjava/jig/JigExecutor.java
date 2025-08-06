@@ -2,10 +2,10 @@ package org.dddjava.jig;
 
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.adapter.JigDocumentGenerator;
-import org.dddjava.jig.application.metrics.JigMetrics;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.configuration.JigMetrics;
 import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -74,18 +74,18 @@ class AsmMethodVisitor extends MethodVisitor {
             var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
             var returnType = methodSignatureVisitor.returnVisitor.jigTypeReference();
             var parameterTypeList = methodSignatureVisitor.parameterVisitors.stream().map(AsmTypeSignatureVisitor::jigTypeReference).toList();
-            return jigMethodHeader(access, jigMethodId, returnType, parameterTypeList, throwsList);
+            return jigMethodHeader(jigMethodId, access, returnType, parameterTypeList, throwsList);
         }).orElseGet(() -> {
             var returnType = JigTypeReference.fromId(AsmUtils.type2TypeId(methodType.getReturnType()));
             var parameterTypeList = Arrays.stream(methodType.getArgumentTypes())
                     .map(type -> AsmUtils.type2TypeId(type))
                     .map(JigTypeReference::fromId)
                     .toList();
-            return jigMethodHeader(access, jigMethodId, returnType, parameterTypeList, throwsList);
+            return jigMethodHeader(jigMethodId, access, returnType, parameterTypeList, throwsList);
         });
     }
 
-    private JigMethodHeader jigMethodHeader(int access, JigMethodId jigMethodId, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
+    private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
         var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
         JigMemberOwnership ownership = AsmUtils.jigMemberOwnership(access);
 

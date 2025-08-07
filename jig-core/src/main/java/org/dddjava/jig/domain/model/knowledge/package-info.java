@@ -1,6 +1,7 @@
 /**
  * 知識
  *
- * 情報に価値を付加したもの。
+ * 情報＋解釈。
+ * JIGドキュメントで強調するものをここで扱う。
  */
 package org.dddjava.jig.domain.model.knowledge;

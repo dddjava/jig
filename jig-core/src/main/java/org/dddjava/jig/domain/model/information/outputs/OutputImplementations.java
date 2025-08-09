@@ -8,17 +8,7 @@ import java.util.stream.Collectors;
 /**
  * 出力ポート／アダプタの実装群
  */
-public class OutputImplementations {
-
-    List<OutputImplementation> list;
-
-    public OutputImplementations(List<OutputImplementation> list) {
-        this.list = list;
-    }
-
-    public List<OutputImplementation> list() {
-        return list;
-    }
+public record OutputImplementations(List<OutputImplementation> list) {
 
     public boolean empty() {
         return list.isEmpty();

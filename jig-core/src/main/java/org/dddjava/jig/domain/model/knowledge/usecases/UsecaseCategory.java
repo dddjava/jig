@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.core;
+package org.dddjava.jig.domain.model.knowledge.usecases;
 
 /**
  * ユースケースの種類

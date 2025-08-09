@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.knowledge.core.Usecase;
+import org.dddjava.jig.domain.model.knowledge.usecases.Usecase;
 
 public class Nodes {
 

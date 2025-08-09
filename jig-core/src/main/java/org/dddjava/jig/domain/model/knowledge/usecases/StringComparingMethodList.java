@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.core.usecases;
+package org.dddjava.jig.domain.model.knowledge.usecases;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;

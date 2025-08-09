@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.core;
+package org.dddjava.jig.domain.model.knowledge.usecases;
 
 import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;

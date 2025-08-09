@@ -19,12 +19,12 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
-import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngle;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
+import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
+import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 
 import java.nio.file.Path;

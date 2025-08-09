@@ -23,14 +23,14 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
-import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
+import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
+import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList;
 
 import java.util.List;
 import java.util.Map;

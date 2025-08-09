@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.core;
+package org.dddjava.jig.domain.model.knowledge.usecases;
 
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;

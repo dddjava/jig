@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +30,12 @@ public class Node {
 
     public static Node packageOf(PackageId packageId) {
         return new Node(packageId.asText());
+    }
+
+    public static Node businessRuleNodeOf(JigType jigType) {
+        return new Node(jigType.id().fullQualifiedName())
+                .label(jigType.term().titleAndSimpleName("\\n"))
+                .url(jigType.id(), JigDocument.DomainSummary);
     }
 
     public Node as(NodeRole nodeRole) {

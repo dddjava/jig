@@ -105,7 +105,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         return coreDomainJigTypes.orderedStream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.id()))
-                .map(jigType -> Nodes.businessRuleNodeOf(jigType))
+                .map(jigType -> Node.businessRuleNodeOf(jigType))
                 .map(Node::asText)
                 .collect(joining("\n"));
     }

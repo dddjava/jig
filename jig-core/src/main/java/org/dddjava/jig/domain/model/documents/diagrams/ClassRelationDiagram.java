@@ -55,7 +55,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
             for (JigType jigType : jigPackageWithJigTypes.jigTypes()) {
-                Node node = Nodes.businessRuleNodeOf(jigType);
+                Node node = Node.businessRuleNodeOf(jigType);
                 if (isolatedTypes.contains(jigType.id())) {
                     node.warning();
                 }

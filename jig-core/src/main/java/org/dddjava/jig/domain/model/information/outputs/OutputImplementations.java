@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 出力ポート／アダプタの実装群
@@ -29,5 +30,9 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
                                 .flatMap(gateway -> outputAdapter.resolveInvocation(gateway).stream()
                                         .map(invocation -> new OutputImplementation(gateway.jigMethod(), invocation.jigMethod(), outputPort.jigType())))))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), OutputImplementations::new));
+    }
+
+    public Stream<OutputImplementation> stream() {
+        return values.stream();
     }
 }

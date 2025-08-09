@@ -56,7 +56,7 @@ public class Node {
         return NodeEditor.INSTANCE.toText(this);
     }
 
-    Node shape(String value) {
+    public Node shape(String value) {
         attributeMap.put("shape", value);
         return this;
     }

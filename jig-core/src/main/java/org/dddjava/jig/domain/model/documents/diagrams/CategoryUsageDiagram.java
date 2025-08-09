@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -30,6 +31,16 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         this.serviceMethods = serviceMethods;
         this.coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
         this.relationships = coreTypesAndRelations.internalTypeRelationships();
+    }
+
+    public static Node usecase(ServiceMethod serviceMethod) {
+        JigMethod jigMethod = serviceMethod.method();
+        return new Node(jigMethod.jigMethodId().value())
+                .shape("ellipse")
+                .label(jigMethod.aliasText())
+                .tooltip(jigMethod.simpleText())
+                .as(NodeRole.準主役)
+                .url(jigMethod.jigMethodDeclaration().declaringTypeId(), JigDocument.ApplicationSummary);
     }
 
     @Override
@@ -61,7 +72,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
             if (related) {
                 // enumに関連しているサービスメソッドだけ出力する
-                useCaseText.add(Nodes.usecase(serviceMethod).asText());
+                useCaseText.add(usecase(serviceMethod).asText());
             }
         }
 

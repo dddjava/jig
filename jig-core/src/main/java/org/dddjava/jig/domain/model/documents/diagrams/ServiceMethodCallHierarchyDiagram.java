@@ -29,6 +29,20 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         this.serviceAngles = serviceAngles;
     }
 
+    public static Node usecase(Usecase usecase) {
+        return new Node(usecase.usecaseIdentifier())
+                .shape("ellipse")
+                .label(usecase.usecaseLabel())
+                .tooltip(usecase.simpleTextWithDeclaringType())
+                .as(usecase.isHandler() ? NodeRole.主役 : NodeRole.準主役)
+                .url(usecase.declaringType(), JigDocument.ApplicationSummary);
+    }
+
+    public static Node lambda(JigMethod method) {
+        return new Node(method.jigMethodId().value())
+                .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
+    }
+
     @Override
     public int write(Consumer<DiagramSource> diagramSourceWriteProcess) {
         List<ServiceAngle> angles = serviceAngles.list();
@@ -49,11 +63,11 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .map(serviceAngle -> {
                     JigMethod method = serviceAngle.serviceMethod().method();
                     if (method.jigMethodId().isLambda()) {
-                        return Nodes.lambda(method).asText();
+                        return lambda(method).asText();
                     }
                     Usecase usecase = new Usecase(serviceAngle);
 
-                    Node useCaseNode = Nodes.usecase(usecase);
+                    Node useCaseNode = usecase(usecase);
 
                     // 非publicは色なし
                     if (serviceAngle.isNotPublicMethod()) {

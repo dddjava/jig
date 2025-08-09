@@ -19,7 +19,7 @@ public class DatasourceAngles {
 
     public DatasourceAngles(OutputImplementations outputImplementations, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
         List<DatasourceAngle> list = new ArrayList<>();
-        for (OutputImplementation outputImplementation : outputImplementations.list()) {
+        for (OutputImplementation outputImplementation : outputImplementations.values()) {
             CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortGateway().jigMethodId());
             list.add(new DatasourceAngle(outputImplementation, myBatisStatements, callerMethods));
         }

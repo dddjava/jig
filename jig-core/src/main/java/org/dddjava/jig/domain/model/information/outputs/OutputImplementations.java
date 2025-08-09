@@ -2,20 +2,20 @@ package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
  * 出力ポート／アダプタの実装群
  */
-public record OutputImplementations(List<OutputImplementation> list) {
+public record OutputImplementations(Collection<OutputImplementation> values) {
 
     public boolean empty() {
-        return list.isEmpty();
+        return values.isEmpty();
     }
 
     public Gateways repositoryMethods() {
-        return list.stream().map(OutputImplementation::outputPortGateway)
+        return values.stream().map(OutputImplementation::outputPortGateway)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), Gateways::new));
     }
 

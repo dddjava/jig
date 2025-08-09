@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.module;
+package org.dddjava.jig.domain.model.knowledge.module;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;

@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.information.module.JigPackages;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

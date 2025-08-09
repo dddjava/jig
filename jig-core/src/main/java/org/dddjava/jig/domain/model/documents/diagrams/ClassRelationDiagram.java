@@ -7,10 +7,10 @@ import org.dddjava.jig.domain.model.data.types.TypeIds;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.util.StringJoiner;
 import java.util.function.Consumer;

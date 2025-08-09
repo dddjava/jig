@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.module;
+package org.dddjava.jig.domain.model.knowledge.module;
 
 import java.util.Collection;
 import java.util.Comparator;

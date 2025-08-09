@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.domain.model.information.module.JigPackages;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 
 import java.util.Map;
 

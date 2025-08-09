@@ -15,8 +15,6 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
-import org.dddjava.jig.domain.model.information.module.JigPackage;
-import org.dddjava.jig.domain.model.information.module.JigPackages;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -30,6 +28,8 @@ import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 
 import java.util.List;

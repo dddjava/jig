@@ -3,10 +3,10 @@ package org.dddjava.jig.adapter.mermaid;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.module.JigPackage;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 
 import java.util.*;
 import java.util.stream.Stream;

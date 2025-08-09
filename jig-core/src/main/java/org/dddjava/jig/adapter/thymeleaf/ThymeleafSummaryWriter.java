@@ -4,10 +4,10 @@ import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.module.JigPackage;
-import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

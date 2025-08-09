@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.information.module.JigPackage;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 
 import java.util.ArrayList;
 import java.util.List;

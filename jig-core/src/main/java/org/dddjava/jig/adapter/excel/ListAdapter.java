@@ -15,7 +15,6 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inputs.HttpEntrypointPath;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -24,6 +23,7 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngle;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 

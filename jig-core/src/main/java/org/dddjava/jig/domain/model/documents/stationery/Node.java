@@ -85,11 +85,6 @@ public class Node {
         return this;
     }
 
-    public Node big() {
-        attributeMap.put("fontsize", "30");
-        return this;
-    }
-
     public void warning() {
         attributeMap.put("color", "red");
     }

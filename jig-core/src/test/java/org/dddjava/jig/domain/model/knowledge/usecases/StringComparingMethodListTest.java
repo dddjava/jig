@@ -1,7 +1,6 @@
-package org.dddjava.jig.domain.model.knowledge.core.usecases;
+package org.dddjava.jig.domain.model.knowledge.usecases;
 
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 

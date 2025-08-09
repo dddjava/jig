@@ -10,8 +10,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 
 public class JigTypes {
     private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
@@ -21,7 +22,7 @@ public class JigTypes {
 
     public JigTypes(Collection<JigType> jigTypes) {
         this.list = jigTypes.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
-        this.map = jigTypes.stream().collect(Collectors.toMap(
+        this.map = jigTypes.stream().collect(toMap(
                 jigType -> jigType.id(),
                 Function.identity(),
                 (left, right) -> {

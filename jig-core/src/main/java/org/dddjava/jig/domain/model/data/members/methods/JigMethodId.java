@@ -4,7 +4,8 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * メソッドのID
@@ -16,7 +17,7 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
      */
     public static JigMethodId from(TypeId declaringType, String methodName, List<TypeId> parameterTypeIds) {
         return new JigMethodId("%s#%s(%s)".formatted(declaringType.fullQualifiedName(), methodName,
-                parameterTypeIds.stream().map(TypeId::fullQualifiedName).collect(Collectors.joining(","))));
+                parameterTypeIds.stream().map(TypeId::fullQualifiedName).collect(joining(","))));
     }
 
     public String name() {
@@ -47,7 +48,7 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
         return "%s.%s(%s)".formatted(
                 tuple.declaringTypeId().asSimpleName(),
                 tuple.name(),
-                tuple.parameterTypeIdList().stream().map(TypeId::asSimpleName).collect(Collectors.joining(",")));
+                tuple.parameterTypeIdList().stream().map(TypeId::asSimpleName).collect(joining(",")));
     }
 
     public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNameList) {

@@ -3,8 +3,9 @@ package org.dddjava.jig.domain.model.data.types;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * 宣言アノテーションや型アノテーションとして記述されたアノテーション
@@ -38,6 +39,6 @@ public record JigAnnotationReference(TypeId id,
     public String asText() {
         return elements.stream()
                 .map(element -> "%s=%s".formatted(element.name(), element.valueAsString()))
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(joining(", ", "[", "]"));
     }
 }

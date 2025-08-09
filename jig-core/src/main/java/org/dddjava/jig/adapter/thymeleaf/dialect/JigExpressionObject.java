@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * `#jig` で使用するExpressionObject
@@ -112,7 +113,7 @@ class JigExpressionObject {
                     }
                     return linkTypeText(argumentTypeId);
                 })
-                .collect(Collectors.joining(", ", "&lt;", "&gt;"));
+                .collect(joining(", ", "&lt;", "&gt;"));
 
         if (typeId.isJavaLanguageType()) {
             return unlinkText(typeId) + typeParameterText;

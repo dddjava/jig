@@ -11,9 +11,10 @@ import testing.TestSupport;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AsmMethodVisitorInstructionTest {
@@ -312,9 +313,9 @@ public class AsmMethodVisitorInstructionTest {
 
         Map<String, Long> collect = actual.stream()
                 .filter(instruction -> instruction instanceof FieldAccess)
-                .collect(Collectors.groupingBy(
+                .collect(groupingBy(
                         instruction -> instruction.getClass().getSimpleName(),
-                        Collectors.counting()));
+                        counting()));
 
         assertAll(
                 () -> assertEquals(1, collect.get("GetAccess")),

@@ -22,9 +22,9 @@ import stub.domain.model.type.HogeRepository;
 import stub.domain.model.type.SimpleNumber;
 import testing.TestSupport;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -53,7 +53,7 @@ public class AsmClassSourceReaderTest {
 
         String actualText = actual.jigTypeHeader().baseTypeDataBundle().interfaceTypes().stream()
                 .map(JigTypeReference::fqnWithGenerics)
-                .collect(Collectors.joining());
+                .collect(joining());
         assertEquals("java.lang.Comparable<stub.domain.model.relation.clz.GenericsParameter>", actualText);
     }
 

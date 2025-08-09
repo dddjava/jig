@@ -3,8 +3,9 @@ package org.dddjava.jig.domain.model.data.types;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @param superType      親クラスの完全修飾クラス名。classの場合は未指定でもObjectが入るが、interfaceなどではempty。
@@ -24,6 +25,6 @@ public record JigBaseTypeDataBundle(
                 ))
                 // "." の含まれていないものは型パラメタとして扱う。デフォルトパッケージのクラスも該当してしまうが、良しとする。
                 .filter(jigTypeHeaderJigObjectId -> jigTypeHeaderJigObjectId.value().contains("."))
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 }

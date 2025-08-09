@@ -16,7 +16,8 @@ import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * サービスの切り口
@@ -98,7 +99,7 @@ public class ServiceAngle {
     public Set<TypeId> userControllerTypeIds() {
         return entrypoints.stream()
                 .map(entrypointMethod -> entrypointMethod.typeId())
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 
     public JigMethodId jigMethodId() {

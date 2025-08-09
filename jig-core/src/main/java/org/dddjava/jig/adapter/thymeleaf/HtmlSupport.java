@@ -3,7 +3,7 @@ package org.dddjava.jig.adapter.thymeleaf;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.joining;
 
 public class HtmlSupport {
 
@@ -13,7 +13,7 @@ public class HtmlSupport {
         var typeText = tuple.declaringTypeId().packageAbbreviationText();
         var parameterText = tuple.parameterTypeIdList().stream()
                 .map(TypeId::packageAbbreviationText)
-                .collect(Collectors.joining(", ", "(", ")"));
+                .collect(joining(", ", "(", ")"));
         return (typeText + '.' + tuple.name() + parameterText).replaceAll("[^a-zA-Z0-9]", "_");
     }
 }

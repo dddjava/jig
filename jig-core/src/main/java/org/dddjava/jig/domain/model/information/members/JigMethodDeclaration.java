@@ -6,8 +6,9 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * メソッド定義
@@ -25,7 +26,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return Stream.concat(
                 instructions.associatedTypeStream(),
                 header.associatedTypeStream()
-        ).collect(Collectors.toSet());
+        ).collect(toSet());
     }
 
     public Stream<JigTypeReference> argumentStream() {

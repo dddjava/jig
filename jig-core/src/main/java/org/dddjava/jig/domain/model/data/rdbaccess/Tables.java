@@ -3,7 +3,8 @@ package org.dddjava.jig.domain.model.data.rdbaccess;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * テーブル一覧
@@ -35,6 +36,6 @@ public class Tables {
                 .map(Table::name)
                 .distinct()
                 .sorted()
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(joining(", ", "[", "]"));
     }
 }

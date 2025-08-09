@@ -8,8 +8,9 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * JIGが識別する型
@@ -50,7 +51,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
                 .map(TypeId::unarray)
                 // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。水際的にここで処置しておくが、源泉近くで対応したい。
                 .filter(typeId -> !typeId.isJavaLanguageType())
-                .collect(Collectors.toSet());
+                .collect(toSet());
         return new TypeIds(collect);
     }
 

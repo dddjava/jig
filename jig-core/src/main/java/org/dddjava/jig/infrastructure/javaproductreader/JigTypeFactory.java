@@ -15,9 +15,8 @@ import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.*;
 
 /**
  * {@link JigType} の生成処理
@@ -27,7 +26,7 @@ public class JigTypeFactory {
     public static JigTypes createJigTypes(Collection<ClassDeclaration> classDeclarations, Glossary glossary) {
         return classDeclarations.stream()
                 .map(classDeclaration -> createJigType(glossary, classDeclaration))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
+                .collect(collectingAndThen(toList(), JigTypes::new));
     }
 
     private static JigType createJigType(Glossary glossary, ClassDeclaration classDeclaration) {

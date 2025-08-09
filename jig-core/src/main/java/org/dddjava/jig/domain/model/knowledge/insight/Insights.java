@@ -6,13 +6,15 @@ import org.dddjava.jig.domain.model.data.terms.TermKind;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 public record Insights(Collection<MethodInsight> values, Glossary glossary) {
     public List<PackageInsight> packageInsightList() {
         return typeInsightStream()
-                .collect(Collectors.groupingBy(typeInsight -> typeInsight.typeId().packageId(), Collectors.toList()))
+                .collect(groupingBy(typeInsight -> typeInsight.typeId().packageId(), toList()))
                 .entrySet()
                 .stream()
                 .map(entry -> new PackageInsight(entry.getKey(), glossary.termOf(entry.getKey().asText(), TermKind.パッケージ), entry.getValue()))
@@ -28,7 +30,7 @@ public record Insights(Collection<MethodInsight> values, Glossary glossary) {
 
     private Stream<TypeInsight> typeInsightStream() {
         return values.stream()
-                .collect(Collectors.groupingBy(MethodInsight::typeId, Collectors.toList()))
+                .collect(groupingBy(MethodInsight::typeId, toList()))
                 .entrySet()
                 .stream()
                 .map(entry -> new TypeInsight(entry.getKey(), glossary.termOf(entry.getKey().value(), TermKind.クラス), entry.getValue()));

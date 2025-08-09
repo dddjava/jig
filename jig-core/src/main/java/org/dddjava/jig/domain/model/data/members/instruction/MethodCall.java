@@ -5,8 +5,9 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * メソッド呼び出し
@@ -25,7 +26,7 @@ public record MethodCall(TypeId methodOwner, String methodName,
 
     public String asSignatureAndReturnTypeSimpleText() {
         return "%s(%s):%s".formatted(methodName,
-                argumentTypes.stream().map(TypeId::asSimpleText).collect(Collectors.joining(", ")),
+                argumentTypes.stream().map(TypeId::asSimpleText).collect(joining(", ")),
                 returnType.asSimpleText());
     }
 

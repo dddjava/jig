@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * JIG-CLI Runner
@@ -37,7 +38,7 @@ class CliRunner {
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
-                .collect(Collectors.joining("\n"));
+                .collect(joining("\n"));
         logger.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime,
                 resultLog);

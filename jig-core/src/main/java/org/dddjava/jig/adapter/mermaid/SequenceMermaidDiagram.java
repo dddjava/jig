@@ -3,7 +3,7 @@ package org.dddjava.jig.adapter.mermaid;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
-import java.util.stream.Collectors;
+import static java.util.stream.Collectors.joining;
 
 /**
  * メソッド呼び出しのシーケンス図を生成する
@@ -36,7 +36,7 @@ public class SequenceMermaidDiagram {
                     "()" :
                     "(" + methodCall.argumentTypes().stream()
                             .map(TypeId::asSimpleText)
-                            .collect(Collectors.joining(", ")) + ")";
+                            .collect(joining(", ")) + ")";
 
             // Add call line
             sb.append("    ").append(caller.asSimpleText())

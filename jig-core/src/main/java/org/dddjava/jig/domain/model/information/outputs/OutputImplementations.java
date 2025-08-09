@@ -3,8 +3,10 @@ package org.dddjava.jig.domain.model.information.outputs;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
  * 出力ポート／アダプタの実装群
@@ -17,7 +19,7 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
 
     public Gateways repositoryMethods() {
         return values.stream().map(OutputImplementation::outputPortGateway)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), Gateways::new));
+                .collect(collectingAndThen(toList(), Gateways::new));
     }
 
     // FIXME これのテストがない
@@ -29,7 +31,7 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
                                 // 実装しているinvocationが
                                 .flatMap(gateway -> outputAdapter.resolveInvocation(gateway).stream()
                                         .map(invocation -> new OutputImplementation(gateway.jigMethod(), invocation.jigMethod(), outputPort.jigType())))))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), OutputImplementations::new));
+                .collect(collectingAndThen(toList(), OutputImplementations::new));
     }
 
     public Stream<OutputImplementation> stream() {

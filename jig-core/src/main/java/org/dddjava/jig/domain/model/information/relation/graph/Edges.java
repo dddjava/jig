@@ -2,8 +2,9 @@ package org.dddjava.jig.domain.model.information.relation.graph;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Edgeのまとまり。グラフ。
@@ -18,12 +19,12 @@ public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
      */
     public Edges<T> transitiveReduction() {
         Collection<Edges<T>> cyclicEdgesGroup = cyclicEdgesGroup();
-        Set<Edge<T>> cyclicEdges = cyclicEdgesGroup.stream().flatMap(it -> it.edges.stream()).collect(Collectors.toSet());
+        Set<Edge<T>> cyclicEdges = cyclicEdgesGroup.stream().flatMap(it -> it.edges.stream()).collect(toSet());
 
         // 循環依存を除いたgraphで到達可能かを判断する
         var graph = edges.stream()
                 .filter(edge -> !cyclicEdges.contains(edge))
-                .collect(Collectors.groupingBy(Edge::from, Collectors.mapping(Edge::to, Collectors.toList())));
+                .collect(groupingBy(Edge::from, mapping(Edge::to, toList())));
 
         List<Edge<T>> toRemove = edges.stream()
                 // 循環依存は除外しない
@@ -64,7 +65,7 @@ public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
      */
     public Collection<Edges<T>> cyclicEdgesGroup() {
         Map<T, List<T>> graph = edges.stream()
-                .collect(Collectors.groupingBy(Edge::from, Collectors.mapping(Edge::to, Collectors.toList())));
+                .collect(groupingBy(Edge::from, mapping(Edge::to, toList())));
 
         List<List<T>> stronglyConnectedComponents = detectStronglyConnectedComponents(graph);
 

@@ -9,8 +9,9 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * 型関連図
@@ -36,7 +37,7 @@ public class TypeRelationMermaidDiagram {
                 // toを対象にすると広く使われるクラス（たとえばIDなど）があるパッケージは見れたものではなくなるので出さない。
                 .filter(typeRelationship -> typeRelationship.from().packageId().equals(packageId))
                 // パッケージ内の関連とパッケージ外の関連を仕分ける
-                .collect(Collectors.partitioningBy(typeRelationship -> typeRelationship.to().packageId().equals(packageId)));
+                .collect(partitioningBy(typeRelationship -> typeRelationship.to().packageId().equals(packageId)));
         if (partitioningRelations.get(true).isEmpty()) {
             // パッケージ内の関連がない場合は出力しない
             return Optional.empty();
@@ -53,17 +54,17 @@ public class TypeRelationMermaidDiagram {
         // 関連に含まれるnodeをパッケージの内側と外側に仕分け＆ラベル付け
         Set<TypeId> targetTypes = targetRelationships.stream()
                 .flatMap(typeRelationship -> Stream.of(typeRelationship.from(), typeRelationship.to()))
-                .collect(Collectors.toSet());
+                .collect(toSet());
         // 内側:true, 外側:false のMapに振り分ける
         Map<Boolean, List<String>> nodeMap = targetTypes.stream()
-                .collect(Collectors.partitioningBy(typeId -> typeId.packageId().equals(packageId),
-                        Collectors.mapping(typeId -> {
+                .collect(partitioningBy(typeId -> typeId.packageId().equals(packageId),
+                        mapping(typeId -> {
                                     String label = coreTypesAndRelations.coreJigTypes()
                                             .resolveJigType(typeId).map(JigType::label)
                                             .orElseGet(typeId::asSimpleName);
                                     return MermaidSupport.box(mermaidId(typeId), label);
                                 },
-                                Collectors.toList())));
+                                toList())));
 
         StringJoiner diagramText = new StringJoiner("\n    ", "\ngraph TB\n    ", "");
         if (nodeMap.containsKey(true)) {

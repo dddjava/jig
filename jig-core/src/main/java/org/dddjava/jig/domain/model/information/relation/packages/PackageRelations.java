@@ -9,8 +9,9 @@ import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * パッケージの依存関係
@@ -68,6 +69,6 @@ public record PackageRelations(Collection<PackageRelation> relations) {
     public PackageIds packageIds() {
         return new PackageIds(relations.stream()
                 .flatMap(relation -> Stream.of(relation.from(), relation.to()))
-                .collect(Collectors.toSet()));
+                .collect(toSet()));
     }
 }

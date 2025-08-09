@@ -8,7 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * 型の識別子一覧
@@ -22,14 +23,14 @@ public record TypeIds(Set<TypeId> values) {
     }
 
     public static Collector<TypeId, ?, TypeIds> collector() {
-        return Collectors.collectingAndThen(Collectors.toSet(), TypeIds::new);
+        return collectingAndThen(toSet(), TypeIds::new);
     }
 
     public String asSimpleText() {
         return values.stream().distinct().toList().stream()
                 .map(TypeId::asSimpleText)
                 .sorted()
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(joining(", ", "[", "]"));
     }
 
     public boolean contains(TypeId typeId) {
@@ -43,7 +44,7 @@ public record TypeIds(Set<TypeId> values) {
     public PackageIds packageIds() {
         Set<PackageId> availablePackages = values.stream()
                 .map(TypeId::packageId)
-                .collect(Collectors.toSet());
+                .collect(toSet());
         return new PackageIds(availablePackages);
     }
 

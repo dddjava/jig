@@ -18,8 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -196,7 +196,7 @@ class AsmMethodVisitorTest {
 
         Set<String> actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
-                .stream().map(TypeId::asSimpleName).collect(Collectors.toSet());
+                .stream().map(TypeId::asSimpleName).collect(toSet());
 
         // "A2", "B", "C" などのTypeAnnotationは取得できていない
         // メソッド内のアノテーションは取得できていない
@@ -218,7 +218,7 @@ class AsmMethodVisitorTest {
 
         Set<String> actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
-                .stream().map(TypeId::asSimpleName).collect(Collectors.toSet());
+                .stream().map(TypeId::asSimpleName).collect(toSet());
 
         Set<String> expected = Set.of(
                 "MethodVisitorSut", // フィールドのオーナー
@@ -236,7 +236,7 @@ class AsmMethodVisitorTest {
 
         var actual = method.usingTypes().list()
                 // アサーションのための名前でsetで収集する
-                .stream().map(TypeId::asSimpleName).collect(Collectors.toSet());
+                .stream().map(TypeId::asSimpleName).collect(toSet());
 
         var expected = Set.of(
                 "Optional", "Predicate", "Function", "Integer", "Character", // 戻り値

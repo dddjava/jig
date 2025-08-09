@@ -9,11 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 /**
  * メソッドの使用しているメソッド一覧
@@ -58,7 +56,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
         return new CallerMethods(list.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodId))
                 .map(MethodRelation::from)
-                .collect(Collectors.toSet()));
+                .collect(toSet()));
     }
 
     public String mermaidEdgeText(Function<JigMethodId, Optional<String>> converter) {
@@ -71,7 +69,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                 )
                 .sorted()
                 .distinct()
-                .collect(Collectors.joining("\n"));
+                .collect(joining("\n"));
     }
 
     public MethodRelations filterFromRecursive(JigMethodId baseMethod) {

@@ -9,7 +9,8 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class JigReportsTask extends DefaultTask {
 
@@ -34,7 +35,7 @@ public class JigReportsTask extends DefaultTask {
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
-                .collect(Collectors.joining("\n"));
+                .collect(joining("\n"));
         getLogger().info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime, resultLog);
     }

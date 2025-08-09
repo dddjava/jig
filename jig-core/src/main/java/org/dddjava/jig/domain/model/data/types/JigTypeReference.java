@@ -2,8 +2,9 @@ package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * 型の参照。
@@ -48,14 +49,14 @@ public record JigTypeReference(TypeId id,
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
                 .map(jigTypeParameter -> jigTypeParameter.simpleNameWithGenerics())
-                .collect(Collectors.joining(", ", "<", ">"));
+                .collect(joining(", ", "<", ">"));
     }
 
     String typeArgumentsFqn() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
                 .map(typeArgument -> typeArgument.fqnWithGenerics())
-                .collect(Collectors.joining(", ", "<", ">"));
+                .collect(joining(", ", "<", ">"));
     }
 
     public Stream<TypeId> toTypeIdStream() {

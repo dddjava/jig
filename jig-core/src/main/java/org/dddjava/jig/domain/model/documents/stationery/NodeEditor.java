@@ -4,7 +4,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * ノードの最終的な編集者
@@ -58,7 +59,7 @@ public class NodeEditor {
 
         String attribute = map.entrySet().stream()
                 .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
-                .collect(Collectors.joining(",", "[", "]"));
+                .collect(joining(",", "[", "]"));
         return '"' + node.identifier + '"' + attribute + ';';
     }
 

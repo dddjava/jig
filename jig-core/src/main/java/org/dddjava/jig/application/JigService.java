@@ -34,8 +34,9 @@ import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class JigService {
@@ -163,7 +164,7 @@ public class JigService {
         Glossary glossary = glossary(jigRepository);
 
         Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.orderedStream()
-                .collect(Collectors.groupingBy(JigType::packageId));
+                .collect(groupingBy(JigType::packageId));
 
         List<Term> packageTerms = glossary.terms().stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)

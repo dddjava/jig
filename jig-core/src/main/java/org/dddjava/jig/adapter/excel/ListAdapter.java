@@ -31,7 +31,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 @HandleDocument
 public class ListAdapter implements Adapter<ReportBook> {
@@ -39,7 +40,7 @@ public class ListAdapter implements Adapter<ReportBook> {
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター
      */
-    private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = Collectors.joining(", ", "[", "]");
+    private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = joining(", ", "[", "]");
 
     private final JigDocumentContext jigDocumentContext;
     private final JigService jigService;

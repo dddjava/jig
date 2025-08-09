@@ -8,7 +8,8 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageRelatio
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * 関連
@@ -45,7 +46,7 @@ public class RelationText {
     }
 
     public String asUniqueText() {
-        return list.stream().sorted().distinct().collect(Collectors.joining("\n"));
+        return list.stream().sorted().distinct().collect(joining("\n"));
     }
 
     public void add(PackageId from, PackageId to) {

@@ -6,8 +6,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 public class ProcessExecutor {
     private static final Logger logger = Logger.getLogger(ProcessExecutor.class.getName());
@@ -50,7 +51,7 @@ public class ProcessExecutor {
             logger.warning("Execute " + command + " failed: " + e + "\n" +
                     Stream.of(e.getStackTrace())
                             .map(element -> "    " + element.toString())
-                            .collect(Collectors.joining("\n")));
+                            .collect(joining("\n")));
             return ProcessResult.failure();
         }
     }

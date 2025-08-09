@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.data.types;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * 型の属性セット
@@ -17,7 +19,7 @@ public record JigTypeAttributes(JigTypeVisibility jigTypeVisibility,
         if (typeParameters.isEmpty()) return "";
         return typeParameters.stream()
                 .map(jigTypeParameter -> jigTypeParameter.nameAndBounds())
-                .collect(Collectors.joining(", ", "<", ">"));
+                .collect(joining(", ", "<", ">"));
     }
 
     public List<JigAnnotationReference> declarationAnnotationList() {
@@ -36,6 +38,6 @@ public record JigTypeAttributes(JigTypeVisibility jigTypeVisibility,
         // 型パラメタ（の境界型）がまだはいっていない
         return declarationAnnotationInstances.stream()
                 .map(JigAnnotationReference::id)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 }

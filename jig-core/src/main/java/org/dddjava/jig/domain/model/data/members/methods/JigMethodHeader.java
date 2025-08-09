@@ -9,8 +9,9 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * メソッドのヘッダ
@@ -43,7 +44,7 @@ public record JigMethodHeader(JigMethodId id,
                 id.name(),
                 jigMethodAttribute.argumentList().stream()
                         .map(JigTypeReference::simpleNameWithGenerics)
-                        .collect(Collectors.joining(", ")));
+                        .collect(joining(", ")));
     }
 
     public boolean isObjectMethod() {

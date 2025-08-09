@@ -5,7 +5,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * パッケージ識別子
@@ -153,7 +154,7 @@ public class PackageId implements Comparable<PackageId> {
             String[] parts = value.split("\\.");
             return abbreviationText = Arrays.stream(parts)
                     .map(value -> String.valueOf(value.charAt(0)))
-                    .collect(Collectors.joining("."));
+                    .collect(joining("."));
         }
     }
 

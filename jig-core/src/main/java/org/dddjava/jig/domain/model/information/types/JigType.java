@@ -102,7 +102,7 @@ public class JigType {
         // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
         if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Service"))
                 || hasAnnotation(TypeId.from(org.dddjava.jig.annotation.Service.class))) {
-            return TypeCategory.Usecase;
+            return TypeCategory.InputPort;
         }
         if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Controller"))
                 || hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.RestController"))

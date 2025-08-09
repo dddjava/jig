@@ -106,7 +106,7 @@ public class JigService {
 
     public JigTypes serviceTypes(JigRepository jigRepository) {
         return jigTypesCache.get("serviceTypes", key -> {
-            return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
+            return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.InputPort);
         });
     }
 

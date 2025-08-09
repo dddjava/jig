@@ -2,11 +2,11 @@ package org.dddjava.jig.domain.model.information.types;
 
 public enum TypeCategory {
     /**
-     * ユースケース
+     * 入力ポート
      *
      * いわゆるService。
      */
-    Usecase,
+    InputPort,
 
     /**
      * 入力アダプタ
@@ -39,7 +39,7 @@ public enum TypeCategory {
      */
     public boolean isApplicationComponent() {
         return switch (this) {
-            case Usecase, InputAdapter, OutputAdapter, OtherApplicationComponent -> true;
+            case InputPort, InputAdapter, OutputAdapter, OtherApplicationComponent -> true;
             default -> false;
         };
     }

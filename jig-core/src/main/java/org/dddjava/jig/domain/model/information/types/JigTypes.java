@@ -67,7 +67,7 @@ public class JigTypes {
     public boolean isService(JigMethodId jigMethodId) {
         return resolveJigMethod(jigMethodId)
                 .flatMap(jigMethod -> resolveJigType(jigMethod.declaringType()))
-                .filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase)
+                .filter(jigType -> jigType.typeCategory() == TypeCategory.InputPort)
                 .isPresent();
     }
 

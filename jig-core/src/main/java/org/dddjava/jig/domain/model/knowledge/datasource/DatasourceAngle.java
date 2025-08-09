@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.adapter;
+package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;

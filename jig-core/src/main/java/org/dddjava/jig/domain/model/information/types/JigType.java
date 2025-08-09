@@ -14,16 +14,7 @@ import java.util.stream.Stream;
 /**
  * JIGが識別する型
  */
-public class JigType {
-    private final JigTypeHeader jigTypeHeader;
-    private final JigTypeMembers jigTypeMembers;
-    private final JigTypeGlossary jigTypeGlossary;
-
-    public JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
-        this.jigTypeGlossary = jigTypeGlossary;
-        this.jigTypeHeader = jigTypeHeader;
-        this.jigTypeMembers = jigTypeMembers;
-    }
+public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
 
     public TypeId id() {
         return jigTypeHeader.id();
@@ -35,10 +26,6 @@ public class JigType {
 
     public String fqn() {
         return jigTypeHeader.fqn();
-    }
-
-    public JigTypeHeader jigTypeHeader() {
-        return jigTypeHeader;
     }
 
     public JigTypeVisibility visibility() {
@@ -123,10 +110,6 @@ public class JigType {
 
     public Stream<JigMethod> allJigMethodStream() {
         return jigTypeMembers.allJigMethodStream();
-    }
-
-    public JigTypeMembers jigTypeMembers() {
-        return jigTypeMembers;
     }
 
     public JigFields instanceJigFields() {

@@ -3,8 +3,6 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +23,6 @@ public class RelationText {
     public RelationText(String attribute) {
         list = new ArrayList<>();
         list.add(attribute);
-    }
-
-    public static RelationText fromPackageRelations(PackageRelations packageRelations) {
-        RelationText relationText = new RelationText();
-        for (PackageRelation packageRelation : packageRelations.listUnique()) {
-            relationText.add(packageRelation.from(), packageRelation.to());
-        }
-        return relationText;
     }
 
     private void add(String from, String to) {

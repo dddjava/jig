@@ -13,10 +13,6 @@ public record JigPackage(PackageId packageId, Term term, Collection<JigType> jig
         this(packageId, term, List.of());
     }
 
-    public String simpleName() {
-        return packageId.simpleName();
-    }
-
     /**
      * FullQualifiedName
      */

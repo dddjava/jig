@@ -23,7 +23,7 @@ public record Gateways(Collection<JigMethod> values) {
 
     public List<JigMethod> list() {
         return values.stream()
-                .sorted(Comparator.comparing(JigMethod::fqn))
+                .sorted(Comparator.comparing(JigMethod::jigMethodId))
                 .toList();
     }
 }

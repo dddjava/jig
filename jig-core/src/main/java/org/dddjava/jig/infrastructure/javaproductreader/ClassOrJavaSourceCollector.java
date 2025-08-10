@@ -46,14 +46,20 @@ public class ClassOrJavaSourceCollector {
         return new ClassFiles(classSourceList);
     }
 
-    private enum JavaFileType {PackageInfoFile, JavaFile}
+    private enum JavaFileType {ModuleInfoFile, PackageInfoFile, JavaFile}
 
     private JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
         Map<JavaFileType, List<Path>> collected = sourceBasePaths.javaSourceBasePaths().stream()
                 .map(basePath -> collectSourcePathList(basePath, ".java"))
                 .flatMap(List::stream)
-                .collect(groupingBy(path -> path.getFileName().toString().equals("package-info.java") ? JavaFileType.PackageInfoFile : JavaFileType.JavaFile));
-        return new JavaFilePaths(collected.getOrDefault(JavaFileType.PackageInfoFile, List.of()), collected.getOrDefault(JavaFileType.JavaFile, List.of()));
+                .collect(groupingBy(path -> switch (path.getFileName().toString()) {
+                    case "package-info.java" -> JavaFileType.PackageInfoFile;
+                    case "module-info.java" -> JavaFileType.ModuleInfoFile;
+                    default -> JavaFileType.JavaFile;
+                }));
+        return new JavaFilePaths(
+                collected.getOrDefault(JavaFileType.PackageInfoFile, List.of()),
+                collected.getOrDefault(JavaFileType.JavaFile, List.of()));
     }
 
     private List<Path> collectSourcePathList(Path basePath, String suffix) {

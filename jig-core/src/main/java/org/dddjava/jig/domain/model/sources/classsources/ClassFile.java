@@ -12,9 +12,4 @@ public record ClassFile(byte[] bytes, Path path) {
     public static ClassFile readFromPath(Path path) throws IOException {
         return new ClassFile(Files.readAllBytes(path), path);
     }
-
-    @Override
-    public String toString() {
-        return "ClassSource{bytes.length=" + bytes.length + '}';
-    }
 }

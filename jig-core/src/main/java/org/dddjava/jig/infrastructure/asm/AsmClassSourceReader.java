@@ -9,6 +9,7 @@ import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -31,6 +32,11 @@ public class AsmClassSourceReader {
     }
 
     public Optional<ClassDeclaration> classDeclaration(ClassFile classFile) {
+        // そのまま読ませると予期しないエラーになりがちなのでスキップしておく。package-infoはsuperがObjectだけど、module-infoはsuperが無しでnullになるとか。
+        if (classFile.path().endsWith(Path.of("module-info.class")) || classFile.path().endsWith(Path.of("package-info.class"))) {
+            logger.info("package-info や module-info の情報（アノテーションなど）は現在読み取っていません。skip={}", classFile.path());
+            return Optional.empty();
+        }
         try {
             counter.increment();
             AsmClassVisitor asmClassVisitor = new AsmClassVisitor();

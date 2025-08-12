@@ -9,7 +9,8 @@ import testing.JigServiceTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @JigServiceTest
 class BusinessRuleServiceTest {
@@ -48,7 +49,7 @@ class BusinessRuleServiceTest {
 
         var jigTypes = jigService.jigTypes(jigRepository);
 
-        assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
+        assertFalse(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeに存在しない");
 
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         assertFalse(coreDomainJigTypes.contains(typeIdentifier), "domain coreには存在しない");

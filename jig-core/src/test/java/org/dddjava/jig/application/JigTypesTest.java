@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @JigServiceTest
-class BusinessRuleServiceTest {
+class JigTypesTest {
 
     @Test
     void クラス可視性の判定(JigRepository jigRepository) throws Exception {

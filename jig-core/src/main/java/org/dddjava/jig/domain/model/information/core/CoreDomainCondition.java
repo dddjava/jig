@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.core;
 
 
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.regex.Pattern;
 
@@ -23,5 +24,9 @@ public class CoreDomainCondition {
         if (fqn.endsWith(".package-info")) return false;
         return businessRulePattern.matcher(fqn).matches()
                 && !compilerGeneratedClassPattern.matcher(fqn).matches();
+    }
+
+    public JigTypes coreDomainJigTypes(JigTypes jigTypes) {
+        return jigTypes.filter(this::isCoreDomain);
     }
 }

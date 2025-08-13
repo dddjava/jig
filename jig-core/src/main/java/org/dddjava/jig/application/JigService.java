@@ -89,7 +89,8 @@ public class JigService {
      */
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
         return jigTypesCache.get("coreDomainJigTypes", key -> {
-            JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(coreDomainCondition::isCoreDomain);
+            var jigTypes = jigTypes(jigRepository);
+            JigTypes coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes;
         });

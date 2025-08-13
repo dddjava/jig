@@ -26,7 +26,7 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        try (var __ = JigMetrics.init(configuration)) {
+        try (var ignore = JigMetrics.init(configuration)) {
             return Objects.requireNonNull(Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
                     new JigExecutor(configuration).execute(sourceBasePaths)));
         }

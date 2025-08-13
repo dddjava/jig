@@ -41,7 +41,8 @@ class BusinessRuleServiceTest {
     }
 
     /**
-     * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
+     * {@link stub.domain.model.annotation} の package-info.java にはアノテーションをつけている
+     * アノテーションをつけると package-info.class がコンパイル時に生成される模様。
      */
     @Test
     void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigRepository jigRepository) {

@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
+import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
@@ -90,9 +91,9 @@ public class JigService {
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
         return jigTypesCache.get("coreDomainJigTypes", key -> {
             var jigTypes = jigTypes(jigRepository);
-            JigTypes coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
+            CoreDomainJigTypes coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
-            return coreDomainJigTypes;
+            return coreDomainJigTypes.jigTypes();
         });
     }
 

@@ -26,7 +26,8 @@ public class CoreDomainCondition {
                 && !compilerGeneratedClassPattern.matcher(fqn).matches();
     }
 
-    public JigTypes coreDomainJigTypes(JigTypes jigTypes) {
-        return jigTypes.filter(this::isCoreDomain);
+    public CoreDomainJigTypes coreDomainJigTypes(JigTypes jigTypes) {
+        var coreJigTypes = jigTypes.filter(this::isCoreDomain);
+        return new CoreDomainJigTypes(coreJigTypes);
     }
 }

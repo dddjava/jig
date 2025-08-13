@@ -5,7 +5,7 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.Architecture;
+import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
 import java.util.regex.Pattern;
@@ -60,7 +60,7 @@ public record Configuration(
     }
 
     // パッケージ名でCoreDomainを判定するArchitectureを作成する
-    private static Architecture createArchitecture(JigProperties properties) {
+    private static CoreDomainCondition createArchitecture(JigProperties properties) {
         Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
         Pattern businessRulePattern = Pattern.compile(properties.getDomainPattern());
 

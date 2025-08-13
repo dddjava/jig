@@ -10,9 +10,9 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
-import org.dddjava.jig.domain.model.information.Architecture;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
@@ -41,7 +41,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class JigService {
 
-    private final Architecture architecture;
+    private final CoreDomainCondition coreDomainCondition;
     private final JigEventRepository jigEventRepository;
 
     // 何度も呼ばれる計算量の多いメソッドをキャッシュするためのフィールド
@@ -49,8 +49,8 @@ public class JigService {
     private final Cache<String, JigTypes> jigTypesCache;
     private final Cache<String, CoreTypesAndRelations> JigTypesWithRelationshipsCache;
 
-    public JigService(Architecture architecture, JigEventRepository jigEventRepository) {
-        this.architecture = architecture;
+    public JigService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
+        this.coreDomainCondition = coreDomainCondition;
         this.jigEventRepository = jigEventRepository;
 
         if (System.getProperty("jig.debug", "false").equals("true")) {
@@ -89,7 +89,7 @@ public class JigService {
      */
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
         return jigTypesCache.get("coreDomainJigTypes", key -> {
-            JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(architecture::isCoreDomain);
+            JigTypes coreDomainJigTypes = jigTypes(jigRepository).filter(coreDomainCondition::isCoreDomain);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes;
         });

@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 
-import java.util.regex.Pattern;
-
 // Configurationという名前だけど実態は設定されたインスタンスを管理している（SpringのApplicationContextみたいな感じになっている）
 public record Configuration(
         GlossaryRepository glossaryRepository,
@@ -43,7 +41,7 @@ public record Configuration(
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
         JigEventRepository jigEventRepository = new JigEventRepository();
 
-        var architecture = createArchitecture(properties);
+        var architecture = new CoreDomainCondition(properties.getDomainPattern());
         JigService jigService = new JigService(architecture, jigEventRepository);
 
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
@@ -57,18 +55,5 @@ public record Configuration(
                 jigService,
                 jigDocumentContext
         );
-    }
-
-    // パッケージ名でCoreDomainを判定するArchitectureを作成する
-    private static CoreDomainCondition createArchitecture(JigProperties properties) {
-        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
-        Pattern businessRulePattern = Pattern.compile(properties.getDomainPattern());
-
-        return jigType -> {
-            String fqn = jigType.id().fullQualifiedName();
-            if (fqn.endsWith(".package-info")) return false;
-            return businessRulePattern.matcher(fqn).matches()
-                    && !compilerGeneratedClassPattern.matcher(fqn).matches();
-        };
     }
 }

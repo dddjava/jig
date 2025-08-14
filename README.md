@@ -1,6 +1,5 @@
 # JIG
 
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.dddjava.jig/jig-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.dddjava.jig/jig-core)
 [![CircleCI](https://circleci.com/gh/dddjava/jig/tree/main.svg?style=svg)](https://circleci.com/gh/dddjava/jig)
 [![GitHubActions](https://github.com/dddjava/jig/actions/workflows/build-main.yml/badge.svg)](https://github.com/dddjava/jig/actions/workflows/build-main.yml)
 

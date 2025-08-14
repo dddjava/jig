@@ -1,4 +1,4 @@
-name: Test & Merge PR
+name: mainへのPullRequestにテストを実行する
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-merge:
+  test:
     runs-on: ubuntu-latest
     env:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
@@ -22,14 +22,8 @@ jobs:
           java-version: '17'
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Build with Tests
+      - name: Build
         run: ./gradlew build
-      - name: Merge Pull Request
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr merge ${{ github.event.pull_request.number }} --merge --delete-branch
       - name: Upload Failure Report
         uses: actions/upload-artifact@v4
         if: failure()

@@ -1,4 +1,4 @@
-name: メインラインのビルド
+name: Main Upkeep
 
 on:
   push:

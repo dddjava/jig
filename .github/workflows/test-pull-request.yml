@@ -1,4 +1,4 @@
-name: Main Merge Gate
+name: Main PR Gate
 
 on:
   pull_request:

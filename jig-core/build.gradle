@@ -64,33 +64,25 @@ java {
 
 dependencies {
     implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
-    api libs.slf4j.api
 
-    // バイトコードの読み取り: infrastructure/asm
+    api "org.slf4j:slf4j-api"
+
     api libs.asm
-    // SQLの取得: infrastructure/mybatis
     api libs.mybatis
-    // javadocコメントの取得: infrastructure/javaparser
     api libs.javaparser
-
-    // excel出力: presentation/poi
     api libs.bundles.poi
-    // HTML出力
-    api libs.thymeleaf
+    api "org.thymeleaf:thymeleaf"
+    api "com.github.ben-manes.caffeine:caffeine"
+    api "io.micrometer:micrometer-core"
+    api "io.micrometer:micrometer-registry-prometheus"
+    api "org.jspecify:jspecify"
 
-    api libs.caffeine
+    testRuntimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("org.mockito:mockito-core")
+    testImplementation("org.springframework:spring-web")
 
-    api libs.micrometer
-    api libs.micrometer.prometheus
-
-    api libs.jspecify
-
-    testRuntimeOnly libs.logback.classic
-    testImplementation libs.mockito
-
-    // テストで読み取るのに使用するアノテーションなど。
-    testImplementation libs.spring.web
-    testImplementation "io.swagger.core.v3:swagger-annotations-jakarta:2.2.35"
+    // テストで読み取るのに使用するアノテーションなど
+    testImplementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.35")
     testImplementation("jakarta.validation:jakarta.validation-api:3.1.1")
 }
 

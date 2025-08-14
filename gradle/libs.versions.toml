@@ -1,38 +1,14 @@
 [versions]
 poi = "5.4.1"
-spring-boot = { strictly = "3.3.4" }
 
 [libraries]
-# SpringBootにあわせる
-slf4j-api = { module = "org.slf4j:slf4j-api" }
-log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j" }
-logback-classic = { module = "ch.qos.logback:logback-classic" }
-thymeleaf = { module = "org.thymeleaf:thymeleaf" }
+spring-boot-plugin = "org.springframework.boot:spring-boot-gradle-plugin:3.3.4"
 
 asm = "org.ow2.asm:asm:9.8"
 javaparser = "com.github.javaparser:javaparser-core:3.27.0"
 mybatis = "org.mybatis:mybatis:3.5.19"
-caffeine = { module = "com.github.ben-manes.caffeine:caffeine" }
-
-micrometer = { module = "io.micrometer:micrometer-core" }
-micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
-
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
 
-spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
-
-spring-context = { module = "org.springframework:spring-context" }
-spring-web = { module = "org.springframework:spring-web" }
-spring-test = { module = "org.springframework:spring-test" }
-
-mockito = { module = "org.mockito:mockito-core" }
-
-jspecify = { module = "org.jspecify:jspecify" }
-
 [bundles]
 poi = ['poi', 'poi-ooxml']
-micrometer = ['micrometer', 'micrometer-prometheus']
-
-[plugins]
-gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.3.1" }

@@ -1,4 +1,4 @@
-name: mainへのPullRequestにテストを実行する
+name: Main Merge Gate
 
 on:
   pull_request:

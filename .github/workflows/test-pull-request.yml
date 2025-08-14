@@ -4,12 +4,19 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review # Draftを解除したとき
 permissions:
   contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Draftでは動作させない
+    if: github.event.pull_request.draft == false
     env:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
     steps:

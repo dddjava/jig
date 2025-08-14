@@ -1,14 +1,13 @@
 [versions]
 poi = "5.4.1"
 spring-boot = { strictly = "3.3.4" }
-spring = { strictly = "6.1.13" }
 
 [libraries]
 # SpringBootにあわせる
-slf4j-api = { module = "org.slf4j:slf4j-api", version = { strictly = "2.0.16" } }
-log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version = { strictly = "2.23.1" } }
-logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.5.8" } }
-thymeleaf = { module = "org.thymeleaf:thymeleaf", version = { strictly = "3.1.2.RELEASE" } }
+slf4j-api = { module = "org.slf4j:slf4j-api" }
+log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j" }
+logback-classic = { module = "ch.qos.logback:logback-classic" }
+thymeleaf = { module = "org.thymeleaf:thymeleaf" }
 
 asm = "org.ow2.asm:asm:9.8"
 javaparser = "com.github.javaparser:javaparser-core:3.27.0"
@@ -23,9 +22,9 @@ poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
 
 spring-boot-plugin = { module = "org.springframework.boot:spring-boot-gradle-plugin", version.ref = "spring-boot" }
 
-spring-context = { module = "org.springframework:spring-context", version.ref = "spring" }
-spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
-spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
+spring-context = { module = "org.springframework:spring-context" }
+spring-web = { module = "org.springframework:spring-web" }
+spring-test = { module = "org.springframework:spring-test" }
 
 mockito = "org.mockito:mockito-core:5.18.0"
 

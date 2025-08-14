@@ -2,7 +2,7 @@
 poi = "5.4.1"
 
 [libraries]
-spring-boot-plugin = "org.springframework.boot:spring-boot-gradle-plugin:3.3.4"
+spring-boot-plugin = "org.springframework.boot:spring-boot-gradle-plugin:3.5.4"
 
 asm = "org.ow2.asm:asm:9.8"
 javaparser = "com.github.javaparser:javaparser-core:3.27.0"

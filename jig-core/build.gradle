@@ -57,7 +57,7 @@ signing {
 }
 
 java {
-    // Mavenリポジトリにデプロイするために必要なので追加
+    // MavenCentralへの公開にJavadocとsourceの添付が必要
     withJavadocJar()
     withSourcesJar()
 }

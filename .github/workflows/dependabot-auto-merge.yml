@@ -5,7 +5,7 @@
 
 name: Dependabot auto-merge
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
 
@@ -22,4 +22,4 @@ jobs:
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GH_TOKEN: ${{secrets.DEPENDABOT_AUTO_MERGE_PAT}}

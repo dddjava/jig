@@ -12,10 +12,10 @@ thymeleaf = { module = "org.thymeleaf:thymeleaf" }
 asm = "org.ow2.asm:asm:9.8"
 javaparser = "com.github.javaparser:javaparser-core:3.27.0"
 mybatis = "org.mybatis:mybatis:3.5.19"
-caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.2"
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine" }
 
-micrometer = "io.micrometer:micrometer-core:1.15.3"
-micrometer-prometheus = "io.micrometer:micrometer-registry-prometheus:1.15.3"
+micrometer = { module = "io.micrometer:micrometer-core" }
+micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
@@ -26,9 +26,9 @@ spring-context = { module = "org.springframework:spring-context" }
 spring-web = { module = "org.springframework:spring-web" }
 spring-test = { module = "org.springframework:spring-test" }
 
-mockito = "org.mockito:mockito-core:5.18.0"
+mockito = { module = "org.mockito:mockito-core" }
 
-jspecify = "org.jspecify:jspecify:1.0.0"
+jspecify = { module = "org.jspecify:jspecify" }
 
 [bundles]
 poi = ['poi', 'poi-ooxml']

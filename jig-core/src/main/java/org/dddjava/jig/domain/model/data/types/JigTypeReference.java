@@ -55,7 +55,7 @@ public record JigTypeReference(TypeId id,
     String typeArgumentsFqn() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
-                .map(typeArgument -> typeArgument.fqnWithGenerics())
+                .map(JigTypeArgument::fqnWithGenerics)
                 .collect(joining(", ", "<", ">"));
     }
 
@@ -65,7 +65,7 @@ public record JigTypeReference(TypeId id,
         return Stream.of(
                         // Type[] の場合は Type[] と Type の2つにする。これでいいかは疑問はあるが、とりあえず。
                         id.isArray() ? Stream.of(id, id.unarray()) : Stream.of(id),
-                        typeAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id()),
+                        typeAnnotations.stream().map(JigAnnotationReference::id),
                         typeArgumentList.stream().flatMap(jigTypeArgument -> jigTypeArgument.jigTypeReference().toTypeIdStream())
                 )
                 .flatMap(identity -> identity);

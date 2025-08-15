@@ -18,24 +18,6 @@ public record Configuration(
         JigDocumentContext jigDocumentContext
 ) {
 
-    // 2025.6.1リリース後に削除。MavenPluginなどで使用。　
-    @Deprecated(since = "2025.6.1", forRemoval = true)
-    public Configuration(JigProperties jigProperties) {
-        this(from(jigProperties));
-    }
-
-    // Configuration(JigProperties)と併せて廃止する
-    private Configuration(Configuration config) {
-        this(
-                config.glossaryRepository,
-                config.jigEventRepository,
-                config.properties,
-                config.jigDocumentGenerator,
-                config.jigService,
-                config.jigDocumentContext
-        );
-    }
-
     public static Configuration from(JigProperties jigProperties) {
         JigProperties properties = new JigPropertyLoader(jigProperties).load();
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();

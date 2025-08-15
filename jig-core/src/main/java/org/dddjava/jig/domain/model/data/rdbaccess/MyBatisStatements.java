@@ -21,10 +21,6 @@ public class MyBatisStatements {
         this.sqlReadStatus = sqlReadStatus;
     }
 
-    public static MyBatisStatements empty() {
-        return new MyBatisStatements(SqlReadStatus.未処理);
-    }
-
     public Tables tables(SqlType sqlType) {
         return list.stream()
                 .filter(myBatisStatement -> myBatisStatement.sqlType() == sqlType)

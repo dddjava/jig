@@ -9,17 +9,6 @@ package org.dddjava.jig.domain.model.data.types;
  */
 public record JigTypeArgument(JigTypeReference jigTypeReference, String wildcard) {
 
-    public static JigTypeArgument primitive(String value) {
-        return new JigTypeArgument(JigTypeReference.fromId(value), "=");
-    }
-
-    /**
-     * ワイルドカードなし
-     */
-    public static JigTypeArgument just(String value) {
-        return just(JigTypeReference.fromId(value));
-    }
-
     public static JigTypeArgument just(JigTypeReference jigTypeReference) {
         return new JigTypeArgument(jigTypeReference, "=");
     }

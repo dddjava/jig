@@ -41,14 +41,14 @@ public record JigTypeReference(TypeId id,
         return id.value();
     }
 
-    String typeArgumentSimpleName() {
+    private String typeArgumentSimpleName() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
                 .map(jigTypeParameter -> jigTypeParameter.simpleNameWithGenerics())
                 .collect(joining(", ", "<", ">"));
     }
 
-    String typeArgumentsFqn() {
+    private String typeArgumentsFqn() {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
                 .map(JigTypeArgument::fqnWithGenerics)

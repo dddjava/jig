@@ -11,5 +11,5 @@ public enum SimpleInstruction implements Instruction {
 
     NULL参照,
 
-    RETURN;
+    RETURN
 }

@@ -30,7 +30,7 @@ public record MethodInsight(JigMethod jigMethod) {
     public int numberOfUsingMethods() {
         return Math.toIntExact(jigMethod.usingMethods().invokedMethodStream()
                 // この除外はusingのほうに持って行った方がいい気はする
-                .filter(methodCall -> !methodCall.isJSL())
+                .filter(methodCall -> methodCall.isNotJSL())
                 .distinct()
                 .count());
     }

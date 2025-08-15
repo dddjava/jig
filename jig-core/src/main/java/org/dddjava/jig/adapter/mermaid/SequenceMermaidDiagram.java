@@ -25,7 +25,7 @@ public class SequenceMermaidDiagram {
 
         jigMethod.usingMethods().invokedMethodStream()
                 // Java標準ライブラリのクラスを除外
-                .filter(methodCall -> !methodCall.isJSL())
+                .filter(methodCall -> methodCall.isNotJSL())
                 .forEach(methodCall -> {
             TypeId callee = methodCall.methodOwner();
             String methodName = methodCall.methodName();

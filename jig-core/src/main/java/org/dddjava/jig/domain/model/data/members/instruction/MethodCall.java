@@ -30,8 +30,8 @@ public record MethodCall(TypeId methodOwner, String methodName,
                 returnType.asSimpleText());
     }
 
-    public boolean isJSL() {
-        return methodOwner.isJavaLanguageType();
+    public boolean isNotJSL() {
+        return !methodOwner.isJavaLanguageType();
     }
 
     public boolean isConstructor() {

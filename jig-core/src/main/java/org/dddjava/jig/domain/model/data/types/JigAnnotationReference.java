@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -15,10 +14,6 @@ import static java.util.stream.Collectors.joining;
  */
 public record JigAnnotationReference(TypeId id,
                                      Collection<JigAnnotationElementValuePair> elements) {
-
-    public static JigAnnotationReference from(TypeId typeId) {
-        return new JigAnnotationReference(typeId, List.of());
-    }
 
     public String simpleTypeName() {
         return id.asSimpleText();

@@ -31,10 +31,6 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
         return new JigTypeGlossary(typeTerm, terms);
     }
 
-    public boolean markedCore() {
-        return typeTerm().title().startsWith("*");
-    }
-
     public Term typeTerm() {
         return term;
     }

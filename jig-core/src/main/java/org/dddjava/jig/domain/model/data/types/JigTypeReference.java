@@ -31,30 +31,22 @@ public record JigTypeReference(TypeId id,
     }
 
     public String simpleNameWithGenerics() {
-        return simpleName() + typeArgumentSimpleName();
+        return simpleName() + formatTypeArguments(JigTypeArgument::simpleNameWithGenerics);
     }
 
     public String fqnWithGenerics() {
-        return id.value() + typeArgumentsFqn();
+        return id.value() + formatTypeArguments(JigTypeArgument::fqnWithGenerics);
     }
 
     public String fqn() {
         return id.value();
     }
 
-    private String formatTypeArguments(Function<JigTypeArgument, String> formatter) {
+    private String formatTypeArguments(Function<JigTypeArgument, String> jigTypeArgumentFormatter) {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
-                .map(formatter)
+                .map(jigTypeArgumentFormatter)
                 .collect(joining(", ", "<", ">"));
-    }
-
-    private String typeArgumentSimpleName() {
-        return formatTypeArguments(JigTypeArgument::simpleNameWithGenerics);
-    }
-
-    private String typeArgumentsFqn() {
-        return formatTypeArguments(JigTypeArgument::fqnWithGenerics);
     }
 
     public Stream<TypeId> toTypeIdStream() {

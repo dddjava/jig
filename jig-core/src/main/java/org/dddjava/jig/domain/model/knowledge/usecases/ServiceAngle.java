@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.SimpleInstruction;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
@@ -15,9 +14,6 @@ import org.dddjava.jig.domain.model.information.outputs.Gateways;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 
 import java.util.Collection;
-import java.util.Set;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * サービスの切り口
@@ -96,17 +92,7 @@ public class ServiceAngle {
         return usingServiceMethods;
     }
 
-    public Set<TypeId> userControllerTypeIds() {
-        return entrypoints.stream()
-                .map(entrypointMethod -> entrypointMethod.typeId())
-                .collect(toSet());
-    }
-
     public JigMethodId jigMethodId() {
         return serviceMethod().method().jigMethodId();
-    }
-
-    public TypeId declaringType() {
-        return serviceMethod.declaringType();
     }
 }

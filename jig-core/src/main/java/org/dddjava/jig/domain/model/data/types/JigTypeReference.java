@@ -21,10 +21,6 @@ public record JigTypeReference(TypeId id,
         return new JigTypeReference(id, List.of(), List.of());
     }
 
-    public static JigTypeReference fromId(String id) {
-        return fromId(TypeId.valueOf(id));
-    }
-
     public static JigTypeReference fromJvmBinaryName(String jvmBinaryName) {
         return fromId(TypeId.fromJvmBinaryName(jvmBinaryName));
     }

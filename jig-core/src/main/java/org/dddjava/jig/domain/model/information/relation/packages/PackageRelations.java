@@ -47,13 +47,6 @@ public record PackageRelations(Collection<PackageRelation> relations) {
     }
 
     /**
-     * 関連数
-     */
-    public RelationNumber number() {
-        return new RelationNumber(listUnique().size());
-    }
-
-    /**
      * 指定された深さに切り詰める
      */
     public PackageRelations applyDepth(PackageDepth packageDepth) {

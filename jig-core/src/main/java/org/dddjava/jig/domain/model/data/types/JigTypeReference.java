@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.types;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -41,18 +42,19 @@ public record JigTypeReference(TypeId id,
         return id.value();
     }
 
-    private String typeArgumentSimpleName() {
+    private String formatTypeArguments(Function<JigTypeArgument, String> formatter) {
         if (typeArgumentList.isEmpty()) return "";
         return typeArgumentList.stream()
-                .map(jigTypeParameter -> jigTypeParameter.simpleNameWithGenerics())
+                .map(formatter)
                 .collect(joining(", ", "<", ">"));
     }
 
+    private String typeArgumentSimpleName() {
+        return formatTypeArguments(JigTypeArgument::simpleNameWithGenerics);
+    }
+
     private String typeArgumentsFqn() {
-        if (typeArgumentList.isEmpty()) return "";
-        return typeArgumentList.stream()
-                .map(JigTypeArgument::fqnWithGenerics)
-                .collect(joining(", ", "<", ">"));
+        return formatTypeArguments(JigTypeArgument::fqnWithGenerics);
     }
 
     public Stream<TypeId> toTypeIdStream() {

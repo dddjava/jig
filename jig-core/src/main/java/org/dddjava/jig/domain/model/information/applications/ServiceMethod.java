@@ -44,16 +44,6 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
         return method().declaringType();
     }
 
-    public List<TypeId> internalUsingTypes() {
-        return usingMethods().invokedMethodStream()
-                .flatMap(invokedMethod -> invokedMethod.streamAssociatedTypes())
-                .filter(typeId -> !typeId.isJavaLanguageType())
-                .filter(typeId -> primaryType().filter(primaryType -> primaryType.equals(typeId)).isEmpty())
-                .filter(typeId -> !requireTypes().contains(typeId))
-                .distinct()
-                .toList();
-    }
-
     public Optional<TypeId> primaryType() {
         // 戻り値型が主要な関心
         TypeId typeId = method().methodReturnTypeReference().id();

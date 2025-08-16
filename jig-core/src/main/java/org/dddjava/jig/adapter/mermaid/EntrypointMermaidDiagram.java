@@ -23,8 +23,7 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
     }
 
     private static String mermaid(InputAdapter inputAdapter, MethodRelations methodRelations, JigTypes jigTypes) {
-
-        var entryPointText = new StringJoiner("\n");
+        var entrypointMermaidText = new StringJoiner("\n");
 
         Map<TypeId, Set<JigMethod>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
@@ -36,9 +35,9 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
         inputAdapter.entrypoints().forEach(entrypoint -> {
             var entrypointMmdId = MermaidSupport.mermaidIdText(entrypoint.jigMethod().jigMethodId());
             // エントリーポイント
-            entryPointText.add("    %s{{\"%s\"}}".formatted(entrypointMmdId, entrypoint.methodLabelText()));
+            entrypointMermaidText.add("    %s{{\"%s\"}}".formatted(entrypointMmdId, entrypoint.methodLabelText()));
             // エントリーポイントに繋がるパス
-            entryPointText.add("    %s>\"%s\"] -.-> %s".formatted("__" + entrypointMmdId, entrypoint.pathText(), entrypointMmdId));
+            entrypointMermaidText.add("    %s>\"%s\"] -.-> %s".formatted("__" + entrypointMmdId, entrypoint.pathText(), entrypointMmdId));
 
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypoint.jigMethod().jigMethodId(),
@@ -74,7 +73,7 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
         // pathとentrypoint method
-        mermaidText.add(entryPointText.toString());
+        mermaidText.add(entrypointMermaidText.toString());
         // サービスメソッドをクラス単位にグループ化して名前解決＆クリックで遷移できるようにする
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));

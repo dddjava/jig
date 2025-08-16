@@ -2,10 +2,8 @@ package org.dddjava.jig.adapter.mermaid;
 
 import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.inputs.HttpEntrypointPath;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapter;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
-import org.dddjava.jig.domain.model.information.inputs.MessageListener;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelation;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
@@ -38,22 +36,12 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
         inputAdapter.entrypoints().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
             var apiMethodMmdId = MermaidSupport.mermaidIdText(entrypointMethod.jigMethod().jigMethodId());
-            String apiMethodLabel = entrypointMethod.jigMethod().labelText();
 
-            var description = switch (entrypointMethod.entrypointType()) {
-                case HTTP_API -> {
-                    var httpEndpoint = HttpEntrypointPath.from(entrypointMethod);
-                    apiMethodLabel = httpEndpoint.interfaceLabel();
-                    yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
-                }
-                case QUEUE_LISTENER -> "queue: %s".formatted(MessageListener.from(entrypointMethod).queueName());
-                default -> entrypointMethod.entrypointType().toString();
-            };
             // apiMethod
-            entryPointText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, apiMethodLabel));
+            entryPointText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, entrypointMethod.methodLabelText()));
             // path -> apiMethod
             String apiPointMmdId = "__" + apiMethodMmdId;
-            entryPointText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
+            entryPointText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, entrypointMethod.pathText(), apiMethodMmdId));
 
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodId(),

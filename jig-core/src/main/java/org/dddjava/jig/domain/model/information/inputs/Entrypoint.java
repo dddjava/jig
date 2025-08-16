@@ -27,4 +27,29 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
     public PackageId packageId() {
         return jigType.packageId();
     }
+
+    /**
+     * エントリーポイントのパス
+     *
+     * HTTP_APIは `GET /get` のようなHTTPメソッドとパスの組み合わせ。
+     * QUEUE_LISTENERは `queue: my-queue` のようにキュー名。
+     * それ以外は種別の文字列表現。
+     */
+    public String pathText() {
+        return switch (entrypointType()) {
+            case HTTP_API -> {
+                var httpEndpoint = HttpEntrypointPath.from(this);
+                yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
+            }
+            case QUEUE_LISTENER -> "queue: %s".formatted(MessageListener.from(this).queueName());
+            default -> this.entrypointType().toString();
+        };
+    }
+
+    public String methodLabelText() {
+        if (entrypointType() == EntrypointType.HTTP_API) {
+            return HttpEntrypointPath.from(this).interfaceLabel();
+        }
+        return jigMethod().labelText();
+    }
 }

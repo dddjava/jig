@@ -33,18 +33,15 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
 
         var methodRelationSet = new HashSet<MethodRelation>();
 
-        inputAdapter.entrypoints().forEach(entrypointMethod -> {
-            // APIメソッドの名前と形
-            var apiMethodMmdId = MermaidSupport.mermaidIdText(entrypointMethod.jigMethod().jigMethodId());
-
-            // apiMethod
-            entryPointText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, entrypointMethod.methodLabelText()));
-            // path -> apiMethod
-            String apiPointMmdId = "__" + apiMethodMmdId;
-            entryPointText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, entrypointMethod.pathText(), apiMethodMmdId));
+        inputAdapter.entrypoints().forEach(entrypoint -> {
+            var entrypointMmdId = MermaidSupport.mermaidIdText(entrypoint.jigMethod().jigMethodId());
+            // エントリーポイント
+            entryPointText.add("    %s{{\"%s\"}}".formatted(entrypointMmdId, entrypoint.methodLabelText()));
+            // エントリーポイントに繋がるパス
+            entryPointText.add("    %s>\"%s\"] -.-> %s".formatted("__" + entrypointMmdId, entrypoint.pathText(), entrypointMmdId));
 
             // apiMethod -> others...
-            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.jigMethod().jigMethodId(),
+            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypoint.jigMethod().jigMethodId(),
                     // @Serviceのクラスについたら終了
                     jigMethodId -> jigTypes.isService(jigMethodId)
             );
@@ -64,7 +61,7 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
                                     });
                         } else {
                             // controllerと同じクラスのメソッドはメソッド名だけ
-                            if (entrypointMethod.typeId().equals(declaringTypeId)) {
+                            if (entrypoint.typeId().equals(declaringTypeId)) {
                                 methodLabelMap.put(MermaidSupport.mermaidIdText(jigMethodId), jigMethodId.name());
                             } else {
                                 // 他はクラス名+メソッド名

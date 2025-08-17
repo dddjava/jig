@@ -58,10 +58,9 @@ public class Validations {
     }
 
     public List<Validation> list() {
-        Comparator<Validation> comparing = Comparator.comparing(Validation::typeId)
-                .thenComparing(Validation::memberName);
         return values.stream()
-                .sorted(comparing)
+                .sorted(Comparator.comparing(Validation::typeId)
+                        .thenComparing(Validation::memberName))
                 .toList();
     }
 }

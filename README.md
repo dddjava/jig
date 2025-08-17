@@ -2,6 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/dddjava/jig/tree/main.svg?style=svg)](https://circleci.com/gh/dddjava/jig)
 [![GitHubActions](https://github.com/dddjava/jig/actions/workflows/build-main.yml/badge.svg)](https://github.com/dddjava/jig/actions/workflows/build-main.yml)
+[MavenCentralRepository](https://central.sonatype.com/artifact/org.dddjava.jig/jig-core)
 
 ![banner](./docs/banner.png)
 

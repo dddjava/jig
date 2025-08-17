@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 public class Validations {
     private static final Pattern ANNOTATION_PATTERN = Pattern.compile("((javax|jakarta).validation|org.hibernate.validator).+");
 
-    List<Validation> list;
+    List<Validation> values;
 
-    public Validations(List<Validation> list) {
-        this.list = list;
+    public Validations(List<Validation> values) {
+        this.values = values;
     }
 
     public static Validations from(JigTypes jigTypes) {
@@ -58,7 +58,7 @@ public class Validations {
     }
 
     public List<Validation> list() {
-        return list.stream()
+        return values.stream()
                 .sorted(Comparator.comparing(validation -> validation.typeId()))
                 .toList();
     }

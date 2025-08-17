@@ -59,6 +59,7 @@ public class Validations {
 
     public List<Validation> list() {
         return values.stream()
+                // できればメンバのタイプも加えてフィールド→メソッドの順にしたい
                 .sorted(Comparator.comparing(Validation::typeId)
                         .thenComparing(Validation::memberName))
                 .toList();

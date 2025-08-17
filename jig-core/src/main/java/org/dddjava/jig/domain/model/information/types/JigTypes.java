@@ -86,6 +86,14 @@ public class JigTypes {
         return list.stream();
     }
 
+    /**
+     * 並び順を伴わないstream
+     * 現状は orderedStream と同じだが、常にソートが必要とも限らないので不要な場合はこちらを使用する。
+     */
+    public Stream<JigType> stream() {
+        return list.stream();
+    }
+
     public TypeIds typeIds() {
         return new TypeIds(map.keySet());
     }

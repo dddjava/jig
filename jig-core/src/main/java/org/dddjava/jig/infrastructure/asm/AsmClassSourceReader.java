@@ -9,6 +9,8 @@ import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
@@ -37,16 +39,31 @@ public class AsmClassSourceReader {
             logger.info("package-info や module-info の情報（アノテーションなど）は現在読み取っていません。skip={}", classFile.path());
             return Optional.empty();
         }
+
+        return classBytes(classFile)
+                .flatMap(this::getClassDeclaration);
+    }
+
+    private Optional<ClassDeclaration> getClassDeclaration(byte[] classBytes) {
         try {
             counter.increment();
             AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
 
-            ClassReader classReader = new ClassReader(classFile.bytes());
+            ClassReader classReader = new ClassReader(classBytes);
             classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
 
             return Optional.of(asmClassVisitor.classDeclaration());
         } catch (Exception e) {
-            logger.warn("クラスの読み取りに失敗しました。スキップして続行します。 {}", classFile, e);
+            logger.warn("クラスデータの読み取りに失敗しました。スキップして続行します。", e);
+            return Optional.empty();
+        }
+    }
+
+    private static Optional<byte[]> classBytes(ClassFile classFile) {
+        try {
+            return Optional.of(Files.readAllBytes(classFile.path()));
+        } catch (IOException e) {
+            logger.warn("クラスファイルの読み取りに失敗しました。スキップして続行します。", e);
             return Optional.empty();
         }
     }

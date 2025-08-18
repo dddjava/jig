@@ -1,15 +1,14 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * classファイルの中身
+ * classファイル
  */
-public record ClassFile(byte[] bytes, Path path) {
+public record ClassFile(Path path) {
 
     public static ClassFile readFromPath(Path path) throws IOException {
-        return new ClassFile(Files.readAllBytes(path), path);
+        return new ClassFile(path);
     }
 }

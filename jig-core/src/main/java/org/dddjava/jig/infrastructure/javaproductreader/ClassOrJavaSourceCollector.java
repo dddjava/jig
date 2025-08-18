@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.*;
 
 /**
  * classやjavaファイルを対象とするSourceReader
@@ -31,7 +31,7 @@ public class ClassOrJavaSourceCollector {
     }
 
     private ClassFiles collectClassSources(SourceBasePaths sourceBasePaths) {
-        var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
+        return sourceBasePaths.classSourceBasePaths().stream()
                 .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
                 .flatMap(List::stream)
                 .flatMap(path -> {
@@ -42,8 +42,7 @@ public class ClassOrJavaSourceCollector {
                         return Stream.empty();
                     }
                 })
-                .toList();
-        return new ClassFiles(classSourceList);
+                .collect(collectingAndThen(toUnmodifiableList(), ClassFiles::new));
     }
 
     private enum JavaFileType {ModuleInfoFile, PackageInfoFile, JavaFile}

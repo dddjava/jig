@@ -32,7 +32,7 @@ public class ClassOrJavaSourceCollector {
 
     private ClassFiles collectClassSources(SourceBasePaths sourceBasePaths) {
         return sourceBasePaths.classSourceBasePaths().stream()
-                .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
+                .map(classSourceBasePath -> collectSourcePathList(classSourceBasePath, ".class"))
                 .flatMap(List::stream)
                 .flatMap(path -> {
                     try {
@@ -49,7 +49,7 @@ public class ClassOrJavaSourceCollector {
 
     private JavaFilePaths collectJavaSources(SourceBasePaths sourceBasePaths) {
         Map<JavaFileType, List<Path>> collected = sourceBasePaths.javaSourceBasePaths().stream()
-                .map(basePath -> collectSourcePathList(basePath, ".java"))
+                .map(javaSourceBasePath -> collectSourcePathList(javaSourceBasePath, ".java"))
                 .flatMap(List::stream)
                 .collect(groupingBy(path -> switch (path.getFileName().toString()) {
                     case "package-info.java" -> JavaFileType.PackageInfoFile;

@@ -100,7 +100,7 @@ public class DefaultJigRepositoryFactory {
 
             Collection<ClassDeclaration> classDeclarations = Objects.requireNonNull(
                     Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
-                            asmClassSourceReader.readClasses(sources.classFiles())));
+                            asmClassSourceReader.readClasses(sources.classFilePaths())));
 
             MyBatisStatements myBatisStatements = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
                     readMyBatisStatements(sources, classDeclarations)));

@@ -5,7 +5,7 @@ import java.util.Collection;
 /**
  * classファイル一式
  */
-public record ClassFiles(Collection<ClassFile> values) {
+public record ClassFilePaths(Collection<ClassFilePath> values) {
 
     public boolean nothing() {
         return values.isEmpty();

@@ -24,19 +24,6 @@ import java.util.Objects;
 
 public class TestSupport {
 
-    public static Path getModuleRootPath() {
-        URI uri = defaultPackageClassURI();
-        Path path = Paths.get(uri).toAbsolutePath();
-
-        while (!path.endsWith("jig-core")) {
-            path = path.getParent();
-            if (path == null) {
-                throw new IllegalStateException("プロジェクト名変わった？");
-            }
-        }
-        return path;
-    }
-
     public static URI defaultPackageClassURI() {
         try {
             var resource = TestSupport.class.getResource("/DefaultPackageClass.class");
@@ -67,6 +54,19 @@ public class TestSupport {
 
     public static Path getTestSourceRootPath() {
         return getModuleRootPath().resolve("src").resolve("test").resolve("java");
+    }
+
+    private static Path getModuleRootPath() {
+        URI uri = defaultPackageClassURI();
+        Path path = Paths.get(uri).toAbsolutePath();
+
+        while (!path.endsWith("jig-core")) {
+            path = path.getParent();
+            if (path == null) {
+                throw new IllegalStateException("プロジェクト名変わった？");
+            }
+        }
+        return path;
     }
 
     public static JigType buildJigType(Class<?> definitionClass) {

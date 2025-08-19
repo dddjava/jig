@@ -3,7 +3,6 @@ package testing;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.SourceBasePath;
@@ -14,7 +13,6 @@ import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.javaproductreader.JigTypeFactory;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,16 +23,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class TestSupport {
-
-    public static URL[] getTestResourceRootURLs() {
-        try {
-            URL classRootUrl = defaultPackageClassURI().toURL();
-            URL resourceRootUrl = resourceRootURI().toURL();
-            return new URL[]{classRootUrl, resourceRootUrl};
-        } catch (MalformedURLException e) {
-            throw new AssertionError(e);
-        }
-    }
 
     public static Path getModuleRootPath() {
         URI uri = defaultPackageClassURI();
@@ -52,14 +40,6 @@ public class TestSupport {
     public static URI defaultPackageClassURI() {
         try {
             return TestSupport.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
-        } catch (URISyntaxException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    public static URI resourceRootURI() {
-        try {
-            return TestSupport.class.getResource("/marker.properties").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }
@@ -92,14 +72,6 @@ public class TestSupport {
         AsmClassSourceReader sut = new AsmClassSourceReader();
         ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
         return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).orderedStream().findFirst().orElseThrow();
-    }
-
-    private static JigMethodDeclaration JigMethodDeclaration準備(Class<?> sutClass, String methodName) {
-        var members = buildJigType(sutClass).jigTypeMembers();
-        return members.allJigMethodStream()
-                .map(JigMethod::jigMethodDeclaration)
-                .filter(jigMethodDeclaration -> jigMethodDeclaration.name().equals(methodName))
-                .findAny().orElseThrow();
     }
 
     public static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {

@@ -82,7 +82,7 @@ dependencies {
     testImplementation("org.springframework:spring-web")
 
     // テストで読み取るのに使用するアノテーションなど
-    testImplementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.35")
+    testImplementation("io.swagger.core.v3:swagger-annotations-jakarta:2.2.36")
     testImplementation("jakarta.validation:jakarta.validation-api:3.1.1")
 }
 

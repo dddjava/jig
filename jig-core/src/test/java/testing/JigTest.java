@@ -37,7 +37,7 @@ public @interface JigTest {
 
         public JigTestExtension() throws Exception {
             Path tempDir = Files.createTempDirectory("jig");
-            var configuration = Configuration.from(
+            Configuration configuration = Configuration.from(
                     new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir));
             parameterTypeSupplierMap = Map.of(
                     Configuration.class, () -> configuration,
@@ -64,7 +64,7 @@ public @interface JigTest {
         @Override
         public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
             Class<?> parameterType = parameterContext.getParameter().getType();
-            var objectSupplier = Objects.requireNonNull(parameterTypeSupplierMap.get(parameterType));
+            Supplier<Object> objectSupplier = Objects.requireNonNull(parameterTypeSupplierMap.get(parameterType));
             return objectSupplier.get();
         }
     }

@@ -4,14 +4,13 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import testing.JigTestExtension;
+import testing.JigTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(JigTestExtension.class)
+@JigTest
 public class PackageDependenciesTest {
 
     @Test

@@ -19,6 +19,9 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * テストクラスの変数でテスト用のインスタンスを受け取れるようにするJUnit拡張
+ */
 public class JigTestExtension implements ParameterResolver {
 
     public final Configuration configuration;

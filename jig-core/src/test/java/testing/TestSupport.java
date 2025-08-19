@@ -31,7 +31,7 @@ public class TestSupport {
         while (!path.endsWith("jig-core")) {
             path = path.getParent();
             if (path == null) {
-                throw new IllegalStateException("モジュール名変わった？");
+                throw new IllegalStateException("プロジェクト名変わった？");
             }
         }
         return path;

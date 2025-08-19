@@ -19,6 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 @ExtendWith(JigTest.JigTestExtension.class)
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -30,45 +33,39 @@ public @interface JigTest {
      */
     class JigTestExtension implements ParameterResolver {
 
-        public final Configuration configuration;
+        private final Map<Class<?>, Supplier<Object>> parameterTypeSupplierMap;
 
         public JigTestExtension() throws Exception {
             Path tempDir = Files.createTempDirectory("jig");
-            configuration = Configuration.from(
+            var configuration = Configuration.from(
                     new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir));
+            parameterTypeSupplierMap = Map.of(
+                    Configuration.class, () -> configuration,
+                    SourceBasePaths.class, () -> TestSupport.getRawSourceLocations(),
+                    JigRepository.class, () -> {
+                        DefaultJigRepositoryFactory factory = DefaultJigRepositoryFactory.init(configuration);
+                        return factory.createJigRepository(TestSupport.getRawSourceLocations());
+                    },
+                    GlossaryRepository.class, () -> configuration.glossaryRepository(),
+                    JigEventRepository.class, () -> configuration.jigEventRepository(),
+                    JigProperties.class, () -> configuration.properties(),
+                    JigDocumentGenerator.class, () -> configuration.jigDocumentGenerator(),
+                    JigService.class, () -> configuration.jigService(),
+                    JigDocumentContext.class, () -> configuration.jigDocumentContext()
+            );
         }
 
         @Override
         public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
             Class<?> parameterType = parameterContext.getParameter().getType();
-            return parameterType == Configuration.class
-                    || parameterType == SourceBasePaths.class
-                    || parameterType == JigRepository.class
-                    || parameterType == GlossaryRepository.class
-                    || parameterType == JigEventRepository.class
-                    || parameterType == JigProperties.class
-                    || parameterType == JigDocumentGenerator.class
-                    || parameterType == JigService.class
-                    || parameterType == JigDocumentContext.class;
+            return parameterTypeSupplierMap.containsKey(parameterType);
         }
 
         @Override
         public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
             Class<?> parameterType = parameterContext.getParameter().getType();
-            if (parameterType == Configuration.class) return configuration;
-            if (parameterType == SourceBasePaths.class) return TestSupport.getRawSourceLocations();
-            if (parameterType == JigRepository.class) {
-                DefaultJigRepositoryFactory factory = DefaultJigRepositoryFactory.init(configuration);
-                return factory.createJigRepository(TestSupport.getRawSourceLocations());
-            }
-            if (parameterType == GlossaryRepository.class) return configuration.glossaryRepository();
-            if (parameterType == JigEventRepository.class) return configuration.jigEventRepository();
-            if (parameterType == JigProperties.class) return configuration.properties();
-            if (parameterType == JigDocumentGenerator.class) return configuration.jigDocumentGenerator();
-            if (parameterType == JigService.class) return configuration.jigService();
-            if (parameterType == JigDocumentContext.class) return configuration.jigDocumentContext();
-
-            throw new AssertionError("実装ミスでもなければここには来ない");
+            var objectSupplier = Objects.requireNonNull(parameterTypeSupplierMap.get(parameterType));
+            return objectSupplier.get();
         }
     }
 }

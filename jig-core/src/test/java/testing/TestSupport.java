@@ -39,7 +39,8 @@ public class TestSupport {
 
     public static URI defaultPackageClassURI() {
         try {
-            return TestSupport.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
+            var resource = TestSupport.class.getResource("/DefaultPackageClass.class");
+            return Objects.requireNonNull(resource).toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

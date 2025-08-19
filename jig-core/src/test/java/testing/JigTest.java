@@ -68,8 +68,7 @@ public @interface JigTest {
             if (parameterType == JigService.class) return configuration.jigService();
             if (parameterType == JigDocumentContext.class) return configuration.jigDocumentContext();
 
-            // 実装ミスでもなければここには来ない
-            throw new AssertionError();
+            throw new AssertionError("実装ミスでもなければここには来ない");
         }
     }
 }

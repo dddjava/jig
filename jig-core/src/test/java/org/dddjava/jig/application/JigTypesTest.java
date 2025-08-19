@@ -5,14 +5,14 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.junit.jupiter.api.Test;
-import testing.JigServiceTest;
+import testing.JigTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@JigServiceTest
+@JigTest
 class JigTypesTest {
 
     @Test

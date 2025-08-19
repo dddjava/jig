@@ -4,13 +4,13 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.junit.jupiter.api.Test;
-import testing.JigServiceTest;
+import testing.JigTest;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@JigServiceTest
+@JigTest
 class JigExecutorTest {
 
     @Test

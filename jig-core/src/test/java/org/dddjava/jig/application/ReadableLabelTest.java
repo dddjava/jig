@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.ClassJavadocStub;
 import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
-import testing.JigServiceTest;
+import testing.JigTest;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
-@JigServiceTest
+@JigTest
 class ReadableLabelTest {
 
     JigDocumentContext sut;

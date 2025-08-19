@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaIdentifier;
-import testing.JigServiceTest;
+import testing.JigTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@JigServiceTest
+@JigTest
 class ServiceMethodTest {
 
     @Test

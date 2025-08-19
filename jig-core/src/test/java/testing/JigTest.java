@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @ExtendWith(JigTestExtension.class)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JigServiceTest {
+public @interface JigTest {
 }

@@ -53,13 +53,14 @@ public class TestSupport {
     }
 
     public static Path getTestSourceRootPath() {
-        return getModuleRootPath().resolve("src").resolve("test").resolve("java");
+        return projectRootPath().resolve("src").resolve("test").resolve("java");
     }
 
-    private static Path getModuleRootPath() {
+    private static Path projectRootPath() {
         URI uri = defaultPackageClassURI();
         Path path = Paths.get(uri).toAbsolutePath();
 
+        // jig-core のパスまで後ろから辿る
         while (!path.endsWith("jig-core")) {
             path = path.getParent();
             if (path == null) {

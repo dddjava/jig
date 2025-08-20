@@ -19,7 +19,7 @@ public record JigAnnotationReference(TypeId id,
         return id.asSimpleText();
     }
 
-    public Stream<TypeId> allTypeIentifierStream() {
+    public Stream<TypeId> allTypeIdStream() {
         // TODO elementがclassやannotationの場合に追加する
         return Stream.of(id);
     }

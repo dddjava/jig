@@ -126,7 +126,7 @@ class JigExpressionObject {
     }
 
     private String linkTypeText(TypeId typeId) {
-        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fullQualifiedName(), labelText(typeId));
+        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fqn(), labelText(typeId));
     }
 
     public List<JigMethod> listRemarkableInstanceMethods(JigType jigType) {
@@ -162,7 +162,7 @@ class JigExpressionObject {
                 return enumModel;
             }
         }
-        logger.warn("cannot find enum model for {}. Try to create empty model.", typeId.fullQualifiedName());
+        logger.warn("cannot find enum model for {}. Try to create empty model.", typeId.fqn());
         // 落ちないように
         return new EnumModel(typeId, List.of());
     }

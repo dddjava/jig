@@ -45,7 +45,7 @@ public record TypeRelationship(Edge<TypeId> edge, TypeRelationKind typeRelationK
 
     @Override
     public String toString() {
-        return from().fullQualifiedName() + " -> " + to().fullQualifiedName();
+        return from().fqn() + " -> " + to().fqn();
     }
 
     public String formatText() {

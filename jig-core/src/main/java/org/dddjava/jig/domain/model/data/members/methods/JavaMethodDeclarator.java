@@ -42,7 +42,7 @@ public record JavaMethodDeclarator(
                     var formalParameter = formalParameterList.get(i);
                     // FQNが一致すればOK。
                     // TODO 引数型がネストクラスの場合、コードで書かれるFQNは pkg.Hoge.Fuga となるのに対し、バイトコードでは pkg.Hoge$Fuga となり一致しない可能性がある。要テスト。
-                    if (formalParameter.equals(parameterizedArgumentType.fullQualifiedName())) {
+                    if (formalParameter.equals(parameterizedArgumentType.fqn())) {
                         continue;
                     }
                     // FQNが一致せずとも単純クラス名が一致すればOKとする。このマッチは確実ではなく、異なるものと一致する可能性がある。

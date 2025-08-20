@@ -92,7 +92,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .add("}")
                 .add(nonCategoryNodeTexts(categoryRelatedTypes))
                 .add(relations.toEdges().orderedUniqueStream()
-                        .map(edge -> "\"%s\" -> \"%s\"".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()))
+                        .map(edge -> "\"%s\" -> \"%s\"".formatted(edge.from().fqn(), edge.to().fqn()))
                         .collect(joining("\n")))
                 .add(serviceRelationText.asText())
                 .toString();

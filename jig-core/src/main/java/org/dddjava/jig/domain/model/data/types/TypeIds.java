@@ -18,7 +18,7 @@ public record TypeIds(Set<TypeId> values) {
 
     public List<TypeId> list() {
         ArrayList<TypeId> list = new ArrayList<>(this.values);
-        list.sort(Comparator.comparing(TypeId::fullQualifiedName));
+        list.sort(Comparator.comparing(TypeId::fqn));
         return list;
     }
 

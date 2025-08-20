@@ -36,7 +36,7 @@ public record TypeId(String value) implements Comparable<TypeId> {
     /**
      * @return "org.dddjava.jig.domain.model.data.types.TypeId"
      */
-    public String fullQualifiedName() {
+    public String fqn() {
         return value;
     }
 

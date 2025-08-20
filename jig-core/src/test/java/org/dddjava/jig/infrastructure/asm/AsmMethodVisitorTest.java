@@ -250,7 +250,7 @@ class AsmMethodVisitorTest {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
         JigAnnotationReference sut = method.declarationAnnotationStream().findFirst().orElseThrow();
 
-        assertEquals(VariableAnnotation.class.getTypeName(), sut.id().fullQualifiedName());
+        assertEquals(VariableAnnotation.class.getTypeName(), sut.id().fqn());
 
         String text = sut.asText();
         assertTrue(text.contains("string=am"), "Text should contain 'string=am'");

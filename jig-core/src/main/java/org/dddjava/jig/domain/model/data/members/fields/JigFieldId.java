@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 public record JigFieldId(String value) {
 
     public static JigFieldId from(TypeId declaringTypeId, String name) {
-        return new JigFieldId("%s#%s".formatted(declaringTypeId.fullQualifiedName(), name));
+        return new JigFieldId("%s#%s".formatted(declaringTypeId.fqn(), name));
     }
 
     public String name() {

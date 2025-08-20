@@ -31,7 +31,7 @@ public class Validations {
         Stream<Validation> methodStream = jigType.jigTypeMembers().jigMethodDeclarations().stream()
                 .flatMap(jigMethodDeclaration -> jigMethodDeclaration.header().declarationAnnotationStream()
                         // TODO 正規表現の絞り込みをやめる
-                        .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
+                        .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fqn()).matches())
                         .map(jigAnnotationReference -> {
                             return new Validation(
                                     jigType.id(),
@@ -44,7 +44,7 @@ public class Validations {
         Stream<Validation> fieldStream = jigType.jigTypeMembers().allJigFieldStream()
                 .flatMap(jigField -> jigField.jigFieldHeader().declarationAnnotationStream()
                         // TODO 正規表現の絞り込みをやめる
-                        .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fullQualifiedName()).matches())
+                        .filter(jigAnnotationReference -> ANNOTATION_PATTERN.matcher(jigAnnotationReference.id().fqn()).matches())
                         .map(jigAnnotationReference -> {
                             return new Validation(
                                     jigType.id(),

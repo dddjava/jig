@@ -77,7 +77,7 @@ public class TypeRelationMermaidDiagram {
             nodeMap.get(false).forEach(diagramText::add);
         }
         // クリックでジャンプ
-        targetTypes.stream().map(id -> "click %s \"#%s\"".formatted(mermaidId(id), id.fullQualifiedName())).forEach(diagramText::add);
+        targetTypes.stream().map(id -> "click %s \"#%s\"".formatted(mermaidId(id), id.fqn())).forEach(diagramText::add);
 
         // 推移簡約して出力
         // （ここで関連数が減るので閾値と一致しなくなっている）
@@ -111,6 +111,6 @@ public class TypeRelationMermaidDiagram {
      * このダイアグラムでは種類も多くないのでFQNをそのまま使用する。
      */
     private String mermaidId(TypeId typeId) {
-        return typeId.fullQualifiedName();
+        return typeId.fqn();
     }
 }

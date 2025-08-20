@@ -16,8 +16,8 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
      * 完全なIDを生成するファクトリ
      */
     public static JigMethodId from(TypeId declaringType, String methodName, List<TypeId> parameterTypeIds) {
-        return new JigMethodId("%s#%s(%s)".formatted(declaringType.fullQualifiedName(), methodName,
-                parameterTypeIds.stream().map(TypeId::fullQualifiedName).collect(joining(","))));
+        return new JigMethodId("%s#%s(%s)".formatted(declaringType.fqn(), methodName,
+                parameterTypeIds.stream().map(TypeId::fqn).collect(joining(","))));
     }
 
     public String name() {

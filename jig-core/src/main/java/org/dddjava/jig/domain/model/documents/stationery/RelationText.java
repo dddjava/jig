@@ -44,7 +44,7 @@ public class RelationText {
     }
 
     public void add(JigMethodId from, TypeId to) {
-        add(from.value(), to.fullQualifiedName());
+        add(from.value(), to.fqn());
     }
 
     public void add(JigMethodId from, JigMethodId to) {

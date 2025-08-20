@@ -58,12 +58,12 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
 
     @Override
     public TermId fromTypeId(TypeId typeId) {
-        return new TermId(typeId.fullQualifiedName());
+        return new TermId(typeId.fqn());
     }
 
     @Override
     public TermId fromMethodImplementationDeclarator(TypeId typeId, JavaMethodDeclarator methodImplementationDeclarator) {
-        return new TermId(typeId.fullQualifiedName() + "#" + methodImplementationDeclarator.asText());
+        return new TermId(typeId.fqn() + "#" + methodImplementationDeclarator.asText());
     }
 
     @Override

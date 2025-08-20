@@ -47,8 +47,8 @@
                 <tr th:each="field: ${item.instanceJigFields().fields()}" th:with="it=${field.typeId()}">
                     <td th:text="${field.nameText()}">xxx</td>
                     <td th:switch="${#jig.fieldLinkType(it)}">
-                        <span th:case="none" class="weak" th:text="${it.fullQualifiedName()}">long</span>
-                        <a th:case="*" th:href="${'./domain.html#' + it.fullQualifiedName()}"
+                        <span th:case="none" class="weak" th:text="${it.fqn()}">long</span>
+                        <a th:case="*" th:href="${'./domain.html#' + it.fqn()}"
                            th:text="${#jig.labelText(it)}">xxx</a>
                     </td>
                 </tr>

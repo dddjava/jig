@@ -20,22 +20,22 @@ class JigTypesTest {
         List<JigType> jigTypes = jigRepository.fetchJigTypes().list();
 
         JigType publicType = jigTypes.stream()
-                .filter(jigType -> jigType.id().fullQualifiedName().endsWith("PublicType"))
+                .filter(jigType -> jigType.id().fqn().endsWith("PublicType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(JigTypeVisibility.PUBLIC, publicType.visibility());
 
         JigType protectedType = jigTypes.stream()
-                .filter(jigType -> jigType.id().fullQualifiedName().endsWith("ProtectedType"))
+                .filter(jigType -> jigType.id().fqn().endsWith("ProtectedType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(JigTypeVisibility.PUBLIC, protectedType.visibility());
 
         JigType defaultType = jigTypes.stream()
-                .filter(jigType -> jigType.id().fullQualifiedName().endsWith("DefaultType"))
+                .filter(jigType -> jigType.id().fqn().endsWith("DefaultType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(JigTypeVisibility.NOT_PUBLIC, defaultType.visibility());
 
         JigType privateType = jigTypes.stream()
-                .filter(jigType -> jigType.id().fullQualifiedName().endsWith("PrivateType"))
+                .filter(jigType -> jigType.id().fqn().endsWith("PrivateType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(JigTypeVisibility.NOT_PUBLIC, privateType.visibility());
     }

@@ -54,6 +54,6 @@ public record MethodInsight(JigMethod jigMethod) {
     }
 
     public String typeFqn() {
-        return typeId().fullQualifiedName();
+        return typeId().fqn();
     }
 }

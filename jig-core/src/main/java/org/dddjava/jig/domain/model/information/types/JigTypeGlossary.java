@@ -17,7 +17,7 @@ import java.util.Collection;
 public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
 
     public static JigTypeGlossary from(Glossary glossary, TypeId typeId) {
-        TermId termId = new TermId(typeId.fullQualifiedName());
+        TermId termId = new TermId(typeId.fqn());
         Collection<Term> terms = glossary.findRelated(termId);
 
         Term typeTerm = terms.stream()

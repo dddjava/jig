@@ -72,7 +72,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 ? internalClassRelations.toEdges().transitiveReduction()
                 : internalClassRelations.toEdges();
         for (Edge<TypeId> edge : edges.list()) {
-            graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fullQualifiedName(), edge.to().fullQualifiedName()));
+            graph.add("\"%s\" -> \"%s\";".formatted(edge.from().fqn(), edge.to().fqn()));
         }
 
         diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, graph.toString()));

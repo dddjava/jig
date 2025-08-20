@@ -31,7 +31,7 @@ public class DatasourceAngle {
             MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
             // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
             return outputImplementation.usingMethods()
-                    .containsAny(methodCall -> methodCall.methodOwner().fullQualifiedName().equals(myBatisStatementId.namespace())
+                    .containsAny(methodCall -> methodCall.methodOwner().fqn().equals(myBatisStatementId.namespace())
                             && methodCall.methodName().equals(myBatisStatementId.id()));
         });
         this.concreteMethod = outputImplementation.concreteMethod();

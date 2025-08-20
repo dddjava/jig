@@ -20,7 +20,7 @@ public class CoreDomainCondition {
     }
 
     public boolean isCoreDomain(JigType jigType) {
-        String fqn = jigType.id().fullQualifiedName();
+        String fqn = jigType.id().fqn();
         if (fqn.endsWith(".package-info")) return false;
         return businessRulePattern.matcher(fqn).matches()
                 && !compilerGeneratedClassPattern.matcher(fqn).matches();

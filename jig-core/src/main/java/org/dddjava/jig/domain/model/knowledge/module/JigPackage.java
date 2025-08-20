@@ -13,9 +13,6 @@ public record JigPackage(PackageId packageId, Term term, Collection<JigType> jig
         this(packageId, term, List.of());
     }
 
-    /**
-     * FullQualifiedName
-     */
     public String fqn() {
         return packageId.asText();
     }

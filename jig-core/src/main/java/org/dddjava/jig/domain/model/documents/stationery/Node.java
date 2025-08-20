@@ -25,7 +25,7 @@ public class Node {
     }
 
     public static Node typeOf(TypeId typeId) {
-        return new Node(typeId.fullQualifiedName());
+        return new Node(typeId.fqn());
     }
 
     public static Node packageOf(PackageId packageId) {
@@ -33,7 +33,7 @@ public class Node {
     }
 
     public static Node businessRuleNodeOf(JigType jigType) {
-        return new Node(jigType.id().fullQualifiedName())
+        return new Node(jigType.id().fqn())
                 .label(jigType.term().titleAndSimpleName("\\n"))
                 .url(jigType.id(), JigDocument.DomainSummary);
     }
@@ -81,7 +81,7 @@ public class Node {
 
     public Node url(TypeId typeId, JigDocument jigDocument) {
         String ref = jigDocument.fileName() + ".html";
-        attributeMap.put("URL", "./" + ref + "#" + typeId.fullQualifiedName());
+        attributeMap.put("URL", "./" + ref + "#" + typeId.fqn());
         return this;
     }
 

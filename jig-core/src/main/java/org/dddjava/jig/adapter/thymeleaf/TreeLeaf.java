@@ -17,7 +17,7 @@ public class TreeLeaf implements TreeComponent {
 
     @Override
     public String href() {
-        return "#" + jigType.id().fullQualifiedName();
+        return "#" + jigType.id().fqn();
     }
 
     @Override

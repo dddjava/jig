@@ -6,6 +6,7 @@ module org.dddjava.jig.core {
     exports org.dddjava.jig.domain.model.sources;
     exports org.dddjava.jig.infrastructure.configuration;
     exports org.dddjava.jig.domain.model.documents.documentformat;
+    exports org.dddjava.jig.domain.model.sources.filesystem;
 
     requires com.github.benmanes.caffeine;
     requires com.github.javaparser.core;

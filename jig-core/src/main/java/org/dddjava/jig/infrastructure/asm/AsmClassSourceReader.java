@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.annotation.Repository;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.ClassFilePaths;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

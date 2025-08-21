@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.domain.model.sources.LocalSource;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.ClassFilePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
+import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,8 +67,8 @@ public class ClassOrJavaSourceCollector {
         }
     }
 
-    public LocalSource collectSources(SourceBasePaths sourceBasePaths) {
+    public FilesystemSources collectSources(SourceBasePaths sourceBasePaths) {
         logger.info("read paths: {}", sourceBasePaths);
-        return new LocalSource(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
+        return new FilesystemSources(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }
 }

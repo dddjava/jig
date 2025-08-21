@@ -12,9 +12,9 @@ import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
-import org.dddjava.jig.domain.model.sources.LocalSource;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
+import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
@@ -61,7 +61,7 @@ public class DefaultJigRepositoryFactory {
     public JigRepository createJigRepository(SourceBasePaths sourceBasePaths) {
         Timer.Sample sample = Timer.start(io.micrometer.core.instrument.Metrics.globalRegistry);
         try {
-            LocalSource sources = sourceCollector.collectSources(sourceBasePaths);
+            FilesystemSources sources = sourceCollector.collectSources(sourceBasePaths);
             if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
             if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
@@ -82,7 +82,7 @@ public class DefaultJigRepositoryFactory {
     /**
      * プロジェクト情報を読み取る
      */
-    private JigRepository analyze(LocalSource sources) {
+    private JigRepository analyze(FilesystemSources sources) {
         var metricName = "jig.analysis.time";
         return Objects.requireNonNull(Metrics.timer(metricName, "phase", "code_analysis_total").record(() -> {
             JavaFilePaths javaFilePaths = sources.javaFilePaths();
@@ -128,7 +128,7 @@ public class DefaultJigRepositoryFactory {
         }));
     }
 
-    private MyBatisStatements readMyBatisStatements(LocalSource sources, Collection<ClassDeclaration> classDeclarations) {
+    private MyBatisStatements readMyBatisStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)

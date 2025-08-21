@@ -55,7 +55,7 @@ class CliConfig {
                 .add("jig.pattern.domain=" + modelPattern)
                 .add("jig.output.directory=" + outputDirectory)
                 .add("jig.output.diagram.format=" + diagramFormat)
-                .add("jig.output.diagram.timeout=" + dotTimeout.toString())
+                .add("jig.output.diagram.timeout=" + dotTimeout)
                 .add("jig.output.diagram.transitiveReduction=" + diagramTransitiveReduction)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)

@@ -40,7 +40,7 @@ public class AsmClassSourceReader {
             return Optional.empty();
         }
 
-        return classBytes(classFilePath)
+        return readClassBytes(classFilePath.path())
                 .flatMap(this::getClassDeclaration);
     }
 
@@ -59,9 +59,9 @@ public class AsmClassSourceReader {
         }
     }
 
-    private static Optional<byte[]> classBytes(ClassFilePath classFilePath) {
+    private static Optional<byte[]> readClassBytes(Path path) {
         try {
-            return Optional.of(Files.readAllBytes(classFilePath.path()));
+            return Optional.of(Files.readAllBytes(path));
         } catch (IOException e) {
             logger.warn("クラスファイルの読み取りに失敗しました。スキップして続行します。", e);
             return Optional.empty();

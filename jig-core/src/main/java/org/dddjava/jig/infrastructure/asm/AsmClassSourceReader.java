@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.asm;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.annotation.Repository;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFilePath;
 import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -28,19 +27,19 @@ public class AsmClassSourceReader {
 
     public Collection<ClassDeclaration> readClasses(ClassFilePaths classFilePaths) {
         return classFilePaths.values().stream()
-                .map(classFile -> classDeclaration(classFile))
+                .map(classFile -> classDeclaration(classFile.path()))
                 .flatMap(Optional::stream)
                 .toList();
     }
 
-    public Optional<ClassDeclaration> classDeclaration(ClassFilePath classFilePath) {
+    public Optional<ClassDeclaration> classDeclaration(Path path) {
         // そのまま読ませると予期しないエラーになりがちなのでスキップしておく。package-infoはsuperがObjectだけど、module-infoはsuperが無しでnullになるとか。
-        if (classFilePath.path().endsWith(Path.of("module-info.class")) || classFilePath.path().endsWith(Path.of("package-info.class"))) {
-            logger.info("package-info や module-info の情報（アノテーションなど）は現在読み取っていません。skip={}", classFilePath.path());
+        if (path.endsWith(Path.of("module-info.class")) || path.endsWith(Path.of("package-info.class"))) {
+            logger.info("package-info や module-info の情報（アノテーションなど）は現在読み取っていません。skip={}", path);
             return Optional.empty();
         }
 
-        return readClassBytes(classFilePath.path())
+        return readClassBytes(path)
                 .flatMap(this::getClassDeclaration);
     }
 

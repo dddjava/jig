@@ -72,7 +72,7 @@ public class TestSupport {
 
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
-        ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass)).orElseThrow();
+        ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass).path()).orElseThrow();
         return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).orderedStream().findFirst().orElseThrow();
     }
 

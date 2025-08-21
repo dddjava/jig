@@ -27,7 +27,7 @@ public class AsmClassSourceReader {
 
     public Collection<ClassDeclaration> readClasses(ClassFilePaths classFilePaths) {
         return classFilePaths.values().stream()
-                .map(classFile -> classDeclaration(classFile.path()))
+                .map(classFile -> classDeclaration(classFile))
                 .flatMap(Optional::stream)
                 .toList();
     }

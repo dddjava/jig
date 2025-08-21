@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.sources.LocalSource;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFilePath;
 import org.dddjava.jig.domain.model.sources.classsources.ClassFilePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaFilePaths;
 import org.slf4j.Logger;
@@ -34,14 +33,6 @@ public class ClassOrJavaSourceCollector {
         return sourceBasePaths.classSourceBasePaths().stream()
                 .map(classSourceBasePath -> collectSourcePathList(classSourceBasePath, ".class"))
                 .flatMap(List::stream)
-                .flatMap(path -> {
-                    try {
-                        return Stream.of(ClassFilePath.readFromPath(path));
-                    } catch (IOException e) {
-                        jigEventRepository.registerクラスファイルの読み込みに失敗しました(path, e);
-                        return Stream.empty();
-                    }
-                })
                 .collect(collectingAndThen(toUnmodifiableList(), ClassFilePaths::new));
     }
 

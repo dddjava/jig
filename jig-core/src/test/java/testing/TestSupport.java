@@ -7,12 +7,10 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-import org.dddjava.jig.domain.model.sources.classsources.ClassFilePath;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.javaproductreader.JigTypeFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -29,18 +27,6 @@ public class TestSupport {
             var resource = TestSupport.class.getResource("/DefaultPackageClass.class");
             return Objects.requireNonNull(resource).toURI().resolve("./");
         } catch (URISyntaxException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    public static ClassFilePath getClassSource(Class<?> clz) {
-        var className = clz.getName();
-        String resourcePath = className.replace('.', '/') + ".class";
-        URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
-        try {
-            Path path = Paths.get(url.toURI());
-            return ClassFilePath.readFromPath(path);
-        } catch (URISyntaxException | IOException e) {
             throw new AssertionError(e);
         }
     }
@@ -72,8 +58,19 @@ public class TestSupport {
 
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
-        ClassDeclaration classDeclaration = sut.classDeclaration(getClassSource(definitionClass).path()).orElseThrow();
+        ClassDeclaration classDeclaration = sut.classDeclaration(getPathFromClass(definitionClass)).orElseThrow();
         return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).orderedStream().findFirst().orElseThrow();
+    }
+
+    private static Path getPathFromClass(Class<?> definitionClass) {
+        var className = definitionClass.getName();
+        String resourcePath = className.replace('.', '/') + ".class";
+        URL url = Objects.requireNonNull(definitionClass.getResource('/' + resourcePath));
+        try {
+            return Paths.get(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new AssertionError(e);
+        }
     }
 
     public static JigMethod JigMethod準備(Class<?> sutClass, String methodName) {

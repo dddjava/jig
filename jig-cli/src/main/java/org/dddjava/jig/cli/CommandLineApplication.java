@@ -10,7 +10,7 @@ public class CommandLineApplication {
         var context = SpringApplication.run(CommandLineApplication.class, args);
 
         var cliRunner = context.getBean(CliRunner.class);
-        cliRunner.run(args);
+        cliRunner.run();
 
         System.exit(SpringApplication.exit(context));
     }

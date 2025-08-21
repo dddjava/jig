@@ -26,7 +26,7 @@ class CliRunner {
         this.cliConfig = cliConfig;
     }
 
-    void run(String... args) {
+    void run() {
         Configuration configuration = cliConfig.configuration();
         logger.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
 

@@ -22,4 +22,6 @@ jobs:
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
+          # PATで指定しないとmainにmergeはされるが、mergeした時のworkflowが動かない。
           GH_TOKEN: ${{secrets.DEPENDABOT_AUTO_MERGE_PAT}}
+

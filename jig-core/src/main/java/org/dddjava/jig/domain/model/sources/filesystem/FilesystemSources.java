@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.sources.filesystem;
 
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
-
 /**
  * ファイルシステムにあるソース群
  *

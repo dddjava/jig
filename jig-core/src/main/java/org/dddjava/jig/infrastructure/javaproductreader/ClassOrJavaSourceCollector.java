@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.ClassFilePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
 import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

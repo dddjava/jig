@@ -1,7 +1,7 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.sources.SourceBasePath;
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

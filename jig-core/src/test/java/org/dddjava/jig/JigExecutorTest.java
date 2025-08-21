@@ -1,7 +1,7 @@
 package org.dddjava.jig;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.junit.jupiter.api.Test;
 import testing.JigTest;

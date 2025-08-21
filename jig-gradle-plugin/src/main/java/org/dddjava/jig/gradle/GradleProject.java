@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.sources.SourceBasePath;
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.sources;
+package org.dddjava.jig.domain.model.sources.filesystem;
 
 import java.nio.file.Path;
 import java.util.Collection;

@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.application.JigEventRepository;
-import org.dddjava.jig.domain.model.sources.SourceBasePath;
-import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.javaproductreader.ClassOrJavaSourceCollector;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

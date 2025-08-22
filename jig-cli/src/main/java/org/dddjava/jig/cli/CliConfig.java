@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
-import java.util.StringJoiner;
 
 @Component
 class CliConfig {
@@ -49,19 +48,29 @@ class CliConfig {
     List<Mode> mode = List.of(Mode.DEFAULT);
 
     public String propertiesText() {
-        return new StringJoiner("\n")
-                .add("mode=" + mode)
-                .add("jig.document.types=" + documentTypeText)
-                .add("jig.pattern.domain=" + modelPattern)
-                .add("jig.output.directory=" + outputDirectory)
-                .add("jig.output.diagram.format=" + diagramFormat)
-                .add("jig.output.diagram.timeout=" + dotTimeout)
-                .add("jig.output.diagram.transitiveReduction=" + diagramTransitiveReduction)
-                .add("project.path=" + projectPath)
-                .add("directory.classes=" + directoryClasses)
-                .add("directory.resources=" + directoryResources)
-                .add("directory.sources=" + directorySources)
-                .toString();
+        return """
+                mode=%s
+                jig.document.types=%s
+                jig.pattern.domain=%s
+                jig.output.directory=%s
+                jig.output.diagram.format=%s
+                jig.output.diagram.timeout=%s
+                jig.output.diagram.transitiveReduction=%s
+                project.path=%s
+                directory.classes=%s
+                directory.resources=%s
+                directory.sources=%s""".formatted(
+                        mode,
+                        documentTypeText,
+                        modelPattern,
+                        outputDirectory,
+                        diagramFormat,
+                        dotTimeout,
+                        diagramTransitiveReduction,
+                        projectPath,
+                        directoryClasses,
+                        directoryResources,
+                        directorySources);
     }
 
     List<JigDocument> jigDocuments() {

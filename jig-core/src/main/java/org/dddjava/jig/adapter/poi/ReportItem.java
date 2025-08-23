@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.excel;
+package org.dddjava.jig.adapter.poi;
 
 import java.util.function.Function;
 

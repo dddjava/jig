@@ -2,10 +2,10 @@ package org.dddjava.jig.adapter;
 
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.adapter.excel.GlossaryAdapter;
-import org.dddjava.jig.adapter.excel.ListAdapter;
 import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
+import org.dddjava.jig.adapter.poi.GlossaryAdapter;
+import org.dddjava.jig.adapter.poi.ListAdapter;
 import org.dddjava.jig.adapter.thymeleaf.*;
 import org.dddjava.jig.adapter.thymeleaf.dialect.JigDialect;
 import org.dddjava.jig.application.JigService;

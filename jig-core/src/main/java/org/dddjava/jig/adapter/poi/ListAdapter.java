@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.excel;
+package org.dddjava.jig.adapter.poi;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;

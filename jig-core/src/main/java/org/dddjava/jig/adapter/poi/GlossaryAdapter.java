@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.excel;
+package org.dddjava.jig.adapter.poi;
 
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;

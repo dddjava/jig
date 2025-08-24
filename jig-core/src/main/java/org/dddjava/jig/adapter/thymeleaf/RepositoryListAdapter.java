@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class RepositoryListAdapter implements Adapter<List<RepositoryListAdapter.OutputSummaryItem>> {
+public class RepositoryListAdapter implements Adapter {
     private final JigService jigService;
     private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
@@ -49,7 +49,7 @@ public class RepositoryListAdapter implements Adapter<List<RepositoryListAdapter
     }
 
     @Override
-    public List<Path> write(List<RepositoryListAdapter.OutputSummaryItem> result, JigDocument jigDocument) {
+    public List<Path> write(Object result, JigDocument jigDocument) {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(

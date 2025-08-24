@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 @HandleDocument
-public class InsightAdapter implements Adapter<Insights> {
+public class InsightAdapter implements Adapter {
 
     private final JigService jigService;
     private final TemplateEngine templateEngine;
@@ -36,7 +36,8 @@ public class InsightAdapter implements Adapter<Insights> {
     }
 
     @Override
-    public List<Path> write(Insights result, JigDocument jigDocument) {
+    public List<Path> write(Object object, JigDocument jigDocument) {
+        Insights result = (Insights) object;
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(
@@ -50,7 +51,7 @@ public class InsightAdapter implements Adapter<Insights> {
         String template = jigDocumentWriter.jigDocument().fileName();
 
         jigDocumentWriter.writeTextAs(".html",
-            writer -> templateEngine.process(template, context, writer));
+                writer -> templateEngine.process(template, context, writer));
         return jigDocumentWriter.outputFilePaths();
     }
 }

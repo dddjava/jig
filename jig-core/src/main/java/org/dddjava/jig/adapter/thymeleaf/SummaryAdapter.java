@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @HandleDocument
-public class SummaryAdapter implements Adapter<SummaryModel> {
+public class SummaryAdapter implements Adapter {
 
     private final JigService jigService;
     private final ThymeleafSummaryWriter thymeleafSummaryWriter;
@@ -62,7 +62,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     }
 
     @Override
-    public List<Path> write(SummaryModel result, JigDocument jigDocument) {
-        return thymeleafSummaryWriter.write(jigDocument, result);
+    public List<Path> write(Object result, JigDocument jigDocument) {
+        return thymeleafSummaryWriter.write(jigDocument, (SummaryModel) result);
     }
 }

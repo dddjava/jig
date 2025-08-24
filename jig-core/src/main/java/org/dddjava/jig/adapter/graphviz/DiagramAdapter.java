@@ -19,7 +19,7 @@ import java.util.List;
  * {@link HandleDocument} で指定されたドキュメントを出力する際に各メソッドが実行される。
  */
 @HandleDocument
-public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
+public class DiagramAdapter implements Adapter {
 
     private final JigService jigService;
     private final GraphvizDiagramWriter graphvizDiagramWriter;
@@ -57,7 +57,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
     }
 
     @Override
-    public List<Path> write(DiagramSourceWriter result, JigDocument jigDocument) {
-        return graphvizDiagramWriter.write(result, jigDocument);
+    public List<Path> write(Object result, JigDocument jigDocument) {
+        return graphvizDiagramWriter.write((DiagramSourceWriter) result, jigDocument);
     }
 }

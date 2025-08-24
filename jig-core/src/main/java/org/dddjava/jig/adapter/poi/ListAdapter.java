@@ -35,7 +35,7 @@ import java.util.stream.Collector;
 import static java.util.stream.Collectors.joining;
 
 @HandleDocument
-public class ListAdapter implements Adapter<ReportBook> {
+public class ListAdapter implements Adapter {
 
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター
@@ -228,7 +228,7 @@ public class ListAdapter implements Adapter<ReportBook> {
     }
 
     @Override
-    public List<Path> write(ReportBook result, JigDocument jigDocument) {
-        return result.writeXlsx(jigDocument, jigDocumentContext.outputDirectory());
+    public List<Path> write(Object result, JigDocument jigDocument) {
+        return ((ReportBook) result).writeXlsx(jigDocument, jigDocumentContext.outputDirectory());
     }
 }

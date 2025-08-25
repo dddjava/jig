@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReportBook {
+class ReportBook {
 
     List<ReportSheet<?>> sheets;
 

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class ReportSheet<T> {
+class ReportSheet<T> {
     private static final Logger logger = LoggerFactory.getLogger(ReportSheet.class);
 
     private final String sheetName;

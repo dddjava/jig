@@ -7,6 +7,11 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * 用語集一覧のAdapter
+ *
+ * @see org.dddjava.jig.domain.model.documents.documentformat.JigDocument#TermList
+ */
 public class GlossaryAdapter {
 
     private static List<ReportItem<Term>> reporter() {

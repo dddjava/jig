@@ -34,6 +34,9 @@ import java.util.stream.Collector;
 
 import static java.util.stream.Collectors.joining;
 
+/**
+ * 一覧のAdapter
+ */
 @HandleDocument
 public class ListAdapter implements Adapter {
 

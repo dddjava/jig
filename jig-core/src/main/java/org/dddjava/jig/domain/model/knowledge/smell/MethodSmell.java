@@ -3,64 +3,53 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 
 import java.util.Optional;
 
 /**
  * メソッドの不吉なにおい
  */
-public record MethodSmell(JigMethod method, MethodWorries methodWorries, JigType declaringJigType) {
+public record MethodSmell(JigMethod method,
+                          JigType declaringJigType,
+                          boolean notUseMember,
+                          boolean primitiveInterface,
+                          boolean referenceNull,
+                          boolean nullDecision,
+                          boolean returnsBoolean,
+                          boolean returnsVoid
+) {
 
     public static Optional<MethodSmell> createMethodSmell(JigMethod method, JigType declaringJigType) {
         // java.lang.Object由来は除外する
         if (method.isObjectMethod()) {
             return Optional.empty();
         }
-        var methodWorries = MethodWorries.from(method, declaringJigType);
-        if (methodWorries.empty()) return Optional.empty();
 
-        var instance = new MethodSmell(method, methodWorries, declaringJigType);
-        if (!instance.hasSmell()) return Optional.empty();
-        return Optional.of(instance);
+        var methodInsight = new MethodInsight(method);
+
+        // methodInsightからsmellとなりうるものを抽出
+        var smellOfNotUseMember = methodInsight.smellOfNotUseMember();
+        var smellOfPrimitiveInterface = methodInsight.smellOfPrimitiveInterface();
+        var smellOfReferenceNull = methodInsight.smellOfReferenceNull();
+        var smellOfNullDecision = methodInsight.smellOfNullDecision();
+        var smellOfReturnsBoolean = methodInsight.smellOfReturnsBoolean();
+        var smellOfReturnsVoid = methodInsight.smellOfReturnsVoid();
+
+        if (!smellOfNotUseMember && !smellOfPrimitiveInterface && !smellOfReferenceNull && !smellOfNullDecision && !smellOfReturnsBoolean && !smellOfReturnsVoid) {
+            return Optional.empty();
+        }
+        return Optional.of(new MethodSmell(method, declaringJigType,
+                smellOfNotUseMember,
+                smellOfPrimitiveInterface,
+                smellOfReferenceNull,
+                smellOfNullDecision,
+                smellOfReturnsBoolean,
+                smellOfReturnsVoid
+        ));
     }
 
     public TypeId methodReturnType() {
         return method().methodReturnTypeReference().id();
-    }
-
-    public boolean notUseMember() {
-        return methodWorries.contains(MethodWorry.メンバを使用していない);
-    }
-
-    public boolean primitiveInterface() {
-        if (method.isRecordComponent()) {
-            // componentメソッドであれば基本型の授受を許容する
-            return false;
-        }
-
-        return methodWorries.contains(MethodWorry.基本型の授受を行なっている);
-    }
-
-    public boolean returnsBoolean() {
-        return methodWorries.contains(MethodWorry.真偽値を返している);
-    }
-
-    private boolean hasSmell() {
-
-        // TODO このメソッドの並びと各実装がダメな感じなのでなんとかする。
-        // 現状はここにメソッド追加するのと、列挙に追加するのと、判定メソッド作るのと、やってる。
-        return notUseMember() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision() || returnsVoid();
-    }
-
-    public boolean referenceNull() {
-        return methodWorries.contains(MethodWorry.NULLリテラルを使用している);
-    }
-
-    public boolean nullDecision() {
-        return methodWorries.contains(MethodWorry.NULL判定をしている);
-    }
-
-    public boolean returnsVoid() {
-        return methodWorries.contains(MethodWorry.voidを返している);
     }
 }

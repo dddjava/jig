@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * メソッドの気になるところ
  */
-public record MethodWorries(List<MethodWorry> list) {
+record MethodWorries(List<MethodWorry> list) {
 
     public static MethodWorries from(JigMethod method, JigType contextJigType) {
         return new MethodWorries(Arrays.stream(MethodWorry.values())

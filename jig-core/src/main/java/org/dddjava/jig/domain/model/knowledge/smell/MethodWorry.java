@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 /**
  * メソッドの気になるところ
  */
-public enum MethodWorry {
+enum MethodWorry {
     メンバを使用していない {
         @Override
         boolean judge(JigMethod jigMethod, JigType contextJigType) {

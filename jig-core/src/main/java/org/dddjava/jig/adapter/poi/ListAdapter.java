@@ -89,7 +89,8 @@ public class ListAdapter implements Adapter {
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.id().asSimpleText()),
                         ReportItem.ofString("クラス別名", JigType::label),
-                        ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantNames().stream().collect(STREAM_COLLECTOR)),
+                        ReportItem.ofString("定数宣言", item -> item.jigTypeMembers().enumConstantStream()
+                                .map(jigField -> jigField.jigFieldHeader().name()).collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("フィールド", item -> item.jigTypeMembers().instanceFields().stream()
                                 .map(jigField -> jigField.jigFieldHeader().simpleText())
                                 .collect(STREAM_COLLECTOR)),

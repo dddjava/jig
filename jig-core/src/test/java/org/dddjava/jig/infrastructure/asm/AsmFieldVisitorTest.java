@@ -46,7 +46,8 @@ class AsmFieldVisitorTest {
     void enumフィールドのテスト() {
         var members = TestSupport.buildJigType(MyEnumFieldSut.class).jigTypeMembers();
 
-        List<String> enumConstantNames = members.enumConstantNames();
+        List<String> enumConstantNames = members.enumConstantStream()
+                .map(jigField -> jigField.jigFieldHeader().name()).toList();
         assertEquals(List.of("通常の列挙値1", "通常の列挙値2", "Deprecatedな列挙値"), enumConstantNames,
                 "enumの列挙として記述された以外のフィールドが含まれていないこと");
 

@@ -69,7 +69,10 @@ class JigExpressionObject {
             return List.of();
         }
 
-        return jigType.jigTypeMembers().enumConstantNames();
+        return jigType.jigTypeMembers().enumConstantStream()
+                .map(jigField -> jigField.term())
+                .map(term -> term.title())
+                .toList();
     }
 
     public String fieldRawText(JigField jigField) {

@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -36,13 +35,10 @@ public record JigTypeMembers(Collection<JigField> staticFields, Collection<JigFi
                 .findAny();
     }
 
-    public List<String> enumConstantNames() {
+    public Stream<JigField> enumConstantStream() {
+        // TODO enumの順でソートしないと異なる順番の可能性がある
         return staticFields.stream()
-                .map(JigField::jigFieldHeader)
-                .filter(jigFieldHeader -> jigFieldHeader.isEnumConstant())
-                // TODO enumの順でソートしないと狂う可能性がある
-                .map(jigFieldHeader -> jigFieldHeader.name())
-                .toList();
+                .filter(jigField -> jigField.jigFieldHeader().isEnumConstant());
     }
 
     public Stream<JigMethod> allJigMethodStream() {

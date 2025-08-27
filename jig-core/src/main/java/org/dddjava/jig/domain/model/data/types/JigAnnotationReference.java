@@ -7,7 +7,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.joining;
 
 /**
- * 宣言アノテーションや型アノテーションとして記述されたアノテーション
+ * アノテーション参照
+ * 宣言アノテーションや型アノテーションとして記述されたもの
  *
  * @param id アノテーションの型を示すID
  * @param elements 要素のコレクション

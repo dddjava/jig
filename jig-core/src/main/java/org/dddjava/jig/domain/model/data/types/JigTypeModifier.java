@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.data.types;
 
 /**
+ * Javaのクラス修飾子
+ *
  * Java言語によるクラス修飾子およびインスタンス修飾子のうち、可視性とアノテーションを除くもの。
  * JLSではstrictfpもあるが、使用しないので扱わない。
  *

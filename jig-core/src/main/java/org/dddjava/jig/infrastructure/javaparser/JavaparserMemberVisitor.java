@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
+import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -57,5 +58,17 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         n.getJavadoc().ifPresent(javadoc ->
                 glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeId, methodImplementationDeclarator), methodImplementationDeclarator, javadoc.getDescription().toText()))
         );
+    }
+
+    @Override
+    public void visit(EnumConstantDeclaration n, GlossaryRepository glossaryRepository) {
+        n.getJavadoc().ifPresent(javadoc -> {
+            glossaryRepository.register(
+                    // enumの列挙定数は用語集にはフィールドとして登録する
+                    TermFactory.fromField(
+                            glossaryRepository.fromFieldId(JigFieldId.from(typeId, n.getNameAsString())),
+                            javadoc.getDescription().toText()
+                    ));
+        });
     }
 }

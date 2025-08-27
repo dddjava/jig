@@ -62,16 +62,20 @@ class JigExpressionObject {
     }
 
     /**
-     * enumの定数名リストを作成する。
+     * enumの列挙定数名リスト
      */
     public List<String> enumConstantIdentifiers(JigType jigType) {
-        if (jigType.toValueKind() != JigTypeValueKind.区分) {
-            return List.of();
-        }
+        return jigType.jigTypeMembers().enumConstantStream()
+                .map(jigField -> jigField.nameText())
+                .toList();
+    }
 
+    /**
+     * enumの列挙定数用語リスト
+     */
+    public List<Term> enumConstantTerms(JigType jigType) {
         return jigType.jigTypeMembers().enumConstantStream()
                 .map(jigField -> jigField.term())
-                .map(term -> term.title())
                 .toList();
     }
 

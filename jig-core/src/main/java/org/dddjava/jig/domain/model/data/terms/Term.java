@@ -32,6 +32,10 @@ public record Term(TermId id,
         return title + delimiter + simpleText;
     }
 
+    public boolean hasAlias() {
+        return !simpleText().equals(title);
+    }
+
     /**
      * 用語の関連をIDで判定する
      *

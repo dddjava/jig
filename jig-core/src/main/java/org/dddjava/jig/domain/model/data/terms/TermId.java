@@ -12,16 +12,17 @@ public record TermId(String value) {
     String simpleText() {
         int methodStart = value.indexOf('#');
         if (methodStart == -1) {
+            // #がないのはクラス
             int lastDot = value.lastIndexOf('.');
-
             return lastDot != -1 ? value.substring(lastDot + 1) : value;
         }
 
         int argStart = value.indexOf('(');
         if (argStart == -1) {
-            // ないはず
-            return value;
+            // フィールドと思われるので # 以降末尾まで
+            return value.substring(methodStart + 1);
         }
+        // メソッドなので # 以降 ( の手前まで
         return value.substring(methodStart + 1, argStart);
     }
 }

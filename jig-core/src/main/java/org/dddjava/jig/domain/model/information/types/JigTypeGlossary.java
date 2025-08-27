@@ -46,6 +46,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
                     }
                 })
                 .findAny()
+                // 用語に登録されていないものでも 名称＝物理名 として返す
                 .orElseGet(() -> new Term(new TermId(jigMethodId.value()), jigMethodId.name(), "", TermKind.メソッド));
     }
 
@@ -55,6 +56,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
                 .filter(term -> term.termKind() == TermKind.フィールド)
                 .filter(term -> term.id().equals(termId))
                 .findAny()
+                // 用語に登録されていないものでも 名称＝物理名 として返す
                 .orElseGet(() -> Term.simple(termId, id.name(), TermKind.フィールド));
     }
 }

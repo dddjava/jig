@@ -35,6 +35,11 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
         return term;
     }
 
+    /**
+     * メソッドの用語解決
+     * メソッドの識別は完全には一致しない（引数の型が完全には解決できない）ため、
+     * 一致している可能性の高いものを選ぶ。
+     */
     public Term getMethodTermPossiblyMatches(JigMethodId jigMethodId) {
         return memberTerms.stream()
                 .filter(term -> term.termKind() == TermKind.メソッド)

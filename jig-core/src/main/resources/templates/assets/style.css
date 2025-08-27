@@ -86,6 +86,8 @@ main table thead {
 }
 .sideNavMain > main {
     flex-grow: 1;
+    /* 実際100pxになるわけではないけどこれを指定しておくとnav.treeのサイズ変更が期待通り動く */
+    width: 100px;
 }
 
 /* ナビのツリー  */

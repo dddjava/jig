@@ -55,13 +55,13 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
                 .orElseGet(() -> Term.simple(new TermId(jigMethodId.value()), jigMethodId.name(), TermKind.メソッド));
     }
 
-    public Term fieldTerm(JigFieldId id) {
-        TermId termId = new TermId(id.value());
+    public Term fieldTerm(JigFieldId jigFieldId) {
+        TermId termId = new TermId(jigFieldId.value());
         return memberTerms.stream()
                 .filter(term -> term.termKind() == TermKind.フィールド)
                 .filter(term -> term.id().equals(termId))
                 .findAny()
                 // 用語に登録されていないものでも 名称＝物理名 として返す
-                .orElseGet(() -> Term.simple(termId, id.name(), TermKind.フィールド));
+                .orElseGet(() -> Term.simple(termId, jigFieldId.name(), TermKind.フィールド));
     }
 }

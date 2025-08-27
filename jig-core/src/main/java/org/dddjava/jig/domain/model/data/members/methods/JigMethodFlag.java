@@ -1,7 +1,9 @@
 package org.dddjava.jig.domain.model.data.members.methods;
 
 /**
- * Methodの扱うaccess_flagsのうち、可視性と所有関係を除くもの。
+ * メソッドのフラグ
+ *
+ * クラスファイルのMethodが扱うaccess_flagsのうち、可視性と所有関係を除くもの。
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.6">4.6 Methods</a>
  */

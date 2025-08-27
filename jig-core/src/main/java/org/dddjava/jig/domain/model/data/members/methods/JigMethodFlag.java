@@ -69,6 +69,9 @@ public enum JigMethodFlag {
         this.compilerGenerated = compilerGenerated;
     }
 
+    /**
+     * コンパイラが生成したメソッドか否かを判定する
+     */
     public boolean compilerGenerated() {
         return compilerGenerated;
     }

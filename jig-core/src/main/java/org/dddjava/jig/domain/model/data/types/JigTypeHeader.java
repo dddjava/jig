@@ -3,12 +3,14 @@ package org.dddjava.jig.domain.model.data.types;
 import java.util.*;
 
 /**
+ * 型ヘッダ
+ *
  * JSL`NormalClassDeclaration` の `ClassBody` 以外で得られる情報
  *
- * @param id                   完全修飾クラス名
+ * @param id                      完全修飾クラス名
  * @param javaTypeDeclarationKind
  * @param jigTypeAttributes
- * @param baseTypeDataBundle   親クラス及び実装インタフェース
+ * @param baseTypeDataBundle      親クラス及び実装インタフェース
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html">jls/Chapter 8. Classes</a>
  */
 public record JigTypeHeader(TypeId id,

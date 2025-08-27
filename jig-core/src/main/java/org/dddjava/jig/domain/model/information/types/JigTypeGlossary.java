@@ -52,7 +52,7 @@ public record JigTypeGlossary(Term term, Collection<Term> memberTerms) {
                 })
                 .findAny()
                 // 用語に登録されていないものでも 名称＝物理名 として返す
-                .orElseGet(() -> new Term(new TermId(jigMethodId.value()), jigMethodId.name(), "", TermKind.メソッド));
+                .orElseGet(() -> Term.simple(new TermId(jigMethodId.value()), jigMethodId.name(), TermKind.メソッド));
     }
 
     public Term fieldTerm(JigFieldId id) {

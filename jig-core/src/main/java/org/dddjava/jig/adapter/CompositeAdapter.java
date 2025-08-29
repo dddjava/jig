@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter;
 
-import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 
@@ -33,23 +32,14 @@ public class CompositeAdapter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Path> invoke(JigDocument jigDocument, JigRepository jigRepository) {
         Object adapter = adapterInstanceMap.get(jigDocument);
         MethodHandle adapterMethod = adapterMethodMap.get(jigDocument);
 
         try {
-            if (adapter instanceof DiagramAdapter writableAdapter) {
-                Object result = adapterMethod.invoke(adapter, jigRepository);
-                return writableAdapter.write(result, jigDocument);
-            } else {
-                // 引数はJigRepositoryとJigDocumentでなければならない
-                Object result = adapterMethod.invoke(adapter, jigRepository, jigDocument);
-                if (result instanceof List<?> list) {
-                    // uncheckedの警告を抑止しないならこういう書き方になるが無駄な感じが否めない
-                    return list.stream().map(Path.class::cast).toList();
-                }
-                throw new UnsupportedOperationException();
-            }
+            // 引数はJigRepositoryとJigDocumentでなければならない
+            return (List<Path>) adapterMethod.invoke(adapter, jigRepository, jigDocument);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

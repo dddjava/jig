@@ -29,33 +29,33 @@ public class DiagramAdapter {
     }
 
     @HandleDocument(JigDocument.PackageRelationDiagram)
-    public DiagramSourceWriter packageRelation(JigRepository jigRepository) {
-        return PackageRelationDiagram.from(jigService.coreTypesAndRelations(jigRepository));
+    public List<Path> packageRelation(JigRepository jigRepository, JigDocument jigDocument) {
+        return write(jigDocument, PackageRelationDiagram.from(jigService.coreTypesAndRelations(jigRepository)));
     }
 
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)
-    public DiagramSourceWriter businessRuleRelation(JigRepository jigRepository) {
-        return new ClassRelationDiagram(jigService.coreTypesAndRelations(jigRepository));
+    public List<Path> businessRuleRelation(JigRepository jigRepository, JigDocument jigDocument) {
+        return write(jigDocument, new ClassRelationDiagram(jigService.coreTypesAndRelations(jigRepository)));
     }
 
     @HandleDocument(JigDocument.CategoryDiagram)
-    public DiagramSourceWriter categories(JigRepository jigRepository) {
-        return CategoryDiagram.create(jigService.categoryTypes(jigRepository));
+    public List<Path> categories(JigRepository jigRepository, JigDocument jigDocument) {
+        return write(jigDocument, CategoryDiagram.create(jigService.categoryTypes(jigRepository)));
     }
 
     @HandleDocument(JigDocument.CategoryUsageDiagram)
-    public DiagramSourceWriter categoryUsages(JigRepository jigRepository) {
+    public List<Path> categoryUsages(JigRepository jigRepository, JigDocument jigDocument) {
         ServiceMethods serviceMethods = jigService.serviceMethods(jigRepository);
         CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
-        return new CategoryUsageDiagram(serviceMethods, coreTypesAndRelations);
+        return write(jigDocument, new CategoryUsageDiagram(serviceMethods, coreTypesAndRelations));
     }
 
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)
-    public DiagramSourceWriter serviceMethodCallHierarchy(JigRepository jigRepository) {
-        return new ServiceMethodCallHierarchyDiagram(jigService.serviceAngles(jigRepository));
+    public List<Path> serviceMethodCallHierarchy(JigRepository jigRepository, JigDocument jigDocument) {
+        return write(jigDocument, new ServiceMethodCallHierarchyDiagram(jigService.serviceAngles(jigRepository)));
     }
 
-    public List<Path> write(Object result, JigDocument jigDocument) {
-        return graphvizDiagramWriter.write((DiagramSourceWriter) result, jigDocument);
+    private List<Path> write(JigDocument jigDocument, DiagramSourceWriter result) {
+        return graphvizDiagramWriter.write(result, jigDocument);
     }
 }

@@ -11,10 +11,10 @@ import java.util.List;
 
 public class CompositeAdapter {
 
-    EnumMap<JigDocument, Adapter> adapterInstanceMap = new EnumMap<>(JigDocument.class);
+    EnumMap<JigDocument, Object> adapterInstanceMap = new EnumMap<>(JigDocument.class);
     EnumMap<JigDocument, MethodHandle> adapterMethodMap = new EnumMap<>(JigDocument.class);
 
-    public void register(Adapter adapter) {
+    public void register(Object adapter) {
         try {
             var lookup = MethodHandles.lookup();
             for (var method : adapter.getClass().getMethods()) {
@@ -33,12 +33,16 @@ public class CompositeAdapter {
     }
 
     public List<Path> invoke(JigDocument jigDocument, JigRepository jigRepository) {
-        Adapter adapter = adapterInstanceMap.get(jigDocument);
+        Object adapter = adapterInstanceMap.get(jigDocument);
         MethodHandle adapterMethod = adapterMethodMap.get(jigDocument);
 
         try {
             Object result = adapterMethod.invoke(adapter, jigRepository);
-            return adapter.write(result, jigDocument);
+            if (adapter instanceof Adapter writableAdapter) {
+                return writableAdapter.write(result, jigDocument);
+            } else {
+                throw new UnsupportedOperationException();
+            }
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

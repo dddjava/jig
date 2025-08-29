@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @HandleDocument
-public class SummaryAdapter implements Adapter {
+public class SummaryAdapter {
 
     private final JigService jigService;
     private final ThymeleafSummaryWriter thymeleafSummaryWriter;
@@ -28,41 +27,40 @@ public class SummaryAdapter implements Adapter {
     }
 
     @HandleDocument(JigDocument.DomainSummary)
-    public SummaryModel domainSummary(JigRepository jigRepository) {
+    public List<Path> domainSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreTypesAndRelations(jigRepository)));
+        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreTypesAndRelations(jigRepository))));
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)
-    public SummaryModel applicationSummary(JigRepository jigRepository) {
+    public List<Path> applicationSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes jigTypes = jigService.serviceTypes(jigRepository);
-        return SummaryModel.of(jigTypes, jigService.packages(jigRepository));
+        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)));
     }
 
     @HandleDocument(JigDocument.UsecaseSummary)
-    public SummaryModel usecaseSummary(JigRepository jigRepository) {
+    public List<Path> usecaseSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes jigTypes = jigService.serviceTypes(jigRepository);
         var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.lambdaInlined(jigTypes));
-        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("mermaidDiagram", usecaseMermaidDiagram));
+        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("mermaidDiagram", usecaseMermaidDiagram)));
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)
-    public SummaryModel entrypointSummary(JigRepository jigRepository) {
+    public List<Path> entrypointSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes contextJigTypes = jigService.jigTypes(jigRepository);
         InputAdapters inputAdapters = jigService.entrypoint(jigRepository);
         JigTypes jigTypes = inputAdapters.jigTypes();
         var entrypointMermaidDiagram = new EntrypointMermaidDiagram(inputAdapters, contextJigTypes);
-        return SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("mermaidDiagram", entrypointMermaidDiagram));
+        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("mermaidDiagram", entrypointMermaidDiagram)));
     }
 
     @HandleDocument(JigDocument.EnumSummary)
-    public SummaryModel inputSummary(JigRepository jigRepository) {
+    public List<Path> inputSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        return SummaryModel.of(categoryTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap()));
+        return write(jigDocument, SummaryModel.of(categoryTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap())));
     }
 
-    @Override
-    public List<Path> write(Object result, JigDocument jigDocument) {
-        return thymeleafSummaryWriter.write(jigDocument, (SummaryModel) result);
+    private List<Path> write(JigDocument jigDocument, SummaryModel result) {
+        return thymeleafSummaryWriter.write(jigDocument, result);
     }
 }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.application.JigService;
@@ -18,7 +17,7 @@ import java.util.Map;
 
 
 @HandleDocument
-public class InsightAdapter implements Adapter {
+public class InsightAdapter {
 
     private final JigService jigService;
     private final TemplateEngine templateEngine;
@@ -31,13 +30,8 @@ public class InsightAdapter implements Adapter {
     }
 
     @HandleDocument(JigDocument.Insight)
-    public Insights invoke(JigRepository repository) {
-        return jigService.insights(repository);
-    }
-
-    @Override
-    public List<Path> write(Object object, JigDocument jigDocument) {
-        Insights result = (Insights) object;
+    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
+        Insights result = jigService.insights(repository);
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(

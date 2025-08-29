@@ -38,13 +38,13 @@ public class CompositeAdapter {
 
         try {
             Object result = adapterMethod.invoke(adapter, jigRepository);
-            if (result instanceof List<?> list) {
-                // uncheckedの警告を抑止しないならこういう書き方になるが無駄な感じが否めない
-                return list.stream().map(Path.class::cast).toList();
-            }
             if (adapter instanceof Adapter writableAdapter) {
                 return writableAdapter.write(result, jigDocument);
             } else {
+                if (result instanceof List<?> list) {
+                    // uncheckedの警告を抑止しないならこういう書き方になるが無駄な感じが否めない
+                    return list.stream().map(Path.class::cast).toList();
+                }
                 throw new UnsupportedOperationException();
             }
         } catch (Throwable e) {

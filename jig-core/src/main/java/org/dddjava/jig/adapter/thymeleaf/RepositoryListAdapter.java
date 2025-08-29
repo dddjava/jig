@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.application.JigService;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class RepositoryListAdapter implements Adapter {
+public class RepositoryListAdapter {
     private final JigService jigService;
     private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
@@ -31,10 +30,10 @@ public class RepositoryListAdapter implements Adapter {
     }
 
     @HandleDocument(JigDocument.RepositorySummary)
-    public List<OutputSummaryItem> invoke(JigRepository repository) {
+    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
         var outputAdapters = OutputAdapters.from(jigTypes);
-        return outputAdapters.stream()
+        var result = outputAdapters.stream()
                 // output adapterの実装しているoutput portのgatewayを
                 .flatMap(outputAdapter -> outputAdapter.implementsPortStream(jigTypes)
                         .flatMap(outputPort -> outputPort.gatewayStream()
@@ -46,10 +45,6 @@ public class RepositoryListAdapter implements Adapter {
                                                 outputAdapter.jigType().label(),
                                                 invocation.jigMethod().name())))))
                 .toList();
-    }
-
-    @Override
-    public List<Path> write(Object result, JigDocument jigDocument) {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(

@@ -11,5 +11,7 @@ import java.util.List;
  */
 public interface Adapter {
 
-    List<Path> write(Object result, JigDocument jigDocument);
+    default List<Path> write(Object result, JigDocument jigDocument) {
+        throw new UnsupportedOperationException();
+    }
 }

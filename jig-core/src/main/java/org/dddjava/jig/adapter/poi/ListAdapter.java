@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.poi;
 
-import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
@@ -38,7 +37,7 @@ import static java.util.stream.Collectors.joining;
  * 一覧のAdapter
  */
 @HandleDocument
-public class ListAdapter implements Adapter {
+public class ListAdapter {
 
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター
@@ -54,7 +53,7 @@ public class ListAdapter implements Adapter {
     }
 
     @HandleDocument(JigDocument.BusinessRuleList)
-    public ReportBook businessRuleReports(JigRepository jigRepository) {
+    public List<Path> businessRuleReports(JigRepository jigRepository, JigDocument jigDocument) {
 
         MethodSmells methodSmells = jigService.methodSmells(jigRepository);
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
@@ -64,7 +63,7 @@ public class ListAdapter implements Adapter {
         JigTypes coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
         List<JigPackageWithJigTypes> jigTypePackages = JigPackageWithJigTypes.from(coreDomainJigTypes);
-        return new ReportBook(
+        var result = new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("パッケージ別名", item -> jigDocumentContext.packageTerm(item.packageId()).title()),
@@ -140,16 +139,17 @@ public class ListAdapter implements Adapter {
                         ReportItem.ofString("voidを返している", item -> markIfTrue(item.returnsVoid()))
                 ), methodSmells.list())
         );
+        return result.writeXlsx(jigDocument, jigDocumentContext.outputDirectory());
     }
 
     @HandleDocument(JigDocument.ApplicationList)
-    public ReportBook applicationReports(JigRepository jigRepository) {
+    public List<Path> applicationReports(JigRepository jigRepository, JigDocument jigDocument) {
         ServiceAngles serviceAngles = jigService.serviceAngles(jigRepository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigRepository);
         StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigRepository);
         InputAdapters inputAdapters = jigService.entrypoint(jigRepository);
 
-        return new ReportBook(
+        var result = new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.typeId().asSimpleText()),
@@ -225,14 +225,10 @@ public class ListAdapter implements Adapter {
                         ReportItem.ofString("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText())
                 ), stringComparingMethodList.list())
         );
+        return result.writeXlsx(jigDocument, jigDocumentContext.outputDirectory());
     }
 
     private static String markIfTrue(boolean b) {
         return b ? "◯" : "";
-    }
-
-    @Override
-    public List<Path> write(Object result, JigDocument jigDocument) {
-        return ((ReportBook) result).writeXlsx(jigDocument, jigDocumentContext.outputDirectory());
     }
 }

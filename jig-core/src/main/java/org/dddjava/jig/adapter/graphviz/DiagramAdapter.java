@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.graphviz;
 
-import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
@@ -19,7 +18,7 @@ import java.util.List;
  * {@link HandleDocument} で指定されたドキュメントを出力する際に各メソッドが実行される。
  */
 @HandleDocument
-public class DiagramAdapter implements Adapter {
+public class DiagramAdapter {
 
     private final JigService jigService;
     private final GraphvizDiagramWriter graphvizDiagramWriter;
@@ -56,7 +55,6 @@ public class DiagramAdapter implements Adapter {
         return new ServiceMethodCallHierarchyDiagram(jigService.serviceAngles(jigRepository));
     }
 
-    @Override
     public List<Path> write(Object result, JigDocument jigDocument) {
         return graphvizDiagramWriter.write((DiagramSourceWriter) result, jigDocument);
     }

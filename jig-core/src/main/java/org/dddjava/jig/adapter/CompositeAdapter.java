@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter;
 
+import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 
@@ -37,7 +38,7 @@ public class CompositeAdapter {
         MethodHandle adapterMethod = adapterMethodMap.get(jigDocument);
 
         try {
-            if (adapter instanceof Adapter writableAdapter) {
+            if (adapter instanceof DiagramAdapter writableAdapter) {
                 Object result = adapterMethod.invoke(adapter, jigRepository);
                 return writableAdapter.write(result, jigDocument);
             } else {

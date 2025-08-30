@@ -66,7 +66,7 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
         compositeAdapter.register(new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext)));
         compositeAdapter.register(new InsightAdapter(jigService, templateEngine, jigDocumentContext));
-        compositeAdapter.register(new RepositoryListAdapter(jigService, templateEngine, jigDocumentContext));
+        compositeAdapter.register(new RepositorySummaryAdapter(jigService, templateEngine, jigDocumentContext));
     }
 
     public void generateIndex(List<HandleResult> results) {

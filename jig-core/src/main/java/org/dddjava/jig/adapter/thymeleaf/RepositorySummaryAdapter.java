@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class RepositoryListAdapter {
+public class RepositorySummaryAdapter {
     private final JigService jigService;
     private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
 
-    public RepositoryListAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public RepositorySummaryAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;

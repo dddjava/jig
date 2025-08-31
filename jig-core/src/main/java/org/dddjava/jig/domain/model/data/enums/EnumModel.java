@@ -39,4 +39,11 @@ public class EnumModel {
     public void addConstructorArgumentNames(List<String> argumentNames) {
         constructorArgumentNamesList.add(argumentNames);
     }
+
+    public boolean hasConstructorArguments() {
+        return enumConstants.stream()
+                .mapToInt(enumConstant -> enumConstant.argumentExpressions().size())
+                .max()
+                .orElse(0) > 0;
+    }
 }

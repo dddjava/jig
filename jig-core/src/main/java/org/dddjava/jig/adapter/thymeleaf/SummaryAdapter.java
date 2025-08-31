@@ -29,7 +29,11 @@ public class SummaryAdapter {
     @HandleDocument(JigDocument.DomainSummary)
     public List<Path> domainSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreTypesAndRelations(jigRepository))));
+        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository))
+                .withAdditionalMap(Map.of(
+                        TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreTypesAndRelations(jigRepository),
+                        "enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap()
+                )));
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)

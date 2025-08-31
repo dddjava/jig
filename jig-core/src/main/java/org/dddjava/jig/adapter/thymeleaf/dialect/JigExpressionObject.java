@@ -3,6 +3,7 @@ package org.dddjava.jig.adapter.thymeleaf.dialect;
 import org.dddjava.jig.adapter.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
+import org.dddjava.jig.adapter.thymeleaf.SummaryAdapter;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -175,7 +176,7 @@ class JigExpressionObject {
     }
 
     public Optional<String> relationDiagram(JigPackage jigPackage) {
-        if (context.getVariable(TypeRelationMermaidDiagram.CONTEXT_KEY) instanceof CoreTypesAndRelations coreTypesAndRelations) {
+        if (context.getVariable(SummaryAdapter.RELATIONSHIPS_KEY) instanceof CoreTypesAndRelations coreTypesAndRelations) {
             return new TypeRelationMermaidDiagram().write(jigPackage, coreTypesAndRelations);
         }
         return Optional.empty();

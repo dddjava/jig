@@ -21,8 +21,6 @@ import static java.util.stream.Collectors.*;
  */
 public class TypeRelationMermaidDiagram {
 
-    public static final String CONTEXT_KEY = "relationships";
-
     /**
      * @param jigPackage                出力対象パッケージ
      * @param coreTypesAndRelations 出力コンテキスト

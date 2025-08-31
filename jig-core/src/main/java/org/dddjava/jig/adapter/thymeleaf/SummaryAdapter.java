@@ -2,7 +2,6 @@ package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.mermaid.EntrypointMermaidDiagram;
-import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -18,6 +17,9 @@ import java.util.Map;
 @HandleDocument
 public class SummaryAdapter {
 
+    public static final String ENUM_MODEL_MAP_KEY = "enumModelMap";
+    public static final String RELATIONSHIPS_KEY = "relationships";
+
     private final JigService jigService;
     private final ThymeleafSummaryWriter thymeleafSummaryWriter;
 
@@ -31,8 +33,8 @@ public class SummaryAdapter {
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
         return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository))
                 .withAdditionalMap(Map.of(
-                        TypeRelationMermaidDiagram.CONTEXT_KEY, jigService.coreTypesAndRelations(jigRepository),
-                        "enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap()
+                        RELATIONSHIPS_KEY, jigService.coreTypesAndRelations(jigRepository),
+                        ENUM_MODEL_MAP_KEY, jigRepository.jigDataProvider().fetchEnumModels().toMap()
                 )));
     }
 
@@ -61,7 +63,7 @@ public class SummaryAdapter {
     @HandleDocument(JigDocument.EnumSummary)
     public List<Path> inputSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        return write(jigDocument, SummaryModel.of(categoryTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("enumModelMap", jigRepository.jigDataProvider().fetchEnumModels().toMap())));
+        return write(jigDocument, SummaryModel.of(categoryTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(ENUM_MODEL_MAP_KEY, jigRepository.jigDataProvider().fetchEnumModels().toMap())));
     }
 
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {

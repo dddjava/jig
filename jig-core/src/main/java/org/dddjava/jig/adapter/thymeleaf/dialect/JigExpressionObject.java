@@ -164,7 +164,7 @@ class JigExpressionObject {
         var typeId = jigType.id();
         // これを使用するテンプレートは "enumModelMap" をcontextにputしておく
         // ・・・ならexpressionにしなくてもいいのでは？？？？
-        Object variable = context.getVariable("enumModelMap");
+        Object variable = context.getVariable(SummaryAdapter.ENUM_MODEL_MAP_KEY);
         if (variable instanceof Map<?, ?> map) {
             if (map.get(typeId) instanceof EnumModel enumModel) {
                 return enumModel;

@@ -16,13 +16,32 @@
         </section>
 
         <section th:if="${#jig.isEnum(item)}">
-            <h3>列挙値 (<a th:href="${'./enum.html#' + item.fqn()}">区分概要</a>)</h3>
+            <h3>列挙値</h3>
             <dl>
                 <th:block th:each="term : ${#jig.enumConstantTerms(item)}">
                     <dt th:text="${term.simpleText()}">hoge</dt>
                     <dd th:if="${term.hasAlias()}" th:text="${term.title()}">fuga</dd>
                 </th:block>
             </dl>
+
+            <details>
+                <summary>列挙値詳細</summary>
+                <table class="fields"
+                       th:with="enumModel=${#jig.selectEnumModel(item)}">
+                    <thead>
+                    <tr>
+                        <th>列挙定数名</th>
+                        <th th:each="parameterName : ${enumModel.constructorArgumentNames()}" th:text="${parameterName}">パラメータ</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="constantName : ${#jig.enumConstantIdentifiers(item)}"
+                        th:with="params=${enumModel.paramOf(constantName)}">
+                        <td class="method-name" th:text="${constantName}">xxx</td>
+                        <td th:each="param: ${params}" th:text="${param}">xxx</td>
+                    </tr>
+                </table>
+            </details>
         </section>
 
         <table class="fields" th:unless="${item.instanceJigFields().empty()}">

@@ -7,16 +7,18 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Function;
 
-public record UsecaseMermaidDiagram(
-        JigTypes contextJigTypes,
-        MethodRelations methodRelations
-) {
+public class UsecaseMermaidDiagram {
+
+    private final JigTypes contextJigTypes;
+    private final MethodRelations methodRelations;
+
+    public UsecaseMermaidDiagram(JigTypes contextJigTypes, MethodRelations methodRelations) {
+        this.contextJigTypes = contextJigTypes;
+        this.methodRelations = methodRelations;
+    }
 
     private static String htmlIdText(TypeId typeId) {
         // 英数字以外を_に置換する
@@ -103,4 +105,34 @@ public record UsecaseMermaidDiagram(
     private String usecaseMermaidNodeText(JigMethod jigMethod) {
         return "%s([\"%s\"])".formatted(MermaidSupport.mermaidIdText(jigMethod.jigMethodId()), jigMethod.labelTextOrLambda());
     }
+
+    public JigTypes contextJigTypes() {
+        return contextJigTypes;
+    }
+
+    public MethodRelations methodRelations() {
+        return methodRelations;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (UsecaseMermaidDiagram) obj;
+        return Objects.equals(this.contextJigTypes, that.contextJigTypes) &&
+                Objects.equals(this.methodRelations, that.methodRelations);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contextJigTypes, methodRelations);
+    }
+
+    @Override
+    public String toString() {
+        return "UsecaseMermaidDiagram[" +
+                "contextJigTypes=" + contextJigTypes + ", " +
+                "methodRelations=" + methodRelations + ']';
+    }
+
 }

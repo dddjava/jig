@@ -12,7 +12,15 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.*;
 
-public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes contextJigTypes) {
+public class EntrypointMermaidDiagram {
+
+    private final InputAdapters inputAdapters;
+    private final JigTypes contextJigTypes;
+
+    public EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes contextJigTypes) {
+        this.inputAdapters = inputAdapters;
+        this.contextJigTypes = contextJigTypes;
+    }
 
     public String textFor(JigType jigType) {
         return inputAdapters().groups().stream()
@@ -100,4 +108,34 @@ public record EntrypointMermaidDiagram(InputAdapters inputAdapters, JigTypes con
     private static String methodRelationEdgeText(MethodRelation methodRelation) {
         return "%s --> %s".formatted(MermaidSupport.mermaidIdText(methodRelation.from()), MermaidSupport.mermaidIdText(methodRelation.to()));
     }
+
+    public InputAdapters inputAdapters() {
+        return inputAdapters;
+    }
+
+    public JigTypes contextJigTypes() {
+        return contextJigTypes;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (EntrypointMermaidDiagram) obj;
+        return Objects.equals(this.inputAdapters, that.inputAdapters) &&
+                Objects.equals(this.contextJigTypes, that.contextJigTypes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(inputAdapters, contextJigTypes);
+    }
+
+    @Override
+    public String toString() {
+        return "EntrypointMermaidDiagram[" +
+                "inputAdapters=" + inputAdapters + ", " +
+                "contextJigTypes=" + contextJigTypes + ']';
+    }
+
 }

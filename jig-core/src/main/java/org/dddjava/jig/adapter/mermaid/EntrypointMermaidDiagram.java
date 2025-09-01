@@ -23,10 +23,10 @@ public class EntrypointMermaidDiagram {
     }
 
     public String textFor(JigType jigType) {
-        return inputAdapters().groups().stream()
+        return inputAdapters.groups().stream()
                 .filter(inputAdapter -> inputAdapter.jigType() == jigType)
                 .findAny()
-                .map(inputAdapter -> mermaid(inputAdapter, inputAdapters().methodRelations(), contextJigTypes))
+                .map(inputAdapter -> mermaid(inputAdapter, inputAdapters.methodRelations(), contextJigTypes))
                 .orElse("");
     }
 
@@ -108,34 +108,4 @@ public class EntrypointMermaidDiagram {
     private static String methodRelationEdgeText(MethodRelation methodRelation) {
         return "%s --> %s".formatted(MermaidSupport.mermaidIdText(methodRelation.from()), MermaidSupport.mermaidIdText(methodRelation.to()));
     }
-
-    public InputAdapters inputAdapters() {
-        return inputAdapters;
-    }
-
-    public JigTypes contextJigTypes() {
-        return contextJigTypes;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (EntrypointMermaidDiagram) obj;
-        return Objects.equals(this.inputAdapters, that.inputAdapters) &&
-                Objects.equals(this.contextJigTypes, that.contextJigTypes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(inputAdapters, contextJigTypes);
-    }
-
-    @Override
-    public String toString() {
-        return "EntrypointMermaidDiagram[" +
-                "inputAdapters=" + inputAdapters + ", " +
-                "contextJigTypes=" + contextJigTypes + ']';
-    }
-
 }

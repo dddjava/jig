@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head th:replace="~{fragment-base::head(${title})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>インサイト</title>
+</head>
+<body class="insight">
+<header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
+<main>
+    <h1>シーケンス図</h1>
+    このドキュメントは作成中です。
+
+    <section class="type" th:each="item : ${jigTypes}">
+        <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+
+        <section class="method" th:each="method : ${#jig.listRemarkableInstanceMethods(item)}">
+            <h3 th:id="${#jig.htmlIdText(method)}" th:text="${method.labelText()}">XXXメソッド</h3>
+
+            <div class="mermaid" th:utext="${#jig.sequenceFor(method)}">
+                mermaidでシーケンス図を出力
+            </div>
+        </section>
+    </section>
+</main>
+
+<th:block th:replace="~{fragment-base::scripts}">
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
+</th:block>
+</body>
+</html>

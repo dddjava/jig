@@ -48,6 +48,7 @@ public class HandleResult {
                  EnumSummary,
                  TermList,
                  Insight,
+                 Sequence,
                  Glossary,
                  PackageSummary -> false;
         };

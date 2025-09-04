@@ -10,6 +10,11 @@
 <body class="insight">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
+    <h1>インサイト</h1>
+    <aside class="notice">
+        <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
+    </aside>
+
     <button id="cancel-zoom" class="hidden">ズーム解除</button>
 
     <h2>パッケージ (<span th:text="${packageInsightList.size()}">1</span>)</h2>

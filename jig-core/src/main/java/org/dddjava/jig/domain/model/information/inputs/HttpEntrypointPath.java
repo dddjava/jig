@@ -29,7 +29,6 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
                 .annotationValueOf(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
                 .filter(value -> !"/".equals(value)).orElse("");
 
-        String methodPath;
         List<JigAnnotationReference> methodAnnotations = jigMethod.declarationAnnotationStream()
                 .filter(jigAnnotationReference -> {
                     TypeId typeId = jigAnnotationReference.id();
@@ -50,6 +49,7 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
         if (methodAnnotations.size() > 1) {
             logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
         }
+        String methodPath;
         methodPath = requestMappingForMethod.elementTextOf("value").orElse(null);
         if (methodPath == null) methodPath = requestMappingForMethod.elementTextOf("path").orElse(null);
         var simpleText = requestMappingForMethod.id().asSimpleText();

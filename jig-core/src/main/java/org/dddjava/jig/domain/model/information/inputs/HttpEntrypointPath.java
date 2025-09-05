@@ -49,9 +49,7 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
         if (methodAnnotations.size() > 1) {
             logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
         }
-        String methodPath;
-        methodPath = requestMappingForMethod.elementTextOf("value").orElse(null);
-        if (methodPath == null) methodPath = requestMappingForMethod.elementTextOf("path").orElse(null);
+        var methodPath = resolvePath(requestMappingForMethod);
         var simpleText = requestMappingForMethod.id().asSimpleText();
         // アノテーション名からHTTPメソッド名を作る。RequestMappingは一旦対応しない。
         var method = "RequestMapping".equals(simpleText) ? "???" : simpleText.replace("Mapping", "").toUpperCase(Locale.ROOT);
@@ -65,6 +63,13 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
 
         if (methodPath == null || methodPath.isEmpty()) methodPath = "/";
         return new HttpEntrypointPath(method, interfaceLabel, classPath, methodPath);
+    }
+
+    private static String resolvePath(JigAnnotationReference requestMappingForMethod) {
+        String methodPath;
+        methodPath = requestMappingForMethod.elementTextOf("value").orElse(null);
+        if (methodPath == null) methodPath = requestMappingForMethod.elementTextOf("path").orElse(null);
+        return methodPath;
     }
 
     public String pathText() {

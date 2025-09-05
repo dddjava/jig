@@ -54,11 +54,11 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
         var methodPath = resolveMethodPath(requestMappingForMethod);
         var simpleText = requestMappingForMethod.id().asSimpleText();
         // アノテーション名からHTTPメソッド名を作る。RequestMappingは一旦対応しない。
-        var method = "RequestMapping".equals(simpleText) ? "???" : simpleText.replace("Mapping", "").toUpperCase(Locale.ROOT);
+        var httpMethod = "RequestMapping".equals(simpleText) ? "???" : simpleText.replace("Mapping", "").toUpperCase(Locale.ROOT);
 
         var entrypointName = resolveEntrypointName(jigMethod);
 
-        return new HttpEntrypointPath(method, entrypointName, classPath, methodPath);
+        return new HttpEntrypointPath(httpMethod, entrypointName, classPath, methodPath);
     }
 
     private static String resolveEntrypointName(JigMethod jigMethod) {

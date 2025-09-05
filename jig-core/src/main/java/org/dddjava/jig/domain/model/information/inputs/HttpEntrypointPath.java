@@ -66,9 +66,9 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
     }
 
     private static String resolvePath(JigAnnotationReference requestMappingForMethod) {
-        var methodPath = requestMappingForMethod.elementTextOf("value").orElse(null);
-        if (methodPath == null) methodPath = requestMappingForMethod.elementTextOf("path").orElse(null);
-        return methodPath;
+        return requestMappingForMethod.elementTextOf("value")
+                .or(() -> requestMappingForMethod.elementTextOf("path"))
+                .orElse(null);
     }
 
     public String pathText() {

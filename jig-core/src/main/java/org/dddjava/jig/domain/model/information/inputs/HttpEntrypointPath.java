@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.joining;
 
@@ -61,14 +62,14 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
                 .findAny();
         String interfaceLabel = optOperationSummary.orElseGet(jigMethod::labelText);
 
-        if (methodPath == null || methodPath.isEmpty()) methodPath = "/";
         return new HttpEntrypointPath(method, interfaceLabel, classPath, methodPath);
     }
 
     private static String resolvePath(JigAnnotationReference requestMappingForMethod) {
         return requestMappingForMethod.elementTextOf("value")
                 .or(() -> requestMappingForMethod.elementTextOf("path"))
-                .orElse(null);
+                .filter(Predicate.not(String::isEmpty))
+                .orElse("/");
     }
 
     public String pathText() {

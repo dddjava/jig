@@ -32,15 +32,15 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
                 .annotationValueOf(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
                 .filter(value -> !"/".equals(value)).orElse("");
 
+        var entrypointName = resolveEntrypointName(jigMethod);
         var optRequestMappingForMethod = findJigAnnotationReference(jigMethod);
 
         return optRequestMappingForMethod.map(requestMappingForMethod -> {
             var methodPath = resolveMethodPath(requestMappingForMethod);
             var httpMethod = resolveHttpMethod(requestMappingForMethod);
-            var entrypointName = resolveEntrypointName(jigMethod);
             return new HttpEntrypointPath(httpMethod, entrypointName, classPath, methodPath);
         }).orElseGet(() -> {
-            return new HttpEntrypointPath("???", jigMethod.labelText(), classPath, "");
+            return new HttpEntrypointPath("???", entrypointName, classPath, "");
         });
     }
 

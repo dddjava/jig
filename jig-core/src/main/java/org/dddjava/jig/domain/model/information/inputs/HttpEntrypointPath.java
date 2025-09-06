@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.joining;
@@ -31,6 +32,19 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
                 .annotationValueOf(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
                 .filter(value -> !"/".equals(value)).orElse("");
 
+        var optRequestMappingForMethod = findJigAnnotationReference(jigMethod);
+
+        return optRequestMappingForMethod.map(requestMappingForMethod -> {
+            var methodPath = resolveMethodPath(requestMappingForMethod);
+            var httpMethod = resolveHttpMethod(requestMappingForMethod);
+            var entrypointName = resolveEntrypointName(jigMethod);
+            return new HttpEntrypointPath(httpMethod, entrypointName, classPath, methodPath);
+        }).orElseGet(() -> {
+            return new HttpEntrypointPath("???", jigMethod.labelText(), classPath, "");
+        });
+    }
+
+    private static Optional<JigAnnotationReference> findJigAnnotationReference(JigMethod jigMethod) {
         List<JigAnnotationReference> methodAnnotations = jigMethod.declarationAnnotationStream()
                 .filter(jigAnnotationReference -> {
                     TypeId typeId = jigAnnotationReference.id();
@@ -44,19 +58,14 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
                 .toList();
         if (methodAnnotations.isEmpty()) {
             logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
-            return new HttpEntrypointPath("???", jigMethod.labelText(), classPath, "");
+            return Optional.empty();
         }
         // メソッドにアノテーションが複数指定されている場合、最初の一つが優先される（SpringMVCの挙動）
         var requestMappingForMethod = methodAnnotations.get(0);
         if (methodAnnotations.size() > 1) {
             logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
         }
-
-        var methodPath = resolveMethodPath(requestMappingForMethod);
-        var httpMethod = resolveHttpMethod(requestMappingForMethod);
-        var entrypointName = resolveEntrypointName(jigMethod);
-
-        return new HttpEntrypointPath(httpMethod, entrypointName, classPath, methodPath);
+        return Optional.of(requestMappingForMethod);
     }
 
     private static String resolveHttpMethod(JigAnnotationReference requestMappingForMethod) {

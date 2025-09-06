@@ -40,6 +40,9 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
             var httpMethod = resolveHttpMethod(requestMappingForMethod);
             return new HttpEntrypointPath(httpMethod, entrypointName, classPath, methodPath);
         }).orElseGet(() -> {
+            // RequestMappingでないものをEntrypointと認識しているのはおかしい。
+            // Entrypointの時点で解決しているはずなので、ここで分岐があるのが設計ミス。
+            logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
             return new HttpEntrypointPath("???", entrypointName, classPath, "");
         });
     }
@@ -57,7 +60,6 @@ public record HttpEntrypointPath(String method, String interfaceLabel, String cl
                 })
                 .toList();
         if (methodAnnotations.isEmpty()) {
-            logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
             return Optional.empty();
         }
         // メソッドにアノテーションが複数指定されている場合、最初の一つが優先される（SpringMVCの挙動）

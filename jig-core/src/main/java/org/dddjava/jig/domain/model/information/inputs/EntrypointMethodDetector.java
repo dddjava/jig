@@ -12,10 +12,10 @@ import java.util.stream.Stream;
  */
 public class EntrypointMethodDetector {
 
-    private final DetectorConditions detectorConditions;
+    private final List<DetectorCondition> detectorConditions;
 
     public EntrypointMethodDetector() {
-        detectorConditions = new DetectorConditions(List.of(
+        detectorConditions = List.of(
                 new DetectorCondition(EntrypointType.HTTP_API,
                         List.of("org.springframework.stereotype.Controller",
                                 "org.springframework.web.bind.annotation.RestController",
@@ -33,14 +33,7 @@ public class EntrypointMethodDetector {
                 new DetectorCondition(EntrypointType.OTHER,
                         List.of("org.dddjava.jig.adapter.HandleDocument"),
                         List.of("org.dddjava.jig.adapter.HandleDocument"))
-        ));
-    }
-
-    record DetectorConditions(List<DetectorCondition> detectorConditions) {
-
-        Stream<DetectorCondition> stream() {
-            return detectorConditions.stream();
-        }
+        );
     }
 
     record DetectorCondition(EntrypointType entrypointType,

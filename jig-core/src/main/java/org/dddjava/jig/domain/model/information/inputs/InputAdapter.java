@@ -19,11 +19,11 @@ public record InputAdapter(JigType jigType, Collection<Entrypoint> entrypoints) 
 
     static Optional<InputAdapter> from(EntrypointMethodDetector entrypointMethodDetector, JigType jigType) {
         var entrypointMethods = entrypointMethodDetector.collectMethod(jigType);
-        if (!entrypointMethods.isEmpty()) {
-            return Optional.of(new InputAdapter(jigType, entrypointMethods));
+        if (entrypointMethods.isEmpty()) {
+            // エントリーポイントではない
+            return Optional.empty();
         }
-        // not entrypoint
-        return Optional.empty();
+        return Optional.of(new InputAdapter(jigType, entrypointMethods));
     }
 
 }

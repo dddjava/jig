@@ -12,11 +12,11 @@ import java.util.stream.Stream;
  */
 public class EntrypointMethodDetector {
 
-    private final List<DetectorCondition> detectorConditions;
+    private final List<EntrypointAnnotation> entrypointAnnotations;
 
     public EntrypointMethodDetector() {
-        detectorConditions = List.of(
-                new DetectorCondition(EntrypointType.HTTP_API,
+        entrypointAnnotations = List.of(
+                new EntrypointAnnotation(EntrypointType.HTTP_API,
                         List.of("org.springframework.stereotype.Controller",
                                 "org.springframework.web.bind.annotation.RestController",
                                 "org.springframework.web.bind.annotation.ControllerAdvice"),
@@ -26,29 +26,29 @@ public class EntrypointMethodDetector {
                                 "org.springframework.web.bind.annotation.PutMapping",
                                 "org.springframework.web.bind.annotation.DeleteMapping",
                                 "org.springframework.web.bind.annotation.PatchMapping")),
-                new DetectorCondition(EntrypointType.QUEUE_LISTENER,
+                new EntrypointAnnotation(EntrypointType.QUEUE_LISTENER,
                         List.of("org.springframework.stereotype.Component"),
                         List.of("org.springframework.amqp.rabbit.annotation.RabbitListener")),
                 // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
-                new DetectorCondition(EntrypointType.OTHER,
+                new EntrypointAnnotation(EntrypointType.OTHER,
                         List.of("org.dddjava.jig.adapter.HandleDocument"),
                         List.of("org.dddjava.jig.adapter.HandleDocument"))
         );
     }
 
-    record DetectorCondition(EntrypointType entrypointType,
-                             List<String> classAnnotations, List<String> methodAnnotations) {
+    record EntrypointAnnotation(EntrypointType entrypointType,
+                                List<String> classAnnotations, List<String> methodAnnotations) {
     }
 
     Collection<Entrypoint> collectMethod(JigType jigType) {
-        return detectorConditions.stream()
-                .flatMap(detectorCondition -> {
-                    if (detectorCondition.classAnnotations().stream().map(TypeId::valueOf)
+        return entrypointAnnotations.stream()
+                .flatMap(entrypointAnnotation -> {
+                    if (entrypointAnnotation.classAnnotations().stream().map(TypeId::valueOf)
                             .anyMatch(jigType::hasAnnotation)) {
                         return jigType.instanceJigMethodStream().filter(jigMethod ->
-                                        detectorCondition.methodAnnotations().stream().map(TypeId::valueOf)
+                                        entrypointAnnotation.methodAnnotations().stream().map(TypeId::valueOf)
                                                 .anyMatch(jigMethod::hasAnnotation))
-                                .map(jigMethod -> new Entrypoint(detectorCondition.entrypointType(), jigType, jigMethod));
+                                .map(jigMethod -> new Entrypoint(entrypointAnnotation.entrypointType(), jigType, jigMethod));
                     }
                     return Stream.empty();
                 })

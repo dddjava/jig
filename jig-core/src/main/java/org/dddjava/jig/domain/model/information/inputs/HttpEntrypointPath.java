@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.joining;
  *
  * エントリーポイントから情報を抜き出したもの。
  */
-public record HttpEntrypointPath(String method, String interfaceLabel, String classPath, String methodPath) {
+public record HttpEntrypointPath(String method, String entrypointName, String classPath, String methodPath) {
     private static final Logger logger = LoggerFactory.getLogger(HttpEntrypointPath.class);
 
     public static HttpEntrypointPath from(Entrypoint entrypoint) {

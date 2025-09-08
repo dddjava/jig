@@ -48,7 +48,7 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
 
     public String methodLabelText() {
         if (entrypointType() == EntrypointType.HTTP_API) {
-            return HttpEntrypointPath.from(this).interfaceLabel();
+            return HttpEntrypointPath.from(this).entrypointName();
         }
         return jigMethod().labelText();
     }

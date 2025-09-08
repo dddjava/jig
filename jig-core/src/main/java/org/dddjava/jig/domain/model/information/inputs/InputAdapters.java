@@ -22,11 +22,11 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
                 MethodRelations.from(jigTypes));
     }
 
-    public List<Entrypoint> listRequestHandlerMethods() {
-        return requetHandlerMethodStream().toList();
+    public List<Entrypoint> listEntrypoint() {
+        return entrypointStream().toList();
     }
 
-    private Stream<Entrypoint> requetHandlerMethodStream() {
+    private Stream<Entrypoint> entrypointStream() {
         return groups.stream()
                 .flatMap(inputAdapter -> inputAdapter.entrypoints().stream())
                 .filter(entrypointMethod -> entrypointMethod.entrypointType() == EntrypointType.HTTP_API);
@@ -37,7 +37,7 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
     }
 
     public Collection<Entrypoint> collectEntrypointMethodOf(CallerMethods callerMethods) {
-        return requetHandlerMethodStream()
+        return entrypointStream()
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();
     }

@@ -163,7 +163,7 @@ public class ListAdapter {
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("循環的複雑度", item -> item.jigMethod().instructions().cyclomaticComplexity()),
                         ReportItem.ofString("パス", item -> HttpEntrypointPath.from(item).pathText())
-                ), inputAdapters.listRequestHandlerMethods()),
+                ), inputAdapters.listEntrypoint()),
                 new ReportSheet<>("SERVICE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.serviceMethod().declaringType().packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),

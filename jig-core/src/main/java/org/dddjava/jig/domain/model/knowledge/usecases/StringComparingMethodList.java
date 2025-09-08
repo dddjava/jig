@@ -25,7 +25,7 @@ public class StringComparingMethodList {
 
     public static StringComparingMethodList createFrom(InputAdapters inputAdapters, ServiceMethods serviceMethods) {
         Stream<JigMethod> targetMethodStream = Stream.concat(
-                inputAdapters.listRequestHandlerMethods().stream()
+                inputAdapters.listEntrypoint().stream()
                         .map(entrypointMethod -> entrypointMethod.jigMethod()),
                 serviceMethods.list().stream()
                         .map(serviceMethod -> serviceMethod.method())

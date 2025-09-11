@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 /**
@@ -15,5 +16,9 @@ public record Gateway(JigMethod jigMethod) {
         // TODO ジェネリクス対応できてなさそう
         return jigMethodId.name().equals(invocationJigMethod.name())
                 && jigMethodId.tuple().parameterTypeNameList().equals(invocationJigMethodId.tuple().parameterTypeNameList());
+    }
+
+    public JigMethodId jigMethodId() {
+        return jigMethod.jigMethodId();
     }
 }

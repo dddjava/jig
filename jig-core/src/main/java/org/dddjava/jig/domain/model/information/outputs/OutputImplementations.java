@@ -18,7 +18,7 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
     }
 
     public Gateways repositoryMethods() {
-        return values.stream().map(OutputImplementation::outputPortGateway)
+        return values.stream().map(OutputImplementation::gateway)
                 .collect(collectingAndThen(toList(), Gateways::new));
     }
 

@@ -30,7 +30,7 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
                         .flatMap(outputPort -> outputPort.gatewayStream()
                                 // 実装しているinvocationが
                                 .flatMap(gateway -> outputAdapter.resolveInvocation(gateway).stream()
-                                        .map(invocation -> new OutputImplementation(gateway.jigMethod(), invocation.jigMethod(), outputPort.jigType())))))
+                                        .map(invocation -> new OutputImplementation(gateway, invocation, outputPort)))))
                 .collect(collectingAndThen(toList(), OutputImplementations::new));
     }
 

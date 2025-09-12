@@ -1,0 +1,13 @@
+# https://docs.github.com/ja/repositories/releasing-projects-on-github/automatically-generated-release-notes
+
+changelog:
+  categories:
+    - title: 変更
+      labels:
+        - '*'
+      exclude:
+        labels:
+          - dependencies
+    - title: ライブラリ更新
+      labels:
+        - dependencies

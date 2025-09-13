@@ -49,6 +49,7 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
         return switch (entrypointType()) {
             case HTTP_API -> {
                 var httpEndpoint = HttpEntrypointPath.from(this);
+                // これだとクラスのパスがはいってない
                 yield "%s %s".formatted(httpEndpoint.method(), httpEndpoint.methodPath());
             }
             case QUEUE_LISTENER -> "queue: %s".formatted(MessageListener.from(this).queueName());
@@ -61,6 +62,10 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
             return HttpEntrypointPath.from(this).entrypointName();
         }
         return jigMethod().labelText();
+    }
+
+    public String fullPathText() {
+        return HttpEntrypointPath.from(this).pathText();
     }
 
     /**

@@ -41,25 +41,26 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
     }
 
     public String methodLabelText() {
-        if (entrypointType() == EntrypointType.HTTP_API) {
-            return resolveEntrypointName();
-        }
-        return jigMethod().labelText();
+        return entrypointName();
     }
 
     public String fullPathText() {
         return entrypointMapping.fullPathText();
     }
 
-    private String resolveEntrypointName() {
-        return jigMethod
-                // Swaggerのアノテーションのsummaryが記述されていればそれを採用
-                .declarationAnnotationStream()
-                .filter(methodAnnotation -> methodAnnotation.id().equals(TypeId.valueOf("io.swagger.v3.oas.annotations.Operation")))
-                .flatMap(methodAnnotation -> methodAnnotation.elementTextOf("summary").stream())
-                // アノテーションの仕様上、同じアノテーションが複数あることもあるし、要素の文字列も配列で定義可能なのでAnyで取得。実際は0..1になる。
-                .findAny()
-                // OpenAPIドキュメントの自動生成をしていないなど、解決できない場合は通常のメソッドラベル
-                .orElseGet(jigMethod::labelText);
+    private String entrypointName() {
+        if (entrypointType() == EntrypointType.HTTP_API) {
+            return jigMethod
+                    // Swaggerのアノテーションのsummaryが記述されていればそれを採用
+                    .declarationAnnotationStream()
+                    .filter(methodAnnotation -> methodAnnotation.id().equals(TypeId.valueOf("io.swagger.v3.oas.annotations.Operation")))
+                    .flatMap(methodAnnotation -> methodAnnotation.elementTextOf("summary").stream())
+                    // アノテーションの仕様上、同じアノテーションが複数あることもあるし、要素の文字列も配列で定義可能なのでAnyで取得。実際は0..1になる。
+                    .findAny()
+                    // OpenAPIドキュメントの自動生成をしていないなど、解決できない場合は通常のメソッドラベル
+                    .orElseGet(jigMethod::labelText);
+        } else {
+            return jigMethod().labelText();
+        }
     }
 }

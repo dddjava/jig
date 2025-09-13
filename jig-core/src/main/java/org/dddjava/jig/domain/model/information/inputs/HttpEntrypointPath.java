@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.joining;
@@ -33,41 +31,17 @@ public record HttpEntrypointPath(String method, String entrypointName, String cl
                 .filter(value -> !"/".equals(value)).orElse("");
 
         var entrypointName = resolveEntrypointName(jigMethod);
-        var optRequestMappingForMethod = findJigAnnotationReference(jigMethod);
+        var requestMappingForMethod = entrypoint.httpMappingAnnotation();
 
-        return optRequestMappingForMethod.map(requestMappingForMethod -> {
+        if (requestMappingForMethod != null) {
             var methodPath = resolveMethodPath(requestMappingForMethod);
             var httpMethod = resolveHttpMethod(requestMappingForMethod);
             return new HttpEntrypointPath(httpMethod, entrypointName, classPath, methodPath);
-        }).orElseGet(() -> {
-            // RequestMappingでないものをEntrypointと認識しているのはおかしい。
-            // Entrypointの時点で解決しているはずなので、ここで分岐があるのが設計ミス。
-            logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
-            return new HttpEntrypointPath("???", entrypointName, classPath, "");
-        });
-    }
-
-    private static Optional<JigAnnotationReference> findJigAnnotationReference(JigMethod jigMethod) {
-        List<JigAnnotationReference> methodAnnotations = jigMethod.declarationAnnotationStream()
-                .filter(jigAnnotationReference -> {
-                    TypeId typeId = jigAnnotationReference.id();
-                    return typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"))
-                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.GetMapping"))
-                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.PostMapping"))
-                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.PutMapping"))
-                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.DeleteMapping"))
-                            || typeId.equals(TypeId.valueOf("org.springframework.web.bind.annotation.PatchMapping"));
-                })
-                .toList();
-        if (methodAnnotations.isEmpty()) {
-            return Optional.empty();
         }
-        // メソッドにアノテーションが複数指定されている場合、最初の一つが優先される（SpringMVCの挙動）
-        var requestMappingForMethod = methodAnnotations.get(0);
-        if (methodAnnotations.size() > 1) {
-            logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
-        }
-        return Optional.of(requestMappingForMethod);
+        // RequestMappingでないものをEntrypointと認識しているのはおかしい。
+        // Entrypointの時点で解決しているはずなので、ここで分岐があるのが設計ミス。
+        logger.warn("{} のRequestMapping系アノテーションが検出されませんでした。JIGの不具合もしくは設定ミスです。", jigMethod.simpleText());
+        return new HttpEntrypointPath("???", entrypointName, classPath, "");
     }
 
     private static String resolveHttpMethod(JigAnnotationReference requestMappingForMethod) {

@@ -1,7 +1,10 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +14,8 @@ import java.util.stream.Stream;
  * エントリポイント検出器
  */
 public class EntrypointMethodDetector {
+
+    private static final Logger logger = LoggerFactory.getLogger(EntrypointMethodDetector.class);
 
     private final List<EntrypointAnnotation> entrypointAnnotations;
 
@@ -45,10 +50,29 @@ public class EntrypointMethodDetector {
                 .flatMap(entrypointAnnotation -> {
                     if (entrypointAnnotation.classAnnotations().stream().map(TypeId::valueOf)
                             .anyMatch(jigType::hasAnnotation)) {
-                        return jigType.instanceJigMethodStream().filter(jigMethod ->
-                                        entrypointAnnotation.methodAnnotations().stream().map(TypeId::valueOf)
-                                                .anyMatch(jigMethod::hasAnnotation))
-                                .map(jigMethod -> new Entrypoint(entrypointAnnotation.entrypointType(), jigType, jigMethod));
+                        return jigType.instanceJigMethodStream()
+                                .filter(jigMethod -> entrypointAnnotation.methodAnnotations().stream().map(TypeId::valueOf)
+                                        .anyMatch(jigMethod::hasAnnotation))
+                                .map(jigMethod -> {
+                                    JigAnnotationReference httpMapping = null;
+                                    if (entrypointAnnotation.entrypointType() == EntrypointType.HTTP_API) {
+                                        var methodAnnotations = jigMethod.declarationAnnotationStream()
+                                                .filter(jigAnnotationReference -> {
+                                                    var typeId = jigAnnotationReference.id();
+                                                    return entrypointAnnotation.methodAnnotations().stream()
+                                                            .map(TypeId::valueOf)
+                                                            .anyMatch(typeId::equals);
+                                                })
+                                                .toList();
+                                        if (!methodAnnotations.isEmpty()) {
+                                            httpMapping = methodAnnotations.get(0);
+                                            if (methodAnnotations.size() > 1) {
+                                                logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
+                                            }
+                                        }
+                                    }
+                                    return new Entrypoint(entrypointAnnotation.entrypointType(), jigType, jigMethod, httpMapping);
+                                });
                     }
                     return Stream.empty();
                 })

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
+import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -14,7 +15,8 @@ import org.dddjava.jig.domain.model.information.types.JigType;
  *
  * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、ハンドラとして扱われません。
  */
-public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMethod jigMethod) {
+public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMethod jigMethod,
+                         JigAnnotationReference httpMappingAnnotation) {
 
     public boolean anyMatch(CallerMethods callerMethods) {
         return callerMethods.contains(jigMethod.jigMethodId());

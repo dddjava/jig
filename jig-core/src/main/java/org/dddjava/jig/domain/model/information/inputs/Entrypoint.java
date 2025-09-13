@@ -73,7 +73,7 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
      *
      * エントリーポイントから情報を抜き出したもの。
      */
-    public static record HttpEntrypointPath(String method, String entrypointName, String classPath, String methodPath) {
+    private record HttpEntrypointPath(String method, String entrypointName, String classPath, String methodPath) {
         private static final Logger logger = LoggerFactory.getLogger(HttpEntrypointPath.class);
 
         public static HttpEntrypointPath from(Entrypoint entrypoint) {

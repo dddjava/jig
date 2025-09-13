@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,28 +55,38 @@ public class EntrypointMethodDetector {
                                 .filter(jigMethod -> entrypointAnnotation.methodAnnotations().stream().map(TypeId::valueOf)
                                         .anyMatch(jigMethod::hasAnnotation))
                                 .map(jigMethod -> {
-                                    JigAnnotationReference httpMapping = null;
-                                    if (entrypointAnnotation.entrypointType() == EntrypointType.HTTP_API) {
-                                        var methodAnnotations = jigMethod.declarationAnnotationStream()
-                                                .filter(jigAnnotationReference -> {
-                                                    var typeId = jigAnnotationReference.id();
-                                                    return entrypointAnnotation.methodAnnotations().stream()
-                                                            .map(TypeId::valueOf)
-                                                            .anyMatch(typeId::equals);
-                                                })
-                                                .toList();
-                                        if (!methodAnnotations.isEmpty()) {
-                                            httpMapping = methodAnnotations.get(0);
-                                            if (methodAnnotations.size() > 1) {
-                                                logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
-                                            }
-                                        }
-                                    }
-                                    return new Entrypoint(entrypointAnnotation.entrypointType(), jigType, jigMethod, httpMapping);
+                                    var entrypointMapping = getEntrypointMapping(jigType, entrypointAnnotation, jigMethod);
+                                    return new Entrypoint(entrypointAnnotation.entrypointType(), jigType, jigMethod, entrypointMapping);
                                 });
                     }
                     return Stream.empty();
                 })
                 .toList();
+    }
+
+    private EntrypointMapping getEntrypointMapping(JigType jigType, EntrypointAnnotation entrypointAnnotation, JigMethod jigMethod) {
+        if (entrypointAnnotation.entrypointType() == EntrypointType.HTTP_API) {
+            var methodAnnotations = jigMethod.declarationAnnotationStream()
+                    .filter(jigAnnotationReference -> {
+                        var typeId = jigAnnotationReference.id();
+                        return entrypointAnnotation.methodAnnotations().stream()
+                                .map(TypeId::valueOf)
+                                .anyMatch(typeId::equals);
+                    })
+                    .toList();
+            if (!methodAnnotations.isEmpty()) {
+                JigAnnotationReference httpMapping = methodAnnotations.get(0);
+                if (methodAnnotations.size() > 1) {
+                    logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
+                }
+                // HTTPハンドラメソッド
+                return HttpEntrypointMapping.from(jigType, httpMapping);
+            }
+        } else if (entrypointAnnotation.entrypointType() == EntrypointType.QUEUE_LISTENER) {
+            return new QueueListenerEntrypointMapping(jigMethod);
+        }
+        // デフォルト
+        return new EntrypointMapping() {
+        };
     }
 }

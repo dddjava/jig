@@ -12,6 +12,9 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.joining;
 
 public interface EntrypointMapping {
+    EntrypointMapping DEFAULT = new EntrypointMapping() {
+    };
+
     default String shortPathText() {
         return fullPathText();
     }

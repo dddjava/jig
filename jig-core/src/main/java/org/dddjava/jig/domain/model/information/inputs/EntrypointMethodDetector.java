@@ -86,7 +86,6 @@ public class EntrypointMethodDetector {
             return new QueueListenerEntrypointMapping(jigMethod);
         }
         // デフォルト
-        return new EntrypointMapping() {
-        };
+        return EntrypointMapping.DEFAULT;
     }
 }

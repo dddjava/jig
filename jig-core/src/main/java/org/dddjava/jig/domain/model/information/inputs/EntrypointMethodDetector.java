@@ -75,12 +75,12 @@ public class EntrypointMethodDetector {
                     })
                     .toList();
             if (!methodAnnotations.isEmpty()) {
-                JigAnnotationReference httpMapping = methodAnnotations.get(0);
+                JigAnnotationReference mappingAnnotation = methodAnnotations.get(0);
                 if (methodAnnotations.size() > 1) {
                     logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。出力には1件目を採用します。", jigMethod.simpleText());
                 }
                 // HTTPハンドラメソッド
-                return HttpEntrypointMapping.from(jigType, httpMapping);
+                return HttpEntrypointMapping.from(jigType, mappingAnnotation);
             }
         } else if (entrypointAnnotation.entrypointType() == EntrypointType.QUEUE_LISTENER) {
             return new QueueListenerEntrypointMapping(jigMethod);

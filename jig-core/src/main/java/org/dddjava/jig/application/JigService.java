@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
-import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
@@ -90,7 +89,7 @@ public class JigService {
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
         return jigTypesCache.get("coreDomainJigTypes", key -> {
             var jigTypes = jigTypes(jigRepository);
-            CoreDomainJigTypes coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
+            var coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes.jigTypes();
         });
@@ -134,34 +133,34 @@ public class JigService {
     }
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {
-        ServiceMethods serviceMethods = serviceMethods(jigRepository);
-        OutputImplementations outputImplementations = outputImplementations(jigRepository);
+        var serviceMethods = serviceMethods(jigRepository);
+        var outputImplementations = outputImplementations(jigRepository);
         return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outputImplementations);
     }
 
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
-        JigTypes jigTypes = jigTypes(jigRepository);
-        OutputImplementations outputImplementations = outputImplementations(jigRepository);
+        var jigTypes = jigTypes(jigRepository);
+        var outputImplementations = outputImplementations(jigRepository);
         return new DatasourceAngles(outputImplementations, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {
-        InputAdapters inputAdapters = inputAdapters(jigRepository);
-        ServiceMethods serviceMethods = serviceMethods(jigRepository);
+        var inputAdapters = inputAdapters(jigRepository);
+        var serviceMethods = serviceMethods(jigRepository);
         return StringComparingMethodList.createFrom(inputAdapters, serviceMethods);
     }
 
     public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {
         return JigTypesWithRelationshipsCache.get("coreTypesAndRelations", key -> {
-            JigTypes jigTypes = coreDomainJigTypes(jigRepository);
-            TypeRelationships typeRelationships = TypeRelationships.internalRelation(jigTypes);
+            var jigTypes = coreDomainJigTypes(jigRepository);
+            var typeRelationships = TypeRelationships.internalRelation(jigTypes);
             return new CoreTypesAndRelations(jigTypes, typeRelationships);
         });
     }
 
     public JigPackages packages(JigRepository jigRepository) {
-        JigTypes jigTypes = jigTypes(jigRepository);
-        Glossary glossary = glossary(jigRepository);
+        var jigTypes = jigTypes(jigRepository);
+        var glossary = glossary(jigRepository);
 
         Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.orderedStream()
                 .collect(groupingBy(JigType::packageId));

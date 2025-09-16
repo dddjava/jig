@@ -24,6 +24,7 @@ Java 10 以降では、ローカル変数の宣言に `var` を使用するこ�
    - 初期化式が以下のいずれかで「型が明白」な場合は `var` を使用してよい。
      - `new` によるコンストラクタ呼び出し（例: `new ArrayList<>(...)`、`new Items(...)`）
      - 明確に命名されたファクトリメソッドやスタティックメソッド（例: `List.of(...)`, `Optional.of(...)`, `Path.of(...)`）
+     - 型名とローカル変数名が同一（例: `JigType jigType = jigType(jigRepository);`）
    - 例外: `try-with-resources` のリソース変数についても上記に準ずる。型が明白なら `var` を許容。
 
 2. 使用を避ける（明示的な型を記載する）
@@ -62,6 +63,9 @@ var path = Path.of("/tmp/file.txt");
 
 // 終端操作から自明なストリームの結果
 var sortedList = items.stream().sorted().toList();
+
+// 型名とローカル変数名が同じ場合は var を使用する
+var jigType = jigType(jigRepository);
 ```
 
 ### 非推奨 / 禁止（Avoid）

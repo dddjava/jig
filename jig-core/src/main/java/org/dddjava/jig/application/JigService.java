@@ -128,9 +128,9 @@ public class JigService {
     }
 
     public InputAdapters entrypoint(JigRepository jigRepository) {
-        InputAdapters from = InputAdapters.from(jigTypes(jigRepository));
-        if (from.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
-        return from;
+        var inputAdapters = InputAdapters.from(jigTypes(jigRepository));
+        if (inputAdapters.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
+        return inputAdapters;
     }
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {

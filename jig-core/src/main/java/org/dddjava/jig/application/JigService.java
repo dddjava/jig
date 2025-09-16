@@ -119,15 +119,15 @@ public class JigService {
         return serviceMethods;
     }
 
-    private OutputImplementations repositoryMethods(JigRepository jigRepository) {
+    private OutputImplementations outputImplementations(JigRepository jigRepository) {
         var jigTypes = jigTypes(jigRepository);
-        var outputPorts = OutputAdapters.from(jigTypes);
-        OutputImplementations outputImplementations = OutputImplementations.from(jigTypes, outputPorts);
+        var outputAdapters = OutputAdapters.from(jigTypes);
+        var outputImplementations = OutputImplementations.from(jigTypes, outputAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;
     }
 
-    public InputAdapters entrypoint(JigRepository jigRepository) {
+    public InputAdapters inputAdapters(JigRepository jigRepository) {
         var inputAdapters = InputAdapters.from(jigTypes(jigRepository));
         if (inputAdapters.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
         return inputAdapters;
@@ -135,18 +135,18 @@ public class JigService {
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {
         ServiceMethods serviceMethods = serviceMethods(jigRepository);
-        OutputImplementations outputImplementations = repositoryMethods(jigRepository);
-        return ServiceAngles.from(serviceMethods, entrypoint(jigRepository), outputImplementations);
+        OutputImplementations outputImplementations = outputImplementations(jigRepository);
+        return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outputImplementations);
     }
 
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
         JigTypes jigTypes = jigTypes(jigRepository);
-        OutputImplementations outputImplementations = repositoryMethods(jigRepository);
+        OutputImplementations outputImplementations = outputImplementations(jigRepository);
         return new DatasourceAngles(outputImplementations, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {
-        InputAdapters inputAdapters = entrypoint(jigRepository);
+        InputAdapters inputAdapters = inputAdapters(jigRepository);
         ServiceMethods serviceMethods = serviceMethods(jigRepository);
         return StringComparingMethodList.createFrom(inputAdapters, serviceMethods);
     }

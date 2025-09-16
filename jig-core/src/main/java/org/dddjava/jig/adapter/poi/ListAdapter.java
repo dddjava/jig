@@ -146,7 +146,7 @@ public class ListAdapter {
         ServiceAngles serviceAngles = jigService.serviceAngles(jigRepository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigRepository);
         StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigRepository);
-        InputAdapters inputAdapters = jigService.entrypoint(jigRepository);
+        InputAdapters inputAdapters = jigService.inputAdapters(jigRepository);
 
         var result = new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(

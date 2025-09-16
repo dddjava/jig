@@ -60,7 +60,7 @@ public class SummaryAdapter {
     @HandleDocument(JigDocument.EntrypointSummary)
     public List<Path> entrypointSummary(JigRepository jigRepository, JigDocument jigDocument) {
         JigTypes contextJigTypes = jigService.jigTypes(jigRepository);
-        InputAdapters inputAdapters = jigService.entrypoint(jigRepository);
+        InputAdapters inputAdapters = jigService.inputAdapters(jigRepository);
         JigTypes jigTypes = inputAdapters.jigTypes();
         var entrypointMermaidDiagram = new EntrypointMermaidDiagram(inputAdapters, contextJigTypes);
         return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of("mermaidDiagram", entrypointMermaidDiagram)));

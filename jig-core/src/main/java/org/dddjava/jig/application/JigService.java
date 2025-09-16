@@ -14,7 +14,6 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
-import org.dddjava.jig.domain.model.information.inputs.EntrypointMethodDetector;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
@@ -129,8 +128,7 @@ public class JigService {
     }
 
     public InputAdapters entrypoint(JigRepository jigRepository) {
-        var entrypointMethodDetector = new EntrypointMethodDetector();
-        InputAdapters from = InputAdapters.from(entrypointMethodDetector, jigTypes(jigRepository));
+        InputAdapters from = InputAdapters.from(jigTypes(jigRepository));
         if (from.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
         return from;
     }

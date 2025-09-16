@@ -13,10 +13,10 @@ import static java.util.stream.Collectors.toList;
 
 public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRelations) {
 
-    public static InputAdapters from(EntrypointMethodDetector entrypointMethodDetector, JigTypes jigTypes) {
+    public static InputAdapters from(JigTypes jigTypes) {
         return new InputAdapters(
                 jigTypes.orderedStream()
-                        .flatMap(jigType -> InputAdapter.from(entrypointMethodDetector, jigType).stream())
+                        .flatMap(jigType -> InputAdapter.from(jigType).stream())
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 MethodRelations.from(jigTypes));

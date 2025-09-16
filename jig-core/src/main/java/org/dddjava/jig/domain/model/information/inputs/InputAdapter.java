@@ -17,7 +17,9 @@ public record InputAdapter(JigType jigType, Collection<Entrypoint> entrypoints) 
         if (entrypoints.isEmpty()) throw new IllegalArgumentException("entrypointMethods is empty");
     }
 
-    static Optional<InputAdapter> from(EntrypointMethodDetector entrypointMethodDetector, JigType jigType) {
+    static final EntrypointMethodDetector entrypointMethodDetector = new EntrypointMethodDetector();
+
+    static Optional<InputAdapter> from(JigType jigType) {
         return Optional.of(entrypointMethodDetector.collectMethod(jigType))
                 // 1つもエントリーポイントがない場合はInputAdapterではないものとして弾く
                 .filter(detectedMethods -> !detectedMethods.isEmpty())

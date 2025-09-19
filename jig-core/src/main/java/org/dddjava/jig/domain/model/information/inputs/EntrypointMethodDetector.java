@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 /**
  * エントリポイント検出器
  */
-public class EntrypointMethodDetector {
+class EntrypointMethodDetector {
 
     private static final Logger logger = LoggerFactory.getLogger(EntrypointMethodDetector.class);
 

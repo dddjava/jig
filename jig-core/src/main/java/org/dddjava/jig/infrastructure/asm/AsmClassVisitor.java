@@ -226,11 +226,6 @@ class AsmClassVisitor extends ClassVisitor {
         return Objects.requireNonNull(typeId);
     }
 
-    public JigTypeHeader jigTypeHeader() {
-        // visitEndで入るので注意
-        return Objects.requireNonNull(jigTypeHeader);
-    }
-
     ClassDeclaration classDeclaration() {
         // lambda合成メソッドを名前でひけるように収集
         Map<String, List<Instruction>> lambdaMethodMap = methodCollector.stream()
@@ -248,7 +243,8 @@ class AsmClassVisitor extends ClassVisitor {
                 })
                 .toList();
 
-        return new ClassDeclaration(jigTypeHeader(), fieldHeaders, methodDeclarations);
+        // jigTypeHeaderはvisitEndで入るので、visitEnd後しかこのメソッドは呼んではいけない
+        return new ClassDeclaration(Objects.requireNonNull(jigTypeHeader), fieldHeaders, methodDeclarations);
     }
 
     private static Instruction resolveInstruction(Instruction instruction, Map<String, List<Instruction>> lambdaMethodMap) {

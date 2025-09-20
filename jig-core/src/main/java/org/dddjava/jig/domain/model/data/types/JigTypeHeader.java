@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.types;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * 型ヘッダ
@@ -46,5 +47,12 @@ public record JigTypeHeader(TypeId id,
         return baseTypeDataBundle.interfaceTypes().stream()
                 .sorted(Comparator.comparing(jigBaseTypeData -> jigBaseTypeData.id()))
                 .toList();
+    }
+
+    public boolean isCompilerGenerated() {
+        // クラス名の末尾に `$1` などがつくものはコンパイラが生成したものと見做す
+        // 厳密な判定ではないが、慣習的にこの条件に当てはまるクラスは作らないだろうと言う思い。
+        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+        return compilerGeneratedClassPattern.matcher(id().fqn()).matches();
     }
 }

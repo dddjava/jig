@@ -55,6 +55,22 @@ class AsmClassVisitor extends ClassVisitor {
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
 
+    public boolean isEnum() {
+        return Objects.requireNonNull(jigTypeHeaderBuilder)
+                .baseTypeDataBundle()
+                .superType()
+                .filter(superType -> superType.typeIs(Enum.class))
+                .isPresent();
+    }
+
+    public boolean isRecord() {
+        return Objects.requireNonNull(jigTypeHeaderBuilder)
+                .baseTypeDataBundle()
+                .superType()
+                .filter(superType -> superType.typeIs(Record.class))
+                .isPresent();
+    }
+
     // FieldやMethodで使用するもの
     record Pair<T1, T2>(T1 header, T2 body) {
     }
@@ -205,7 +221,13 @@ class AsmClassVisitor extends ClassVisitor {
         return JavaTypeDeclarationKind.CLASS;
     }
 
+    public TypeId typeId() {
+        // visitの先頭で入るのでNullなことはほぼない
+        return Objects.requireNonNull(typeId);
+    }
+
     public JigTypeHeader jigTypeHeader() {
+        // visitEndで入るので注意
         return Objects.requireNonNull(jigTypeHeader);
     }
 

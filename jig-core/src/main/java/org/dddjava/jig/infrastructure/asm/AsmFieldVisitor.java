@@ -46,7 +46,7 @@ class AsmFieldVisitor extends FieldVisitor {
         if ((access & Opcodes.ACC_ENUM) != 0) flags.add(JigFieldFlag.ENUM);
 
         return new AsmFieldVisitor(contextClass.api(), it -> {
-            contextClass.addJigFieldHeader(JigFieldHeader.from(JigFieldId.from(contextClass.jigTypeHeader().id(), name),
+            contextClass.addJigFieldHeader(JigFieldHeader.from(JigFieldId.from(contextClass.typeId(), name),
                     AsmUtils.jigMemberOwnership(access),
                     resolveFieldTypeReference(contextClass.api(), descriptor, signature),
                     AsmUtils.resolveMethodVisibility(access),

@@ -57,7 +57,7 @@ class AsmMethodVisitor extends MethodVisitor {
 
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
-        var jigMethodId = JigMethodId.from(contextClass.jigTypeHeader().id(), name,
+        var jigMethodId = JigMethodId.from(contextClass.typeId(), name,
                 Arrays.stream(methodType.getArgumentTypes()).map(type -> AsmUtils.type2TypeId(type)).toList());
 
         return new AsmMethodVisitor(contextClass,
@@ -111,27 +111,25 @@ class AsmMethodVisitor extends MethodVisitor {
             flags.add(JigMethodFlag.LAMBDA_SUPPORT);
         }
 
-        contextClass.jigTypeHeader().baseTypeDataBundle().superType().ifPresent(superType -> {
+        if (contextClass.isEnum()) {
             // enumの場合に生成される以下をわかるようにしておく
             // - public static MyEnum[] values();
             // - public static MyEnum valueOf(java.lang.String);
             // - private static MyEnum[] $values();
-            if (superType.typeIs(Enum.class)) {
-                if (ownership == JigMemberOwnership.CLASS) {
-                    if ((name.equals("values") && parameterList.isEmpty())
-                            || (name.equals("$values()") && parameterList.isEmpty())
-                            || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).typeIs(String.class))) {
-                        flags.add(JigMethodFlag.ENUM_SUPPORT);
-                    }
+            if (ownership == JigMemberOwnership.CLASS) {
+                if ((name.equals("values") && parameterList.isEmpty())
+                        || (name.equals("$values()") && parameterList.isEmpty())
+                        || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).typeIs(String.class))) {
+                    flags.add(JigMethodFlag.ENUM_SUPPORT);
                 }
             }
+        }
+        if (contextClass.isRecord()) {
             // recordの場合にcomponentをわかるようにしておく
-            if (superType.typeIs(Record.class)) {
-                if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
-                    flags.add(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
-                }
+            if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
+                flags.add(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
             }
-        });
+        }
 
         return JigMethodHeader.from(jigMethodId, ownership,
                 jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
@@ -207,7 +205,8 @@ class AsmMethodVisitor extends MethodVisitor {
      * ここではJava言語でのLambdaやメソッド参照と想定して処理している。
      */
     @Override
-    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object...
+            bootstrapMethodArguments) {
         logger.debug("visitInvokeDynamicInsn {} {} {} {}", name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
         // name, descriptorにはLambdaやメソッド参照を受ける型の情報。
         // たとえばFunctionで受けるなら name=apply descriptor=()Ljava/util/valueResolver/Function; となる。

@@ -35,7 +35,7 @@ class AsmFieldVisitor extends FieldVisitor {
         this.finisher = finisher;
     }
 
-    static AsmFieldVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, @Nullable String signature) {
+    static AsmFieldVisitor from(ContextClass contextClass, int access, String name, String descriptor, @Nullable String signature) {
         logger.debug("field: name={}, descriptor={}, signature={}", name, descriptor, signature);
 
         EnumSet<JigFieldFlag> flags = EnumSet.noneOf(JigFieldFlag.class);

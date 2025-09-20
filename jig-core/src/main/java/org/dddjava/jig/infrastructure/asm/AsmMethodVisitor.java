@@ -40,16 +40,16 @@ class AsmMethodVisitor extends MethodVisitor {
 
     private final ArrayList<Instruction> methodInstructionCollector = new ArrayList<>();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
-    private final AsmClassVisitor contextClass;
+    private final ContextClass contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
 
-    private AsmMethodVisitor(AsmClassVisitor contextClass, Consumer<AsmMethodVisitor> finisher) {
+    private AsmMethodVisitor(ContextClass contextClass, Consumer<AsmMethodVisitor> finisher) {
         super(contextClass.api());
         this.contextClass = contextClass;
         this.finisher = finisher;
     }
 
-    public static MethodVisitor from(AsmClassVisitor contextClass, int access, String name, String descriptor, @Nullable String signature, @Nullable String[] exceptions) {
+    public static MethodVisitor from(ContextClass contextClass, int access, String name, String descriptor, @Nullable String signature, @Nullable String[] exceptions) {
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
         // throwsのアノテーションが必要になったら別途考える
         var throwsList = Optional.ofNullable(exceptions).stream().flatMap(Arrays::stream)

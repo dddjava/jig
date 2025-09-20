@@ -41,7 +41,7 @@ import static java.util.stream.Collectors.toMap;
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Format</a>
  */
-class AsmClassVisitor extends ClassVisitor {
+class AsmClassVisitor extends ClassVisitor implements ContextClass {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
     @Nullable
@@ -55,21 +55,6 @@ class AsmClassVisitor extends ClassVisitor {
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
 
-    public boolean isEnum() {
-        return Objects.requireNonNull(jigTypeHeaderBuilder)
-                .baseTypeDataBundle()
-                .superType()
-                .filter(superType -> superType.typeIs(Enum.class))
-                .isPresent();
-    }
-
-    public boolean isRecord() {
-        return Objects.requireNonNull(jigTypeHeaderBuilder)
-                .baseTypeDataBundle()
-                .superType()
-                .filter(superType -> superType.typeIs(Record.class))
-                .isPresent();
-    }
 
     // FieldやMethodで使用するもの
     record Pair<T1, T2>(T1 header, T2 body) {
@@ -221,6 +206,7 @@ class AsmClassVisitor extends ClassVisitor {
         return JavaTypeDeclarationKind.CLASS;
     }
 
+    @Override
     public TypeId typeId() {
         // visitの先頭で入るのでNullなことはほぼない
         return Objects.requireNonNull(typeId);
@@ -262,19 +248,41 @@ class AsmClassVisitor extends ClassVisitor {
         return instruction;
     }
 
-    int api() {
+    @Override
+    public int api() {
         return api;
     }
 
-    boolean isRecordComponentName(String name) {
+    @Override
+    public boolean isEnum() {
+        return Objects.requireNonNull(jigTypeHeaderBuilder)
+                .baseTypeDataBundle()
+                .superType()
+                .filter(superType -> superType.typeIs(Enum.class))
+                .isPresent();
+    }
+
+    @Override
+    public boolean isRecord() {
+        return Objects.requireNonNull(jigTypeHeaderBuilder)
+                .baseTypeDataBundle()
+                .superType()
+                .filter(superType -> superType.typeIs(Record.class))
+                .isPresent();
+    }
+
+    @Override
+    public boolean isRecordComponentName(String name) {
         // recordであることと引数0の確認後なので名前比較だけでOK
         return recordComponentNames.contains(name);
     }
 
-    void addJigFieldHeader(JigFieldHeader jigFieldHeader) {
+    @Override
+    public void addJigFieldHeader(JigFieldHeader jigFieldHeader) {
         fieldHeaders.add(jigFieldHeader);
     }
 
+    @Override
     public void finishVisitMethod(JigMethodHeader jigMethodHeader, List<Instruction> methodInstructionList) {
         // lambda式の展開のためにこの形で保持しておく
         methodCollector.add(new Pair<>(jigMethodHeader, methodInstructionList));

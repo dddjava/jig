@@ -11,15 +11,16 @@ import java.util.regex.Pattern;
  */
 public class CoreDomainCondition {
 
-    private final Pattern compilerGeneratedClassPattern;
     private final Pattern businessRulePattern;
+    private final Pattern compilerGeneratedClassPattern;
 
     public CoreDomainCondition(String domainPattern) {
+        this.businessRulePattern = Pattern.compile(domainPattern);
+
         // クラス名の末尾に `$1` などがつくものはコンパイラが生成したものと見做す
         // 厳密な判定ではないが、慣習的にこの条件に当てはまるクラスは作らないだろうと言う思い。
         // FIXME この判定するにしてもこのクラスではないのでは？
         this.compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
-        this.businessRulePattern = Pattern.compile(domainPattern);
     }
 
     public boolean isCoreDomain(JigType jigType) {

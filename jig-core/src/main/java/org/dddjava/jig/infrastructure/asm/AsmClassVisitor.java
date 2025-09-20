@@ -46,8 +46,12 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Nullable
     private TypeId typeId;
+
+    @Nullable
+    private JigTypeHeaderBuilder jigTypeHeaderBuilder;
     @Nullable
     private JigTypeHeader jigTypeHeader;
+
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private boolean isStaticNestedClass = false;
 
@@ -73,10 +77,10 @@ class AsmClassVisitor extends ClassVisitor {
         if (signature != null) {
             AsmClassSignatureVisitor asmClassSignatureVisitor = new AsmClassSignatureVisitor(api);
             new SignatureReader(signature).accept(asmClassSignatureVisitor);
-            this.jigTypeHeader = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, asmClassSignatureVisitor.jigTypeParameters(), asmClassSignatureVisitor.jigBaseTypeDataBundle());
+            this.jigTypeHeaderBuilder = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, asmClassSignatureVisitor.jigTypeParameters(), asmClassSignatureVisitor.jigBaseTypeDataBundle());
         } else {
             // 非総称型で作成
-            this.jigTypeHeader = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, List.of(),
+            this.jigTypeHeaderBuilder = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, List.of(),
                     new JigBaseTypeDataBundle(
                             Optional.of(JigTypeReference.fromJvmBinaryName(superName)),
                             Arrays.stream(interfaces).map(JigTypeReference::fromJvmBinaryName).toList()
@@ -85,9 +89,8 @@ class AsmClassVisitor extends ClassVisitor {
         super.visit(version, access, classInternalName, signature, superName, interfaces);
     }
 
-    private JigTypeHeader jigTypeHeader(TypeId typeId, JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
-        // アノテーションはまだ取得していないので空で作る
-        return new JigTypeHeader(typeId, javaTypeDeclarationKind, new JigTypeAttributes(jigTypeVisibility, jigTypeModifiers, Collections.emptyList(), jigTypeParameters), jigBaseTypeDataBundle);
+    private JigTypeHeaderBuilder jigTypeHeader(TypeId typeId, JavaTypeDeclarationKind javaTypeDeclarationKind, JigTypeVisibility jigTypeVisibility, Collection<JigTypeModifier> jigTypeModifiers, List<JigTypeParameter> jigTypeParameters, JigBaseTypeDataBundle jigBaseTypeDataBundle) {
+        return new JigTypeHeaderBuilder(typeId, javaTypeDeclarationKind, jigBaseTypeDataBundle, jigTypeVisibility, jigTypeModifiers, jigTypeParameters);
     }
 
     @Override
@@ -136,24 +139,27 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-        // 変更要因があったら作り直す
-        if (isStaticNestedClass || !declarationAnnotationCollector.isEmpty()) {
-            EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
-            Objects.requireNonNull(jigTypeHeader);
-            jigTypeModifiers.addAll(jigTypeHeader.jigTypeAttributes().jigTypeModifiers());
-            if (isStaticNestedClass) {
-                jigTypeModifiers.add(JigTypeModifier.STATIC);
-            }
-            jigTypeHeader = new JigTypeHeader(jigTypeHeader.id(), jigTypeHeader.javaTypeDeclarationKind(),
-                    new JigTypeAttributes(
-                            jigTypeHeader.jigTypeAttributes().jigTypeVisibility(),
-                            jigTypeModifiers,
-                            List.copyOf(declarationAnnotationCollector),
-                            jigTypeHeader.jigTypeAttributes().typeParameters()
-                    ),
-                    jigTypeHeader.baseTypeDataBundle()
-            );
+        // この時点で空はないけどNullableなのでNullでないことを宣言
+        Objects.requireNonNull(jigTypeHeaderBuilder);
+
+        EnumSet<JigTypeModifier> jigTypeModifiers = EnumSet.noneOf(JigTypeModifier.class);
+        jigTypeModifiers.addAll(jigTypeHeaderBuilder.jigTypeModifiers());
+        // staticなネストクラスの場合の修飾子を追加。JVMSではフラグはないが、JLSでは修飾子を記述するので、ここで追加する。
+        if (isStaticNestedClass) {
+            jigTypeModifiers.add(JigTypeModifier.STATIC);
         }
+
+        // 情報が揃ったのでjigTypeHeaderを構築する
+        jigTypeHeader = new JigTypeHeader(jigTypeHeaderBuilder.id(), jigTypeHeaderBuilder.javaTypeDeclarationKind(),
+                new JigTypeAttributes(
+                        jigTypeHeaderBuilder.jigTypeVisibility(),
+                        jigTypeModifiers,
+                        List.copyOf(declarationAnnotationCollector),
+                        jigTypeHeaderBuilder.typeParameters()
+                ),
+                jigTypeHeaderBuilder.baseTypeDataBundle()
+        );
+
         super.visitEnd();
     }
 

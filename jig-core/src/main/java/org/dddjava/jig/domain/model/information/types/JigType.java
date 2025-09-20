@@ -87,26 +87,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     }
 
     public TypeCategory typeCategory() {
-        // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
-        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Service"))
-                || hasAnnotation(TypeId.from(org.dddjava.jig.annotation.Service.class))) {
-            return TypeCategory.InputPort;
-        }
-        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Controller"))
-                || hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.RestController"))
-                || hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
-                || hasAnnotation(TypeId.valueOf("org.dddjava.jig.adapter.HandleDocument"))) {
-            return TypeCategory.InputAdapter;
-        }
-        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Repository"))
-                || hasAnnotation(TypeId.from(org.dddjava.jig.annotation.Repository.class))) {
-            return TypeCategory.OutputAdapter;
-        }
-        if (hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Component"))) {
-            return TypeCategory.OtherApplicationComponent;
-        }
-
-        return TypeCategory.Others;
+        return TypeCategory.from(this);
     }
 
     public Stream<JigMethod> allJigMethodStream() {

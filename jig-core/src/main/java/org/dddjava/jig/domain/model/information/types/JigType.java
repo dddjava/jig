@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethods;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
@@ -116,5 +117,12 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
 
     public JigMethods staticJigMethods() {
         return new JigMethods(jigTypeMembers.staticMethods());
+    }
+
+    public boolean isCompilerGenerated() {
+        // クラス名の末尾に `$1` などがつくものはコンパイラが生成したものと見做す
+        // 厳密な判定ではないが、慣習的にこの条件に当てはまるクラスは作らないだろうと言う思い。
+        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+        return compilerGeneratedClassPattern.matcher(id().fqn()).matches();
     }
 }

@@ -71,9 +71,9 @@ class AsmMethodVisitor extends MethodVisitor {
     private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, Type methodType, List<JigTypeReference> throwsList, Optional<String> optSignature) {
         return optSignature.map(signature -> {
             // signatureが使える場合はsignatureから型や引数を解釈する
-            var methodSignatureVisitor = AsmMethodSignatureVisitor.buildMethodSignatureVisitor(api, signature);
-            var returnType = methodSignatureVisitor.returnVisitor.jigTypeReference();
-            var parameterTypeList = methodSignatureVisitor.parameterVisitors.stream().map(AsmTypeSignatureVisitor::jigTypeReference).toList();
+            var methodSignatureVisitor = AsmMethodSignatureVisitor.readSignatureData(api, signature);
+            var returnType = methodSignatureVisitor.returnType();
+            var parameterTypeList = methodSignatureVisitor.parameterTypeList();
             return jigMethodHeader(jigMethodId, access, returnType, parameterTypeList, throwsList);
         }).orElseGet(() -> {
             var returnType = JigTypeReference.fromId(AsmUtils.type2TypeId(methodType.getReturnType()));

@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ import java.util.List;
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.7.9.1-500">MethodSignature</a>
  */
-class AsmMethodSignatureVisitor extends SignatureVisitor {
+class AsmMethodSignatureVisitor extends SignatureVisitor implements MethodSignatureData {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodSignatureVisitor.class);
     List<AsmTypeSignatureVisitor> parameterVisitors;
     AsmTypeSignatureVisitor returnVisitor;
@@ -75,9 +76,19 @@ class AsmMethodSignatureVisitor extends SignatureVisitor {
         return super.visitExceptionType();
     }
 
-    static AsmMethodSignatureVisitor buildMethodSignatureVisitor(int api, String signature) {
+    static MethodSignatureData readSignatureData(int api, String signature) {
         AsmMethodSignatureVisitor methodSignatureVisitor = new AsmMethodSignatureVisitor(api);
         new SignatureReader(signature).accept(methodSignatureVisitor);
         return methodSignatureVisitor;
+    }
+
+    @Override
+    public List<JigTypeReference> parameterTypeList() {
+        return parameterVisitors.stream().map(AsmTypeSignatureVisitor::jigTypeReference).toList();
+    }
+
+    @Override
+    public JigTypeReference returnType() {
+        return returnVisitor.jigTypeReference();
     }
 }

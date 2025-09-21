@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toMap;
 /**
  * クラスのバイトコードから必要な情報を抽出するClassVisitorの実装
  *
- * ```
+ * <pre>
  * visit
  * [ visitSource ]
  * [ visitModule ]
@@ -37,7 +37,7 @@ import static java.util.stream.Collectors.toMap;
  * | visitMethod
  * )*
  * visitEnd
- * ```
+ * </pre>
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Format</a>
  */

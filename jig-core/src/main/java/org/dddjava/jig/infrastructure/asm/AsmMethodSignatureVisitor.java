@@ -26,13 +26,19 @@ import java.util.List;
  */
 class AsmMethodSignatureVisitor extends SignatureVisitor implements MethodSignatureData {
     private static final Logger logger = LoggerFactory.getLogger(AsmMethodSignatureVisitor.class);
-    List<AsmTypeSignatureVisitor> parameterVisitors;
-    AsmTypeSignatureVisitor returnVisitor;
+    private final List<AsmTypeSignatureVisitor> parameterVisitors;
+    private final AsmTypeSignatureVisitor returnVisitor;
 
-    public AsmMethodSignatureVisitor(int api) {
+    private AsmMethodSignatureVisitor(int api) {
         super(api);
         parameterVisitors = new ArrayList<>();
         returnVisitor = new AsmTypeSignatureVisitor(this.api);
+    }
+
+    static MethodSignatureData readSignatureData(int api, String signature) {
+        AsmMethodSignatureVisitor methodSignatureVisitor = new AsmMethodSignatureVisitor(api);
+        new SignatureReader(signature).accept(methodSignatureVisitor);
+        return methodSignatureVisitor;
     }
 
     /**
@@ -74,12 +80,6 @@ class AsmMethodSignatureVisitor extends SignatureVisitor implements MethodSignat
     public SignatureVisitor visitExceptionType() {
         logger.debug("visitExceptionType");
         return super.visitExceptionType();
-    }
-
-    static MethodSignatureData readSignatureData(int api, String signature) {
-        AsmMethodSignatureVisitor methodSignatureVisitor = new AsmMethodSignatureVisitor(api);
-        new SignatureReader(signature).accept(methodSignatureVisitor);
-        return methodSignatureVisitor;
     }
 
     @Override

@@ -5,6 +5,14 @@ import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 
 /**
  * ユースケース
+ *
+ * サービスクラスのメソッドとして実装される。
+ * すべてのサービスクラスのメソッドがユースケースではないが、今のところ区別はできていない。
+ *
+ * すくなくとも、アダプタの接続されるポート（Controllerなどのエントリーポイントから直接呼び出されるメソッド）はユースケースであり、
+ * このメソッドはUsecaseCategoryでは「ハンドラ」と識別する。
+ * ハンドラはユースケースだが、ハンドラでないものもユースケースの可能性がある。実装上の区別はつけづらいので、
+ * Javadocコメントの記述有無などで判断する？
  */
 public record Usecase(ServiceMethod serviceMethod, UsecaseCategory usecaseCategory) {
 

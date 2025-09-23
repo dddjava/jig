@@ -6,14 +6,10 @@ import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 /**
  * ユースケース
  */
-public class Usecase {
+public record Usecase(ServiceMethod serviceMethod, UsecaseCategory usecaseCategory) {
 
-    ServiceMethod serviceMethod;
-    UsecaseCategory usecaseCategory;
-
-    public Usecase(ServiceAngle serviceAngle) {
-        this.serviceMethod = serviceAngle.serviceMethod();
-        this.usecaseCategory = UsecaseCategory.resolver(serviceAngle);
+    public static Usecase from(ServiceAngle serviceAngle) {
+        return new Usecase(serviceAngle.serviceMethod(), UsecaseCategory.resolver(serviceAngle));
     }
 
     public String usecaseIdentifier() {

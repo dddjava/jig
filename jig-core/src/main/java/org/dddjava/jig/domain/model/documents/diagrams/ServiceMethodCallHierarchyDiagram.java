@@ -65,7 +65,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                     if (method.jigMethodId().isLambda()) {
                         return lambda(method).asText();
                     }
-                    Usecase usecase = new Usecase(serviceAngle);
+                    Usecase usecase = Usecase.from(serviceAngle);
 
                     Node useCaseNode = usecase(usecase);
 

@@ -13,9 +13,19 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
+/**
+ * ユースケース概要で表示する図
+ *
+ * 指定されたメソッドの呼び出し元1階層、呼び出し先は再起的に全階層を出力する。
+ */
 public class UsecaseMermaidDiagram {
 
+    // メソッドの関連を辿って得られるJigMethodIdから完全なJigMethodを取得するためのコンテキスト
+    // メソッド名や出力対象か否かの判断にJigMethodが必要なので保持している
     private final JigTypes contextJigTypes;
+
+    // メソッドを辿るための関連
+    // 現在の実装ではServiceTypeとなるJigTypeのメソッド関連の一覧となっている。
     private final MethodRelations methodRelations;
 
     public UsecaseMermaidDiagram(JigTypes contextJigTypes, MethodRelations methodRelations) {

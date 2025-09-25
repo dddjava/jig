@@ -38,7 +38,7 @@ public class NodeEditor {
 
     List<Editor> editors;
 
-    String toText(Node original) {
+    String dotText(Node original) {
         Node node = original;
         for (Editor editor : editors) {
             node = editor.edit(node);

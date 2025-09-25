@@ -56,7 +56,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
                             .url(categoryType.id(), JigDocument.EnumSummary)
                             .as(NodeRole.主役);
                 })
-                .map(Node::asText)
+                .map(Node::dotText)
                 .collect(joining("\n"));
 
         DocumentName documentName = DocumentName.of(JigDocument.CategoryDiagram);

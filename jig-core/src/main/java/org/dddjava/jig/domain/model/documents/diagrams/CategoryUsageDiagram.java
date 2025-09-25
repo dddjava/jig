@@ -72,7 +72,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
             if (related) {
                 // enumに関連しているサービスメソッドだけ出力する
-                useCaseText.add(usecase(serviceMethod).asText());
+                useCaseText.add(usecase(serviceMethod).dotText());
             }
         }
 
@@ -94,7 +94,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .add(relations.toEdges().orderedUniqueStream()
                         .map(edge -> "\"%s\" -> \"%s\"".formatted(edge.from().fqn(), edge.to().fqn()))
                         .collect(joining("\n")))
-                .add(serviceRelationText.asText())
+                .add(serviceRelationText.dotText())
                 .toString();
 
         diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, dotText));
@@ -106,7 +106,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.id()))
                 .map(jigType -> Node.businessRuleNodeOf(jigType))
-                .map(Node::asText)
+                .map(Node::dotText)
                 .collect(joining("\n"));
     }
 
@@ -115,7 +115,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .map(jigType -> Node.typeOf(jigType.id())
                         .label(jigType.term().titleAndSimpleName("\\n"))
                         .as(NodeRole.主役))
-                .map(Node::asText)
+                .map(Node::dotText)
                 .collect(joining("\n"));
     }
 }

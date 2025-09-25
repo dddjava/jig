@@ -31,11 +31,12 @@ public class RelationText {
         list.add(line);
     }
 
-    public String asText() {
+    public String dotText() {
         return String.join("\n", list);
     }
 
-    public String asUniqueText() {
+    // TODO なんか名前に違和感
+    public String uniqueDotText() {
         return list.stream().sorted().distinct().collect(joining("\n"));
     }
 

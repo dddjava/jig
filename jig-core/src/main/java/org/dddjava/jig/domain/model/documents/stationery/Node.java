@@ -58,9 +58,9 @@ public class Node {
         return this;
     }
 
-    public String asText() {
+    public String dotText() {
         // "hoge"[label="fuga",color="piyo"];
-        return NodeEditor.INSTANCE.toText(this);
+        return NodeEditor.INSTANCE.dotText(this);
     }
 
     public Node shape(String value) {

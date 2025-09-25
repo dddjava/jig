@@ -36,6 +36,7 @@ public record UsingMethods(List<MethodCall> methodCalls) {
                 .anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(jigMethodId));
     }
 
+    // FIXME テストでのみ使用しているテキスト出力。廃止したい。
     public String asSimpleTextSorted() {
         return methodCalls.stream()
                 .map(invokedMethod -> {

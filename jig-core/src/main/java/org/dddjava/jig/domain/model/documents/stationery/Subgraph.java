@@ -33,7 +33,7 @@ public class Subgraph {
 
     public Subgraph addNodes(Stream<Node> nodes) {
         // うけとったStreamの終端操作しちゃうのはどうなのよと思いつつ
-        nodes.map(Node::asText).forEach(this::add);
+        nodes.map(Node::dotText).forEach(this::add);
         return this;
     }
 

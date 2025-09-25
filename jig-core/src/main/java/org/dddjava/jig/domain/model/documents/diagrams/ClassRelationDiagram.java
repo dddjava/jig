@@ -62,7 +62,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 if (jigType.isDeprecated()) {
                     node.deprecated();
                 }
-                subgraph.add(node.asText());
+                subgraph.add(node.dotText());
             }
 
             graph.add(subgraph.toString());

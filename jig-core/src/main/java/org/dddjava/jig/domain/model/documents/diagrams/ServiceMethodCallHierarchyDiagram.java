@@ -63,7 +63,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .map(serviceAngle -> {
                     JigMethod method = serviceAngle.serviceMethod().method();
                     if (method.jigMethodId().isLambda()) {
-                        return lambda(method).asText();
+                        return lambda(method).dotText();
                     }
                     Usecase usecase = Usecase.from(serviceAngle);
 
@@ -74,7 +74,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                         useCaseNode.as(NodeRole.脇役);
                     }
 
-                    return useCaseNode.asText();
+                    return useCaseNode.dotText();
                 }).collect(joining("\n"));
 
         String subgraphText = serviceAngles.streamAndMap((jigType, serviceAngleList) ->
@@ -91,17 +91,17 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
         DocumentName documentName = DocumentName.of(JigDocument.ServiceMethodCallHierarchyDiagram);
 
-        String graphText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+        String dotText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("newrank=true;")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
-                .add(relationText.asText())
+                .add(relationText.dotText())
                 .add(subgraphText)
                 .add(serviceMethodText)
                 .add(repositoryText(angles))
                 .toString();
-        diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, graphText));
+        diagramSourceWriteProcess.accept(DiagramSource.createDiagramSourceUnit(documentName, dotText));
         return 1;
     }
 
@@ -121,12 +121,12 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         }
         String repositoryTypes = repositories.stream()
                 .map(repository -> Node.typeOf(repository).as(NodeRole.モブ).label(repository.asSimpleText()))
-                .map(Node::asText)
+                .map(Node::dotText)
                 .collect(joining("\n"));
 
         return new StringJoiner("\n")
                 .add("{rank=same;").add(repositoryTypes).add("}")
-                .add("{edge [style=dashed];").add(repositoryRelation.asUniqueText()).add("}")
+                .add("{edge [style=dashed];").add(repositoryRelation.uniqueDotText()).add("}")
                 .toString();
     }
 }

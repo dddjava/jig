@@ -138,7 +138,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         String standalonePackageNodeText = standalonePackages.stream()
                 .map(packageId -> Node.packageOf(packageId)
                         .label(labeler.label(packageId))
-                        .url(packageId, JigDocument.DomainSummary).asText())
+                        .url(packageId, JigDocument.DomainSummary).dotText())
                 .collect(joining("\n"));
 
         String summaryText = "summary[shape=note,label=\""
@@ -148,17 +148,17 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 + "\"]";
 
         DocumentName documentName = DocumentName.of(JigDocument.PackageRelationDiagram);
-        String text = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+        String dotText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add(summaryText)
                 .add(Node.DEFAULT)
-                .add(unidirectionalRelation.asText())
+                .add(unidirectionalRelation.dotText())
                 .add(packageMutualDependencies.dotRelationText())
                 .add(groupingSubgraphAndInternalNodeText)
                 .add(standalonePackageNodeText)
                 .toString();
 
-        return Optional.of(DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText(packageMutualDependencies)));
+        return Optional.of(DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), dotText, additionalText(packageMutualDependencies)));
     }
 
     private AdditionalText additionalText(PackageMutualDependencies packageMutualDependencies) {

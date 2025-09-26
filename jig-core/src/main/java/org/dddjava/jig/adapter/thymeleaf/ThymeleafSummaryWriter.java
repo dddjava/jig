@@ -47,7 +47,7 @@ public class ThymeleafSummaryWriter {
 
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
-                .sorted(Comparator.comparing(PackageId::asText))
+                .sorted()
                 .map(packageId -> jigPackage(packageId))
                 .toList();
 

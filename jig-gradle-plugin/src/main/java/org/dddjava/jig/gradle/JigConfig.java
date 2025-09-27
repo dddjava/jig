@@ -49,7 +49,7 @@ public class JigConfig {
                 .toList();
     }
 
-    public JigProperties asProperties(Project project) {
+    public JigProperties toJigProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
                 modelPattern, resolveOutputDirectory(project),

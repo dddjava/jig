@@ -14,6 +14,8 @@ import static java.util.stream.Collectors.joining;
 
 /**
  * メソッドが使用しているメソッド一覧
+ *
+ * @param methodCalls 使用しているメソッドのリスト。登場順とするためListにしている。
  */
 public record UsingMethods(List<MethodCall> methodCalls) {
 

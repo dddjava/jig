@@ -154,7 +154,7 @@ public class AsmMethodVisitorInstructionTest {
     private static Stream<MethodCall> getDynamicMethodCallStream(JigMethod jigMethod) {
         return jigMethod.instructions().instructions().stream()
                 .filter(instruction -> instruction instanceof DynamicMethodCall || instruction instanceof LambdaExpressionCall)
-                .flatMap(instruction -> instruction.findMethodCall());
+                .flatMap(instruction -> instruction.methodCallStream());
     }
 
     @Test

@@ -17,7 +17,7 @@ public record DynamicMethodCall(MethodCall methodCall, TypeId returnType,
                                 List<TypeId> argumentTypes) implements Instruction {
 
     @Override
-    public Stream<MethodCall> findMethodCall() {
+    public Stream<MethodCall> methodCallStream() {
         return Stream.of(methodCall());
     }
 

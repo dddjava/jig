@@ -19,7 +19,7 @@ public sealed interface Instruction
      * メソッド呼び出しの場合に中身がある
      * Optionalのほうがいいんだけど、Optionalからstreamへの変換がノイジーなのでstreamにしておく。
      */
-    default Stream<MethodCall> findMethodCall() {
+    default Stream<MethodCall> methodCallStream() {
         return Stream.empty();
     }
 
@@ -34,7 +34,7 @@ public sealed interface Instruction
      * lambdaのメソッド呼び出しをインライン化したもの
      */
     default Stream<MethodCall> lambdaInlinedMethodCallStream() {
-        return findMethodCall();
+        return methodCallStream();
     }
 
     /**

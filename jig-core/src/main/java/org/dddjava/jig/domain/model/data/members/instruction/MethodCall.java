@@ -40,7 +40,7 @@ public record MethodCall(TypeId methodOwner, String methodName,
     }
 
     @Override
-    public Stream<MethodCall> findMethodCall() {
+    public Stream<MethodCall> methodCallStream() {
         return Stream.of(this);
     }
 

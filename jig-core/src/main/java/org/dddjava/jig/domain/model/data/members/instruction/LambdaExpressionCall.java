@@ -18,7 +18,7 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
     }
 
     @Override
-    public Stream<MethodCall> findMethodCall() {
+    public Stream<MethodCall> methodCallStream() {
         return Stream.of(origin.methodCall());
     }
 

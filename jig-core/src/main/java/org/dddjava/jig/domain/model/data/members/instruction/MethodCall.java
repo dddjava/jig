@@ -45,7 +45,7 @@ public record MethodCall(TypeId methodOwner, String methodName,
     }
 
     @Override
-    public Stream<TypeId> streamAssociatedTypes() {
+    public Stream<TypeId> associatedTypeStream() {
         return Stream.concat(
                 argumentTypes.stream(),
                 Stream.of(methodOwner, returnType)

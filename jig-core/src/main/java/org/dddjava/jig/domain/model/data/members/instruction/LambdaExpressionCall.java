@@ -29,9 +29,9 @@ public record LambdaExpressionCall(DynamicMethodCall origin,
     }
 
     @Override
-    public Stream<TypeId> streamAssociatedTypes() {
+    public Stream<TypeId> associatedTypeStream() {
         return Stream.of(
-                origin.methodCall().streamAssociatedTypes(),
+                origin.methodCall().associatedTypeStream(),
                 origin.argumentTypes().stream(),
                 Stream.of(origin.returnType()).filter(Predicate.not(TypeId::isVoid)),
                 // lambdaの中身

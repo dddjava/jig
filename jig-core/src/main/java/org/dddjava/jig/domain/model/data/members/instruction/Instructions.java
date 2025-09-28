@@ -23,7 +23,7 @@ public record Instructions(List<Instruction> instructions) {
 
     public Stream<TypeId> associatedTypeStream() {
         return instructions.stream()
-                .flatMap(Instruction::streamAssociatedTypes);
+                .flatMap(Instruction::associatedTypeStream);
     }
 
     public Stream<JigFieldId> fieldReferenceStream() {

@@ -26,7 +26,7 @@ public sealed interface Instruction
     /**
      * この命令によって関連づけられる型のストリーム
      */
-    default Stream<TypeId> streamAssociatedTypes() {
+    default Stream<TypeId> associatedTypeStream() {
         return Stream.empty();
     }
 

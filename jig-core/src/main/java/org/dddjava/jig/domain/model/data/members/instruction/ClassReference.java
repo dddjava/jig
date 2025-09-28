@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public record ClassReference(TypeId targetTypeId) implements Instruction {
 
     @Override
-    public Stream<TypeId> streamAssociatedTypes() {
+    public Stream<TypeId> associatedTypeStream() {
         return Stream.of(targetTypeId);
     }
 }

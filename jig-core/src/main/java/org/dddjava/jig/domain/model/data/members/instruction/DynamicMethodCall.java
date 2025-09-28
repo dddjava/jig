@@ -22,9 +22,9 @@ public record DynamicMethodCall(MethodCall methodCall, TypeId returnType,
     }
 
     @Override
-    public Stream<TypeId> streamAssociatedTypes() {
+    public Stream<TypeId> associatedTypeStream() {
         return Stream.of(
-                methodCall().streamAssociatedTypes(),
+                methodCall().associatedTypeStream(),
                 argumentTypes().stream(),
                 Stream.of(returnType()).filter(Predicate.not(TypeId::isVoid))
         ).flatMap(stream -> stream);

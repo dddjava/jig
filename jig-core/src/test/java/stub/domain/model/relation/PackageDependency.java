@@ -8,7 +8,14 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class MethodInstructionTestStub {
+/**
+ * パッケージ依存の検証用
+ *
+ * TODO いらないものも混ざっているので要整理
+ *
+ * @see org.dddjava.jig.application.PackageDependenciesTest
+ */
+public class PackageDependency {
 
     InstructionField instructionField = null;
 
@@ -64,5 +71,4 @@ public class MethodInstructionTestStub {
     void accessPrimitiveWrapperConstantField() {
         Object obj = IntegerConstantFieldHolder.INTEGER_CONSTANT;
     }
-
 }

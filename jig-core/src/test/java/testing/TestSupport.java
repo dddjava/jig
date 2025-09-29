@@ -77,6 +77,7 @@ public class TestSupport {
         JigTypeMembers members = buildJigType(sutClass).jigTypeMembers();
         return members.allJigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals(methodName))
+                // TODO 同名を複数検出したら1件目を返している。エラーにすべきでしょう。
                 .findFirst()
                 .orElseThrow();
     }

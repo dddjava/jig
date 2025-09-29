@@ -45,7 +45,7 @@ public record JigTypeHeader(TypeId id,
 
     public List<JigTypeReference> interfaceTypeList() {
         return baseTypeDataBundle.interfaceTypes().stream()
-                .sorted(Comparator.comparing(jigBaseTypeData -> jigBaseTypeData.id()))
+                .sorted(Comparator.comparing(JigTypeReference::id))
                 .toList();
     }
 

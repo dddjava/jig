@@ -1,9 +1,11 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.relation.method.*;
 import testing.TestSupport;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -19,9 +21,8 @@ public class InstructionTest {
         var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "method");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
-        assertEquals(2, methodCalls.size());
-        assertEquals("invokeMethod", methodCalls.get(0).methodName());
-        assertEquals("chainedInvokeMethod", methodCalls.get(1).methodName());
+        assertEquals(List.of("invokeMethod", "chainedInvokeMethod"),
+                methodCalls.stream().map(MethodCall::methodName).toList());
     }
 
     @Test
@@ -29,8 +30,8 @@ public class InstructionTest {
         var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "methodRef");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
-        assertEquals(1, methodCalls.size());
-        assertEquals("referenceMethod", methodCalls.get(0).methodName());
+        assertEquals(List.of("referenceMethod"),
+                methodCalls.stream().map(MethodCall::methodName).toList());
     }
 
     @Test
@@ -38,11 +39,8 @@ public class InstructionTest {
         var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "lambda");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
-        assertEquals(3, methodCalls.size());
-        assertEquals("empty", methodCalls.get(0).methodName());
-        // forEachに渡すLambdaが先に評価されるのでこの順番
-        assertEquals("lambda$lambda$0", methodCalls.get(1).methodName());
-        assertEquals("forEach", methodCalls.get(2).methodName());
+        assertEquals(List.of("empty", "lambda$lambda$0", "forEach"),
+                methodCalls.stream().map(MethodCall::methodName).toList());
     }
 
     private static class MethodInstructionTestStub {

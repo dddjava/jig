@@ -31,9 +31,9 @@ public class PackageDependenciesTest {
         var expected = List.of(
                 "stub.domain.model -> stub.domain.model.relation.annotation",
                 "stub.domain.model.relation -> stub.domain.model.relation.clz",
-                "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_wrapper_constant",
                 "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
-                "stub.domain.model.relation -> stub.domain.model.relation.method"
+                "stub.domain.model.relation.tails -> stub.domain.model.relation.constant.to_primitive_wrapper_constant",
+                "stub.domain.model.relation.tails -> stub.domain.model.relation.method"
         );
 
         assertEquals(expected, actual);

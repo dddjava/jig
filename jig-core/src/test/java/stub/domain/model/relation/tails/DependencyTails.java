@@ -1,4 +1,4 @@
-package stub.domain.model.relation;
+package stub.domain.model.relation.tails;
 
 import stub.domain.model.relation.constant.to_primitive_constant.ConstantFieldHolder;
 import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
@@ -9,15 +9,17 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * パッケージ依存の検証用
+ * パッケージ依存の検証のための呼び出し元となるクラス
  *
- * TODO いらないものも混ざっているので要整理
- *
- * @see org.dddjava.jig.application.PackageDependenciesTest
+ * {@link org.dddjava.jig.application.PackageDependenciesTest}は主にこのクラスからの関連でパッケージ関連を作る。
  */
-public class PackageDependency {
+public class DependencyTails {
 
     InstructionField instructionField = null;
+
+    void relateToClass() {
+
+    }
 
     @MethodAnnotation
     void method(MethodArgument methodArgument) throws Exception {
@@ -59,16 +61,13 @@ public class PackageDependency {
         throw new UncheckedExceptionA();
     }
 
+    void メソッド内のフィールド参照() {
+        // 検出されない参照
+        // プリミティブおよびStringはインライン化される
+        Object int定数 = ConstantFieldHolder.INT_CONSTANT;
+        Object String定数 = ConstantFieldHolder.STRING_CONSTANT;
 
-    void accessPrimitiveConstantField() {
-        Object obj = ConstantFieldHolder.INT_CONSTANT;
-    }
-
-    void accessStringConstantField() {
-        Object obj = ConstantFieldHolder.STRING_CONSTANT;
-    }
-
-    void accessPrimitiveWrapperConstantField() {
+        // 検出される参照
         Object obj = IntegerConstantFieldHolder.INTEGER_CONSTANT;
     }
 }

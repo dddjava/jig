@@ -2,6 +2,7 @@ package stub.domain.model.relation.tails;
 
 import stub.domain.model.relation.field.to_primitive_constant.ConstantFieldHolder;
 import stub.domain.model.relation.field.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
+import stub.domain.model.relation.field.to_reference.ReferenceConstantOwnerInMethod;
 import stub.domain.model.relation.method.*;
 
 import java.util.List;

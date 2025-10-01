@@ -1,4 +1,4 @@
-package stub.domain.model.relation.constant.to_primitive_constant;
+package stub.domain.model.relation.field.to_primitive_constant;
 
 public class ConstantFieldHolder {
     public static final int INT_CONSTANT = 1;

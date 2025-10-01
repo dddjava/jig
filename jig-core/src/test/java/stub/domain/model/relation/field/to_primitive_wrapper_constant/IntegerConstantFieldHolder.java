@@ -1,4 +1,4 @@
-package stub.domain.model.relation.constant.to_primitive_wrapper_constant;
+package stub.domain.model.relation.field.to_primitive_wrapper_constant;
 
 public class IntegerConstantFieldHolder {
 

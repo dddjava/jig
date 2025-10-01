@@ -18,10 +18,6 @@ public class DependencyTails {
 
     InstructionField instructionField = null;
 
-    void relateToClass() {
-
-    }
-
     @MethodAnnotation
     void method(MethodArgument methodArgument) throws Exception {
         // ローカル変数宣言だけ
@@ -29,11 +25,6 @@ public class DependencyTails {
 
         // メソッド呼び出し
         instructionField.invokeMethod().chainedInvokeMethod();
-    }
-
-    void fieldRef() {
-        // 別クラスのフィールドを参照する
-        Object obj = ReferenceConstantOwnerInMethod.FIELD;
     }
 
     void lambda() {
@@ -65,10 +56,11 @@ public class DependencyTails {
     void メソッド内のフィールド参照() {
         // 検出されない参照
         // プリミティブおよびStringはインライン化される
-        Object int定数 = ConstantFieldHolder.INT_CONSTANT;
-        Object String定数 = ConstantFieldHolder.STRING_CONSTANT;
+        Object プリミティブ型の定数 = ConstantFieldHolder.INT_CONSTANT;
+        Object Stringの定数 = ConstantFieldHolder.STRING_CONSTANT;
 
         // 検出される参照
-        Object obj = IntegerConstantFieldHolder.INTEGER_CONSTANT;
+        Object プリミティブのラッパー型 = IntegerConstantFieldHolder.INTEGER_CONSTANT;
+        Object 参照型 = ReferenceConstantOwnerInMethod.FIELD;
     }
 }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.relation.packages;
 
-import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 
@@ -19,10 +18,6 @@ public record PackageRelation(Edge<PackageId> edge) {
 
     public PackageId to() {
         return edge.to();
-    }
-
-    public PackageRelation applyDepth(PackageDepth packageDepth) {
-        return from(from().applyDepth(packageDepth), to().applyDepth(packageDepth));
     }
 
     public boolean notSelfRelation() {

@@ -159,4 +159,13 @@ public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
     public Stream<Edge<T>> orderedUniqueStream() {
         return edges.stream().sorted().distinct();
     }
+
+    public boolean isEmpty() {
+        return edges.isEmpty();
+    }
+
+    public Stream<T> nodeStream() {
+        return edges.stream()
+                .flatMap(edge -> Stream.of(edge.from(), edge.to()));
+    }
 }

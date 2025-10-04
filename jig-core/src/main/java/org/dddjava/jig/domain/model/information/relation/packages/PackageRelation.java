@@ -19,8 +19,4 @@ public record PackageRelation(Edge<PackageId> edge) {
     public PackageId to() {
         return edge.to();
     }
-
-    public boolean notSelfRelation() {
-        return !from().equals(to());
-    }
 }

@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.*;
 /**
  * Edgeのまとまり。グラフ。
  * それぞれの関連をEdgeに単純化してまとめて操作するためのクラス。
+ *
  * @param <T> Nodeの型
  */
 public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
@@ -167,5 +168,20 @@ public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
     public Stream<T> nodeStream() {
         return edges.stream()
                 .flatMap(edge -> Stream.of(edge.from(), edge.to()));
+    }
+
+    /**
+     * 双方向（相互）なEdgeだけを抽出する。
+     * 例: a->b と b->a の両方が存在する場合、両方のEdgeを結果に含める。
+     * 自己ループ（a->a）は対象外。
+     */
+    public MutualEdges<T> mutualEdges() {
+        Set<Edge<T>> set = new HashSet<>(edges);
+        Set<Edge<T>> mutual = edges.stream()
+                .filter(e -> !e.from().equals(e.to()))
+                // 反対にしたものが含まれている
+                .filter(e -> set.contains(Edge.of(e.to(), e.from())))
+                .collect(toSet());
+        return new MutualEdges<>(mutual);
     }
 }

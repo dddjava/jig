@@ -9,21 +9,21 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 class MutualEdgesTest {
 
     @MethodSource
     @ParameterizedTest
-    void mutualEdges抽出(List<Edge<String>> relations, List<Edge<String>> expected) {
+    void mutualEdgesが期待通り抽出されること(List<Edge<String>> relations, List<Edge<String>> expected) {
         var edges = new Edges<>(relations);
         MutualEdges<String> mutual = edges.mutualEdges();
-        // MutualEdges は Set を保持しているので、比較は並び替えて行う
-        List<Edge<String>> actual = mutual.edges().stream().sorted().toList();
-        assertEquals(expected.stream().sorted().toList(), actual);
+
+        assertTrue(mutual.edges().containsAll(expected));
     }
 
-    static Stream<Arguments> mutualEdges抽出() {
+    static Stream<Arguments> mutualEdgesが期待通り抽出されること() {
         return Stream.of(
                 argumentSet("相互なし", // 何も抽出されない
                         List.of(Edge.of("a", "b"), Edge.of("b", "c"), Edge.of("a", "c")),

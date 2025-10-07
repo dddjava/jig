@@ -42,9 +42,11 @@ class MutualEdgesTest {
                                 Edge.of("b", "c"), Edge.of("c", "b"),
                                 Edge.of("x", "y") // 無関係
                         ),
-                        List.of(Edge.of("a", "b"), Edge.of("b", "a"), Edge.of("b", "c"), Edge.of("c", "b"))
+                        List.of(
+                                Edge.of("a", "b"), Edge.of("b", "a"),
+                                Edge.of("b", "c"), Edge.of("c", "b"))
                 ),
-                argumentSet("三つ巴は相互なし扱い", // a->b, b->c, c->a は pair ではない
+                argumentSet("三つ巴は相互なし扱い", // a->b, b->c, c->a は mutual ではない
                         List.of(Edge.of("a", "b"), Edge.of("b", "c"), Edge.of("c", "a")),
                         List.of()
                 )

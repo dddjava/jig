@@ -9,46 +9,45 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 
 class MutualEdgesTest {
 
     @MethodSource
     @ParameterizedTest
-    void mutualEdgesが期待通り抽出されること(List<Edge<String>> relations, List<Edge<String>> expected) {
-        var edges = new Edges<>(relations);
+    void mutualEdgesが期待通り抽出されること(List<Edge<String>> relations, Set<Edge<String>> expected) {
+        Edges<String> edges = new Edges<>(relations);
         MutualEdges<String> mutual = edges.mutualEdges();
 
-        assertTrue(mutual.edges().containsAll(expected));
+        assertEquals(expected, mutual.edges());
     }
 
     static Stream<Arguments> mutualEdgesが期待通り抽出されること() {
         return Stream.of(
                 argumentSet("相互なし", // 何も抽出されない
                         List.of(Edge.of("a", "b"), Edge.of("b", "c"), Edge.of("a", "c")),
-                        List.of()
+                        Set.of()
                 ),
                 argumentSet("一組の相互", // a<->b のみ
                         List.of(Edge.of("a", "b"), Edge.of("b", "a"), Edge.of("b", "c")),
-                        List.of(Edge.of("a", "b"), Edge.of("b", "a"))
+                        Set.of(Edge.of("a", "b"), Edge.of("b", "a"))
                 ),
                 argumentSet("自己ループは除外", // a->a は mutual にならない
                         List.of(Edge.of("a", "a"), Edge.of("a", "b")),
-                        List.of()
+                        Set.of()
                 ),
                 argumentSet("複数の相互", // a<->b と b<->c の両方
                         List.of(Edge.of("a", "b"), Edge.of("b", "a"),
                                 Edge.of("b", "c"), Edge.of("c", "b"),
                                 Edge.of("x", "y") // 無関係
                         ),
-                        List.of(
+                        Set.of(
                                 Edge.of("a", "b"), Edge.of("b", "a"),
                                 Edge.of("b", "c"), Edge.of("c", "b"))
                 ),
                 argumentSet("三つ巴は相互なし扱い", // a->b, b->c, c->a は mutual ではない
                         List.of(Edge.of("a", "b"), Edge.of("b", "c"), Edge.of("c", "a")),
-                        List.of()
+                        Set.of()
                 )
         );
     }

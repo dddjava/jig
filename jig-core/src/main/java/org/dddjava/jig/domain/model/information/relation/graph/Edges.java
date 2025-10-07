@@ -178,7 +178,6 @@ public record Edges<T extends Comparable<T>>(Collection<Edge<T>> edges) {
     public MutualEdges<T> mutualEdges() {
         Set<Edge<T>> set = new HashSet<>(edges);
         Set<Edge<T>> mutual = edges.stream()
-                .filter(e -> !e.from().equals(e.to()))
                 // 反対にしたものが含まれている
                 .filter(e -> set.contains(Edge.of(e.to(), e.from())))
                 .collect(toSet());

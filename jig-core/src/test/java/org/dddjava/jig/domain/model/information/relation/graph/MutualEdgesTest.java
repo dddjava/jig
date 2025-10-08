@@ -30,7 +30,7 @@ class MutualEdgesTest {
                 ),
                 argumentSet("一組の相互", // a<->b のみ
                         List.of(Edge.of("a", "b"), Edge.of("b", "a"), Edge.of("b", "c")),
-                        Set.of(Edge.of("a", "b"), Edge.of("b", "a"))
+                        Set.of(new MutualEdge<>("a", "b"))
                 ),
                 argumentSet("自己ループは除外", // a->a は mutual にならない
                         List.of(Edge.of("a", "a"), Edge.of("a", "b")),
@@ -41,9 +41,8 @@ class MutualEdgesTest {
                                 Edge.of("b", "c"), Edge.of("c", "b"),
                                 Edge.of("x", "y") // 無関係
                         ),
-                        Set.of(
-                                Edge.of("a", "b"), Edge.of("b", "a"),
-                                Edge.of("b", "c"), Edge.of("c", "b"))
+                        Set.of(new MutualEdge<>("a", "b"),
+                                new MutualEdge<>("b", "c"))
                 ),
                 argumentSet("三つ巴は相互なし扱い", // a->b, b->c, c->a は mutual ではない
                         List.of(Edge.of("a", "b"), Edge.of("b", "c"), Edge.of("c", "a")),
@@ -54,30 +53,30 @@ class MutualEdgesTest {
 
     @MethodSource
     @ParameterizedTest
-    void singleDirection正規化(Set<Edge<String>> mutualEdges, List<Edge<String>> expectedSingleDirection) {
-        MutualEdges<String> mutual = new MutualEdges<>(mutualEdges);
-        Edges<String> single = mutual.singleDirection();
-        assertEquals(expectedSingleDirection.stream().sorted().toList(), single.list());
+    void singleDirection正規化(List<Edge<String>> edges, Set<MutualEdge<String>> expected) {
+        MutualEdges<String> mutual = MutualEdges.from(edges);
+        Set<MutualEdge<String>> actual = mutual.edges();
+        assertEquals(expected, actual);
     }
 
     static Stream<Arguments> singleDirection正規化() {
         return Stream.of(
                 argumentSet("一組の相互は片方向に正規化",
-                        Set.of(Edge.of("a", "b"), Edge.of("b", "a")),
-                        List.of(Edge.of("a", "b"))
+                        List.of(Edge.of("a", "b"), Edge.of("b", "a")),
+                        Set.of(new MutualEdge<>("a", "b"))
                 ),
                 argumentSet("複数の相互は from<to のみ残す",
-                        Set.of(Edge.of("a", "b"), Edge.of("b", "a"),
+                        List.of(Edge.of("a", "b"), Edge.of("b", "a"),
                                 Edge.of("c", "b"), Edge.of("b", "c")),
-                        List.of(Edge.of("a", "b"), Edge.of("b", "c"))
+                        Set.of(new MutualEdge<>("a", "b"), new MutualEdge<>("b", "c"))
                 ),
                 argumentSet("自己ループは生成側で除外想定だが、混じっていても除外される",
-                        Set.of(Edge.of("a", "a"), Edge.of("a", "b"), Edge.of("b", "a")),
-                        List.of(Edge.of("a", "b"))
+                        List.of(Edge.of("a", "a"), Edge.of("a", "b"), Edge.of("b", "a")),
+                        Set.of(new MutualEdge<>("a", "b"))
                 ),
                 argumentSet("順序は文字列表現（b<c）",
-                        Set.of(Edge.of("c", "b"), Edge.of("b", "c")),
-                        List.of(Edge.of("b", "c"))
+                        List.of(Edge.of("c", "b"), Edge.of("b", "c")),
+                        Set.of(new MutualEdge<>("b", "c"))
                 )
         );
     }

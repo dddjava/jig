@@ -80,4 +80,31 @@ class MutualEdgesTest {
                 )
         );
     }
+
+    @MethodSource
+    @ParameterizedTest
+    void notContainsの判定が期待通り(boolean expected, List<Edge<String>> allEdges, Edge<String> query) {
+        MutualEdges<String> mutual = MutualEdges.from(allEdges);
+        assertEquals(expected, mutual.notContains(query));
+    }
+
+    static Stream<Arguments> notContainsの判定が期待通り() {
+        List<Edge<String>> base = List.of(
+                Edge.of("a", "b"),
+                Edge.of("b", "a"), // a<->b の相互
+                Edge.of("b", "c")   // 片方向のみ
+        );
+        return Stream.of(
+                argumentSet("相互に含まれる（a->b）ので notContains は false",
+                        false, base, Edge.of("a", "b")),
+                argumentSet("相互に含まれる（b->a）ので notContains は false",
+                        false, base, Edge.of("b", "a")),
+                argumentSet("相互に含まれない（b->c 片方向）ので notContains は true",
+                        true, base, Edge.of("b", "c")),
+                argumentSet("相互に含まれない（c->b が存在しない）ので notContains は true",
+                        true, base, Edge.of("c", "b")),
+                argumentSet("自己ループ（a->a）は mutual に含まれないので notContains は true",
+                        true, base, Edge.of("a", "a"))
+        );
+    }
 }

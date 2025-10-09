@@ -7,8 +7,9 @@ import org.dddjava.jig.domain.model.data.packages.PackageIds;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependencies;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
+import org.dddjava.jig.domain.model.information.relation.graph.Edge;
+import org.dddjava.jig.domain.model.information.relation.graph.MutualEdge;
+import org.dddjava.jig.domain.model.information.relation.graph.MutualEdges;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
@@ -74,17 +75,24 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             return Optional.empty();
         }
 
-        PackageMutualDependencies packageMutualDependencies = PackageMutualDependencies.from(relationList);
+        var mutualEdges = packageRelations.relations().mutualEdges();
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         List<PackageRelation> filteredRelations = jigDocumentContext.diagramOption().transitiveReduction()
                 ? PackageRelations.toEdges(relationList).transitiveReduction().listSortedAndConverted(PackageRelation::new)
                 : relationList;
         for (PackageRelation packageRelation : filteredRelations) {
-            if (packageMutualDependencies.notContains(packageRelation)) {
+            // 相互依存でないものを単方向関連とする
+            if (mutualEdges.notContains(packageRelation.edge())) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
             }
         }
+        //var mutualRelationText = packageMutualDependencies.dotRelationText();
+        RelationText mutualRelation = new RelationText("edge [color=red,dir=both,style=bold];");
+        mutualEdges.edges().forEach(edge -> {
+            mutualRelation.add(edge.a(), edge.b());
+        });
+
 
         var allPackages = allPackages();
         PackageDepth maxDepth = allPackages.maxDepth();
@@ -153,28 +161,29 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(summaryText)
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.dotText())
-                .add(packageMutualDependencies.dotRelationText())
+                .add(mutualRelation.dotText())
                 .add(groupingSubgraphAndInternalNodeText)
                 .add(standalonePackageNodeText)
                 .toString();
 
-        return Optional.of(DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), dotText, additionalText(packageMutualDependencies)));
+        return Optional.of(DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), dotText, additionalText(mutualEdges)));
     }
 
-    private AdditionalText additionalText(PackageMutualDependencies packageMutualDependencies) {
-        if (packageMutualDependencies.none()) {
+    private AdditionalText additionalText(MutualEdges<PackageId> mutualEdges) {
+        if (mutualEdges.edges().isEmpty()) {
             return AdditionalText.empty();
         }
-        return new AdditionalText(bidirectionalRelationReasonText(packageMutualDependencies));
+        return new AdditionalText(bidirectionalRelationReasonText(mutualEdges));
     }
 
-    private String bidirectionalRelationReasonText(PackageMutualDependencies packageMutualDependencies) {
+    private String bidirectionalRelationReasonText(MutualEdges<PackageId> mutualEdges) {
         StringJoiner sj = new StringJoiner("\n");
-        for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
-            sj.add("# " + packageMutualDependency.toString());
+        for (MutualEdge<PackageId> mutualEdge : mutualEdges.edges()) {
+            // 相互依存となっているパッケージ
+            sj.add("# " + mutualEdge.toString());
             for (TypeRelationship typeRelationship : contextJigTypes.internalTypeRelationships().list()) {
-                PackageRelation packageRelation = PackageRelation.from(typeRelationship.from().packageId(), typeRelationship.to().packageId());
-                if (packageMutualDependency.matches(packageRelation)) {
+                if (mutualEdge.equals(MutualEdge.from(Edge.of(typeRelationship.from().packageId(), typeRelationship.to().packageId())))) {
+                    // 内訳の型関連
                     sj.add("- " + typeRelationship.formatText());
                 }
             }

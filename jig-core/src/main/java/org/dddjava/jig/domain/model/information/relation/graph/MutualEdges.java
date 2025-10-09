@@ -22,4 +22,8 @@ public record MutualEdges<T extends Comparable<T>>(Set<MutualEdge<T>> edges) {
                 .collect(toSet());
         return new MutualEdges<>(mutual);
     }
+
+    public boolean notContains(Edge<T> edge) {
+        return edges.contains(MutualEdge.from(edge));
+    }
 }

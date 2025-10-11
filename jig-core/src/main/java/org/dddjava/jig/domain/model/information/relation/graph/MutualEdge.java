@@ -5,7 +5,7 @@ package org.dddjava.jig.domain.model.information.relation.graph;
  *
  * from/toの関係ではないのでa,bという名称にする。
  *
- * @param <NODE>
+ * @param <NODE> ノードの型
  */
 public record MutualEdge<NODE>(NODE a, NODE b) implements Comparable<MutualEdge<NODE>> {
 

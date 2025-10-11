@@ -9,6 +9,12 @@ package org.dddjava.jig.domain.model.information.relation.graph;
  */
 public record MutualEdge<NODE>(NODE a, NODE b) implements Comparable<MutualEdge<NODE>> {
 
+    public MutualEdge {
+        if (a.toString().compareTo(b.toString()) > 0) {
+            throw new IllegalArgumentException("順序が a <= b でない");
+        }
+    }
+
     public static <T> MutualEdge<T> from(Edge<T> edge) {
         var a = edge.from();
         var b = edge.to();

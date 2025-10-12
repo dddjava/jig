@@ -15,7 +15,7 @@ class MutualEdgesTest {
 
     @MethodSource
     @ParameterizedTest
-    void mutualEdgesが期待通り抽出されること(List<Edge<String>> relations, Set<Edge<String>> expected) {
+    void mutualEdgesが期待通り抽出されること(List<Edge<String>> relations, Set<MutualEdge<String>> expected) {
         Edges<String> edges = new Edges<>(relations);
         MutualEdges<String> mutual = edges.mutualEdges();
 

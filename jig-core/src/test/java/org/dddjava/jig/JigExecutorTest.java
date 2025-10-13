@@ -20,7 +20,7 @@ class JigExecutorTest {
                 sourceBasePaths
         );
 
-        List<JigDocument> actualDocuments = actual.stream().map(handleResult -> handleResult.jigDocument).toList();
+        List<JigDocument> actualDocuments = actual.stream().map(handleResult -> handleResult.jigDocument()).toList();
         // canonicalのすべてが処理されている
         assertTrue(actualDocuments.containsAll(JigDocument.canonical()), actualDocuments::toString);
 

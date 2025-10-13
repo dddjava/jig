@@ -11,10 +11,10 @@ import static java.util.stream.Collectors.joining;
 
 public class HandleResult {
 
-    JigDocument jigDocument;
-    List<Path> outputFilePaths;
+    private final JigDocument jigDocument;
+    private final List<Path> outputFilePaths;
     @Nullable
-    String failureMessage;
+    private final String failureMessage;
 
     private HandleResult(JigDocument jigDocument, List<Path> outputFilePaths, @Nullable String failureMessage) {
         this.jigDocument = jigDocument;

@@ -16,18 +16,26 @@ public class HandleResult {
     @Nullable
     String failureMessage;
 
-    HandleResult(JigDocument jigDocument, List<Path> outputFilePaths, @Nullable String failureMessage) {
+    private HandleResult(JigDocument jigDocument, List<Path> outputFilePaths, @Nullable String failureMessage) {
         this.jigDocument = jigDocument;
         this.outputFilePaths = outputFilePaths;
         this.failureMessage = failureMessage;
     }
 
-    public HandleResult(JigDocument jigDocument, List<Path> outputFilePaths) {
+    private HandleResult(JigDocument jigDocument, List<Path> outputFilePaths) {
         this(jigDocument, outputFilePaths, outputFilePaths.isEmpty() ? "skip" : null);
     }
 
-    public HandleResult(JigDocument jigDocument, String failureMessage) {
+    private HandleResult(JigDocument jigDocument, String failureMessage) {
         this(jigDocument, Collections.emptyList(), failureMessage);
+    }
+
+    public static HandleResult withException(JigDocument jigDocument, Exception e) {
+        return new HandleResult(jigDocument, e.getMessage());
+    }
+
+    public static HandleResult withOutput(JigDocument jigDocument, List<Path> outputFilePaths) {
+        return new HandleResult(jigDocument, outputFilePaths);
     }
 
     public boolean isOutputDiagram() {

@@ -128,11 +128,11 @@ public class JigDocumentGenerator {
 
                 long takenTime = System.currentTimeMillis() - startTime;
                 logger.info("[{}] completed: {} ms", jigDocument, takenTime);
-                return new HandleResult(jigDocument, outputFilePaths);
+                return HandleResult.withOutput(jigDocument, outputFilePaths);
             } catch (Exception e) {
                 // ドキュメント出力に失敗しても例外を伝播させない
                 logger.warn("[{}] failed to write document.", jigDocument, e);
-                return new HandleResult(jigDocument, e.getMessage());
+                return HandleResult.withException(jigDocument, e);
             }
         }));
     }

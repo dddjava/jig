@@ -22,20 +22,12 @@ public class HandleResult {
         this.failureMessage = failureMessage;
     }
 
-    private HandleResult(JigDocument jigDocument, List<Path> outputFilePaths) {
-        this(jigDocument, outputFilePaths, outputFilePaths.isEmpty() ? "skip" : null);
-    }
-
-    private HandleResult(JigDocument jigDocument, String failureMessage) {
-        this(jigDocument, Collections.emptyList(), failureMessage);
-    }
-
     public static HandleResult withException(JigDocument jigDocument, Exception e) {
-        return new HandleResult(jigDocument, e.getMessage());
+        return new HandleResult(jigDocument, Collections.emptyList(), e.getMessage());
     }
 
     public static HandleResult withOutput(JigDocument jigDocument, List<Path> outputFilePaths) {
-        return new HandleResult(jigDocument, outputFilePaths);
+        return new HandleResult(jigDocument, outputFilePaths, outputFilePaths.isEmpty() ? "skip" : null);
     }
 
     public boolean isOutputDiagram() {

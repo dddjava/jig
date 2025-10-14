@@ -17,6 +17,7 @@ public interface HandleResult {
 
     boolean isOutputDiagram();
 
+    // テストでのみ使用している。廃止したい。
     boolean failure();
 
     String outputFilePathsText();

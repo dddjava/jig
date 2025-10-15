@@ -17,7 +17,7 @@ public interface HandleResult {
 
     boolean isOutputDiagram();
 
-    // テストでのみ使用している。廃止したい。
+    @Deprecated(since = "2025.10.1", forRemoval = true)
     boolean failure();
 
     String outputFilePathsText();

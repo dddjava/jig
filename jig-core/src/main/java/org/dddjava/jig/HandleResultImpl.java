@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -15,10 +16,22 @@ public class HandleResultImpl implements HandleResult {
     @Nullable
     private final String failureMessage;
 
-    HandleResultImpl(JigDocument jigDocument, List<Path> outputFilePaths, @Nullable String failureMessage) {
+    /**
+     * 成功時のコンストラクタ
+     */
+    HandleResultImpl(JigDocument jigDocument, List<Path> outputFilePaths) {
         this.jigDocument = jigDocument;
         this.outputFilePaths = outputFilePaths;
-        this.failureMessage = failureMessage;
+        this.failureMessage = outputFilePaths.isEmpty() ? "skip" : null;
+    }
+
+    /**
+     * 失敗時のコンストラクタ
+     */
+    HandleResultImpl(JigDocument jigDocument, Exception e) {
+        this.jigDocument = jigDocument;
+        this.outputFilePaths = Collections.emptyList();
+        this.failureMessage = e.getMessage();
     }
 
     @Override

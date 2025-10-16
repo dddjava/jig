@@ -22,7 +22,7 @@ public class HandleResultImpl implements HandleResult {
     HandleResultImpl(JigDocument jigDocument, List<Path> outputFilePaths) {
         this.jigDocument = jigDocument;
         this.outputFilePaths = outputFilePaths;
-        this.failureMessage = outputFilePaths.isEmpty() ? "skip" : null;
+        this.failureMessage = null;
     }
 
     /**
@@ -61,9 +61,9 @@ public class HandleResultImpl implements HandleResult {
 
     @Override
     public boolean failure() {
-        return !success()
-                // 現状、skipかどうかはfailureMessageで見るしかない
-                && !"skip".equals(failureMessage);
+        // 何かしらのエラーがある
+        // 出力対象なしは失敗ではないので、!success() ではない
+        return failureMessage != null;
     }
 
     @Override
@@ -77,7 +77,8 @@ public class HandleResultImpl implements HandleResult {
 
     @Override
     public boolean success() {
-        return failureMessage == null;
+        // 何かしらのアウトプットがある
+        return !outputFilePaths.isEmpty();
     }
 
     @Override
@@ -97,7 +98,11 @@ public class HandleResultImpl implements HandleResult {
     public String toString() {
         if (success()) {
             return String.format("%s: %s", jigDocument(), outputFileNames());
+        } else if (failure()) {
+            return String.format("%s: %s", jigDocument(), failureMessage);
+        } else {
+            // 実装上は「例外が起こっていないがなんのアウトプットもない」の場合のみここに入る
+            return String.format("%s: skip", jigDocument());
         }
-        return String.format("%s: %s", jigDocument(), failureMessage);
     }
 }

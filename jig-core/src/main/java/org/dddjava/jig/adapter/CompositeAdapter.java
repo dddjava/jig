@@ -38,7 +38,9 @@ public class CompositeAdapter {
         MethodHandle adapterMethod = adapterMethodMap.get(jigDocument);
 
         try {
-            // 引数はJigRepositoryとJigDocumentでなければならない
+            // adapterMethodは引数がJigRepositoryとJigDocument、戻り型 List<Path> でなければならない。
+            // 引数チェックもやろうと思えばできるが、異なるシグネチャのメソッドを無視するわけにもいかないし、
+            // どちらにしても実行時例外にするしかないので引数は見ず標準例外が出るに任せる。
             return (List<Path>) adapterMethod.invoke(adapter, jigRepository, jigDocument);
         } catch (Throwable e) {
             throw new RuntimeException(e);

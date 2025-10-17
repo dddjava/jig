@@ -18,10 +18,10 @@ public class DatasourceAngle {
 
     private final OutputImplementation outputImplementation;
     private final JigMethod interfaceMethod;
-    MyBatisStatements myBatisStatements;
-    JigMethod concreteMethod;
+    private final MyBatisStatements myBatisStatements;
+    private final JigMethod concreteMethod;
 
-    CallerMethods callerMethods;
+    private final CallerMethods callerMethods;
 
     public DatasourceAngle(OutputImplementation outputImplementation, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
         this.interfaceMethod = outputImplementation.outputPortGateway();

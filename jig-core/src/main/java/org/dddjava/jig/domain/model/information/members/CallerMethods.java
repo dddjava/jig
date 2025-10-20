@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * 呼び出しメソッド一覧
+ * 呼び出し元メソッド一覧
  */
 public record CallerMethods(Set<JigMethodId> values) {
 

@@ -21,12 +21,11 @@ public class DatasourceAngles {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortGateway().jigMethodId());
                     return new DatasourceAngle(outputImplementation, myBatisStatements, callerMethods);
                 })
+                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodId().value()))
                 .toList();
     }
 
     public List<DatasourceAngle> list() {
-        return list.stream()
-                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodId().value()))
-                .toList();
+        return list;
     }
 }

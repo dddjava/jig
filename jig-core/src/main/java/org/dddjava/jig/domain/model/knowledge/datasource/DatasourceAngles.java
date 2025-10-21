@@ -11,21 +11,15 @@ import java.util.List;
 /**
  * データソースの切り口一覧
  */
-public class DatasourceAngles {
+public record DatasourceAngles(List<DatasourceAngle> list) {
 
-    List<DatasourceAngle> list;
-
-    public DatasourceAngles(OutputImplementations outputImplementations, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
-        this.list = outputImplementations.stream()
+    public static DatasourceAngles from(OutputImplementations outputImplementations, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
+        return new DatasourceAngles(outputImplementations.stream()
                 .map(outputImplementation -> {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortGateway().jigMethodId());
                     return new DatasourceAngle(outputImplementation, myBatisStatements, callerMethods);
                 })
                 .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodId().value()))
-                .toList();
-    }
-
-    public List<DatasourceAngle> list() {
-        return list;
+                .toList());
     }
 }

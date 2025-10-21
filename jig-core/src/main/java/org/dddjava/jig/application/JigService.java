@@ -141,7 +141,7 @@ public class JigService {
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
         var jigTypes = jigTypes(jigRepository);
         var outputImplementations = outputImplementations(jigRepository);
-        return new DatasourceAngles(outputImplementations, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
+        return DatasourceAngles.from(outputImplementations, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {

@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * パッケージ
+ */
 public record JigPackages(Collection<JigPackage> jigPackages) {
 
     public List<JigPackage> listPackage() {

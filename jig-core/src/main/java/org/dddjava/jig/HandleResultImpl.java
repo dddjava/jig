@@ -98,11 +98,15 @@ public class HandleResultImpl implements HandleResult {
     public String toString() {
         if (success()) {
             return String.format("%s: %s", jigDocument(), outputFileNames());
-        } else if (failure()) {
-            return String.format("%s: %s", jigDocument(), failureMessage);
-        } else {
-            // 実装上は「例外が起こっていないがなんのアウトプットもない」の場合のみここに入る
-            return String.format("%s: skip", jigDocument());
         }
+
+        // 失敗メッセージがある
+        if (failureMessage != null) {
+            return String.format("%s: %s", jigDocument(), failureMessage);
+        }
+
+        // 実装上は「例外が起こっていないがなんのアウトプットもない」の場合のみここに入る
+        // 失敗メッセージがない = skip は違和感はある
+        return String.format("%s: skip", jigDocument());
     }
 }

@@ -9,15 +9,10 @@ import static java.util.stream.Collectors.joining;
 /**
  * テーブル一覧
  */
-public class Tables {
-    private final List<Table> tables;
+public record Tables(List<Table> tables) {
 
     public Tables(Table table) {
         this(Collections.singletonList(table));
-    }
-
-    private Tables(List<Table> tables) {
-        this.tables = tables;
     }
 
     public static Tables nothing() {

@@ -11,14 +11,8 @@ import java.util.stream.Stream;
 /**
  * バリデーション一覧
  */
-public class Validations {
+public record Validations(List<Validation> values) {
     private static final Pattern ANNOTATION_PATTERN = Pattern.compile("((javax|jakarta).validation|org.hibernate.validator).+");
-
-    List<Validation> values;
-
-    public Validations(List<Validation> values) {
-        this.values = values;
-    }
 
     public static Validations from(JigTypes jigTypes) {
         List<Validation> list = jigTypes.stream()

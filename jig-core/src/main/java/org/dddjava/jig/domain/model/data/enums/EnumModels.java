@@ -9,12 +9,7 @@ import java.util.stream.Collectors;
 /**
  * Enum固有で取得するモデル
  */
-public class EnumModels {
-    List<EnumModel> list;
-
-    public EnumModels(List<EnumModel> list) {
-        this.list = list;
-    }
+public record EnumModels(List<EnumModel> list) {
 
     public Map<TypeId, EnumModel> toMap() {
         return list.stream()

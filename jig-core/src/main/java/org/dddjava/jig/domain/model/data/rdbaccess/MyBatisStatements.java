@@ -7,18 +7,10 @@ import java.util.function.Predicate;
 /**
  * SQL一覧
  */
-public class MyBatisStatements {
-
-    List<MyBatisStatement> list;
-    SqlReadStatus sqlReadStatus;
+public record MyBatisStatements(List<MyBatisStatement> list, SqlReadStatus sqlReadStatus) {
 
     public MyBatisStatements(SqlReadStatus sqlReadStatus) {
         this(Collections.emptyList(), sqlReadStatus);
-    }
-
-    public MyBatisStatements(List<MyBatisStatement> list, SqlReadStatus sqlReadStatus) {
-        this.list = list;
-        this.sqlReadStatus = sqlReadStatus;
     }
 
     public Tables tables(SqlType sqlType) {

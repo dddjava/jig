@@ -15,13 +15,7 @@ import java.util.stream.Stream;
  * 文字列比較を行なっているメソッドはビジネスルールの分類判定を行なっている可能性が高い。
  * サービスなどに登場した場合はかなり拙いし、そうでなくても列挙を使用するなど改善の余地がある。
  */
-public class StringComparingMethodList {
-
-    List<JigMethod> methods;
-
-    StringComparingMethodList(List<JigMethod> methods) {
-        this.methods = methods;
-    }
+public record StringComparingMethodList(List<JigMethod> methods) {
 
     public static StringComparingMethodList createFrom(InputAdapters inputAdapters, ServiceMethods serviceMethods) {
         Stream<JigMethod> targetMethodStream = Stream.concat(

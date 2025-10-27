@@ -1,9 +1,5 @@
 package org.dddjava.jig.application;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import io.micrometer.core.instrument.Metrics;
-import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -14,14 +10,8 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
-import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
-import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
-import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
@@ -40,28 +30,16 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class JigService {
 
-    private final CoreDomainCondition coreDomainCondition;
     private final JigEventRepository jigEventRepository;
-
-    // 何度も呼ばれる計算量の多いメソッドをキャッシュするためのフィールド
-    // 現状は引数に揺れがないので、キャッシュキーはメソッド名にしておく
-    private final Cache<String, JigTypes> jigTypesCache;
-    private final Cache<String, CoreTypesAndRelations> JigTypesWithRelationshipsCache;
+    private final TypesQueryService typesQueryService;
+    private final InfrastructureQueryService infrastructureQueryService;
+    private final UsecaseQueryService usecaseQueryService;
 
     public JigService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
-        this.coreDomainCondition = coreDomainCondition;
         this.jigEventRepository = jigEventRepository;
-
-        if (System.getProperty("jig.debug", "false").equals("true")) {
-            this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
-            this.JigTypesWithRelationshipsCache = Caffeine.newBuilder().recordStats().build();
-
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, JigTypesWithRelationshipsCache, "JigTypesWithRelationshipsCache");
-        } else {
-            this.jigTypesCache = Caffeine.newBuilder().build();
-            this.JigTypesWithRelationshipsCache = Caffeine.newBuilder().build();
-        }
+        this.typesQueryService = new TypesQueryService(coreDomainCondition, jigEventRepository);
+        this.infrastructureQueryService = new InfrastructureQueryService(jigEventRepository, this.typesQueryService);
+        this.usecaseQueryService = new UsecaseQueryService(jigEventRepository, this.typesQueryService, this.infrastructureQueryService);
     }
 
     /**
@@ -71,14 +49,14 @@ public class JigService {
      * ライブラリのクラスなど、使用しているだけのものは入らない。
      */
     public JigTypes jigTypes(JigRepository jigRepository) {
-        return jigRepository.fetchJigTypes();
+        return typesQueryService.jigTypes(jigRepository);
     }
 
     /**
      * 用語集を取得する
      */
     public Glossary glossary(JigRepository jigRepository) {
-        return jigRepository.fetchGlossary();
+        return typesQueryService.glossary(jigRepository);
     }
 
     /**
@@ -87,75 +65,43 @@ public class JigService {
      * コアドメインは実行時に指定するパターンなどによって識別する。
      */
     public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("coreDomainJigTypes", key -> {
-            var jigTypes = jigTypes(jigRepository);
-            var coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
-            if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
-            return coreDomainJigTypes.jigTypes();
-        });
+        return typesQueryService.coreDomainJigTypes(jigRepository);
     }
 
     public MethodSmells methodSmells(JigRepository jigRepository) {
-        return MethodSmells.from(coreDomainJigTypes(jigRepository));
+        return typesQueryService.methodSmells(jigRepository);
     }
 
     public JigTypes categoryTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("categoryTypes", key -> {
-            return coreDomainJigTypes(jigRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
-        });
+        return typesQueryService.categoryTypes(jigRepository);
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("serviceTypes", key -> {
-            return jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.InputPort);
-        });
+        return typesQueryService.serviceTypes(jigRepository);
     }
 
     public ServiceMethods serviceMethods(JigRepository jigRepository) {
-        JigTypes serviceJigTypes = serviceTypes(jigRepository);
-        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(jigTypes(jigRepository)));
-        if (serviceMethods.empty()) jigEventRepository.registerサービスが見つからない();
-        return serviceMethods;
-    }
-
-    private OutputImplementations outputImplementations(JigRepository jigRepository) {
-        var jigTypes = jigTypes(jigRepository);
-        var outputAdapters = OutputAdapters.from(jigTypes);
-        var outputImplementations = OutputImplementations.from(jigTypes, outputAdapters);
-        if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
-        return outputImplementations;
+        return usecaseQueryService.serviceMethods(jigRepository);
     }
 
     public InputAdapters inputAdapters(JigRepository jigRepository) {
-        var inputAdapters = InputAdapters.from(jigTypes(jigRepository));
-        if (inputAdapters.isEmpty()) jigEventRepository.registerエントリーポイントが見つからない();
-        return inputAdapters;
+        return usecaseQueryService.inputAdapters(jigRepository);
     }
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {
-        var serviceMethods = serviceMethods(jigRepository);
-        var outputImplementations = outputImplementations(jigRepository);
-        return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outputImplementations);
+        return usecaseQueryService.serviceAngles(jigRepository);
     }
 
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
-        var jigTypes = jigTypes(jigRepository);
-        var outputImplementations = outputImplementations(jigRepository);
-        return DatasourceAngles.from(outputImplementations, jigRepository.jigDataProvider().fetchMybatisStatements(), MethodRelations.from(jigTypes));
+        return infrastructureQueryService.datasourceAngles(jigRepository);
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {
-        var inputAdapters = inputAdapters(jigRepository);
-        var serviceMethods = serviceMethods(jigRepository);
-        return StringComparingMethodList.createFrom(inputAdapters, serviceMethods);
+        return usecaseQueryService.stringComparing(jigRepository);
     }
 
     public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {
-        return JigTypesWithRelationshipsCache.get("coreTypesAndRelations", key -> {
-            var jigTypes = coreDomainJigTypes(jigRepository);
-            var typeRelationships = TypeRelationships.internalRelation(jigTypes);
-            return new CoreTypesAndRelations(jigTypes, typeRelationships);
-        });
+        return typesQueryService.coreTypesAndRelations(jigRepository);
     }
 
     public JigPackages packages(JigRepository jigRepository) {

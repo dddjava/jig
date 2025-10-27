@@ -30,13 +30,11 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class JigService {
 
-    private final JigEventRepository jigEventRepository;
     private final TypesQueryService typesQueryService;
     private final InfrastructureQueryService infrastructureQueryService;
     private final UsecaseQueryService usecaseQueryService;
 
     public JigService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
-        this.jigEventRepository = jigEventRepository;
         this.typesQueryService = new TypesQueryService(coreDomainCondition, jigEventRepository);
         this.infrastructureQueryService = new InfrastructureQueryService(jigEventRepository, this.typesQueryService);
         this.usecaseQueryService = new UsecaseQueryService(jigEventRepository, this.typesQueryService, this.infrastructureQueryService);

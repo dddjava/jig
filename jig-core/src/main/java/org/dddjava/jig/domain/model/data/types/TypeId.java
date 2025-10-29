@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * *型の識別子
+ * 型の識別子
  */
 public record TypeId(String value) implements Comparable<TypeId> {
 

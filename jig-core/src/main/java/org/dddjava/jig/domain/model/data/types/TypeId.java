@@ -14,6 +14,9 @@ public record TypeId(String value) implements Comparable<TypeId> {
 
     private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
 
+    /**
+     * 与えられた文字列のままのTypeIdを生成するファクトリ。
+     */
     public static TypeId valueOf(String value) {
         if (cache.containsKey(value)) {
             Metrics.counter("cache.gets", "cache", "typeId", "result", "hit").increment();
@@ -25,10 +28,19 @@ public record TypeId(String value) implements Comparable<TypeId> {
         return instance;
     }
 
+    /**
+     * クラスオブジェクトからTypeIdを生成するファクトリ。
+     *
+     * TODO JIG実行時のクラスパスに含まれるものしか扱えないため、使用できるクラスは限定的。テストユーティリティなどに持って行って廃止した方がいいかもしれない。
+     */
     public static TypeId from(Class<?> clz) {
         return valueOf(clz.getName());
     }
 
+    /**
+     * classファイルに記録されている名称からTypeIdを生成するファクトリ。
+     * クラスファイル上でのパッケージ名は `/` で区切られている。
+     */
     public static TypeId fromJvmBinaryName(String jvmBinaryName) {
         return valueOf(jvmBinaryName.replace('/', '.'));
     }
@@ -42,6 +54,9 @@ public record TypeId(String value) implements Comparable<TypeId> {
 
     /**
      * パッケージなしのクラス名
+     * ネストクラスでは `Hoge$Fuga` のように外側のクラス名を含む。
+     *
+     * TODO Class#getSimpleName() はネストクラスでも単純名を返すためこの名前はよくない
      *
      * @return "TypeId"
      */
@@ -55,6 +70,9 @@ public record TypeId(String value) implements Comparable<TypeId> {
      */
     public String asSimpleName() {
         String text = asSimpleText();
+        // $を含んでいた場合、一番後ろの$以降を単純名とする。
+        // 一番後ろなのはクラスは多重ネストが可能なため。
+        // class Hoge$Fuga {} のようなクラスの記述は可能でこの場合は Fuga となってしまうが、慣習的にも作らないのでこのケースは考慮しない。
         int lastDollarIndex = text.lastIndexOf('$');
         return (lastDollarIndex != -1) ? text.substring(lastDollarIndex + 1) : text;
     }
@@ -76,6 +94,9 @@ public record TypeId(String value) implements Comparable<TypeId> {
         if (value.indexOf('$') == -1) {
             return this;
         }
+        // $の後ろが数字の場合のみ除去する。
+        // こうしないとネストクラスが外側のクラスとして扱われてしまう。
+        // class Hoge$1 {} のようなクラスの記述は可能だが、慣習的にも作らないのでこのケースは考慮しない。
         return valueOf(value.replaceFirst("\\$\\d+", ""));
     }
 
@@ -97,6 +118,7 @@ public record TypeId(String value) implements Comparable<TypeId> {
     }
 
     public boolean isJavaLanguageType() {
+        // TODO これだとパッケージ名 javarista などjava&javax以外も含まれてしまうような。。。
         return isPrimitive() || isVoid() || value.startsWith("java");
     }
 

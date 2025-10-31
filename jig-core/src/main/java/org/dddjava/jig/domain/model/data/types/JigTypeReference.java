@@ -65,8 +65,4 @@ public record JigTypeReference(TypeId id,
     public JigTypeReference convertArray() {
         return new JigTypeReference(id.convertArray(), typeAnnotations, typeArgumentList);
     }
-
-    public boolean typeIs(Class<?> clz) {
-        return id.equals(TypeId.from(clz));
-    }
 }

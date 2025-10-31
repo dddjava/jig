@@ -119,7 +119,7 @@ class AsmMethodVisitor extends MethodVisitor {
             if (ownership == JigMemberOwnership.CLASS) {
                 if ((name.equals("values") && parameterList.isEmpty())
                         || (name.equals("$values()") && parameterList.isEmpty())
-                        || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).typeIs(String.class))) {
+                        || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).id().equals(TypeId.STRING))) {
                     flags.add(JigMethodFlag.ENUM_SUPPORT);
                 }
             }

@@ -37,6 +37,10 @@ public record TypeId(String value) implements Comparable<TypeId> {
      * 与えられた文字列のままのTypeIdを生成するファクトリ。
      */
     public static TypeId valueOf(String value) {
+        // FIXME 定数の初期化時点でcacheが初期化されていないためNPEが起こる。回避するためにnullチェック。
+        if (cache == null) {
+            return new TypeId(value);
+        }
         if (cache.containsKey(value)) {
             Metrics.counter("cache.gets", "cache", "typeId", "result", "hit").increment();
             return cache.get(value);

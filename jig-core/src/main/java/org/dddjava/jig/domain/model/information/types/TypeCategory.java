@@ -39,7 +39,7 @@ public enum TypeCategory {
     public static TypeCategory from(JigType jigType) {
         // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Service"))
-                || jigType.hasAnnotation(TypeId.JIG_SERVICE_ANNOTATION)) {
+                || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.annotation.Service"))) {
             return InputPort;
         }
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Controller"))
@@ -49,7 +49,7 @@ public enum TypeCategory {
             return InputAdapter;
         }
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Repository"))
-                || jigType.hasAnnotation(TypeId.JIG_REPOSITORY_ANNOTATION)) {
+                || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.annotation.Repository"))) {
             return OutputAdapter;
         }
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Component"))) {

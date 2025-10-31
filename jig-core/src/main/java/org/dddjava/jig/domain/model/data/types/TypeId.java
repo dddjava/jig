@@ -28,9 +28,6 @@ public record TypeId(String value) implements Comparable<TypeId> {
     public static final TypeId STRING = TypeId.valueOf("java.lang.String");
     // 日付
     public static final TypeId LOCAL_DATE = TypeId.valueOf("java.time.LocalDate");
-    // JIG内部使用
-    public static final TypeId JIG_SERVICE_ANNOTATION = TypeId.valueOf("org.dddjava.jig.annotation.Service");
-    public static final TypeId JIG_REPOSITORY_ANNOTATION = TypeId.valueOf("org.dddjava.jig.annotation.Repository");
 
     private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
 

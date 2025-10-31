@@ -27,4 +27,16 @@ public record JigBaseTypeDataBundle(
                 .filter(jigTypeHeaderJigObjectId -> jigTypeHeaderJigObjectId.value().contains("."))
                 .collect(toSet());
     }
+
+    public boolean superTypeIsEnum() {
+        return superType
+                .filter(type -> type.id().equals(TypeId.ENUM))
+                .isPresent();
+    }
+
+    public boolean superTypeIsRecord() {
+        return superType
+                .filter(type -> type.id().equals(TypeId.RECORD))
+                .isPresent();
+    }
 }

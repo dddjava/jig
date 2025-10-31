@@ -15,6 +15,8 @@ public record TypeId(String value) implements Comparable<TypeId> {
     // 判定に使用する型
     public static final TypeId DEPRECATED_ANNOTATION = TypeId.valueOf("java.lang.Deprecated");
     public static final TypeId OBJECT = TypeId.valueOf("java.lang.Object");
+    public static final TypeId ENUM = TypeId.valueOf("java.lang.Enum");
+    public static final TypeId RECORD = TypeId.valueOf("java.lang.Record");
     // 数値
     public static final TypeId INT_PRIMITIVE = TypeId.valueOf("int");
     public static final TypeId LONG_PRIMITIVE = TypeId.valueOf("long");

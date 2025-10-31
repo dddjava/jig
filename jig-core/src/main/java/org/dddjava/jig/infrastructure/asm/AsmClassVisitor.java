@@ -257,18 +257,14 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     public boolean isEnum() {
         return Objects.requireNonNull(jigTypeHeaderBuilder)
                 .baseTypeDataBundle()
-                .superType()
-                .filter(superType -> superType.typeIs(Enum.class))
-                .isPresent();
+                .superTypeIsEnum();
     }
 
     @Override
     public boolean isRecord() {
         return Objects.requireNonNull(jigTypeHeaderBuilder)
                 .baseTypeDataBundle()
-                .superType()
-                .filter(superType -> superType.typeIs(Record.class))
-                .isPresent();
+                .superTypeIsRecord();
     }
 
     @Override

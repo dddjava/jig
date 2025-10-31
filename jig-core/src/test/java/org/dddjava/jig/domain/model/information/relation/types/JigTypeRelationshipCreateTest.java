@@ -32,7 +32,7 @@ public class JigTypeRelationshipCreateTest {
         assertEquals(1, sut.size());
         assertEquals(
                 TypeRelationship.of(
-                        TypeId.from(SimpleClass.class), TypeId.from(Object.class),
+                        TestSupport.getTypeIdFromClass(SimpleClass.class), TestSupport.getTypeIdFromClass(Object.class),
                         TypeRelationKind.継承クラス),
                 sut.typeRelationships().stream().findFirst().orElseThrow());
     }
@@ -44,13 +44,13 @@ public class JigTypeRelationshipCreateTest {
 
         assertEquals(5, sut.size());
         Comparator<TypeRelationship> comparing = Comparator.comparing(TypeRelationship::to);
-        TypeId from = TypeId.from(ComplexClass.class);
+        TypeId from = TestSupport.getTypeIdFromClass(ComplexClass.class);
         assertEquals(Stream.of(
-                        TypeRelationship.of(from, TypeId.from(CharSequence.class), TypeRelationKind.型引数),
-                        TypeRelationship.of(from, TypeId.from(ComplexSubClass.class), TypeRelationKind.継承クラス),
-                        TypeRelationship.of(from, TypeId.from(String.class), TypeRelationKind.型引数),
-                        TypeRelationship.of(from, TypeId.from(ComplexInterface.class), TypeRelationKind.実装インタフェース),
-                        TypeRelationship.of(from, TypeId.from(Integer.class), TypeRelationKind.型引数)
+                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(CharSequence.class), TypeRelationKind.型引数),
+                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(ComplexSubClass.class), TypeRelationKind.継承クラス),
+                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(String.class), TypeRelationKind.型引数),
+                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(ComplexInterface.class), TypeRelationKind.実装インタフェース),
+                        TypeRelationship.of(from, TestSupport.getTypeIdFromClass(Integer.class), TypeRelationKind.型引数)
                 ).sorted(comparing).toList(),
                 sut.list().stream().sorted(comparing).toList());
     }

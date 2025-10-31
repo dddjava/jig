@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.junit.jupiter.api.Test;
+import testing.TestSupport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ class SequenceMermaidDiagramTest {
                 // Regular class call
                 new MethodCall(TypeId.valueOf("CalleeClass"), "method", List.of(), TypeId.valueOf("ReturnType")),
                 // Java standard library class call (ArrayList)
-                new MethodCall(TypeId.from(ArrayList.class), "add", List.of(TypeId.valueOf("Object")), TypeId.valueOf("boolean"))
+                new MethodCall(TestSupport.getTypeIdFromClass(ArrayList.class), "add", List.of(TypeId.valueOf("Object")), TypeId.valueOf("boolean"))
         ));
 
         var jigMethodDeclaration = new JigMethodDeclaration(

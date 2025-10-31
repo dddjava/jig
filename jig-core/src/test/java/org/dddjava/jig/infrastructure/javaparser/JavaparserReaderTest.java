@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +44,7 @@ class JavaparserReaderTest {
 
         sut.loadPackageInfoJavaFile(targetPath, glossaryRepository);
 
-        PackageId packageId = TypeId.from(this.getClass())
+        PackageId packageId = TestSupport.getTypeIdFromClass(this.getClass())
                 .packageId().subpackageOf(packagePathText.split("/"));
         Term term = glossaryRepository.get(packageId);
 
@@ -59,7 +58,7 @@ class JavaparserReaderTest {
 
         sut.loadPackageInfoJavaFile(getJavaFilePath(path), glossaryRepository);
 
-        PackageId packageId = TypeId.from(this.getClass())
+        PackageId packageId = TestSupport.getTypeIdFromClass(this.getClass())
                 .packageId().subpackageOf("ut", "package_info_typical");
         Term term = glossaryRepository.get(packageId);
 
@@ -78,7 +77,7 @@ class JavaparserReaderTest {
         sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
 
         var glossary = glossaryRepository.all();
-        var term = glossary.termOf(TypeId.from(ParseTargetCanonicalClass.class).value(), TermKind.クラス);
+        var term = glossary.termOf(TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class).value(), TermKind.クラス);
 
         assertEquals("クラスコメント", term.title());
     }
@@ -92,7 +91,7 @@ class JavaparserReaderTest {
 
         var glossary = glossaryRepository.all();
         var term = glossary.termOf(JigMethodId.from(
-                TypeId.from(ParseTargetCanonicalClass.class),
+                TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class),
                 "method", List.of()).value(), TermKind.メソッド);
 
         assertEquals("メソッドコメント", term.title());
@@ -107,7 +106,7 @@ class JavaparserReaderTest {
 
         var glossary = glossaryRepository.all();
         var term = glossary.termOf(JigFieldId.from(
-                TypeId.from(ParseTargetCanonicalClass.class),
+                TestSupport.getTypeIdFromClass(ParseTargetCanonicalClass.class),
                 "field").value(), TermKind.フィールド);
 
         assertEquals("フィールドコメント", term.title());

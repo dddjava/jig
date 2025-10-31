@@ -15,6 +15,7 @@ import stub.domain.model.ClassJavadocStub;
 import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
 import testing.JigTest;
+import testing.TestSupport;
 
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -41,7 +42,7 @@ class ReadableLabelTest {
     @MethodSource
     void クラスコメント取得(Class<?> targetClass, String expectedText, JigRepository jigRepository) {
         var jigTypes = jigRepository.fetchJigTypes();
-        String label = jigTypes.resolveJigType(TypeId.from(targetClass))
+        String label = jigTypes.resolveJigType(TestSupport.getTypeIdFromClass(targetClass))
                 .map(jigType -> jigType.label())
                 .orElseThrow(AssertionError::new);
 
@@ -59,7 +60,7 @@ class ReadableLabelTest {
     @Test
     void メソッド別名取得(JigRepository jigRepository) {
         JigTypes jigTypes = jigRepository.fetchJigTypes();
-        TypeId テスト対象クラス = TypeId.from(MethodJavadocStub.class);
+        TypeId テスト対象クラス = TestSupport.getTypeIdFromClass(MethodJavadocStub.class);
         JigType jigType = jigTypes.listMatches(item -> item.id().equals(テスト対象クラス)).get(0);
 
         JigMethod method = resolveMethodBySignature(jigType, "method()");

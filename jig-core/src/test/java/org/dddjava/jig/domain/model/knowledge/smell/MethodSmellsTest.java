@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ class MethodSmellsTest {
         MethodSmells methodSmells = jigService.methodSmells(jigRepository);
 
         var detectedSmells = methodSmells.list().stream()
-                .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeId.from(SmelledClass.class)))
+                .filter(methodSmell -> methodSmell.method().declaringType().equals(TestSupport.getTypeIdFromClass(SmelledClass.class)))
                 .toList();
 
         assertEquals(9, detectedSmells.size(), detectedSmells.toString());
@@ -106,7 +105,7 @@ class MethodSmellsTest {
         MethodSmells methodSmells = jigService.methodSmells(jigRepository);
 
         var detectedSmells = methodSmells.list().stream()
-                .filter(methodSmell -> methodSmell.method().declaringType().equals(TypeId.from(SmelledRecord.class)))
+                .filter(methodSmell -> methodSmell.method().declaringType().equals(TestSupport.getTypeIdFromClass(SmelledRecord.class)))
                 .toList();
 
         assertEquals(1, detectedSmells.size(), detectedSmells.toString());

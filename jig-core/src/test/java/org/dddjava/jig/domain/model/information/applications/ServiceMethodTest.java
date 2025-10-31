@@ -11,6 +11,7 @@ import stub.application.service.CanonicalService;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import testing.JigTest;
+import testing.TestSupport;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ class ServiceMethodTest {
     void name(JigService jigService, JigRepository jigRepository) {
         JigTypes jigTypes = jigService.jigTypes(jigRepository);
 
-        var targetType = jigTypes.resolveJigType(TypeId.from(CanonicalService.class)).orElseThrow();
+        var targetType = jigTypes.resolveJigType(TestSupport.getTypeIdFromClass(CanonicalService.class)).orElseThrow();
         ServiceMethod sut = targetType.allJigMethodStream()
                 .filter(jigMethod -> jigMethod.name().equals("fuga"))
                 .findAny()
@@ -33,11 +34,11 @@ class ServiceMethodTest {
                 .orElseThrow();
 
         Optional<TypeId> primaryType = sut.primaryType();
-        assertEquals(TypeId.from(Fuga.class), primaryType.orElseThrow());
+        assertEquals(TestSupport.getTypeIdFromClass(Fuga.class), primaryType.orElseThrow());
 
         List<TypeId> requireTypes = sut.requireTypes();
         assertEquals(1, requireTypes.size());
-        assertEquals(TypeId.from(FugaIdentifier.class), requireTypes.get(0));
+        assertEquals(TestSupport.getTypeIdFromClass(FugaIdentifier.class), requireTypes.get(0));
 
         UsingMethods usingMethods = sut.usingMethods();
         assertEquals(2, usingMethods.invokedMethodStream().count());

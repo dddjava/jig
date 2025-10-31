@@ -52,15 +52,6 @@ public record TypeId(String value) implements Comparable<TypeId> {
     }
 
     /**
-     * クラスオブジェクトからTypeIdを生成するファクトリ。
-     *
-     * TODO JIG実行時のクラスパスに含まれるものしか扱えないため、使用できるクラスは限定的。テストユーティリティなどに持って行って廃止した方がいいかもしれない。
-     */
-    public static TypeId from(Class<?> clz) {
-        return valueOf(clz.getName());
-    }
-
-    /**
      * classファイルに記録されている名称からTypeIdを生成するファクトリ。
      * クラスファイル上でのパッケージ名は `/` で区切られている。
      */

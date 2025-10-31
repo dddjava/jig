@@ -2,6 +2,7 @@ package testing;
 
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
@@ -84,5 +85,12 @@ public class TestSupport {
 
     public static JigTypeHeader getJigTypeHeader(Class<?> clz) {
         return buildJigType(clz).jigTypeHeader();
+    }
+
+    /**
+     * クラスオブジェクトからTypeIdを生成する。
+     */
+    public static TypeId getTypeIdFromClass(Class<?> clz) {
+        return TypeId.valueOf(clz.getName());
     }
 }

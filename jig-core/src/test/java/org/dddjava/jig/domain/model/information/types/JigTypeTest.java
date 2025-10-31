@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.RequestMapping;
 import testing.TestSupport;
@@ -13,7 +12,7 @@ class JigTypeTest {
     void アノテーションの値取得_String() {
         var jigType = TestSupport.buildJigType(MyAnnotatedClass.class);
 
-        var actual = jigType.annotationValueOf(TypeId.from(RequestMapping.class), "name")
+        var actual = jigType.annotationValueOf(TestSupport.getTypeIdFromClass(RequestMapping.class), "name")
                 .orElseThrow(); // 取れなければテスト失敗でよい
 
         assertEquals("hoge", actual);
@@ -23,7 +22,7 @@ class JigTypeTest {
     void アノテーションの値取得_String配列の単一値() {
         var jigType = TestSupport.buildJigType(MyAnnotatedClass.class);
 
-        var actual = jigType.annotationValueOf(TypeId.from(RequestMapping.class), "value")
+        var actual = jigType.annotationValueOf(TestSupport.getTypeIdFromClass(RequestMapping.class), "value")
                 .orElseThrow(); // 取れなければテスト失敗でよい
 
         assertEquals("{id}", actual);
@@ -33,7 +32,7 @@ class JigTypeTest {
     void アノテーションの値取得_aliasなど片方だけとればいいものは最初にマッチしたものがとれる() {
         var jigType = TestSupport.buildJigType(MyAnnotatedClass.class);
 
-        var actual = jigType.annotationValueOf(TypeId.from(RequestMapping.class), "none", "value", "path")
+        var actual = jigType.annotationValueOf(TestSupport.getTypeIdFromClass(RequestMapping.class), "none", "value", "path")
                 .orElseThrow(); // 取れなければテスト失敗でよい
 
         // pathの値がとれている。

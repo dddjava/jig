@@ -60,7 +60,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     }
 
     public boolean isDeprecated() {
-        return hasAnnotation(TypeId.from(Deprecated.class));
+        return hasAnnotation(TypeId.DEPRECATED_ANNOTATION);
     }
 
     public Optional<String> annotationValueOf(TypeId typeId, String... elementNames) {

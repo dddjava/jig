@@ -20,6 +20,6 @@ record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
 
     public boolean isDeprecated() {
         return declarationAnnotations.stream()
-                .anyMatch(annotation -> annotation.id().equals(TypeId.from(Deprecated.class)));
+                .anyMatch(annotation -> annotation.id().equals(TypeId.DEPRECATED_ANNOTATION));
     }
 }

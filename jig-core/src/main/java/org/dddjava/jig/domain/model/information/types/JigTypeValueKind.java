@@ -4,11 +4,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 /**
  * 値の種類
@@ -29,20 +25,20 @@ public enum JigTypeValueKind {
         }
 
         JigFields instanceJigFields = jigType.instanceJigFields();
-        if (matchFieldType(instanceJigFields, List.class) || matchFieldType(instanceJigFields, Set.class)) {
+        if (matchFieldType(instanceJigFields, TypeId.LIST) || matchFieldType(instanceJigFields, TypeId.SET)) {
             return コレクション;
         }
-        if (matchFieldType(instanceJigFields, String.class)) {
+        if (matchFieldType(instanceJigFields, TypeId.STRING)) {
             return 文字列;
         }
-        if (matchFieldType(instanceJigFields, BigDecimal.class)
-                || matchFieldType(instanceJigFields, Integer.class)
-                || matchFieldType(instanceJigFields, Long.class)
-                || matchFieldType(instanceJigFields, int.class)
-                || matchFieldType(instanceJigFields, long.class)) {
+        if (matchFieldType(instanceJigFields, TypeId.BIG_DECIMAL)
+                || matchFieldType(instanceJigFields, TypeId.INTEGER)
+                || matchFieldType(instanceJigFields, TypeId.LONG)
+                || matchFieldType(instanceJigFields, TypeId.INT_PRIMITIVE)
+                || matchFieldType(instanceJigFields, TypeId.LONG_PRIMITIVE)) {
             return 数値;
         }
-        if (matchFieldType(instanceJigFields, LocalDate.class)) {
+        if (matchFieldType(instanceJigFields, TypeId.LOCAL_DATE)) {
             return 日付;
         }
         if (isDateRange(instanceJigFields)) {
@@ -51,15 +47,15 @@ public enum JigTypeValueKind {
         return 不明;
     }
 
-    private static boolean matchFieldType(JigFields jigFields, Class<?> clz) {
+    private static boolean matchFieldType(JigFields jigFields, TypeId typeId) {
         Collection<JigField> fields = jigFields.fields();
         if (fields.size() != 1) return false;
-        return fields.stream().anyMatch(field -> field.typeId().equals(TypeId.from(clz)));
+        return fields.stream().anyMatch(field -> field.typeId().equals(typeId));
     }
 
     private static boolean isDateRange(JigFields jigFields) {
         Collection<JigField> fields = jigFields.fields();
         if (fields.size() != 2) return false;
-        return fields.stream().anyMatch(field -> field.typeId().equals(TypeId.from(LocalDate.class)));
+        return fields.stream().anyMatch(field -> field.typeId().equals(TypeId.LOCAL_DATE));
     }
 }

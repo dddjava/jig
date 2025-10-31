@@ -30,9 +30,9 @@ public record StringComparingMethodList(List<JigMethod> methods) {
     static StringComparingMethodList createFrom(Stream<JigMethod> target) {
         // String#equals(Object)
         JigMethodId jigMethodId = JigMethodId.from(
-                TypeId.from(String.class),
+                TypeId.STRING,
                 "equals",
-                List.of(TypeId.from(Object.class))
+                List.of(TypeId.OBJECT)
         );
         return new StringComparingMethodList(target
                 .filter(jigMethod -> jigMethod.isCall(jigMethodId))

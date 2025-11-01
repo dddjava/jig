@@ -185,7 +185,7 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
             return arrayAsmTypeSignatureVisitor.jigTypeReference().convertArray();
         } else if (classType != null) {
             return new JigTypeReference(
-                    TypeId.fromJvmBinaryName(classType.name()),
+                    AsmUtils.jvmBinaryName2TypeId(classType.name()),
                     List.of(), // 型アノテーション未対応
                     classType.arguments().stream()
                             .map(visitor -> visitor.typeArgument())

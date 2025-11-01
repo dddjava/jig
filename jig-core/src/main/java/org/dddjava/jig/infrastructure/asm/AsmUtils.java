@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
@@ -30,5 +31,17 @@ class AsmUtils {
 
     public static TypeId type2TypeId(Type typeValue) {
         return TypeId.valueOf(typeValue.getClassName());
+    }
+
+    /**
+     * classファイルに記録されている名称からTypeIdを生成する。
+     * クラスファイル上でのパッケージ名は `/` で区切られている。
+     */
+    public static TypeId jvmBinaryName2TypeId(String jvmBinaryName) {
+        return TypeId.valueOf(jvmBinaryName.replace('/', '.'));
+    }
+
+    public static JigTypeReference jvmBinaryName2JigTypeReference(String jvmBinaryName) {
+        return JigTypeReference.fromId(jvmBinaryName2TypeId(jvmBinaryName));
     }
 }

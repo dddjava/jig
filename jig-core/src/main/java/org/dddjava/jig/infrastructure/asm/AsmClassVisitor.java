@@ -70,7 +70,7 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
 
     @Override
     public void visit(int version, int access, String classInternalName, @Nullable String signature, String superName, String[] interfaces) {
-        var typeId = this.typeId = TypeId.fromJvmBinaryName(classInternalName);
+        var typeId = this.typeId = AsmUtils.jvmBinaryName2TypeId(classInternalName);
         var jigTypeModifiers = resolveTypeModifiers(access);
         var jigTypeKind = resolveTypeKind(access);
         var jigTypeVisibility = resolveVisibility(access);
@@ -83,8 +83,8 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
             // 非総称型で作成
             this.jigTypeHeaderBuilder = jigTypeHeader(typeId, jigTypeKind, jigTypeVisibility, jigTypeModifiers, List.of(),
                     new JigBaseTypeDataBundle(
-                            Optional.of(JigTypeReference.fromJvmBinaryName(superName)),
-                            Arrays.stream(interfaces).map(JigTypeReference::fromJvmBinaryName).toList()
+                            Optional.of(AsmUtils.jvmBinaryName2JigTypeReference(superName)),
+                            Arrays.stream(interfaces).map(AsmUtils::jvmBinaryName2JigTypeReference).toList()
                     ));
         }
         super.visit(version, access, classInternalName, signature, superName, interfaces);
@@ -108,7 +108,7 @@ class AsmClassVisitor extends ClassVisitor implements ContextClass {
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
         // nameが一致するもののみ、このクラスの情報として採用する
-        if (TypeId.fromJvmBinaryName(name).equals(this.typeId)) {
+        if (AsmUtils.jvmBinaryName2TypeId(name).equals(this.typeId)) {
             if ((access & Opcodes.ACC_STATIC) != 0) {
                 isStaticNestedClass = true;
             }

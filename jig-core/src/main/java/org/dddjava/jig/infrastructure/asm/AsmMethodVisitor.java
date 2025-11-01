@@ -53,7 +53,7 @@ class AsmMethodVisitor extends MethodVisitor {
         // これもsignatureがあればsignatureからとれるけれど、Throwableはジェネリクスにできないしexceptionsだけで十分そう
         // throwsのアノテーションが必要になったら別途考える
         var throwsList = Optional.ofNullable(exceptions).stream().flatMap(Arrays::stream)
-                .map(JigTypeReference::fromJvmBinaryName).toList();
+                .map(AsmUtils::jvmBinaryName2JigTypeReference).toList();
 
         var methodType = Type.getMethodType(descriptor);
         // idはsignature有無に関わらずdeclaringType,name,descriptorから作る
@@ -160,7 +160,7 @@ class AsmMethodVisitor extends MethodVisitor {
         logger.debug("visitFieldInsn {} {} {} {}", opcode, owner, name, descriptor);
 
         var fieldTypeId = AsmUtils.typeDescriptorToTypeId(descriptor);
-        var declaringTypeId = TypeId.fromJvmBinaryName(owner);
+        var declaringTypeId = AsmUtils.jvmBinaryName2TypeId(owner);
 
         var jigFieldId = JigFieldId.from(declaringTypeId, name);
         var fieldInstruction = switch (opcode) {
@@ -182,7 +182,7 @@ class AsmMethodVisitor extends MethodVisitor {
                 .toList();
         TypeId returnType = methodDescriptorToReturnTypeId(descriptor);
 
-        MethodCall methodCall = new MethodCall(TypeId.fromJvmBinaryName(owner), name, argumentTypes, returnType);
+        MethodCall methodCall = new MethodCall(AsmUtils.jvmBinaryName2TypeId(owner), name, argumentTypes, returnType);
         methodInstructionCollector.add(methodCall);
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
@@ -229,7 +229,7 @@ class AsmMethodVisitor extends MethodVisitor {
                     && (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
                     && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD)) {
                 // 実際に呼び出されるメソッド
-                var handleOwnerType = TypeId.fromJvmBinaryName(handle.getOwner());
+                var handleOwnerType = AsmUtils.jvmBinaryName2TypeId(handle.getOwner());
                 var handleMethodName = handle.getName();
                 var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
                         .map(type1 -> AsmUtils.type2TypeId(type1))

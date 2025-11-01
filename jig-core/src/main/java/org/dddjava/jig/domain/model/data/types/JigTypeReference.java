@@ -23,10 +23,6 @@ public record JigTypeReference(TypeId id,
         return new JigTypeReference(id, List.of(), List.of());
     }
 
-    public static JigTypeReference fromJvmBinaryName(String jvmBinaryName) {
-        return fromId(TypeId.fromJvmBinaryName(jvmBinaryName));
-    }
-
     public String simpleName() {
         return id.asSimpleText();
     }

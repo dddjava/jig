@@ -52,14 +52,6 @@ public record TypeId(String value) implements Comparable<TypeId> {
     }
 
     /**
-     * classファイルに記録されている名称からTypeIdを生成するファクトリ。
-     * クラスファイル上でのパッケージ名は `/` で区切られている。
-     */
-    public static TypeId fromJvmBinaryName(String jvmBinaryName) {
-        return valueOf(jvmBinaryName.replace('/', '.'));
-    }
-
-    /**
      * @return "org.dddjava.jig.domain.model.data.types.TypeId"
      */
     public String fqn() {

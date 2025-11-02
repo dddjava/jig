@@ -25,14 +25,22 @@ public class JigExecutor {
     /**
      * 標準のJigExecutorを使用するエントリポイント
      */
+    @Deprecated(since = "2025.11.1", forRemoval = true)
     public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
+        return standard(configuration, sourceBasePaths).listResult();
+    }
+
+    /**
+     * 標準のJigExecutorを使用するエントリポイント
+     */
+    public static JigResult standard(Configuration configuration, SourceBasePaths sourceBasePaths) {
         try (var ignore = JigMetrics.init(configuration)) {
             return Objects.requireNonNull(Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
                     new JigExecutor(configuration).execute(sourceBasePaths)));
         }
     }
 
-    private List<HandleResult> execute(SourceBasePaths sourceBasePaths) {
+    private JigResult execute(SourceBasePaths sourceBasePaths) {
         var startTime = System.currentTimeMillis();
         try {
             // configurationに従ってJigRepositoryの生成と初期化を行う。
@@ -44,12 +52,7 @@ public class JigExecutor {
 
             // JigRepositoryを参照してJIGドキュメントを生成する
             JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
-            var results = jigDocumentGenerator.generateDocuments(jigRepository);
-
-            jigDocumentGenerator.generateIndex(results);
-            jigDocumentGenerator.generateAssets();
-
-            return results;
+            return jigDocumentGenerator.generate(jigRepository);
         } finally {
             configuration.jigEventRepository().notifyWithLogger();
             logger.info("[JIG] all JIG documents completed: {} ms", System.currentTimeMillis() - startTime);

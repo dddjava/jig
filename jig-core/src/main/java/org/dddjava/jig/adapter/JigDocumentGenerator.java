@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter;
 
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
 import org.dddjava.jig.adapter.poi.GlossaryAdapter;
@@ -158,5 +159,15 @@ public class JigDocumentGenerator {
 
     public void close(Consumer<Path> pathConsumer) {
         pathConsumer.accept(outputDirectory);
+    }
+
+    public JigResult generate(JigRepository jigRepository) {
+        var handleResults = generateDocuments(jigRepository);
+
+        generateIndex(handleResults);
+        generateAssets();
+        return new JigResultData(
+                handleResults
+        );
     }
 }

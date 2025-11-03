@@ -70,19 +70,14 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new RepositorySummaryAdapter(jigService, templateEngine, jigDocumentContext));
     }
 
-    public void generateIndex(List<HandleResult> results) {
-        Metrics.timer("jig.document.time", "phase", "index").record(() -> {
-            IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
-            indexView.render(results, outputDirectory);
-        });
-    }
-
-    public List<HandleResult> generateDocuments(JigRepository jigRepository) {
+    public JigResult generate(JigRepository jigRepository) {
         prepareOutputDirectory();
-        return jigDocuments
-                .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
-                .toList();
+
+        var handleResults = generateDocuments(jigRepository);
+
+        generateIndex(handleResults);
+        generateAssets();
+        return new JigResultData(handleResults);
     }
 
     private void prepareOutputDirectory() {
@@ -108,7 +103,14 @@ public class JigDocumentGenerator {
         }
     }
 
-    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
+    private List<HandleResult> generateDocuments(JigRepository jigRepository) {
+        return jigDocuments
+                .parallelStream()
+                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
+                .toList();
+    }
+
+    private HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
         return Objects.requireNonNull(Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
             try {
                 long startTime = System.currentTimeMillis();
@@ -138,7 +140,14 @@ public class JigDocumentGenerator {
         }));
     }
 
-    public void generateAssets() {
+    private void generateIndex(List<HandleResult> results) {
+        Metrics.timer("jig.document.time", "phase", "index").record(() -> {
+            IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
+            indexView.render(results, outputDirectory);
+        });
+    }
+
+    private void generateAssets() {
         try {
             Path assetsPath = this.outputDirectory.resolve("assets");
             Files.createDirectories(assetsPath);
@@ -159,13 +168,5 @@ public class JigDocumentGenerator {
 
     public void close(Consumer<Path> pathConsumer) {
         pathConsumer.accept(outputDirectory);
-    }
-
-    public JigResult generate(JigRepository jigRepository) {
-        var handleResults = generateDocuments(jigRepository);
-
-        generateIndex(handleResults);
-        generateAssets();
-        return new JigResultData(handleResults);
     }
 }

@@ -15,10 +15,10 @@ class JigExecutorTest {
 
     @Test
     void name(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        var actual = JigExecutor.execute(
+        var actual = JigExecutor.standard(
                 configuration,
                 sourceBasePaths
-        );
+        ).listResult();
 
         List<JigDocument> actualDocuments = actual.stream().map(handleResult -> handleResult.jigDocument()).toList();
         // canonicalのすべてが処理されている

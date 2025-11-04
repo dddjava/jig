@@ -34,10 +34,10 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static JigResult standard(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        try (var ignore = JigMetrics.init(configuration)) {
-            return Objects.requireNonNull(Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
-                    new JigExecutor(configuration).execute(sourceBasePaths)));
-        }
+        return JigMetrics.init(configuration).record(() ->
+                Objects.requireNonNull(Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
+                        new JigExecutor(configuration).execute(sourceBasePaths)))
+        );
     }
 
     private JigResult execute(SourceBasePaths sourceBasePaths) {

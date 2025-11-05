@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class JigMetrics {
@@ -30,7 +31,8 @@ public class JigMetrics {
 
     public JigResult record(Supplier<JigResult> supplier) {
         try {
-            return supplier.get();
+            var result = Metrics.timer("jig.execution.time", "phase", "total_execution").record(supplier);
+            return Objects.requireNonNull(result);
         } finally {
             try {
                 jvmGcMetrics.close();

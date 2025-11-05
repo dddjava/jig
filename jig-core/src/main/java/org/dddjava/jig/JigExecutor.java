@@ -1,6 +1,5 @@
 package org.dddjava.jig;
 
-import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Objects;
 
 public class JigExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JigExecutor.class);
@@ -34,10 +32,8 @@ public class JigExecutor {
      * 標準のJigExecutorを使用するエントリポイント
      */
     public static JigResult standard(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        return JigMetrics.init(configuration).record(() ->
-                Objects.requireNonNull(Metrics.timer("jig.execution.time", "phase", "total_execution").record(() ->
-                        new JigExecutor(configuration).execute(sourceBasePaths)))
-        );
+        return JigMetrics.init(configuration)
+                .record(() -> new JigExecutor(configuration).execute(sourceBasePaths));
     }
 
     private JigResult execute(SourceBasePaths sourceBasePaths) {

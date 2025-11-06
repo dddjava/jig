@@ -33,7 +33,7 @@ class CliRunner {
         long startTime = System.currentTimeMillis();
         SourceBasePaths sourceBasePaths = cliConfig.rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourceBasePaths);
+        List<HandleResult> handleResultList = JigExecutor.standard(configuration, sourceBasePaths).listResult();
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

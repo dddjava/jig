@@ -15,4 +15,9 @@ record JigResultData(Collection<HandleResult> handleResults) implements JigResul
                 .sorted(Comparator.comparing(HandleResult::jigDocument))
                 .toList();
     }
+
+    @Override
+    public JigSummary summary() {
+        throw new UnsupportedOperationException();
+    }
 }

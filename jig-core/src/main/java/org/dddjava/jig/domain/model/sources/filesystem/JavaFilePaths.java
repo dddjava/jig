@@ -20,4 +20,8 @@ public record JavaFilePaths(List<Path> packageInfos, List<Path> javaFiles) {
     public Collection<Path> javaPaths() {
         return javaFiles;
     }
+
+    public int size() {
+        return packageInfos.size() + javaFiles.size();
+    }
 }

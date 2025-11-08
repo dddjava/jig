@@ -11,4 +11,8 @@ public record ClassFilePaths(Collection<Path> values) {
     public boolean nothing() {
         return values.isEmpty();
     }
+
+    public int size() {
+        return values.size();
+    }
 }

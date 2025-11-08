@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.application.JigEventRepository;
@@ -122,6 +123,17 @@ public class DefaultJigRepositoryFactory {
                     @Override
                     public Glossary fetchGlossary() {
                         return glossaryRepository.all();
+                    }
+
+                    @Override
+                    public JigResult.JigSummary summary() {
+                        return new JigResult.JigSummary(
+                                sources.javaFilePaths().size(),
+                                sources.classFilePaths().size(),
+                                0,
+                                0,
+                                0
+                        );
                     }
                 };
             });

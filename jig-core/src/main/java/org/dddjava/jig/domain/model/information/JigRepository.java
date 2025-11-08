@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information;
 
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.JigDataProvider;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -24,6 +25,11 @@ public interface JigRepository {
             public Glossary fetchGlossary() {
                 return new Glossary(List.of());
             }
+
+            @Override
+            public JigResult.JigSummary summary() {
+                return JigResult.JigSummary.empty();
+            }
         };
     }
 
@@ -36,4 +42,6 @@ public interface JigRepository {
     JigDataProvider jigDataProvider();
 
     Glossary fetchGlossary();
+
+    JigResult.JigSummary summary();
 }

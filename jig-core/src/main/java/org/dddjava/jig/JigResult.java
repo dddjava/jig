@@ -20,6 +20,9 @@ public interface JigResult {
             int numberOfClasses,
             int numberOfMethods
     ) {
+        public static JigSummary empty() {
+            return new JigSummary(0, 0, 0, 0, 0);
+        }
     }
 }
 

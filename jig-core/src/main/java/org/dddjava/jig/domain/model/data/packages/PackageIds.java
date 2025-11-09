@@ -30,4 +30,8 @@ public record PackageIds(Set<PackageId> values) {
         boolean isEnglish = locale.getLanguage().equals("en");
         return (isEnglish ? "Packages: " : "パッケージ数: ") + values.size();
     }
+
+    public int size() {
+        return values.size();
+    }
 }

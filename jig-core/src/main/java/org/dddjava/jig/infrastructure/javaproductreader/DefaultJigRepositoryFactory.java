@@ -130,9 +130,9 @@ public class DefaultJigRepositoryFactory {
                         return new JigResult.JigSummary(
                                 sources.javaFilePaths().size(),
                                 sources.classFilePaths().size(),
-                                0,
-                                0,
-                                0
+                                fetchJigTypes().typeIds().packageIds().size(),
+                                fetchJigTypes().typeIds().size(),
+                                fetchJigTypes().stream().mapToInt(jigType -> Math.toIntExact(jigType.allJigMethodStream().count())).sum()
                         );
                     }
                 };

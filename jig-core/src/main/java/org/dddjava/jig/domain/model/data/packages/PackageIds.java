@@ -28,7 +28,7 @@ public record PackageIds(Set<PackageId> values) {
     public String countDescriptionText() {
         Locale locale = Locale.getDefault();
         boolean isEnglish = locale.getLanguage().equals("en");
-        return (isEnglish ? "Packages: " : "パッケージ数: ") + values.size();
+        return (isEnglish ? "Packages: " : "パッケージ数: ") + size();
     }
 
     public int size() {

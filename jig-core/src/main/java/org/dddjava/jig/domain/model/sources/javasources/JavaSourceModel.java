@@ -11,7 +11,7 @@ import java.util.stream.Stream;
  */
 public class JavaSourceModel {
 
-    List<EnumModel> enumModels;
+    private final List<EnumModel> enumModels;
 
     private JavaSourceModel(List<EnumModel> enumModels) {
         this.enumModels = enumModels;

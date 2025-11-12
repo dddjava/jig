@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
- * フィールド　
+ * フィールド
  */
 public record JigField(JigFieldHeader jigFieldHeader, Term term) {
 

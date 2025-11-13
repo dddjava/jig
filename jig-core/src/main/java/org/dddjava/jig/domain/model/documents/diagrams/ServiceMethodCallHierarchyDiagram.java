@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.joining;
  */
 public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
-    ServiceAngles serviceAngles;
+    private final ServiceAngles serviceAngles;
 
     public ServiceMethodCallHierarchyDiagram(ServiceAngles serviceAngles) {
         this.serviceAngles = serviceAngles;

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  */
 public class ClassRelationDiagram implements DiagramSourceWriter {
 
-    CoreTypesAndRelations coreTypesAndRelations;
+    private final CoreTypesAndRelations coreTypesAndRelations;
 
     public ClassRelationDiagram(CoreTypesAndRelations coreTypesAndRelations) {
         this.coreTypesAndRelations = coreTypesAndRelations;

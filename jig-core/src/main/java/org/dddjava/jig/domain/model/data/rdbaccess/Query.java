@@ -5,14 +5,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * クエリ
  */
-public class Query {
-
-    @Nullable
-    String text;
-
-    public Query(@Nullable String text) {
-        this.text = text;
-    }
+public record Query(@Nullable String text) {
 
     public Tables extractTable(SqlType sqlType) {
         Table table = text == null ? sqlType.unexpectedTable() : sqlType.extractTable(text);

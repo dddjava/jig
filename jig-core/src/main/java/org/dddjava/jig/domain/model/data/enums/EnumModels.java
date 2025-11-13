@@ -13,6 +13,6 @@ public record EnumModels(Collection<EnumModel> values) {
 
     public Map<TypeId, EnumModel> toMap() {
         return values.stream()
-                .collect(Collectors.toMap(enumModel -> enumModel.typeId, enumModel -> enumModel));
+                .collect(Collectors.toMap(enumModel -> enumModel.typeId(), enumModel -> enumModel));
     }
 }

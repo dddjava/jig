@@ -10,17 +10,21 @@ import java.util.List;
  * Enum固有で取得するモデル
  */
 public class EnumModel {
-    TypeId typeId;
+    private final TypeId typeId;
 
     /**
      * 列挙定数
      */
-    List<EnumConstant> enumConstants;
-    List<List<String>> constructorArgumentNamesList = new ArrayList<>();
+    private final List<EnumConstant> enumConstants;
+    private final List<List<String>> constructorArgumentNamesList = new ArrayList<>();
 
     public EnumModel(TypeId typeId, List<EnumConstant> enumConstants) {
         this.typeId = typeId;
         this.enumConstants = enumConstants;
+    }
+
+    public TypeId typeId() {
+        return typeId;
     }
 
     public List<String> paramOf(String name) {

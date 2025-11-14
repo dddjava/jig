@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JigExecutorTest {
 
     @Test
-    void name(Configuration configuration, SourceBasePaths sourceBasePaths) {
+    void 出力対象がある場合に実行できる(Configuration configuration, SourceBasePaths sourceBasePaths) {
         var actual = JigExecutor.standard(
                 configuration,
                 sourceBasePaths

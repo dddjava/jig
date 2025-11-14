@@ -66,7 +66,7 @@ public class DefaultJigRepositoryFactory {
             if (sources.emptyClassSources()) jigEventRepository.recordEvent(ReadStatus.バイナリソースなし);
             if (sources.emptyJavaSources()) jigEventRepository.recordEvent(ReadStatus.テキストソースなし);
 
-            // errorが1つでもあったら読み取り失敗としてSourceを返さない
+            // errorが1つでもあったら読み取り失敗として分析せず空を返す
             if (jigEventRepository.hasError()) {
                 return JigRepository.empty();
             }

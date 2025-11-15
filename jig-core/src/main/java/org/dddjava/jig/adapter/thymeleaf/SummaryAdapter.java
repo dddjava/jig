@@ -7,7 +7,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
-import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -28,7 +27,7 @@ public class SummaryAdapter {
 
     @HandleDocument(JigDocument.DomainSummary)
     public List<Path> domainSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        JigTypes jigTypes = jigService.coreDomainJigTypes(jigRepository);
+        var jigTypes = jigService.coreDomainJigTypes(jigRepository);
         return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository))
                 .withAdditionalMap(Map.of(
                         RELATIONSHIPS_KEY, jigService.coreTypesAndRelations(jigRepository),
@@ -38,7 +37,7 @@ public class SummaryAdapter {
 
     @HandleDocument(JigDocument.ApplicationSummary)
     public List<Path> applicationSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        JigTypes jigTypes = jigService.serviceTypes(jigRepository);
+        var jigTypes = jigService.serviceTypes(jigRepository);
         return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)));
     }
 

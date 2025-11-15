@@ -17,7 +17,6 @@ import java.util.Map;
 @HandleDocument
 public class SummaryAdapter {
 
-    public static final String ENUM_MODEL_MAP_KEY = "enumModelMap";
     public static final String RELATIONSHIPS_KEY = "relationships";
 
     private final JigService jigService;
@@ -34,7 +33,7 @@ public class SummaryAdapter {
         return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository))
                 .withAdditionalMap(Map.of(
                         RELATIONSHIPS_KEY, jigService.coreTypesAndRelations(jigRepository),
-                        ENUM_MODEL_MAP_KEY, jigRepository.jigDataProvider().fetchEnumModels().toMap()
+                        SummaryModel.ENUM_MODEL_MAP_KEY, jigRepository.jigDataProvider().fetchEnumModels().toMap()
                 )));
     }
 
@@ -68,8 +67,11 @@ public class SummaryAdapter {
 
     @HandleDocument(JigDocument.EnumSummary)
     public List<Path> inputSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        return write(jigDocument, SummaryModel.of(categoryTypes, jigService.packages(jigRepository)).withAdditionalMap(Map.of(ENUM_MODEL_MAP_KEY, jigRepository.jigDataProvider().fetchEnumModels().toMap())));
+        var categoryTypes = jigService.categoryTypes(jigRepository);
+        var packages = jigService.packages(jigRepository);
+        var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
+        var summaryModel = SummaryModel.forEnumSummary(categoryTypes, packages, enumModels);
+        return write(jigDocument, summaryModel);
     }
 
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {

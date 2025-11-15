@@ -4,6 +4,7 @@ import org.dddjava.jig.adapter.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
 import org.dddjava.jig.adapter.thymeleaf.SummaryAdapter;
+import org.dddjava.jig.adapter.thymeleaf.SummaryModel;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -164,7 +165,7 @@ class JigExpressionObject {
         var typeId = jigType.id();
         // これを使用するテンプレートは "enumModelMap" をcontextにputしておく
         // ・・・ならexpressionにしなくてもいいのでは？？？？
-        Object variable = context.getVariable(SummaryAdapter.ENUM_MODEL_MAP_KEY);
+        Object variable = context.getVariable(SummaryModel.ENUM_MODEL_MAP_KEY);
         if (variable instanceof Map<?, ?> map) {
             if (map.get(typeId) instanceof EnumModel enumModel) {
                 return enumModel;

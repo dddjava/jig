@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
+import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 
@@ -7,8 +8,15 @@ import java.util.Map;
 
 public record SummaryModel(JigTypes jigTypes, JigPackages jigPackages, Map<String, Object> additionalMap) {
 
+    public static final String ENUM_MODEL_MAP_KEY = "enumModelMap";
+
     static SummaryModel of(JigTypes jigTypes, JigPackages jigPackages) {
         return new SummaryModel(jigTypes, jigPackages, Map.of());
+    }
+
+    static SummaryModel forEnumSummary(JigTypes categoryTypes, JigPackages packages, EnumModels enumModels) {
+        return of(categoryTypes, packages)
+                .withAdditionalMap(Map.of(ENUM_MODEL_MAP_KEY, enumModels.toMap()));
     }
 
     public boolean empty() {

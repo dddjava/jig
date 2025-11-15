@@ -71,8 +71,7 @@ public class SummaryAdapter {
         var categoryTypes = jigService.categoryTypes(jigRepository);
         var packages = jigService.packages(jigRepository);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        var summaryModel = SummaryModel.forEnumSummary(categoryTypes, packages, enumModels);
-        return write(jigDocument, summaryModel);
+        return write(jigDocument, SummaryModel.forEnumSummary(categoryTypes, packages, enumModels));
     }
 
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {

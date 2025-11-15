@@ -67,7 +67,7 @@ public class SummaryAdapter {
     }
 
     @HandleDocument(JigDocument.EnumSummary)
-    public List<Path> inputSummary(JigRepository jigRepository, JigDocument jigDocument) {
+    public List<Path> enumSummary(JigRepository jigRepository, JigDocument jigDocument) {
         var categoryTypes = jigService.categoryTypes(jigRepository);
         var packages = jigService.packages(jigRepository);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();

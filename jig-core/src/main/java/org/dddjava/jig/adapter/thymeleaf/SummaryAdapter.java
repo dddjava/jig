@@ -10,12 +10,9 @@ import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 @HandleDocument
 public class SummaryAdapter {
-
-    public static final String RELATIONSHIPS_KEY = "relationships";
 
     private final JigService jigService;
     private final ThymeleafSummaryWriter thymeleafSummaryWriter;
@@ -28,11 +25,10 @@ public class SummaryAdapter {
     @HandleDocument(JigDocument.DomainSummary)
     public List<Path> domainSummary(JigRepository jigRepository, JigDocument jigDocument) {
         var jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository))
-                .withAdditionalMap(Map.of(
-                        RELATIONSHIPS_KEY, jigService.coreTypesAndRelations(jigRepository),
-                        SummaryModel.ENUM_MODEL_MAP_KEY, jigRepository.jigDataProvider().fetchEnumModels().toMap()
-                )));
+        var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
+        var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
+        var packages = jigService.packages(jigRepository);
+        return write(jigDocument, SummaryModel.forDomainSummary(jigTypes, packages, coreTypesAndRelations, enumModels));
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)

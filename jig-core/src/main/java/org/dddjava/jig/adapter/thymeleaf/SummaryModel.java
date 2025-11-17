@@ -45,7 +45,7 @@ public record SummaryModel(JigTypes jigTypes, JigPackages jigPackages, Map<Strin
         return jigTypes.empty();
     }
 
-    public SummaryModel withAdditionalMap(Map<String, Object> additionalMap) {
+    private SummaryModel withAdditionalMap(Map<String, Object> additionalMap) {
         return new SummaryModel(jigTypes, jigPackages, additionalMap);
     }
 }

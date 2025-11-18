@@ -1,5 +1,5 @@
 [versions]
-poi = "5.4.1"
+poi = "5.5.0"
 
 [libraries]
 spring-boot-plugin = "org.springframework.boot:spring-boot-gradle-plugin:3.5.7"

@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import testing.xlsx.XlsxAssertions;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
@@ -29,7 +28,7 @@ class JigDocumentGeneratorTest {
     Path tempDir;
 
     @Test
-    void 用語一覧がtermをもとに出力できる() throws IOException {
+    void 用語一覧がtermをもとに出力できる() {
         // data
         var terms = new Glossary(List.of(
                 new Term(new TermId("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),

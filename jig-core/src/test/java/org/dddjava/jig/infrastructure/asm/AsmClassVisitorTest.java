@@ -12,7 +12,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import testing.TestSupport;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AsmClassVisitorTest {
 
     @Test
-    void JigTypeDataの取得() throws IOException {
+    void JigTypeDataの取得() {
         var typeData = TestSupport.getJigTypeHeader(MyClass.class);
 
         assertEquals("MyClass", typeData.simpleName());
@@ -41,7 +40,7 @@ class AsmClassVisitorTest {
     }
 
     @Test
-    void JigTypeDataの取得_やりすぎばん() throws IOException {
+    void JigTypeDataの取得_やりすぎばん() {
         JigTypeHeader typeData = TestSupport.getJigTypeHeader(MyGenericsMadnessInterface.class);
         assertEquals("MyGenericsMadnessInterface", typeData.simpleName());
         assertEquals("MyGenericsMadnessInterface<T extends List<Predicate<T>>>", typeData.simpleNameWithGenerics());
@@ -62,7 +61,7 @@ class AsmClassVisitorTest {
 //            MyTypeModifierClass.MyTypeModifierClassSEALED.class,
 //            MyTypeModifierClass.MyTypeModifierClassNON_SEALED.class
     })
-    void 修飾子が取得できる(Class<?> target) throws IOException {
+    void 修飾子が取得できる(Class<?> target) {
         JigTypeHeader jigTypeHeader = TestSupport.getJigTypeHeader(target);
 
         Collection<JigTypeModifier> jigTypeModifiers = jigTypeHeader.jigTypeAttributes().jigTypeModifiers();
@@ -75,13 +74,13 @@ class AsmClassVisitorTest {
     }
 
     @Test
-    void 多重ネスト_static_inner() throws IOException {
+    void 多重ネスト_static_inner() {
         JigTypeHeader header = TestSupport.getJigTypeHeader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICInner.class);
         assertFalse(header.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }
 
     @Test
-    void 多重ネスト_static_static() throws IOException {
+    void 多重ネスト_static_static() {
         JigTypeHeader header = TestSupport.getJigTypeHeader(MyTypeModifierClass.MyTypeModifierClassSTATIC.MyTypeModifierClassSTATICNest.class);
         assertTrue(header.jigTypeAttributes().jigTypeModifiers().contains(JigTypeModifier.STATIC));
     }

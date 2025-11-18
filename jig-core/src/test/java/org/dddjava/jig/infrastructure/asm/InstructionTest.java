@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class InstructionTest {
 
     @Test
-    void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() throws Exception {
+    void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() {
         var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "method");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
@@ -26,7 +26,7 @@ public class InstructionTest {
     }
 
     @Test
-    void メソッドの使用しているメソッドが取得できる_メソッド参照() throws Exception {
+    void メソッドの使用しているメソッドが取得できる_メソッド参照() {
         var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "methodRef");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 
@@ -35,7 +35,7 @@ public class InstructionTest {
     }
 
     @Test
-    void メソッドの使用しているメソッドが取得できる_lambda式() throws Exception {
+    void メソッドの使用しているメソッドが取得できる_lambda式() {
         var jigMethod = TestSupport.JigMethod準備(MethodInstructionTestStub.class, "lambda");
         var methodCalls = jigMethod.usingMethods().methodCalls();
 

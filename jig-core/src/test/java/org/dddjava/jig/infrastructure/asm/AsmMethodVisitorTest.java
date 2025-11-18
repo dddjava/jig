@@ -246,7 +246,7 @@ class AsmMethodVisitorTest {
     }
 
     @Test
-    void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
+    void メソッドに付与されているアノテーションと記述が取得できる() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドに付与されているアノテーションと記述が取得できる");
         JigAnnotationReference sut = method.declarationAnnotationStream().findFirst().orElseThrow();
 
@@ -261,7 +261,7 @@ class AsmMethodVisitorTest {
     }
 
     @Test
-    void 戻り値のジェネリクスが取得できる() throws Exception {
+    void 戻り値のジェネリクスが取得できる() {
         JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
 
         assertEquals("List<String>", actual.methodReturnTypeReference().simpleNameWithGenerics());
@@ -283,7 +283,7 @@ class AsmMethodVisitorTest {
             "forがあるメソッド, 2",
     })
     @ParameterizedTest
-    void メソッドでifやswitchを使用していると検出できる(String name, int number) throws Exception {
+    void メソッドでifやswitchを使用していると検出できる(String name, int number) {
         JigMethod actual = TestSupport.JigMethod準備(DecisionClass.class, name);
         assertEquals(number, actual.instructions().cyclomaticComplexity());
     }

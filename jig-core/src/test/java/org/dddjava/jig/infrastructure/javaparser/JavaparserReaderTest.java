@@ -38,7 +38,7 @@ class JavaparserReaderTest {
             "ut/package_info_javadoc_tag_only, package-info.java, package_info_javadoc_tag_only", // javadocタグのみのものはパッケージ名がtitleになる
     })
     @ParameterizedTest
-    void PackageInfoからタイトルを読み取れる(String packagePathText, String filePathText, String expected) throws IOException {
+    void PackageInfoからタイトルを読み取れる(String packagePathText, String filePathText, String expected) {
         Path targetPath = getJavaFilePath(Path.of(packagePathText, filePathText));
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
 

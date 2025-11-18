@@ -31,7 +31,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class AsmClassSourceReaderTest {
 
     @Test
-    void クラス定義に使用している型が取得できる() throws Exception {
+    void クラス定義に使用している型が取得できる() {
         JigType actual = TestSupport.buildJigType(ClassDefinition.class);
 
         assertUsingTypesContainsAll(actual,
@@ -45,7 +45,7 @@ public class AsmClassSourceReaderTest {
     }
 
     @Test
-    void インタフェース定義に使用している型が取得できる() throws Exception {
+    void インタフェース定義に使用している型が取得できる() {
         JigType actual = TestSupport.buildJigType(InterfaceDefinition.class);
 
         assertUsingTypesContainsAll(actual, ClassAnnotation.class, GenericsParameter.class);
@@ -57,7 +57,7 @@ public class AsmClassSourceReaderTest {
     }
 
     @Test
-    void enumで使用している型が取得できる() throws Exception {
+    void enumで使用している型が取得できる() {
         JigType actual = TestSupport.buildJigType(EnumDefinition.class);
 
         assertUsingTypesContainsAll(actual, EnumField.class, ConstructorArgument.class, ClassReference.class);
@@ -72,7 +72,7 @@ public class AsmClassSourceReaderTest {
 
     @MethodSource
     @ParameterizedTest
-    void TypeKind判定(Class<?> targetType, TypeKind typeKind) throws Exception {
+    void TypeKind判定(Class<?> targetType, TypeKind typeKind) {
         JigType actual = TestSupport.buildJigType(targetType);
         assertEquals(typeKind, actual.typeKind());
     }

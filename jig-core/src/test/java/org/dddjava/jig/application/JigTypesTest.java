@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class JigTypesTest {
 
     @Test
-    void クラス可視性の判定(JigRepository jigRepository) throws Exception {
+    void クラス可視性の判定(JigRepository jigRepository) {
         List<JigType> jigTypes = jigRepository.fetchJigTypes().list();
 
         JigType publicType = jigTypes.stream()

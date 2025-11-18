@@ -54,7 +54,7 @@ public class JavaparserLineSeparatorTest {
     }
 
     @Test
-    void JavadocParserでparseすると改行コードがシステムのになる() throws ClassNotFoundException {
+    void JavadocParserでparseすると改行コードがシステムのになる() {
         System.setProperty("line.separator", "\r\n");
 
         String javadocCode = """

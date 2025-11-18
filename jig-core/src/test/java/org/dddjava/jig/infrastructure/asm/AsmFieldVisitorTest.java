@@ -60,7 +60,7 @@ class AsmFieldVisitorTest {
     }
 
     @Test
-    void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
+    void フィールドに付与されているアノテーションと記述が取得できる() {
         var members = TestSupport.buildJigType(MemberAnnotatedClass.class).jigTypeMembers();
         JigField field = members.findFieldByName("field").orElseThrow();
 

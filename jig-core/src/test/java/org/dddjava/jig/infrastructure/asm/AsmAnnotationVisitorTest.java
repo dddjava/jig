@@ -32,7 +32,7 @@ class AsmAnnotationVisitorTest {
     }
 
     private enum MyEnum {
-        AAA, BBB;
+        AAA, BBB
     }
 
     @MyAnnotation2(

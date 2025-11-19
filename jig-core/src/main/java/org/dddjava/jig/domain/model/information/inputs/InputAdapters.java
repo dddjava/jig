@@ -23,10 +23,10 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
     }
 
     public List<Entrypoint> listEntrypoint() {
-        return entrypointStream().toList();
+        return httpEntrypointStream().toList();
     }
 
-    private Stream<Entrypoint> entrypointStream() {
+    private Stream<Entrypoint> httpEntrypointStream() {
         return groups.stream()
                 .flatMap(inputAdapter -> inputAdapter.entrypoints().stream())
                 .filter(entrypointMethod -> entrypointMethod.entrypointType() == EntrypointType.HTTP_API);
@@ -37,7 +37,7 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
     }
 
     public Collection<Entrypoint> collectEntrypointMethodOf(CallerMethods callerMethods) {
-        return entrypointStream()
+        return httpEntrypointStream()
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();
     }

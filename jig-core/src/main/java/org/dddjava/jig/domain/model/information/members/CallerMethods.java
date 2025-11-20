@@ -11,11 +11,6 @@ import java.util.function.Predicate;
  */
 public record CallerMethods(Set<JigMethodId> values) {
 
-    public boolean contains(JigMethodId jigMethodId) {
-        return values.stream()
-                .anyMatch(item -> item.equals(jigMethodId));
-    }
-
     public int size() {
         return values.size();
     }

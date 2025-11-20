@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
@@ -16,10 +15,6 @@ import org.dddjava.jig.domain.model.information.types.JigType;
  */
 public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMethod jigMethod,
                          EntrypointMapping entrypointMapping) {
-
-    public boolean anyMatch(CallerMethods callerMethods) {
-        return callerMethods.contains(jigMethod.jigMethodId());
-    }
 
     public TypeId typeId() {
         return jigType.id();

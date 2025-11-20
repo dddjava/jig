@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -38,7 +39,11 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
 
     public Collection<Entrypoint> collectEntrypointMethodOf(CallerMethods callerMethods) {
         return httpEntrypointStream()
-                .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
+                .filter(entrypointMethod -> {
+                    JigMethodId jigMethodId = entrypointMethod.jigMethod().jigMethodId();
+                    return callerMethods.values().stream()
+                            .anyMatch(item -> item.equals(jigMethodId));
+                })
                 .toList();
     }
 

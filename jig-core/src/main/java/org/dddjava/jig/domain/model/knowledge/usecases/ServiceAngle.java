@@ -18,23 +18,24 @@ import java.util.Collection;
 /**
  * サービスの切り口
  */
+// TODO UsecaseとServiceAngleを統合する
 public class ServiceAngle {
 
     ServiceMethod serviceMethod;
 
     Collection<JigMethodId> userServiceMethods;
-    Collection<Entrypoint> entrypoints;
+    UsecaseCategory usecaseCategory;
 
     Collection<MethodCall> usingServiceMethods;
     Gateways usingGateways;
 
-    private ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways, Collection<MethodCall> usingServiceMethods, Collection<Entrypoint> entrypoints, Collection<JigMethodId> userServiceMethods) {
+    private ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways, Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods, UsecaseCategory usecaseCategory) {
         this.serviceMethod = serviceMethod;
 
         this.usingGateways = usingGateways;
         this.usingServiceMethods = usingServiceMethods;
 
-        this.entrypoints = entrypoints;
+        this.usecaseCategory = usecaseCategory;
         this.userServiceMethods = userServiceMethods;
     }
 
@@ -47,7 +48,8 @@ public class ServiceAngle {
                 .toList();
         Gateways usingGateways = outputImplementations.repositoryMethods().filter(usingMethods);
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
-        return new ServiceAngle(serviceMethod, usingGateways, usingServiceMethods, entrypointMethods, userServiceMethods);
+        UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
+        return new ServiceAngle(serviceMethod, usingGateways, usingServiceMethods, userServiceMethods, usecaseCategory);
     }
 
     public ServiceMethod serviceMethod() {
@@ -55,7 +57,7 @@ public class ServiceAngle {
     }
 
     public boolean usingFromController() {
-        return !entrypoints.isEmpty();
+        return usecaseCategory.handler();
     }
 
     public UsingFields usingFields() {

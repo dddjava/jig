@@ -19,25 +19,9 @@ import java.util.Collection;
  * サービスの切り口
  */
 // TODO UsecaseとServiceAngleを統合する
-public class ServiceAngle {
-
-    ServiceMethod serviceMethod;
-
-    Collection<JigMethodId> userServiceMethods;
-    UsecaseCategory usecaseCategory;
-
-    Collection<MethodCall> usingServiceMethods;
-    Gateways usingGateways;
-
-    private ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways, Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods, UsecaseCategory usecaseCategory) {
-        this.serviceMethod = serviceMethod;
-
-        this.usingGateways = usingGateways;
-        this.usingServiceMethods = usingServiceMethods;
-
-        this.usecaseCategory = usecaseCategory;
-        this.userServiceMethods = userServiceMethods;
-    }
+public record ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways,
+                           Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
+                           UsecaseCategory usecaseCategory) {
 
     public static ServiceAngle from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutputImplementations outputImplementations) {
         UsingMethods usingMethods = serviceMethod.usingMethods();
@@ -50,10 +34,6 @@ public class ServiceAngle {
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
         return new ServiceAngle(serviceMethod, usingGateways, usingServiceMethods, userServiceMethods, usecaseCategory);
-    }
-
-    public ServiceMethod serviceMethod() {
-        return serviceMethod;
     }
 
     public boolean usingFromController() {
@@ -82,16 +62,8 @@ public class ServiceAngle {
         });
     }
 
-    public Collection<JigMethodId> userServiceMethods() {
-        return userServiceMethods;
-    }
-
     public boolean isNotPublicMethod() {
         return !serviceMethod.isPublic();
-    }
-
-    public Collection<MethodCall> usingServiceMethods() {
-        return usingServiceMethods;
     }
 
     public JigMethodId jigMethodId() {

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
@@ -32,7 +33,7 @@ public record ServiceAngles(Collection<Entry> entries) {
         return entries.stream()
                 .map(Entry::serviceAngles)
                 .flatMap(Collection::stream)
-                .sorted()
+                .sorted(Comparator.comparing(serviceAngle -> serviceAngle.jigMethodId()))
                 .toList();
     }
 

@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  * サービスの切り口一覧
  */
 public record ServiceAngles(Collection<Entry> entries) {
-    private record Entry(JigType jigType, List<ServiceAngle> serviceAngleList) {
+    private record Entry(JigType jigType, Collection<ServiceAngle> serviceAngles) {
     }
 
     public static ServiceAngles from(ServiceMethods serviceMethods, InputAdapters inputAdapters, OutputImplementations outputImplementations) {
@@ -29,10 +29,10 @@ public record ServiceAngles(Collection<Entry> entries) {
     }
 
     public List<ServiceAngle> list() {
-        return entries.stream().map(Entry::serviceAngleList).flatMap(List::stream).toList();
+        return entries.stream().map(Entry::serviceAngles).flatMap(Collection::stream).toList();
     }
 
-    public <T> Stream<T> streamAndMap(BiFunction<JigType, List<ServiceAngle>, T> biFunction) {
-        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.serviceAngleList));
+    public <T> Stream<T> streamAndMap(BiFunction<JigType, Collection<ServiceAngle>, T> biFunction) {
+        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.serviceAngles));
     }
 }

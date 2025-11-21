@@ -29,7 +29,11 @@ public record ServiceAngles(Collection<Entry> entries) {
     }
 
     public List<ServiceAngle> list() {
-        return entries.stream().map(Entry::serviceAngles).flatMap(Collection::stream).toList();
+        return entries.stream()
+                .map(Entry::serviceAngles)
+                .flatMap(Collection::stream)
+                .sorted()
+                .toList();
     }
 
     public <T> Stream<T> streamAndMap(BiFunction<JigType, Collection<ServiceAngle>, T> biFunction) {

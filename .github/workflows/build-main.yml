@@ -15,7 +15,7 @@ jobs:
     env:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=UTF-8'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'

@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngle;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.usecases.Usecase;
 
 import java.util.HashSet;
 import java.util.List;
@@ -29,9 +28,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         this.serviceAngles = serviceAngles;
     }
 
-    private static Node usecaseNode(ServiceAngle serviceAngle) {
-        Usecase usecase = serviceAngle.toUsecase();
-
+    private static Node usecaseNode(ServiceAngle usecase) {
         return new Node(usecase.usecaseIdentifier())
                 .shape("ellipse")
                 .label(usecase.usecaseLabel())

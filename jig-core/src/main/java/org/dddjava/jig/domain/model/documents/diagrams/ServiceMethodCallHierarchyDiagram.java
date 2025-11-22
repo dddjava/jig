@@ -29,7 +29,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         this.serviceAngles = serviceAngles;
     }
 
-    public static Node usecase(Usecase usecase) {
+    private static Node usecase(Usecase usecase) {
         return new Node(usecase.usecaseIdentifier())
                 .shape("ellipse")
                 .label(usecase.usecaseLabel())
@@ -38,7 +38,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .url(usecase.declaringType(), JigDocument.ApplicationSummary);
     }
 
-    public static Node lambda(JigMethod method) {
+    private static Node lambda(JigMethod method) {
         return new Node(method.jigMethodId().value())
                 .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
     }

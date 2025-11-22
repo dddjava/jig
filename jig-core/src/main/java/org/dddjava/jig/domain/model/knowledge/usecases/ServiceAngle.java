@@ -69,4 +69,8 @@ public record ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways,
     public JigMethodId jigMethodId() {
         return serviceMethod().method().jigMethodId();
     }
+
+    public Usecase toUsecase() {
+        return Usecase.from(this);
+    }
 }

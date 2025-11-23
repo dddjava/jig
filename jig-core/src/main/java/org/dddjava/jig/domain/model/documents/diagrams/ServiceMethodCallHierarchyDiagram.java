@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngle;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
+import org.dddjava.jig.domain.model.knowledge.usecases.Usecase;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +28,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         this.serviceAngles = serviceAngles;
     }
 
-    private static Node usecaseNode(ServiceAngle usecase) {
+    private static Node usecaseNode(Usecase usecase) {
         return new Node(usecase.usecaseIdentifier())
                 .shape("ellipse")
                 .label(usecase.usecaseLabel())
@@ -45,30 +45,30 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
     @Override
     public int write(Consumer<DiagramSource> diagramSourceWriteProcess) {
-        List<ServiceAngle> angles = serviceAngles.list();
+        List<Usecase> angles = serviceAngles.list();
         if (angles.isEmpty()) {
             return 0;
         }
 
         // メソッド間の関連
         RelationText relationText = new RelationText();
-        for (ServiceAngle serviceAngle : angles) {
-            for (JigMethodId jigMethodId : serviceAngle.userServiceMethods()) {
-                relationText.add(jigMethodId, serviceAngle.jigMethodId());
+        for (Usecase usecase : angles) {
+            for (JigMethodId jigMethodId : usecase.userServiceMethods()) {
+                relationText.add(jigMethodId, usecase.jigMethodId());
             }
         }
 
         // メソッドの表示方法
         String serviceMethodText = angles.stream()
-                .map(serviceAngle -> {
-                    JigMethod method = serviceAngle.serviceMethod().method();
+                .map(usecase -> {
+                    JigMethod method = usecase.serviceMethod().method();
                     if (method.jigMethodId().isLambda()) {
                         return lambdaNode(method).dotText();
                     }
-                    Node useCaseNode = usecaseNode(serviceAngle);
+                    Node useCaseNode = usecaseNode(usecase);
 
                     // 非publicは色なし
-                    if (serviceAngle.isNotPublicMethod()) {
+                    if (usecase.isNotPublicMethod()) {
                         useCaseNode.as(NodeRole.脇役);
                     }
 
@@ -81,7 +81,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                                 + "style=solid;"
                                 + "label=\"" + jigType.label() + "\";"
                                 + serviceAngleList.stream()
-                                .map(serviceAngle -> serviceAngle.jigMethodId().value())
+                                .map(usecase -> usecase.jigMethodId().value())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")
@@ -108,12 +108,12 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
      *
      * [ServiceMethod] --> [Repository]
      */
-    private String repositoryText(List<ServiceAngle> angles) {
+    private String repositoryText(List<Usecase> angles) {
         Set<TypeId> repositories = new HashSet<>();
         RelationText repositoryRelation = new RelationText();
-        for (ServiceAngle serviceAngle : angles) {
-            for (JigMethod repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {
-                repositoryRelation.add(serviceAngle.serviceMethod().method().jigMethodId(), repositoryMethod.declaringType());
+        for (Usecase usecase : angles) {
+            for (JigMethod repositoryMethod : usecase.usingRepositoryMethods().list()) {
+                repositoryRelation.add(usecase.serviceMethod().method().jigMethodId(), repositoryMethod.declaringType());
                 repositories.add(repositoryMethod.declaringType());
             }
         }

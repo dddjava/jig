@@ -28,11 +28,11 @@ import java.util.Collection;
  * Javadocコメントの記述有無などで判断する？
  */
 // TODO Usecaseにrenameする
-public record ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways,
-                           Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
-                           UsecaseCategory usecaseCategory) {
+public record Usecase(ServiceMethod serviceMethod, Gateways usingGateways,
+                      Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
+                      UsecaseCategory usecaseCategory) {
 
-    public static ServiceAngle from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutputImplementations outputImplementations) {
+    public static Usecase from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutputImplementations outputImplementations) {
         UsingMethods usingMethods = serviceMethod.usingMethods();
 
         Collection<JigMethodId> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodId -> serviceMethods.contains(jigMethodId));
@@ -42,7 +42,7 @@ public record ServiceAngle(ServiceMethod serviceMethod, Gateways usingGateways,
         Gateways usingGateways = outputImplementations.repositoryMethods().filter(usingMethods);
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
-        return new ServiceAngle(serviceMethod, usingGateways, usingServiceMethods, userServiceMethods, usecaseCategory);
+        return new Usecase(serviceMethod, usingGateways, usingServiceMethods, userServiceMethods, usecaseCategory);
     }
 
     public boolean usingFromController() {

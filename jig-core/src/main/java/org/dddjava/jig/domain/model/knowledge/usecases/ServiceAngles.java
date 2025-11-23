@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * サービスの切り口一覧
  */
 public record ServiceAngles(Collection<Entry> entries) {
-    private record Entry(JigType jigType, Collection<ServiceAngle> serviceAngles) {
+    private record Entry(JigType jigType, Collection<Usecase> usecases) {
     }
 
     public static ServiceAngles from(ServiceMethods serviceMethods, InputAdapters inputAdapters, OutputImplementations outputImplementations) {
@@ -23,21 +23,21 @@ public record ServiceAngles(Collection<Entry> entries) {
         return new ServiceAngles(serviceMethods
                 .streamAndMap((jigType, serviceMethodList) -> {
                     var serviceAngleList = serviceMethodList.stream()
-                            .map(serviceMethod -> ServiceAngle.from(serviceMethod, serviceMethods, inputAdapters, outputImplementations))
+                            .map(serviceMethod -> Usecase.from(serviceMethod, serviceMethods, inputAdapters, outputImplementations))
                             .toList();
                     return new Entry(jigType, serviceAngleList);
                 }).toList());
     }
 
-    public List<ServiceAngle> list() {
+    public List<Usecase> list() {
         return entries.stream()
-                .map(Entry::serviceAngles)
+                .map(Entry::usecases)
                 .flatMap(Collection::stream)
-                .sorted(Comparator.comparing(serviceAngle -> serviceAngle.jigMethodId()))
+                .sorted(Comparator.comparing(usecase -> usecase.jigMethodId()))
                 .toList();
     }
 
-    public <T> Stream<T> streamAndMap(BiFunction<JigType, Collection<ServiceAngle>, T> biFunction) {
-        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.serviceAngles));
+    public <T> Stream<T> streamAndMap(BiFunction<JigType, Collection<Usecase>, T> biFunction) {
+        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.usecases));
     }
 }

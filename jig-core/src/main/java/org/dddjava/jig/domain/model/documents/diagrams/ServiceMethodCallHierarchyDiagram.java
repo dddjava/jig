@@ -75,12 +75,12 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                     return useCaseNode.dotText();
                 }).collect(joining("\n"));
 
-        String subgraphText = serviceAngles.streamAndMap((jigType, serviceAngleList) ->
+        String subgraphText = serviceAngles.streamAndMap((jigType, usecases) ->
                         "subgraph \"cluster_" + jigType.fqn() + "\""
                                 + "{"
                                 + "style=solid;"
                                 + "label=\"" + jigType.label() + "\";"
-                                + serviceAngleList.stream()
+                                + usecases.stream()
                                 .map(usecase -> usecase.jigMethodId().value())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))

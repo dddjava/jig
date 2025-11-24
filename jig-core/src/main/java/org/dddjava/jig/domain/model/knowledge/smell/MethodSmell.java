@@ -20,7 +20,7 @@ public record MethodSmell(JigMethod method,
                           boolean returnsVoid
 ) {
 
-    public static Optional<MethodSmell> createMethodSmell(JigMethod method, JigType declaringJigType) {
+    public static Optional<MethodSmell> from(JigMethod method, JigType declaringJigType) {
         // java.lang.Object由来は除外する
         if (method.isObjectMethod()) {
             return Optional.empty();

@@ -14,7 +14,7 @@ public record MethodSmells(Collection<MethodSmell> smells) {
     public static MethodSmells from(JigTypes jigTypes) {
         return new MethodSmells(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.instanceJigMethodStream()
-                        .flatMap(method -> MethodSmell.createMethodSmell(method, jigType).stream())
+                        .flatMap(method -> MethodSmell.from(method, jigType).stream())
                 )
                 .toList());
     }

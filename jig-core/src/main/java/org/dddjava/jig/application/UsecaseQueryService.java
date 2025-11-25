@@ -46,6 +46,6 @@ public class UsecaseQueryService {
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {
         var inputAdapters = inputAdapters(jigRepository);
         var serviceMethods = serviceMethods(jigRepository);
-        return StringComparingMethodList.createFrom(inputAdapters, serviceMethods);
+        return StringComparingMethodList.from(inputAdapters, serviceMethods);
     }
 }

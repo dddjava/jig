@@ -17,17 +17,17 @@ import java.util.stream.Stream;
  */
 public record StringComparingMethodList(List<JigMethod> methods) {
 
-    public static StringComparingMethodList createFrom(InputAdapters inputAdapters, ServiceMethods serviceMethods) {
+    public static StringComparingMethodList from(InputAdapters inputAdapters, ServiceMethods serviceMethods) {
         Stream<JigMethod> targetMethodStream = Stream.concat(
                 inputAdapters.listEntrypoint().stream()
                         .map(entrypointMethod -> entrypointMethod.jigMethod()),
                 serviceMethods.list().stream()
                         .map(serviceMethod -> serviceMethod.method())
         );
-        return createFrom(targetMethodStream);
+        return from(targetMethodStream);
     }
 
-    static StringComparingMethodList createFrom(Stream<JigMethod> target) {
+    static StringComparingMethodList from(Stream<JigMethod> target) {
         // String#equals(Object)
         JigMethodId jigMethodId = JigMethodId.from(
                 TypeId.STRING,

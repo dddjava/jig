@@ -15,7 +15,7 @@ class StringComparingMethodListTest {
     void String比較を行っていないクラス() {
         JigType jigType = TestSupport.buildJigType(NonStringComparingClass.class);
 
-        StringComparingMethodList sut = StringComparingMethodList.createFrom(jigType.allJigMethodStream());
+        StringComparingMethodList sut = StringComparingMethodList.from(jigType.allJigMethodStream());
 
         assertTrue(sut.list().isEmpty());
     }
@@ -24,7 +24,7 @@ class StringComparingMethodListTest {
     void String比較を行っているクラス() {
         JigType jigType = TestSupport.buildJigType(StringComparingClass.class);
 
-        StringComparingMethodList sut = StringComparingMethodList.createFrom(jigType.allJigMethodStream());
+        StringComparingMethodList sut = StringComparingMethodList.from(jigType.allJigMethodStream());
 
         assertEquals(2, sut.list().size());
         assertEquals("stringEqualsMethod1", sut.list().get(0).name());

@@ -23,7 +23,7 @@ public enum SqlType {
 
     SqlType(String... patterns) {
         this.patterns = Stream.of(patterns)
-                .map(pattern -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE))
+                .map(pattern -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS))
                 .toList();
     }
 

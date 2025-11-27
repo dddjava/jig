@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JigTest
-class MyBatisMyBatisStatementReaderTest {
+class MyBatisStatementReaderTest {
 
     @Test
     void bindを使ってても解析できる(JigRepository jigRepository) {

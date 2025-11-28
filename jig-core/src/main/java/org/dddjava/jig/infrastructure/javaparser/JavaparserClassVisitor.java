@@ -57,38 +57,38 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     @Override
-    public void visit(EnumDeclaration node, GlossaryRepository arg) {
-        TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(node, arg);
+    public void visit(EnumDeclaration enumDeclaration, GlossaryRepository arg) {
+        TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(enumDeclaration, arg);
 
-        List<EnumConstant> constants = node.getEntries().stream()
+        List<EnumConstant> constants = enumDeclaration.getEntries().stream()
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
                 .toList();
         enumModel = Optional.of(new EnumModel(typeId, constants));
-        super.visit(node, arg);
+        super.visit(enumDeclaration, arg);
     }
 
     @Override
-    public void visit(ConstructorDeclaration n, GlossaryRepository arg) {
+    public void visit(ConstructorDeclaration constructorDeclaration, GlossaryRepository arg) {
         // enumの時だけコンストラクタの引数名を取る
-        enumModel.ifPresent(it -> it.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).toList()));
-        super.visit(n, arg);
+        enumModel.ifPresent(it -> it.addConstructorArgumentNames(constructorDeclaration.getParameters().stream().map(e -> e.getName().asString()).toList()));
+        super.visit(constructorDeclaration, arg);
     }
 
     @Override
-    public void visit(RecordDeclaration n, GlossaryRepository arg) {
-        visitClassOrInterfaceOrEnumOrRecord(n, arg);
+    public void visit(RecordDeclaration recordDeclaration, GlossaryRepository arg) {
+        visitClassOrInterfaceOrEnumOrRecord(recordDeclaration, arg);
     }
 
     @Override
-    public void visit(LocalRecordDeclarationStmt n, GlossaryRepository arg) {
+    public void visit(LocalRecordDeclarationStmt localRecordDeclarationStmt, GlossaryRepository arg) {
         // メソッド内のRecordに対応する必要がある場合
-        super.visit(n, arg);
+        super.visit(localRecordDeclarationStmt, arg);
     }
 
     @Override
-    public void visit(LocalClassDeclarationStmt n, GlossaryRepository arg) {
+    public void visit(LocalClassDeclarationStmt localClassDeclarationStmt, GlossaryRepository arg) {
         // メソッド内のclassに対応する必要がある場合
-        super.visit(n, arg);
+        super.visit(localClassDeclarationStmt, arg);
     }
 
     private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeId visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {

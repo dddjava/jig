@@ -23,11 +23,11 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     @Override
-    public void visit(FieldDeclaration n, GlossaryRepository glossaryRepository) {
-        n.getJavadoc().ifPresent(javadoc -> {
+    public void visit(FieldDeclaration fieldDeclaration, GlossaryRepository glossaryRepository) {
+        fieldDeclaration.getJavadoc().ifPresent(javadoc -> {
             // フィールドは複数の変数を宣言できるのでVariablesで処理する必要がある
             // variableごとにコメントは書けるが、宣言についているものを採用する
-            var variables = n.getVariables();
+            var variables = fieldDeclaration.getVariables();
             variables.forEach(v -> {
                 glossaryRepository.register(
                         TermFactory.fromField(
@@ -39,11 +39,11 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     @Override
-    public void visit(MethodDeclaration n, GlossaryRepository glossaryRepository) {
+    public void visit(MethodDeclaration methodDeclaration, GlossaryRepository glossaryRepository) {
         var methodImplementationDeclarator = new JavaMethodDeclarator(
                 typeId,
-                n.getNameAsString(),
-                n.getParameters().stream()
+                methodDeclaration.getNameAsString(),
+                methodDeclaration.getParameters().stream()
                         .map(parameter -> {
                             var type = parameter.getType();
                             if (type.isClassOrInterfaceType()) {
@@ -55,18 +55,18 @@ class JavaparserMemberVisitor extends VoidVisitorAdapter<GlossaryRepository> {
                         .toList()
         );
 
-        n.getJavadoc().ifPresent(javadoc ->
+        methodDeclaration.getJavadoc().ifPresent(javadoc ->
                 glossaryRepository.register(TermFactory.fromMethod(glossaryRepository.fromMethodImplementationDeclarator(typeId, methodImplementationDeclarator), methodImplementationDeclarator, javadoc.getDescription().toText()))
         );
     }
 
     @Override
-    public void visit(EnumConstantDeclaration n, GlossaryRepository glossaryRepository) {
-        n.getJavadoc().ifPresent(javadoc -> {
+    public void visit(EnumConstantDeclaration enumConstantDeclaration, GlossaryRepository glossaryRepository) {
+        enumConstantDeclaration.getJavadoc().ifPresent(javadoc -> {
             glossaryRepository.register(
                     // enumの列挙定数は用語集にはフィールドとして登録する
                     TermFactory.fromField(
-                            glossaryRepository.fromFieldId(JigFieldId.from(typeId, n.getNameAsString())),
+                            glossaryRepository.fromFieldId(JigFieldId.from(typeId, enumConstantDeclaration.getNameAsString())),
                             javadoc.getDescription().toText()
                     ));
         });

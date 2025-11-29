@@ -59,7 +59,6 @@ public class HandleResultImpl implements HandleResult {
         };
     }
 
-    @Override
     public boolean failure() {
         // 何かしらのエラーがある
         // 出力対象なしは失敗ではないので、!success() ではない

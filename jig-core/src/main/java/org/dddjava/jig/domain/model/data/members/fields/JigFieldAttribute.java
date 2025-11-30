@@ -15,7 +15,7 @@ record JigFieldAttribute(JigMemberVisibility jigMemberVisibility,
                          Collection<JigAnnotationReference> declarationAnnotations,
                          EnumSet<JigFieldFlag> flags) {
     Stream<TypeId> toTypeIdStream() {
-        return declarationAnnotations.stream().map(jigAnnotationReference -> jigAnnotationReference.id());
+        return declarationAnnotations.stream().map(JigAnnotationReference::id);
     }
 
     public boolean isDeprecated() {

@@ -13,11 +13,11 @@ public enum SupportGradleVersion {
     /**
      * 最新
      */
-    LATEST("8.13"),
+    LATEST("9.2.1"),
     /**
      * 一つ前のメジャーバージョンの最終
      */
-    PREVIOUS_MAJOR_LATEST("7.6.4");
+    PREVIOUS_MAJOR_LATEST("8.14.3");
 
     private final String version;
 

@@ -14,7 +14,7 @@ public class JavaparserLocalClassTest {
     @BeforeAll
     static void setup() {
         // デフォルト（JAVA_11）だとローカルインタフェースは通らない
-        StaticJavaParser.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        StaticJavaParser.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
     }
 
     @Test
@@ -22,7 +22,7 @@ public class JavaparserLocalClassTest {
         ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
         ParserConfiguration.LanguageLevel languageLevel = configuration.getLanguageLevel();
 
-        assertEquals(ParserConfiguration.LanguageLevel.JAVA_17, languageLevel);
+        assertEquals(ParserConfiguration.LanguageLevel.JAVA_21, languageLevel);
     }
 
     @Test

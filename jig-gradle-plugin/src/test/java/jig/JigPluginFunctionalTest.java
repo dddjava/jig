@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see <a href="https://docs.gradle.org/8.13/userguide/test_kit.html">Testing Build Logic with TestKit</a>
  */
-@EnabledOnJre(JRE.JAVA_17) // Gradle7がJava21に対応していないため17でのみ実行する
 public class JigPluginFunctionalTest {
 
     @TempDir

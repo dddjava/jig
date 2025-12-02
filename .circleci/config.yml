@@ -1,9 +1,9 @@
 version: 2.1
 
 executors:
-  circleci-openjdk-17-executor:
+  circleci-openjdk-21-executor:
     docker:
-      - image: cimg/openjdk:17.0.10
+      - image: cimg/openjdk:21.0.9
     working_directory: ~/repo
     environment:
       _JAVA_OPTIONS: -Xmx512m
@@ -32,12 +32,12 @@ commands:
       - post-build
 
 jobs:
-  build-java-17:
-    executor: circleci-openjdk-17-executor
+  build-java-21:
+    executor: circleci-openjdk-21-executor
     steps:
       - build
   publish:
-    executor: circleci-openjdk-17-executor
+    executor: circleci-openjdk-21-executor
     steps:
       - pre-build
       - run:
@@ -65,7 +65,7 @@ workflows:
   version: 2
   usually:
     jobs:
-      - build-java-17:
+      - build-java-21:
           filters:
             branches:
               only: 'main'

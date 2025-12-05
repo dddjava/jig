@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="stub.infrastructure.datasource.ComplexMapper">
+
+    <select id="select_with">
+        with withでつけられた名前 as (
+        select hoge, fuga from とあるテーブル
+        )
+        select hoge from withでつけられた名前
+    </select>
+
+    <select id="select_ognl">
+        select hoge, fuga, ${value} from とあるテーブル
+        order by 1
+    </select>
+
+    <select id="select_ognl_where">
+        select hoge, fuga, ${value} from とあるテーブル
+        <where>
+            1 = 1
+        </where>
+        order by 1
+    </select>
+
+</mapper>

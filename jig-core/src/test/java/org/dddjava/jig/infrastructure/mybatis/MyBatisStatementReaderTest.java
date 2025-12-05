@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import stub.infrastructure.datasource.ComplexMapper;
 import stub.infrastructure.datasource.SampleMapper;
 import testing.JigTest;
 
@@ -27,6 +28,33 @@ class MyBatisStatementReaderTest {
                 .filter(statement -> statement.myBatisStatementId().equals(new MyBatisStatementId(SampleMapper.class.getCanonicalName() + ".binding")))
                 .findAny().orElseThrow();
         assertEquals("[fuga]", myBatisStatement.tables().asText());
+    }
+
+    @Test
+    void OGNLを使ったSELECTが解析できない(JigRepository jigRepository) {
+        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
+
+        MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
+                .filter(statement -> statement.myBatisStatementId().equals(new MyBatisStatementId(ComplexMapper.class.getCanonicalName() + ".select_ognl")))
+                .findAny().orElseThrow();
+
+        assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
+        // OGNLを使ったSQLは現時点では空になる
+        assertEquals("", myBatisStatement.query().text());
+    }
+
+    @Test
+    void OGNLを使ったSELECTが解析できない2(JigRepository jigRepository) {
+        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
+
+        MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
+                .filter(statement -> statement.myBatisStatementId().equals(new MyBatisStatementId(ComplexMapper.class.getCanonicalName() + ".select_ognl_where")))
+                .findAny().orElseThrow();
+
+        assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
+        // OGNLを使ったSQLは現時点では空になる
+        // ・・・のだが、 <where>タグなどで分割されているとOGNLを使用していない部分だけクエリが出てくる
+        assertEquals("order by 1", myBatisStatement.query().text());
     }
 
     @ParameterizedTest

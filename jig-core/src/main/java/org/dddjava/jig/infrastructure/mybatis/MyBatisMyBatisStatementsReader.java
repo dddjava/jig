@@ -115,7 +115,19 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
                     query = Query.unsupported();
                 }
 
-                SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
+                // MyBatis上でのSQLの種類
+                // https://mybatis.org/mybatis-3/ja/sqlmap-xml.html#sql_command_type
+                var sqlCommandType = mappedStatement.getSqlCommandType();
+                SqlType sqlType = switch (sqlCommandType) {
+                    case SELECT -> SqlType.SELECT;
+                    case INSERT -> SqlType.INSERT;
+                    case UPDATE -> SqlType.UPDATE;
+                    case DELETE -> SqlType.DELETE;
+                    case UNKNOWN, FLUSH -> {
+                        logger.warn("JIGではSQL Command Type {} はJIGでは対応していません。SELECTとして続行します。", sqlCommandType);
+                        yield SqlType.SELECT;
+                    }
+                };
                 MyBatisStatement myBatisStatement = new MyBatisStatement(myBatisStatementId, query, sqlType);
                 list.add(myBatisStatement);
             }

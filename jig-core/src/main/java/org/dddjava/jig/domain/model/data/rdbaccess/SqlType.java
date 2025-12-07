@@ -27,6 +27,12 @@ public enum SqlType {
                 .toList();
     }
 
+    /**
+     * SQLから使用しているテーブルを抽出する
+     *
+     * 現在は1テーブルのみ対応
+     * 複問い合わせやWITHなどは未対応
+     */
     public Table extractTable(String sql) {
         for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));

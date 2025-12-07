@@ -141,7 +141,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
         SqlSource sqlSource = mappedStatement.getSqlSource();
 
         if (!(sqlSource instanceof DynamicSqlSource dynamicSqlSource)) {
-            return new Query(mappedStatement.getBoundSql(null).getSql());
+            return Query.from(mappedStatement.getBoundSql(null).getSql());
         }
 
         // 動的クエリ（XMLで組み立てるもの）をエミュレート
@@ -154,9 +154,9 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
             var sqlText = emulateSql(mixedSqlNode);
             logger.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
             logger.debug("組み立てたSQL: [{}]", sqlText);
-            return new Query(sqlText);
+            return Query.from(sqlText);
         }
-        return new Query(mappedStatement.getBoundSql(null).getSql());
+        return Query.from(mappedStatement.getBoundSql(null).getSql());
     }
 
     private static String emulateSql(MixedSqlNode mixedSqlNode) throws NoSuchFieldException, IllegalAccessException {

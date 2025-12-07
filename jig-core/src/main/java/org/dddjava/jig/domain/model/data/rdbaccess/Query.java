@@ -7,6 +7,10 @@ import org.jspecify.annotations.Nullable;
  */
 public record Query(@Nullable String text) {
 
+    public static Query from(String text) {
+        return new Query(text);
+    }
+
     public Tables extractTable(SqlType sqlType) {
         Table table = text == null ? sqlType.unexpectedTable() : sqlType.extractTable(text);
         return new Tables(table);

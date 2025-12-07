@@ -5,18 +5,31 @@ import org.jspecify.annotations.Nullable;
 /**
  * クエリ
  */
-public record Query(@Nullable String text) {
+public record Query(String text) {
 
-    public static Query from(String text) {
+    public static final String UNSUPPORTED = "<<unsupported>>";
+
+    public static Query from(@Nullable String text) {
+        if (text == null) return unsupported();
         return new Query(text);
     }
 
     public Tables extractTable(SqlType sqlType) {
-        Table table = text == null ? sqlType.unexpectedTable() : sqlType.extractTable(text);
+        Table table = UNSUPPORTED.equals(text) ? sqlType.unexpectedTable() : sqlType.extractTable(text);
         return new Tables(table);
     }
 
     public static Query unsupported() {
-        return new Query(null);
+        return new Query(UNSUPPORTED);
+    }
+
+    @Override
+    public String text() {
+        if (UNSUPPORTED.equals(text)) {
+            // 特殊値を返さないようにする
+            // Queryのtextは外部から使用しないので例外でよい。これが発生したらバグ。
+            throw new IllegalArgumentException("BUG!!");
+        }
+        return text;
     }
 }

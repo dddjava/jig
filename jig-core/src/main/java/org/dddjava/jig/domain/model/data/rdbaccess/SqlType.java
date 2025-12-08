@@ -33,7 +33,7 @@ public enum SqlType {
      * 現在は1テーブルのみ対応
      * 複問い合わせやWITHなどは未対応
      */
-    public Table extractTable(String sql) {
+    public Table extractTable(String sql, MyBatisStatementId myBatisStatementId) {
         for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
             if (matcher.matches()) {
@@ -41,7 +41,11 @@ public enum SqlType {
             }
         }
 
-        logger.warn("{} としてテーブル名が解析できませんでした。 [{}]", this, sql);
+        logger.warn("{} {} を {} としてテーブル名が解析できませんでした。このMapper由来の解析結果はドキュメントに出力されません。" +
+                        "MyBatisの動的なSQLなどは完全に再現できません。JIGが認識しているSQL文=[{}]",
+                myBatisStatementId.namespace(),
+                myBatisStatementId.id(),
+                this, sql);
         return unexpectedTable();
     }
 

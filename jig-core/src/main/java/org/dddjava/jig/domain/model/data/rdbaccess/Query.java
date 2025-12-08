@@ -14,14 +14,6 @@ public record Query(String text) {
         return new Query(text);
     }
 
-    public Tables extractTable(SqlType sqlType) {
-        if (UNSUPPORTED.equals(text)) {
-            return new Tables(sqlType.unexpectedTable());
-        }
-        Table table = sqlType.extractTable(text);
-        return new Tables(table);
-    }
-
     public static Query unsupported() {
         return new Query(UNSUPPORTED);
     }
@@ -34,5 +26,9 @@ public record Query(String text) {
             throw new IllegalArgumentException("BUG!!");
         }
         return text;
+    }
+
+    public boolean supported() {
+        return !UNSUPPORTED.equals(text);
     }
 }

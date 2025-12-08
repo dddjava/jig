@@ -6,6 +6,10 @@ package org.dddjava.jig.domain.model.data.rdbaccess;
 public record MyBatisStatement(MyBatisStatementId myBatisStatementId, Query query, SqlType sqlType) {
 
     public Tables tables() {
-        return query.extractTable(sqlType);
+        if (query.supported()) {
+            Table table = sqlType.extractTable(query.text());
+            return new Tables(table);
+        }
+        return new Tables(sqlType.unexpectedTable());
     }
 }

@@ -15,7 +15,10 @@ public record Query(String text) {
     }
 
     public Tables extractTable(SqlType sqlType) {
-        Table table = UNSUPPORTED.equals(text) ? sqlType.unexpectedTable() : sqlType.extractTable(text);
+        if (UNSUPPORTED.equals(text)) {
+            return new Tables(sqlType.unexpectedTable());
+        }
+        Table table = sqlType.extractTable(text);
         return new Tables(table);
     }
 

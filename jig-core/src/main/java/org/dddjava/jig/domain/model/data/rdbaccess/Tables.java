@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
 /**
  * テーブル一覧
  */
-public record Tables(List<Table> tables) {
+public record Tables(Collection<Table> tables) {
 
     public Tables(Table table) {
         this(Collections.singletonList(table));

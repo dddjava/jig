@@ -104,7 +104,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                MyBatisStatementId myBatisStatementId = new MyBatisStatementId(mappedStatement.getId());
+                MyBatisStatementId myBatisStatementId = MyBatisStatementId.from(mappedStatement.getId());
 
                 Query query;
                 try {

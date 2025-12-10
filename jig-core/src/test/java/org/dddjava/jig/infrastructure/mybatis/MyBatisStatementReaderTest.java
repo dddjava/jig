@@ -25,7 +25,7 @@ class MyBatisStatementReaderTest {
         MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
-                .filter(statement -> statement.myBatisStatementId().equals(new MyBatisStatementId(SampleMapper.class.getCanonicalName() + ".binding")))
+                .filter(statement -> statement.myBatisStatementId().equals(MyBatisStatementId.from(SampleMapper.class.getCanonicalName() + ".binding")))
                 .findAny().orElseThrow();
         assertEquals("[fuga]", myBatisStatement.tables().asText());
     }
@@ -35,7 +35,7 @@ class MyBatisStatementReaderTest {
         MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
-                .filter(statement -> statement.myBatisStatementId().equals(new MyBatisStatementId(ComplexMapper.class.getCanonicalName() + ".select_ognl")))
+                .filter(statement -> statement.myBatisStatementId().equals(MyBatisStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl")))
                 .findAny().orElseThrow();
 
         assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
@@ -48,7 +48,7 @@ class MyBatisStatementReaderTest {
         MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
-                .filter(statement -> statement.myBatisStatementId().equals(new MyBatisStatementId(ComplexMapper.class.getCanonicalName() + ".select_ognl_where")))
+                .filter(statement -> statement.myBatisStatementId().equals(MyBatisStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl_where")))
                 .findAny().orElseThrow();
 
         assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
@@ -63,7 +63,7 @@ class MyBatisStatementReaderTest {
         MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
-                .filter(current -> current.myBatisStatementId().equals(new MyBatisStatementId("stub.infrastructure.datasource.CanonicalMapper." + methodName)))
+                .filter(current -> current.myBatisStatementId().equals(MyBatisStatementId.from("stub.infrastructure.datasource.CanonicalMapper." + methodName)))
                 .findFirst()
                 .orElseThrow(AssertionError::new);
 

@@ -26,22 +26,14 @@ import java.util.Objects;
  * }
  * </pre>
  */
-public class MyBatisStatementId {
+public record MyBatisStatementId(String value, String namespace, String id) {
 
-    private final String value;
-    private final String namespace;
-    private final String id;
-
-    public MyBatisStatementId(String value) {
-        this.value = value;
-
+    public static MyBatisStatementId from(String value) {
         var namespaceIdSeparateIndex = value.lastIndexOf('.');
         if (namespaceIdSeparateIndex != -1) {
-            this.namespace = value.substring(0, namespaceIdSeparateIndex);
-            this.id = value.substring(namespaceIdSeparateIndex + 1);
+            return new MyBatisStatementId(value, value.substring(0, namespaceIdSeparateIndex), value.substring(namespaceIdSeparateIndex + 1));
         } else {
-            this.namespace = "<unknown namespace>";
-            this.id = value;
+            return new MyBatisStatementId(value, "<unknown namespace>", value);
         }
     }
 

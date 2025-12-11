@@ -21,6 +21,8 @@ public record MyBatisStatements(List<MyBatisStatement> list, SqlReadStatus sqlRe
                 .orElse(Tables.nothing());
     }
 
+    // テストでしか使用していないので削除したい
+    @Deprecated
     public List<MyBatisStatement> list() {
         return list;
     }

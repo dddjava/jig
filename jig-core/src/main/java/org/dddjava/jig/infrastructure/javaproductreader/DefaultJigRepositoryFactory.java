@@ -148,11 +148,11 @@ public class DefaultJigRepositoryFactory {
         // MyBatisがMapperXMLやインタフェースclassを探すパス
         List<Path> classPaths = sources.sourceBasePaths().classSourceBasePaths();
 
-        MyBatisStatements myBatisStatements = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
+        var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        if (myBatisStatements.status().not正常()) {
-            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+        if (myBatisReadResult.status().not正常()) {
+            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisReadResult.status()));
         }
-        return myBatisStatements;
+        return myBatisReadResult.myBatisStatements();
     }
 }

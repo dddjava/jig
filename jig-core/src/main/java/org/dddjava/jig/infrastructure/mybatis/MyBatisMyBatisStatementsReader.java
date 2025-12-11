@@ -12,6 +12,7 @@ import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.data.rdbaccess.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.sources.mybatis.MyBatisReadResult;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(MyBatisMyBatisStatementsReader.class);
 
     @Override
-    public MyBatisStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
+    public MyBatisReadResult readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         // Mapperアノテーションがついているクラスを対象にする
         Collection<String> classNames = jigTypeHeaders.stream()
                 .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributes()
@@ -47,7 +48,8 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
                 .toList();
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
-        if (classNames.isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
+        if (classNames.isEmpty()) return new MyBatisReadResult(new MyBatisStatements(List.of()), SqlReadStatus.成功);
+        new MyBatisStatements();
 
         URL[] classLocationUrls = classPaths.stream()
                 .map(path -> {
@@ -67,16 +69,16 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
         } catch (IOException e) {
             logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
-            return new MyBatisStatements(SqlReadStatus.失敗);
+            return new MyBatisReadResult(SqlReadStatus.失敗);
         } catch (PersistenceException e) {
             logger.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
                     "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
-            return new MyBatisStatements(SqlReadStatus.失敗);
+            return new MyBatisReadResult(SqlReadStatus.失敗);
         }
     }
 
-    private MyBatisStatements extractSql(Collection<String> classNames, ClassLoader classLoader) {
+    private MyBatisReadResult extractSql(Collection<String> classNames, ClassLoader classLoader) {
         SqlReadStatus sqlReadStatus = SqlReadStatus.成功;
 
         Configuration config = new Configuration();
@@ -134,7 +136,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
         }
 
         logger.debug("取得したSQL: {}件", list.size());
-        return new MyBatisStatements(list, sqlReadStatus);
+        return new MyBatisReadResult(new MyBatisStatements(list), sqlReadStatus);
     }
 
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {

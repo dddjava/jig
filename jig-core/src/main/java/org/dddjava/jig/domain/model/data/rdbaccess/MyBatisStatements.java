@@ -7,10 +7,10 @@ import java.util.function.Predicate;
 /**
  * SQL一覧
  */
-public record MyBatisStatements(List<MyBatisStatement> list, SqlReadStatus sqlReadStatus) {
+public record MyBatisStatements(List<MyBatisStatement> list) {
 
-    public MyBatisStatements(SqlReadStatus sqlReadStatus) {
-        this(Collections.emptyList(), sqlReadStatus);
+    public MyBatisStatements() {
+        this(Collections.emptyList());
     }
 
     public Tables tables(SqlType sqlType) {
@@ -34,13 +34,10 @@ public record MyBatisStatements(List<MyBatisStatement> list, SqlReadStatus sqlRe
         List<MyBatisStatement> myBatisStatements = list.stream()
                 .filter(myBatisStatementPredicate)
                 .toList();
-        return new MyBatisStatements(myBatisStatements, sqlReadStatus);
+        return new MyBatisStatements(myBatisStatements);
     }
 
-    public SqlReadStatus status() {
-        if (sqlReadStatus == SqlReadStatus.成功 && list.isEmpty()) {
-            return SqlReadStatus.SQLなし;
-        }
-        return sqlReadStatus;
+    public boolean isEmpty() {
+        return list.isEmpty();
     }
 }

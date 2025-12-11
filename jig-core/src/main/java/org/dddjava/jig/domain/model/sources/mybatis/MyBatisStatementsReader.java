@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.sources.mybatis;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 
 import java.nio.file.Path;
@@ -12,5 +11,5 @@ import java.util.List;
  */
 public interface MyBatisStatementsReader {
 
-    MyBatisStatements readFrom(Collection<JigTypeHeader> sources, List<Path> classPaths);
+    MyBatisReadResult readFrom(Collection<JigTypeHeader> sources, List<Path> classPaths);
 }

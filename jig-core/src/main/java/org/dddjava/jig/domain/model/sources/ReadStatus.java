@@ -1,4 +1,4 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig.domain.model.sources;
 
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 

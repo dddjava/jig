@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.rdbaccess;
+package org.dddjava.jig.domain.model.sources.mybatis;
 
 public enum SqlReadStatus {
     成功,

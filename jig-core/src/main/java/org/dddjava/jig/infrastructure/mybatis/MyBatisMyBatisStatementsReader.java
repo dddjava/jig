@@ -14,6 +14,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisReadResult;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
+import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

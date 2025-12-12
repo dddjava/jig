@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -60,12 +59,6 @@ public class JigEventRepository {
         logger.warn("パス {} 配下のファイルの収集に失敗しました。スキップして続行しますが、このパス配下の情報は結果に含まれません。" +
                         "読み取れないパスが指定された場合などに発生します。実行環境かパスの指定を見直してください。(type={}, message={})",
                 basePath, e.getClass().getName(), e.getMessage(), e);
-    }
-
-    public void registerクラスファイルの読み込みに失敗しました(Path path, IOException e) {
-        logger.warn("{} のファイル内容取得に失敗しました。スキップして続行しますが、このファイルの情報は結果に含まれません。" +
-                        "通常は発生しない想定ですが、読み取り不可となっている場合などに発生します。環境を確認してください。(type={}, message={})",
-                path, e.getClass().getName(), e.getMessage(), e);
     }
 
     /**

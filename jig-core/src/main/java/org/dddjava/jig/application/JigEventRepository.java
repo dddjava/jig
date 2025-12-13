@@ -15,7 +15,7 @@ import java.util.*;
 public class JigEventRepository {
     private static final Logger logger = LoggerFactory.getLogger(JigEventRepository.class);
 
-    private final List<ReadStatus> readStatuses = new ArrayList<>();
+    private final Collection<ReadStatus> readStatuses = EnumSet.noneOf(ReadStatus.class);
     private final Set<Warning> warnings = new HashSet<>();
 
     public void registerコアドメインが見つからない() {

@@ -40,10 +40,11 @@ public class JigEventRepository {
 
     public void recordEvent(ReadStatus readStatus) {
         readStatuses.add(readStatus);
+        var message = readStatus.localizedMessage();
         if (readStatus.isError()) {
-            logger.error(readStatus.localizedMessage());
+            logger.error(message);
         } else {
-            logger.warn(readStatus.localizedMessage());
+            logger.warn(message);
         }
     }
 

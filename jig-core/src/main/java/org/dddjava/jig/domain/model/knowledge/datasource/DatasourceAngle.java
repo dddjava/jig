@@ -18,7 +18,7 @@ public class DatasourceAngle {
 
     private final OutputImplementation outputImplementation;
     private final JigMethod interfaceMethod;
-    private final MyBatisStatements myBatisStatements;
+    private final CrudTables crudTables;
     private final JigMethod concreteMethod;
 
     private final CallerMethods callerMethods;
@@ -27,13 +27,20 @@ public class DatasourceAngle {
         this.interfaceMethod = outputImplementation.outputPortGateway();
         this.outputImplementation = outputImplementation;
         this.callerMethods = callerMethods;
-        this.myBatisStatements = allMyBatisStatements.filterRelationOn(myBatisStatement -> {
+        var myBatisStatements = allMyBatisStatements.filterRelationOn(myBatisStatement -> {
             MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
             // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
             return outputImplementation.usingMethods()
                     .containsAny(methodCall -> methodCall.methodOwner().fqn().equals(myBatisStatementId.namespace())
                             && methodCall.methodName().equals(myBatisStatementId.id()));
         });
+        this.crudTables = new CrudTables(
+                myBatisStatements.tables(SqlType.INSERT),
+                myBatisStatements.tables(SqlType.SELECT),
+                myBatisStatements.tables(SqlType.UPDATE),
+                myBatisStatements.tables(SqlType.DELETE)
+        );
+
         this.concreteMethod = outputImplementation.concreteMethod();
     }
 
@@ -62,19 +69,19 @@ public class DatasourceAngle {
     }
 
     public String insertTables() {
-        return myBatisStatements.tables(SqlType.INSERT).asText();
+        return crudTables.create().asText();
     }
 
     public String selectTables() {
-        return myBatisStatements.tables(SqlType.SELECT).asText();
+        return crudTables.read().asText();
     }
 
     public String updateTables() {
-        return myBatisStatements.tables(SqlType.UPDATE).asText();
+        return crudTables.update().asText();
     }
 
     public String deleteTables() {
-        return myBatisStatements.tables(SqlType.DELETE).asText();
+        return crudTables.delete().asText();
     }
 
     public JigMethod concreteMethod() {

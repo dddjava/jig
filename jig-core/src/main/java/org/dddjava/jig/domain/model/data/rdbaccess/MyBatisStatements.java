@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
+import org.dddjava.jig.domain.model.knowledge.datasource.CrudTables;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
@@ -39,5 +41,14 @@ public record MyBatisStatements(List<MyBatisStatement> list) {
 
     public boolean isEmpty() {
         return list.isEmpty();
+    }
+
+    public CrudTables crudTables() {
+        return new CrudTables(
+                tables(SqlType.INSERT),
+                tables(SqlType.SELECT),
+                tables(SqlType.UPDATE),
+                tables(SqlType.DELETE)
+        );
     }
 }

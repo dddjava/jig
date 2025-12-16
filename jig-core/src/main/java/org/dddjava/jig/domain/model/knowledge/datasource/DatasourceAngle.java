@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -34,12 +33,7 @@ public class DatasourceAngle {
                     .containsAny(methodCall -> methodCall.methodOwner().fqn().equals(myBatisStatementId.namespace())
                             && methodCall.methodName().equals(myBatisStatementId.id()));
         });
-        this.crudTables = new CrudTables(
-                myBatisStatements.tables(SqlType.INSERT),
-                myBatisStatements.tables(SqlType.SELECT),
-                myBatisStatements.tables(SqlType.UPDATE),
-                myBatisStatements.tables(SqlType.DELETE)
-        );
+        this.crudTables = myBatisStatements.crudTables();
 
         this.concreteMethod = outputImplementation.concreteMethod();
     }

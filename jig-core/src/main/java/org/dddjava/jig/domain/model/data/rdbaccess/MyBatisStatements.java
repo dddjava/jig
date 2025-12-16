@@ -15,7 +15,7 @@ public record MyBatisStatements(List<MyBatisStatement> list) {
         this(Collections.emptyList());
     }
 
-    public Tables tables(SqlType sqlType) {
+    private Tables tables(SqlType sqlType) {
         return list.stream()
                 .filter(myBatisStatement -> myBatisStatement.sqlType() == sqlType)
                 .map(MyBatisStatement::tables)

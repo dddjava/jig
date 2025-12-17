@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
-import org.dddjava.jig.domain.model.knowledge.datasource.CrudTables;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;

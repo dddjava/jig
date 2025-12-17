@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
+import org.dddjava.jig.domain.model.data.rdbaccess.CrudTables;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;

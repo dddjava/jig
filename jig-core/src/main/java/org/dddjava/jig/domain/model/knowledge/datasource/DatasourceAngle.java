@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.CrudTables;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -23,19 +21,11 @@ public class DatasourceAngle {
 
     private final CallerMethods callerMethods;
 
-    public DatasourceAngle(OutputImplementation outputImplementation, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
+    public DatasourceAngle(OutputImplementation outputImplementation, CrudTables crudTables, CallerMethods callerMethods) {
         this.interfaceMethod = outputImplementation.outputPortGateway();
         this.outputImplementation = outputImplementation;
         this.callerMethods = callerMethods;
-        var myBatisStatements = allMyBatisStatements.filterRelationOn(myBatisStatement -> {
-            MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
-            // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-            return outputImplementation.usingMethods()
-                    .containsAny(methodCall -> methodCall.methodOwner().fqn().equals(myBatisStatementId.namespace())
-                            && methodCall.methodName().equals(myBatisStatementId.id()));
-        });
-        this.crudTables = myBatisStatements.crudTables();
-
+        this.crudTables = crudTables;
         this.concreteMethod = outputImplementation.concreteMethod();
     }
 

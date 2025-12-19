@@ -15,14 +15,12 @@ import java.util.stream.Stream;
 public class DatasourceAngle {
 
     private final OutputImplementation outputImplementation;
-    private final JigMethod interfaceMethod;
     private final CrudTables crudTables;
     private final JigMethod concreteMethod;
 
     private final CallerMethods callerMethods;
 
     public DatasourceAngle(OutputImplementation outputImplementation, CrudTables crudTables, CallerMethods callerMethods) {
-        this.interfaceMethod = outputImplementation.outputPortGateway();
         this.outputImplementation = outputImplementation;
         this.callerMethods = callerMethods;
         this.crudTables = crudTables;
@@ -34,19 +32,19 @@ public class DatasourceAngle {
     }
 
     public JigMethod interfaceMethod() {
-        return interfaceMethod;
+        return outputImplementation.outputPortGateway();
     }
 
     public String nameAndArgumentSimpleText() {
-        return interfaceMethod.nameAndArgumentSimpleText();
+        return interfaceMethod().nameAndArgumentSimpleText();
     }
 
     public JigTypeReference methodReturnTypeReference() {
-        return interfaceMethod.methodReturnTypeReference();
+        return interfaceMethod().methodReturnTypeReference();
     }
 
     public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
-        return interfaceMethod.methodArgumentTypeReferenceStream();
+        return interfaceMethod().methodArgumentTypeReferenceStream();
     }
 
     public int cyclomaticComplexity() {

@@ -16,15 +16,12 @@ public class DatasourceAngle {
 
     private final OutputImplementation outputImplementation;
     private final CrudTables crudTables;
-    private final JigMethod concreteMethod;
-
     private final CallerMethods callerMethods;
 
     public DatasourceAngle(OutputImplementation outputImplementation, CrudTables crudTables, CallerMethods callerMethods) {
         this.outputImplementation = outputImplementation;
         this.callerMethods = callerMethods;
         this.crudTables = crudTables;
-        this.concreteMethod = outputImplementation.concreteMethod();
     }
 
     public TypeId declaringType() {
@@ -68,7 +65,7 @@ public class DatasourceAngle {
     }
 
     public JigMethod concreteMethod() {
-        return concreteMethod;
+        return outputImplementation.concreteMethod();
     }
 
     public CallerMethods callerMethods() {

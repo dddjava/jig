@@ -25,6 +25,14 @@ public class TestSupport {
 
     public static URI defaultPackageClassURI() {
         try {
+            // MEMO DefaultPackageClass を文字列でなくクラスの参照にしたいが、
+            // デフォルトパッケージのクラスはデフォルトパッケージ外から参照できないため、文字列での記述としている。
+            // importではnamed packageしか使用できないことはJSLに記述があるが、
+            // クラスリテラルなどでunnamed packageのクラスがコンパイルエラーになると言う記述は見当たらない（Java6などにはあったようだが）
+            // JEP463やJava Language Updateとかに classes in the unnamed package cannot be referenced explicitly by classes in named packages. などの記述はある
+            // https://openjdk.org/jeps/463
+            // デフォルトパッケージは特殊用途（小さかったり一時的だったり初期段階だったり）の利便性のためという位置付け。
+            // https://docs.oracle.com/javase/specs/jls/se21/html/jls-7.html#jls-7.4.2
             var resource = TestSupport.class.getResource("/DefaultPackageClass.class");
             return Objects.requireNonNull(resource).toURI().resolve("./");
         } catch (URISyntaxException e) {

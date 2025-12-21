@@ -119,6 +119,6 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     }
 
     public boolean isCompilerGenerated() {
-        return jigTypeHeader().isCompilerGenerated();
+        return jigTypeHeader.isCompilerGenerated();
     }
 }

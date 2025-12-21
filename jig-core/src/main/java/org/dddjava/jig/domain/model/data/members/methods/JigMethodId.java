@@ -63,6 +63,6 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
 
     @Override
     public int compareTo(JigMethodId o) {
-        return this.value.compareTo(o.value());
+        return this.value.compareTo(o.value);
     }
 }

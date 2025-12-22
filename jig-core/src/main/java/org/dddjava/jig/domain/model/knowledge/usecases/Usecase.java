@@ -75,7 +75,7 @@ public record Usecase(ServiceMethod serviceMethod, Gateways usingGateways,
     }
 
     public JigMethodId jigMethodId() {
-        return serviceMethod().method().jigMethodId();
+        return serviceMethod.method().jigMethodId();
     }
 
     public String usecaseIdentifier() {

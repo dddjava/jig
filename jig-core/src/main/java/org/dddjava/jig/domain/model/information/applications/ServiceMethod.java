@@ -41,12 +41,12 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     }
 
     public TypeId declaringType() {
-        return method().declaringType();
+        return method.declaringType();
     }
 
     public Optional<TypeId> primaryType() {
         // 戻り値型が主要な関心
-        TypeId typeId = method().methodReturnTypeReference().id();
+        TypeId typeId = method.methodReturnTypeReference().id();
         if (typeId.isVoid()) return Optional.empty();
         return Optional.of(typeId);
     }
@@ -60,6 +60,6 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
     }
 
     public TypeIds usingTypes() {
-        return method().usingTypes();
+        return method.usingTypes();
     }
 }

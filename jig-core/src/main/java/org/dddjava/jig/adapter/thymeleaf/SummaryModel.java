@@ -13,6 +13,7 @@ public record SummaryModel(JigTypes jigTypes, JigPackages jigPackages, Map<Strin
 
     public static final String ENUM_MODEL_MAP_KEY = "enumModelMap";
     public static final String RELATIONSHIPS_KEY = "relationships";
+    public static final String MERMAID_DIAGRAM_KEY = "mermaidDiagram";
 
     static SummaryModel of(JigTypes jigTypes, JigPackages jigPackages) {
         return new SummaryModel(jigTypes, jigPackages, Map.of());
@@ -25,12 +26,12 @@ public record SummaryModel(JigTypes jigTypes, JigPackages jigPackages, Map<Strin
 
     static SummaryModel withMermaidDiagram(JigTypes jigTypes, JigPackages packages, UsecaseMermaidDiagram usecaseMermaidDiagram) {
         return of(jigTypes, packages)
-                .withAdditionalMap(Map.of("mermaidDiagram", usecaseMermaidDiagram));
+                .withAdditionalMap(Map.of(MERMAID_DIAGRAM_KEY, usecaseMermaidDiagram));
     }
 
     static SummaryModel withMermaidDiagram(JigTypes jigTypes, JigPackages packages, EntrypointMermaidDiagram entrypointMermaidDiagram) {
         return of(jigTypes, packages)
-                .withAdditionalMap(Map.of("mermaidDiagram", entrypointMermaidDiagram));
+                .withAdditionalMap(Map.of(MERMAID_DIAGRAM_KEY, entrypointMermaidDiagram));
     }
 
     static SummaryModel forDomainSummary(JigTypes jigTypes, JigPackages packages, CoreTypesAndRelations coreTypesAndRelations, EnumModels enumModels) {

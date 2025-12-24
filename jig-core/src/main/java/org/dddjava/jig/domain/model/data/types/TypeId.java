@@ -78,7 +78,8 @@ public record TypeId(String value) implements Comparable<TypeId> {
         String text = asSimpleText();
         // $を含んでいた場合、一番後ろの$以降を単純名とする。
         // 一番後ろなのはクラスは多重ネストが可能なため。
-        // class Hoge$Fuga {} のようなクラスの記述は可能でこの場合は Fuga となってしまうが、慣習的にも作らないのでこのケースは考慮しない。
+        // class Hoge$Fuga {} のようなクラスの記述は可能でこの場合は Fuga となってしまうが、
+        // バイトコード上は区別できず、慣習的にも作らないのでこのケースは考慮しない。
         int lastDollarIndex = text.lastIndexOf('$');
         return (lastDollarIndex != -1) ? text.substring(lastDollarIndex + 1) : text;
     }

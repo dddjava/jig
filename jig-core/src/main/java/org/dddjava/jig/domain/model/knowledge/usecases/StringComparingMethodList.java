@@ -17,6 +17,13 @@ import java.util.stream.Stream;
  */
 public record StringComparingMethodList(List<JigMethod> methods) {
 
+    // String#equals(Object)
+    private static final JigMethodId EQUALS = JigMethodId.from(
+            TypeId.STRING,
+            "equals",
+            List.of(TypeId.OBJECT)
+    );
+
     public static StringComparingMethodList from(InputAdapters inputAdapters, ServiceMethods serviceMethods) {
         Stream<JigMethod> targetMethodStream = Stream.concat(
                 inputAdapters.listEntrypoint().stream()
@@ -28,14 +35,8 @@ public record StringComparingMethodList(List<JigMethod> methods) {
     }
 
     static StringComparingMethodList from(Stream<JigMethod> target) {
-        // String#equals(Object)
-        JigMethodId jigMethodId = JigMethodId.from(
-                TypeId.STRING,
-                "equals",
-                List.of(TypeId.OBJECT)
-        );
         return new StringComparingMethodList(target
-                .filter(jigMethod -> jigMethod.isCall(jigMethodId))
+                .filter(jigMethod -> jigMethod.isCall(EQUALS))
                 .toList());
     }
 

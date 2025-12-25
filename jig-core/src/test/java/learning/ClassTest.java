@@ -50,4 +50,18 @@ public class ClassTest {
 
         assertEquals("learning", name);
     }
+
+    @Test
+    void getName_Nested_Array() {
+        var name = ClassTest.NestedClass[].class.getName();
+
+        assertEquals("[Llearning.ClassTest$NestedClass;", name);
+    }
+
+    @Test
+    void getTypeName_Nested_Array() {
+        var name = ClassTest.NestedClass[].class.getTypeName();
+
+        assertEquals("learning.ClassTest$NestedClass", name);
+    }
 }

@@ -62,6 +62,6 @@ public class ClassTest {
     void getTypeName_Nested_Array() {
         var name = ClassTest.NestedClass[].class.getTypeName();
 
-        assertEquals("learning.ClassTest$NestedClass", name);
+        assertEquals("learning.ClassTest$NestedClass[]", name);
     }
 }

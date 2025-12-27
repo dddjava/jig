@@ -17,15 +17,6 @@ public record TypeId(String value) implements Comparable<TypeId> {
     public static final TypeId OBJECT = TypeId.valueOf("java.lang.Object");
     public static final TypeId ENUM = TypeId.valueOf("java.lang.Enum");
     public static final TypeId RECORD = TypeId.valueOf("java.lang.Record");
-    // 数値
-    public static final TypeId INT_PRIMITIVE = TypeId.valueOf("int");
-    public static final TypeId LONG_PRIMITIVE = TypeId.valueOf("long");
-    public static final TypeId INTEGER = TypeId.valueOf("java.lang.Integer");
-    public static final TypeId LONG = TypeId.valueOf("java.lang.Long");
-    public static final TypeId BIG_DECIMAL = TypeId.valueOf("java.math.BigDecimal");
-    // コレクション
-    public static final TypeId LIST = TypeId.valueOf("java.util.List");
-    public static final TypeId SET = TypeId.valueOf("java.util.Set");
     // 文字列
     public static final TypeId STRING = TypeId.valueOf("java.lang.String");
     // 日付

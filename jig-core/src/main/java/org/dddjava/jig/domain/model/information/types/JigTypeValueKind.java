@@ -18,6 +18,16 @@ public enum JigTypeValueKind {
     コレクション,
     不明;
 
+    // 数値
+    private static final TypeId INT_PRIMITIVE = TypeId.valueOf("int");
+    private static final TypeId LONG_PRIMITIVE = TypeId.valueOf("long");
+    private static final TypeId INTEGER = TypeId.valueOf("java.lang.Integer");
+    private static final TypeId LONG = TypeId.valueOf("java.lang.Long");
+    private static final TypeId BIG_DECIMAL = TypeId.valueOf("java.math.BigDecimal");
+    // コレクション
+    private static final TypeId LIST = TypeId.valueOf("java.util.List");
+    private static final TypeId SET = TypeId.valueOf("java.util.Set");
+
     public static JigTypeValueKind from(JigType jigType) {
         TypeKind typeKind = jigType.typeKind();
         if (typeKind.isCategory()) {
@@ -25,17 +35,17 @@ public enum JigTypeValueKind {
         }
 
         JigFields instanceJigFields = jigType.instanceJigFields();
-        if (matchFieldType(instanceJigFields, TypeId.LIST) || matchFieldType(instanceJigFields, TypeId.SET)) {
+        if (matchFieldType(instanceJigFields, LIST) || matchFieldType(instanceJigFields, SET)) {
             return コレクション;
         }
         if (matchFieldType(instanceJigFields, TypeId.STRING)) {
             return 文字列;
         }
-        if (matchFieldType(instanceJigFields, TypeId.BIG_DECIMAL)
-                || matchFieldType(instanceJigFields, TypeId.INTEGER)
-                || matchFieldType(instanceJigFields, TypeId.LONG)
-                || matchFieldType(instanceJigFields, TypeId.INT_PRIMITIVE)
-                || matchFieldType(instanceJigFields, TypeId.LONG_PRIMITIVE)) {
+        if (matchFieldType(instanceJigFields, BIG_DECIMAL)
+                || matchFieldType(instanceJigFields, INTEGER)
+                || matchFieldType(instanceJigFields, LONG)
+                || matchFieldType(instanceJigFields, INT_PRIMITIVE)
+                || matchFieldType(instanceJigFields, LONG_PRIMITIVE)) {
             return 数値;
         }
         if (matchFieldType(instanceJigFields, TypeId.LOCAL_DATE)) {

@@ -65,6 +65,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(enumDeclaration, arg);
 
         // enum は追加でjavaファイルから情報を読み取る
+        // TODO JavaparserMemberVisitorに移動
         List<EnumConstant> constants = enumDeclaration.getEntries().stream()
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
                 .toList();

@@ -45,10 +45,14 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     @Override
     public void visit(PackageDeclaration packageDeclaration, GlossaryRepository arg) {
+        // package は今のところ使用予定はない
+        super.visit(packageDeclaration, arg);
     }
 
     @Override
     public void visit(ImportDeclaration importDeclaration, GlossaryRepository arg) {
+        // import は今のところ使用予定はない
+        super.visit(importDeclaration, arg);
     }
 
     @Override
@@ -60,6 +64,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     public void visit(EnumDeclaration enumDeclaration, GlossaryRepository arg) {
         TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(enumDeclaration, arg);
 
+        // enum は追加でjavaファイルから情報を読み取る
         List<EnumConstant> constants = enumDeclaration.getEntries().stream()
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
                 .toList();
@@ -81,16 +86,19 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     @Override
     public void visit(LocalRecordDeclarationStmt localRecordDeclarationStmt, GlossaryRepository arg) {
-        // メソッド内のRecordに対応する必要がある場合
+        // ローカルレコード（メソッド内のRecord）はJIGの関心ある構造でないので対応予定はない
         super.visit(localRecordDeclarationStmt, arg);
     }
 
     @Override
     public void visit(LocalClassDeclarationStmt localClassDeclarationStmt, GlossaryRepository arg) {
-        // メソッド内のclassに対応する必要がある場合
+        // ローカルクラス（メソッド内のclass）はJIGの関心ある構造でないので対応予定はない
         super.visit(localClassDeclarationStmt, arg);
     }
 
+    /**
+     * class/interface/enum/record の共通処理
+     */
     private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeId visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
         var fqn = packageName + node.getNameAsString();
 

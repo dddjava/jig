@@ -26,7 +26,7 @@ import java.util.Properties;
  * 4. デフォルト値（JigPropertyで定義）
  */
 public class JigPropertyLoader {
-    static Logger logger = LoggerFactory.getLogger(JigPropertyLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(JigPropertyLoader.class);
 
     private final JigProperties primaryProperty;
     private JigProperties jigProperties;

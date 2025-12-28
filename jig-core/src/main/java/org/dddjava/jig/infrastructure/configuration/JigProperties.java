@@ -16,7 +16,7 @@ import java.util.List;
  * 実行時に設定するプロパティ。
  */
 public class JigProperties {
-    static Logger logger = LoggerFactory.getLogger(JigProperties.class);
+    private static final Logger logger = LoggerFactory.getLogger(JigProperties.class);
 
     /**
      * 主要: ドメイン（主として扱うクラス名）のパターン

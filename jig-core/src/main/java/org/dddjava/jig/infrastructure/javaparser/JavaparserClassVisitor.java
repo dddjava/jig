@@ -31,7 +31,7 @@ import java.util.Optional;
  * 主な役割はコメントを読むことだが、enumの情報はクラスファイルには残っていないのでここで取得している。
  */
 class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
-    static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
+    private static final Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
     @Nullable

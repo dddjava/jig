@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JigPropertyHolder {
-    static Logger logger = LoggerFactory.getLogger(JigPropertyHolder.class);
+    private static final Logger logger = LoggerFactory.getLogger(JigPropertyHolder.class);
     private static final JigPropertyHolder INSTANCE = new JigPropertyHolder();
 
     public static JigPropertyHolder getInstance() {

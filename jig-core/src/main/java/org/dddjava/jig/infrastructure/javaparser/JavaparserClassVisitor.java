@@ -4,7 +4,6 @@ import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
@@ -14,7 +13,6 @@ import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.application.GlossaryRepository;
-import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
@@ -64,20 +62,12 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     public void visit(EnumDeclaration enumDeclaration, GlossaryRepository arg) {
         TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(enumDeclaration, arg);
 
-        // enum は追加でjavaファイルから情報を読み取る
-        // TODO JavaparserMemberVisitorに移動
-        List<EnumConstant> constants = enumDeclaration.getEntries().stream()
-                .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).toList()))
-                .toList();
-        enumModel = Optional.of(new EnumModel(typeId, constants));
-        super.visit(enumDeclaration, arg);
-    }
+        // enum　固有の読み取りを行う
+        var visitor = new JavaparserEnumVisitor(typeId);
+        enumDeclaration.accept(visitor, arg);
+        enumModel = Optional.of(visitor.createEnumModel());
 
-    @Override
-    public void visit(ConstructorDeclaration constructorDeclaration, GlossaryRepository arg) {
-        // enumの時だけコンストラクタの引数名を取る
-        enumModel.ifPresent(it -> it.addConstructorArgumentNames(constructorDeclaration.getParameters().stream().map(e -> e.getName().asString()).toList()));
-        super.visit(constructorDeclaration, arg);
+        super.visit(enumDeclaration, arg);
     }
 
     @Override

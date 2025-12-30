@@ -40,7 +40,9 @@ public class EnumModel {
     }
 
     public List<String> constructorArgumentNames() {
-        return constructorParameterNameList.stream().max(Comparator.comparing(List::size))
+        return constructorParameterNameList.stream()
+                // 複数ある場合にどれを使用するか定まらないので、もっとも引数が多いものを採用する
+                .max(Comparator.comparing(List::size))
                 .orElse(List.of());
     }
 

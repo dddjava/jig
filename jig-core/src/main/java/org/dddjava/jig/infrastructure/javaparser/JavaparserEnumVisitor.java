@@ -79,9 +79,6 @@ class JavaparserEnumVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     EnumModel createEnumModel() {
-        // TODO EnumModel をイミュータブルにできる
-        var enumModel = new EnumModel(typeId, constantsList);
-        enumModel.addConstructorArgumentNames(constructorParameterNameList);
-        return enumModel;
+        return EnumModel.from(typeId, constantsList, constructorParameterNameList);
     }
 }

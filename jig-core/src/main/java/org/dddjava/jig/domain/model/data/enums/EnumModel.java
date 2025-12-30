@@ -23,6 +23,12 @@ public class EnumModel {
         this.enumConstants = enumConstants;
     }
 
+    public static EnumModel from(TypeId typeId, List<EnumConstant> constantsList, List<String> constructorParameterNameList) {
+        var enumModel = new EnumModel(typeId, constantsList);
+        enumModel.addConstructorArgumentNames(constructorParameterNameList);
+        return enumModel;
+    }
+
     public TypeId typeId() {
         return typeId;
     }

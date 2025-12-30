@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.data.enums;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,17 +15,16 @@ public class EnumModel {
      * 列挙定数
      */
     private final List<EnumConstant> enumConstants;
-    private final List<List<String>> constructorArgumentNamesList = new ArrayList<>();
+    private final List<List<String>> constructorParameterNameList;
 
-    public EnumModel(TypeId typeId, List<EnumConstant> enumConstants) {
+    public EnumModel(TypeId typeId, List<EnumConstant> enumConstants, List<List<String>> constructorParameterNameList) {
         this.typeId = typeId;
         this.enumConstants = enumConstants;
+        this.constructorParameterNameList = constructorParameterNameList;
     }
 
-    public static EnumModel from(TypeId typeId, List<EnumConstant> constantsList, List<String> constructorParameterNameList) {
-        var enumModel = new EnumModel(typeId, constantsList);
-        enumModel.constructorArgumentNamesList.add(constructorParameterNameList);
-        return enumModel;
+    public static EnumModel from(TypeId typeId, List<EnumConstant> constantsList, List<List<String>> constructorParameterNameList) {
+        return new EnumModel(typeId, constantsList, constructorParameterNameList);
     }
 
     public TypeId typeId() {
@@ -42,7 +40,7 @@ public class EnumModel {
     }
 
     public List<String> constructorArgumentNames() {
-        return constructorArgumentNamesList.stream().max(Comparator.comparing(List::size))
+        return constructorParameterNameList.stream().max(Comparator.comparing(List::size))
                 .orElse(List.of());
     }
 

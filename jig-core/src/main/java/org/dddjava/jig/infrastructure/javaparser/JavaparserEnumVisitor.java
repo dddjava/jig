@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * enum 固有の情報を読み取るVisitor
@@ -25,7 +26,12 @@ class JavaparserEnumVisitor extends VoidVisitorAdapter<GlossaryRepository> {
      * 列挙定数のリスト
      */
     private final ArrayList<EnumConstant> constantsList = new ArrayList<>();
-    private final ArrayList<String> constructorParameterNameList = new ArrayList<>();
+
+    /**
+     * コンストラクタ引数名のリスト
+     * コンストラクタごとに分けるため二重リストにしている
+     */
+    private final ArrayList<List<String>> constructorParameterNameList = new ArrayList<>();
 
     public JavaparserEnumVisitor(TypeId typeId) {
         this.typeId = typeId;
@@ -43,8 +49,7 @@ class JavaparserEnumVisitor extends VoidVisitorAdapter<GlossaryRepository> {
      */
     @Override
     public void visit(ConstructorDeclaration constructorDeclaration, GlossaryRepository arg) {
-        // TODO 複数のコンストラクタがある場合に対応できていない
-        constructorParameterNameList.addAll(constructorDeclaration.getParameters().stream()
+        constructorParameterNameList.add(constructorDeclaration.getParameters().stream()
                 .map(e -> e.getName().asString())
                 .toList());
         super.visit(constructorDeclaration, arg);

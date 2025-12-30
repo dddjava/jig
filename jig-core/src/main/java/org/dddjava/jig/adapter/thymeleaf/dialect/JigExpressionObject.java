@@ -172,7 +172,7 @@ class JigExpressionObject {
         }
         logger.warn("cannot find enum model for {}. Try to create empty model.", typeId.fqn());
         // 落ちないように
-        return new EnumModel(typeId, List.of());
+        return new EnumModel(typeId, List.of(), List.of());
     }
 
     public Optional<String> relationDiagram(JigPackage jigPackage) {

@@ -25,7 +25,7 @@
                 <thead>
                 <tr>
                     <th>列挙定数名</th>
-                    <th th:each="parameterName : ${enumModel.constructorArgumentNames()}" th:text="${parameterName}">パラメータ</th>
+                    <th th:each="parameterName : ${enumModel.constructorParameterNames()}" th:text="${parameterName}">パラメータ</th>
                 </tr>
                 </thead>
                 <tbody>

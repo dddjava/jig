@@ -46,10 +46,7 @@ public class EnumModel {
                 .orElse(List.of());
     }
 
-    public boolean hasConstructorArguments() {
-        return enumConstants.stream()
-                .mapToInt(enumConstant -> enumConstant.argumentExpressions().size())
-                .max()
-                .orElse(0) > 0;
+    public boolean hasConstructorParameter() {
+        return !constructorParameterNames().isEmpty();
     }
 }

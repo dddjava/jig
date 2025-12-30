@@ -25,7 +25,7 @@ public class EnumModel {
 
     public static EnumModel from(TypeId typeId, List<EnumConstant> constantsList, List<String> constructorParameterNameList) {
         var enumModel = new EnumModel(typeId, constantsList);
-        enumModel.addConstructorArgumentNames(constructorParameterNameList);
+        enumModel.constructorArgumentNamesList.add(constructorParameterNameList);
         return enumModel;
     }
 
@@ -44,10 +44,6 @@ public class EnumModel {
     public List<String> constructorArgumentNames() {
         return constructorArgumentNamesList.stream().max(Comparator.comparing(List::size))
                 .orElse(List.of());
-    }
-
-    public void addConstructorArgumentNames(List<String> argumentNames) {
-        constructorArgumentNamesList.add(argumentNames);
     }
 
     public boolean hasConstructorArguments() {

@@ -134,7 +134,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().nameAndArgumentSimpleText();
     }
 
-    public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
+    public Stream<JigTypeReference> parameterTypeStream() {
         return header().parameterTypeList().stream();
     }
 

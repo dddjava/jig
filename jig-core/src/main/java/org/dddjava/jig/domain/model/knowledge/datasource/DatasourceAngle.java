@@ -41,7 +41,7 @@ public class DatasourceAngle {
     }
 
     public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {
-        return interfaceMethod().methodArgumentTypeReferenceStream();
+        return interfaceMethod().parameterTypeStream();
     }
 
     public int cyclomaticComplexity() {

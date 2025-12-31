@@ -175,7 +175,7 @@ public class ListAdapter {
                                 jigDocumentContext.typeTerm(item.serviceMethod().method().methodReturnTypeReference().id()).title()
                         ),
                         ReportItem.ofString("メソッド引数の型の別名", item ->
-                                item.serviceMethod().method().methodArgumentTypeReferenceStream()
+                                item.serviceMethod().method().parameterTypeStream()
                                         .map(JigTypeReference::id)
                                         .map(jigDocumentContext::typeTerm)
                                         .map(Term::title)

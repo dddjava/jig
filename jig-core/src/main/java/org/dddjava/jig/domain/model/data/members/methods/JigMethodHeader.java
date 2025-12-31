@@ -24,11 +24,11 @@ public record JigMethodHeader(JigMethodId id,
                                        JigMemberVisibility jigMemberVisibility,
                                        Collection<JigAnnotationReference> declarationAnnotations,
                                        JigTypeReference returnType,
-                                       List<JigTypeReference> argumentList,
+                                       List<JigTypeReference> parameterList,
                                        Collection<JigTypeReference> throwTypes,
                                        EnumSet<JigMethodFlag> flags) {
         return new JigMethodHeader(id, ownership,
-                new JigMethodAttribute(jigMemberVisibility, declarationAnnotations, returnType, argumentList, throwTypes, flags));
+                new JigMethodAttribute(jigMemberVisibility, declarationAnnotations, returnType, parameterList, throwTypes, flags));
     }
 
     public String name() {

@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+/**
+ * メンバの属性
+ *
+ * 仮引数型は順番に意味があるので List で扱う。
+ */
 record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
                           Collection<JigAnnotationReference> declarationAnnotations,
                           JigTypeReference returnType,

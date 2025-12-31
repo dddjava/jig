@@ -126,7 +126,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return usingMethods().contains(jigMethodId);
     }
 
-    public JigTypeReference methodReturnTypeReference() {
+    public JigTypeReference returnType() {
         return header().returnType();
     }
 

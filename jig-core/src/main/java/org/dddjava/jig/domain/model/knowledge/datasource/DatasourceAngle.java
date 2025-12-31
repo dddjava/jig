@@ -37,7 +37,7 @@ public class DatasourceAngle {
     }
 
     public JigTypeReference methodReturnTypeReference() {
-        return interfaceMethod().methodReturnTypeReference();
+        return interfaceMethod().returnType();
     }
 
     public Stream<JigTypeReference> methodArgumentTypeReferenceStream() {

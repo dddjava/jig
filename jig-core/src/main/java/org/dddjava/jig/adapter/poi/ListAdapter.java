@@ -153,7 +153,7 @@ public class ListAdapter {
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.typeId().asSimpleText()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.jigMethod().nameAndArgumentSimpleText()),
-                        ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().methodReturnTypeReference().simpleName()),
+                        ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().returnType().simpleName()),
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().jigFieldIds().stream()
                                 .map(JigFieldId::declaringTypeId)
@@ -167,12 +167,12 @@ public class ListAdapter {
                         ReportItem.ofString("パッケージ名", item -> item.serviceMethod().declaringType().packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
                         ReportItem.ofString("メソッドシグネチャ", item -> item.serviceMethod().method().nameAndArgumentSimpleText()),
-                        ReportItem.ofString("メソッド戻り値の型", item -> item.serviceMethod().method().methodReturnTypeReference().simpleName()),
+                        ReportItem.ofString("メソッド戻り値の型", item -> item.serviceMethod().method().returnType().simpleName()),
                         ReportItem.ofString("イベントハンドラ", item -> markIfTrue(item.usingFromController())),
                         ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.serviceMethod().declaringType()).title()),
                         ReportItem.ofString("メソッド別名", item -> item.serviceMethod().method().aliasTextOrBlank()),
                         ReportItem.ofString("メソッド戻り値の型の別名", item ->
-                                jigDocumentContext.typeTerm(item.serviceMethod().method().methodReturnTypeReference().id()).title()
+                                jigDocumentContext.typeTerm(item.serviceMethod().method().returnType().id()).title()
                         ),
                         ReportItem.ofString("メソッド引数の型の別名", item ->
                                 item.serviceMethod().method().parameterTypeStream()

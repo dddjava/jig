@@ -50,6 +50,6 @@ public record MethodSmell(JigMethod method,
     }
 
     public TypeId methodReturnType() {
-        return method.methodReturnTypeReference().id();
+        return method.returnType().id();
     }
 }

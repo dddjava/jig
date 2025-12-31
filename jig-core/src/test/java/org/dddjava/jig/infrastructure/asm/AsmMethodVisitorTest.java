@@ -264,7 +264,7 @@ class AsmMethodVisitorTest {
     void 戻り値のジェネリクスが取得できる() {
         JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値のジェネリクスが取得できる");
 
-        assertEquals("List<String>", actual.methodReturnTypeReference().simpleNameWithGenerics());
+        assertEquals("List<String>", actual.returnType().simpleNameWithGenerics());
     }
 
     @Test

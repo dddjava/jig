@@ -84,7 +84,7 @@ public record MethodInsight(JigMethod jigMethod) {
             return false;
         }
 
-        return jigMethod.methodReturnTypeReference().id().isPrimitive()
+        return jigMethod.returnType().id().isPrimitive()
                 || jigMethod.parameterTypeStream()
                 .anyMatch(jigTypeReference -> jigTypeReference.id().isPrimitive());
     }
@@ -103,10 +103,10 @@ public record MethodInsight(JigMethod jigMethod) {
     }
 
     public boolean smellOfReturnsBoolean() {
-        return jigMethod.methodReturnTypeReference().id().isBoolean();
+        return jigMethod.returnType().id().isBoolean();
     }
 
     public boolean smellOfReturnsVoid() {
-        return jigMethod.methodReturnTypeReference().id().isVoid();
+        return jigMethod.returnType().id().isVoid();
     }
 }

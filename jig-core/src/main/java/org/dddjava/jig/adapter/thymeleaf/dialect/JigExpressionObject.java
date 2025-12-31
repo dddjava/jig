@@ -96,8 +96,8 @@ class JigExpressionObject {
         return linkText(jigMethod.jigMethodDeclaration().header().returnType());
     }
 
-    public Iterator<String> methodArgumentLinkTexts(JigMethod jigMethod) {
-        return jigMethod.jigMethodDeclaration().header().argumentList().stream()
+    public Iterator<String> methodParameterLinkTexts(JigMethod jigMethod) {
+        return jigMethod.jigMethodDeclaration().header().parameterTypeList().stream()
                 .map(this::linkText)
                 .iterator();
     }

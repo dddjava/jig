@@ -70,7 +70,7 @@ public record JigMethodHeader(JigMethodId id,
         return jigMethodAttribute.flags().contains(JigMethodFlag.LAMBDA_SUPPORT);
     }
 
-    public List<JigTypeReference> argumentList() {
+    public List<JigTypeReference> parameterTypeList() {
         return jigMethodAttribute.parameterTypeList();
     }
 

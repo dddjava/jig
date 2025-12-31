@@ -30,7 +30,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     }
 
     public Stream<JigTypeReference> argumentStream() {
-        return header.argumentList().stream();
+        return header.parameterTypeList().stream();
     }
 
     public TypeId declaringTypeId() {

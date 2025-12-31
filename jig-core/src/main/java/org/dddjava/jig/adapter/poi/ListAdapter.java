@@ -113,7 +113,7 @@ public class ListAdapter {
                         ReportItem.ofNumber("使用箇所数", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).size()),
                         ReportItem.ofString("使用箇所", item -> allClassRelations.collectTypeIdWhichRelationTo(item.id()).asSimpleText()),
                         ReportItem.ofNumber("メソッド数", item -> item.instanceJigMethods().list().size()),
-                        ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::nameArgumentsReturnSimpleText).sorted().collect(STREAM_COLLECTOR))
+                        ReportItem.ofString("メソッド一覧", item -> item.instanceJigMethods().stream().map(JigMethod::simpleMethodDeclarationText).sorted().collect(STREAM_COLLECTOR))
                 ), coreDomainJigTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.typeId().packageId().asText()),
@@ -127,7 +127,7 @@ public class ListAdapter {
                 new ReportSheet<>("注意メソッド", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.method().declaringType().packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.method().declaringType().asSimpleText()),
-                        ReportItem.ofString("メソッドシグネチャ", item -> item.method().nameAndArgumentSimpleText()),
+                        ReportItem.ofString("メソッドシグネチャ", item -> item.method().simpleMethodSignatureText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnType().asSimpleText()),
                         ReportItem.ofString("クラス別名", item -> item.declaringJigType().label()),
                         ReportItem.ofString("メンバを使用していない", item -> markIfTrue(item.notUseMember())),
@@ -152,7 +152,7 @@ public class ListAdapter {
                 new ReportSheet<>("CONTROLLER", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.typeId().asSimpleText()),
-                        ReportItem.ofString("メソッドシグネチャ", item -> item.jigMethod().nameAndArgumentSimpleText()),
+                        ReportItem.ofString("メソッドシグネチャ", item -> item.jigMethod().simpleMethodSignatureText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.jigMethod().returnType().simpleName()),
                         ReportItem.ofString("クラス別名", item -> item.jigType().label()),
                         ReportItem.ofString("使用しているフィールドの型", item -> item.jigMethod().usingFields().jigFieldIds().stream()
@@ -166,7 +166,7 @@ public class ListAdapter {
                 new ReportSheet<>("SERVICE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.serviceMethod().declaringType().packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
-                        ReportItem.ofString("メソッドシグネチャ", item -> item.serviceMethod().method().nameAndArgumentSimpleText()),
+                        ReportItem.ofString("メソッドシグネチャ", item -> item.serviceMethod().method().simpleMethodSignatureText()),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.serviceMethod().method().returnType().simpleName()),
                         ReportItem.ofString("イベントハンドラ", item -> markIfTrue(item.usingFromController())),
                         ReportItem.ofString("クラス別名", item -> jigDocumentContext.typeTerm(item.serviceMethod().declaringType()).title()),
@@ -189,7 +189,7 @@ public class ListAdapter {
                         ReportItem.ofNumber("循環的複雑度", item -> item.serviceMethod().method().instructions().cyclomaticComplexity()),
                         ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()
-                                .map(JigMethod::nameAndArgumentSimpleText)
+                                .map(JigMethod::simpleMethodSignatureText)
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("null使用", item -> markIfTrue(item.useNull())),
                         ReportItem.ofString("stream使用", item -> markIfTrue(item.useStream()))
@@ -197,7 +197,7 @@ public class ListAdapter {
                 new ReportSheet<>("REPOSITORY", List.of(
                         ReportItem.ofString("パッケージ名", DatasourceAngle::packageText),
                         ReportItem.ofString("クラス名", DatasourceAngle::typeSimpleName),
-                        ReportItem.ofString("メソッドシグネチャ", DatasourceAngle::nameAndArgumentSimpleText),
+                        ReportItem.ofString("メソッドシグネチャ", DatasourceAngle::simpleMethodSignatureText),
                         ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnType().simpleNameWithGenerics()),
                         ReportItem.ofString("クラス別名", DatasourceAngle::typeLabel),
                         ReportItem.ofString("メソッド戻り値の型の別名", item ->
@@ -221,7 +221,7 @@ public class ListAdapter {
                 new ReportSheet<>("文字列比較箇所", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.jigMethodDeclaration().declaringTypeId().packageId().asText()),
                         ReportItem.ofString("クラス名", item -> item.jigMethodDeclaration().declaringTypeId().asSimpleText()),
-                        ReportItem.ofString("メソッドシグネチャ", item -> item.nameAndArgumentSimpleText())
+                        ReportItem.ofString("メソッドシグネチャ", item -> item.simpleMethodSignatureText())
                 ), stringComparingMethodList.list())
         );
         return result.writeXlsx(jigDocument, jigDocumentContext.outputDirectory());

@@ -35,11 +35,17 @@ public record JigMethodHeader(JigMethodId id,
         return id.name();
     }
 
-    public String nameArgumentsReturnSimpleText() {
-        return nameAndArgumentSimpleText() + ':' + jigMethodAttribute.returnType().simpleNameWithGenerics();
+    /**
+     * メソッド定義（メソッドシグネチャと戻り値型）をシンプルな形式（クラス単純名）で返す
+     */
+    public String simpleMethodDeclarationText() {
+        return simpleMethodSignatureText() + ':' + jigMethodAttribute.returnType().simpleNameWithGenerics();
     }
 
-    public String nameAndArgumentSimpleText() {
+    /**
+     * メソッドシグネチャ（メソッド名と引数型リスト）をシンプルな形式（クラス単純名）で返す
+     */
+    public String simpleMethodSignatureText() {
         return "%s(%s)".formatted(
                 id.name(),
                 jigMethodAttribute.parameterTypeList().stream()

@@ -25,7 +25,7 @@
                 <section class="method" th:each="method : ${#jig.listRemarkableInstanceMethods(item)}">
                     <h3 th:id="${#jig.htmlIdText(method)}" th:text="${method.labelText()}">XXXメソッド</h3>
                     <div class="fully-qualified-name"
-                         th:text="${#jig.nameAndArgumentsAndReturnSimpleText(method)}">
+                         th:text="${#jig.simpleMethodDeclarationText(method)}">
                         availableRoomList(OffsetDateTime):List
                     </div>
 

@@ -29,7 +29,7 @@ public record Validations(List<Validation> values) {
                         .map(jigAnnotationReference -> {
                             return new Validation(
                                     jigType.id(),
-                                    jigMethodDeclaration.header().nameAndArgumentSimpleText(),
+                                    jigMethodDeclaration.header().simpleMethodSignatureText(),
                                     jigMethodDeclaration.header().returnType().id(),
                                     jigAnnotationReference.id(),
                                     jigAnnotationReference.asText()

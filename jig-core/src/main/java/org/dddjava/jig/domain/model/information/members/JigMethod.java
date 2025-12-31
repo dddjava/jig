@@ -118,8 +118,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().isAbstract();
     }
 
-    public String nameArgumentsReturnSimpleText() {
-        return header().nameArgumentsReturnSimpleText();
+    public String simpleMethodDeclarationText() {
+        return header().simpleMethodDeclarationText();
     }
 
     public boolean isCall(JigMethodId jigMethodId) {
@@ -130,8 +130,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().returnType();
     }
 
-    public String nameAndArgumentSimpleText() {
-        return header().nameAndArgumentSimpleText();
+    public String simpleMethodSignatureText() {
+        return header().simpleMethodSignatureText();
     }
 
     public Stream<JigTypeReference> parameterTypeStream() {

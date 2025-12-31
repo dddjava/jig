@@ -75,7 +75,7 @@ class ReadableLabelTest {
 
     JigMethod resolveMethodBySignature(JigType jigType, String methodText) {
         return jigType.allJigMethodStream()
-                .filter(jigMethod -> jigMethod.nameAndArgumentSimpleText().equals(methodText))
+                .filter(jigMethod -> jigMethod.simpleMethodSignatureText().equals(methodText))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }

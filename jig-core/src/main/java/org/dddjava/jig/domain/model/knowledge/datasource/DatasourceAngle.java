@@ -32,8 +32,8 @@ public class DatasourceAngle {
         return outputImplementation.outputPortGateway();
     }
 
-    public String nameAndArgumentSimpleText() {
-        return interfaceMethod().nameAndArgumentSimpleText();
+    public String simpleMethodSignatureText() {
+        return interfaceMethod().simpleMethodSignatureText();
     }
 
     public JigTypeReference methodReturnType() {

@@ -271,7 +271,7 @@ class AsmMethodVisitorTest {
     void 引数型のジェネリクスが取得できる() {
         JigMethod actual = TestSupport.JigMethod準備(MethodVisitorSut.class, "引数型のジェネリクスが取得できる");
 
-        assertEquals("引数型のジェネリクスが取得できる(List<String>)", actual.nameAndArgumentSimpleText());
+        assertEquals("引数型のジェネリクスが取得できる(List<String>)", actual.simpleMethodSignatureText());
     }
 
     @CsvSource({
@@ -302,7 +302,7 @@ class AsmMethodVisitorTest {
     @ParameterizedTest
     void 引数と戻り値を文字列表示できる(String methodName, String expectedText) {
         JigMethod actual = TestSupport.JigMethod準備(MethodReturnAndArgumentsSut.class, methodName);
-        assertEquals(expectedText, actual.nameArgumentsReturnSimpleText());
+        assertEquals(expectedText, actual.simpleMethodDeclarationText());
     }
 
     @Test

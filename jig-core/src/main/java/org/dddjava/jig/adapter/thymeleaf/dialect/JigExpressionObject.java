@@ -88,8 +88,8 @@ class JigExpressionObject {
         return jigMethod.jigMethodDeclaration().argumentStream().findAny().isPresent();
     }
 
-    public String nameAndArgumentsAndReturnSimpleText(JigMethod jigMethod) {
-        return jigMethod.nameArgumentsReturnSimpleText();
+    public String simpleMethodDeclarationText(JigMethod jigMethod) {
+        return jigMethod.simpleMethodDeclarationText();
     }
 
     public String methodReturnLinkText(JigMethod jigMethod) {

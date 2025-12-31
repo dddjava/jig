@@ -198,13 +198,13 @@ public class ListAdapter {
                         ReportItem.ofString("パッケージ名", DatasourceAngle::packageText),
                         ReportItem.ofString("クラス名", DatasourceAngle::typeSimpleName),
                         ReportItem.ofString("メソッドシグネチャ", DatasourceAngle::nameAndArgumentSimpleText),
-                        ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnTypeReference().simpleNameWithGenerics()),
+                        ReportItem.ofString("メソッド戻り値の型", item -> item.methodReturnType().simpleNameWithGenerics()),
                         ReportItem.ofString("クラス別名", DatasourceAngle::typeLabel),
                         ReportItem.ofString("メソッド戻り値の型の別名", item ->
-                                jigDocumentContext.typeTerm(item.methodReturnTypeReference().id()).title()
+                                jigDocumentContext.typeTerm(item.methodReturnType().id()).title()
                         ),
                         ReportItem.ofString("メソッド引数の型の別名", item ->
-                                item.methodArgumentTypeReferenceStream()
+                                item.methodParameterTypeStream()
                                         .map(JigTypeReference::id)
                                         .map(jigDocumentContext::typeTerm)
                                         .map(Term::title)

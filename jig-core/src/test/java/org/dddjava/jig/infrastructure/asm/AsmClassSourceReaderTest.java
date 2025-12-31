@@ -15,7 +15,7 @@ import stub.domain.model.relation.EnumDefinition;
 import stub.domain.model.relation.InterfaceDefinition;
 import stub.domain.model.relation.clz.*;
 import stub.domain.model.relation.enumeration.ClassReference;
-import stub.domain.model.relation.enumeration.ConstructorArgument;
+import stub.domain.model.relation.enumeration.ConstructorParameter;
 import stub.domain.model.relation.enumeration.EnumField;
 import stub.domain.model.type.HogeRepository;
 import stub.domain.model.type.SimpleNumber;
@@ -60,7 +60,7 @@ public class AsmClassSourceReaderTest {
     void enumで使用している型が取得できる() {
         JigType actual = TestSupport.buildJigType(EnumDefinition.class);
 
-        assertUsingTypesContainsAll(actual, EnumField.class, ConstructorArgument.class, ClassReference.class);
+        assertUsingTypesContainsAll(actual, EnumField.class, ConstructorParameter.class, ClassReference.class);
     }
 
     private static void assertUsingTypesContainsAll(JigType jigType, Class<?>... classes) {

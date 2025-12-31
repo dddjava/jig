@@ -1,7 +1,7 @@
 package stub.domain.model.relation;
 
 import stub.domain.model.relation.enumeration.ClassReference;
-import stub.domain.model.relation.enumeration.ConstructorArgument;
+import stub.domain.model.relation.enumeration.ConstructorParameter;
 import stub.domain.model.relation.enumeration.EnumField;
 
 public enum EnumDefinition {
@@ -11,6 +11,6 @@ public enum EnumDefinition {
 
     EnumField field;
 
-    EnumDefinition(ConstructorArgument arg, Class<?> clz) {
+    EnumDefinition(ConstructorParameter arg, Class<?> clz) {
     }
 }

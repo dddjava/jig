@@ -85,7 +85,7 @@ class AsmMethodVisitor extends MethodVisitor {
         });
     }
 
-    private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, JigTypeReference returnType, List<JigTypeReference> parameterList, List<JigTypeReference> throwsList) {
+    private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, JigTypeReference returnType, List<JigTypeReference> parameterTypeList, List<JigTypeReference> throwsList) {
         var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
         JigMemberOwnership ownership = AsmUtils.jigMemberOwnership(access);
 
@@ -117,22 +117,22 @@ class AsmMethodVisitor extends MethodVisitor {
             // - public static MyEnum valueOf(java.lang.String);
             // - private static MyEnum[] $values();
             if (ownership == JigMemberOwnership.CLASS) {
-                if ((name.equals("values") && parameterList.isEmpty())
-                        || (name.equals("$values()") && parameterList.isEmpty())
-                        || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).id().equals(TypeId.STRING))) {
+                if ((name.equals("values") && parameterTypeList.isEmpty())
+                        || (name.equals("$values()") && parameterTypeList.isEmpty())
+                        || (name.equals("valueOf") && parameterTypeList.size() == 1 && parameterTypeList.get(0).id().equals(TypeId.STRING))) {
                     flags.add(JigMethodFlag.ENUM_SUPPORT);
                 }
             }
         }
         if (contextClass.isRecord()) {
             // recordの場合にcomponentをわかるようにしておく
-            if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
+            if (parameterTypeList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
                 flags.add(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
             }
         }
 
         return JigMethodHeader.from(jigMethodId, ownership,
-                jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
+                jigMemberVisibility, declarationAnnotationCollector, returnType, parameterTypeList, throwsList, flags);
     }
 
     @Override

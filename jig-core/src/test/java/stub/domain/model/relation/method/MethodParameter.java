@@ -1,6 +1,6 @@
 package stub.domain.model.relation.method;
 
-public class MethodArgument {
+public class MethodParameter {
 
     void method() {
 

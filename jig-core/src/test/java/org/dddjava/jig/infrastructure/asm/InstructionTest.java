@@ -47,7 +47,7 @@ public class InstructionTest {
 
         InstructionField instructionField = null;
 
-        void method(MethodArgument methodArgument) throws Exception {
+        void method(MethodParameter methodParameter) throws Exception {
             // ローカル変数宣言だけ
             LocalValue localValue = null;
 

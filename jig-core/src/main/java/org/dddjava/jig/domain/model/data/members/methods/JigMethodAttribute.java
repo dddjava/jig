@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
                           Collection<JigAnnotationReference> declarationAnnotations,
                           JigTypeReference returnType,
-                          List<JigTypeReference> argumentList,
+                          List<JigTypeReference> parameterTypeList,
                           Collection<JigTypeReference> throwTypes,
                           EnumSet<JigMethodFlag> flags) {
 
@@ -22,7 +22,7 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
         return Stream.of(
                         declarationAnnotations.stream().flatMap(JigAnnotationReference::allTypeIdStream),
                         returnType.toTypeIdStream(),
-                        argumentList.stream().flatMap(JigTypeReference::toTypeIdStream),
+                        parameterTypeList.stream().flatMap(JigTypeReference::toTypeIdStream),
                         throwTypes.stream().flatMap(JigTypeReference::toTypeIdStream))
                 .flatMap(Function.identity());
     }

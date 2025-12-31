@@ -42,7 +42,7 @@ public record JigMethodHeader(JigMethodId id,
     public String nameAndArgumentSimpleText() {
         return "%s(%s)".formatted(
                 id.name(),
-                jigMethodAttribute.argumentList().stream()
+                jigMethodAttribute.parameterTypeList().stream()
                         .map(JigTypeReference::simpleNameWithGenerics)
                         .collect(joining(", ")));
     }
@@ -71,7 +71,7 @@ public record JigMethodHeader(JigMethodId id,
     }
 
     public List<JigTypeReference> argumentList() {
-        return jigMethodAttribute.argumentList();
+        return jigMethodAttribute.parameterTypeList();
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {

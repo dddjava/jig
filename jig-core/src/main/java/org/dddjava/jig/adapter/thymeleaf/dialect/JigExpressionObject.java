@@ -67,7 +67,7 @@ class JigExpressionObject {
      */
     public List<String> enumConstantIdentifiers(JigType jigType) {
         return jigType.jigTypeMembers().enumConstantStream()
-                .map(jigField -> jigField.nameText())
+                .map(JigField::nameText)
                 .toList();
     }
 
@@ -76,7 +76,7 @@ class JigExpressionObject {
      */
     public List<Term> enumConstantTerms(JigType jigType) {
         return jigType.jigTypeMembers().enumConstantStream()
-                .map(jigField -> jigField.term())
+                .map(JigField::term)
                 .toList();
     }
 

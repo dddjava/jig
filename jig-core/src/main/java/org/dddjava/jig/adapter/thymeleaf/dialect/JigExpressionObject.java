@@ -106,20 +106,14 @@ class JigExpressionObject {
         TypeId typeId = jigTypeReference.id();
         var typeArgumentList = jigTypeReference.typeArgumentList();
         if (typeArgumentList.isEmpty()) {
-            if (typeId.isJavaLanguageType()) {
-                return unlinkText(typeId);
-            }
-            return linkTypeText(typeId);
+            return typeIdToLinkText(typeId);
         }
 
         // 型引数あり
         String typeArgumentText = typeArgumentList.stream()
                 .map(JigTypeArgument::typeId)
                 .map(argumentTypeId -> {
-                    if (argumentTypeId.isJavaLanguageType()) {
-                        return unlinkText(argumentTypeId);
-                    }
-                    return linkTypeText(argumentTypeId);
+                    return typeIdToLinkText(argumentTypeId);
                 })
                 .collect(joining(", ", "&lt;", "&gt;"));
 
@@ -127,6 +121,13 @@ class JigExpressionObject {
             return unlinkText(typeId) + typeArgumentText;
         }
         return linkTypeText(typeId) + typeArgumentText;
+    }
+
+    private String typeIdToLinkText(TypeId typeId) {
+        if (typeId.isJavaLanguageType()) {
+            return unlinkText(typeId);
+        }
+        return linkTypeText(typeId);
     }
 
     private String unlinkText(TypeId typeId) {

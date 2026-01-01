@@ -112,9 +112,7 @@ class JigExpressionObject {
         // 型引数あり
         String typeArgumentText = typeArgumentList.stream()
                 .map(JigTypeArgument::typeId)
-                .map(argumentTypeId -> {
-                    return typeIdToLinkText(argumentTypeId);
-                })
+                .map(this::typeIdToLinkText)
                 .collect(joining(", ", "&lt;", "&gt;"));
 
         return typeIdToLinkText(typeId) + typeArgumentText;

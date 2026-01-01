@@ -105,15 +105,13 @@ class JigExpressionObject {
     private String linkText(JigTypeReference jigTypeReference) {
         TypeId typeId = jigTypeReference.id();
         var typeArgumentList = jigTypeReference.typeArgumentList();
-        if (typeArgumentList.isEmpty()) {
-            return typeIdToLinkText(typeId);
-        }
 
-        // 型引数あり
-        String typeArgumentText = typeArgumentList.stream()
-                .map(JigTypeArgument::typeId)
-                .map(this::typeIdToLinkText)
-                .collect(joining(", ", "&lt;", "&gt;"));
+        // 型引数がなければ空文字列、ある場合は <Class> のような文字列にする
+        String typeArgumentText = typeArgumentList.isEmpty() ? "" :
+                typeArgumentList.stream()
+                        .map(JigTypeArgument::typeId)
+                        .map(this::typeIdToLinkText)
+                        .collect(joining(", ", "&lt;", "&gt;"));
 
         return typeIdToLinkText(typeId) + typeArgumentText;
     }

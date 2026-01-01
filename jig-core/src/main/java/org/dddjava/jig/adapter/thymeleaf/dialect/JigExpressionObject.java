@@ -118,23 +118,23 @@ class JigExpressionObject {
                 .collect(joining(", ", "&lt;", "&gt;"));
 
         if (typeId.isJavaLanguageType()) {
-            return unlinkText(typeId) + typeArgumentText;
+            return plainText(typeId) + typeArgumentText;
         }
-        return linkTypeText(typeId) + typeArgumentText;
+        return linkText(typeId) + typeArgumentText;
     }
 
     private String typeIdToLinkText(TypeId typeId) {
         if (typeId.isJavaLanguageType()) {
-            return unlinkText(typeId);
+            return plainText(typeId);
         }
-        return linkTypeText(typeId);
+        return linkText(typeId);
     }
 
-    private String unlinkText(TypeId typeId) {
+    private String plainText(TypeId typeId) {
         return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
     }
 
-    private String linkTypeText(TypeId typeId) {
+    private String linkText(TypeId typeId) {
         return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fqn(), labelText(typeId));
     }
 

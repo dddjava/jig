@@ -116,16 +116,8 @@ class JigExpressionObject {
 
     private String typeIdToLinkText(TypeId typeId) {
         if (typeId.isJavaLanguageType()) {
-            return plainText(typeId);
+            return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
         }
-        return linkText(typeId);
-    }
-
-    private String plainText(TypeId typeId) {
-        return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
-    }
-
-    private String linkText(TypeId typeId) {
         return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fqn(), labelText(typeId));
     }
 

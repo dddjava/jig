@@ -178,7 +178,8 @@ class JigExpressionObject {
             // 同じかletterの方が大きい場合
             if (compared >= 0) return letter;
         }
-        return letters.get(letters.size() - 1);
+        // どれにも合致しない場合は最後
+        return letters.getLast();
     }
 
     public String sequenceFor(JigMethod jigMethod) {

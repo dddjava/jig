@@ -112,8 +112,8 @@ class JigExpressionObject {
             return linkTypeText(typeId);
         }
 
-        // 型パラメータあり
-        String typeParameterText = typeArgumentList.stream()
+        // 型引数あり
+        String typeArgumentText = typeArgumentList.stream()
                 .map(JigTypeArgument::typeId)
                 .map(argumentTypeId -> {
                     if (argumentTypeId.isJavaLanguageType()) {
@@ -124,9 +124,9 @@ class JigExpressionObject {
                 .collect(joining(", ", "&lt;", "&gt;"));
 
         if (typeId.isJavaLanguageType()) {
-            return unlinkText(typeId) + typeParameterText;
+            return unlinkText(typeId) + typeArgumentText;
         }
-        return linkTypeText(typeId) + typeParameterText;
+        return linkTypeText(typeId) + typeArgumentText;
     }
 
     private String unlinkText(TypeId typeId) {

@@ -117,10 +117,7 @@ class JigExpressionObject {
                 })
                 .collect(joining(", ", "&lt;", "&gt;"));
 
-        if (typeId.isJavaLanguageType()) {
-            return plainText(typeId) + typeArgumentText;
-        }
-        return linkText(typeId) + typeArgumentText;
+        return typeIdToLinkText(typeId) + typeArgumentText;
     }
 
     private String typeIdToLinkText(TypeId typeId) {

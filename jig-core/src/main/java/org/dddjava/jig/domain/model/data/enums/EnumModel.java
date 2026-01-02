@@ -7,28 +7,15 @@ import java.util.List;
 
 /**
  * Enum固有で取得するモデル
+ *
+ * @param enumConstants 列挙定数
  */
-public class EnumModel {
-    private final TypeId typeId;
-
-    /**
-     * 列挙定数
-     */
-    private final List<EnumConstant> enumConstants;
-    private final List<List<String>> constructorParameterNameList;
-
-    public EnumModel(TypeId typeId, List<EnumConstant> enumConstants, List<List<String>> constructorParameterNameList) {
-        this.typeId = typeId;
-        this.enumConstants = enumConstants;
-        this.constructorParameterNameList = constructorParameterNameList;
-    }
+public record EnumModel(TypeId typeId,
+                        List<EnumConstant> enumConstants,
+                        List<List<String>> constructorParameterNameList) {
 
     public static EnumModel from(TypeId typeId, List<EnumConstant> constantsList, List<List<String>> constructorParameterNameList) {
         return new EnumModel(typeId, constantsList, constructorParameterNameList);
-    }
-
-    public TypeId typeId() {
-        return typeId;
     }
 
     public List<String> paramOf(String name) {

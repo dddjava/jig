@@ -50,7 +50,6 @@ public class HandleResultImpl implements HandleResult {
                  UsecaseSummary,
                  EntrypointSummary,
                  RepositorySummary,
-                 EnumSummary,
                  TermList,
                  Insight,
                  Sequence,

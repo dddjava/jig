@@ -123,7 +123,7 @@ public class JigDocumentGenerator {
                             GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);
                     case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
                             .write(outputDirectory, jigService.packages(jigRepository));
-                    case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
+                    case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary,
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                          ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList,

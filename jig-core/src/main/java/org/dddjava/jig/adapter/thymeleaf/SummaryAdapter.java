@@ -61,14 +61,6 @@ public class SummaryAdapter {
         return write(jigDocument, SummaryModel.withMermaidDiagram(jigTypes, packages, entrypointMermaidDiagram));
     }
 
-    @HandleDocument(JigDocument.EnumSummary)
-    public List<Path> enumSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        var categoryTypes = jigService.categoryTypes(jigRepository);
-        var packages = jigService.packages(jigRepository);
-        var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        return write(jigDocument, SummaryModel.forEnumSummary(categoryTypes, packages, enumModels));
-    }
-
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {
         return thymeleafSummaryWriter.write(jigDocument, result);
     }

@@ -116,15 +116,6 @@ public enum JigDocument {
             "repository"),
 
     /**
-     * 区分概要
-     * @deprecated https://github.com/dddjava/jig/releases/tag/2025.9.1
-     */
-    @Deprecated(since = "2025.9.1", forRemoval = true)
-    EnumSummary(
-            JigDocumentLabel.of("区分概要", "enum"),
-            "enum"),
-
-    /**
      * インサイト
      */
     Insight(JigDocumentLabel.of("インサイト", "insight"),

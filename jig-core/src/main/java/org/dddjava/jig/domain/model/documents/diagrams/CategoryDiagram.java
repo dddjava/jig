@@ -53,7 +53,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
 
                     return Node.typeOf(categoryType.id())
                             .html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>")
-                            .url(categoryType.id(), JigDocument.EnumSummary)
+                            .url(categoryType.id(), JigDocument.DomainSummary)
                             .as(NodeRole.主役);
                 })
                 .map(Node::dotText)

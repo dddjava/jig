@@ -19,11 +19,6 @@ public record SummaryModel(JigTypes jigTypes, JigPackages jigPackages, Map<Strin
         return new SummaryModel(jigTypes, jigPackages, Map.of());
     }
 
-    static SummaryModel forEnumSummary(JigTypes categoryTypes, JigPackages packages, EnumModels enumModels) {
-        return of(categoryTypes, packages)
-                .withAdditionalMap(Map.of(ENUM_MODEL_MAP_KEY, enumModels.toMap()));
-    }
-
     static SummaryModel withMermaidDiagram(JigTypes jigTypes, JigPackages packages, UsecaseMermaidDiagram usecaseMermaidDiagram) {
         return of(jigTypes, packages)
                 .withAdditionalMap(Map.of(MERMAID_DIAGRAM_KEY, usecaseMermaidDiagram));

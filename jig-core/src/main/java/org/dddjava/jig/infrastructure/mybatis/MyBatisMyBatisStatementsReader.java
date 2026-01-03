@@ -49,7 +49,7 @@ public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
                 .toList();
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
-        if (classNames.isEmpty()) return new MyBatisReadResult(new MyBatisStatements(List.of()), SqlReadStatus.成功);
+        if (classNames.isEmpty()) return new MyBatisReadResult(new MyBatisStatements(), SqlReadStatus.成功);
         new MyBatisStatements();
 
         URL[] classLocationUrls = classPaths.stream()

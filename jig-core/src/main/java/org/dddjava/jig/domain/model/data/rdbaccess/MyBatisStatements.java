@@ -9,8 +9,8 @@ import java.util.function.Predicate;
  */
 public record MyBatisStatements(List<MyBatisStatement> list) {
 
-    public MyBatisStatements() {
-        this(Collections.emptyList());
+    public static MyBatisStatements empty() {
+        return new MyBatisStatements(Collections.emptyList());
     }
 
     private Tables tables(SqlType sqlType) {

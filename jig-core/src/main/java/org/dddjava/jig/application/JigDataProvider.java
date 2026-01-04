@@ -11,7 +11,7 @@ public interface JigDataProvider {
         return new JigDataProvider() {
             @Override
             public MyBatisStatements fetchMybatisStatements() {
-                return new MyBatisStatements();
+                return MyBatisStatements.empty();
             }
 
             @Override

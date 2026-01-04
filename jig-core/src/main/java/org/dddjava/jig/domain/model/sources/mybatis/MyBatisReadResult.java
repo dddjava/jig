@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 public record MyBatisReadResult(MyBatisStatements myBatisStatements, SqlReadStatus sqlReadStatus) {
 
     public MyBatisReadResult(SqlReadStatus sqlReadStatus) {
-        this(new MyBatisStatements(), sqlReadStatus);
+        this(MyBatisStatements.empty(), sqlReadStatus);
     }
 
     public SqlReadStatus status() {

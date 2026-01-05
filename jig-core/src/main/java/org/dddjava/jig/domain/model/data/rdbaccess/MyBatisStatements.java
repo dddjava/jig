@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.rdbaccess;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -21,10 +22,10 @@ public record MyBatisStatements(List<MyBatisStatement> list) {
                 .orElse(Tables.nothing());
     }
 
-    // テストでしか使用していないので削除したい
-    @Deprecated
-    public List<MyBatisStatement> list() {
-        return list;
+    public Optional<MyBatisStatement> findById(MyBatisStatementId myBatisStatementId) {
+        return list.stream()
+                .filter(myBatisStatement -> myBatisStatement.myBatisStatementId().equals(myBatisStatementId))
+                .findFirst();
     }
 
     /**

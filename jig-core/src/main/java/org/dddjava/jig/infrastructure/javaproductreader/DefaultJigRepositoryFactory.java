@@ -22,7 +22,7 @@ import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
-import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
+import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReaderImpl;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public class DefaultJigRepositoryFactory {
                 new ClassOrJavaSourceCollector(configuration.jigEventRepository()),
                 new AsmClassSourceReader(),
                 new JavaparserReader(),
-                new MyBatisMyBatisStatementsReader(),
+                new MyBatisStatementsReaderImpl(),
                 configuration.jigEventRepository(), configuration.glossaryRepository()
         );
     }

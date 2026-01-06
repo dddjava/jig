@@ -35,9 +35,9 @@ import java.util.List;
  * クラスパスにMapperが依存しているクラスが存在しない場合、MyBatisがMapperを読み取れないため解析できません。
  * それでも出力したい場合は、実行時に該当のクラスをクラスパスに含めてください。
  */
-public class MyBatisMyBatisStatementsReader implements MyBatisStatementsReader {
+public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyBatisMyBatisStatementsReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyBatisStatementsReaderImpl.class);
 
     @Override
     public MyBatisReadResult readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.documentformat;
 
-import org.dddjava.jig.infrastructure.mybatis.MyBatisMyBatisStatementsReader;
+import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReaderImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +72,7 @@ public enum JigDocument {
      * 三層（プレゼンテーション層、アプリケーション層、データソース層）の情報を提供する。
      * アプリケーションの状況把握に使用できる。
      *
-     * 制限事項: {@link MyBatisMyBatisStatementsReader}
+     * 制限事項: {@link MyBatisStatementsReaderImpl}
      */
     ApplicationList(
             JigDocumentLabel.of("機能一覧", "ApplicationList"),

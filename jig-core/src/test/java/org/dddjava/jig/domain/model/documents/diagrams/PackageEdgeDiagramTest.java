@@ -74,10 +74,9 @@ class PackageEdgeDiagramTest {
     void 出力されるパターン(List<TypeRelationship> classRelations, int depth, List<String> expectedContainsTexts) {
         var sut = PackageRelations.from(new TypeRelationships(classRelations)).applyDepth(new PackageDepth(depth));
 
-        JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
-        when(jigDocumentContext.packageTerm(any()))
-                .thenAnswer(invocationOnMock ->
-                        Term.simple(new TermId("dummy"), "dummy", TermKind.パッケージ));
+            JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
+            Term dummyTerm = Term.simple(new TermId("dummy"), "dummy", TermKind.パッケージ);
+            when(jigDocumentContext.packageTerm(any())).thenReturn(dummyTerm);
 
         var list = sut.listUnique().stream()
                 .map(packageRelation -> "\"%s\" -> \"%s\";".formatted(packageRelation.from().asText(), packageRelation.to().asText()))

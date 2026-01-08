@@ -9,7 +9,7 @@ import java.util.List;
  * 分岐条件をドキュメントで扱っていないのでこのクラス上での差はない。
  *
  * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.tableswitch">tableswitch</a>
- * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.lookupswitch">lookupswitch</>a>
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html#jvms-4.10.1.9.lookupswitch">lookupswitch</a>
  */
 public record SwitchInstruction(JumpTarget defaultTarget,
                                 List<JumpTarget> caseTargets) implements Instruction {

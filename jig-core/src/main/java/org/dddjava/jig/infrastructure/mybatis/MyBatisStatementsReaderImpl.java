@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * 本クラスではMyBatisの内部APIを使用してSQLを取得しています。
@@ -52,15 +53,14 @@ public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
         if (classNames.isEmpty()) return new MyBatisReadResult(MyBatisStatements.empty(), SqlReadStatus.成功);
 
         URL[] classLocationUrls = classPaths.stream()
-                .map(path -> {
+                .flatMap(path -> {
                     try {
-                        return path.toUri().toURL();
+                        return Stream.of(path.toUri().toURL());
                     } catch (MalformedURLException e) {
                         logger.warn("pathのURLへの変換に失敗しました。{}を読み飛ばします。", path, e);
-                        return null;
+                        return Stream.empty();
                     }
                 })
-                .filter(url -> url != null)
                 .toArray(URL[]::new);
         try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);

@@ -28,7 +28,7 @@ class JigExecutorTest {
 
         // すべて失敗していない（success or skip）であること
         assertAll(actual.stream().map(actualResult ->
-                () -> assertFalse(((HandleResultImpl)actualResult).failure(), () -> actualResult.toString())
+                () -> assertFalse(((HandleResultImpl) actualResult).failure(), () -> actualResult.toString())
         ));
     }
 
@@ -45,7 +45,7 @@ class JigExecutorTest {
 
         // すべて失敗していない（success or skip）であること
         assertAll(actual.stream().map(actualResult ->
-                () -> assertFalse(((HandleResultImpl)actualResult).failure(), () -> actualResult.toString())
+                () -> assertFalse(((HandleResultImpl) actualResult).failure(), () -> actualResult.toString())
         ));
     }
 }

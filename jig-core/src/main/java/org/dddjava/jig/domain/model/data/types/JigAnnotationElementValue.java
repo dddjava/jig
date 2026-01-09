@@ -33,8 +33,8 @@ record JigAnnotationElementNormalValue(Object value)
  *
  * <code>@Hoge(value = MyEnum.HOGE)</code>
  *
- * @param typeId enumの型
- * @param constantName   列挙値のname
+ * @param typeId       enumの型
+ * @param constantName 列挙値のname
  */
 record JigAnnotationElementEnumValue(TypeId typeId, String constantName)
         implements JigAnnotationElementValue {

@@ -12,19 +12,19 @@ import static java.util.stream.Collectors.joining;
  */
 public record JigTypeParameter(String name, List<JigTypeArgument> bounds) {
 
-        public String nameAndBounds() {
-            List<JigTypeArgument> meaningfulBounds = bounds.stream()
-                    .filter(JigTypeArgument::notObject)
-                    .toList();
+    public String nameAndBounds() {
+        List<JigTypeArgument> meaningfulBounds = bounds.stream()
+                .filter(JigTypeArgument::notObject)
+                .toList();
 
-            if (meaningfulBounds.isEmpty()) {
-                return name;
-            }
-
-            String boundsString = meaningfulBounds.stream()
-                    .map(JigTypeArgument::simpleNameWithGenerics)
-                    .collect(joining(" & "));
-
-            return name + " extends " + boundsString;
+        if (meaningfulBounds.isEmpty()) {
+            return name;
         }
+
+        String boundsString = meaningfulBounds.stream()
+                .map(JigTypeArgument::simpleNameWithGenerics)
+                .collect(joining(" & "));
+
+        return name + " extends " + boundsString;
     }
+}

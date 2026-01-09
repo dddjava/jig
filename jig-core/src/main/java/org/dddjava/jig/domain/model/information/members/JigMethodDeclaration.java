@@ -13,7 +13,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * メソッド定義
  *
- * @param header メソッドヘッダ。JLSのModifierを含む。
+ * @param header       メソッドヘッダ。JLSのModifierを含む。
  * @param instructions メソッドで実行される命令
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4">Method Declaration</a>
  */

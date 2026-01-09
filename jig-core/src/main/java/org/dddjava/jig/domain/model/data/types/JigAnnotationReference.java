@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.joining;
  * 「参照」と言う名前をとっているが、アノテーションの要素値を持つため実体という方が正しい。
  * JigTypeReferenceと位置付けが近いから寄せている。
  *
- * @param id アノテーションの型を示すID
+ * @param id       アノテーションの型を示すID
  * @param elements 要素のコレクション
  * @see JigTypeReference
  */

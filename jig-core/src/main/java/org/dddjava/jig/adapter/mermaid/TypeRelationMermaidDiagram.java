@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.*;
 public class TypeRelationMermaidDiagram {
 
     /**
-     * @param jigPackage                出力対象パッケージ
+     * @param jigPackage            出力対象パッケージ
      * @param coreTypesAndRelations 出力コンテキスト
      * @return Mermaidテキスト
      */

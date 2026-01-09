@@ -5,8 +5,8 @@ import java.util.Collection;
 /**
  * 有向グラフの辺
  *
- * @param from 始点
- * @param to 終点
+ * @param from   始点
+ * @param to     終点
  * @param <NODE> ノードの型
  */
 public record Edge<NODE>(NODE from, NODE to) implements Comparable<Edge<NODE>> {

@@ -4,6 +4,7 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
@@ -19,7 +20,8 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngle;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
-import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList;
@@ -29,6 +31,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -61,11 +64,20 @@ public class ListAdapter {
         CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
         JigTypes coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
         JigTypes categoryTypes = jigService.categoryTypes(jigRepository);
-        List<JigPackageWithJigTypes> jigTypePackages = JigPackageWithJigTypes.from(coreDomainJigTypes);
+
+        JigPackages packages = jigService.packages(jigRepository);
+        Set<PackageId> coreDomainPackages = coreDomainJigTypes.stream()
+                .map(JigType::packageId)
+                .collect(Collectors.toUnmodifiableSet());
+        List<JigPackage> jigTypePackages = packages.jigPackages().stream()
+                .filter(jigPackage -> coreDomainPackages.contains(jigPackage.packageId()))
+                .sorted()
+                .toList();
+
         var result = new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         ReportItem.ofString("パッケージ名", item -> item.packageId().asText()),
-                        ReportItem.ofString("パッケージ別名", item -> jigDocumentContext.packageTerm(item.packageId()).title()),
+                        ReportItem.ofString("パッケージ別名", item -> item.term().title()),
                         ReportItem.ofNumber("クラス数", item -> item.jigTypes().size())
                 ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(

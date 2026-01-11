@@ -28,6 +28,7 @@ import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
@@ -71,7 +72,7 @@ public class ListAdapter {
                 .collect(Collectors.toUnmodifiableSet());
         List<JigPackage> jigTypePackages = packages.jigPackages().stream()
                 .filter(jigPackage -> coreDomainPackages.contains(jigPackage.packageId()))
-                .sorted()
+                .sorted(Comparator.comparing(JigPackage::packageId))
                 .toList();
 
         var result = new ReportBook(

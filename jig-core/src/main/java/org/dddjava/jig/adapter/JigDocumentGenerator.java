@@ -124,6 +124,7 @@ public class JigDocumentGenerator {
                     case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
                             .write(outputDirectory, jigService.packages(jigRepository));
                     case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary,
+                         DomainDetail,
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                          ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList,

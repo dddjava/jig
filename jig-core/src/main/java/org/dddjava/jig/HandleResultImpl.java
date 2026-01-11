@@ -45,7 +45,7 @@ public class HandleResultImpl implements HandleResult {
                  ServiceMethodCallHierarchyDiagram -> true;
             case ApplicationList,
                  BusinessRuleList,
-                 DomainSummary,
+                 DomainSummary, DomainDetail,
                  ApplicationSummary,
                  UsecaseSummary,
                  EntrypointSummary,

@@ -28,7 +28,7 @@ public class JavaparserLineSeparatorTest {
                 """;
         CompilationUnit sut = StaticJavaParser.parse(code);
 
-        var comment = sut.getAllComments().get(0);
+        var comment = sut.getAllComments().getFirst();
 
         // commentのStringは改行コード\nのまま
         String commentAsText = comment.asString();

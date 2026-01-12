@@ -9,8 +9,6 @@ import org.dddjava.jig.infrastructure.javaproductreader.DefaultJigRepositoryFact
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 public class JigExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
@@ -18,14 +16,6 @@ public class JigExecutor {
 
     public JigExecutor(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    /**
-     * 標準のJigExecutorを使用するエントリポイント
-     */
-    @Deprecated(since = "2025.11.1", forRemoval = true)
-    public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
-        return standard(configuration, sourceBasePaths).listResult();
     }
 
     /**

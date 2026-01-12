@@ -11,6 +11,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * JavaParser の LineSeparator のテスト
+ *
+ * システム改行コードの置き換えは内部でキャッシュされるため、このテストクラスはIDEで単独実行する。
+ * テストメソッドを複数作成する場合、クラス単位での実行は改行コード置き換えが期待通りにならない可能性があるので注意すること。
+ */
 @Disabled("システム改行コードを置き換える前に JavaParser （の LineSeparator ）が使用されると変更できないため無効としておく")
 public class JavaparserLineSeparatorTest {
 
@@ -53,22 +59,5 @@ public class JavaparserLineSeparatorTest {
 
         String javadocText = javadoc.toText();
         assertTrue(javadocText.contains("\r\n"), "Javadoc.toText() の改行コードはシステム改行コードになっている");
-    }
-
-    @Test
-    void JavadocParserでparseすると改行コードがシステムのになる() {
-        System.setProperty("line.separator", "\r\n");
-
-        String javadocCode = """
-                /**
-                 * this
-                 * is
-                 * javadoc
-                 */
-                """;
-        var javadoc = StaticJavaParser.parseJavadoc(javadocCode);
-
-        var descriptionText = javadoc.getDescription().toText();
-        assertTrue(descriptionText.contains("\r\n"));
     }
 }

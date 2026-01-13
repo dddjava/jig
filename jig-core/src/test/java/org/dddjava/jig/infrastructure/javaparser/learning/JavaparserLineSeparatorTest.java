@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JavaparserLineSeparatorTest {
 
     @Test
-    void StaticJavaParserでparseすると改行コードがシステムのになる() {
+    void StaticJavaParserでparseするとJavadocの改行はシステム改行コードになる() {
         // システム改行コードを置き換える
         System.setProperty("line.separator", "\r\n");
 

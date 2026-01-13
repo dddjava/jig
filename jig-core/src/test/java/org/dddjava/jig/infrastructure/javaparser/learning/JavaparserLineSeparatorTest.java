@@ -6,7 +6,7 @@ import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.utils.LineSeparator;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,15 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
  * システム改行コードの置き換えは内部でキャッシュされるため、このテストクラスはIDEで単独実行する。
  * テストメソッドを複数作成する場合、クラス単位での実行は改行コード置き換えが期待通りにならない可能性があるので注意すること。
  */
-@Disabled("システム改行コードを置き換える前に JavaParser （の LineSeparator ）が使用されると変更できないため無効としておく")
 public class JavaparserLineSeparatorTest {
 
     @Test
     void StaticJavaParserでparseすると改行コードがシステムのになる() {
-        // システム改行コードを置き換え
+        // システム改行コードを置き換える
         System.setProperty("line.separator", "\r\n");
 
-        assertEquals("\r\n", LineSeparator.SYSTEM.asRawString(), "改行コードが置き換えられている");
+        Assumptions.assumeTrue(LineSeparator.SYSTEM.asRawString().equals("\r\n"),
+                "Javaparser の認識している改行コードがCRLFでないためテストをスキップします。" +
+                        "先行して実行されたテストで Javaparser が使用された場合、改行コードは置き換えられません。");
 
         // この改行コードは \n （ファイルの改行コード）になる
         var code = """

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head th:replace="~{fragment-base::head(${title})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>ドメイン詳細</title>
+</head>
+<body class="domain-detail">
+<header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
+<main>
+    <h1>ドメイン詳細</h1>
+    <aside class="notice">
+        <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
+        <p>このドキュメントでビジネスルール一覧と同等の情報を扱い、こちらに置き換えられる予定です。</p>
+    </aside>
+    <details class="controls" open>
+        <summary>⚙️ 表示設定</summary>
+    </details>
+
+</main>
+
+<th:block th:replace="~{fragment-base::scripts}">
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
+</th:block>
+</body>
+</html>

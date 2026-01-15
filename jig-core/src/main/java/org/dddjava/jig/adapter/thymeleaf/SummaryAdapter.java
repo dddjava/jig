@@ -31,15 +31,6 @@ public class SummaryAdapter {
         return write(jigDocument, SummaryModel.forDomainSummary(jigTypes, packages, coreTypesAndRelations, enumModels));
     }
 
-    @HandleDocument(JigDocument.DomainDetail)
-    public List<Path> domainDetail(JigRepository jigRepository, JigDocument jigDocument) {
-        var jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
-        var packages = jigService.packages(jigRepository);
-        return write(jigDocument, SummaryModel.forDomainSummary(jigTypes, packages, coreTypesAndRelations, enumModels));
-    }
-
     @HandleDocument(JigDocument.ApplicationSummary)
     public List<Path> applicationSummary(JigRepository jigRepository, JigDocument jigDocument) {
         var jigTypes = jigService.serviceTypes(jigRepository);

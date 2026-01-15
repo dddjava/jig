@@ -95,14 +95,6 @@ public enum JigDocument {
             "domain"),
 
     /**
-     * ドメイン詳細
-     */
-    DomainDetail(
-            JigDocumentLabel.of("ドメイン詳細", "DomainDetail"),
-            "domain-detail"
-    ),
-
-    /**
      * アプリケーション概要
      */
     ApplicationSummary(

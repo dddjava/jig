@@ -19,6 +19,16 @@
         <button id="toggle-description-btn">詳細列を表示/非表示</button>
     </details>
 
+    <script id="package-data" type="application/json" th:utext="${packagesJson}">
+        [{"fqn": "example", "name": "name", "description": "desc"}]
+    </script>
+
+    <script>
+        const jsonText = document.getElementById('package-data').textContent;
+        const packageData = JSON.parse(jsonText);
+        console.log(packageData);
+    </script>
+
     <table>
         <thead>
         <tr>

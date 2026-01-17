@@ -40,7 +40,6 @@ public class PackageSummaryView {
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "packages", jigPackages.listPackage(),
                 "packagesJson", packagesJson
         );
 

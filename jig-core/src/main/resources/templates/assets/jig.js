@@ -287,6 +287,33 @@ function zoomFamilyTables(baseTable, baseRow) {
     })
 }
 
+function writePackageTable() {
+    const jsonText = document.getElementById('package-data').textContent;
+    const packageData = JSON.parse(jsonText);
+
+    const tbody = document.querySelector('#package-table tbody');
+    //tbody.innerHTML = '';
+
+    packageData.forEach(item => {
+        const tr = document.createElement('tr');
+
+        const fqnTd = document.createElement('td');
+        fqnTd.textContent = item.fqn;
+        tr.appendChild(fqnTd);
+
+        const nameTd = document.createElement('td');
+        nameTd.textContent = item.name;
+        tr.appendChild(nameTd);
+
+        const descTd = document.createElement('td');
+        descTd.textContent = item.description;
+        descTd.className = 'description hidden markdown';
+        tr.appendChild(descTd);
+
+        tbody.appendChild(tr);
+    });
+}
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
@@ -302,6 +329,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLetterNavigationVisibility();
     } else if (document.body.classList.contains("package-list")) {
         document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
+        writePackageTable();
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();
         setupZoomIcons();

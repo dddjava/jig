@@ -19,17 +19,7 @@
         <button id="toggle-description-btn">詳細列を表示/非表示</button>
     </details>
 
-    <script id="package-data" type="application/json" th:utext="${packagesJson}">
-        [{"fqn": "example", "name": "name", "description": "desc"}]
-    </script>
-
-    <script>
-        const jsonText = document.getElementById('package-data').textContent;
-        const packageData = JSON.parse(jsonText);
-        console.log(packageData);
-    </script>
-
-    <table>
+    <table id="package-table">
         <thead>
         <tr>
             <th>完全修飾名</th>
@@ -38,16 +28,20 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="item : ${packages}">
-            <td th:text="${item.fqn()}">com.example</td>
-            <td th:text="${item.label()}"></td>
-            <td th:text="${item.term().description()}" class="description hidden markdown">## アプリケーションのベースパッケージです。
+        <tr>
+            <td>com.example</td>
+            <td>えぐざんぷる</td>
+            <td class="description hidden markdown">## アプリケーションのベースパッケージです。
 - システム全体で利用される基本的な構成要素を含みます。
             </td>
         </tr>
         </tbody>
     </table>
 </main>
+
+<script id="package-data" type="application/json" th:utext="${packagesJson}">
+    [{"fqn": "example", "name": "name", "description": "desc"}]
+</script>
 
 <th:block th:replace="~{fragment-base::scripts}">
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>

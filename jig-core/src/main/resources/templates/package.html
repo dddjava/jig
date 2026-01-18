@@ -24,6 +24,7 @@
         <tr>
             <th>完全修飾名</th>
             <th>名称</th>
+            <th>クラス数</th>
             <th class="description hidden">詳細</th>
         </tr>
         </thead>
@@ -31,6 +32,7 @@
         <tr>
             <td>com.example</td>
             <td>えぐざんぷる</td>
+            <td>10</td>
             <td class="description hidden markdown">## アプリケーションのベースパッケージです。
 - システム全体で利用される基本的な構成要素を含みます。
             </td>
@@ -40,7 +42,7 @@
 </main>
 
 <script id="package-data" type="application/json" th:utext="${packagesJson}">
-    [{"fqn": "example", "name": "name", "description": "desc"}]
+    [{"fqn": "example", "name": "name", "classCount": 0, "description": "desc"}]
 </script>
 
 <th:block th:replace="~{fragment-base::scripts}">

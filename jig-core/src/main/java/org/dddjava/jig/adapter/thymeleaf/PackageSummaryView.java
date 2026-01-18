@@ -30,11 +30,12 @@ public class PackageSummaryView {
 
         var packagesJson = jigPackages.listPackage().stream()
                 .map(packageInfo -> """
-                        {"fqn": "%s", "name": "%s", "description": "%s"}
+                        {"fqn": "%s", "name": "%s", "description": "%s", "classCount": %d}
                         """.formatted(
                         escape(packageInfo.fqn()),
                         escape(packageInfo.label()),
-                        escape(packageInfo.term().description())))
+                        escape(packageInfo.term().description()),
+                        packageInfo.numberOfClasses()))
                 .collect(Collectors.joining(",", "[", "]"));
 
 

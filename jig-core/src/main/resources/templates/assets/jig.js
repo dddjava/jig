@@ -305,6 +305,10 @@ function writePackageTable() {
         nameTd.textContent = item.name;
         tr.appendChild(nameTd);
 
+        const classCountTd = document.createElement('td');
+        classCountTd.textContent = item.classCount;
+        tr.appendChild(classCountTd);
+
         const descTd = document.createElement('td');
         descTd.textContent = item.description;
         descTd.className = 'description hidden markdown';

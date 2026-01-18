@@ -25,4 +25,8 @@ public record JigPackage(PackageId packageId, Term term, Collection<JigType> jig
     public String label() {
         return term.title();
     }
+
+    public int numberOfClasses() {
+        return jigTypes.size();
+    }
 }

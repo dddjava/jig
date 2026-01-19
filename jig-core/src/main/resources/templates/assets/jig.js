@@ -307,7 +307,7 @@ function writePackageTable() {
         tr.appendChild(nameTd);
 
         const classCountTd = document.createElement('td');
-        classCountTd.textContent = item.classCount;
+        classCountTd.textContent = String(item.classCount);
         tr.appendChild(classCountTd);
 
         const descTd = document.createElement('td');

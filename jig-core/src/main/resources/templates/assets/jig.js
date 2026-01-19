@@ -289,6 +289,7 @@ function zoomFamilyTables(baseTable, baseRow) {
 
 function writePackageTable() {
     const jsonText = document.getElementById('package-data').textContent;
+    /** @type {Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
 
     const tbody = document.querySelector('#package-table tbody');

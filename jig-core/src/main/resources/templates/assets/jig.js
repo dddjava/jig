@@ -46,8 +46,6 @@ function filterTable(tableId, filterInputId) {
     }
 }
 
-let sortState = {};
-
 function sortTable(event) {
     const headerColumn = event.target;
     const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);

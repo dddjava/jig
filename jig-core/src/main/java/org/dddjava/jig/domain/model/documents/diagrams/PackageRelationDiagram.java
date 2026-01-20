@@ -56,7 +56,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     /**
      * 関連なしも含むすべてのパッケージ
      */
-    private PackageIds allPackages() {
+    private PackageIds allPackageIds() {
         return contextJigTypes.coreJigTypes().typeIds().packageIds().applyDepth(appliedDepth);
     }
 
@@ -94,14 +94,14 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         });
 
 
-        var allPackages = allPackages();
-        PackageDepth maxDepth = allPackages.maxDepth();
+        var allPackageIds = allPackageIds();
+        PackageDepth maxDepth = allPackageIds.maxDepth();
         // 最下層を一つ上でグルーピング
         Map<PackageId, List<PackageId>> groupingPackages = new HashMap<>();
         // 最下層以外
         List<PackageId> standalonePackages = new ArrayList<>();
 
-        for (PackageId packageId : allPackages.values()) {
+        for (PackageId packageId : allPackageIds.values()) {
             if (packageId.depth().just(maxDepth)) {
                 groupingPackages.computeIfAbsent(packageId.parent(), k -> new ArrayList<>())
                         .add(packageId);
@@ -151,7 +151,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         String summaryText = "summary[shape=note,label=\""
                 + labeler.contextDescription() + "\\l"
-                + allPackages.countDescriptionText() + "\\l"
+                + allPackageIds.countDescriptionText() + "\\l"
                 + packageRelationText(filteredRelations) + "\\l"
                 + "\"]";
 

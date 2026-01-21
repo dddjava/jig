@@ -42,7 +42,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
      */
     private final PackageDepth appliedDepth;
 
-    public PackageRelationDiagram(PackageRelations packageRelations, CoreTypesAndRelations contextJigTypes, PackageDepth appliedDepth) {
+    private PackageRelationDiagram(PackageRelations packageRelations, CoreTypesAndRelations contextJigTypes, PackageDepth appliedDepth) {
         this.packageRelations = packageRelations;
         this.contextJigTypes = contextJigTypes;
         this.appliedDepth = appliedDepth;

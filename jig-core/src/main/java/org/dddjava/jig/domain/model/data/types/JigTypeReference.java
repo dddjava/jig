@@ -8,7 +8,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.joining;
 
 /**
- * 型の参照。
+ * 型の参照
+ *
  * extendsやimplements、フィールドやメソッドなどで使用される。
  * 「参照」と言う名前であり型そのものではないが、型パラメタを持つ実体でもある。
  *

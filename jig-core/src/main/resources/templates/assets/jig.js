@@ -314,14 +314,17 @@ function writePackageTable() {
 
         const classCountTd = document.createElement('td');
         classCountTd.textContent = String(item.classCount);
+        classCountTd.className = 'number';
         tr.appendChild(classCountTd);
 
         const incomingCountTd = document.createElement('td');
         incomingCountTd.textContent = String(incomingCounts.get(item.fqn) ?? 0);
+        incomingCountTd.className = 'number';
         tr.appendChild(incomingCountTd);
 
         const outgoingCountTd = document.createElement('td');
         outgoingCountTd.textContent = String(outgoingCounts.get(item.fqn) ?? 0);
+        outgoingCountTd.className = 'number';
         tr.appendChild(outgoingCountTd);
 
         const descTd = document.createElement('td');

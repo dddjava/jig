@@ -382,11 +382,35 @@ function writePackageRelationDiagram(filterFqn) {
     };
 
     Array.from(visibleSet).sort().forEach(ensureNodeId);
+    const relationKey = (from, to) => `${from}::${to}`;
+    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
+    const relationSet = new Set(visibleRelations.map(relation => relationKey(relation.from, relation.to)));
+    const mutualPairs = new Set();
+    visibleRelations.forEach(relation => {
+        if (relationSet.has(relationKey(relation.to, relation.from))) {
+            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
+        }
+    });
+
+    const linkStyles = [];
+    let linkIndex = 0;
     visibleRelations.forEach(relation => {
         const fromId = ensureNodeId(relation.from);
         const toId = ensureNodeId(relation.to);
+        const pairKey = canonicalPairKey(relation.from, relation.to);
+        if (mutualPairs.has(pairKey)) {
+            if (relation.from > relation.to) {
+                return;
+            }
+            lines.push(`${fromId} <--> ${toId}`);
+            linkStyles.push(`linkStyle ${linkIndex} stroke:red,stroke-width:2px`);
+            linkIndex += 1;
+            return;
+        }
         lines.push(`${fromId} --> ${toId}`);
+        linkIndex += 1;
     });
+    linkStyles.forEach(styleLine => lines.push(styleLine));
 
     diagram.removeAttribute('data-processed');
     diagram.textContent = lines.join('\n');

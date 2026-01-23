@@ -17,6 +17,12 @@
     <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
         <button id="toggle-description-btn">詳細列を表示/非表示</button>
+        <label>
+            パッケージ絞り込み:
+            <input id="package-filter-input" type="text" placeholder="com.example">
+        </label>
+        <button id="apply-package-filter">適用</button>
+        <button id="clear-package-filter">クリア</button>
     </details>
 
     <pre id="package-relation-diagram" class="mermaid"></pre>

@@ -395,6 +395,10 @@ function writePackageRelationDiagram(filterFqn) {
 }
 
 function filterPackageDiagramByFqn(fqn) {
+    const input = document.getElementById('package-filter-input');
+    if (input) {
+        input.value = fqn ?? '';
+    }
     writePackageRelationDiagram(fqn);
 }
 
@@ -403,6 +407,30 @@ window.filterPackageDiagram = function (nodeId) {
     if (!fqn) return;
     filterPackageDiagramByFqn(fqn);
 };
+
+function setupPackageFilterInput() {
+    const input = document.getElementById('package-filter-input');
+    const applyButton = document.getElementById('apply-package-filter');
+    const clearButton = document.getElementById('clear-package-filter');
+    if (!input || !applyButton || !clearButton) return;
+
+    const applyFilter = () => {
+        const value = input.value.trim();
+        filterPackageDiagramByFqn(value || null);
+    };
+
+    applyButton.addEventListener('click', applyFilter);
+    clearButton.addEventListener('click', () => {
+        input.value = '';
+        filterPackageDiagramByFqn(null);
+    });
+    input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            applyFilter();
+        }
+    });
+}
 
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
@@ -422,6 +450,7 @@ document.addEventListener("DOMContentLoaded", function () {
         setupSortableTables();
         writePackageRelationDiagram();
         writePackageTable();
+        setupPackageFilterInput();
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();
         setupZoomIcons();

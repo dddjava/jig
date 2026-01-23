@@ -285,14 +285,19 @@ function zoomFamilyTables(baseTable, baseRow) {
     })
 }
 
+let packageSummaryCache = null;
+let packageDiagramNodeIdToFqn = new Map();
+
 function readPackageSummaryData() {
+    if (packageSummaryCache) return packageSummaryCache;
     const jsonText = document.getElementById('package-data').textContent;
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
-    return {
+    packageSummaryCache = {
         packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
     };
+    return packageSummaryCache;
 }
 
 function writePackageTable() {
@@ -313,6 +318,7 @@ function writePackageTable() {
         const fqnTd = document.createElement('td');
         fqnTd.textContent = item.fqn;
         fqnTd.className = 'fqn';
+        fqnTd.addEventListener('click', () => filterPackageDiagramByFqn(item.fqn));
         tr.appendChild(fqnTd);
 
         const nameTd = document.createElement('td');
@@ -343,38 +349,60 @@ function writePackageTable() {
     });
 }
 
-function writePackageRelationDiagram() {
+function writePackageRelationDiagram(filterFqn) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
 
     const {packages, relations} = readPackageSummaryData();
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const lines = ['graph TD'];
+    const scopePrefix = filterFqn ? `${filterFqn}.` : null;
+    const withinScope = fqn => !filterFqn || fqn === filterFqn || fqn.startsWith(scopePrefix);
+    const visiblePackages = packages.filter(item => withinScope(item.fqn));
+    const visibleSet = new Set(visiblePackages.map(item => item.fqn));
+    const visibleRelations = relations.filter(relation => withinScope(relation.from) && withinScope(relation.to));
+    visibleRelations.forEach(relation => {
+        visibleSet.add(relation.from);
+        visibleSet.add(relation.to);
+    });
+
     const nodeIdByFqn = new Map();
+    packageDiagramNodeIdToFqn = new Map();
     let nodeIndex = 0;
     const ensureNodeId = fqn => {
         if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
         const nodeId = `P${nodeIndex++}`;
         nodeIdByFqn.set(fqn, nodeId);
+        packageDiagramNodeIdToFqn.set(nodeId, fqn);
         lines.push(`${nodeId}["${escapeMermaidText(fqn)}"]`);
+        lines.push(`click ${nodeId} filterPackageDiagram`);
         return nodeId;
     };
 
-    packages.forEach(item => {
-        ensureNodeId(item.fqn);
-    });
-    relations.forEach(relation => {
+    Array.from(visibleSet).sort().forEach(ensureNodeId);
+    visibleRelations.forEach(relation => {
         const fromId = ensureNodeId(relation.from);
         const toId = ensureNodeId(relation.to);
         lines.push(`${fromId} --> ${toId}`);
     });
 
+    diagram.removeAttribute('data-processed');
     diagram.textContent = lines.join('\n');
     if (window.mermaid) {
-        mermaid.initialize({startOnLoad: false});
+        mermaid.initialize({startOnLoad: false, securityLevel: 'loose'});
         mermaid.run({nodes: [diagram]});
     }
 }
+
+function filterPackageDiagramByFqn(fqn) {
+    writePackageRelationDiagram(fqn);
+}
+
+window.filterPackageDiagram = function (nodeId) {
+    const fqn = packageDiagramNodeIdToFqn.get(nodeId);
+    if (!fqn) return;
+    filterPackageDiagramByFqn(fqn);
+};
 
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる

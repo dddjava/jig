@@ -10,6 +10,8 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
@@ -124,6 +126,11 @@ public class JigService {
                 .toList();
 
         return new JigPackages(jigPackages);
+    }
+
+    public PackageRelations packageRelations(JigRepository jigRepository) {
+        var jigTypes = jigTypes(jigRepository);
+        return PackageRelations.from(TypeRelationships.internalRelation(jigTypes));
     }
 
     public Insights insights(JigRepository repository) {

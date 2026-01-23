@@ -2,6 +2,8 @@ package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -25,10 +27,10 @@ public class PackageSummaryView {
         this.templateEngine = templateEngine;
     }
 
-    public List<Path> write(Path outputDirectory, JigPackages jigPackages) {
+    public List<Path> write(Path outputDirectory, JigPackages jigPackages, PackageRelations packageRelations) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
-        var packagesJson = jigPackages.listPackage().stream()
+        String packagesJson = jigPackages.listPackage().stream()
                 .map(packageInfo -> """
                         {"fqn": "%s", "name": "%s", "description": "%s", "classCount": %d}
                         """.formatted(
@@ -38,10 +40,17 @@ public class PackageSummaryView {
                         packageInfo.numberOfClasses()))
                 .collect(Collectors.joining(",", "[", "]"));
 
+        String packageRelationsJson = packageRelations.listUnique().stream()
+                .map(this::formatRelationJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String packageSummaryJson = """
+                {"packages": %s, "relations": %s}
+                """.formatted(packagesJson, packageRelationsJson);
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "packagesJson", packagesJson
+                "packagesJson", packageSummaryJson
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
@@ -54,5 +63,13 @@ public class PackageSummaryView {
 
     private String escape(String string) {
         return string.replace("\n", "\\n");
+    }
+
+    private String formatRelationJson(PackageRelation relation) {
+        return """
+                {"from": "%s", "to": "%s"}
+                """.formatted(
+                escape(relation.from().asText()),
+                escape(relation.to().asText()));
     }
 }

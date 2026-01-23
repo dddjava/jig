@@ -287,13 +287,14 @@ function zoomFamilyTables(baseTable, baseRow) {
 
 function writePackageTable() {
     const jsonText = document.getElementById('package-data').textContent;
-    /** @type {Array<{fqn: string, name: string, classCount: number, description: string}>} */
+    /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
+    const packages = Array.isArray(packageData) ? packageData : (packageData.packages ?? []);
 
     const tbody = document.querySelector('#package-table tbody');
     //tbody.innerHTML = '';
 
-    packageData.forEach(item => {
+    packages.forEach(item => {
         const tr = document.createElement('tr');
 
         const fqnTd = document.createElement('td');

@@ -42,7 +42,7 @@
 </main>
 
 <script id="package-data" type="application/json" th:utext="${packagesJson}">
-    [{"fqn": "example", "name": "name", "classCount": 0, "description": "desc"}]
+    {"packages": [{"fqn": "example", "name": "name", "classCount": 0, "description": "desc"}], "relations": [{"from": "example", "to": "example.feature"}]}
 </script>
 
 <th:block th:replace="~{fragment-base::scripts}">

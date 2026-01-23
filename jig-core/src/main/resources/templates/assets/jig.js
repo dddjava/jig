@@ -306,6 +306,7 @@ function writePackageTable() {
 
         const fqnTd = document.createElement('td');
         fqnTd.textContent = item.fqn;
+        fqnTd.className = 'fqn';
         tr.appendChild(fqnTd);
 
         const nameTd = document.createElement('td');

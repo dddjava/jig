@@ -295,6 +295,16 @@ label {
 .package-list td {
     text-align: left;
     vertical-align: top;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: normal;
+}
+.package-list td.fqn {
+    white-space: nowrap;
+    overflow: scroll;
+    max-width: 20em;
+    overflow-wrap: normal;
+    word-break: normal;
 }
 .package-list tr:nth-child(even) {
     background-color: #f9f9f9;

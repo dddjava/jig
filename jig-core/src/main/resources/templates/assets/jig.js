@@ -285,12 +285,18 @@ function zoomFamilyTables(baseTable, baseRow) {
     })
 }
 
-function writePackageTable() {
+function readPackageSummaryData() {
     const jsonText = document.getElementById('package-data').textContent;
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
-    const packages = Array.isArray(packageData) ? packageData : (packageData.packages ?? []);
-    const relations = Array.isArray(packageData) ? [] : (packageData.relations ?? []);
+    return {
+        packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
+        relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
+    };
+}
+
+function writePackageTable() {
+    const {packages, relations} = readPackageSummaryData();
     const incomingCounts = new Map();
     const outgoingCounts = new Map();
     relations.forEach(relation => {
@@ -337,6 +343,39 @@ function writePackageTable() {
     });
 }
 
+function writePackageRelationDiagram() {
+    const diagram = document.getElementById('package-relation-diagram');
+    if (!diagram) return;
+
+    const {packages, relations} = readPackageSummaryData();
+    const escapeMermaidText = text => text.replace(/"/g, '\\"');
+    const lines = ['graph TD'];
+    const nodeIdByFqn = new Map();
+    let nodeIndex = 0;
+    const ensureNodeId = fqn => {
+        if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
+        const nodeId = `P${nodeIndex++}`;
+        nodeIdByFqn.set(fqn, nodeId);
+        lines.push(`${nodeId}["${escapeMermaidText(fqn)}"]`);
+        return nodeId;
+    };
+
+    packages.forEach(item => {
+        ensureNodeId(item.fqn);
+    });
+    relations.forEach(relation => {
+        const fromId = ensureNodeId(relation.from);
+        const toId = ensureNodeId(relation.to);
+        lines.push(`${fromId} --> ${toId}`);
+    });
+
+    diagram.textContent = lines.join('\n');
+    if (window.mermaid) {
+        mermaid.initialize({startOnLoad: false});
+        mermaid.run({nodes: [diagram]});
+    }
+}
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
@@ -353,6 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (document.body.classList.contains("package-list")) {
         document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
         setupSortableTables();
+        writePackageRelationDiagram();
         writePackageTable();
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();

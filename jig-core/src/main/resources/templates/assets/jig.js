@@ -352,6 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateLetterNavigationVisibility();
     } else if (document.body.classList.contains("package-list")) {
         document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
+        setupSortableTables();
         writePackageTable();
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();

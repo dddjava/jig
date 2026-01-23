@@ -290,6 +290,13 @@ function writePackageTable() {
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
     const packages = Array.isArray(packageData) ? packageData : (packageData.packages ?? []);
+    const relations = Array.isArray(packageData) ? [] : (packageData.relations ?? []);
+    const incomingCounts = new Map();
+    const outgoingCounts = new Map();
+    relations.forEach(relation => {
+        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
+        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
+    });
 
     const tbody = document.querySelector('#package-table tbody');
     //tbody.innerHTML = '';
@@ -308,6 +315,14 @@ function writePackageTable() {
         const classCountTd = document.createElement('td');
         classCountTd.textContent = String(item.classCount);
         tr.appendChild(classCountTd);
+
+        const incomingCountTd = document.createElement('td');
+        incomingCountTd.textContent = String(incomingCounts.get(item.fqn) ?? 0);
+        tr.appendChild(incomingCountTd);
+
+        const outgoingCountTd = document.createElement('td');
+        outgoingCountTd.textContent = String(outgoingCounts.get(item.fqn) ?? 0);
+        tr.appendChild(outgoingCountTd);
 
         const descTd = document.createElement('td');
         descTd.textContent = item.description;

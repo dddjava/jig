@@ -287,6 +287,7 @@ function zoomFamilyTables(baseTable, baseRow) {
 
 let packageSummaryCache = null;
 let packageDiagramNodeIdToFqn = new Map();
+let currentPackageDepth = 0;
 
 function readPackageSummaryData() {
     if (packageSummaryCache) return packageSummaryCache;
@@ -298,6 +299,19 @@ function readPackageSummaryData() {
         relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
     };
     return packageSummaryCache;
+}
+
+function packageDepthOf(fqn) {
+    if (!fqn || fqn === '(default)') return 0;
+    return fqn.split('.').length;
+}
+
+function aggregatePackageFqn(fqn, depth) {
+    if (!depth || depth <= 0) return fqn;
+    if (!fqn || fqn === '(default)') return fqn;
+    const parts = fqn.split('.');
+    if (parts.length <= depth) return fqn;
+    return parts.slice(0, depth).join('.');
 }
 
 function writePackageTable() {
@@ -360,9 +374,19 @@ function writePackageRelationDiagram(filterFqn) {
     const scopePrefix = filterFqn ? `${filterFqn}.` : null;
     const withinScope = fqn => !filterFqn || fqn === filterFqn || fqn.startsWith(scopePrefix);
     const visiblePackages = packages.filter(item => withinScope(item.fqn));
-    const visibleSet = new Set(visiblePackages.map(item => item.fqn));
-    const visibleRelations = relations.filter(relation => withinScope(relation.from) && withinScope(relation.to));
+    const visibleSet = new Set(visiblePackages.map(item => aggregatePackageFqn(item.fqn, currentPackageDepth)));
+    const visibleRelations = relations.filter(relation => withinScope(relation.from) && withinScope(relation.to))
+        .map(relation => ({
+            from: aggregatePackageFqn(relation.from, currentPackageDepth),
+            to: aggregatePackageFqn(relation.to, currentPackageDepth),
+        }))
+        .filter(relation => relation.from !== relation.to);
+    const uniqueRelationMap = new Map();
     visibleRelations.forEach(relation => {
+        uniqueRelationMap.set(`${relation.from}::${relation.to}`, relation);
+    });
+    const uniqueRelations = Array.from(uniqueRelationMap.values());
+    uniqueRelations.forEach(relation => {
         visibleSet.add(relation.from);
         visibleSet.add(relation.to);
     });
@@ -384,9 +408,9 @@ function writePackageRelationDiagram(filterFqn) {
     Array.from(visibleSet).sort().forEach(ensureNodeId);
     const relationKey = (from, to) => `${from}::${to}`;
     const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
-    const relationSet = new Set(visibleRelations.map(relation => relationKey(relation.from, relation.to)));
+    const relationSet = new Set(uniqueRelations.map(relation => relationKey(relation.from, relation.to)));
     const mutualPairs = new Set();
-    visibleRelations.forEach(relation => {
+    uniqueRelations.forEach(relation => {
         if (relationSet.has(relationKey(relation.to, relation.from))) {
             mutualPairs.add(canonicalPairKey(relation.from, relation.to));
         }
@@ -394,7 +418,7 @@ function writePackageRelationDiagram(filterFqn) {
 
     const linkStyles = [];
     let linkIndex = 0;
-    visibleRelations.forEach(relation => {
+    uniqueRelations.forEach(relation => {
         const fromId = ensureNodeId(relation.from);
         const toId = ensureNodeId(relation.to);
         const pairKey = canonicalPairKey(relation.from, relation.to);
@@ -458,6 +482,32 @@ function setupPackageFilterInput() {
     });
 }
 
+function setupPackageDepthControl() {
+    const select = document.getElementById('package-depth-select');
+    if (!select) return;
+    const {packages} = readPackageSummaryData();
+    const maxDepth = packages.reduce((max, item) => Math.max(max, packageDepthOf(item.fqn)), 0);
+
+    select.innerHTML = '';
+    const noAggregationOption = document.createElement('option');
+    noAggregationOption.value = '0';
+    noAggregationOption.textContent = '集約なし';
+    select.appendChild(noAggregationOption);
+
+    for (let depth = 1; depth <= maxDepth; depth += 1) {
+        const option = document.createElement('option');
+        option.value = String(depth);
+        option.textContent = `深さ${depth}`;
+        select.appendChild(option);
+    }
+
+    select.value = String(currentPackageDepth);
+    select.addEventListener('change', () => {
+        currentPackageDepth = Number(select.value);
+        filterPackageDiagramByFqn(document.getElementById('package-filter-input')?.value.trim() || null);
+    });
+}
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
@@ -477,6 +527,7 @@ document.addEventListener("DOMContentLoaded", function () {
         writePackageRelationDiagram();
         writePackageTable();
         setupPackageFilterInput();
+        setupPackageDepthControl();
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();
         setupZoomIcons();

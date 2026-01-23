@@ -355,6 +355,7 @@ function writePackageRelationDiagram(filterFqn) {
 
     const {packages, relations} = readPackageSummaryData();
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
+    const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
     const lines = ['graph TD'];
     const scopePrefix = filterFqn ? `${filterFqn}.` : null;
     const withinScope = fqn => !filterFqn || fqn === filterFqn || fqn.startsWith(scopePrefix);
@@ -374,7 +375,8 @@ function writePackageRelationDiagram(filterFqn) {
         const nodeId = `P${nodeIndex++}`;
         nodeIdByFqn.set(fqn, nodeId);
         packageDiagramNodeIdToFqn.set(nodeId, fqn);
-        lines.push(`${nodeId}["${escapeMermaidText(fqn)}"]`);
+        const label = nameByFqn.get(fqn) || fqn;
+        lines.push(`${nodeId}["${escapeMermaidText(label)}"]`);
         lines.push(`click ${nodeId} filterPackageDiagram`);
         return nodeId;
     };

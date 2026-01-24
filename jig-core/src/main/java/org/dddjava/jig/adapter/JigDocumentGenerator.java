@@ -154,6 +154,7 @@ public class JigDocumentGenerator {
             Files.createDirectories(assetsPath);
             copyAsset("style.css", assetsPath);
             copyAsset("jig.js", assetsPath);
+            copyAsset("package.js", assetsPath);
             copyAsset("favicon.ico", assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

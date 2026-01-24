@@ -292,7 +292,7 @@ label {
     font-size: 0.9em;
     color: #555;
 }
-.package-list button.filter-icon {
+.package-list button.package-filter-icon {
     width: 1.8em;
     height: 1.8em;
     border-radius: 999px;
@@ -302,7 +302,7 @@ label {
     padding: 0;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>");
 }
-.package-list button.filter-icon:hover {
+.package-list button.package-filter-icon:hover {
     background-color: #f5f5f5;
 }
 .package-list button.icon-only {

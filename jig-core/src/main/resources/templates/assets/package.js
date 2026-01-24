@@ -529,11 +529,17 @@ function applyDefaultScopeIfPresent() {
     const input = document.getElementById('package-filter-input');
     if (!input || input.value.trim()) return false;
     const {packages} = readPackageSummaryData();
-    const domainCandidates = packages
+    const domainRoots = packages
         .map(item => item.fqn)
-        .filter(fqn => /\.domain(\.|$)/.test(fqn));
-    if (domainCandidates.length === 0) return false;
-    const candidate = domainCandidates.reduce((best, current) => {
+        .map(fqn => {
+            const parts = fqn.split('.');
+            const domainIndex = parts.indexOf('domain');
+            if (domainIndex === -1) return null;
+            return parts.slice(0, domainIndex + 1).join('.');
+        })
+        .filter(Boolean);
+    if (domainRoots.length === 0) return false;
+    const candidate = domainRoots.reduce((best, current) => {
         const bestDepth = best.split('.').length;
         const currentDepth = current.split('.').length;
         return currentDepth < bestDepth ? current : best;

@@ -2,6 +2,40 @@ let packageSummaryCache = null;
 let packageDiagramNodeIdToFqn = new Map();
 let currentPackageDepth = 0;
 let currentPackageFilterMode = 'scope';
+let currentDiagramElement = null;
+
+function ensureDiagramErrorBox(diagram) {
+    let errorBox = document.getElementById('package-diagram-error');
+    if (errorBox) return errorBox;
+    errorBox = document.createElement('pre');
+    errorBox.id = 'package-diagram-error';
+    errorBox.setAttribute('role', 'alert');
+    errorBox.style.display = 'none';
+    errorBox.style.whiteSpace = 'pre-wrap';
+    errorBox.style.border = '1px solid #cc3333';
+    errorBox.style.background = '#fff5f5';
+    errorBox.style.color = '#222222';
+    errorBox.style.padding = '8px 12px';
+    errorBox.style.margin = '12px 0';
+    diagram.parentNode.insertBefore(errorBox, diagram);
+    return errorBox;
+}
+
+function showDiagramError(message) {
+    const diagram = currentDiagramElement;
+    if (!diagram) return;
+    const errorBox = ensureDiagramErrorBox(diagram);
+    errorBox.textContent = message;
+    errorBox.style.display = '';
+    diagram.style.display = 'none';
+}
+
+function hideDiagramError(diagram) {
+    const errorBox = ensureDiagramErrorBox(diagram);
+    errorBox.textContent = '';
+    errorBox.style.display = 'none';
+    diagram.style.display = '';
+}
 
 function readPackageSummaryData() {
     if (packageSummaryCache) return packageSummaryCache;
@@ -79,6 +113,7 @@ function writePackageTable() {
 function writePackageRelationDiagram(filterFqn, mode) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
+    currentDiagramElement = diagram;
 
     const {packages, relations} = readPackageSummaryData();
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
@@ -181,6 +216,18 @@ function writePackageRelationDiagram(filterFqn, mode) {
     diagram.removeAttribute('data-processed');
     diagram.textContent = lines.join('\n');
     if (window.mermaid) {
+        if (!mermaid.parseError) {
+            mermaid.parseError = function (err, hash) {
+                const message = err && err.message ? err.message : String(err);
+                const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
+                showDiagramError(`Mermaid parse error: ${message}${location}`);
+                console.error('Mermaid parse error:', err);
+                if (hash) {
+                    console.error('Mermaid error location:', hash.line, hash.loc);
+                }
+            };
+        }
+        hideDiagramError(diagram);
         mermaid.initialize({startOnLoad: false, securityLevel: 'loose'});
         mermaid.run({nodes: [diagram]});
     }

@@ -150,6 +150,12 @@ function writePackageTable() {
         writePackageRelationDiagram(fqn, currentPackageFilterMode);
         filterPackageTable(fqn);
     };
+    const applyRelatedFilter = fqn => {
+        if (input) {
+            input.value = fqn;
+        }
+        filterPackageDiagramByFqn(fqn);
+    };
 
     packages.forEach(item => {
         const tr = document.createElement('tr');
@@ -166,6 +172,19 @@ function writePackageTable() {
         actionButton.addEventListener('click', () => applyFilter(item.fqn));
         actionTd.appendChild(actionButton);
         tr.appendChild(actionTd);
+
+        const relatedTd = document.createElement('td');
+        const relatedButton = document.createElement('button');
+        relatedButton.type = 'button';
+        relatedButton.className = 'related-icon';
+        relatedButton.setAttribute('aria-label', '関連のみ表示');
+        const relatedText = document.createElement('span');
+        relatedText.className = 'screen-reader-only';
+        relatedText.textContent = '関連のみ表示';
+        relatedButton.appendChild(relatedText);
+        relatedButton.addEventListener('click', () => applyRelatedFilter(item.fqn));
+        relatedTd.appendChild(relatedButton);
+        tr.appendChild(relatedTd);
 
         const fqnTd = document.createElement('td');
         fqnTd.textContent = item.fqn;

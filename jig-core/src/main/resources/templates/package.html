@@ -51,20 +51,31 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:remove="all">
-            <td><button type="button" class="filter-icon" aria-label="このパッケージで絞り込み"><span class="screen-reader-only">絞り込み</span></button></td>
-            <td class="fqn">com.example</td>
-            <td>えぐざんぷる</td>
-            <td>10</td>
-            <td>2</td>
-            <td>5</td>
-        </tr>
         </tbody>
     </table>
 </main>
 
 <script id="package-data" type="application/json" th:utext="${packagesJson}">
-    {"packages": [{"fqn": "example", "name": "name", "classCount": 0, "description": "desc"}], "relations": [{"from": "example", "to": "example.feature"}]}
+    {
+        "packages": [
+            {"fqn": "com.example", "name": "example", "classCount": 4, "description": "Application root package."},
+            {"fqn": "com.example.api", "name": "api", "classCount": 3, "description": "Web API endpoints."},
+            {"fqn": "com.example.domain", "name": "domain", "classCount": 12, "description": "Domain model."},
+            {"fqn": "com.example.domain.order", "name": "order", "classCount": 5, "description": "Order aggregate."},
+            {"fqn": "com.example.domain.customer", "name": "customer", "classCount": 4, "description": "Customer aggregate."},
+            {"fqn": "com.example.application", "name": "application", "classCount": 6, "description": "Use cases."},
+            {"fqn": "com.example.infrastructure", "name": "infrastructure", "classCount": 8, "description": "Adapters and persistence."},
+            {"fqn": "com.example.infrastructure.db", "name": "db", "classCount": 5, "description": "Database access."}
+        ],
+        "relations": [
+            {"from": "com.example.api", "to": "com.example.application"},
+            {"from": "com.example.application", "to": "com.example.domain"},
+            {"from": "com.example.application", "to": "com.example.infrastructure"},
+            {"from": "com.example.domain.order", "to": "com.example.domain.customer"},
+            {"from": "com.example.infrastructure", "to": "com.example.domain"},
+            {"from": "com.example.infrastructure.db", "to": "com.example.infrastructure"}
+        ]
+    }
 </script>
 
 <th:block th:replace="~{fragment-base::scripts}">

@@ -159,7 +159,7 @@ function writePackageTable() {
         actionButton.className = 'filter-icon';
         actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
         const actionText = document.createElement('span');
-        actionText.className = 'sr-only';
+        actionText.className = 'screen-reader-only';
         actionText.textContent = '絞り込み';
         actionButton.appendChild(actionText);
         actionButton.addEventListener('click', () => applyFilter(item.fqn));

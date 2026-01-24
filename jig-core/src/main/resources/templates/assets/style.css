@@ -41,6 +41,16 @@ aside.notice {
 col.hidden {
     visibility: collapse;
 }
+.screen-reader-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
 .weak {
     font-size: 0.9em;
     color: gray;
@@ -295,16 +305,6 @@ label {
 }
 .package-list table th.no-sort {
     cursor: default;
-}
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
 }
 .package-list table {
     border-collapse: collapse;

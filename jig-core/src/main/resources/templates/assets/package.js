@@ -8,6 +8,7 @@ let lastDiagramText = '';
 let lastDiagramEdgeCount = 0;
 const DEFAULT_MAX_EDGES = 500;
 let currentPackageFilterFqn = null;
+let currentRelatedMode = 'direct';
 
 function ensureDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
@@ -235,13 +236,7 @@ function filterPackageTableByRelated(fqn) {
     }
     const {relations} = readPackageSummaryData();
     const aggregatedRoot = aggregatePackageFqn(fqn, currentPackageDepth);
-    const relatedSet = new Set([aggregatedRoot]);
-    relations.forEach(relation => {
-        const from = aggregatePackageFqn(relation.from, currentPackageDepth);
-        const to = aggregatePackageFqn(relation.to, currentPackageDepth);
-        if (from === aggregatedRoot) relatedSet.add(to);
-        if (to === aggregatedRoot) relatedSet.add(from);
-    });
+    const relatedSet = buildRelatedSet(aggregatedRoot, relations);
     const rows = document.querySelectorAll('#package-table tbody tr');
     rows.forEach(row => {
         const fqnCell = row.querySelector('td.fqn');
@@ -249,6 +244,48 @@ function filterPackageTableByRelated(fqn) {
         const aggregatedRow = aggregatePackageFqn(rowFqn, currentPackageDepth);
         row.classList.toggle('hidden', !relatedSet.has(aggregatedRow));
     });
+}
+
+function buildRelatedSet(root, relations) {
+    if (!root) return new Set();
+    if (currentRelatedMode === 'direct') {
+        const relatedSet = new Set([root]);
+        relations.forEach(relation => {
+            const from = aggregatePackageFqn(relation.from, currentPackageDepth);
+            const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+            if (from === root) relatedSet.add(to);
+            if (to === root) relatedSet.add(from);
+        });
+        return relatedSet;
+    }
+
+    const adjacency = new Map();
+    const addEdge = (from, to) => {
+        if (!adjacency.has(from)) adjacency.set(from, new Set());
+        adjacency.get(from).add(to);
+    };
+    relations.forEach(relation => {
+        const from = aggregatePackageFqn(relation.from, currentPackageDepth);
+        const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+        addEdge(from, to);
+        if (currentRelatedMode === 'all') {
+            addEdge(to, from);
+        }
+    });
+
+    const relatedSet = new Set([root]);
+    const queue = [root];
+    while (queue.length) {
+        const current = queue.shift();
+        const nextSet = adjacency.get(current);
+        if (!nextSet) continue;
+        nextSet.forEach(next => {
+            if (relatedSet.has(next)) return;
+            relatedSet.add(next);
+            queue.push(next);
+        });
+    }
+    return relatedSet;
 }
 
 function writePackageRelationDiagram(filterFqn, mode) {
@@ -284,14 +321,16 @@ function writePackageRelationDiagram(filterFqn, mode) {
     let uniqueRelations = Array.from(uniqueRelationMap.values());
 
     if (aggregatedRoot && mode === 'related') {
-        const relatedSet = new Set([aggregatedRoot]);
-        uniqueRelations.forEach(relation => {
-            if (relation.from === aggregatedRoot) relatedSet.add(relation.to);
-            if (relation.to === aggregatedRoot) relatedSet.add(relation.from);
-        });
-        uniqueRelations = uniqueRelations.filter(relation =>
-            relation.from === aggregatedRoot || relation.to === aggregatedRoot
-        );
+        const relatedSet = buildRelatedSet(aggregatedRoot, uniqueRelations);
+        if (currentRelatedMode === 'direct') {
+            uniqueRelations = uniqueRelations.filter(relation =>
+                relation.from === aggregatedRoot || relation.to === aggregatedRoot
+            );
+        } else {
+            uniqueRelations = uniqueRelations.filter(relation =>
+                relatedSet.has(relation.from) && relatedSet.has(relation.to)
+            );
+        }
         visibleSet.clear();
         relatedSet.forEach(value => visibleSet.add(value));
     } else if (aggregatedRoot && mode === 'scope') {
@@ -416,6 +455,11 @@ function setupPackageFilterInput() {
         currentPackageDepth = 0;
         currentPackageFilterMode = 'scope';
         currentPackageFilterFqn = null;
+        currentRelatedMode = 'direct';
+        const relatedSelect = document.getElementById('related-mode-select');
+        if (relatedSelect) {
+            relatedSelect.value = currentRelatedMode;
+        }
         pendingDiagramRender = null;
         writePackageRelationDiagram(null, currentPackageFilterMode);
         filterPackageTable(null);
@@ -478,6 +522,18 @@ function setupPackageDepthControl() {
     });
 }
 
+function setupRelatedModeControl() {
+    const select = document.getElementById('related-mode-select');
+    if (!select) return;
+    select.value = currentRelatedMode;
+    select.addEventListener('change', () => {
+        currentRelatedMode = select.value;
+        if (currentPackageFilterMode === 'related') {
+            filterPackageDiagramByFqn(currentPackageFilterFqn);
+        }
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("package-list")) return;
     setupSortableTables();
@@ -486,4 +542,5 @@ document.addEventListener("DOMContentLoaded", function () {
     writePackageTable();
     setupPackageFilterInput();
     setupPackageDepthControl();
+    setupRelatedModeControl();
 });

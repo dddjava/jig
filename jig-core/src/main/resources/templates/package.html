@@ -17,14 +17,22 @@
     <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
         <div class="control-row">
-            <label class="control-label" for="package-filter-input">スコープ:</label>
+            <label class="control-label" for="package-depth-select">階層集約:</label>
+            <select id="package-depth-select"></select>
+            <span class="note">凡例: P=パッケージ数 / R=関連数</span>
+        </div>
+        <div class="control-row">
+            <label class="control-label" for="package-filter-input">スコープフィルタ:</label>
             <input id="package-filter-input" type="text" placeholder="com.example">
             <button id="apply-package-filter">適用</button>
         </div>
         <div class="control-row">
-            <label class="control-label" for="package-depth-select">階層集約:</label>
-            <select id="package-depth-select"></select>
-            <span class="note">凡例: P=パッケージ数 / R=関連数</span>
+            <label class="control-label" for="related-mode-select">関連フィルタ:</label>
+            <select id="related-mode-select">
+                <option value="direct">直接</option>
+                <option value="outbound">依存先すべて</option>
+                <option value="all">関連すべて</option>
+            </select>
         </div>
         <button id="reset-package-controls">リセット</button>
     </details>

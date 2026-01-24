@@ -16,7 +16,6 @@
     </aside>
     <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
-        <button id="toggle-description-btn">詳細列を表示/非表示</button>
         <div class="control-row">
             <label class="control-label" for="package-filter-input">パッケージ絞り込み:</label>
             <input id="package-filter-input" type="text" placeholder="com.example">
@@ -39,7 +38,6 @@
             <col class="col-number">
             <col class="col-number">
             <col class="col-number">
-            <col class="col-description">
         </colgroup>
         <thead>
         <tr>
@@ -48,7 +46,6 @@
             <th>クラス数</th>
             <th>関連数（依存元）</th>
             <th>関連数（依存先）</th>
-            <th class="description hidden">詳細</th>
         </tr>
         </thead>
         <tbody>
@@ -58,9 +55,6 @@
             <td>10</td>
             <td>2</td>
             <td>5</td>
-            <td class="description hidden markdown">## アプリケーションのベースパッケージです。
-- システム全体で利用される基本的な構成要素を含みます。
-            </td>
         </tr>
         </tbody>
     </table>

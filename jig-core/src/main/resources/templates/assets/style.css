@@ -38,6 +38,9 @@ aside.notice {
 .hidden {
     display: none;
 }
+col.hidden {
+    visibility: collapse;
+}
 .weak {
     font-size: 0.9em;
     color: gray;

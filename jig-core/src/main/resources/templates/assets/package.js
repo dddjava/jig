@@ -168,11 +168,6 @@ function writePackageTable() {
         outgoingCountTd.className = 'number';
         tr.appendChild(outgoingCountTd);
 
-        const descTd = document.createElement('td');
-        descTd.textContent = item.description;
-        descTd.className = 'description hidden markdown';
-        tr.appendChild(descTd);
-
         tbody.appendChild(tr);
     });
 }
@@ -395,7 +390,6 @@ function setupPackageDepthControl() {
 
 document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("package-list")) return;
-    document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
     setupSortableTables();
     currentPackageFilterMode = 'scope';
     writePackageRelationDiagram(null, currentPackageFilterMode);

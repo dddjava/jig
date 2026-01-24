@@ -180,16 +180,6 @@ function updateLetterNavigationVisibility() {
     });
 }
 
-function toggleDescription() {
-    // クラス名に一致する要素を全部取得
-    const elements = document.getElementsByClassName("description");
-
-    // 各要素に対して「hidden」クラスをトグル（付けたり外したり）する
-    Array.from(elements).forEach(el => {
-        console.log(el);
-        el.classList.toggle("hidden");
-    });
-}
 
 function setupSortableTables() {
     document.querySelectorAll("table.sortable").forEach(table => {

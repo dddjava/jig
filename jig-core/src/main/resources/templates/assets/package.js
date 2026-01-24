@@ -3,11 +3,15 @@ let packageDiagramNodeIdToFqn = new Map();
 let currentPackageDepth = 0;
 let currentPackageFilterMode = 'scope';
 let currentDiagramElement = null;
+let pendingDiagramRender = null;
+let lastDiagramText = '';
+let lastDiagramEdgeCount = 0;
+const DEFAULT_MAX_EDGES = 500;
 
 function ensureDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
     if (errorBox) return errorBox;
-    errorBox = document.createElement('pre');
+    errorBox = document.createElement('div');
     errorBox.id = 'package-diagram-error';
     errorBox.setAttribute('role', 'alert');
     errorBox.style.display = 'none';
@@ -17,24 +21,68 @@ function ensureDiagramErrorBox(diagram) {
     errorBox.style.color = '#222222';
     errorBox.style.padding = '8px 12px';
     errorBox.style.margin = '12px 0';
+
+    const message = document.createElement('pre');
+    message.id = 'package-diagram-error-message';
+    message.style.whiteSpace = 'pre-wrap';
+    message.style.margin = '0 0 8px 0';
+
+    const action = document.createElement('button');
+    action.id = 'package-diagram-error-action';
+    action.type = 'button';
+    action.style.display = 'none';
+    action.textContent = '描画する';
+
+    errorBox.appendChild(message);
+    errorBox.appendChild(action);
     diagram.parentNode.insertBefore(errorBox, diagram);
     return errorBox;
 }
 
-function showDiagramError(message) {
+function showDiagramError(message, withAction) {
     const diagram = currentDiagramElement;
     if (!diagram) return;
     const errorBox = ensureDiagramErrorBox(diagram);
-    errorBox.textContent = message;
+    const messageNode = document.getElementById('package-diagram-error-message');
+    const actionNode = document.getElementById('package-diagram-error-action');
+    if (messageNode) messageNode.textContent = message;
+    if (actionNode) {
+        actionNode.style.display = withAction ? '' : 'none';
+        if (withAction) {
+            actionNode.onclick = function () {
+                if (!pendingDiagramRender) return;
+                renderPackageDiagram(pendingDiagramRender.text, pendingDiagramRender.maxEdges);
+                pendingDiagramRender = null;
+            };
+        } else {
+            actionNode.onclick = null;
+        }
+    }
     errorBox.style.display = '';
     diagram.style.display = 'none';
 }
 
 function hideDiagramError(diagram) {
     const errorBox = ensureDiagramErrorBox(diagram);
-    errorBox.textContent = '';
+    const messageNode = document.getElementById('package-diagram-error-message');
+    const actionNode = document.getElementById('package-diagram-error-action');
+    if (messageNode) messageNode.textContent = '';
+    if (actionNode) {
+        actionNode.style.display = 'none';
+        actionNode.onclick = null;
+    }
     errorBox.style.display = 'none';
     diagram.style.display = '';
+}
+
+function renderPackageDiagram(text, maxEdges) {
+    const diagram = currentDiagramElement;
+    if (!diagram || !window.mermaid) return;
+    hideDiagramError(diagram);
+    diagram.removeAttribute('data-processed');
+    diagram.textContent = text;
+    mermaid.initialize({startOnLoad: false, securityLevel: 'loose', maxEdges: maxEdges});
+    mermaid.run({nodes: [diagram]});
 }
 
 function readPackageSummaryData() {
@@ -213,23 +261,37 @@ function writePackageRelationDiagram(filterFqn, mode) {
     });
     linkStyles.forEach(styleLine => lines.push(styleLine));
 
+    lastDiagramText = lines.join('\n');
+    lastDiagramEdgeCount = uniqueRelations.length;
+    if (lastDiagramEdgeCount > DEFAULT_MAX_EDGES) {
+        pendingDiagramRender = {text: lastDiagramText, maxEdges: lastDiagramEdgeCount};
+        const message = [
+            '関連数が多すぎるため描画を省略しました。',
+            `エッジ数: ${lastDiagramEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+            '描画する場合はボタンを押してください。',
+        ].join('\n');
+        showDiagramError(message, true);
+        return;
+    }
     diagram.removeAttribute('data-processed');
-    diagram.textContent = lines.join('\n');
+    diagram.textContent = lastDiagramText;
     if (window.mermaid) {
         if (!mermaid.parseError) {
             mermaid.parseError = function (err, hash) {
                 const message = err && err.message ? err.message : String(err);
                 const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
-                showDiagramError(`Mermaid parse error: ${message}${location}`);
+                const isEdgeLimit = message.includes('Edge limit exceeded');
+                if (isEdgeLimit) {
+                    pendingDiagramRender = {text: lastDiagramText, maxEdges: lastDiagramEdgeCount};
+                }
+                showDiagramError(`Mermaid parse error: ${message}${location}`, isEdgeLimit);
                 console.error('Mermaid parse error:', err);
                 if (hash) {
                     console.error('Mermaid error location:', hash.line, hash.loc);
                 }
             };
         }
-        hideDiagramError(diagram);
-        mermaid.initialize({startOnLoad: false, securityLevel: 'loose'});
-        mermaid.run({nodes: [diagram]});
+        renderPackageDiagram(lastDiagramText, DEFAULT_MAX_EDGES);
     }
 }
 

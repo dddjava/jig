@@ -452,29 +452,9 @@ window.filterPackageDiagram = function (nodeId) {
 function setupPackageFilterInput() {
     const input = document.getElementById('package-filter-input');
     const applyButton = document.getElementById('apply-package-filter');
-    const resetButton = document.getElementById('reset-package-controls');
+    const clearScopeButton = document.getElementById('clear-scope-filter');
     const depthSelect = document.getElementById('package-depth-select');
-    if (!input || !applyButton || !resetButton) return;
-
-    const resetAll = () => {
-        input.value = '';
-        if (depthSelect) {
-            depthSelect.value = '0';
-        }
-        currentPackageDepth = 0;
-        currentPackageFilterMode = 'scope';
-        currentPackageFilterFqn = null;
-        currentRelatedFilterFqn = null;
-        currentRelatedMode = 'direct';
-        const relatedSelect = document.getElementById('related-mode-select');
-        if (relatedSelect) {
-            relatedSelect.value = currentRelatedMode;
-        }
-        pendingDiagramRender = null;
-        writePackageRelationDiagram(null, currentPackageFilterMode);
-        filterPackageTable(null);
-        updateRelatedFilterTarget();
-    };
+    if (!input || !applyButton || !clearScopeButton) return;
 
     const applyFilter = () => {
         const value = input.value.trim();
@@ -485,9 +465,17 @@ function setupPackageFilterInput() {
         filterPackageTable(value || null);
         updateRelatedFilterTarget();
     };
+    const clearScope = () => {
+        input.value = '';
+        currentPackageFilterFqn = null;
+        currentPackageFilterMode = 'scope';
+        writePackageRelationDiagram(null, currentPackageFilterMode);
+        filterPackageTable(null);
+        updateRelatedFilterTarget();
+    };
 
     applyButton.addEventListener('click', applyFilter);
-    resetButton.addEventListener('click', resetAll);
+    clearScopeButton.addEventListener('click', clearScope);
     input.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -561,6 +549,7 @@ function applyDefaultScopeIfPresent() {
 
 function setupRelatedModeControl() {
     const select = document.getElementById('related-mode-select');
+    const clearButton = document.getElementById('clear-related-filter');
     if (!select) return;
     select.value = currentRelatedMode;
     select.addEventListener('change', () => {
@@ -569,6 +558,16 @@ function setupRelatedModeControl() {
             filterPackageDiagramByFqn(currentRelatedFilterFqn);
         }
     });
+    if (clearButton) {
+        clearButton.addEventListener('click', () => {
+            currentRelatedFilterFqn = null;
+            currentPackageFilterMode = 'scope';
+            const scopeValue = document.getElementById('package-filter-input')?.value.trim() || null;
+            writePackageRelationDiagram(scopeValue || null, currentPackageFilterMode);
+            filterPackageTable(scopeValue || null);
+            updateRelatedFilterTarget();
+        });
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function () {

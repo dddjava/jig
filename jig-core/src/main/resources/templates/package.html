@@ -25,6 +25,7 @@
             <label class="control-label" for="package-filter-input">スコープフィルタ:</label>
             <input id="package-filter-input" type="text" placeholder="com.example">
             <button id="apply-package-filter">適用</button>
+            <button id="clear-scope-filter" type="button">解除</button>
         </div>
         <div class="control-row">
             <label class="control-label" for="related-mode-select">関連フィルタ:</label>
@@ -34,8 +35,8 @@
                 <option value="all">関連すべて</option>
             </select>
             <span class="note" id="related-filter-target">未選択</span>
+            <button id="clear-related-filter" type="button">解除</button>
         </div>
-        <button id="reset-package-controls">リセット</button>
     </details>
 
     <pre id="package-relation-diagram" class="mermaid"></pre>

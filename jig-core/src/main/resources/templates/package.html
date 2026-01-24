@@ -17,17 +17,17 @@
     <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
         <button id="toggle-description-btn">詳細列を表示/非表示</button>
-        <label>
-            パッケージ絞り込み:
+        <div class="control-row">
+            <label class="control-label" for="package-filter-input">パッケージ絞り込み:</label>
             <input id="package-filter-input" type="text" placeholder="com.example">
-        </label>
-        <button id="apply-package-filter">適用</button>
-        <button id="clear-package-filter">クリア</button>
-        <label>
-            階層集約:
+            <button id="apply-package-filter">適用</button>
+        </div>
+        <div class="control-row">
+            <label class="control-label" for="package-depth-select">階層集約:</label>
             <select id="package-depth-select"></select>
-        </label>
-        <span class="note">凡例: P=パッケージ数 / R=関連数</span>
+            <span class="note">凡例: P=パッケージ数 / R=関連数</span>
+        </div>
+        <button id="clear-package-filter">クリア</button>
     </details>
 
     <pre id="package-relation-diagram" class="mermaid"></pre>

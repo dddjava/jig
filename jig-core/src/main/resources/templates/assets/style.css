@@ -220,6 +220,70 @@ label {
     margin-left: 8px;
 }
 
+/* パッケージ概要の表示設定 */
+.package-list details.controls {
+    background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    margin: 1em auto;
+    width: 95%;
+    max-width: 980px;
+}
+.package-list details.controls summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 6px 0;
+    font-weight: 600;
+}
+.package-list details.controls > :not(summary) {
+    display: block;
+    margin: 8px 0;
+}
+.package-list details.controls .control-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.package-list details.controls .control-label {
+    font-weight: 600;
+}
+.package-list details.controls input[type="text"],
+.package-list details.controls select {
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background-color: #fff;
+}
+.package-list details.controls button {
+    padding: 6px 10px;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+.package-list details.controls button:hover {
+    background-color: #e6e6e6;
+}
+.package-list details.controls .note {
+    font-size: 0.9em;
+    color: #555;
+}
+@media (max-width: 720px) {
+    .package-list details.controls .control-row {
+        align-items: flex-start;
+    }
+    .package-list details.controls .control-label {
+        width: 100%;
+    }
+    .package-list details.controls input[type="text"],
+    .package-list details.controls select {
+        width: 100%;
+    }
+}
+
 /* 用語集 / 目次 */
 .glossary .letter-navigation {
     text-align: center;

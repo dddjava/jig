@@ -106,6 +106,11 @@ function packageDepthOf(fqn) {
     return fqn.split('.').length;
 }
 
+function packageDepthOfMax() {
+    const {packages} = readPackageSummaryData();
+    return packages.reduce((max, item) => Math.max(max, packageDepthOf(item.fqn)), 0);
+}
+
 function aggregatePackageFqn(fqn, depth) {
     if (!depth || depth <= 0) return fqn;
     if (!fqn || fqn === '(default)') return fqn;
@@ -150,6 +155,29 @@ function computeAggregationStats(packages, relations, maxDepth) {
     return stats;
 }
 
+function computeAggregationStatsForScope(packages, relations, scopeFqn, maxDepth) {
+    const scopePrefix = scopeFqn ? `${scopeFqn}.` : null;
+    const withinScope = fqn => !scopeFqn || fqn === scopeFqn || fqn.startsWith(scopePrefix);
+    const scopedPackages = packages.filter(item => withinScope(item.fqn));
+    const scopedRelations = relations.filter(relation => withinScope(relation.from) && withinScope(relation.to));
+    return computeAggregationStats(scopedPackages, scopedRelations, maxDepth);
+}
+
+function computeAggregationStatsForRelated(packages, relations, rootFqn, maxDepth) {
+    if (!rootFqn) {
+        return computeAggregationStats(packages, relations, maxDepth);
+    }
+    const aggregatedRoot = aggregatePackageFqn(rootFqn, currentPackageDepth);
+    const relatedSet = buildRelatedSet(aggregatedRoot, relations);
+    const relatedPackages = packages.filter(item => relatedSet.has(aggregatePackageFqn(item.fqn, currentPackageDepth)));
+    const relatedRelations = relations.filter(relation => {
+        const from = aggregatePackageFqn(relation.from, currentPackageDepth);
+        const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+        return relatedSet.has(from) && relatedSet.has(to);
+    });
+    return computeAggregationStats(relatedPackages, relatedRelations, maxDepth);
+}
+
 function writePackageTable() {
     const {packages, relations} = readPackageSummaryData();
     const incomingCounts = new Map();
@@ -174,9 +202,6 @@ function writePackageTable() {
         updateRelatedFilterTarget();
     };
     const applyRelatedFilter = fqn => {
-        if (input) {
-            input.value = fqn;
-        }
         filterPackageDiagramByFqn(fqn);
     };
 
@@ -317,10 +342,12 @@ function renderCurrentDiagramAndTable() {
     if (currentPackageFilterMode === 'related') {
         writePackageRelationDiagram(currentRelatedFilterFqn, currentPackageFilterMode);
         filterPackageTableByRelated(currentRelatedFilterFqn);
+        updatePackageDepthOptions(packageDepthOfMax());
         return;
     }
     writePackageRelationDiagram(currentPackageFilterFqn, currentPackageFilterMode);
     filterPackageTable(currentPackageFilterFqn);
+    updatePackageDepthOptions(packageDepthOfMax());
 }
 
 function writePackageRelationDiagram(filterFqn, mode) {
@@ -579,16 +606,32 @@ function setupPackageDepthControl() {
     if (!select) return;
     const {packages} = readPackageSummaryData();
     const maxDepth = packages.reduce((max, item) => Math.max(max, packageDepthOf(item.fqn)), 0);
-    const {relations} = readPackageSummaryData();
-    const aggregationStats = computeAggregationStats(packages, relations, maxDepth);
+    updatePackageDepthOptions(maxDepth);
+    select.value = String(currentPackageDepth);
+    select.addEventListener('change', () => {
+        currentPackageDepth = Number(select.value);
+        renderCurrentDiagramAndTable();
+        updateRelatedFilterTarget();
+        updatePackageDepthOptions(maxDepth);
+    });
+}
 
+function updatePackageDepthOptions(maxDepth) {
+    const select = document.getElementById('package-depth-select');
+    if (!select) return;
+    const {packages, relations} = readPackageSummaryData();
+    let aggregationStats;
+    if (currentPackageFilterMode === 'related') {
+        aggregationStats = computeAggregationStatsForRelated(packages, relations, currentRelatedFilterFqn, maxDepth);
+    } else {
+        aggregationStats = computeAggregationStatsForScope(packages, relations, currentPackageFilterFqn, maxDepth);
+    }
     select.innerHTML = '';
     const noAggregationOption = document.createElement('option');
     noAggregationOption.value = '0';
     const noAggregationStats = aggregationStats.get(0);
     noAggregationOption.textContent = `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`;
     select.appendChild(noAggregationOption);
-
     for (let depth = 1; depth <= maxDepth; depth += 1) {
         const option = document.createElement('option');
         option.value = String(depth);
@@ -599,13 +642,8 @@ function setupPackageDepthControl() {
         option.textContent = `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`;
         select.appendChild(option);
     }
-
-    select.value = String(currentPackageDepth);
-    select.addEventListener('change', () => {
-        currentPackageDepth = Number(select.value);
-        renderCurrentDiagramAndTable();
-        updateRelatedFilterTarget();
-    });
+    const value = Math.min(currentPackageDepth, maxDepth);
+    select.value = String(value);
 }
 
 function applyDefaultScopeIfPresent() {

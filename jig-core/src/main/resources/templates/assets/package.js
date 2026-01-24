@@ -522,6 +522,28 @@ function setupPackageDepthControl() {
     });
 }
 
+function applyDefaultScopeIfPresent() {
+    const input = document.getElementById('package-filter-input');
+    if (!input || input.value.trim()) return false;
+    const {packages} = readPackageSummaryData();
+    const domainCandidates = packages
+        .map(item => item.fqn)
+        .filter(fqn => /\.domain(\.|$)/.test(fqn));
+    if (domainCandidates.length === 0) return false;
+    const candidate = domainCandidates.reduce((best, current) => {
+        const bestDepth = best.split('.').length;
+        const currentDepth = current.split('.').length;
+        return currentDepth < bestDepth ? current : best;
+    });
+    if (!candidate) return false;
+    input.value = candidate;
+    currentPackageFilterFqn = candidate;
+    currentPackageFilterMode = 'scope';
+    writePackageRelationDiagram(candidate, currentPackageFilterMode);
+    filterPackageTable(candidate);
+    return true;
+}
+
 function setupRelatedModeControl() {
     const select = document.getElementById('related-mode-select');
     if (!select) return;
@@ -537,10 +559,14 @@ function setupRelatedModeControl() {
 document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("package-list")) return;
     setupSortableTables();
-    currentPackageFilterMode = 'scope';
-    writePackageRelationDiagram(null, currentPackageFilterMode);
     writePackageTable();
     setupPackageFilterInput();
     setupPackageDepthControl();
     setupRelatedModeControl();
+    currentPackageFilterMode = 'scope';
+    const applied = applyDefaultScopeIfPresent();
+    if (!applied) {
+        writePackageRelationDiagram(null, currentPackageFilterMode);
+        filterPackageTable(null);
+    }
 });

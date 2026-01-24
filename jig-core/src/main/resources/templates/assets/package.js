@@ -7,6 +7,7 @@ let pendingDiagramRender = null;
 let lastDiagramText = '';
 let lastDiagramEdgeCount = 0;
 const DEFAULT_MAX_EDGES = 500;
+let currentPackageFilterFqn = null;
 
 function ensureDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
@@ -146,6 +147,7 @@ function writePackageTable() {
         if (input) {
             input.value = fqn;
         }
+        currentPackageFilterFqn = fqn;
         currentPackageFilterMode = 'scope';
         writePackageRelationDiagram(fqn, currentPackageFilterMode);
         filterPackageTable(fqn);
@@ -154,6 +156,7 @@ function writePackageTable() {
         if (input) {
             input.value = fqn;
         }
+        currentPackageFilterFqn = fqn;
         filterPackageDiagramByFqn(fqn);
     };
 
@@ -222,6 +225,29 @@ function filterPackageTable(scopeFqn) {
         const fqn = fqnCell ? fqnCell.textContent : '';
         const visible = !scopeFqn || fqn === scopeFqn || fqn.startsWith(scopePrefix);
         row.classList.toggle('hidden', !visible);
+    });
+}
+
+function filterPackageTableByRelated(fqn) {
+    if (!fqn) {
+        filterPackageTable(null);
+        return;
+    }
+    const {relations} = readPackageSummaryData();
+    const aggregatedRoot = aggregatePackageFqn(fqn, currentPackageDepth);
+    const relatedSet = new Set([aggregatedRoot]);
+    relations.forEach(relation => {
+        const from = aggregatePackageFqn(relation.from, currentPackageDepth);
+        const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+        if (from === aggregatedRoot) relatedSet.add(to);
+        if (to === aggregatedRoot) relatedSet.add(from);
+    });
+    const rows = document.querySelectorAll('#package-table tbody tr');
+    rows.forEach(row => {
+        const fqnCell = row.querySelector('td.fqn');
+        const rowFqn = fqnCell ? fqnCell.textContent : '';
+        const aggregatedRow = aggregatePackageFqn(rowFqn, currentPackageDepth);
+        row.classList.toggle('hidden', !relatedSet.has(aggregatedRow));
     });
 }
 
@@ -363,8 +389,10 @@ function writePackageRelationDiagram(filterFqn, mode) {
 }
 
 function filterPackageDiagramByFqn(fqn) {
+    currentPackageFilterFqn = fqn;
     currentPackageFilterMode = 'related';
     writePackageRelationDiagram(fqn, currentPackageFilterMode);
+    filterPackageTableByRelated(fqn);
 }
 
 window.filterPackageDiagram = function (nodeId) {
@@ -387,6 +415,7 @@ function setupPackageFilterInput() {
         }
         currentPackageDepth = 0;
         currentPackageFilterMode = 'scope';
+        currentPackageFilterFqn = null;
         pendingDiagramRender = null;
         writePackageRelationDiagram(null, currentPackageFilterMode);
         filterPackageTable(null);
@@ -394,6 +423,7 @@ function setupPackageFilterInput() {
 
     const applyFilter = () => {
         const value = input.value.trim();
+        currentPackageFilterFqn = value || null;
         currentPackageFilterMode = 'scope';
         writePackageRelationDiagram(value || null, currentPackageFilterMode);
         filterPackageTable(value || null);
@@ -440,6 +470,11 @@ function setupPackageDepthControl() {
         currentPackageDepth = Number(select.value);
         const value = document.getElementById('package-filter-input')?.value.trim() || null;
         writePackageRelationDiagram(value, currentPackageFilterMode);
+        if (currentPackageFilterMode === 'related') {
+            filterPackageTableByRelated(value);
+        } else {
+            filterPackageTable(value);
+        }
     });
 }
 

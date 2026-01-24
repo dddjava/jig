@@ -7,7 +7,7 @@ let pendingDiagramRender = null;
 let lastDiagramSource = '';
 let lastDiagramEdgeCount = 0;
 const DEFAULT_MAX_EDGES = 500;
-let scopeFilterFqn = null;
+let packageFilterFqn = null;
 let relatedFilterMode = 'direct';
 let relatedFilterFqn = null;
 let diagramDirection = 'TD';
@@ -155,12 +155,12 @@ function buildAggregationStats(packages, relations, maxDepth) {
     return stats;
 }
 
-function buildAggregationStatsForScope(packages, relations, scopeFqn, maxDepth) {
-    const scopePrefix = scopeFqn ? `${scopeFqn}.` : null;
-    const withinScope = fqn => !scopeFqn || fqn === scopeFqn || fqn.startsWith(scopePrefix);
-    const scopedPackages = packages.filter(item => withinScope(item.fqn));
-    const scopedRelations = relations.filter(relation => withinScope(relation.from) && withinScope(relation.to));
-    return buildAggregationStats(scopedPackages, scopedRelations, maxDepth);
+function buildAggregationStatsForPackageFilter(packages, relations, packageFilterFqn, maxDepth) {
+    const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
+    const withinFilter = fqn => !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix);
+    const filteredPackages = packages.filter(item => withinFilter(item.fqn));
+    const filteredRelations = relations.filter(relation => withinFilter(relation.from) && withinFilter(relation.to));
+    return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
 function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth) {
@@ -195,7 +195,7 @@ function renderPackageTable() {
         if (input) {
             input.value = fqn;
         }
-        scopeFilterFqn = fqn;
+        packageFilterFqn = fqn;
         relatedFilterFqn = null;
         activeFilterMode = 'scope';
         renderDiagramAndTable();
@@ -262,20 +262,20 @@ function renderPackageTable() {
     });
 }
 
-function applyScopeFilterToTable(scopeFqn) {
+function applyPackageFilterToTable(packageFilterFqn) {
     const rows = document.querySelectorAll('#package-table tbody tr');
-    const scopePrefix = scopeFqn ? `${scopeFqn}.` : null;
+    const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     rows.forEach(row => {
         const fqnCell = row.querySelector('td.fqn');
         const fqn = fqnCell ? fqnCell.textContent : '';
-        const visible = !scopeFqn || fqn === scopeFqn || fqn.startsWith(scopePrefix);
+        const visible = !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix);
         row.classList.toggle('hidden', !visible);
     });
 }
 
 function applyRelatedFilterToTable(fqn) {
     if (!fqn) {
-        applyScopeFilterToTable(null);
+        applyPackageFilterToTable(null);
         return;
     }
     const {relations} = getPackageSummaryData();
@@ -345,8 +345,8 @@ function renderDiagramAndTable() {
         updateAggregationDepthOptions(getMaxPackageDepth());
         return;
     }
-    renderPackageDiagram(scopeFilterFqn, activeFilterMode);
-    applyScopeFilterToTable(scopeFilterFqn);
+    renderPackageDiagram(packageFilterFqn, activeFilterMode);
+    applyPackageFilterToTable(packageFilterFqn);
     updateAggregationDepthOptions(getMaxPackageDepth());
 }
 
@@ -568,7 +568,7 @@ window.filterPackageDiagram = function (nodeId) {
     applyRelatedFilter(fqn);
 };
 
-function setupScopeFilterControls() {
+function setupPackageFilterControls() {
     const input = document.getElementById('package-filter-input');
     const applyButton = document.getElementById('apply-package-filter');
     const clearScopeButton = document.getElementById('clear-scope-filter');
@@ -577,7 +577,7 @@ function setupScopeFilterControls() {
 
     const applyFilter = () => {
         const value = input.value.trim();
-        scopeFilterFqn = value || null;
+        packageFilterFqn = value || null;
         relatedFilterFqn = null;
         activeFilterMode = 'scope';
         renderDiagramAndTable();
@@ -585,7 +585,7 @@ function setupScopeFilterControls() {
     };
     const clearScope = () => {
         input.value = '';
-        scopeFilterFqn = null;
+        packageFilterFqn = null;
         activeFilterMode = 'scope';
         renderDiagramAndTable();
         renderRelatedFilterTarget();
@@ -624,7 +624,7 @@ function updateAggregationDepthOptions(maxDepth) {
     if (activeFilterMode === 'related') {
         aggregationStats = buildAggregationStatsForRelated(packages, relations, relatedFilterFqn, maxDepth);
     } else {
-        aggregationStats = buildAggregationStatsForScope(packages, relations, scopeFilterFqn, maxDepth);
+        aggregationStats = buildAggregationStatsForPackageFilter(packages, relations, packageFilterFqn, maxDepth);
     }
     select.innerHTML = '';
     const noAggregationOption = document.createElement('option');
@@ -667,7 +667,7 @@ function applyDefaultScopeIfPresent() {
     });
     if (!candidate) return false;
     input.value = candidate;
-    scopeFilterFqn = candidate;
+    packageFilterFqn = candidate;
     activeFilterMode = 'scope';
     renderDiagramAndTable();
     return true;
@@ -688,7 +688,7 @@ function setupRelatedFilterControls() {
         clearButton.addEventListener('click', () => {
             relatedFilterFqn = null;
             activeFilterMode = 'scope';
-            scopeFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
+            packageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
             renderDiagramAndTable();
             renderRelatedFilterTarget();
         });
@@ -713,7 +713,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("package-list")) return;
     setupSortableTables();
     renderPackageTable();
-    setupScopeFilterControls();
+    setupPackageFilterControls();
     setupAggregationDepthControl();
     setupRelatedFilterControls();
     setupDiagramDirectionControls();

@@ -1,18 +1,18 @@
 let packageSummaryCache = null;
-let packageDiagramNodeIdToFqn = new Map();
-let currentPackageDepth = 0;
-let currentPackageFilterMode = 'scope';
-let currentDiagramElement = null;
+let diagramNodeIdToFqn = new Map();
+let aggregationDepth = 0;
+let activeFilterMode = 'scope';
+let diagramElement = null;
 let pendingDiagramRender = null;
-let lastDiagramText = '';
+let lastDiagramSource = '';
 let lastDiagramEdgeCount = 0;
 const DEFAULT_MAX_EDGES = 500;
-let currentPackageFilterFqn = null;
-let currentRelatedMode = 'direct';
-let currentRelatedFilterFqn = null;
-let currentDiagramDirection = 'TD';
+let scopeFilterFqn = null;
+let relatedFilterMode = 'direct';
+let relatedFilterFqn = null;
+let diagramDirection = 'TD';
 
-function ensureDiagramErrorBox(diagram) {
+function getOrCreateDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
     if (errorBox) return errorBox;
     errorBox = document.createElement('div');
@@ -43,10 +43,10 @@ function ensureDiagramErrorBox(diagram) {
     return errorBox;
 }
 
-function showDiagramError(message, withAction) {
-    const diagram = currentDiagramElement;
+function showDiagramErrorMessage(message, withAction) {
+    const diagram = diagramElement;
     if (!diagram) return;
-    const errorBox = ensureDiagramErrorBox(diagram);
+    const errorBox = getOrCreateDiagramErrorBox(diagram);
     const messageNode = document.getElementById('package-diagram-error-message');
     const actionNode = document.getElementById('package-diagram-error-action');
     if (messageNode) messageNode.textContent = message;
@@ -55,7 +55,7 @@ function showDiagramError(message, withAction) {
         if (withAction) {
             actionNode.onclick = function () {
                 if (!pendingDiagramRender) return;
-                renderPackageDiagram(pendingDiagramRender.text, pendingDiagramRender.maxEdges);
+                renderDiagramSvg(pendingDiagramRender.text, pendingDiagramRender.maxEdges);
                 pendingDiagramRender = null;
             };
         } else {
@@ -66,8 +66,8 @@ function showDiagramError(message, withAction) {
     diagram.style.display = 'none';
 }
 
-function hideDiagramError(diagram) {
-    const errorBox = ensureDiagramErrorBox(diagram);
+function hideDiagramErrorMessage(diagram) {
+    const errorBox = getOrCreateDiagramErrorBox(diagram);
     const messageNode = document.getElementById('package-diagram-error-message');
     const actionNode = document.getElementById('package-diagram-error-action');
     if (messageNode) messageNode.textContent = '';
@@ -79,17 +79,17 @@ function hideDiagramError(diagram) {
     diagram.style.display = '';
 }
 
-function renderPackageDiagram(text, maxEdges) {
-    const diagram = currentDiagramElement;
+function renderDiagramSvg(text, maxEdges) {
+    const diagram = diagramElement;
     if (!diagram || !window.mermaid) return;
-    hideDiagramError(diagram);
+    hideDiagramErrorMessage(diagram);
     diagram.removeAttribute('data-processed');
     diagram.textContent = text;
     mermaid.initialize({startOnLoad: false, securityLevel: 'loose', maxEdges: maxEdges});
     mermaid.run({nodes: [diagram]});
 }
 
-function readPackageSummaryData() {
+function getPackageSummaryData() {
     if (packageSummaryCache) return packageSummaryCache;
     const jsonText = document.getElementById('package-data').textContent;
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
@@ -101,17 +101,17 @@ function readPackageSummaryData() {
     return packageSummaryCache;
 }
 
-function packageDepthOf(fqn) {
+function getPackageDepth(fqn) {
     if (!fqn || fqn === '(default)') return 0;
     return fqn.split('.').length;
 }
 
-function packageDepthOfMax() {
-    const {packages} = readPackageSummaryData();
-    return packages.reduce((max, item) => Math.max(max, packageDepthOf(item.fqn)), 0);
+function getMaxPackageDepth() {
+    const {packages} = getPackageSummaryData();
+    return packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
 }
 
-function aggregatePackageFqn(fqn, depth) {
+function getAggregatedFqn(fqn, depth) {
     if (!depth || depth <= 0) return fqn;
     if (!fqn || fqn === '(default)') return fqn;
     const parts = fqn.split('.');
@@ -119,7 +119,7 @@ function aggregatePackageFqn(fqn, depth) {
     return parts.slice(0, depth).join('.');
 }
 
-function commonPrefixDepth(fqns) {
+function getCommonPrefixDepth(fqns) {
     if (!fqns || fqns.length === 0) return 0;
     const firstParts = fqns[0].split('.');
     let depth = firstParts.length;
@@ -136,14 +136,14 @@ function commonPrefixDepth(fqns) {
     return depth;
 }
 
-function computeAggregationStats(packages, relations, maxDepth) {
+function buildAggregationStats(packages, relations, maxDepth) {
     const stats = new Map();
     for (let depth = 0; depth <= maxDepth; depth += 1) {
-        const aggregatedPackages = new Set(packages.map(item => aggregatePackageFqn(item.fqn, depth)));
+        const aggregatedPackages = new Set(packages.map(item => getAggregatedFqn(item.fqn, depth)));
         const relationKeys = new Set();
         relations.forEach(relation => {
-            const from = aggregatePackageFqn(relation.from, depth);
-            const to = aggregatePackageFqn(relation.to, depth);
+            const from = getAggregatedFqn(relation.from, depth);
+            const to = getAggregatedFqn(relation.to, depth);
             if (from === to) return;
             relationKeys.add(`${from}::${to}`);
         });
@@ -155,31 +155,31 @@ function computeAggregationStats(packages, relations, maxDepth) {
     return stats;
 }
 
-function computeAggregationStatsForScope(packages, relations, scopeFqn, maxDepth) {
+function buildAggregationStatsForScope(packages, relations, scopeFqn, maxDepth) {
     const scopePrefix = scopeFqn ? `${scopeFqn}.` : null;
     const withinScope = fqn => !scopeFqn || fqn === scopeFqn || fqn.startsWith(scopePrefix);
     const scopedPackages = packages.filter(item => withinScope(item.fqn));
     const scopedRelations = relations.filter(relation => withinScope(relation.from) && withinScope(relation.to));
-    return computeAggregationStats(scopedPackages, scopedRelations, maxDepth);
+    return buildAggregationStats(scopedPackages, scopedRelations, maxDepth);
 }
 
-function computeAggregationStatsForRelated(packages, relations, rootFqn, maxDepth) {
+function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth) {
     if (!rootFqn) {
-        return computeAggregationStats(packages, relations, maxDepth);
+        return buildAggregationStats(packages, relations, maxDepth);
     }
-    const aggregatedRoot = aggregatePackageFqn(rootFqn, currentPackageDepth);
-    const relatedSet = buildRelatedSet(aggregatedRoot, relations);
-    const relatedPackages = packages.filter(item => relatedSet.has(aggregatePackageFqn(item.fqn, currentPackageDepth)));
+    const aggregatedRoot = getAggregatedFqn(rootFqn, aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, relations);
+    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth)));
     const relatedRelations = relations.filter(relation => {
-        const from = aggregatePackageFqn(relation.from, currentPackageDepth);
-        const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
         return relatedSet.has(from) && relatedSet.has(to);
     });
-    return computeAggregationStats(relatedPackages, relatedRelations, maxDepth);
+    return buildAggregationStats(relatedPackages, relatedRelations, maxDepth);
 }
 
-function writePackageTable() {
-    const {packages, relations} = readPackageSummaryData();
+function renderPackageTable() {
+    const {packages, relations} = getPackageSummaryData();
     const incomingCounts = new Map();
     const outgoingCounts = new Map();
     relations.forEach(relation => {
@@ -195,14 +195,14 @@ function writePackageTable() {
         if (input) {
             input.value = fqn;
         }
-        currentPackageFilterFqn = fqn;
-        currentRelatedFilterFqn = null;
-        currentPackageFilterMode = 'scope';
-        renderCurrentDiagramAndTable();
-        updateRelatedFilterTarget();
+        scopeFilterFqn = fqn;
+        relatedFilterFqn = null;
+        activeFilterMode = 'scope';
+        renderDiagramAndTable();
+        renderRelatedFilterTarget();
     };
-    const applyRelatedFilter = fqn => {
-        filterPackageDiagramByFqn(fqn);
+    const applyRelatedFilterForRow = fqn => {
+        applyRelatedFilter(fqn);
     };
 
     packages.forEach(item => {
@@ -230,7 +230,7 @@ function writePackageTable() {
         relatedText.className = 'screen-reader-only';
         relatedText.textContent = '関連のみ表示';
         relatedButton.appendChild(relatedText);
-        relatedButton.addEventListener('click', () => applyRelatedFilter(item.fqn));
+        relatedButton.addEventListener('click', () => applyRelatedFilterForRow(item.fqn));
         relatedTd.appendChild(relatedButton);
         tr.appendChild(relatedTd);
 
@@ -262,7 +262,7 @@ function writePackageTable() {
     });
 }
 
-function filterPackageTable(scopeFqn) {
+function applyScopeFilterToTable(scopeFqn) {
     const rows = document.querySelectorAll('#package-table tbody tr');
     const scopePrefix = scopeFqn ? `${scopeFqn}.` : null;
     rows.forEach(row => {
@@ -273,36 +273,36 @@ function filterPackageTable(scopeFqn) {
     });
 }
 
-function filterPackageTableByRelated(fqn) {
+function applyRelatedFilterToTable(fqn) {
     if (!fqn) {
-        filterPackageTable(null);
+        applyScopeFilterToTable(null);
         return;
     }
-    const {relations} = readPackageSummaryData();
-    const aggregatedRoot = aggregatePackageFqn(fqn, currentPackageDepth);
-    const relatedSet = buildRelatedSet(aggregatedRoot, relations);
+    const {relations} = getPackageSummaryData();
+    const aggregatedRoot = getAggregatedFqn(fqn, aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, relations);
     const rows = document.querySelectorAll('#package-table tbody tr');
     rows.forEach(row => {
         const fqnCell = row.querySelector('td.fqn');
         const rowFqn = fqnCell ? fqnCell.textContent : '';
-        const aggregatedRow = aggregatePackageFqn(rowFqn, currentPackageDepth);
+        const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
         row.classList.toggle('hidden', !relatedSet.has(aggregatedRow));
     });
 }
 
-function updateRelatedFilterTarget() {
+function renderRelatedFilterTarget() {
     const target = document.getElementById('related-filter-target');
     if (!target) return;
-    target.textContent = currentRelatedFilterFqn ? currentRelatedFilterFqn : '未選択';
+    target.textContent = relatedFilterFqn ? relatedFilterFqn : '未選択';
 }
 
-function buildRelatedSet(root, relations) {
+function collectRelatedSet(root, relations) {
     if (!root) return new Set();
-    if (currentRelatedMode === 'direct') {
+    if (relatedFilterMode === 'direct') {
         const relatedSet = new Set([root]);
         relations.forEach(relation => {
-            const from = aggregatePackageFqn(relation.from, currentPackageDepth);
-            const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+            const from = getAggregatedFqn(relation.from, aggregationDepth);
+            const to = getAggregatedFqn(relation.to, aggregationDepth);
             if (from === root) relatedSet.add(to);
             if (to === root) relatedSet.add(from);
         });
@@ -315,10 +315,10 @@ function buildRelatedSet(root, relations) {
         adjacency.get(from).add(to);
     };
     relations.forEach(relation => {
-        const from = aggregatePackageFqn(relation.from, currentPackageDepth);
-        const to = aggregatePackageFqn(relation.to, currentPackageDepth);
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
         addEdge(from, to);
-        if (currentRelatedMode === 'all') {
+        if (relatedFilterMode === 'all') {
             addEdge(to, from);
         }
     });
@@ -338,42 +338,42 @@ function buildRelatedSet(root, relations) {
     return relatedSet;
 }
 
-function renderCurrentDiagramAndTable() {
-    if (currentPackageFilterMode === 'related') {
-        writePackageRelationDiagram(currentRelatedFilterFqn, currentPackageFilterMode);
-        filterPackageTableByRelated(currentRelatedFilterFqn);
-        updatePackageDepthOptions(packageDepthOfMax());
+function renderDiagramAndTable() {
+    if (activeFilterMode === 'related') {
+        renderPackageDiagram(relatedFilterFqn, activeFilterMode);
+        applyRelatedFilterToTable(relatedFilterFqn);
+        updateAggregationDepthOptions(getMaxPackageDepth());
         return;
     }
-    writePackageRelationDiagram(currentPackageFilterFqn, currentPackageFilterMode);
-    filterPackageTable(currentPackageFilterFqn);
-    updatePackageDepthOptions(packageDepthOfMax());
+    renderPackageDiagram(scopeFilterFqn, activeFilterMode);
+    applyScopeFilterToTable(scopeFilterFqn);
+    updateAggregationDepthOptions(getMaxPackageDepth());
 }
 
-function writePackageRelationDiagram(filterFqn, mode) {
+function renderPackageDiagram(filterFqn, mode) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
-    currentDiagramElement = diagram;
+    diagramElement = diagram;
 
-    const {packages, relations} = readPackageSummaryData();
+    const {packages, relations} = getPackageSummaryData();
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const lines = [`graph ${currentDiagramDirection}`];
-    const aggregatedRoot = filterFqn ? aggregatePackageFqn(filterFqn, currentPackageDepth) : null;
+    const lines = [`graph ${diagramDirection}`];
+    const aggregatedRoot = filterFqn ? getAggregatedFqn(filterFqn, aggregationDepth) : null;
     const scopePrefix = filterFqn ? `${filterFqn}.` : null;
     const withinScope = fqn => !filterFqn || fqn === filterFqn || fqn.startsWith(scopePrefix);
     const visiblePackages = mode === 'scope'
         ? packages.filter(item => withinScope(item.fqn))
         : packages;
-    const visibleSet = new Set(visiblePackages.map(item => aggregatePackageFqn(item.fqn, currentPackageDepth)));
+    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
     const filteredRelations = relations.filter(relation => {
         if (mode !== 'scope') return true;
         return withinScope(relation.from) && withinScope(relation.to);
     });
     const visibleRelations = filteredRelations
         .map(relation => ({
-            from: aggregatePackageFqn(relation.from, currentPackageDepth),
-            to: aggregatePackageFqn(relation.to, currentPackageDepth),
+            from: getAggregatedFqn(relation.from, aggregationDepth),
+            to: getAggregatedFqn(relation.to, aggregationDepth),
         }))
         .filter(relation => relation.from !== relation.to);
     const uniqueRelationMap = new Map();
@@ -383,8 +383,8 @@ function writePackageRelationDiagram(filterFqn, mode) {
     let uniqueRelations = Array.from(uniqueRelationMap.values());
 
     if (aggregatedRoot && mode === 'related') {
-        const relatedSet = buildRelatedSet(aggregatedRoot, uniqueRelations);
-        if (currentRelatedMode === 'direct') {
+        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations);
+        if (relatedFilterMode === 'direct') {
             uniqueRelations = uniqueRelations.filter(relation =>
                 relation.from === aggregatedRoot || relation.to === aggregatedRoot
             );
@@ -411,14 +411,14 @@ function writePackageRelationDiagram(filterFqn, mode) {
     });
 
     const nodeIdByFqn = new Map();
-    packageDiagramNodeIdToFqn = new Map();
+    diagramNodeIdToFqn = new Map();
     const nodeLabelById = new Map();
     let nodeIndex = 0;
     const ensureNodeId = fqn => {
         if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
         const nodeId = `P${nodeIndex++}`;
         nodeIdByFqn.set(fqn, nodeId);
-        packageDiagramNodeIdToFqn.set(nodeId, fqn);
+        diagramNodeIdToFqn.set(nodeId, fqn);
         const label = nameByFqn.get(fqn) || fqn;
         nodeLabelById.set(nodeId, label);
         return nodeId;
@@ -469,13 +469,13 @@ function writePackageRelationDiagram(filterFqn, mode) {
         const label = nodeLabelById.get(nodeId);
         lines.push(`${nodeId}["${escapeMermaidText(label)}"]`);
         lines.push(`click ${nodeId} filterPackageDiagram`);
-        const fqn = packageDiagramNodeIdToFqn.get(nodeId);
+        const fqn = diagramNodeIdToFqn.get(nodeId);
         if (fqn && parentFqns.has(fqn)) {
             lines.push(`class ${nodeId} parentPackage`);
         }
     };
 
-    const prefixDepth = commonPrefixDepth(visibleFqns);
+    const prefixDepth = getCommonPrefixDepth(visibleFqns);
     const baseDepth = Math.max(prefixDepth - 1, 0);
     let groupIndex = 0;
     const createGroupNode = key => ({key, children: new Map(), nodes: []});
@@ -521,20 +521,20 @@ function writePackageRelationDiagram(filterFqn, mode) {
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
 
-    lastDiagramText = lines.join('\n');
+    lastDiagramSource = lines.join('\n');
     lastDiagramEdgeCount = uniqueRelations.length;
     if (lastDiagramEdgeCount > DEFAULT_MAX_EDGES) {
-        pendingDiagramRender = {text: lastDiagramText, maxEdges: lastDiagramEdgeCount};
+        pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
         const message = [
             '関連数が多すぎるため描画を省略しました。',
             `エッジ数: ${lastDiagramEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
             '描画する場合はボタンを押してください。',
         ].join('\n');
-        showDiagramError(message, true);
+        showDiagramErrorMessage(message, true);
         return;
     }
     diagram.removeAttribute('data-processed');
-    diagram.textContent = lastDiagramText;
+    diagram.textContent = lastDiagramSource;
     if (window.mermaid) {
         if (!mermaid.parseError) {
             mermaid.parseError = function (err, hash) {
@@ -542,33 +542,33 @@ function writePackageRelationDiagram(filterFqn, mode) {
                 const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
                 const isEdgeLimit = message.includes('Edge limit exceeded');
                 if (isEdgeLimit) {
-                    pendingDiagramRender = {text: lastDiagramText, maxEdges: lastDiagramEdgeCount};
+                    pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
                 }
-                showDiagramError(`Mermaid parse error: ${message}${location}`, isEdgeLimit);
+                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit);
                 console.error('Mermaid parse error:', err);
                 if (hash) {
                     console.error('Mermaid error location:', hash.line, hash.loc);
                 }
             };
         }
-        renderPackageDiagram(lastDiagramText, DEFAULT_MAX_EDGES);
+        renderDiagramSvg(lastDiagramSource, DEFAULT_MAX_EDGES);
     }
 }
 
-function filterPackageDiagramByFqn(fqn) {
-    currentRelatedFilterFqn = fqn;
-    currentPackageFilterMode = 'related';
-    renderCurrentDiagramAndTable();
-    updateRelatedFilterTarget();
+function applyRelatedFilter(fqn) {
+    relatedFilterFqn = fqn;
+    activeFilterMode = 'related';
+    renderDiagramAndTable();
+    renderRelatedFilterTarget();
 }
 
 window.filterPackageDiagram = function (nodeId) {
-    const fqn = packageDiagramNodeIdToFqn.get(nodeId);
+    const fqn = diagramNodeIdToFqn.get(nodeId);
     if (!fqn) return;
-    filterPackageDiagramByFqn(fqn);
+    applyRelatedFilter(fqn);
 };
 
-function setupPackageFilterInput() {
+function setupScopeFilterControls() {
     const input = document.getElementById('package-filter-input');
     const applyButton = document.getElementById('apply-package-filter');
     const clearScopeButton = document.getElementById('clear-scope-filter');
@@ -577,18 +577,18 @@ function setupPackageFilterInput() {
 
     const applyFilter = () => {
         const value = input.value.trim();
-        currentPackageFilterFqn = value || null;
-        currentRelatedFilterFqn = null;
-        currentPackageFilterMode = 'scope';
-        renderCurrentDiagramAndTable();
-        updateRelatedFilterTarget();
+        scopeFilterFqn = value || null;
+        relatedFilterFqn = null;
+        activeFilterMode = 'scope';
+        renderDiagramAndTable();
+        renderRelatedFilterTarget();
     };
     const clearScope = () => {
         input.value = '';
-        currentPackageFilterFqn = null;
-        currentPackageFilterMode = 'scope';
-        renderCurrentDiagramAndTable();
-        updateRelatedFilterTarget();
+        scopeFilterFqn = null;
+        activeFilterMode = 'scope';
+        renderDiagramAndTable();
+        renderRelatedFilterTarget();
     };
 
     applyButton.addEventListener('click', applyFilter);
@@ -601,30 +601,30 @@ function setupPackageFilterInput() {
     });
 }
 
-function setupPackageDepthControl() {
+function setupAggregationDepthControl() {
     const select = document.getElementById('package-depth-select');
     if (!select) return;
-    const {packages} = readPackageSummaryData();
-    const maxDepth = packages.reduce((max, item) => Math.max(max, packageDepthOf(item.fqn)), 0);
-    updatePackageDepthOptions(maxDepth);
-    select.value = String(currentPackageDepth);
+    const {packages} = getPackageSummaryData();
+    const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
+    updateAggregationDepthOptions(maxDepth);
+    select.value = String(aggregationDepth);
     select.addEventListener('change', () => {
-        currentPackageDepth = Number(select.value);
-        renderCurrentDiagramAndTable();
-        updateRelatedFilterTarget();
-        updatePackageDepthOptions(maxDepth);
+        aggregationDepth = Number(select.value);
+        renderDiagramAndTable();
+        renderRelatedFilterTarget();
+        updateAggregationDepthOptions(maxDepth);
     });
 }
 
-function updatePackageDepthOptions(maxDepth) {
+function updateAggregationDepthOptions(maxDepth) {
     const select = document.getElementById('package-depth-select');
     if (!select) return;
-    const {packages, relations} = readPackageSummaryData();
+    const {packages, relations} = getPackageSummaryData();
     let aggregationStats;
-    if (currentPackageFilterMode === 'related') {
-        aggregationStats = computeAggregationStatsForRelated(packages, relations, currentRelatedFilterFqn, maxDepth);
+    if (activeFilterMode === 'related') {
+        aggregationStats = buildAggregationStatsForRelated(packages, relations, relatedFilterFqn, maxDepth);
     } else {
-        aggregationStats = computeAggregationStatsForScope(packages, relations, currentPackageFilterFqn, maxDepth);
+        aggregationStats = buildAggregationStatsForScope(packages, relations, scopeFilterFqn, maxDepth);
     }
     select.innerHTML = '';
     const noAggregationOption = document.createElement('option');
@@ -642,14 +642,14 @@ function updatePackageDepthOptions(maxDepth) {
         option.textContent = `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`;
         select.appendChild(option);
     }
-    const value = Math.min(currentPackageDepth, maxDepth);
+    const value = Math.min(aggregationDepth, maxDepth);
     select.value = String(value);
 }
 
 function applyDefaultScopeIfPresent() {
     const input = document.getElementById('package-filter-input');
     if (!input || input.value.trim()) return false;
-    const {packages} = readPackageSummaryData();
+    const {packages} = getPackageSummaryData();
     const domainRoots = packages
         .map(item => item.fqn)
         .map(fqn => {
@@ -667,44 +667,44 @@ function applyDefaultScopeIfPresent() {
     });
     if (!candidate) return false;
     input.value = candidate;
-    currentPackageFilterFqn = candidate;
-    currentPackageFilterMode = 'scope';
-    renderCurrentDiagramAndTable();
+    scopeFilterFqn = candidate;
+    activeFilterMode = 'scope';
+    renderDiagramAndTable();
     return true;
 }
 
-function setupRelatedModeControl() {
+function setupRelatedFilterControls() {
     const select = document.getElementById('related-mode-select');
     const clearButton = document.getElementById('clear-related-filter');
     if (!select) return;
-    select.value = currentRelatedMode;
+    select.value = relatedFilterMode;
     select.addEventListener('change', () => {
-        currentRelatedMode = select.value;
-        if (currentPackageFilterMode === 'related') {
-            renderCurrentDiagramAndTable();
+        relatedFilterMode = select.value;
+        if (activeFilterMode === 'related') {
+            renderDiagramAndTable();
         }
     });
     if (clearButton) {
         clearButton.addEventListener('click', () => {
-            currentRelatedFilterFqn = null;
-            currentPackageFilterMode = 'scope';
-            currentPackageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
-            renderCurrentDiagramAndTable();
-            updateRelatedFilterTarget();
+            relatedFilterFqn = null;
+            activeFilterMode = 'scope';
+            scopeFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
+            renderDiagramAndTable();
+            renderRelatedFilterTarget();
         });
     }
 }
 
-function setupDiagramDirectionControl() {
+function setupDiagramDirectionControls() {
     const radios = document.querySelectorAll('input[name="diagram-direction"]');
     radios.forEach(radio => {
-        if (radio.value === currentDiagramDirection) {
+        if (radio.value === diagramDirection) {
             radio.checked = true;
         }
         radio.addEventListener('change', () => {
             if (!radio.checked) return;
-            currentDiagramDirection = radio.value;
-            renderCurrentDiagramAndTable();
+            diagramDirection = radio.value;
+            renderDiagramAndTable();
         });
     });
 }
@@ -712,15 +712,15 @@ function setupDiagramDirectionControl() {
 document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("package-list")) return;
     setupSortableTables();
-    writePackageTable();
-    setupPackageFilterInput();
-    setupPackageDepthControl();
-    setupRelatedModeControl();
-    setupDiagramDirectionControl();
-    currentPackageFilterMode = 'scope';
+    renderPackageTable();
+    setupScopeFilterControls();
+    setupAggregationDepthControl();
+    setupRelatedFilterControls();
+    setupDiagramDirectionControls();
+    activeFilterMode = 'scope';
     const applied = applyDefaultScopeIfPresent();
     if (!applied) {
-        renderCurrentDiagramAndTable();
+        renderDiagramAndTable();
     }
-    updateRelatedFilterTarget();
+    renderRelatedFilterTarget();
 });

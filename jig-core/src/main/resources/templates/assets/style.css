@@ -263,6 +263,11 @@ label {
 .package-list details.controls .control-label {
     font-weight: 600;
 }
+.package-list details.controls .radio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
 .package-list details.controls input[type="text"],
 .package-list details.controls select {
     padding: 6px 8px;

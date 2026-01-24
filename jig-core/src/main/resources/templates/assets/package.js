@@ -10,6 +10,7 @@ const DEFAULT_MAX_EDGES = 500;
 let currentPackageFilterFqn = null;
 let currentRelatedMode = 'direct';
 let currentRelatedFilterFqn = null;
+let currentDiagramDirection = 'TD';
 
 function ensureDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
@@ -152,8 +153,7 @@ function writePackageTable() {
         currentPackageFilterFqn = fqn;
         currentRelatedFilterFqn = null;
         currentPackageFilterMode = 'scope';
-        writePackageRelationDiagram(fqn, currentPackageFilterMode);
-        filterPackageTable(fqn);
+        renderCurrentDiagramAndTable();
         updateRelatedFilterTarget();
     };
     const applyRelatedFilter = fqn => {
@@ -296,6 +296,16 @@ function buildRelatedSet(root, relations) {
     return relatedSet;
 }
 
+function renderCurrentDiagramAndTable() {
+    if (currentPackageFilterMode === 'related') {
+        writePackageRelationDiagram(currentRelatedFilterFqn, currentPackageFilterMode);
+        filterPackageTableByRelated(currentRelatedFilterFqn);
+        return;
+    }
+    writePackageRelationDiagram(currentPackageFilterFqn, currentPackageFilterMode);
+    filterPackageTable(currentPackageFilterFqn);
+}
+
 function writePackageRelationDiagram(filterFqn, mode) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
@@ -304,7 +314,7 @@ function writePackageRelationDiagram(filterFqn, mode) {
     const {packages, relations} = readPackageSummaryData();
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const lines = ['graph TD'];
+    const lines = [`graph ${currentDiagramDirection}`];
     const aggregatedRoot = filterFqn ? aggregatePackageFqn(filterFqn, currentPackageDepth) : null;
     const scopePrefix = filterFqn ? `${filterFqn}.` : null;
     const withinScope = fqn => !filterFqn || fqn === filterFqn || fqn.startsWith(scopePrefix);
@@ -438,8 +448,7 @@ function writePackageRelationDiagram(filterFqn, mode) {
 function filterPackageDiagramByFqn(fqn) {
     currentRelatedFilterFqn = fqn;
     currentPackageFilterMode = 'related';
-    writePackageRelationDiagram(fqn, currentPackageFilterMode);
-    filterPackageTableByRelated(fqn);
+    renderCurrentDiagramAndTable();
     updateRelatedFilterTarget();
 }
 
@@ -461,16 +470,14 @@ function setupPackageFilterInput() {
         currentPackageFilterFqn = value || null;
         currentRelatedFilterFqn = null;
         currentPackageFilterMode = 'scope';
-        writePackageRelationDiagram(value || null, currentPackageFilterMode);
-        filterPackageTable(value || null);
+        renderCurrentDiagramAndTable();
         updateRelatedFilterTarget();
     };
     const clearScope = () => {
         input.value = '';
         currentPackageFilterFqn = null;
         currentPackageFilterMode = 'scope';
-        writePackageRelationDiagram(null, currentPackageFilterMode);
-        filterPackageTable(null);
+        renderCurrentDiagramAndTable();
         updateRelatedFilterTarget();
     };
 
@@ -513,14 +520,7 @@ function setupPackageDepthControl() {
     select.value = String(currentPackageDepth);
     select.addEventListener('change', () => {
         currentPackageDepth = Number(select.value);
-        if (currentPackageFilterMode === 'related') {
-            writePackageRelationDiagram(currentRelatedFilterFqn, currentPackageFilterMode);
-            filterPackageTableByRelated(currentRelatedFilterFqn);
-        } else {
-            const value = document.getElementById('package-filter-input')?.value.trim() || null;
-            writePackageRelationDiagram(value, currentPackageFilterMode);
-            filterPackageTable(value);
-        }
+        renderCurrentDiagramAndTable();
         updateRelatedFilterTarget();
     });
 }
@@ -548,8 +548,7 @@ function applyDefaultScopeIfPresent() {
     input.value = candidate;
     currentPackageFilterFqn = candidate;
     currentPackageFilterMode = 'scope';
-    writePackageRelationDiagram(candidate, currentPackageFilterMode);
-    filterPackageTable(candidate);
+    renderCurrentDiagramAndTable();
     return true;
 }
 
@@ -561,19 +560,32 @@ function setupRelatedModeControl() {
     select.addEventListener('change', () => {
         currentRelatedMode = select.value;
         if (currentPackageFilterMode === 'related') {
-            filterPackageDiagramByFqn(currentRelatedFilterFqn);
+            renderCurrentDiagramAndTable();
         }
     });
     if (clearButton) {
         clearButton.addEventListener('click', () => {
             currentRelatedFilterFqn = null;
             currentPackageFilterMode = 'scope';
-            const scopeValue = document.getElementById('package-filter-input')?.value.trim() || null;
-            writePackageRelationDiagram(scopeValue || null, currentPackageFilterMode);
-            filterPackageTable(scopeValue || null);
+            currentPackageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
+            renderCurrentDiagramAndTable();
             updateRelatedFilterTarget();
         });
     }
+}
+
+function setupDiagramDirectionControl() {
+    const radios = document.querySelectorAll('input[name="diagram-direction"]');
+    radios.forEach(radio => {
+        if (radio.value === currentDiagramDirection) {
+            radio.checked = true;
+        }
+        radio.addEventListener('change', () => {
+            if (!radio.checked) return;
+            currentDiagramDirection = radio.value;
+            renderCurrentDiagramAndTable();
+        });
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -583,11 +595,11 @@ document.addEventListener("DOMContentLoaded", function () {
     setupPackageFilterInput();
     setupPackageDepthControl();
     setupRelatedModeControl();
+    setupDiagramDirectionControl();
     currentPackageFilterMode = 'scope';
     const applied = applyDefaultScopeIfPresent();
     if (!applied) {
-        writePackageRelationDiagram(null, currentPackageFilterMode);
-        filterPackageTable(null);
+        renderCurrentDiagramAndTable();
     }
     updateRelatedFilterTarget();
 });

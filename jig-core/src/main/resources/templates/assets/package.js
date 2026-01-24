@@ -9,6 +9,7 @@ let lastDiagramEdgeCount = 0;
 const DEFAULT_MAX_EDGES = 500;
 let currentPackageFilterFqn = null;
 let currentRelatedMode = 'direct';
+let currentRelatedFilterFqn = null;
 
 function ensureDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
@@ -149,15 +150,16 @@ function writePackageTable() {
             input.value = fqn;
         }
         currentPackageFilterFqn = fqn;
+        currentRelatedFilterFqn = null;
         currentPackageFilterMode = 'scope';
         writePackageRelationDiagram(fqn, currentPackageFilterMode);
         filterPackageTable(fqn);
+        updateRelatedFilterTarget();
     };
     const applyRelatedFilter = fqn => {
         if (input) {
             input.value = fqn;
         }
-        currentPackageFilterFqn = fqn;
         filterPackageDiagramByFqn(fqn);
     };
 
@@ -244,6 +246,12 @@ function filterPackageTableByRelated(fqn) {
         const aggregatedRow = aggregatePackageFqn(rowFqn, currentPackageDepth);
         row.classList.toggle('hidden', !relatedSet.has(aggregatedRow));
     });
+}
+
+function updateRelatedFilterTarget() {
+    const target = document.getElementById('related-filter-target');
+    if (!target) return;
+    target.textContent = currentRelatedFilterFqn ? currentRelatedFilterFqn : '未選択';
 }
 
 function buildRelatedSet(root, relations) {
@@ -428,10 +436,11 @@ function writePackageRelationDiagram(filterFqn, mode) {
 }
 
 function filterPackageDiagramByFqn(fqn) {
-    currentPackageFilterFqn = fqn;
+    currentRelatedFilterFqn = fqn;
     currentPackageFilterMode = 'related';
     writePackageRelationDiagram(fqn, currentPackageFilterMode);
     filterPackageTableByRelated(fqn);
+    updateRelatedFilterTarget();
 }
 
 window.filterPackageDiagram = function (nodeId) {
@@ -455,6 +464,7 @@ function setupPackageFilterInput() {
         currentPackageDepth = 0;
         currentPackageFilterMode = 'scope';
         currentPackageFilterFqn = null;
+        currentRelatedFilterFqn = null;
         currentRelatedMode = 'direct';
         const relatedSelect = document.getElementById('related-mode-select');
         if (relatedSelect) {
@@ -463,14 +473,17 @@ function setupPackageFilterInput() {
         pendingDiagramRender = null;
         writePackageRelationDiagram(null, currentPackageFilterMode);
         filterPackageTable(null);
+        updateRelatedFilterTarget();
     };
 
     const applyFilter = () => {
         const value = input.value.trim();
         currentPackageFilterFqn = value || null;
+        currentRelatedFilterFqn = null;
         currentPackageFilterMode = 'scope';
         writePackageRelationDiagram(value || null, currentPackageFilterMode);
         filterPackageTable(value || null);
+        updateRelatedFilterTarget();
     };
 
     applyButton.addEventListener('click', applyFilter);
@@ -512,13 +525,15 @@ function setupPackageDepthControl() {
     select.value = String(currentPackageDepth);
     select.addEventListener('change', () => {
         currentPackageDepth = Number(select.value);
-        const value = document.getElementById('package-filter-input')?.value.trim() || null;
-        writePackageRelationDiagram(value, currentPackageFilterMode);
         if (currentPackageFilterMode === 'related') {
-            filterPackageTableByRelated(value);
+            writePackageRelationDiagram(currentRelatedFilterFqn, currentPackageFilterMode);
+            filterPackageTableByRelated(currentRelatedFilterFqn);
         } else {
+            const value = document.getElementById('package-filter-input')?.value.trim() || null;
+            writePackageRelationDiagram(value, currentPackageFilterMode);
             filterPackageTable(value);
         }
+        updateRelatedFilterTarget();
     });
 }
 
@@ -551,7 +566,7 @@ function setupRelatedModeControl() {
     select.addEventListener('change', () => {
         currentRelatedMode = select.value;
         if (currentPackageFilterMode === 'related') {
-            filterPackageDiagramByFqn(currentPackageFilterFqn);
+            filterPackageDiagramByFqn(currentRelatedFilterFqn);
         }
     });
 }
@@ -569,4 +584,5 @@ document.addEventListener("DOMContentLoaded", function () {
         writePackageRelationDiagram(null, currentPackageFilterMode);
         filterPackageTable(null);
     }
+    updateRelatedFilterTarget();
 });

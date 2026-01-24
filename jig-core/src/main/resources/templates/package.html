@@ -33,6 +33,7 @@
 
     <table id="package-table" class="sortable">
         <colgroup>
+            <col class="col-action">
             <col class="col-fqn">
             <col class="col-name">
             <col class="col-number">
@@ -41,6 +42,7 @@
         </colgroup>
         <thead>
         <tr>
+            <th class="no-sort"><span class="sr-only">絞り込み</span></th>
             <th>完全修飾名</th>
             <th>名称</th>
             <th>クラス数</th>
@@ -50,6 +52,7 @@
         </thead>
         <tbody>
         <tr th:remove="all">
+            <td><button type="button" class="filter-icon" aria-label="このパッケージで絞り込み"><span class="sr-only">絞り込み</span></button></td>
             <td class="fqn">com.example</td>
             <td>えぐざんぷる</td>
             <td>10</td>

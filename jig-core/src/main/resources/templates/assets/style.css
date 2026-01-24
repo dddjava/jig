@@ -69,6 +69,23 @@ main table thead {
     color: #FFF;
     background-color: #465DAA;
 }
+main table .col-action {
+    width: 2.5em;
+}
+main table th.no-sort {
+    cursor: default;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
 
 /* markdown */
 .markdown {
@@ -273,6 +290,19 @@ label {
 .package-list details.controls .note {
     font-size: 0.9em;
     color: #555;
+}
+.package-list button.filter-icon {
+    width: 1.8em;
+    height: 1.8em;
+    border-radius: 999px;
+    border: 1px solid #999;
+    background: #fff no-repeat center;
+    cursor: pointer;
+    padding: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>");
+}
+.package-list button.filter-icon:hover {
+    background-color: #f5f5f5;
 }
 @media (max-width: 720px) {
     .package-list details.controls .control-row {

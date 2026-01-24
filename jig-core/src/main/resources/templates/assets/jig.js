@@ -188,6 +188,9 @@ function setupSortableTables() {
             if (header.hasAttribute("onclick")) {
                 return;
             }
+            if (header.classList.contains("no-sort")) {
+                return;
+            }
 
             header.addEventListener("click", sortTable);
             header.style.cursor = "pointer";

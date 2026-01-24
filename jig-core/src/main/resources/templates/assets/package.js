@@ -141,8 +141,30 @@ function writePackageTable() {
     const tbody = document.querySelector('#package-table tbody');
     //tbody.innerHTML = '';
 
+    const input = document.getElementById('package-filter-input');
+    const applyFilter = fqn => {
+        if (input) {
+            input.value = fqn;
+        }
+        currentPackageFilterMode = 'scope';
+        writePackageRelationDiagram(fqn, currentPackageFilterMode);
+    };
+
     packages.forEach(item => {
         const tr = document.createElement('tr');
+
+        const actionTd = document.createElement('td');
+        const actionButton = document.createElement('button');
+        actionButton.type = 'button';
+        actionButton.className = 'filter-icon';
+        actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
+        const actionText = document.createElement('span');
+        actionText.className = 'sr-only';
+        actionText.textContent = '絞り込み';
+        actionButton.appendChild(actionText);
+        actionButton.addEventListener('click', () => applyFilter(item.fqn));
+        actionTd.appendChild(actionButton);
+        tr.appendChild(actionTd);
 
         const fqnTd = document.createElement('td');
         fqnTd.textContent = item.fqn;

@@ -328,8 +328,20 @@ window.filterPackageDiagram = function (nodeId) {
 function setupPackageFilterInput() {
     const input = document.getElementById('package-filter-input');
     const applyButton = document.getElementById('apply-package-filter');
-    const clearButton = document.getElementById('clear-package-filter');
-    if (!input || !applyButton || !clearButton) return;
+    const resetButton = document.getElementById('reset-package-controls');
+    const depthSelect = document.getElementById('package-depth-select');
+    if (!input || !applyButton || !resetButton) return;
+
+    const resetAll = () => {
+        input.value = '';
+        if (depthSelect) {
+            depthSelect.value = '0';
+        }
+        currentPackageDepth = 0;
+        currentPackageFilterMode = 'scope';
+        pendingDiagramRender = null;
+        writePackageRelationDiagram(null, currentPackageFilterMode);
+    };
 
     const applyFilter = () => {
         const value = input.value.trim();
@@ -338,11 +350,7 @@ function setupPackageFilterInput() {
     };
 
     applyButton.addEventListener('click', applyFilter);
-    clearButton.addEventListener('click', () => {
-        input.value = '';
-        currentPackageFilterMode = 'scope';
-        writePackageRelationDiagram(null, currentPackageFilterMode);
-    });
+    resetButton.addEventListener('click', resetAll);
     input.addEventListener('keydown', event => {
         if (event.key === 'Enter') {
             event.preventDefault();

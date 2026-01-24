@@ -114,6 +114,23 @@ function aggregatePackageFqn(fqn, depth) {
     return parts.slice(0, depth).join('.');
 }
 
+function commonPrefixDepth(fqns) {
+    if (!fqns || fqns.length === 0) return 0;
+    const firstParts = fqns[0].split('.');
+    let depth = firstParts.length;
+    for (let i = 1; i < fqns.length; i += 1) {
+        const parts = fqns[i].split('.');
+        depth = Math.min(depth, parts.length);
+        for (let j = 0; j < depth; j += 1) {
+            if (parts[j] !== firstParts[j]) {
+                depth = j;
+                break;
+            }
+        }
+    }
+    return depth;
+}
+
 function computeAggregationStats(packages, relations, maxDepth) {
     const stats = new Map();
     for (let depth = 0; depth <= maxDepth; depth += 1) {
@@ -368,6 +385,7 @@ function writePackageRelationDiagram(filterFqn, mode) {
 
     const nodeIdByFqn = new Map();
     packageDiagramNodeIdToFqn = new Map();
+    const nodeLabelById = new Map();
     let nodeIndex = 0;
     const ensureNodeId = fqn => {
         if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
@@ -375,8 +393,7 @@ function writePackageRelationDiagram(filterFqn, mode) {
         nodeIdByFqn.set(fqn, nodeId);
         packageDiagramNodeIdToFqn.set(nodeId, fqn);
         const label = nameByFqn.get(fqn) || fqn;
-        lines.push(`${nodeId}["${escapeMermaidText(label)}"]`);
-        lines.push(`click ${nodeId} filterPackageDiagram`);
+        nodeLabelById.set(nodeId, label);
         return nodeId;
     };
 
@@ -393,6 +410,7 @@ function writePackageRelationDiagram(filterFqn, mode) {
 
     const linkStyles = [];
     let linkIndex = 0;
+    const edgeLines = [];
     uniqueRelations.forEach(relation => {
         const fromId = ensureNodeId(relation.from);
         const toId = ensureNodeId(relation.to);
@@ -401,14 +419,69 @@ function writePackageRelationDiagram(filterFqn, mode) {
             if (relation.from > relation.to) {
                 return;
             }
-            lines.push(`${fromId} <--> ${toId}`);
+            edgeLines.push(`${fromId} <--> ${toId}`);
             linkStyles.push(`linkStyle ${linkIndex} stroke:red,stroke-width:2px`);
             linkIndex += 1;
             return;
         }
-        lines.push(`${fromId} --> ${toId}`);
+        edgeLines.push(`${fromId} --> ${toId}`);
         linkIndex += 1;
     });
+
+    const visibleFqns = Array.from(visibleSet).sort();
+    const parentFqns = new Set();
+    visibleFqns.forEach(fqn => {
+        const parts = fqn.split('.');
+        for (let i = 1; i < parts.length; i += 1) {
+            const prefix = parts.slice(0, i).join('.');
+            if (visibleSet.has(prefix)) parentFqns.add(prefix);
+        }
+    });
+
+    const addNodeLines = nodeId => {
+        const label = nodeLabelById.get(nodeId);
+        lines.push(`${nodeId}["${escapeMermaidText(label)}"]`);
+        lines.push(`click ${nodeId} filterPackageDiagram`);
+        const fqn = packageDiagramNodeIdToFqn.get(nodeId);
+        if (fqn && parentFqns.has(fqn)) {
+            lines.push(`class ${nodeId} parentPackage`);
+        }
+    };
+
+    const prefixDepth = commonPrefixDepth(visibleFqns);
+    const baseDepth = Math.max(prefixDepth - 1, 0);
+    let groupIndex = 0;
+    const createGroupNode = key => ({key, children: new Map(), nodes: []});
+    const rootGroup = createGroupNode('');
+    visibleFqns.forEach(fqn => {
+        const parts = fqn.split('.');
+        const maxDepth = parts.length;
+        let current = rootGroup;
+        for (let depth = baseDepth + 1; depth <= maxDepth; depth += 1) {
+            const key = parts.slice(0, depth).join('.');
+            if (!current.children.has(key)) {
+                current.children.set(key, createGroupNode(key));
+            }
+            current = current.children.get(key);
+        }
+        current.nodes.push(nodeIdByFqn.get(fqn));
+    });
+    const renderGroup = group => {
+        group.nodes.forEach(addNodeLines);
+        Array.from(group.children.keys()).sort().forEach(key => {
+            const child = group.children.get(key);
+            const groupId = `G${groupIndex++}`;
+            lines.push(`subgraph ${groupId}["${escapeMermaidText(child.key)}"]`);
+            renderGroup(child);
+            lines.push('end');
+        });
+    };
+    renderGroup(rootGroup);
+    if (parentFqns.size > 0) {
+        lines.push('classDef parentPackage fill:#f1f5ff,stroke:#4b6bd6,stroke-width:2px');
+    }
+
+    edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
 
     lastDiagramText = lines.join('\n');

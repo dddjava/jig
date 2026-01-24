@@ -148,6 +148,7 @@ function writePackageTable() {
         }
         currentPackageFilterMode = 'scope';
         writePackageRelationDiagram(fqn, currentPackageFilterMode);
+        filterPackageTable(fqn);
     };
 
     packages.forEach(item => {
@@ -191,6 +192,17 @@ function writePackageTable() {
         tr.appendChild(outgoingCountTd);
 
         tbody.appendChild(tr);
+    });
+}
+
+function filterPackageTable(scopeFqn) {
+    const rows = document.querySelectorAll('#package-table tbody tr');
+    const scopePrefix = scopeFqn ? `${scopeFqn}.` : null;
+    rows.forEach(row => {
+        const fqnCell = row.querySelector('td.fqn');
+        const fqn = fqnCell ? fqnCell.textContent : '';
+        const visible = !scopeFqn || fqn === scopeFqn || fqn.startsWith(scopePrefix);
+        row.classList.toggle('hidden', !visible);
     });
 }
 
@@ -358,12 +370,14 @@ function setupPackageFilterInput() {
         currentPackageFilterMode = 'scope';
         pendingDiagramRender = null;
         writePackageRelationDiagram(null, currentPackageFilterMode);
+        filterPackageTable(null);
     };
 
     const applyFilter = () => {
         const value = input.value.trim();
         currentPackageFilterMode = 'scope';
         writePackageRelationDiagram(value || null, currentPackageFilterMode);
+        filterPackageTable(value || null);
     };
 
     applyButton.addEventListener('click', applyFilter);

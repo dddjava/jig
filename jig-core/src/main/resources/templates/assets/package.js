@@ -110,6 +110,25 @@ function aggregatePackageFqn(fqn, depth) {
     return parts.slice(0, depth).join('.');
 }
 
+function computeAggregationStats(packages, relations, maxDepth) {
+    const stats = new Map();
+    for (let depth = 0; depth <= maxDepth; depth += 1) {
+        const aggregatedPackages = new Set(packages.map(item => aggregatePackageFqn(item.fqn, depth)));
+        const relationKeys = new Set();
+        relations.forEach(relation => {
+            const from = aggregatePackageFqn(relation.from, depth);
+            const to = aggregatePackageFqn(relation.to, depth);
+            if (from === to) return;
+            relationKeys.add(`${from}::${to}`);
+        });
+        stats.set(depth, {
+            packageCount: aggregatedPackages.size,
+            relationCount: relationKeys.size,
+        });
+    }
+    return stats;
+}
+
 function writePackageTable() {
     const {packages, relations} = readPackageSummaryData();
     const incomingCounts = new Map();
@@ -337,17 +356,24 @@ function setupPackageDepthControl() {
     if (!select) return;
     const {packages} = readPackageSummaryData();
     const maxDepth = packages.reduce((max, item) => Math.max(max, packageDepthOf(item.fqn)), 0);
+    const {relations} = readPackageSummaryData();
+    const aggregationStats = computeAggregationStats(packages, relations, maxDepth);
 
     select.innerHTML = '';
     const noAggregationOption = document.createElement('option');
     noAggregationOption.value = '0';
-    noAggregationOption.textContent = '集約なし';
+    const noAggregationStats = aggregationStats.get(0);
+    noAggregationOption.textContent = `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`;
     select.appendChild(noAggregationOption);
 
     for (let depth = 1; depth <= maxDepth; depth += 1) {
         const option = document.createElement('option');
         option.value = String(depth);
-        option.textContent = `深さ${depth}`;
+        const stats = aggregationStats.get(depth);
+        if (!stats || stats.relationCount === 0) {
+            continue;
+        }
+        option.textContent = `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`;
         select.appendChild(option);
     }
 

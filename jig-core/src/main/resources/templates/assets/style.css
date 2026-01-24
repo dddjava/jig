@@ -277,6 +277,9 @@ label {
     border-radius: 6px;
     background-color: #fff;
 }
+.package-list details.controls input[type="text"] {
+    min-width: 50ch;
+}
 .package-list details.controls button {
     padding: 6px 10px;
     border: 1px solid #888;

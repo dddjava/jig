@@ -350,6 +350,51 @@ function renderDiagramAndTable() {
     updateAggregationDepthOptions(getMaxPackageDepth());
 }
 
+function renderMutualDependencyList(mutualPairs, filteredRelations) {
+    const container = document.getElementById('mutual-dependency-list');
+    if (!container) return;
+    if (!mutualPairs || mutualPairs.size === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+    }
+    const relationMap = new Map();
+    filteredRelations.forEach(relation => {
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
+        if (from === to) return;
+        const key = from < to ? `${from}::${to}` : `${to}::${from}`;
+        if (!relationMap.has(key)) {
+            relationMap.set(key, new Set());
+        }
+        relationMap.get(key).add(`${relation.from} -> ${relation.to}`);
+    });
+
+    container.style.display = '';
+    const title = document.createElement('h2');
+    title.textContent = '相互依存と原因';
+    const list = document.createElement('ul');
+    Array.from(mutualPairs).sort().forEach(key => {
+        const parts = key.split('::');
+        const pairLabel = `${parts[0]} <-> ${parts[1]}`;
+        const item = document.createElement('li');
+        const pair = document.createElement('div');
+        pair.className = 'pair';
+        pair.textContent = pairLabel;
+        item.appendChild(pair);
+        const causes = relationMap.get(key);
+        if (causes && causes.size > 0) {
+            const details = document.createElement('pre');
+            details.textContent = Array.from(causes).sort().join('\n');
+            item.appendChild(details);
+        }
+        list.appendChild(item);
+    });
+    container.innerHTML = '';
+    container.appendChild(title);
+    container.appendChild(list);
+}
+
 function renderPackageDiagram(filterFqn, mode) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
@@ -520,6 +565,7 @@ function renderPackageDiagram(filterFqn, mode) {
 
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
+    renderMutualDependencyList(mutualPairs, filteredRelations);
 
     lastDiagramSource = lines.join('\n');
     lastDiagramEdgeCount = uniqueRelations.length;

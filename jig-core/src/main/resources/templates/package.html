@@ -53,6 +53,7 @@
     </details>
 
     <pre id="package-relation-diagram" class="mermaid"></pre>
+    <section id="mutual-dependency-list" class="mutual-dependencies" aria-live="polite"></section>
 
     <table id="package-table" class="sortable">
         <colgroup>
@@ -99,6 +100,7 @@
             {"from": "com.example.application", "to": "com.example.domain"},
             {"from": "com.example.application", "to": "com.example.infrastructure"},
             {"from": "com.example.domain.order", "to": "com.example.domain.customer"},
+            {"from": "com.example.domain.customer", "to": "com.example.domain.order.hoge"},
             {"from": "com.example.infrastructure", "to": "com.example.domain"},
             {"from": "com.example.infrastructure.db", "to": "com.example.infrastructure"}
         ]

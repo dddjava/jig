@@ -466,19 +466,29 @@ function writePackageRelationDiagram(filterFqn, mode) {
         }
         current.nodes.push(nodeIdByFqn.get(fqn));
     });
-    const renderGroup = group => {
+    const renderGroup = (group, isRoot) => {
         group.nodes.forEach(addNodeLines);
-        Array.from(group.children.keys()).sort().forEach(key => {
+        const childKeys = Array.from(group.children.keys()).sort();
+        if (isRoot && group.nodes.length === 0 && childKeys.length === 1) {
+            renderGroup(group.children.get(childKeys[0]), false);
+            return;
+        }
+        childKeys.forEach(key => {
             const child = group.children.get(key);
+            const childNodeCount = child.nodes.length + child.children.size;
+            if (childNodeCount <= 1) {
+                renderGroup(child, false);
+                return;
+            }
             const groupId = `G${groupIndex++}`;
             lines.push(`subgraph ${groupId}["${escapeMermaidText(child.key)}"]`);
-            renderGroup(child);
+            renderGroup(child, false);
             lines.push('end');
         });
     };
-    renderGroup(rootGroup);
+    renderGroup(rootGroup, true);
     if (parentFqns.size > 0) {
-        lines.push('classDef parentPackage fill:#f1f5ff,stroke:#4b6bd6,stroke-width:2px');
+        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
     }
 
     edgeLines.forEach(line => lines.push(line));

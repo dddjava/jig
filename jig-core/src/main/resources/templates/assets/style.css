@@ -307,6 +307,8 @@ label {
 }
 .package-list button.icon-only {
     cursor: default;
+    pointer-events: none;
+    background-color: transparent;
 }
 .package-list button.related-icon {
     width: 1.8em;

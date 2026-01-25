@@ -1,13 +1,13 @@
-function updateArticleVisibility() {
-    const showEmptyDescription = document.getElementById("show-empty-description").checked;
+function updateArticleVisibility(controls) {
+    const showEmptyDescription = controls.showEmptyDescription.checked;
     const kindVisibilityMap = {
-        "パッケージ": document.getElementById("show-package").checked,
-        "クラス": document.getElementById("show-class").checked,
-        "メソッド": document.getElementById("show-method").checked,
-        "フィールド": document.getElementById("show-field").checked,
+        "パッケージ": controls.showPackage.checked,
+        "クラス": controls.showClass.checked,
+        "メソッド": controls.showMethod.checked,
+        "フィールド": controls.showField.checked,
     };
 
-    const searchKeyword = document.getElementById("search-input").value.toLowerCase();
+    const searchKeyword = controls.searchInput.value.toLowerCase();
     const termArticles = document.getElementsByClassName("term");
 
     Array.from(termArticles).forEach(term => {
@@ -39,12 +39,12 @@ function updateArticleVisibility() {
     });
 
     // 表示が変わるのでnavも更新する
-    updateLetterNavigationVisibility();
+    updateLetterNavigationVisibility(controls);
 }
 
-function updateLetterNavigationVisibility() {
+function updateLetterNavigationVisibility(controls) {
     const letterNavigations = Array.from(document.getElementsByClassName("letter-navigation"));
-    const showNavigation = document.getElementById("show-letter-navigation").checked;
+    const showNavigation = controls.showLetterNavigation.checked;
     if (!showNavigation) {
         letterNavigations.forEach(nav => nav.classList.add("invisible"));
         return;
@@ -83,13 +83,26 @@ function updateLetterNavigationVisibility() {
 document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("glossary")) return;
 
-    document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
-    document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);
-    document.getElementById("show-package").addEventListener("change", updateArticleVisibility);
-    document.getElementById("show-class").addEventListener("change", updateArticleVisibility);
-    document.getElementById("show-method").addEventListener("change", updateArticleVisibility);
-    document.getElementById("show-field").addEventListener("change", updateArticleVisibility);
-    document.getElementById("show-letter-navigation").addEventListener("change", updateLetterNavigationVisibility);
+    const controls = {
+        searchInput: document.getElementById("search-input"),
+        showEmptyDescription: document.getElementById("show-empty-description"),
+        showPackage: document.getElementById("show-package"),
+        showClass: document.getElementById("show-class"),
+        showMethod: document.getElementById("show-method"),
+        showField: document.getElementById("show-field"),
+        showLetterNavigation: document.getElementById("show-letter-navigation"),
+    };
 
-    updateLetterNavigationVisibility();
+    const updateArticles = () => updateArticleVisibility(controls);
+    const updateNav = () => updateLetterNavigationVisibility(controls);
+
+    controls.searchInput.addEventListener("input", updateArticles);
+    controls.showEmptyDescription.addEventListener("change", updateArticles);
+    controls.showPackage.addEventListener("change", updateArticles);
+    controls.showClass.addEventListener("change", updateArticles);
+    controls.showMethod.addEventListener("change", updateArticles);
+    controls.showField.addEventListener("change", updateArticles);
+    controls.showLetterNavigation.addEventListener("change", updateNav);
+
+    updateNav();
 });

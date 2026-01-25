@@ -98,104 +98,14 @@ window.addEventListener("popstate", function (event) {
     }
 });
 
-function updateArticleVisibility() {
-    const showEmptyDescription = document.getElementById("show-empty-description").checked;
-    const kindVisibilityMap = {
-        "パッケージ": document.getElementById("show-package").checked,
-        "クラス": document.getElementById("show-class").checked,
-        "メソッド": document.getElementById("show-method").checked,
-        "フィールド": document.getElementById("show-field").checked,
-    };
-
-    const searchKeyword = document.getElementById("search-input").value.toLowerCase();
-    const termArticles = document.getElementsByClassName("term");
-
-    Array.from(termArticles).forEach(term => {
-        const kindText = term.getElementsByClassName("kind")[0]?.textContent || "";
-
-        // 種類で絞り込む
-        if (!kindVisibilityMap[kindText]) {
-            term.classList.add("hidden");
-            return;
-        }
-
-        // 以降の判定で使用する説明文を取得
-        const description = term.getElementsByClassName("description")[0]?.textContent?.toLowerCase() || "";
-
-        // 説明文有無での判定
-        if (!showEmptyDescription && !description) {
-            term.classList.add("hidden");
-            return;
-        }
-        // 検索キーワードでの判定（タイトルと説明文）
-        const title = term.getElementsByClassName("term-title")[0]?.textContent?.toLowerCase() || "";
-        if (searchKeyword && !title.includes(searchKeyword) && !description.includes(searchKeyword)) {
-            term.classList.add("hidden");
-            return;
-        }
-
-        // すべての条件をパスした場合に表示
-        term.classList.remove("hidden");
-    });
-
-    // 表示が変わるのでnavも更新する
-    updateLetterNavigationVisibility();
-}
-
-function updateLetterNavigationVisibility() {
-    const letterNavigations = Array.from(document.getElementsByClassName("letter-navigation"));
-    const showNavigation = document.getElementById("show-letter-navigation").checked;
-    if (!showNavigation) {
-        letterNavigations.forEach(nav => nav.classList.add("invisible"));
-        return;
-    }
-
-    letterNavigations.forEach((nav, index) => {
-        // 1件目は無視
-        if (index === 0) {
-            nav.classList.remove("invisible");
-            return;
-        }
-
-        let visibleCount = 0;
-        let sibling = nav.previousElementSibling;
-        while (sibling) {
-            // 表示しているものだけ対象にする
-            if (!sibling.classList.contains("invisible")) {
-                // letter-navigationはカウント対象外
-                if (sibling.classList.contains("letter-navigation")) break;
-                visibleCount++;
-                // これ以上カウントする意味がないので抜ける
-                if (visibleCount >= 10) break;
-            }
-            sibling = sibling.previousElementSibling;
-        }
-
-        // 10個以上表示するものがあったら表示する
-        if (visibleCount >= 10) {
-            nav.classList.remove("invisible");
-        } else {
-            nav.classList.add("invisible");
-        }
-    });
-}
-
-function toggleDescription() {
-    // クラス名に一致する要素を全部取得
-    const elements = document.getElementsByClassName("description");
-
-    // 各要素に対して「hidden」クラスをトグル（付けたり外したり）する
-    Array.from(elements).forEach(el => {
-        console.log(el);
-        el.classList.toggle("hidden");
-    });
-}
-
 function setupSortableTables() {
     document.querySelectorAll("table.sortable").forEach(table => {
         const headers = table.querySelectorAll("thead th");
         headers.forEach((header, index) => {
             if (header.hasAttribute("onclick")) {
+                return;
+            }
+            if (header.classList.contains("no-sort")) {
                 return;
             }
 
@@ -285,76 +195,10 @@ function zoomFamilyTables(baseTable, baseRow) {
     })
 }
 
-function writePackageTable() {
-    const jsonText = document.getElementById('package-data').textContent;
-    /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
-    const packageData = JSON.parse(jsonText);
-    const packages = Array.isArray(packageData) ? packageData : (packageData.packages ?? []);
-    const relations = Array.isArray(packageData) ? [] : (packageData.relations ?? []);
-    const incomingCounts = new Map();
-    const outgoingCounts = new Map();
-    relations.forEach(relation => {
-        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
-        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
-    });
-
-    const tbody = document.querySelector('#package-table tbody');
-    //tbody.innerHTML = '';
-
-    packages.forEach(item => {
-        const tr = document.createElement('tr');
-
-        const fqnTd = document.createElement('td');
-        fqnTd.textContent = item.fqn;
-        fqnTd.className = 'fqn';
-        tr.appendChild(fqnTd);
-
-        const nameTd = document.createElement('td');
-        nameTd.textContent = item.name;
-        tr.appendChild(nameTd);
-
-        const classCountTd = document.createElement('td');
-        classCountTd.textContent = String(item.classCount);
-        classCountTd.className = 'number';
-        tr.appendChild(classCountTd);
-
-        const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(incomingCounts.get(item.fqn) ?? 0);
-        incomingCountTd.className = 'number';
-        tr.appendChild(incomingCountTd);
-
-        const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(outgoingCounts.get(item.fqn) ?? 0);
-        outgoingCountTd.className = 'number';
-        tr.appendChild(outgoingCountTd);
-
-        const descTd = document.createElement('td');
-        descTd.textContent = item.description;
-        descTd.className = 'description hidden markdown';
-        tr.appendChild(descTd);
-
-        tbody.appendChild(tr);
-    });
-}
-
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
-    if (document.body.classList.contains("glossary")) {
-        document.getElementById("search-input").addEventListener("input", updateArticleVisibility);
-        document.getElementById("show-empty-description").addEventListener("change", updateArticleVisibility);
-        document.getElementById("show-package").addEventListener("change", updateArticleVisibility);
-        document.getElementById("show-class").addEventListener("change", updateArticleVisibility);
-        document.getElementById("show-method").addEventListener("change", updateArticleVisibility);
-        document.getElementById("show-field").addEventListener("change", updateArticleVisibility);
-        document.getElementById("show-letter-navigation").addEventListener("change", updateLetterNavigationVisibility);
-
-        updateLetterNavigationVisibility();
-    } else if (document.body.classList.contains("package-list")) {
-        document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
-        setupSortableTables();
-        writePackageTable();
-    } else if (document.body.classList.contains("insight")) {
+    if (document.body.classList.contains("insight")) {
         setupSortableTables();
         setupZoomIcons();
         document.getElementById("cancel-zoom").addEventListener("click", cancelZoom);

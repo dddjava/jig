@@ -16,43 +16,102 @@
     </aside>
     <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
-        <button id="toggle-description-btn">詳細列を表示/非表示</button>
+        <div class="control-row">
+            <label class="control-label" for="package-depth-select">階層集約:</label>
+            <select id="package-depth-select"></select>
+            <span class="note">凡例: P=パッケージ数 / R=関連数</span>
+        </div>
+        <div class="control-row">
+            <button type="button" class="package-filter-icon icon-only" aria-label="パッケージフィルタ"><span class="screen-reader-only">パッケージフィルタ</span></button>
+            <label class="control-label" for="package-filter-input">パッケージフィルタ:</label>
+            <input id="package-filter-input" type="text" placeholder="com.example">
+            <button id="apply-package-filter">適用</button>
+            <button id="clear-package-filter" type="button">解除</button>
+        </div>
+        <div class="control-row">
+            <button type="button" class="related-icon icon-only" aria-label="関連フィルタ"><span class="screen-reader-only">関連フィルタ</span></button>
+            <label class="control-label" for="related-mode-select">関連フィルタ:</label>
+            <select id="related-mode-select">
+                <option value="direct">直接</option>
+                <option value="outbound">依存先すべて</option>
+                <option value="all">関連すべて</option>
+            </select>
+            <span class="note" id="related-filter-target">未選択</span>
+            <button id="clear-related-filter" type="button">解除</button>
+        </div>
+        <div class="control-row">
+            <span class="control-label">図の向き:</span>
+            <label class="radio-label">
+                <input type="radio" name="diagram-direction" value="TD" checked>
+                縦
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="diagram-direction" value="LR">
+                横
+            </label>
+        </div>
     </details>
 
+    <pre id="package-relation-diagram" class="mermaid"></pre>
+    <section id="mutual-dependency-list" class="mutual-dependencies" aria-live="polite"></section>
+
     <table id="package-table" class="sortable">
+        <colgroup>
+            <col class="col-action">
+            <col class="col-action">
+            <col class="col-fqn">
+            <col class="col-name">
+            <col class="col-number">
+            <col class="col-number">
+            <col class="col-number">
+        </colgroup>
         <thead>
         <tr>
+            <th class="no-sort"><span class="screen-reader-only">絞り込み</span></th>
+            <th class="no-sort"><span class="screen-reader-only">関連のみ表示</span></th>
             <th>完全修飾名</th>
             <th>名称</th>
             <th>クラス数</th>
             <th>関連数（依存元）</th>
             <th>関連数（依存先）</th>
-            <th class="description hidden">詳細</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:remove="all">
-            <td class="fqn">com.example</td>
-            <td>えぐざんぷる</td>
-            <td>10</td>
-            <td>2</td>
-            <td>5</td>
-            <td class="description hidden markdown">## アプリケーションのベースパッケージです。
-- システム全体で利用される基本的な構成要素を含みます。
-            </td>
-        </tr>
         </tbody>
     </table>
 </main>
 
 <script id="package-data" type="application/json" th:utext="${packagesJson}">
-    {"packages": [{"fqn": "example", "name": "name", "classCount": 0, "description": "desc"}], "relations": [{"from": "example", "to": "example.feature"}]}
+    {
+        "packages": [
+            {"fqn": "com.example", "name": "example", "classCount": 4, "description": "Application root package."},
+            {"fqn": "com.example.api", "name": "api", "classCount": 3, "description": "Web API endpoints."},
+            {"fqn": "com.example.domain", "name": "domain", "classCount": 12, "description": "Domain model."},
+            {"fqn": "com.example.domain.order", "name": "order", "classCount": 5, "description": "Order aggregate."},
+            {"fqn": "com.example.domain.order.hoge", "name": "hoge", "classCount": 5, "description": "Order aggregate."},
+            {"fqn": "com.example.domain.order.fuga", "name": "fuga", "classCount": 5, "description": "Order aggregate."},
+            {"fqn": "com.example.domain.customer", "name": "customer", "classCount": 4, "description": "Customer aggregate."},
+            {"fqn": "com.example.application", "name": "application", "classCount": 6, "description": "Use cases."},
+            {"fqn": "com.example.infrastructure", "name": "infrastructure", "classCount": 8, "description": "Adapters and persistence."},
+            {"fqn": "com.example.infrastructure.db", "name": "db", "classCount": 5, "description": "Database access."}
+        ],
+        "relations": [
+            {"from": "com.example.api", "to": "com.example.application"},
+            {"from": "com.example.application", "to": "com.example.domain"},
+            {"from": "com.example.application", "to": "com.example.infrastructure"},
+            {"from": "com.example.domain.order", "to": "com.example.domain.customer"},
+            {"from": "com.example.domain.customer", "to": "com.example.domain.order.hoge"},
+            {"from": "com.example.infrastructure", "to": "com.example.domain"},
+            {"from": "com.example.infrastructure.db", "to": "com.example.infrastructure"}
+        ]
+    }
 </script>
 
 <th:block th:replace="~{fragment-base::scripts}">
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
     <script src="./assets/jig.js"></script>
 </th:block>
+<script src="./assets/package.js"></script>
 </body>
 </html>

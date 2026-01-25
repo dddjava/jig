@@ -155,6 +155,9 @@ public class JigDocumentGenerator {
             copyAsset("style.css", assetsPath);
             copyAsset("jig.js", assetsPath);
             copyAsset("favicon.ico", assetsPath);
+            // ページごとのスクリプトを追加する
+            //   増えるごとにここに追加しなきゃいけないのはいかがなものか
+            copyAsset("package.js", assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

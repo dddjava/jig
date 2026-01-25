@@ -180,22 +180,15 @@ function updateLetterNavigationVisibility() {
     });
 }
 
-function toggleDescription() {
-    // クラス名に一致する要素を全部取得
-    const elements = document.getElementsByClassName("description");
-
-    // 各要素に対して「hidden」クラスをトグル（付けたり外したり）する
-    Array.from(elements).forEach(el => {
-        console.log(el);
-        el.classList.toggle("hidden");
-    });
-}
 
 function setupSortableTables() {
     document.querySelectorAll("table.sortable").forEach(table => {
         const headers = table.querySelectorAll("thead th");
         headers.forEach((header, index) => {
             if (header.hasAttribute("onclick")) {
+                return;
+            }
+            if (header.classList.contains("no-sort")) {
                 return;
             }
 
@@ -285,58 +278,6 @@ function zoomFamilyTables(baseTable, baseRow) {
     })
 }
 
-function writePackageTable() {
-    const jsonText = document.getElementById('package-data').textContent;
-    /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
-    const packageData = JSON.parse(jsonText);
-    const packages = Array.isArray(packageData) ? packageData : (packageData.packages ?? []);
-    const relations = Array.isArray(packageData) ? [] : (packageData.relations ?? []);
-    const incomingCounts = new Map();
-    const outgoingCounts = new Map();
-    relations.forEach(relation => {
-        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
-        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
-    });
-
-    const tbody = document.querySelector('#package-table tbody');
-    //tbody.innerHTML = '';
-
-    packages.forEach(item => {
-        const tr = document.createElement('tr');
-
-        const fqnTd = document.createElement('td');
-        fqnTd.textContent = item.fqn;
-        fqnTd.className = 'fqn';
-        tr.appendChild(fqnTd);
-
-        const nameTd = document.createElement('td');
-        nameTd.textContent = item.name;
-        tr.appendChild(nameTd);
-
-        const classCountTd = document.createElement('td');
-        classCountTd.textContent = String(item.classCount);
-        classCountTd.className = 'number';
-        tr.appendChild(classCountTd);
-
-        const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(incomingCounts.get(item.fqn) ?? 0);
-        incomingCountTd.className = 'number';
-        tr.appendChild(incomingCountTd);
-
-        const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(outgoingCounts.get(item.fqn) ?? 0);
-        outgoingCountTd.className = 'number';
-        tr.appendChild(outgoingCountTd);
-
-        const descTd = document.createElement('td');
-        descTd.textContent = item.description;
-        descTd.className = 'description hidden markdown';
-        tr.appendChild(descTd);
-
-        tbody.appendChild(tr);
-    });
-}
-
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
@@ -350,10 +291,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("show-letter-navigation").addEventListener("change", updateLetterNavigationVisibility);
 
         updateLetterNavigationVisibility();
-    } else if (document.body.classList.contains("package-list")) {
-        document.getElementById("toggle-description-btn").addEventListener("click", toggleDescription);
-        setupSortableTables();
-        writePackageTable();
     } else if (document.body.classList.contains("insight")) {
         setupSortableTables();
         setupZoomIcons();

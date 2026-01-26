@@ -38,46 +38,6 @@ function updateArticleVisibility(controls) {
         term.classList.remove("hidden");
     });
 
-    // 表示が変わるのでnavも更新する
-    updateLetterNavigationVisibility(controls);
-}
-
-function updateLetterNavigationVisibility(controls) {
-    const letterNavigations = Array.from(document.getElementsByClassName("letter-navigation"));
-    const showNavigation = controls.showLetterNavigation.checked;
-    if (!showNavigation) {
-        letterNavigations.forEach(nav => nav.classList.add("invisible"));
-        return;
-    }
-
-    letterNavigations.forEach((nav, index) => {
-        // 1件目は無視
-        if (index === 0) {
-            nav.classList.remove("invisible");
-            return;
-        }
-
-        let visibleCount = 0;
-        let sibling = nav.previousElementSibling;
-        while (sibling) {
-            // 表示しているものだけ対象にする
-            if (!sibling.classList.contains("invisible")) {
-                // letter-navigationはカウント対象外
-                if (sibling.classList.contains("letter-navigation")) break;
-                visibleCount++;
-                // これ以上カウントする意味がないので抜ける
-                if (visibleCount >= 10) break;
-            }
-            sibling = sibling.previousElementSibling;
-        }
-
-        // 10個以上表示するものがあったら表示する
-        if (visibleCount >= 10) {
-            nav.classList.remove("invisible");
-        } else {
-            nav.classList.add("invisible");
-        }
-    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -90,11 +50,9 @@ document.addEventListener("DOMContentLoaded", function () {
         showClass: document.getElementById("show-class"),
         showMethod: document.getElementById("show-method"),
         showField: document.getElementById("show-field"),
-        showLetterNavigation: document.getElementById("show-letter-navigation"),
     };
 
     const updateArticles = () => updateArticleVisibility(controls);
-    const updateNav = () => updateLetterNavigationVisibility(controls);
 
     controls.searchInput.addEventListener("input", updateArticles);
     controls.showEmptyDescription.addEventListener("change", updateArticles);
@@ -102,7 +60,4 @@ document.addEventListener("DOMContentLoaded", function () {
     controls.showClass.addEventListener("change", updateArticles);
     controls.showMethod.addEventListener("change", updateArticles);
     controls.showField.addEventListener("change", updateArticles);
-    controls.showLetterNavigation.addEventListener("change", updateNav);
-
-    updateNav();
 });

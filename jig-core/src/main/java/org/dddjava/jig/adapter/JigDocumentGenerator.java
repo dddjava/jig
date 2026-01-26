@@ -158,6 +158,7 @@ public class JigDocumentGenerator {
             // ページごとのスクリプトを追加する
             //   増えるごとにここに追加しなきゃいけないのはいかがなものか
             copyAsset("package.js", assetsPath);
+            copyAsset("glossary.js", assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

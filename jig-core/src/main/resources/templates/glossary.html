@@ -30,28 +30,23 @@
         </div>
     </details>
 
-    <section class="term-list">
-        <th-block th:each="term : ${#jig.termList(glossary)}">
-            <article class="term">
-                <h2 th:text="${term.title()}" class="term-title">名称A</h2>
-                <dl>
-                    <dt>単純名</dt>
-                    <dd th:text="${term.simpleText()}">
-                        org.dddjava.jig.domain.model.data.types.JigTypeHeader
-                    </dd>
-                    <dt>完全修飾名</dt>
-                    <dd th:text="${term.id().asText()}">org.dddjava.jig.domain.model.data.types.JigTypeHeader</dd>
-                    <dt>種類</dt>
-                    <dd class="kind" th:text="${term.termKind()}">クラス</dd>
-                </dl>
-                <div th:utext="${term.description()}" class="description markdown">
-                    この用語の説明です。
-                </div>
-            </article>
-        </th-block>
-    </section>
+    <section class="term-list" id="term-list"></section>
 
 </main>
+
+<script id="glossary-data" type="application/json" th:utext="${glossaryJson}">
+    {
+        "terms": [
+            {
+                "title": "名称A",
+                "simpleText": "JigTypeHeader",
+                "fqn": "org.dddjava.jig.domain.model.data.types.JigTypeHeader",
+                "kind": "クラス",
+                "description": "この用語の説明です。"
+            }
+        ]
+    }
+</script>
 
 <th:block th:replace="~{fragment-base::scripts}">
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>

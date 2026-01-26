@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TableView {
 
@@ -24,9 +25,24 @@ public class TableView {
     public List<Path> write(Path outputDirectory, Glossary glossary) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
+        String termsJson = glossary.list().stream()
+                .map(term -> """
+                        {"title": "%s", "simpleText": "%s", "fqn": "%s", "kind": "%s", "description": "%s"}
+                        """.formatted(
+                        escape(term.title()),
+                        escape(term.simpleText()),
+                        escape(term.id().asText()),
+                        escape(term.termKind().name()),
+                        escape(term.description())))
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String glossaryJson = """
+                {"terms": %s}
+                """.formatted(termsJson);
+
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "glossary", glossary
+                "glossaryJson", glossaryJson
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
@@ -35,6 +51,14 @@ public class TableView {
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
         return jigDocumentWriter.outputFilePaths();
+    }
+
+    private String escape(String string) {
+        return string
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
     }
 
 }

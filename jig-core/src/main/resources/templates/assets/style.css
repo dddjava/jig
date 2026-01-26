@@ -232,6 +232,16 @@ label {
 .glossary details.controls input[type="checkbox"] {
     margin-left: 8px;
 }
+.glossary details.controls button {
+    padding: 6px 10px;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+.glossary details.controls button:hover {
+    background-color: #e6e6e6;
+}
 
 /* パッケージ概要の表示設定 */
 .package-list details.controls {

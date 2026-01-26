@@ -40,6 +40,32 @@ function updateArticleVisibility(controls) {
 
 }
 
+function getFilteredTerms(terms, controls) {
+    if (!controls) return terms;
+    const showEmptyDescription = controls.showEmptyDescription.checked;
+    const kindVisibilityMap = {
+        "パッケージ": controls.showPackage.checked,
+        "クラス": controls.showClass.checked,
+        "メソッド": controls.showMethod.checked,
+        "フィールド": controls.showField.checked,
+    };
+    const searchKeyword = controls.searchInput.value.toLowerCase();
+
+    return terms.filter(term => {
+        const kindText = term.kind || "";
+        if (!kindVisibilityMap[kindText]) return false;
+
+        const description = (term.description || "").toLowerCase();
+        if (!showEmptyDescription && !description) return false;
+
+        const title = (term.title || "").toLowerCase();
+        if (searchKeyword && !title.includes(searchKeyword) && !description.includes(searchKeyword)) {
+            return false;
+        }
+        return true;
+    });
+}
+
 function getGlossaryData() {
     const jsonText = document.getElementById("glossary-data")?.textContent || "{}";
     /** @type {{terms?: Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}>} | Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}>} */
@@ -48,6 +74,39 @@ function getGlossaryData() {
         return glossaryData;
     }
     return glossaryData.terms ?? [];
+}
+
+function escapeCsvValue(value) {
+    const text = String(value ?? "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n");
+    return `"${text.replace(/"/g, "\"\"")}"`;
+}
+
+function buildGlossaryCsv(terms) {
+    const header = ["用語（英名）", "用語", "説明", "種類", "識別子"];
+    const rows = terms.map(term => [
+        term.simpleText ?? "",
+        term.title ?? "",
+        term.description ?? "",
+        term.kind ?? "",
+        term.fqn ?? "",
+    ]);
+
+    const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+    return lines.join("\r\n");
+}
+
+function downloadCsv(text, filename) {
+    const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
 }
 
 function renderGlossaryTerms(terms) {
@@ -132,6 +191,14 @@ document.addEventListener("DOMContentLoaded", function () {
     controls.showClass.addEventListener("change", updateArticles);
     controls.showMethod.addEventListener("change", updateArticles);
     controls.showField.addEventListener("change", updateArticles);
+    const exportButton = document.getElementById("export-csv");
+    if (exportButton) {
+        exportButton.addEventListener("click", () => {
+            const filteredTerms = getFilteredTerms(terms, controls);
+            const csvText = buildGlossaryCsv(filteredTerms);
+            downloadCsv(csvText, "glossary.csv");
+        });
+    }
 
     updateArticles();
 });

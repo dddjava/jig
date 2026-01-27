@@ -17,7 +17,7 @@
 
     <button id="cancel-zoom" class="hidden">ズーム解除</button>
 
-    <h2>パッケージ (<span th:text="${packageInsightList.size()}">1</span>)</h2>
+    <h2>パッケージ (<span id="package-count">0</span>)</h2>
     <table id="package-insight-list" class="zebra sortable">
         <thead>
         <tr>
@@ -31,21 +31,10 @@
             <th>規模合計</th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each="insight: ${packageInsightList}" th:data-fqn="${insight.fqn()}">
-            <td><i class="zoom">🔍</i></td>
-            <td th:text="${insight.fqn()}" class="fqn">com.example</td>
-            <td th:text="${insight.label()}">えぐざんぷる</td>
-            <td th:text="${insight.numberOfTypes()}" class="number">11</td>
-            <td th:text="${insight.numberOfMethods()}" class="number">11</td>
-            <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
-            <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
-            <td th:text="${insight.size()}" class="number">129</td>
-        </tr>
-        </tbody>
+        <tbody></tbody>
     </table>
 
-    <h2>クラス (<span th:text="${typeInsightList.size()}">1</span>)</h2>
+    <h2>クラス (<span id="type-count">0</span>)</h2>
     <table id="type-insight-list" class="zebra sortable">
         <thead>
         <tr>
@@ -58,20 +47,10 @@
             <th>規模合計</th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each="insight: ${typeInsightList}" th:data-fqn="${insight.fqn()}" th:data-package-fqn="${insight.packageFqn()}">
-            <td><i class="zoom">🔍</i></td>
-            <td th:text="${insight.fqn()}" class="fqn">com.example</td>
-            <td th:text="${insight.label()}">えぐざんぷる</td>
-            <td th:text="${insight.numberOfMethods()}" class="number">11</td>
-            <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
-            <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
-            <td th:text="${insight.size()}" class="number">129</td>
-        </tr>
-        </tbody>
+        <tbody></tbody>
     </table>
 
-    <h2>メソッド (<span th:text="${methodInsightList.size()}">1</span>)</h2>
+    <h2>メソッド (<span id="method-count">0</span>)</h2>
     <table id="method-insight-list" class="zebra sortable">
         <thead>
         <tr>
@@ -85,20 +64,49 @@
             <th>規模</th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each="insight: ${methodInsightList}" th:data-fqn="${insight.fqn()}" th:data-package-fqn="${insight.packageFqn()}" th:data-type-fqn="${insight.typeFqn()}">
-            <td><i class="zoom">🔍</i></td>
-            <td th:text="${insight.fqn()}" class="fqn">com.example</td>
-            <td th:text="${insight.label()}">えぐざんぷる</td>
-            <td th:text="${insight.cyclomaticComplexity()}" class="number">5</td>
-            <td th:text="${insight.numberOfUsingTypes()}" class="number">2</td>
-            <td th:text="${insight.numberOfUsingMethods()}" class="number">11</td>
-            <td th:text="${insight.numberOfUsingFields()}" class="number">6</td>
-            <td th:text="${insight.size()}" class="number">129</td>
-        </tr>
-        </tbody>
+        <tbody></tbody>
     </table>
 </main>
+
+<script id="insight-data" type="application/json" th:utext="${insightJson}">
+    {
+        "packages": [
+            {
+                "fqn": "com.example",
+                "label": "example",
+                "numberOfTypes": 3,
+                "numberOfMethods": 10,
+                "numberOfUsingTypes": 2,
+                "cyclomaticComplexity": 5,
+                "size": 120
+            }
+        ],
+        "types": [
+            {
+                "fqn": "com.example.Example",
+                "label": "Example",
+                "numberOfMethods": 5,
+                "numberOfUsingTypes": 2,
+                "cyclomaticComplexity": 3,
+                "size": 60,
+                "packageFqn": "com.example"
+            }
+        ],
+        "methods": [
+            {
+                "fqn": "com.example.Example#method()",
+                "label": "method",
+                "cyclomaticComplexity": 1,
+                "numberOfUsingTypes": 1,
+                "numberOfUsingMethods": 2,
+                "numberOfUsingFields": 0,
+                "size": 10,
+                "packageFqn": "com.example",
+                "typeFqn": "com.example.Example"
+            }
+        ]
+    }
+</script>
 
 <th:block th:replace="~{fragment-base::scripts}">
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>

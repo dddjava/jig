@@ -1,3 +1,103 @@
+function parseInsightData() {
+    const dataElement = document.getElementById("insight-data");
+    if (!dataElement) {
+        return null;
+    }
+    try {
+        return JSON.parse(dataElement.textContent);
+    } catch (error) {
+        console.error("Failed to parse insight JSON.", error);
+        return null;
+    }
+}
+
+function setInsightCount(elementId, count) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = count.toString();
+    }
+}
+
+function createCell(text, className) {
+    const cell = document.createElement("td");
+    if (className) {
+        cell.className = className;
+    }
+    cell.textContent = text;
+    return cell;
+}
+
+function createZoomCell() {
+    const cell = document.createElement("td");
+    const icon = document.createElement("i");
+    icon.className = "zoom";
+    icon.textContent = "🔍";
+    cell.appendChild(icon);
+    return cell;
+}
+
+function renderPackageInsights(packages) {
+    const tbody = document.querySelector("#package-insight-list tbody");
+    if (!tbody) {
+        return;
+    }
+    packages.forEach(packageInsight => {
+        const row = document.createElement("tr");
+        row.dataset.fqn = packageInsight.fqn;
+        row.appendChild(createZoomCell());
+        row.appendChild(createCell(packageInsight.fqn, "fqn"));
+        row.appendChild(createCell(packageInsight.label));
+        row.appendChild(createCell(packageInsight.numberOfTypes.toString(), "number"));
+        row.appendChild(createCell(packageInsight.numberOfMethods.toString(), "number"));
+        row.appendChild(createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
+        row.appendChild(createCell(packageInsight.cyclomaticComplexity.toString(), "number"));
+        row.appendChild(createCell(packageInsight.size.toString(), "number"));
+        tbody.appendChild(row);
+    });
+}
+
+function renderTypeInsights(types) {
+    const tbody = document.querySelector("#type-insight-list tbody");
+    if (!tbody) {
+        return;
+    }
+    types.forEach(typeInsight => {
+        const row = document.createElement("tr");
+        row.dataset.fqn = typeInsight.fqn;
+        row.dataset.packageFqn = typeInsight.packageFqn;
+        row.appendChild(createZoomCell());
+        row.appendChild(createCell(typeInsight.fqn, "fqn"));
+        row.appendChild(createCell(typeInsight.label));
+        row.appendChild(createCell(typeInsight.numberOfMethods.toString(), "number"));
+        row.appendChild(createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
+        row.appendChild(createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
+        row.appendChild(createCell(typeInsight.size.toString(), "number"));
+        tbody.appendChild(row);
+    });
+}
+
+function renderMethodInsights(methods) {
+    const tbody = document.querySelector("#method-insight-list tbody");
+    if (!tbody) {
+        return;
+    }
+    methods.forEach(methodInsight => {
+        const row = document.createElement("tr");
+        row.dataset.fqn = methodInsight.fqn;
+        row.dataset.packageFqn = methodInsight.packageFqn;
+        row.dataset.typeFqn = methodInsight.typeFqn;
+        row.appendChild(createZoomCell());
+        row.appendChild(createCell(methodInsight.fqn, "fqn"));
+        row.appendChild(createCell(methodInsight.label));
+        row.appendChild(createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
+        row.appendChild(createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
+        row.appendChild(createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
+        row.appendChild(createCell(methodInsight.numberOfUsingFields.toString(), "number"));
+        row.appendChild(createCell(methodInsight.size.toString(), "number"));
+        tbody.appendChild(row);
+    });
+}
+
 // 拡大アイコンをクリックしたときに、その行以外を非表示にする
 function setupZoomIcons() {
     const zoomIcons = document.querySelectorAll("i.zoom");
@@ -82,6 +182,16 @@ function zoomFamilyTables(baseTable, baseRow) {
 document.addEventListener("DOMContentLoaded", function () {
     if (!document.body.classList.contains("insight")) {
         return;
+    }
+
+    const insightData = parseInsightData();
+    if (insightData) {
+        renderPackageInsights(insightData.packages || []);
+        renderTypeInsights(insightData.types || []);
+        renderMethodInsights(insightData.methods || []);
+        setInsightCount("package-count", (insightData.packages || []).length);
+        setInsightCount("type-count", (insightData.types || []).length);
+        setInsightCount("method-count", (insightData.methods || []).length);
     }
 
     setupSortableTables();

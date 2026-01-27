@@ -159,6 +159,7 @@ public class JigDocumentGenerator {
             //   増えるごとにここに追加しなきゃいけないのはいかがなものか
             copyAsset("package.js", assetsPath);
             copyAsset("glossary.js", assetsPath);
+            copyAsset("insight.js", assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

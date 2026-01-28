@@ -1,0 +1,7 @@
+{
+  "name": "jig-js-tests",
+  "private": true,
+  "scripts": {
+    "test:package": "node --test jig-core/src/test/js/package.test.js"
+  }
+}

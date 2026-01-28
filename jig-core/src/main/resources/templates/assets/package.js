@@ -609,11 +609,31 @@ function applyRelatedFilter(fqn) {
     renderRelatedFilterTarget();
 }
 
-window.filterPackageDiagram = function (nodeId) {
-    const fqn = diagramNodeIdToFqn.get(nodeId);
-    if (!fqn) return;
-    applyRelatedFilter(fqn);
-};
+if (typeof window !== 'undefined') {
+    window.filterPackageDiagram = function (nodeId) {
+        const fqn = diagramNodeIdToFqn.get(nodeId);
+        if (!fqn) return;
+        applyRelatedFilter(fqn);
+    };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        setAggregationDepth(value) {
+            aggregationDepth = value;
+        },
+        setRelatedFilterMode(value) {
+            relatedFilterMode = value;
+        },
+        getAggregatedFqn,
+        collectRelatedSet,
+        buildAggregationStats,
+        buildAggregationStatsForPackageFilter,
+        buildAggregationStatsForRelated,
+        getCommonPrefixDepth,
+        getPackageDepth,
+    };
+}
 
 function setupPackageFilterControls() {
     const input = document.getElementById('package-filter-input');
@@ -756,18 +776,20 @@ function setupDiagramDirectionControls() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    if (!document.body.classList.contains("package-list")) return;
-    setupSortableTables();
-    renderPackageTable();
-    setupPackageFilterControls();
-    setupAggregationDepthControl();
-    setupRelatedFilterControls();
-    setupDiagramDirectionControls();
-    activeFilterType = 'package';
-    const applied = applyDefaultPackageFilterIfPresent();
-    if (!applied) {
-        renderDiagramAndTable();
-    }
-    renderRelatedFilterTarget();
-});
+if (typeof document !== 'undefined') {
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!document.body.classList.contains("package-list")) return;
+        setupSortableTables();
+        renderPackageTable();
+        setupPackageFilterControls();
+        setupAggregationDepthControl();
+        setupRelatedFilterControls();
+        setupDiagramDirectionControls();
+        activeFilterType = 'package';
+        const applied = applyDefaultPackageFilterIfPresent();
+        if (!applied) {
+            renderDiagramAndTable();
+        }
+        renderRelatedFilterTarget();
+    });
+}

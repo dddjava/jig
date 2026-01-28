@@ -513,8 +513,9 @@ function renderPackageDiagram(filterFqn, mode) {
     const addNodeLines = nodeId => {
         const label = nodeLabelById.get(nodeId);
         lines.push(`${nodeId}["${escapeMermaidText(label)}"]`);
-        lines.push(`click ${nodeId} filterPackageDiagram`);
         const fqn = diagramNodeIdToFqn.get(nodeId);
+        const tooltip = fqn ? escapeMermaidText(fqn) : '';
+        lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
             lines.push(`class ${nodeId} parentPackage`);
         }

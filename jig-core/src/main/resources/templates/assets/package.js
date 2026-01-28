@@ -617,24 +617,6 @@ if (typeof window !== 'undefined') {
     };
 }
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        setAggregationDepth(value) {
-            aggregationDepth = value;
-        },
-        setRelatedFilterMode(value) {
-            relatedFilterMode = value;
-        },
-        getAggregatedFqn,
-        collectRelatedSet,
-        buildAggregationStats,
-        buildAggregationStatsForPackageFilter,
-        buildAggregationStatsForRelated,
-        getCommonPrefixDepth,
-        getPackageDepth,
-    };
-}
-
 function setupPackageFilterControls() {
     const input = document.getElementById('package-filter-input');
     const applyButton = document.getElementById('apply-package-filter');
@@ -792,4 +774,23 @@ if (typeof document !== 'undefined') {
         }
         renderRelatedFilterTarget();
     });
+}
+
+// Test-only exports for Node; no-op in browsers.
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        setAggregationDepth(value) {
+            aggregationDepth = value;
+        },
+        setRelatedFilterMode(value) {
+            relatedFilterMode = value;
+        },
+        getAggregatedFqn,
+        collectRelatedSet,
+        buildAggregationStats,
+        buildAggregationStatsForPackageFilter,
+        buildAggregationStatsForRelated,
+        getCommonPrefixDepth,
+        getPackageDepth,
+    };
 }

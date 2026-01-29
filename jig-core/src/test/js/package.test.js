@@ -70,3 +70,61 @@ test('buildAggregationStatsForRelated respects aggregation depth', () => {
     assert.equal(depth1.packageCount, 1);
     assert.equal(depth1.relationCount, 0);
 });
+
+test('buildAggregationStatsForFilters combines package and related filters in direct mode', () => {
+    pkg.setAggregationDepth(0);
+    pkg.setRelatedFilterMode('direct');
+    const packages = [
+        {fqn: 'app.domain.a'},
+        {fqn: 'app.domain.b'},
+        {fqn: 'app.domain.c'},
+        {fqn: 'app.other.d'},
+    ];
+    const relations = [
+        {from: 'app.domain.a', to: 'app.domain.b'},
+        {from: 'app.domain.b', to: 'app.domain.c'},
+        {from: 'app.domain.c', to: 'app.other.d'},
+        {from: 'app.other.d', to: 'app.domain.a'},
+    ];
+
+    const stats = pkg.buildAggregationStatsForFilters(
+        packages,
+        relations,
+        'app.domain',
+        'app.domain.a',
+        0
+    );
+    const depth0 = stats.get(0);
+
+    assert.equal(depth0.packageCount, 2);
+    assert.equal(depth0.relationCount, 1);
+});
+
+test('buildAggregationStatsForFilters combines package and related filters in all mode', () => {
+    pkg.setAggregationDepth(0);
+    pkg.setRelatedFilterMode('all');
+    const packages = [
+        {fqn: 'app.domain.a'},
+        {fqn: 'app.domain.b'},
+        {fqn: 'app.domain.c'},
+        {fqn: 'app.other.d'},
+    ];
+    const relations = [
+        {from: 'app.domain.a', to: 'app.domain.b'},
+        {from: 'app.domain.b', to: 'app.domain.c'},
+        {from: 'app.domain.c', to: 'app.other.d'},
+        {from: 'app.other.d', to: 'app.domain.a'},
+    ];
+
+    const stats = pkg.buildAggregationStatsForFilters(
+        packages,
+        relations,
+        'app.domain',
+        'app.domain.a',
+        0
+    );
+    const depth0 = stats.get(0);
+
+    assert.equal(depth0.packageCount, 3);
+    assert.equal(depth0.relationCount, 2);
+});

@@ -188,7 +188,6 @@ function renderPackageTable() {
     });
 
     const tbody = document.querySelector('#package-table tbody');
-    //tbody.innerHTML = '';
 
     const input = document.getElementById('package-filter-input');
     const applyFilter = fqn => {

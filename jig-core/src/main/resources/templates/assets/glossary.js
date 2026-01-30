@@ -167,38 +167,53 @@ function renderMarkdownDescriptions() {
         .forEach(node => node.innerHTML = marked.parse(node.innerHTML));
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    if (!document.body.classList.contains("glossary")) return;
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!document.body.classList.contains("glossary")) return;
 
-    const terms = getGlossaryData();
-    renderGlossaryTerms(terms);
-    renderMarkdownDescriptions();
+        const terms = getGlossaryData();
+        renderGlossaryTerms(terms);
+        renderMarkdownDescriptions();
 
-    const controls = {
-        searchInput: document.getElementById("search-input"),
-        showEmptyDescription: document.getElementById("show-empty-description"),
-        showPackage: document.getElementById("show-package"),
-        showClass: document.getElementById("show-class"),
-        showMethod: document.getElementById("show-method"),
-        showField: document.getElementById("show-field"),
+        const controls = {
+            searchInput: document.getElementById("search-input"),
+            showEmptyDescription: document.getElementById("show-empty-description"),
+            showPackage: document.getElementById("show-package"),
+            showClass: document.getElementById("show-class"),
+            showMethod: document.getElementById("show-method"),
+            showField: document.getElementById("show-field"),
+        };
+
+        const updateArticles = () => updateArticleVisibility(controls);
+
+        controls.searchInput.addEventListener("input", updateArticles);
+        controls.showEmptyDescription.addEventListener("change", updateArticles);
+        controls.showPackage.addEventListener("change", updateArticles);
+        controls.showClass.addEventListener("change", updateArticles);
+        controls.showMethod.addEventListener("change", updateArticles);
+        controls.showField.addEventListener("change", updateArticles);
+        const exportButton = document.getElementById("export-csv");
+        if (exportButton) {
+            exportButton.addEventListener("click", () => {
+                const filteredTerms = getFilteredTerms(terms, controls);
+                const csvText = buildGlossaryCsv(filteredTerms);
+                downloadCsv(csvText, "glossary.csv");
+            });
+        }
+
+        updateArticles();
+    });
+}
+
+// Test-only exports for Node; no-op in browsers.
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        updateArticleVisibility,
+        getFilteredTerms,
+        getGlossaryData,
+        escapeCsvValue,
+        buildGlossaryCsv,
+        renderGlossaryTerms,
+        renderMarkdownDescriptions,
     };
-
-    const updateArticles = () => updateArticleVisibility(controls);
-
-    controls.searchInput.addEventListener("input", updateArticles);
-    controls.showEmptyDescription.addEventListener("change", updateArticles);
-    controls.showPackage.addEventListener("change", updateArticles);
-    controls.showClass.addEventListener("change", updateArticles);
-    controls.showMethod.addEventListener("change", updateArticles);
-    controls.showField.addEventListener("change", updateArticles);
-    const exportButton = document.getElementById("export-csv");
-    if (exportButton) {
-        exportButton.addEventListener("click", () => {
-            const filteredTerms = getFilteredTerms(terms, controls);
-            const csvText = buildGlossaryCsv(filteredTerms);
-            downloadCsv(csvText, "glossary.csv");
-        });
-    }
-
-    updateArticles();
-});
+}

@@ -179,22 +179,39 @@ function zoomFamilyTables(baseTable, baseRow) {
 }
 
 // ページ読み込み時のイベント
-document.addEventListener("DOMContentLoaded", function () {
-    if (!document.body.classList.contains("insight")) {
-        return;
-    }
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!document.body.classList.contains("insight")) {
+            return;
+        }
 
-    const insightData = parseInsightData();
-    if (insightData) {
-        renderPackageInsights(insightData.packages || []);
-        renderTypeInsights(insightData.types || []);
-        renderMethodInsights(insightData.methods || []);
-        setInsightCount("package-count", (insightData.packages || []).length);
-        setInsightCount("type-count", (insightData.types || []).length);
-        setInsightCount("method-count", (insightData.methods || []).length);
-    }
+        const insightData = parseInsightData();
+        if (insightData) {
+            renderPackageInsights(insightData.packages || []);
+            renderTypeInsights(insightData.types || []);
+            renderMethodInsights(insightData.methods || []);
+            setInsightCount("package-count", (insightData.packages || []).length);
+            setInsightCount("type-count", (insightData.types || []).length);
+            setInsightCount("method-count", (insightData.methods || []).length);
+        }
 
-    setupSortableTables();
-    setupZoomIcons();
-    document.getElementById("cancel-zoom").addEventListener("click", cancelZoom);
-});
+        setupSortableTables();
+        setupZoomIcons();
+        document.getElementById("cancel-zoom").addEventListener("click", cancelZoom);
+    });
+}
+
+// Test-only exports for Node; no-op in browsers.
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        parseInsightData,
+        setInsightCount,
+        createCell,
+        createZoomCell,
+        renderPackageInsights,
+        renderTypeInsights,
+        renderMethodInsights,
+        fqnStartsWith,
+        zoomFamilyTables,
+    };
+}

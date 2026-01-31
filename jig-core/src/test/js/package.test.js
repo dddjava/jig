@@ -615,14 +615,27 @@ test.describe('package.js ダイアグラム分岐', () => {
         });
         pkg.renderPackageDiagram(null, null);
 
-        global.mermaid.parseError(
-            {message: 'Edge limit exceeded'},
-            {line: 10, loc: 2}
-        );
+        const errors = [];
+        const originalError = console.error;
+        console.error = (...args) => {
+            errors.push(args.map(arg => String(arg)).join(' '));
+        };
+
+        // Mermaidはパース失敗時のみ呼ばれるため、テストでは直接呼び出す。
+        try {
+            global.mermaid.parseError(
+                {message: 'Edge limit exceeded'},
+                {line: 10, loc: 2}
+            );
+        } finally {
+            console.error = originalError;
+        }
 
         const messageNode = doc.getElementById('package-diagram-error-message');
         assert.equal(messageNode.textContent.includes('Mermaid parse error:'), true);
         assert.equal(messageNode.textContent.includes('Line: 10 Column: 2'), true);
+        assert.equal(errors.some(line => line.includes('Mermaid parse error:')), true);
+        assert.equal(errors.some(line => line.includes('Mermaid error location: 10 2')), true);
     });
 
     test('renderDiagramAndTableが描画とフィルタ適用を行う', () => {

@@ -39,7 +39,7 @@ class ClassList {
 }
 
 class Element {
-    constructor(tagName) {
+    constructor(tagName, ownerDocument = null) {
         this.tagName = tagName;
         this.children = [];
         this.textContent = '';
@@ -48,7 +48,10 @@ class Element {
         this.style = {};
         this.attributes = new Map();
         this.parentNode = null;
+        this.ownerDocument = ownerDocument;
         this.value = '';
+        this.eventListeners = new Map();
+        let elementId = '';
         let inner = '';
         Object.defineProperty(this, 'innerHTML', {
             get() {
@@ -61,11 +64,37 @@ class Element {
                 }
             },
         });
+        Object.defineProperty(this, 'id', {
+            get() {
+                return elementId;
+            },
+            set(value) {
+                elementId = value;
+                if (this.ownerDocument) {
+                    this.ownerDocument.elementsById.set(value, this);
+                }
+            },
+        });
     }
 
     appendChild(child) {
         child.parentNode = this;
         this.children.push(child);
+        return child;
+    }
+
+    insertBefore(child, referenceNode) {
+        child.parentNode = this;
+        if (!referenceNode) {
+            this.children.push(child);
+            return child;
+        }
+        const index = this.children.indexOf(referenceNode);
+        if (index === -1) {
+            this.children.push(child);
+            return child;
+        }
+        this.children.splice(index, 0, child);
         return child;
     }
 
@@ -85,6 +114,10 @@ class Element {
         }
         return null;
     }
+
+    addEventListener(eventName, handler) {
+        this.eventListeners.set(eventName, handler);
+    }
 }
 
 class DocumentStub {
@@ -95,7 +128,7 @@ class DocumentStub {
     }
 
     createElement(tagName) {
-        return new Element(tagName);
+        return new Element(tagName, this);
     }
 
     getElementById(id) {
@@ -131,7 +164,7 @@ function buildPackageRows(doc, fqns) {
 }
 
 function setPackageData(doc, data) {
-    const dataElement = new Element('script');
+    const dataElement = new Element('script', doc);
     dataElement.textContent = JSON.stringify(data);
     doc.elementsById.set('package-data', dataElement);
     pkg.resetPackageSummaryCache();
@@ -389,5 +422,122 @@ test.describe('package.js UI表示', () => {
         assert.equal(select.children.length >= 2, true);
         assert.equal(select.children[0].textContent.includes('集約なし'), true);
         assert.equal(select.value, '1');
+    });
+});
+
+test.describe('package.js 描画補助', () => {
+    test('パッケージテーブルに行とカウントを描画する', () => {
+        const doc = setupDocument();
+        setPackageData(doc, {
+            packages: [
+                {fqn: 'app.a', name: 'A', classCount: 2},
+                {fqn: 'app.b', name: 'B', classCount: 1},
+            ],
+            relations: [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.a', to: 'app.b'},
+            ],
+        });
+        const tbody = new Element('tbody', doc);
+        doc.selectors.set('#package-table tbody', tbody);
+
+        pkg.renderPackageTable();
+
+        assert.equal(tbody.children.length, 2);
+        assert.equal(tbody.children[0].children[3].textContent, 'A');
+        assert.equal(tbody.children[0].children[4].textContent, '2');
+        assert.equal(tbody.children[0].children[5].textContent, '0');
+        assert.equal(tbody.children[0].children[6].textContent, '2');
+    });
+
+    test('エラーボックスを作成し再利用する', () => {
+        const doc = setupDocument();
+        const container = new Element('div', doc);
+        const diagram = new Element('div', doc);
+        container.appendChild(diagram);
+
+        const first = pkg.getOrCreateDiagramErrorBox(diagram);
+        const second = pkg.getOrCreateDiagramErrorBox(diagram);
+
+        assert.equal(first, second);
+        assert.equal(first.id, 'package-diagram-error');
+        assert.equal(container.children[0], first);
+    });
+
+    test('ダイアグラムのエラー表示を切り替える', () => {
+        const doc = setupDocument();
+        const container = new Element('div', doc);
+        const diagram = new Element('div', doc);
+        container.appendChild(diagram);
+        pkg.setDiagramElement(diagram);
+
+        pkg.showDiagramErrorMessage('error', false);
+        const errorBox = doc.getElementById('package-diagram-error');
+        const messageNode = doc.getElementById('package-diagram-error-message');
+
+        assert.equal(errorBox.style.display, '');
+        assert.equal(diagram.style.display, 'none');
+        assert.equal(messageNode.textContent, 'error');
+
+        pkg.hideDiagramErrorMessage(diagram);
+        assert.equal(errorBox.style.display, 'none');
+        assert.equal(diagram.style.display, '');
+    });
+
+    test('Mermaidでダイアグラム描画を実行する', () => {
+        const doc = setupDocument();
+        const container = new Element('div', doc);
+        const diagram = new Element('div', doc);
+        container.appendChild(diagram);
+        pkg.setDiagramElement(diagram);
+
+        let runCalled = false;
+        global.window = {
+            mermaid: {
+                initialize() {},
+                run() {
+                    runCalled = true;
+                },
+            },
+        };
+        global.mermaid = global.window.mermaid;
+
+        pkg.renderDiagramSvg('graph TD', 100);
+
+        assert.equal(diagram.textContent, 'graph TD');
+        assert.equal(runCalled, true);
+    });
+});
+
+test.describe('package.js 相互依存一覧', () => {
+    test('相互依存がない場合は非表示にする', () => {
+        const doc = setupDocument();
+        const container = new Element('div', doc);
+        doc.elementsById.set('mutual-dependency-list', container);
+
+        pkg.renderMutualDependencyList(new Set(), []);
+
+        assert.equal(container.style.display, 'none');
+        assert.equal(container.innerHTML, '');
+    });
+
+    test('相互依存と原因を一覧化する', () => {
+        const doc = setupDocument();
+        const container = new Element('div', doc);
+        doc.elementsById.set('mutual-dependency-list', container);
+        pkg.setAggregationDepth(0);
+
+        pkg.renderMutualDependencyList(
+            new Set(['app.a::app.b']),
+            [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.b', to: 'app.a'},
+            ]
+        );
+
+        assert.equal(container.style.display, '');
+        assert.equal(container.children.length, 2);
+        assert.equal(container.children[0].tagName, 'h2');
+        assert.equal(container.children[1].tagName, 'ul');
     });
 });

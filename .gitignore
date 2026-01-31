@@ -3,4 +3,8 @@
 build/
 out/
 *.iml
+
 node_modules/
+# JavaScriptのカバレッジツールc8のレポート出力先
+coverage/
+

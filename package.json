@@ -2,6 +2,10 @@
   "name": "jig-js-tests",
   "private": true,
   "scripts": {
-    "test": "node --test jig-core/src/test/js/*.test.js"
+    "test": "node --test jig-core/src/test/js/*.test.js",
+    "test:coverage": "c8 --reporter=html node --test jig-core/src/test/js/*.test.js"
+  },
+  "devDependencies": {
+    "c8": "^10.1.3"
   }
 }

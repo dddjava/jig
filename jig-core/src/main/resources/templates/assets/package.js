@@ -98,11 +98,12 @@ function renderDiagramSvg(text, maxEdges) {
 function getPackageSummaryData() {
     if (packageSummaryCache) return packageSummaryCache;
     const jsonText = document.getElementById('package-data').textContent;
-    /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
+    /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>, causeRelationEvidence?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
     packageSummaryCache = {
         packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
+        causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData.causeRelationEvidence ?? []),
     };
     return packageSummaryCache;
 }
@@ -140,6 +141,12 @@ function getCommonPrefixDepth(fqns) {
         }
     }
     return depth;
+}
+
+function getPackageFqnFromTypeFqn(typeFqn) {
+    if (!typeFqn || !typeFqn.includes('.')) return '(default)';
+    const parts = typeFqn.split('.');
+    return parts.slice(0, parts.length - 1).join('.');
 }
 
 function buildAggregationStats(packages, relations, maxDepth) {
@@ -405,10 +412,10 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
     }
     const relationMap = new Map();
     causeRelationEvidence.forEach(relation => {
-        const from = getAggregatedFqn(relation.from, aggregationDepth);
-        const to = getAggregatedFqn(relation.to, aggregationDepth);
-        if (from === to) return;
-        const key = from < to ? `${from}::${to}` : `${to}::${from}`;
+        const fromPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.from), aggregationDepth);
+        const toPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
+        if (fromPackage === toPackage) return;
+        const key = fromPackage < toPackage ? `${fromPackage}::${toPackage}` : `${toPackage}::${fromPackage}`;
         if (!relationMap.has(key)) {
             relationMap.set(key, new Set());
         }
@@ -447,7 +454,7 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
     if (!diagram) return;
     diagramElement = diagram;
 
-    const {packages, relations} = getPackageSummaryData();
+    const {packages, relations, causeRelationEvidence} = getPackageSummaryData();
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
     const lines = [`graph ${diagramDirection}`];
@@ -462,6 +469,13 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
     const filteredRelations = packageFilterFqn
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
+    const filteredCauseRelationEvidence = packageFilterFqn
+        ? causeRelationEvidence.filter(relation => {
+            const fromPackage = getPackageFqnFromTypeFqn(relation.from);
+            const toPackage = getPackageFqnFromTypeFqn(relation.to);
+            return withinPackageFilter(fromPackage) && withinPackageFilter(toPackage);
+        })
+        : causeRelationEvidence;
     const visibleRelations = filteredRelations
         .map(relation => ({
             from: getAggregatedFqn(relation.from, aggregationDepth),
@@ -604,7 +618,7 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
 
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
-    renderMutualDependencyList(mutualPairs, filteredRelations);
+    renderMutualDependencyList(mutualPairs, filteredCauseRelationEvidence);
 
     lastDiagramSource = lines.join('\n');
     lastDiagramEdgeCount = uniqueRelations.length;

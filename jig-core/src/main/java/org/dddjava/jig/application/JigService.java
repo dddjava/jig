@@ -133,6 +133,10 @@ public class JigService {
         return PackageRelations.from(TypeRelationships.internalRelation(jigTypes));
     }
 
+    public TypeRelationships typeRelationships(JigRepository jigRepository) {
+        return TypeRelationships.internalRelation(jigTypes(jigRepository));
+    }
+
     public Insights insights(JigRepository repository) {
         return new Insights(
                 jigTypes(repository).orderedStream()

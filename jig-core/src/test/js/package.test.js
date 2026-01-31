@@ -635,19 +635,19 @@ test.describe('package.js', () => {
                 assert.equal(container.innerHTML, '');
             });
 
-            test('renderMutualDependencyList: 相互依存と原因を一覧化', () => {
-                const doc = setupDocument();
-                const container = new Element('div', doc);
-                doc.elementsById.set('mutual-dependency-list', container);
-                pkg.setAggregationDepth(0);
+    test('renderMutualDependencyList: 相互依存と原因を一覧化', () => {
+        const doc = setupDocument();
+        const container = new Element('div', doc);
+        doc.elementsById.set('mutual-dependency-list', container);
+        pkg.setAggregationDepth(0);
 
-                pkg.renderMutualDependencyList(
-                    new Set(['app.a::app.b']),
-                    [
-                        {from: 'app.a', to: 'app.b'},
-                        {from: 'app.b', to: 'app.a'},
-                    ]
-                );
+        pkg.renderMutualDependencyList(
+            new Set(['app.alpha::app.beta']),
+            [
+                {from: 'app.alpha.A', to: 'app.beta.B'},
+                {from: 'app.beta.B', to: 'app.alpha.A'},
+            ]
+        );
 
                 assert.equal(container.style.display, '');
         assert.equal(container.children.length, 1);

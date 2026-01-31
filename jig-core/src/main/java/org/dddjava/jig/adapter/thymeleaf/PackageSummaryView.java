@@ -4,6 +4,8 @@ import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -27,7 +29,7 @@ public class PackageSummaryView {
         this.templateEngine = templateEngine;
     }
 
-    public List<Path> write(Path outputDirectory, JigPackages jigPackages, PackageRelations packageRelations) {
+    public List<Path> write(Path outputDirectory, JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         String packagesJson = jigPackages.listPackage().stream()
@@ -44,9 +46,13 @@ public class PackageSummaryView {
                 .map(this::formatRelationJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
+        String typeRelationsJson = typeRelationships.list().stream()
+                .map(this::formatTypeRelationJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
         String packageSummaryJson = """
-                {"packages": %s, "relations": %s}
-                """.formatted(packagesJson, packageRelationsJson);
+                {"packages": %s, "relations": %s, "causeRelationEvidence": %s}
+                """.formatted(packagesJson, packageRelationsJson, typeRelationsJson);
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
@@ -71,5 +77,13 @@ public class PackageSummaryView {
                 """.formatted(
                 escape(relation.from().asText()),
                 escape(relation.to().asText()));
+    }
+
+    private String formatTypeRelationJson(TypeRelationship relation) {
+        return """
+                {"from": "%s", "to": "%s"}
+                """.formatted(
+                escape(relation.from().fqn()),
+                escape(relation.to().fqn()));
     }
 }

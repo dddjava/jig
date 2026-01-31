@@ -103,6 +103,12 @@
             {"from": "com.example.domain.customer", "to": "com.example.domain.order.hoge"},
             {"from": "com.example.infrastructure", "to": "com.example.domain"},
             {"from": "com.example.infrastructure.db", "to": "com.example.infrastructure"}
+        ],
+        "causeRelationEvidence": [
+            {"from": "com.example.api.ApiController", "to": "com.example.application.UseCase"},
+            {"from": "com.example.application.UseCase", "to": "com.example.domain.order.Order"},
+            {"from": "com.example.domain.order.Order", "to": "com.example.domain.customer.Customer"},
+            {"from": "com.example.domain.customer.Customer", "to": "com.example.domain.order.Order"}
         ]
     }
 </script>

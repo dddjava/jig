@@ -170,6 +170,24 @@ function setPackageData(doc, data) {
     pkg.resetPackageSummaryCache();
 }
 
+function setupDiagramEnvironment(doc) {
+    const container = doc.createElement('div');
+    const diagram = doc.createElement('div');
+    diagram.id = 'package-relation-diagram';
+    container.appendChild(diagram);
+    const mutual = doc.createElement('div');
+    mutual.id = 'mutual-dependency-list';
+    doc.elementsById.set('mutual-dependency-list', mutual);
+    global.window = {
+        mermaid: {
+            initialize() {},
+            run() {},
+        },
+    };
+    global.mermaid = global.window.mermaid;
+    return diagram;
+}
+
 test.describe('package.js 関連フィルタ', () => {
     test('directモードは隣接のみを含める', () => {
         pkg.setAggregationDepth(0);
@@ -539,5 +557,288 @@ test.describe('package.js 相互依存一覧', () => {
         assert.equal(container.children.length, 2);
         assert.equal(container.children[0].tagName, 'h2');
         assert.equal(container.children[1].tagName, 'ul');
+    });
+});
+
+test.describe('package.js ダイアグラム描画', () => {
+    test('相互依存を含むダイアグラムを描画する', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [
+                {fqn: 'app.a', name: 'A', classCount: 1},
+                {fqn: 'app.b', name: 'B', classCount: 1},
+            ],
+            relations: [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.b', to: 'app.a'},
+            ],
+        });
+
+        pkg.renderPackageDiagram(null, null);
+
+        const diagram = doc.getElementById('package-relation-diagram');
+        assert.equal(diagram.textContent.includes('graph'), true);
+        assert.equal(diagram.textContent.includes('<-->'), true);
+        const mutual = doc.getElementById('mutual-dependency-list');
+        assert.equal(mutual.children.length > 0, true);
+    });
+});
+
+test.describe('package.js ダイアグラム分岐', () => {
+    test('エッジ数超過で描画を保留しエラーを表示する', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        const packages = [];
+        const relations = [];
+        for (let i = 0; i < 501; i += 1) {
+            const from = `app.p${i}`;
+            const to = `app.p${i + 1}`;
+            packages.push({fqn: from, name: from, classCount: 1});
+            packages.push({fqn: to, name: to, classCount: 1});
+            relations.push({from, to});
+        }
+        setPackageData(doc, {packages, relations});
+
+        pkg.renderPackageDiagram(null, null);
+
+        const errorBox = doc.getElementById('package-diagram-error');
+        assert.equal(errorBox.style.display, '');
+    });
+
+    test('Mermaid parseErrorでエラー内容を表示する', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [{fqn: 'app.a', name: 'A', classCount: 1}],
+            relations: [],
+        });
+        pkg.renderPackageDiagram(null, null);
+
+        global.mermaid.parseError(
+            {message: 'Edge limit exceeded'},
+            {line: 10, loc: 2}
+        );
+
+        const messageNode = doc.getElementById('package-diagram-error-message');
+        assert.equal(messageNode.textContent.includes('Mermaid parse error:'), true);
+        assert.equal(messageNode.textContent.includes('Line: 10 Column: 2'), true);
+    });
+
+    test('renderDiagramAndTableが描画とフィルタ適用を行う', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [
+                {fqn: 'app.a', name: 'A', classCount: 1},
+                {fqn: 'app.b', name: 'B', classCount: 1},
+            ],
+            relations: [
+                {from: 'app.a', to: 'app.b'},
+            ],
+        });
+        const rows = buildPackageRows(doc, ['app.a', 'app.b']);
+        doc.selectors.set('#package-table tbody', doc.createElement('tbody'));
+        const select = doc.createElement('select');
+        select.id = 'package-depth-select';
+        doc.elementsById.set('package-depth-select', select);
+        pkg.setRelatedFilterMode('direct');
+        pkg.setRelatedFilterFqn('app.a');
+        pkg.setAggregationDepth(0);
+
+        pkg.renderDiagramAndTable();
+
+        assert.equal(rows[1].classList.contains('hidden'), false);
+        assert.equal(select.children.length > 0, true);
+    });
+});
+
+test.describe('package.js UI制御', () => {
+    test('フィルタ入力の適用・解除をハンドリングする', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
+            relations: [],
+        });
+        doc.selectorsAll.set('#package-table tbody tr', []);
+
+        const input = doc.createElement('input');
+        input.id = 'package-filter-input';
+        const applyButton = doc.createElement('button');
+        applyButton.id = 'apply-package-filter';
+        const clearButton = doc.createElement('button');
+        clearButton.id = 'clear-package-filter';
+        doc.elementsById.set('package-filter-input', input);
+        doc.elementsById.set('apply-package-filter', applyButton);
+        doc.elementsById.set('clear-package-filter', clearButton);
+
+        pkg.setupPackageFilterControls();
+
+        input.value = 'app.domain';
+        applyButton.eventListeners.get('click')();
+        assert.equal(pkg.getPackageFilterFqn(), 'app.domain');
+
+        clearButton.eventListeners.get('click')();
+        assert.equal(pkg.getPackageFilterFqn(), null);
+        assert.equal(input.value, '');
+    });
+
+    test('Enterキーでフィルタ適用を行う', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
+            relations: [],
+        });
+        doc.selectorsAll.set('#package-table tbody tr', []);
+        const input = doc.createElement('input');
+        input.id = 'package-filter-input';
+        const applyButton = doc.createElement('button');
+        applyButton.id = 'apply-package-filter';
+        const clearButton = doc.createElement('button');
+        clearButton.id = 'clear-package-filter';
+        doc.elementsById.set('package-filter-input', input);
+        doc.elementsById.set('apply-package-filter', applyButton);
+        doc.elementsById.set('clear-package-filter', clearButton);
+
+        pkg.setupPackageFilterControls();
+
+        let prevented = false;
+        input.value = 'app.domain';
+        input.eventListeners.get('keydown')({
+            key: 'Enter',
+            preventDefault() {
+                prevented = true;
+            },
+        });
+
+        assert.equal(prevented, true);
+        assert.equal(pkg.getPackageFilterFqn(), 'app.domain');
+    });
+
+    test('集約深さの変更を反映する', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [
+                {fqn: 'app.domain.a'},
+                {fqn: 'app.domain.b'},
+            ],
+            relations: [],
+        });
+        doc.selectorsAll.set('#package-table tbody tr', []);
+        const select = doc.createElement('select');
+        select.id = 'package-depth-select';
+        doc.elementsById.set('package-depth-select', select);
+
+        pkg.setAggregationDepth(0);
+        pkg.setupAggregationDepthControl();
+
+        select.value = '1';
+        select.eventListeners.get('change')();
+        assert.equal(select.value, '1');
+    });
+
+    test('関連フィルタモードの変更を反映する', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [
+                {fqn: 'app.a'},
+                {fqn: 'app.b'},
+                {fqn: 'app.c'},
+            ],
+            relations: [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.b', to: 'app.c'},
+            ],
+        });
+        const select = doc.createElement('select');
+        select.id = 'related-mode-select';
+        const clearButton = doc.createElement('button');
+        clearButton.id = 'clear-related-filter';
+        const input = doc.createElement('input');
+        input.id = 'package-filter-input';
+        doc.elementsById.set('related-mode-select', select);
+        doc.elementsById.set('clear-related-filter', clearButton);
+        doc.elementsById.set('package-filter-input', input);
+
+        pkg.setAggregationDepth(0);
+        pkg.setRelatedFilterMode('direct');
+        pkg.setRelatedFilterFqn('app.a');
+        pkg.setupRelatedFilterControls();
+        select.value = 'all';
+        select.eventListeners.get('change')();
+
+        const related = pkg.collectRelatedSet('app.a', [
+            {from: 'app.a', to: 'app.b'},
+            {from: 'app.b', to: 'app.c'},
+        ]);
+        assert.equal(related.has('app.c'), true);
+
+        clearButton.eventListeners.get('click')();
+        assert.equal(pkg.getRelatedFilterFqn(), null);
+    });
+
+    test('ダイアグラムの向きを切り替える', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [{fqn: 'app.a'}],
+            relations: [],
+        });
+        doc.selectorsAll.set('#package-table tbody tr', []);
+        const td = doc.createElement('input');
+        td.value = 'TD';
+        const lr = doc.createElement('input');
+        lr.value = 'LR';
+        doc.selectorsAll.set('input[name=\"diagram-direction\"]', [td, lr]);
+
+        pkg.setupDiagramDirectionControls();
+
+        lr.checked = true;
+        lr.eventListeners.get('change')();
+        assert.equal(pkg.getDiagramDirection(), 'LR');
+    });
+});
+
+test.describe('package.js 既定フィルタ', () => {
+    test('ドメインがあれば既定フィルタを適用する', () => {
+        const doc = setupDocument();
+        setupDiagramEnvironment(doc);
+        setPackageData(doc, {
+            packages: [
+                {fqn: 'app.domain.core'},
+                {fqn: 'app.domain.sub'},
+            ],
+            relations: [],
+        });
+        doc.selectorsAll.set('#package-table tbody tr', []);
+        const input = doc.createElement('input');
+        input.id = 'package-filter-input';
+        doc.elementsById.set('package-filter-input', input);
+
+        const applied = pkg.applyDefaultPackageFilterIfPresent();
+
+        assert.equal(applied, true);
+        assert.equal(pkg.getPackageFilterFqn(), 'app.domain');
+        assert.equal(input.value, 'app.domain');
+    });
+
+    test('入力済みなら既定フィルタは適用しない', () => {
+        const doc = setupDocument();
+        setPackageData(doc, {
+            packages: [{fqn: 'app.domain.core'}],
+            relations: [],
+        });
+        const input = doc.createElement('input');
+        input.id = 'package-filter-input';
+        input.value = 'app';
+        doc.elementsById.set('package-filter-input', input);
+
+        const applied = pkg.applyDefaultPackageFilterIfPresent();
+
+        assert.equal(applied, false);
     });
 });

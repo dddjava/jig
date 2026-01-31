@@ -416,8 +416,9 @@ function renderMutualDependencyList(mutualPairs, filteredRelations) {
     });
 
     container.style.display = '';
-    const title = document.createElement('h2');
-    title.textContent = '相互依存と原因';
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = '相互依存と原因';
     const list = document.createElement('ul');
     Array.from(mutualPairs).sort().forEach(key => {
         const parts = key.split('::');
@@ -429,15 +430,16 @@ function renderMutualDependencyList(mutualPairs, filteredRelations) {
         item.appendChild(pair);
         const causes = relationMap.get(key);
         if (causes && causes.size > 0) {
-            const details = document.createElement('pre');
-            details.textContent = Array.from(causes).sort().join('\n');
-            item.appendChild(details);
+            const detailBody = document.createElement('pre');
+            detailBody.textContent = Array.from(causes).sort().join('\n');
+            item.appendChild(detailBody);
         }
         list.appendChild(item);
     });
     container.innerHTML = '';
-    container.appendChild(title);
-    container.appendChild(list);
+    details.appendChild(summary);
+    details.appendChild(list);
+    container.appendChild(details);
 }
 
 function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {

@@ -650,9 +650,9 @@ test.describe('package.js', () => {
                 );
 
                 assert.equal(container.style.display, '');
-                assert.equal(container.children.length, 2);
-                assert.equal(container.children[0].tagName, 'h2');
-                assert.equal(container.children[1].tagName, 'ul');
+        assert.equal(container.children.length, 1);
+        assert.equal(container.children[0].tagName, 'details');
+        assert.equal(container.children[0].children[1].tagName, 'ul');
             });
         });
 

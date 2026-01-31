@@ -395,7 +395,7 @@ function renderDiagramAndTable() {
     updateAggregationDepthOptions(getMaxPackageDepth());
 }
 
-function renderMutualDependencyList(mutualPairs, filteredRelations) {
+function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
     const container = document.getElementById('mutual-dependency-list');
     if (!container) return;
     if (!mutualPairs || mutualPairs.size === 0) {
@@ -404,7 +404,7 @@ function renderMutualDependencyList(mutualPairs, filteredRelations) {
         return;
     }
     const relationMap = new Map();
-    filteredRelations.forEach(relation => {
+    causeRelationEvidence.forEach(relation => {
         const from = getAggregatedFqn(relation.from, aggregationDepth);
         const to = getAggregatedFqn(relation.to, aggregationDepth);
         if (from === to) return;

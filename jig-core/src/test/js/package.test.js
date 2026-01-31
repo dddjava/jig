@@ -489,13 +489,24 @@ test.describe('package.js 描画補助', () => {
         container.appendChild(diagram);
         pkg.setDiagramElement(diagram);
 
-        pkg.showDiagramErrorMessage('error', false);
+        const errors = [];
+        const originalError = console.error;
+        console.error = (...args) => {
+            errors.push(args.map(arg => String(arg)).join(' '));
+        };
+
+        try {
+            pkg.showDiagramErrorMessage('test-error-message', false);
+        } finally {
+            console.error = originalError;
+        }
         const errorBox = doc.getElementById('package-diagram-error');
         const messageNode = doc.getElementById('package-diagram-error-message');
 
         assert.equal(errorBox.style.display, '');
         assert.equal(diagram.style.display, 'none');
-        assert.equal(messageNode.textContent, 'error');
+        assert.equal(messageNode.textContent, 'test-error-message');
+        assert.equal(errors.some(line => line.includes('test-error-message')), true);
 
         pkg.hideDiagramErrorMessage(diagram);
         assert.equal(errorBox.style.display, 'none');
@@ -600,10 +611,21 @@ test.describe('package.js ダイアグラム分岐', () => {
         }
         setPackageData(doc, {packages, relations});
 
-        pkg.renderPackageDiagram(null, null);
+        const errors = [];
+        const originalError = console.error;
+        console.error = (...args) => {
+            errors.push(args.map(arg => String(arg)).join(' '));
+        };
+
+        try {
+            pkg.renderPackageDiagram(null, null);
+        } finally {
+            console.error = originalError;
+        }
 
         const errorBox = doc.getElementById('package-diagram-error');
         assert.equal(errorBox.style.display, '');
+        assert.equal(errors.some(line => line.includes('関連数が多すぎるため描画を省略しました。')), true);
     });
 
     test('Mermaid parseErrorでエラー内容を表示する', () => {

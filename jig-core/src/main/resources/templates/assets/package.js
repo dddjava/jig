@@ -806,16 +806,60 @@ if (typeof module !== 'undefined' && module.exports) {
         setAggregationDepth(value) {
             aggregationDepth = value;
         },
+        setPackageFilterFqn(value) {
+            packageFilterFqn = value;
+        },
         setRelatedFilterMode(value) {
             relatedFilterMode = value;
         },
+        setRelatedFilterFqn(value) {
+            relatedFilterFqn = value;
+        },
+        setDiagramDirection(value) {
+            diagramDirection = value;
+        },
+        setDiagramElement(value) {
+            diagramElement = value;
+        },
+        getPackageFilterFqn() {
+            return packageFilterFqn;
+        },
+        getRelatedFilterFqn() {
+            return relatedFilterFqn;
+        },
+        getDiagramDirection() {
+            return diagramDirection;
+        },
+        resetPackageSummaryCache() {
+            packageSummaryCache = null;
+        },
         getAggregatedFqn,
         collectRelatedSet,
+        getPackageSummaryData,
+        getPackageDepth,
+        getMaxPackageDepth,
+        getCommonPrefixDepth,
         buildAggregationStats,
         buildAggregationStatsForFilters,
         buildAggregationStatsForPackageFilter,
         buildAggregationStatsForRelated,
-        getCommonPrefixDepth,
-        getPackageDepth,
+        getOrCreateDiagramErrorBox,
+        showDiagramErrorMessage,
+        hideDiagramErrorMessage,
+        renderDiagramSvg,
+        renderPackageTable,
+        applyPackageFilterToTable,
+        applyRelatedFilterToTable,
+        renderRelatedFilterTarget,
+        renderDiagramAndTable,
+        renderMutualDependencyList,
+        renderPackageDiagram,
+        applyRelatedFilter,
+        setupPackageFilterControls,
+        setupAggregationDepthControl,
+        updateAggregationDepthOptions,
+        applyDefaultPackageFilterIfPresent,
+        setupRelatedFilterControls,
+        setupDiagramDirectionControls,
     };
 }

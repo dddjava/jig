@@ -232,8 +232,10 @@ function setupDiagramEnvironment(doc) {
     return diagram;
 }
 
-test.describe('package.js 関連フィルタ', () => {
-    test('directモードは隣接のみを含める', () => {
+test.describe('package.js', () => {
+test.describe('データ/ヘルパー', () => {
+test.describe('collectRelatedSet', () => {
+    test('directモード: 隣接のみを含める', () => {
         pkg.setAggregationDepth(0);
         pkg.setRelatedFilterMode('direct');
         const relations = [
@@ -246,7 +248,7 @@ test.describe('package.js 関連フィルタ', () => {
         assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
     });
 
-    test('allモードは推移的に辿る', () => {
+    test('allモード: 推移的に辿る', () => {
         pkg.setAggregationDepth(0);
         pkg.setRelatedFilterMode('all');
         const relations = [
@@ -263,8 +265,8 @@ test.describe('package.js 関連フィルタ', () => {
     });
 });
 
-test.describe('package.js データ取得', () => {
-    test('パッケージデータは配列/オブジェクトの両方に対応する', () => {
+test.describe('データ取得', () => {
+    test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
         const doc = setupDocument();
         setPackageData(doc, [{fqn: 'app.a', name: 'A', classCount: 1, description: ''}]);
 
@@ -274,13 +276,13 @@ test.describe('package.js データ取得', () => {
         assert.equal(data.relations.length, 0);
     });
 
-    test('パッケージ深さを取得する', () => {
+    test('getPackageDepth: 深さを返す', () => {
         assert.equal(pkg.getPackageDepth(''), 0);
         assert.equal(pkg.getPackageDepth('(default)'), 0);
         assert.equal(pkg.getPackageDepth('app.domain'), 2);
     });
 
-    test('最大深さを計算する', () => {
+    test('getMaxPackageDepth: 最大深さを返す', () => {
         const doc = setupDocument();
         setPackageData(doc, {
             packages: [
@@ -294,15 +296,16 @@ test.describe('package.js データ取得', () => {
         assert.equal(pkg.getMaxPackageDepth(), 4);
     });
 
-    test('共通プレフィックスの深さを計算する', () => {
+    test('getCommonPrefixDepth: 共通プレフィックス深さを返す', () => {
         assert.equal(pkg.getCommonPrefixDepth([]), 0);
         assert.equal(pkg.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
         assert.equal(pkg.getCommonPrefixDepth(['app', 'lib.tool']), 0);
     });
 });
+});
 
-test.describe('package.js 集計', () => {
-    test('パッケージフィルタで対象のみ数える', () => {
+test.describe('集計', () => {
+    test('buildAggregationStatsForPackageFilter: 対象のみ数える', () => {
         pkg.setAggregationDepth(0);
         const packages = [
             {fqn: 'app.domain.a'},
@@ -321,7 +324,7 @@ test.describe('package.js 集計', () => {
         assert.equal(depth0.relationCount, 1);
     });
 
-    test('関連フィルタは集計深さを反映する', () => {
+    test('buildAggregationStatsForRelated: 集計深さを反映する', () => {
         pkg.setAggregationDepth(1);
         pkg.setRelatedFilterMode('all');
         const packages = [
@@ -341,7 +344,7 @@ test.describe('package.js 集計', () => {
         assert.equal(depth1.relationCount, 0);
     });
 
-    test('directモードの複合フィルタ集計', () => {
+    test('buildAggregationStatsForFilters: directモードの複合集計', () => {
         pkg.setAggregationDepth(0);
         pkg.setRelatedFilterMode('direct');
         const packages = [
@@ -370,7 +373,7 @@ test.describe('package.js 集計', () => {
         assert.equal(depth0.relationCount, 1);
     });
 
-    test('allモードの複合フィルタ集計', () => {
+    test('buildAggregationStatsForFilters: allモードの複合集計', () => {
         pkg.setAggregationDepth(0);
         pkg.setRelatedFilterMode('all');
         const packages = [
@@ -400,8 +403,9 @@ test.describe('package.js 集計', () => {
     });
 });
 
-test.describe('package.js テーブルフィルタ', () => {
-    test('パッケージフィルタで行の表示/非表示を切り替える', () => {
+test.describe('フィルタ', () => {
+test.describe('テーブル', () => {
+    test('applyPackageFilterToTable: 行の表示/非表示を切り替える', () => {
         const doc = setupDocument();
         const rows = buildPackageRows(doc, ['app.domain', 'app.other']);
 
@@ -411,7 +415,7 @@ test.describe('package.js テーブルフィルタ', () => {
         assert.equal(rows[1].classList.contains('hidden'), true);
     });
 
-    test('関連フィルタが未指定ならパッケージフィルタだけ適用する', () => {
+    test('applyRelatedFilterToTable: 未指定ならパッケージフィルタのみ', () => {
         const doc = setupDocument();
         const rows = buildPackageRows(doc, ['app.domain', 'app.other']);
         pkg.setPackageFilterFqn('app.domain');
@@ -422,7 +426,7 @@ test.describe('package.js テーブルフィルタ', () => {
         assert.equal(rows[1].classList.contains('hidden'), true);
     });
 
-    test('関連フィルタで関係する行のみ表示する', () => {
+    test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
         const doc = setupDocument();
         setPackageData(doc, {
             packages: [
@@ -446,9 +450,11 @@ test.describe('package.js テーブルフィルタ', () => {
         assert.equal(rows[2].classList.contains('hidden'), true);
     });
 });
+});
 
-test.describe('package.js UI表示', () => {
-    test('関連フィルタの対象表示を更新する', () => {
+test.describe('描画', () => {
+test.describe('UI表示', () => {
+    test('renderRelatedFilterTarget: 対象表示を更新する', () => {
         const doc = setupDocument();
         const target = new Element('span');
         doc.elementsById.set('related-filter-target', target);
@@ -462,7 +468,7 @@ test.describe('package.js UI表示', () => {
         assert.equal(target.textContent, 'app.domain');
     });
 
-    test('集約深さの選択肢を更新する', () => {
+    test('updateAggregationDepthOptions: 選択肢を更新する', () => {
         const doc = setupDocument();
         const select = new Element('select');
         doc.elementsById.set('package-depth-select', select);
@@ -487,8 +493,8 @@ test.describe('package.js UI表示', () => {
     });
 });
 
-test.describe('package.js 描画補助', () => {
-    test('パッケージテーブルに行とカウントを描画する', () => {
+test.describe('一覧/補助', () => {
+    test('renderPackageTable: 行とカウントを描画する', () => {
         const doc = setupDocument();
         setPackageData(doc, {
             packages: [
@@ -512,7 +518,7 @@ test.describe('package.js 描画補助', () => {
         assert.equal(tbody.children[0].children[6].textContent, '2');
     });
 
-    test('エラーボックスを作成し再利用する', () => {
+    test('getOrCreateDiagramErrorBox: エラーボックスを作成/再利用する', () => {
         const doc = setupDocument();
         const container = new Element('div', doc);
         const diagram = new Element('div', doc);
@@ -526,7 +532,7 @@ test.describe('package.js 描画補助', () => {
         assert.equal(container.children[0], first);
     });
 
-    test('ダイアグラムのエラー表示を切り替える', () => {
+    test('showDiagramErrorMessage/hideDiagramErrorMessage: 表示を切り替える', () => {
         const doc = setupDocument();
         const container = new Element('div', doc);
         const diagram = new Element('div', doc);
@@ -549,7 +555,7 @@ test.describe('package.js 描画補助', () => {
         assert.equal(diagram.style.display, '');
     });
 
-    test('Mermaidでダイアグラム描画を実行する', () => {
+    test('renderDiagramSvg: Mermaid描画を実行する', () => {
         const doc = setupDocument();
         const container = new Element('div', doc);
         const diagram = new Element('div', doc);
@@ -574,8 +580,8 @@ test.describe('package.js 描画補助', () => {
     });
 });
 
-test.describe('package.js 相互依存一覧', () => {
-    test('相互依存がない場合は非表示にする', () => {
+test.describe('相互依存', () => {
+    test('renderMutualDependencyList: なしの場合は非表示', () => {
         const doc = setupDocument();
         const container = new Element('div', doc);
         doc.elementsById.set('mutual-dependency-list', container);
@@ -586,7 +592,7 @@ test.describe('package.js 相互依存一覧', () => {
         assert.equal(container.innerHTML, '');
     });
 
-    test('相互依存と原因を一覧化する', () => {
+    test('renderMutualDependencyList: 相互依存と原因を一覧化', () => {
         const doc = setupDocument();
         const container = new Element('div', doc);
         doc.elementsById.set('mutual-dependency-list', container);
@@ -606,9 +612,11 @@ test.describe('package.js 相互依存一覧', () => {
         assert.equal(container.children[1].tagName, 'ul');
     });
 });
+});
 
-test.describe('package.js ダイアグラム描画', () => {
-    test('相互依存を含むダイアグラムを描画する', () => {
+test.describe('ダイアグラム', () => {
+test.describe('描画', () => {
+    test('renderPackageDiagram: 相互依存を含む描画', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -632,8 +640,8 @@ test.describe('package.js ダイアグラム描画', () => {
     });
 });
 
-test.describe('package.js ダイアグラム分岐', () => {
-    test('エッジ数超過で描画を保留しエラーを表示する', () => {
+test.describe('分岐/エラー', () => {
+    test('renderPackageDiagram: エッジ数超過で保留/エラー表示', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         const packages = [];
@@ -656,7 +664,7 @@ test.describe('package.js ダイアグラム分岐', () => {
         assert.equal(errors.some(line => line.includes('関連数が多すぎるため描画を省略しました。')), true);
     });
 
-    test('Mermaid parseErrorでエラー内容を表示する', () => {
+    test('mermaid.parseError: エラー内容を表示', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -681,7 +689,7 @@ test.describe('package.js ダイアグラム分岐', () => {
         assert.equal(errors.some(line => line.includes('Mermaid error location: 10 2')), true);
     });
 
-    test('renderDiagramAndTableが描画とフィルタ適用を行う', () => {
+    test('renderDiagramAndTable: 描画とフィルタ適用を行う', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -708,9 +716,10 @@ test.describe('package.js ダイアグラム分岐', () => {
         assert.equal(select.children.length > 0, true);
     });
 });
+});
 
-test.describe('package.js UI制御', () => {
-    test('フィルタ入力の適用・解除をハンドリングする', () => {
+test.describe('UI制御', () => {
+    test('setupPackageFilterControls: 適用/解除をハンドリング', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -732,7 +741,7 @@ test.describe('package.js UI制御', () => {
         assert.equal(input.value, '');
     });
 
-    test('Enterキーでフィルタ適用を行う', () => {
+    test('setupPackageFilterControls: Enterキーで適用', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -757,7 +766,7 @@ test.describe('package.js UI制御', () => {
         assert.equal(pkg.getPackageFilterFqn(), 'app.domain');
     });
 
-    test('集約深さの変更を反映する', () => {
+    test('setupAggregationDepthControl: 変更を反映する', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -778,7 +787,7 @@ test.describe('package.js UI制御', () => {
         assert.equal(select.value, '1');
     });
 
-    test('関連フィルタモードの変更を反映する', () => {
+    test('setupRelatedFilterControls: モード変更を反映', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -814,7 +823,7 @@ test.describe('package.js UI制御', () => {
         assert.equal(pkg.getRelatedFilterFqn(), null);
     });
 
-    test('ダイアグラムの向きを切り替える', () => {
+    test('setupDiagramDirectionControls: 向きを切り替える', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -836,8 +845,8 @@ test.describe('package.js UI制御', () => {
     });
 });
 
-test.describe('package.js 既定フィルタ', () => {
-    test('ドメインがあれば既定フィルタを適用する', () => {
+test.describe('既定フィルタ', () => {
+    test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用', () => {
         const doc = setupDocument();
         setupDiagramEnvironment(doc);
         setPackageData(doc, {
@@ -857,7 +866,7 @@ test.describe('package.js 既定フィルタ', () => {
         assert.equal(input.value, 'app.domain');
     });
 
-    test('入力済みなら既定フィルタは適用しない', () => {
+    test('applyDefaultPackageFilterIfPresent: 入力済みなら適用しない', () => {
         const doc = setupDocument();
         setPackageData(doc, {
             packages: [{fqn: 'app.domain.core'}],
@@ -872,4 +881,5 @@ test.describe('package.js 既定フィルタ', () => {
 
         assert.equal(applied, false);
     });
+});
 });

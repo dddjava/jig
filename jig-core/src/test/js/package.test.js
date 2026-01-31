@@ -170,6 +170,50 @@ function setPackageData(doc, data) {
     pkg.resetPackageSummaryCache();
 }
 
+function withConsoleErrorCapture(callback) {
+    const errors = [];
+    const originalError = console.error;
+    console.error = (...args) => {
+        errors.push(args.map(arg => String(arg)).join(' '));
+    };
+    try {
+        callback();
+    } finally {
+        console.error = originalError;
+    }
+    return errors;
+}
+
+function createPackageFilterControls(doc) {
+    const input = doc.createElement('input');
+    input.id = 'package-filter-input';
+    const applyButton = doc.createElement('button');
+    applyButton.id = 'apply-package-filter';
+    const clearButton = doc.createElement('button');
+    clearButton.id = 'clear-package-filter';
+    doc.elementsById.set('package-filter-input', input);
+    doc.elementsById.set('apply-package-filter', applyButton);
+    doc.elementsById.set('clear-package-filter', clearButton);
+    return {input, applyButton, clearButton};
+}
+
+function createRelatedFilterControls(doc) {
+    const select = doc.createElement('select');
+    select.id = 'related-mode-select';
+    const clearButton = doc.createElement('button');
+    clearButton.id = 'clear-related-filter';
+    doc.elementsById.set('related-mode-select', select);
+    doc.elementsById.set('clear-related-filter', clearButton);
+    return {select, clearButton};
+}
+
+function createDepthSelect(doc) {
+    const select = doc.createElement('select');
+    select.id = 'package-depth-select';
+    doc.elementsById.set('package-depth-select', select);
+    return select;
+}
+
 function setupDiagramEnvironment(doc) {
     const container = doc.createElement('div');
     const diagram = doc.createElement('div');
@@ -489,17 +533,9 @@ test.describe('package.js 描画補助', () => {
         container.appendChild(diagram);
         pkg.setDiagramElement(diagram);
 
-        const errors = [];
-        const originalError = console.error;
-        console.error = (...args) => {
-            errors.push(args.map(arg => String(arg)).join(' '));
-        };
-
-        try {
+        const errors = withConsoleErrorCapture(() => {
             pkg.showDiagramErrorMessage('test-error-message', false);
-        } finally {
-            console.error = originalError;
-        }
+        });
         const errorBox = doc.getElementById('package-diagram-error');
         const messageNode = doc.getElementById('package-diagram-error-message');
 
@@ -611,17 +647,9 @@ test.describe('package.js ダイアグラム分岐', () => {
         }
         setPackageData(doc, {packages, relations});
 
-        const errors = [];
-        const originalError = console.error;
-        console.error = (...args) => {
-            errors.push(args.map(arg => String(arg)).join(' '));
-        };
-
-        try {
+        const errors = withConsoleErrorCapture(() => {
             pkg.renderPackageDiagram(null, null);
-        } finally {
-            console.error = originalError;
-        }
+        });
 
         const errorBox = doc.getElementById('package-diagram-error');
         assert.equal(errorBox.style.display, '');
@@ -637,21 +665,13 @@ test.describe('package.js ダイアグラム分岐', () => {
         });
         pkg.renderPackageDiagram(null, null);
 
-        const errors = [];
-        const originalError = console.error;
-        console.error = (...args) => {
-            errors.push(args.map(arg => String(arg)).join(' '));
-        };
-
         // Mermaidはパース失敗時のみ呼ばれるため、テストでは直接呼び出す。
-        try {
+        const errors = withConsoleErrorCapture(() => {
             global.mermaid.parseError(
                 {message: 'Edge limit exceeded'},
                 {line: 10, loc: 2}
             );
-        } finally {
-            console.error = originalError;
-        }
+        });
 
         const messageNode = doc.getElementById('package-diagram-error-message');
         assert.equal(messageNode.textContent.includes('Mermaid parse error:'), true);
@@ -699,15 +719,7 @@ test.describe('package.js UI制御', () => {
         });
         doc.selectorsAll.set('#package-table tbody tr', []);
 
-        const input = doc.createElement('input');
-        input.id = 'package-filter-input';
-        const applyButton = doc.createElement('button');
-        applyButton.id = 'apply-package-filter';
-        const clearButton = doc.createElement('button');
-        clearButton.id = 'clear-package-filter';
-        doc.elementsById.set('package-filter-input', input);
-        doc.elementsById.set('apply-package-filter', applyButton);
-        doc.elementsById.set('clear-package-filter', clearButton);
+        const {input, applyButton, clearButton} = createPackageFilterControls(doc);
 
         pkg.setupPackageFilterControls();
 
@@ -728,15 +740,7 @@ test.describe('package.js UI制御', () => {
             relations: [],
         });
         doc.selectorsAll.set('#package-table tbody tr', []);
-        const input = doc.createElement('input');
-        input.id = 'package-filter-input';
-        const applyButton = doc.createElement('button');
-        applyButton.id = 'apply-package-filter';
-        const clearButton = doc.createElement('button');
-        clearButton.id = 'clear-package-filter';
-        doc.elementsById.set('package-filter-input', input);
-        doc.elementsById.set('apply-package-filter', applyButton);
-        doc.elementsById.set('clear-package-filter', clearButton);
+        const {input} = createPackageFilterControls(doc);
 
         pkg.setupPackageFilterControls();
 
@@ -764,9 +768,7 @@ test.describe('package.js UI制御', () => {
             relations: [],
         });
         doc.selectorsAll.set('#package-table tbody tr', []);
-        const select = doc.createElement('select');
-        select.id = 'package-depth-select';
-        doc.elementsById.set('package-depth-select', select);
+        const select = createDepthSelect(doc);
 
         pkg.setAggregationDepth(0);
         pkg.setupAggregationDepthControl();
@@ -790,14 +792,9 @@ test.describe('package.js UI制御', () => {
                 {from: 'app.b', to: 'app.c'},
             ],
         });
-        const select = doc.createElement('select');
-        select.id = 'related-mode-select';
-        const clearButton = doc.createElement('button');
-        clearButton.id = 'clear-related-filter';
+        const {select, clearButton} = createRelatedFilterControls(doc);
         const input = doc.createElement('input');
         input.id = 'package-filter-input';
-        doc.elementsById.set('related-mode-select', select);
-        doc.elementsById.set('clear-related-filter', clearButton);
         doc.elementsById.set('package-filter-input', input);
 
         pkg.setAggregationDepth(0);
@@ -851,9 +848,7 @@ test.describe('package.js 既定フィルタ', () => {
             relations: [],
         });
         doc.selectorsAll.set('#package-table tbody tr', []);
-        const input = doc.createElement('input');
-        input.id = 'package-filter-input';
-        doc.elementsById.set('package-filter-input', input);
+        const {input} = createPackageFilterControls(doc);
 
         const applied = pkg.applyDefaultPackageFilterIfPresent();
 

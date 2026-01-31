@@ -42,9 +42,16 @@ function getOrCreateDiagramErrorBox(diagram) {
     return errorBox;
 }
 
-function showDiagramErrorMessage(message, withAction) {
+function showDiagramErrorMessage(message, withAction, err, hash) {
     const diagram = diagramElement;
     if (!diagram) return;
+    console.error(message);
+    if (err) {
+        console.error(err);
+    }
+    if (hash) {
+        console.error('Mermaid error location:', hash.line, hash.loc);
+    }
     const errorBox = getOrCreateDiagramErrorBox(diagram);
     const messageNode = document.getElementById('package-diagram-error-message');
     const actionNode = document.getElementById('package-diagram-error-action');
@@ -620,11 +627,7 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
                 if (isEdgeLimit) {
                     pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
                 }
-                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit);
-                console.error('Mermaid parse error:', err);
-                if (hash) {
-                    console.error('Mermaid error location:', hash.line, hash.loc);
-                }
+                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash);
             };
         }
         renderDiagramSvg(lastDiagramSource, DEFAULT_MAX_EDGES);

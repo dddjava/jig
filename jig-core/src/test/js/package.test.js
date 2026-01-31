@@ -635,6 +635,7 @@ test.describe('package.js ダイアグラム分岐', () => {
         assert.equal(messageNode.textContent.includes('Mermaid parse error:'), true);
         assert.equal(messageNode.textContent.includes('Line: 10 Column: 2'), true);
         assert.equal(errors.some(line => line.includes('Mermaid parse error:')), true);
+        assert.equal(errors.some(line => line.includes('Edge limit exceeded')), true);
         assert.equal(errors.some(line => line.includes('Mermaid error location: 10 2')), true);
     });
 

@@ -63,20 +63,22 @@ public class ListOutputAdapter {
     }
 
     private String formatControllerJson(Entrypoint entrypoint) {
-        String usingFieldTypes = entrypoint.jigMethod().usingFields().jigFieldIds().stream()
+        String usingFieldTypesJson = entrypoint.jigMethod().usingFields().jigFieldIds().stream()
                 .map(JigFieldId::declaringTypeId)
                 .map(TypeId::asSimpleText)
                 .sorted()
-                .collect(STREAM_COLLECTOR);
+                .map(this::escape)
+                .map(value -> "\"" + value + "\"")
+                .collect(Collectors.joining(",", "[", "]"));
         return """
-                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "usingFieldTypes": "%s", "cyclomaticComplexity": %d, "path": "%s"}
+                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "usingFieldTypes": %s, "cyclomaticComplexity": %d, "path": "%s"}
                 """.formatted(
                 escape(entrypoint.packageId().asText()),
                 escape(entrypoint.typeId().asSimpleText()),
                 escape(entrypoint.jigMethod().simpleMethodSignatureText()),
                 escape(entrypoint.jigMethod().returnType().simpleName()),
                 escape(entrypoint.jigType().label()),
-                escape(usingFieldTypes),
+                usingFieldTypesJson,
                 entrypoint.jigMethod().instructions().cyclomaticComplexity(),
                 escape(entrypoint.fullPathText()));
     }

@@ -61,7 +61,7 @@ test.describe('list-output.js CSV', () => {
                 methodSignature: 'getExample()',
                 returnType: 'Example',
                 typeLabel: '例',
-                usingFieldTypes: '[ExampleRepository]',
+                usingFieldTypes: ['ExampleRepository', 'AnotherType'],
                 cyclomaticComplexity: 2,
                 path: 'GET /example',
             },
@@ -72,7 +72,7 @@ test.describe('list-output.js CSV', () => {
         assert.equal(
             csv,
             '"パッケージ名","クラス名","メソッドシグネチャ","メソッド戻り値の型","クラス別名","使用しているフィールドの型","循環的複雑度","パス"\r\n' +
-                '"com.example","ExampleController","getExample()","Example","例","[ExampleRepository]","2","GET /example"'
+                '"com.example","ExampleController","getExample()","Example","例","ExampleRepository\nAnotherType","2","GET /example"'
         );
     });
 });
@@ -90,5 +90,13 @@ test.describe('list-output.js データ読み込み', () => {
 
         assert.equal(items.length, 1);
         assert.equal(items[0].typeName, 'ExampleController');
+    });
+});
+
+test.describe('list-output.js 表示用整形', () => {
+    test('使用フィールド型を改行で連結する', () => {
+        const formatted = listOutput.formatFieldTypes(['A', 'B']);
+
+        assert.equal(formatted, 'A\nB');
     });
 });

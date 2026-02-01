@@ -6,7 +6,7 @@ function getListData() {
      * methodSignature: string,
      * returnType: string,
      * typeLabel: string,
-     * usingFieldTypes: string,
+     * usingFieldTypes: string[],
      * cyclomaticComplexity: number,
      * path: string
      * }>} | Array<{
@@ -15,7 +15,7 @@ function getListData() {
      * methodSignature: string,
      * returnType: string,
      * typeLabel: string,
-     * usingFieldTypes: string,
+     * usingFieldTypes: string[],
      * cyclomaticComplexity: number,
      * path: string
      * }>} */
@@ -31,6 +31,14 @@ function escapeCsvValue(value) {
         .replace(/\r\n/g, "\n")
         .replace(/\r/g, "\n");
     return `"${text.replace(/"/g, "\"\"")}"`;
+}
+
+function formatFieldTypes(fieldTypes) {
+    if (!fieldTypes) return "";
+    if (Array.isArray(fieldTypes)) {
+        return fieldTypes.join("\n");
+    }
+    return String(fieldTypes);
 }
 
 function buildControllerCsv(items) {
@@ -50,7 +58,7 @@ function buildControllerCsv(items) {
         item.methodSignature ?? "",
         item.returnType ?? "",
         item.typeLabel ?? "",
-        item.usingFieldTypes ?? "",
+        formatFieldTypes(item.usingFieldTypes),
         item.cyclomaticComplexity ?? "",
         item.path ?? "",
     ]);
@@ -84,7 +92,7 @@ function renderControllerTable(items) {
             item.methodSignature,
             item.returnType,
             item.typeLabel,
-            item.usingFieldTypes,
+            formatFieldTypes(item.usingFieldTypes),
             item.cyclomaticComplexity,
             item.path,
         ];
@@ -123,6 +131,7 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         getListData,
         escapeCsvValue,
+        formatFieldTypes,
         buildControllerCsv,
         renderControllerTable,
     };

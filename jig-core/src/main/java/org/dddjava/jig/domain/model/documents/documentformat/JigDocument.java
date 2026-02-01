@@ -77,6 +77,14 @@ public enum JigDocument {
     ApplicationList(
             JigDocumentLabel.of("機能一覧", "ApplicationList"),
             "application"),
+    /**
+     * 一覧出力
+     *
+     * 一覧をHTMLで出力する。
+     */
+    ListOutput(
+            JigDocumentLabel.of("一覧出力", "ListOutput"),
+            "list-output"),
 
     /**
      * サービスメソッド呼び出し図

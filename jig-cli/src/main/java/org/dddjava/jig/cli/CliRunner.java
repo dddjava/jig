@@ -2,6 +2,7 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
@@ -33,12 +34,17 @@ class CliRunner {
         long startTime = System.currentTimeMillis();
         SourceBasePaths sourceBasePaths = cliConfig.rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.standard(configuration, sourceBasePaths).listResult();
+        JigResult jigResult = JigExecutor.standard(configuration, sourceBasePaths);
+        List<HandleResult> handleResultList = jigResult.listResult();
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(joining("\n"));
+        if (!resultLog.isBlank()) {
+            resultLog += "\n";
+        }
+        resultLog += "index : [ " + jigResult.indexFilePath() + " ]";
         logger.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime,
                 resultLog);

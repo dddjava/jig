@@ -2,6 +2,7 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.gradle.api.DefaultTask;
@@ -30,12 +31,17 @@ public class JigReportsTask extends DefaultTask {
         long startTime = System.currentTimeMillis();
         SourceBasePaths sourceBasePaths = new GradleProject(project).rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.standard(configuration, sourceBasePaths).listResult();
+        JigResult jigResult = JigExecutor.standard(configuration, sourceBasePaths);
+        List<HandleResult> handleResultList = jigResult.listResult();
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(joining("\n"));
+        if (!resultLog.isBlank()) {
+            resultLog += "\n";
+        }
+        resultLog += "index : [ " + jigResult.indexFilePath() + " ]";
         getLogger().info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime, resultLog);
     }

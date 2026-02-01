@@ -10,6 +10,8 @@ public interface JigResult {
 
     JigSummary summary();
 
+    java.nio.file.Path indexFilePath();
+
     /**
      * 集計
      */
@@ -25,4 +27,3 @@ public interface JigResult {
         }
     }
 }
-

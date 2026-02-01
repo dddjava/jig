@@ -133,8 +133,12 @@ public class ListOutputAdapter {
                 .map(jigDocumentContext::typeTerm)
                 .map(term -> term.title())
                 .toList());
+        String insertTables = toJsonStringList(datasourceAngle.insertTableNames());
+        String selectTables = toJsonStringList(datasourceAngle.selectTableNames());
+        String updateTables = toJsonStringList(datasourceAngle.updateTableNames());
+        String deleteTables = toJsonStringList(datasourceAngle.deleteTableNames());
         return """
-                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "returnTypeLabel": "%s", "parameterTypeLabels": %s, "cyclomaticComplexity": %d, "insertTables": "%s", "selectTables": "%s", "updateTables": "%s", "deleteTables": "%s", "callerTypeCount": %d, "callerMethodCount": %d}
+                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "returnTypeLabel": "%s", "parameterTypeLabels": %s, "cyclomaticComplexity": %d, "insertTables": %s, "selectTables": %s, "updateTables": %s, "deleteTables": %s, "callerTypeCount": %d, "callerMethodCount": %d}
                 """.formatted(
                 escape(datasourceAngle.packageText()),
                 escape(datasourceAngle.typeSimpleName()),
@@ -144,10 +148,10 @@ public class ListOutputAdapter {
                 escape(jigDocumentContext.typeTerm(datasourceAngle.methodReturnType().id()).title()),
                 parameterTypeLabels,
                 datasourceAngle.cyclomaticComplexity(),
-                escape(datasourceAngle.insertTables()),
-                escape(datasourceAngle.selectTables()),
-                escape(datasourceAngle.updateTables()),
-                escape(datasourceAngle.deleteTables()),
+                insertTables,
+                selectTables,
+                updateTables,
+                deleteTables,
                 datasourceAngle.callerMethods().typeCount(),
                 datasourceAngle.callerMethods().size());
     }

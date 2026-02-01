@@ -52,16 +52,32 @@ public class DatasourceAngle {
         return crudTables.create().asText();
     }
 
+    public java.util.List<String> insertTableNames() {
+        return tableNames(crudTables.create());
+    }
+
     public String selectTables() {
         return crudTables.read().asText();
+    }
+
+    public java.util.List<String> selectTableNames() {
+        return tableNames(crudTables.read());
     }
 
     public String updateTables() {
         return crudTables.update().asText();
     }
 
+    public java.util.List<String> updateTableNames() {
+        return tableNames(crudTables.update());
+    }
+
     public String deleteTables() {
         return crudTables.delete().asText();
+    }
+
+    public java.util.List<String> deleteTableNames() {
+        return tableNames(crudTables.delete());
     }
 
     public JigMethod concreteMethod() {
@@ -82,5 +98,13 @@ public class DatasourceAngle {
 
     public String typeLabel() {
         return outputImplementation.interfaceJigType().label();
+    }
+
+    private java.util.List<String> tableNames(org.dddjava.jig.domain.model.data.rdbaccess.Tables tables) {
+        return tables.tables().stream()
+                .map(org.dddjava.jig.domain.model.data.rdbaccess.Table::name)
+                .distinct()
+                .sorted()
+                .toList();
     }
 }

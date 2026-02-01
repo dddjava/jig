@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head th:replace="~{fragment-base::head(${title})}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>一覧出力</title>
+</head>
+<body class="list-output">
+<header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
+<main>
+    <h1 th:text="${title}">一覧出力</h1>
+
+    <aside class="notice">
+        <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
+    </aside>
+
+    <section>
+        <h2>CONTROLLER</h2>
+        <div>
+            <button id="export-csv" type="button">CSV出力</button>
+        </div>
+        <table id="controller-list" class="zebra">
+            <thead>
+            <tr>
+                <th>パッケージ名</th>
+                <th>クラス名</th>
+                <th>メソッドシグネチャ</th>
+                <th>メソッド戻り値の型</th>
+                <th>クラス別名</th>
+                <th>使用しているフィールドの型</th>
+                <th>循環的複雑度</th>
+                <th>パス</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+</main>
+
+<script id="list-data" type="application/json" th:utext="${listJson}">
+    {
+        "controllers": [
+            {
+                "packageName": "com.example",
+                "typeName": "ExampleController",
+                "methodSignature": "getExample()",
+                "returnType": "Example",
+                "typeLabel": "例",
+                "usingFieldTypes": ["ExampleRepository"],
+                "cyclomaticComplexity": 1,
+                "path": "GET /example"
+            }
+        ]
+    }
+</script>
+
+<th:block th:replace="~{fragment-base::scripts}">
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
+</th:block>
+<script src="./assets/list-output.js"></script>
+</body>
+</html>

@@ -68,6 +68,7 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext)));
         compositeAdapter.register(new InsightAdapter(jigService, templateEngine, jigDocumentContext));
         compositeAdapter.register(new RepositorySummaryAdapter(jigService, templateEngine, jigDocumentContext));
+        compositeAdapter.register(new ListOutputAdapter(jigService, templateEngine, jigDocumentContext));
     }
 
     public JigResult generate(JigRepository jigRepository) {
@@ -131,7 +132,7 @@ public class JigDocumentGenerator {
                     case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary,
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                          ServiceMethodCallHierarchyDiagram,
-                         BusinessRuleList, ApplicationList,
+                         BusinessRuleList, ApplicationList, ListOutput,
                          RepositorySummary, Insight, Sequence -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
@@ -165,6 +166,7 @@ public class JigDocumentGenerator {
             copyAsset("package.js", assetsPath);
             copyAsset("glossary.js", assetsPath);
             copyAsset("insight.js", assetsPath);
+            copyAsset("list-output.js", assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

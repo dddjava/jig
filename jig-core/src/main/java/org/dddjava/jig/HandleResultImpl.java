@@ -54,7 +54,8 @@ public class HandleResultImpl implements HandleResult {
                  Insight,
                  Sequence,
                  Glossary,
-                 PackageSummary -> false;
+                 PackageSummary,
+                 ListOutput -> false;
         };
     }
 

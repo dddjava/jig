@@ -16,10 +16,16 @@
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
 
-    <section>
+    <div class="list-output-tabs" role="tablist" aria-label="一覧の切り替え">
+        <button class="tab-button is-active" type="button" data-tab="controller" aria-controls="controller-panel" aria-selected="true">CONTROLLER</button>
+        <button class="tab-button" type="button" data-tab="service" aria-controls="service-panel" aria-selected="false">SERVICE</button>
+        <button class="tab-button" type="button" data-tab="repository" aria-controls="repository-panel" aria-selected="false">REPOSITORY</button>
+    </div>
+
+    <section id="controller-panel" class="list-output-tab is-active" data-tab="controller" role="tabpanel">
         <h2>CONTROLLER</h2>
-        <div>
-            <button id="export-csv" type="button">CSV出力</button>
+        <div class="list-output-actions">
+            <button id="export-controller-csv" type="button">CSV出力</button>
         </div>
         <table id="controller-list" class="zebra">
             <thead>
@@ -32,6 +38,63 @@
                 <th>使用しているフィールドの型</th>
                 <th>循環的複雑度</th>
                 <th>パス</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="service-panel" class="list-output-tab" data-tab="service" role="tabpanel">
+        <h2>SERVICE</h2>
+        <div class="list-output-actions">
+            <button id="export-service-csv" type="button">CSV出力</button>
+        </div>
+        <table id="service-list" class="zebra">
+            <thead>
+            <tr>
+                <th>パッケージ名</th>
+                <th>クラス名</th>
+                <th>メソッドシグネチャ</th>
+                <th>メソッド戻り値の型</th>
+                <th>イベントハンドラ</th>
+                <th>クラス別名</th>
+                <th>メソッド別名</th>
+                <th>メソッド戻り値の型の別名</th>
+                <th>メソッド引数の型の別名</th>
+                <th>使用しているフィールドの型</th>
+                <th>循環的複雑度</th>
+                <th>使用しているサービスのメソッド</th>
+                <th>使用しているリポジトリのメソッド</th>
+                <th>null使用</th>
+                <th>stream使用</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="repository-panel" class="list-output-tab" data-tab="repository" role="tabpanel">
+        <h2>REPOSITORY</h2>
+        <div class="list-output-actions">
+            <button id="export-repository-csv" type="button">CSV出力</button>
+        </div>
+        <table id="repository-list" class="zebra">
+            <thead>
+            <tr>
+                <th>パッケージ名</th>
+                <th>クラス名</th>
+                <th>メソッドシグネチャ</th>
+                <th>メソッド戻り値の型</th>
+                <th>クラス別名</th>
+                <th>メソッド戻り値の型の別名</th>
+                <th>メソッド引数の型の別名</th>
+                <th>循環的複雑度</th>
+                <th>INSERT</th>
+                <th>SELECT</th>
+                <th>UPDATE</th>
+                <th>DELETE</th>
+                <th>関連元クラス数</th>
+                <th>関連元メソッド数</th>
             </tr>
             </thead>
             <tbody></tbody>
@@ -51,6 +114,43 @@
                 "usingFieldTypes": ["ExampleRepository"],
                 "cyclomaticComplexity": 1,
                 "path": "GET /example"
+            }
+        ],
+        "services": [
+            {
+                "packageName": "com.example",
+                "typeName": "ExampleService",
+                "methodSignature": "handle()",
+                "returnType": "Example",
+                "eventHandler": true,
+                "typeLabel": "例",
+                "methodLabel": "取得",
+                "returnTypeLabel": "例",
+                "parameterTypeLabels": ["ExampleParam"],
+                "usingFieldTypes": ["ExampleRepository"],
+                "cyclomaticComplexity": 2,
+                "usingServiceMethods": ["other():Example"],
+                "usingRepositoryMethods": ["find()"],
+                "useNull": false,
+                "useStream": true
+            }
+        ],
+        "repositories": [
+            {
+                "packageName": "com.example",
+                "typeName": "ExampleRepository",
+                "methodSignature": "find()",
+                "returnType": "Example",
+                "typeLabel": "例",
+                "returnTypeLabel": "例",
+                "parameterTypeLabels": [],
+                "cyclomaticComplexity": 1,
+                "insertTables": "EXAMPLE",
+                "selectTables": "EXAMPLE",
+                "updateTables": "",
+                "deleteTables": "",
+                "callerTypeCount": 1,
+                "callerMethodCount": 1
             }
         ]
     }

@@ -469,6 +469,32 @@ label {
 .list-output table thead th {
     white-space: nowrap;
 }
+.list-output .list-output-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.5rem 0 1rem;
+}
+.list-output .tab-button {
+    border: 1px solid #ccc;
+    background-color: #f4f4f4;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+}
+.list-output .tab-button.is-active {
+    background-color: #2c2c2c;
+    border-color: #2c2c2c;
+    color: #fff;
+}
+.list-output .list-output-tab {
+    display: none;
+}
+.list-output .list-output-tab.is-active {
+    display: block;
+}
+.list-output .list-output-actions {
+    margin-bottom: 0.5rem;
+}
 
 /* テーブルの行をゼブラスタイルにする */
 table.zebra tbody tr:nth-child(odd) {

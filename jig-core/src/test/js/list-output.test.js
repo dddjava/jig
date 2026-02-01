@@ -75,6 +75,65 @@ test.describe('list-output.js CSV', () => {
                 '"com.example","ExampleController","getExample()","Example","例","ExampleRepository\nAnotherType","2","GET /example"'
         );
     });
+
+    test('SERVICEのCSVにヘッダーと行を出力する', () => {
+        const items = [
+            {
+                packageName: 'com.example',
+                typeName: 'ExampleService',
+                methodSignature: 'handle()',
+                returnType: 'Example',
+                eventHandler: true,
+                typeLabel: '例',
+                methodLabel: '取得',
+                returnTypeLabel: '例',
+                parameterTypeLabels: ['Param'],
+                usingFieldTypes: ['ExampleRepository'],
+                cyclomaticComplexity: 3,
+                usingServiceMethods: ['other():Example'],
+                usingRepositoryMethods: ['find()'],
+                useNull: false,
+                useStream: true,
+            },
+        ];
+
+        const csv = listOutput.buildServiceCsv(items);
+
+        assert.equal(
+            csv,
+            '"パッケージ名","クラス名","メソッドシグネチャ","メソッド戻り値の型","イベントハンドラ","クラス別名","メソッド別名","メソッド戻り値の型の別名","メソッド引数の型の別名","使用しているフィールドの型","循環的複雑度","使用しているサービスのメソッド","使用しているリポジトリのメソッド","null使用","stream使用"\r\n' +
+                '"com.example","ExampleService","handle()","Example","◯","例","取得","例","Param","ExampleRepository","3","other():Example","find()","","◯"'
+        );
+    });
+
+    test('REPOSITORYのCSVにヘッダーと行を出力する', () => {
+        const items = [
+            {
+                packageName: 'com.example',
+                typeName: 'ExampleRepository',
+                methodSignature: 'find()',
+                returnType: 'Example',
+                typeLabel: '例',
+                returnTypeLabel: '例',
+                parameterTypeLabels: [],
+                cyclomaticComplexity: 1,
+                insertTables: 'EXAMPLE',
+                selectTables: 'EXAMPLE',
+                updateTables: '',
+                deleteTables: '',
+                callerTypeCount: 1,
+                callerMethodCount: 2,
+            },
+        ];
+
+        const csv = listOutput.buildRepositoryCsv(items);
+
+        assert.equal(
+            csv,
+            '"パッケージ名","クラス名","メソッドシグネチャ","メソッド戻り値の型","クラス別名","メソッド戻り値の型の別名","メソッド引数の型の別名","循環的複雑度","INSERT","SELECT","UPDATE","DELETE","関連元クラス数","関連元メソッド数"\r\n' +
+                '"com.example","ExampleRepository","find()","Example","例","例","","1","EXAMPLE","EXAMPLE","","","1","2"'
+        );
+    });
 });
 
 test.describe('list-output.js データ読み込み', () => {
@@ -86,10 +145,10 @@ test.describe('list-output.js データ読み込み', () => {
         });
         doc.elementsById.set('list-data', dataElement);
 
-        const items = listOutput.getListData();
+        const data = listOutput.getListData();
 
-        assert.equal(items.length, 1);
-        assert.equal(items[0].typeName, 'ExampleController');
+        assert.equal(data.controllers.length, 1);
+        assert.equal(data.controllers[0].typeName, 'ExampleController');
     });
 });
 

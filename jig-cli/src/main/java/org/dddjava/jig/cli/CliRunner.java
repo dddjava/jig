@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -39,6 +41,11 @@ class CliRunner {
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(joining("\n"));
+        Path indexFilePath = Paths.get(cliConfig.outputDirectory).toAbsolutePath().normalize().resolve("index.html");
+        if (!resultLog.isBlank()) {
+            resultLog += "\n";
+        }
+        resultLog += "index : [ " + indexFilePath + " ]";
         logger.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime,
                 resultLog);

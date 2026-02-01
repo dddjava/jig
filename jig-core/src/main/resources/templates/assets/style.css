@@ -465,6 +465,11 @@ label {
     display: none;
 }
 
+/* 一覧出力のヘッダは折り返さない */
+.list-output table thead th {
+    white-space: nowrap;
+}
+
 /* テーブルの行をゼブラスタイルにする */
 table.zebra tbody tr:nth-child(odd) {
     background-color: #f9f9f9;

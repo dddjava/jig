@@ -17,15 +17,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.joining;
 
 @HandleDocument
 public class ListOutputAdapter {
-
-    private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = joining(", ", "[", "]");
 
     private final JigService jigService;
     private final TemplateEngine templateEngine;

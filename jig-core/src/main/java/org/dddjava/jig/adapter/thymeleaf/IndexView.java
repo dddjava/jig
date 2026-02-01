@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class IndexView {
+    static final String INDEX_FILE_NAME = "index.html";
 
     private final Map<String, Object> contextMap;
     private final TemplateEngine templateEngine;
@@ -53,7 +54,7 @@ public class IndexView {
         contextMap.put("jigVersion", resolveJigVersion());
         contextMap.put("timestamp", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
-        Path outputFilePath = outputDirectory.resolve("index.html");
+        Path outputFilePath = indexFilePath(outputDirectory);
         try (OutputStream out = Files.newOutputStream(outputFilePath);
              OutputStream outputStream = new BufferedOutputStream(out);
              Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)
@@ -62,6 +63,10 @@ public class IndexView {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public static Path indexFilePath(Path outputDirectory) {
+        return outputDirectory.resolve(INDEX_FILE_NAME);
     }
 
     class DiagramComponent {

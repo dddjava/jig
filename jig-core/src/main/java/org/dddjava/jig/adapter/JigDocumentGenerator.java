@@ -77,7 +77,7 @@ public class JigDocumentGenerator {
 
         generateIndex(handleResults);
         generateAssets();
-        return new JigResultData(handleResults);
+        return new JigResultData(handleResults, IndexView.indexFilePath(outputDirectory));
     }
 
     private void prepareOutputDirectory() {

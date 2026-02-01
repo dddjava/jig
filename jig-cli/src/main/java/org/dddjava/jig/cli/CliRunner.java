@@ -2,6 +2,7 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
+import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
@@ -9,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -35,17 +34,17 @@ class CliRunner {
         long startTime = System.currentTimeMillis();
         SourceBasePaths sourceBasePaths = cliConfig.rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.standard(configuration, sourceBasePaths).listResult();
+        JigResult jigResult = JigExecutor.standard(configuration, sourceBasePaths);
+        List<HandleResult> handleResultList = jigResult.listResult();
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(joining("\n"));
-        Path indexFilePath = Paths.get(cliConfig.outputDirectory).toAbsolutePath().normalize().resolve("index.html");
         if (!resultLog.isBlank()) {
             resultLog += "\n";
         }
-        resultLog += "index : [ " + indexFilePath + " ]";
+        resultLog += "index : [ " + jigResult.indexFilePath() + " ]";
         logger.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime,
                 resultLog);

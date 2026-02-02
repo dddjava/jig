@@ -17,142 +17,372 @@
     </aside>
 
     <div class="list-output-tabs" role="tablist" aria-label="一覧の切り替え">
-        <button class="tab-button is-active" type="button" data-tab="controller" aria-controls="controller-panel" aria-selected="true">CONTROLLER</button>
-        <button class="tab-button" type="button" data-tab="service" aria-controls="service-panel" aria-selected="false">SERVICE</button>
-        <button class="tab-button" type="button" data-tab="repository" aria-controls="repository-panel" aria-selected="false">REPOSITORY</button>
+        <button class="tab-button" type="button" data-tab-group="main" data-tab="business" aria-controls="business-panel" aria-selected="false">ビジネスルール一覧</button>
+        <button class="tab-button is-active" type="button" data-tab-group="main" data-tab="application" aria-controls="application-panel" aria-selected="true">機能一覧</button>
     </div>
 
-    <section id="controller-panel" class="list-output-tab is-active" data-tab="controller" role="tabpanel">
-        <h2>CONTROLLER</h2>
-        <div class="list-output-actions">
-            <button id="export-controller-csv" type="button">CSV出力</button>
+    <section id="business-panel" class="list-output-tab" data-tab-group="main" data-tab="business" role="tabpanel">
+        <h2>ビジネスルール一覧</h2>
+        <div class="list-output-tabs" role="tablist" aria-label="ビジネスルール一覧の切り替え">
+            <button class="tab-button is-active" type="button" data-tab-group="business" data-tab="package" aria-controls="business-package-panel" aria-selected="true">PACKAGE</button>
+            <button class="tab-button" type="button" data-tab-group="business" data-tab="all" aria-controls="business-all-panel" aria-selected="false">ALL</button>
+            <button class="tab-button" type="button" data-tab-group="business" data-tab="enum" aria-controls="business-enum-panel" aria-selected="false">ENUM</button>
+            <button class="tab-button" type="button" data-tab-group="business" data-tab="collection" aria-controls="business-collection-panel" aria-selected="false">COLLECTION</button>
+            <button class="tab-button" type="button" data-tab-group="business" data-tab="validation" aria-controls="business-validation-panel" aria-selected="false">VALIDATION</button>
+            <button class="tab-button" type="button" data-tab-group="business" data-tab="smell" aria-controls="business-smell-panel" aria-selected="false">注意メソッド</button>
         </div>
-        <table id="controller-list" class="zebra">
-            <thead>
-            <tr>
-                <th>パッケージ名</th>
-                <th>クラス名</th>
-                <th>メソッドシグネチャ</th>
-                <th>メソッド戻り値の型</th>
-                <th>クラス別名</th>
-                <th>使用しているフィールドの型</th>
-                <th>循環的複雑度</th>
-                <th>パス</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+
+        <section id="business-package-panel" class="list-output-tab is-active" data-tab-group="business" data-tab="package" role="tabpanel">
+            <h3>PACKAGE</h3>
+            <div class="list-output-actions">
+                <button id="export-business-package-csv" type="button">CSV出力</button>
+            </div>
+            <table id="business-package-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>パッケージ別名</th>
+                    <th>クラス数</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="business-all-panel" class="list-output-tab" data-tab-group="business" data-tab="all" role="tabpanel">
+            <h3>ALL</h3>
+            <div class="list-output-actions">
+                <button id="export-business-all-csv" type="button">CSV出力</button>
+            </div>
+            <table id="business-all-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>クラス別名</th>
+                    <th>ビジネスルールの種類</th>
+                    <th>関連元ビジネスルール数</th>
+                    <th>関連先ビジネスルール数</th>
+                    <th>関連元クラス数</th>
+                    <th>非PUBLIC</th>
+                    <th>同パッケージからのみ参照</th>
+                    <th>関連元クラス</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="business-enum-panel" class="list-output-tab" data-tab-group="business" data-tab="enum" role="tabpanel">
+            <h3>ENUM</h3>
+            <div class="list-output-actions">
+                <button id="export-business-enum-csv" type="button">CSV出力</button>
+            </div>
+            <table id="business-enum-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>クラス別名</th>
+                    <th>定数宣言</th>
+                    <th>フィールド</th>
+                    <th>使用箇所数</th>
+                    <th>使用箇所</th>
+                    <th>パラメーター有り</th>
+                    <th>振る舞い有り</th>
+                    <th>多態</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="business-collection-panel" class="list-output-tab" data-tab-group="business" data-tab="collection" role="tabpanel">
+            <h3>COLLECTION</h3>
+            <div class="list-output-actions">
+                <button id="export-business-collection-csv" type="button">CSV出力</button>
+            </div>
+            <table id="business-collection-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>クラス別名</th>
+                    <th>フィールドの型</th>
+                    <th>使用箇所数</th>
+                    <th>使用箇所</th>
+                    <th>メソッド数</th>
+                    <th>メソッド一覧</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="business-validation-panel" class="list-output-tab" data-tab-group="business" data-tab="validation" role="tabpanel">
+            <h3>VALIDATION</h3>
+            <div class="list-output-actions">
+                <button id="export-business-validation-csv" type="button">CSV出力</button>
+            </div>
+            <table id="business-validation-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>クラス別名</th>
+                    <th>メンバ名</th>
+                    <th>メンバクラス名</th>
+                    <th>アノテーションクラス名</th>
+                    <th>アノテーション記述</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="business-smell-panel" class="list-output-tab" data-tab-group="business" data-tab="smell" role="tabpanel">
+            <h3>注意メソッド</h3>
+            <div class="list-output-actions">
+                <button id="export-business-smell-csv" type="button">CSV出力</button>
+            </div>
+            <table id="business-smell-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>メソッドシグネチャ</th>
+                    <th>メソッド戻り値の型</th>
+                    <th>クラス別名</th>
+                    <th>メンバを使用していない</th>
+                    <th>基本型の授受を行なっている</th>
+                    <th>NULLリテラルを使用している</th>
+                    <th>NULL判定をしている</th>
+                    <th>真偽値を返している</th>
+                    <th>voidを返している</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
     </section>
 
-    <section id="service-panel" class="list-output-tab" data-tab="service" role="tabpanel">
-        <h2>SERVICE</h2>
-        <div class="list-output-actions">
-            <button id="export-service-csv" type="button">CSV出力</button>
+    <section id="application-panel" class="list-output-tab is-active" data-tab-group="main" data-tab="application" role="tabpanel">
+        <h2>機能一覧</h2>
+        <div class="list-output-tabs" role="tablist" aria-label="機能一覧の切り替え">
+            <button class="tab-button is-active" type="button" data-tab-group="application" data-tab="controller" aria-controls="controller-panel" aria-selected="true">CONTROLLER</button>
+            <button class="tab-button" type="button" data-tab-group="application" data-tab="service" aria-controls="service-panel" aria-selected="false">SERVICE</button>
+            <button class="tab-button" type="button" data-tab-group="application" data-tab="repository" aria-controls="repository-panel" aria-selected="false">REPOSITORY</button>
         </div>
-        <table id="service-list" class="zebra">
-            <thead>
-            <tr>
-                <th>パッケージ名</th>
-                <th>クラス名</th>
-                <th>メソッドシグネチャ</th>
-                <th>メソッド戻り値の型</th>
-                <th>イベントハンドラ</th>
-                <th>クラス別名</th>
-                <th>メソッド別名</th>
-                <th>メソッド戻り値の型の別名</th>
-                <th>メソッド引数の型の別名</th>
-                <th>使用しているフィールドの型</th>
-                <th>循環的複雑度</th>
-                <th>使用しているサービスのメソッド</th>
-                <th>使用しているリポジトリのメソッド</th>
-                <th>null使用</th>
-                <th>stream使用</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </section>
 
-    <section id="repository-panel" class="list-output-tab" data-tab="repository" role="tabpanel">
-        <h2>REPOSITORY</h2>
-        <div class="list-output-actions">
-            <button id="export-repository-csv" type="button">CSV出力</button>
-        </div>
-        <table id="repository-list" class="zebra">
-            <thead>
-            <tr>
-                <th>パッケージ名</th>
-                <th>クラス名</th>
-                <th>メソッドシグネチャ</th>
-                <th>メソッド戻り値の型</th>
-                <th>クラス別名</th>
-                <th>メソッド戻り値の型の別名</th>
-                <th>メソッド引数の型の別名</th>
-                <th>循環的複雑度</th>
-                <th>INSERT</th>
-                <th>SELECT</th>
-                <th>UPDATE</th>
-                <th>DELETE</th>
-                <th>関連元クラス数</th>
-                <th>関連元メソッド数</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <section id="controller-panel" class="list-output-tab is-active" data-tab-group="application" data-tab="controller" role="tabpanel">
+            <h3>CONTROLLER</h3>
+            <div class="list-output-actions">
+                <button id="export-controller-csv" type="button">CSV出力</button>
+            </div>
+            <table id="controller-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>メソッドシグネチャ</th>
+                    <th>メソッド戻り値の型</th>
+                    <th>クラス別名</th>
+                    <th>使用しているフィールドの型</th>
+                    <th>循環的複雑度</th>
+                    <th>パス</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="service-panel" class="list-output-tab" data-tab-group="application" data-tab="service" role="tabpanel">
+            <h3>SERVICE</h3>
+            <div class="list-output-actions">
+                <button id="export-service-csv" type="button">CSV出力</button>
+            </div>
+            <table id="service-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>メソッドシグネチャ</th>
+                    <th>メソッド戻り値の型</th>
+                    <th>イベントハンドラ</th>
+                    <th>クラス別名</th>
+                    <th>メソッド別名</th>
+                    <th>メソッド戻り値の型の別名</th>
+                    <th>メソッド引数の型の別名</th>
+                    <th>使用しているフィールドの型</th>
+                    <th>循環的複雑度</th>
+                    <th>使用しているサービスのメソッド</th>
+                    <th>使用しているリポジトリのメソッド</th>
+                    <th>null使用</th>
+                    <th>stream使用</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
+
+        <section id="repository-panel" class="list-output-tab" data-tab-group="application" data-tab="repository" role="tabpanel">
+            <h3>REPOSITORY</h3>
+            <div class="list-output-actions">
+                <button id="export-repository-csv" type="button">CSV出力</button>
+            </div>
+            <table id="repository-list" class="zebra">
+                <thead>
+                <tr>
+                    <th>パッケージ名</th>
+                    <th>クラス名</th>
+                    <th>メソッドシグネチャ</th>
+                    <th>メソッド戻り値の型</th>
+                    <th>クラス別名</th>
+                    <th>メソッド戻り値の型の別名</th>
+                    <th>メソッド引数の型の別名</th>
+                    <th>循環的複雑度</th>
+                    <th>INSERT</th>
+                    <th>SELECT</th>
+                    <th>UPDATE</th>
+                    <th>DELETE</th>
+                    <th>関連元クラス数</th>
+                    <th>関連元メソッド数</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </section>
     </section>
 </main>
 
 <script id="list-data" type="application/json" th:utext="${listJson}">
     {
-        "controllers": [
-            {
-                "packageName": "com.example",
-                "typeName": "ExampleController",
-                "methodSignature": "getExample()",
-                "returnType": "Example",
-                "typeLabel": "例",
-                "usingFieldTypes": ["ExampleRepository"],
-                "cyclomaticComplexity": 1,
-                "path": "GET /example"
-            }
-        ],
-        "services": [
-            {
-                "packageName": "com.example",
-                "typeName": "ExampleService",
-                "methodSignature": "handle()",
-                "returnType": "Example",
-                "eventHandler": true,
-                "typeLabel": "例",
-                "methodLabel": "取得",
-                "returnTypeLabel": "例",
-                "parameterTypeLabels": ["ExampleParam"],
-                "usingFieldTypes": ["ExampleRepository"],
-                "cyclomaticComplexity": 2,
-                "usingServiceMethods": ["other():Example"],
-                "usingRepositoryMethods": ["find()"],
-                "useNull": false,
-                "useStream": true
-            }
-        ],
-        "repositories": [
-            {
-                "packageName": "com.example",
-                "typeName": "ExampleRepository",
-                "methodSignature": "find()",
-                "returnType": "Example",
-                "typeLabel": "例",
-                "returnTypeLabel": "例",
-                "parameterTypeLabels": [],
-                "cyclomaticComplexity": 1,
-                "insertTables": ["EXAMPLE"],
-                "selectTables": ["EXAMPLE"],
-                "updateTables": [],
-                "deleteTables": [],
-                "callerTypeCount": 1,
-                "callerMethodCount": 1
-            }
-        ]
+        "businessRules": {
+            "packages": [
+                {
+                    "packageName": "com.example",
+                    "packageLabel": "例",
+                    "classCount": 1
+                }
+            ],
+            "all": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleRule",
+                    "typeLabel": "例",
+                    "businessRuleKind": "エンティティ",
+                    "incomingBusinessRuleCount": 1,
+                    "outgoingBusinessRuleCount": 2,
+                    "incomingClassCount": 3,
+                    "nonPublic": false,
+                    "samePackageOnly": true,
+                    "incomingClassList": "[ExampleService]"
+                }
+            ],
+            "enums": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleEnum",
+                    "typeLabel": "例",
+                    "constants": "[A, B]",
+                    "fields": "[value]",
+                    "usageCount": 1,
+                    "usagePlaces": "[ExampleRule]",
+                    "hasParameters": true,
+                    "hasBehavior": false,
+                    "isPolymorphic": false
+                }
+            ],
+            "collections": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleCollection",
+                    "typeLabel": "例",
+                    "fieldTypes": "List<Example>",
+                    "usageCount": 1,
+                    "usagePlaces": "[ExampleRule]",
+                    "methodCount": 2,
+                    "methods": "[add(Example), size()]"
+                }
+            ],
+            "validations": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleRule",
+                    "typeLabel": "例",
+                    "memberName": "name",
+                    "memberType": "String",
+                    "annotationType": "NotNull",
+                    "annotationDescription": "@NotNull"
+                }
+            ],
+            "methodSmells": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleRule",
+                    "methodSignature": "check()",
+                    "returnType": "boolean",
+                    "typeLabel": "例",
+                    "notUseMember": false,
+                    "primitiveInterface": false,
+                    "referenceNull": false,
+                    "nullDecision": true,
+                    "returnsBoolean": true,
+                    "returnsVoid": false
+                }
+            ]
+        },
+        "applications": {
+            "controllers": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleController",
+                    "methodSignature": "getExample()",
+                    "returnType": "Example",
+                    "typeLabel": "例",
+                    "usingFieldTypes": ["ExampleRepository"],
+                    "cyclomaticComplexity": 1,
+                    "path": "GET /example"
+                }
+            ],
+            "services": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleService",
+                    "methodSignature": "handle()",
+                    "returnType": "Example",
+                    "eventHandler": true,
+                    "typeLabel": "例",
+                    "methodLabel": "取得",
+                    "returnTypeLabel": "例",
+                    "parameterTypeLabels": ["ExampleParam"],
+                    "usingFieldTypes": ["ExampleRepository"],
+                    "cyclomaticComplexity": 2,
+                    "usingServiceMethods": ["other():Example"],
+                    "usingRepositoryMethods": ["find()"],
+                    "useNull": false,
+                    "useStream": true
+                }
+            ],
+            "repositories": [
+                {
+                    "packageName": "com.example",
+                    "typeName": "ExampleRepository",
+                    "methodSignature": "find()",
+                    "returnType": "Example",
+                    "typeLabel": "例",
+                    "returnTypeLabel": "例",
+                    "parameterTypeLabels": [],
+                    "cyclomaticComplexity": 1,
+                    "insertTables": ["EXAMPLE"],
+                    "selectTables": ["EXAMPLE"],
+                    "updateTables": [],
+                    "deleteTables": [],
+                    "callerTypeCount": 1,
+                    "callerMethodCount": 1
+                }
+            ]
+        }
     }
 </script>
 

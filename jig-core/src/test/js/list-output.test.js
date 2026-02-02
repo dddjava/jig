@@ -141,14 +141,20 @@ test.describe('list-output.js データ読み込み', () => {
         const doc = setupDocument();
         const dataElement = new Element('script');
         dataElement.textContent = JSON.stringify({
-            controllers: [{typeName: 'ExampleController'}],
+            applications: {
+                controllers: [{typeName: 'ExampleController'}],
+            },
+            businessRules: {
+                packages: [{packageName: 'com.example'}],
+            },
         });
         doc.elementsById.set('list-data', dataElement);
 
         const data = listOutput.getListData();
 
-        assert.equal(data.controllers.length, 1);
-        assert.equal(data.controllers[0].typeName, 'ExampleController');
+        assert.equal(data.applications.controllers.length, 1);
+        assert.equal(data.applications.controllers[0].typeName, 'ExampleController');
+        assert.equal(data.businessRules.packages.length, 1);
     });
 });
 

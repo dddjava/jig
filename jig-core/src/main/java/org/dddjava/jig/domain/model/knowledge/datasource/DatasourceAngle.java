@@ -1,12 +1,14 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.CrudTables;
+import org.dddjava.jig.domain.model.data.rdbaccess.Tables;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -52,7 +54,7 @@ public class DatasourceAngle {
         return crudTables.create().asText();
     }
 
-    public java.util.List<String> insertTableNames() {
+    public List<String> insertTableNames() {
         return tableNames(crudTables.create());
     }
 
@@ -60,7 +62,7 @@ public class DatasourceAngle {
         return crudTables.read().asText();
     }
 
-    public java.util.List<String> selectTableNames() {
+    public List<String> selectTableNames() {
         return tableNames(crudTables.read());
     }
 
@@ -68,7 +70,7 @@ public class DatasourceAngle {
         return crudTables.update().asText();
     }
 
-    public java.util.List<String> updateTableNames() {
+    public List<String> updateTableNames() {
         return tableNames(crudTables.update());
     }
 
@@ -76,7 +78,7 @@ public class DatasourceAngle {
         return crudTables.delete().asText();
     }
 
-    public java.util.List<String> deleteTableNames() {
+    public List<String> deleteTableNames() {
         return tableNames(crudTables.delete());
     }
 
@@ -100,7 +102,7 @@ public class DatasourceAngle {
         return outputImplementation.interfaceJigType().label();
     }
 
-    private java.util.List<String> tableNames(org.dddjava.jig.domain.model.data.rdbaccess.Tables tables) {
+    private List<String> tableNames(Tables tables) {
         return tables.tables().stream()
                 .map(org.dddjava.jig.domain.model.data.rdbaccess.Table::name)
                 .distinct()

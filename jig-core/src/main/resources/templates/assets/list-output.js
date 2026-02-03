@@ -767,5 +767,6 @@ if (typeof module !== "undefined" && module.exports) {
         renderBusinessCollectionTable,
         renderBusinessValidationTable,
         renderBusinessSmellTable,
+        activateTabGroup,
     };
 }

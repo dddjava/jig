@@ -679,6 +679,41 @@ test.describe('package.js', () => {
                 const mutual = doc.getElementById('mutual-dependency-list');
                 assert.equal(mutual.children.length > 0, true);
             });
+
+            test('renderPackageDiagram: サブグラフ内のFQNノードラベルが省略される', () => {
+                const doc = setupDocument();
+                const diagram = setupDiagramEnvironment(doc);
+                setPackageData(doc, {
+                    packages: [
+                        {fqn: 'com.example', name: 'example', classCount: 1},
+                        {fqn: 'com.example.domain', name: 'domain', classCount: 1},
+                        {fqn: 'com.example.domain.model', classCount: 1}, // No 'name' property
+                        {fqn: 'com.example.domain.repository', name: 'repository', classCount: 1},
+                        {fqn: 'com.example.service', name: 'service', classCount: 1},
+                    ],
+                    relations: [
+                        {from: 'com.example.domain.model', to: 'com.example.domain.repository'},
+                        {from: 'com.example.service', to: 'com.example.domain'},
+                    ],
+                });
+
+                pkg.setAggregationDepth(0); // Set to no aggregation to ensure full hierarchy is built
+                pkg.renderPackageDiagram(null, null);
+
+                const diagramContent = diagram.textContent;
+
+                // Match subgraph creation for com.example.domain (using regex for groupId)
+                assert.ok(/subgraph G\d+\["com\.example\.domain"]/.test(diagramContent), 'Expected subgraph for com.example.domain');
+
+                // Check for nodes inside this subgraph:
+                // com.example.domain.model (FQN, should be shortened to 'model')
+                assert.ok(/P\d+\["model"]/.test(diagramContent), 'Expected "com.example.domain.model" to be shortened to "model"');
+                // com.example.domain.repository (has 'name', should remain 'repository')
+                assert.ok(/P\d+\["repository"]/.test(diagramContent), 'Expected "com.example.domain.repository" to remain "repository"');
+
+                // Verify that 'com.example.service' is also present and correctly labeled
+                assert.ok(/P\d+\["service"]/.test(diagramContent), 'Expected "com.example.service" to be labeled "service"');
+            });
         });
 
         test.describe('分岐/エラー', () => {

@@ -79,8 +79,8 @@ function markIfTrue(value) {
     return value ? "◯" : "";
 }
 
-function buildControllerCsv(items) {
-    const header = [
+const headerDefinitions = {
+    controller: [
         "パッケージ名",
         "クラス名",
         "メソッドシグネチャ",
@@ -89,23 +89,8 @@ function buildControllerCsv(items) {
         "使用しているフィールドの型",
         "循環的複雑度",
         "パス",
-    ];
-    const rows = items.map(item => [
-        item.packageName ?? "",
-        item.typeName ?? "",
-        item.methodSignature ?? "",
-        item.returnType ?? "",
-        item.typeLabel ?? "",
-        formatFieldTypes(item.usingFieldTypes),
-        item.cyclomaticComplexity ?? "",
-        item.path ?? "",
-    ]);
-    const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
-    return lines.join("\r\n");
-}
-
-function buildServiceCsv(items) {
-    const header = [
+    ],
+    service: [
         "パッケージ名",
         "クラス名",
         "メソッドシグネチャ",
@@ -121,7 +106,100 @@ function buildServiceCsv(items) {
         "使用しているリポジトリのメソッド",
         "null使用",
         "stream使用",
-    ];
+    ],
+    repository: [
+        "パッケージ名",
+        "クラス名",
+        "メソッドシグネチャ",
+        "メソッド戻り値の型",
+        "クラス別名",
+        "メソッド戻り値の型の別名",
+        "メソッド引数の型の別名",
+        "循環的複雑度",
+        "INSERT",
+        "SELECT",
+        "UPDATE",
+        "DELETE",
+        "関連元クラス数",
+        "関連元メソッド数",
+    ],
+    businessPackage: ["パッケージ名", "パッケージ別名", "クラス数"],
+    businessAll: [
+        "パッケージ名",
+        "クラス名",
+        "クラス別名",
+        "ビジネスルールの種類",
+        "関連元ビジネスルール数",
+        "関連先ビジネスルール数",
+        "関連元クラス数",
+        "非PUBLIC",
+        "同パッケージからのみ参照",
+        "関連元クラス",
+    ],
+    businessEnum: [
+        "パッケージ名",
+        "クラス名",
+        "クラス別名",
+        "定数宣言",
+        "フィールド",
+        "使用箇所数",
+        "使用箇所",
+        "パラメーター有り",
+        "振る舞い有り",
+        "多態",
+    ],
+    businessCollection: [
+        "パッケージ名",
+        "クラス名",
+        "クラス別名",
+        "フィールドの型",
+        "使用箇所数",
+        "使用箇所",
+        "メソッド数",
+        "メソッド一覧",
+    ],
+    businessValidation: [
+        "パッケージ名",
+        "クラス名",
+        "クラス別名",
+        "メンバ名",
+        "メンバクラス名",
+        "アノテーションクラス名",
+        "アノテーション記述",
+    ],
+    businessSmell: [
+        "パッケージ名",
+        "クラス名",
+        "メソッドシグネチャ",
+        "メソッド戻り値の型",
+        "クラス別名",
+        "メンバを使用していない",
+        "基本型の授受を行なっている",
+        "NULLリテラルを使用している",
+        "NULL判定をしている",
+        "真偽値を返している",
+        "voidを返している",
+    ],
+};
+
+function buildControllerCsv(items) {
+    const header = headerDefinitions.controller;
+    const rows = items.map(item => [
+        item.packageName ?? "",
+        item.typeName ?? "",
+        item.methodSignature ?? "",
+        item.returnType ?? "",
+        item.typeLabel ?? "",
+        formatFieldTypes(item.usingFieldTypes),
+        item.cyclomaticComplexity ?? "",
+        item.path ?? "",
+    ]);
+    const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+    return lines.join("\r\n");
+}
+
+function buildServiceCsv(items) {
+    const header = headerDefinitions.service;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -144,22 +222,7 @@ function buildServiceCsv(items) {
 }
 
 function buildRepositoryCsv(items) {
-    const header = [
-        "パッケージ名",
-        "クラス名",
-        "メソッドシグネチャ",
-        "メソッド戻り値の型",
-        "クラス別名",
-        "メソッド戻り値の型の別名",
-        "メソッド引数の型の別名",
-        "循環的複雑度",
-        "INSERT",
-        "SELECT",
-        "UPDATE",
-        "DELETE",
-        "関連元クラス数",
-        "関連元メソッド数",
-    ];
+    const header = headerDefinitions.repository;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -181,7 +244,7 @@ function buildRepositoryCsv(items) {
 }
 
 function buildBusinessPackageCsv(items) {
-    const header = ["パッケージ名", "パッケージ別名", "クラス数"];
+    const header = headerDefinitions.businessPackage;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.packageLabel ?? "",
@@ -192,18 +255,7 @@ function buildBusinessPackageCsv(items) {
 }
 
 function buildBusinessAllCsv(items) {
-    const header = [
-        "パッケージ名",
-        "クラス名",
-        "クラス別名",
-        "ビジネスルールの種類",
-        "関連元ビジネスルール数",
-        "関連先ビジネスルール数",
-        "関連元クラス数",
-        "非PUBLIC",
-        "同パッケージからのみ参照",
-        "関連元クラス",
-    ];
+    const header = headerDefinitions.businessAll;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -221,18 +273,7 @@ function buildBusinessAllCsv(items) {
 }
 
 function buildBusinessEnumCsv(items) {
-    const header = [
-        "パッケージ名",
-        "クラス名",
-        "クラス別名",
-        "定数宣言",
-        "フィールド",
-        "使用箇所数",
-        "使用箇所",
-        "パラメーター有り",
-        "振る舞い有り",
-        "多態",
-    ];
+    const header = headerDefinitions.businessEnum;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -250,16 +291,7 @@ function buildBusinessEnumCsv(items) {
 }
 
 function buildBusinessCollectionCsv(items) {
-    const header = [
-        "パッケージ名",
-        "クラス名",
-        "クラス別名",
-        "フィールドの型",
-        "使用箇所数",
-        "使用箇所",
-        "メソッド数",
-        "メソッド一覧",
-    ];
+    const header = headerDefinitions.businessCollection;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -275,15 +307,7 @@ function buildBusinessCollectionCsv(items) {
 }
 
 function buildBusinessValidationCsv(items) {
-    const header = [
-        "パッケージ名",
-        "クラス名",
-        "クラス別名",
-        "メンバ名",
-        "メンバクラス名",
-        "アノテーションクラス名",
-        "アノテーション記述",
-    ];
+    const header = headerDefinitions.businessValidation;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -298,19 +322,7 @@ function buildBusinessValidationCsv(items) {
 }
 
 function buildBusinessSmellCsv(items) {
-    const header = [
-        "パッケージ名",
-        "クラス名",
-        "メソッドシグネチャ",
-        "メソッド戻り値の型",
-        "クラス別名",
-        "メンバを使用していない",
-        "基本型の授受を行なっている",
-        "NULLリテラルを使用している",
-        "NULL判定をしている",
-        "真偽値を返している",
-        "voidを返している",
-    ];
+    const header = headerDefinitions.businessSmell;
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
@@ -636,6 +648,23 @@ function renderBusinessSmellTable(items) {
     tableBody.appendChild(fragment);
 }
 
+function renderTableHeader(tableElementId, headers) {
+    const table = document.getElementById(tableElementId);
+    if (!table) return;
+
+    const thead = document.createElement("thead");
+    const tr = document.createElement("tr");
+
+    headers.forEach(headerText => {
+        const th = document.createElement("th");
+        th.textContent = headerText;
+        tr.appendChild(th);
+    });
+
+    thead.appendChild(tr);
+    table.prepend(thead); // prepend so it's the first child
+}
+
 function activateTabGroup(group, tabName) {
     const tabs = document.querySelectorAll(`.list-output-tab[data-tab-group="${group}"]`);
     const buttons = document.querySelectorAll(`.tab-button[data-tab-group="${group}"]`);
@@ -653,6 +682,17 @@ function activateTabGroup(group, tabName) {
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
         if (!document.body.classList.contains("list-output")) return;
+
+        renderTableHeader("business-package-list", headerDefinitions.businessPackage);
+        renderTableHeader("business-all-list", headerDefinitions.businessAll);
+        renderTableHeader("business-enum-list", headerDefinitions.businessEnum);
+        renderTableHeader("business-collection-list", headerDefinitions.businessCollection);
+        renderTableHeader("business-validation-list", headerDefinitions.businessValidation);
+        renderTableHeader("business-smell-list", headerDefinitions.businessSmell);
+        renderTableHeader("controller-list", headerDefinitions.controller);
+        renderTableHeader("service-list", headerDefinitions.service);
+        renderTableHeader("repository-list", headerDefinitions.repository);
+
         const data = getListData();
         renderBusinessPackageTable(data.businessRules.packages);
         renderBusinessAllTable(data.businessRules.all);
@@ -768,5 +808,7 @@ if (typeof module !== "undefined" && module.exports) {
         renderBusinessValidationTable,
         renderBusinessSmellTable,
         activateTabGroup,
+        headerDefinitions,
+        renderTableHeader,
     };
 }

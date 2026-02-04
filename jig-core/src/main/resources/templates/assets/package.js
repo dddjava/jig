@@ -562,10 +562,14 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         }
     });
 
-    const addNodeLines = nodeId => {
-        const label = nodeLabelById.get(nodeId);
-        lines.push(`${nodeId}["${escapeMermaidText(label)}"]`);
+    const addNodeLines = (nodeId, parentSubgraphFqn) => {
         const fqn = diagramNodeIdToFqn.get(nodeId);
+        let displayLabel = nodeLabelById.get(nodeId);
+
+        if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
+            displayLabel = fqn.substring(parentSubgraphFqn.length + 1);
+        }
+        lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
         const tooltip = fqn ? escapeMermaidText(fqn) : '';
         lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
@@ -591,27 +595,27 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         }
         current.nodes.push(nodeIdByFqn.get(fqn));
     });
-    const renderGroup = (group, isRoot) => {
-        group.nodes.forEach(addNodeLines);
+    const renderGroup = (group, isRoot, parentSubgraphFqnForNodes) => {
+        group.nodes.forEach(nodeId => addNodeLines(nodeId, parentSubgraphFqnForNodes));
         const childKeys = Array.from(group.children.keys()).sort();
         if (isRoot && group.nodes.length === 0 && childKeys.length === 1) {
-            renderGroup(group.children.get(childKeys[0]), false);
+            renderGroup(group.children.get(childKeys[0]), false, parentSubgraphFqnForNodes);
             return;
         }
         childKeys.forEach(key => {
             const child = group.children.get(key);
             const childNodeCount = child.nodes.length + child.children.size;
             if (childNodeCount <= 1) {
-                renderGroup(child, false);
+                renderGroup(child, false, parentSubgraphFqnForNodes);
                 return;
             }
             const groupId = `G${groupIndex++}`;
             lines.push(`subgraph ${groupId}["${escapeMermaidText(child.key)}"]`);
-            renderGroup(child, false);
+            renderGroup(child, false, child.key);
             lines.push('end');
         });
     };
-    renderGroup(rootGroup, true);
+    renderGroup(rootGroup, true, rootGroup.key);
     if (parentFqns.size > 0) {
         lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
     }

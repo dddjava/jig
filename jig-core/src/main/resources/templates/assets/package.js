@@ -10,6 +10,7 @@ let packageFilterFqn = null;
 let relatedFilterMode = 'direct';
 let relatedFilterFqn = null;
 let diagramDirection = 'TD';
+let transitiveReductionEnabled = true;
 
 function getOrCreateDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
@@ -449,6 +450,101 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
     container.appendChild(details);
 }
 
+function detectStronglyConnectedComponents(graph) {
+    const indices = new Map();
+    const lowLink = new Map();
+    const stack = [];
+    const onStack = new Set();
+    const result = [];
+    const index = {value: 0};
+
+    function strongConnect(node) {
+        indices.set(node, index.value);
+        lowLink.set(node, index.value);
+        index.value++;
+        stack.push(node);
+        onStack.add(node);
+
+        (graph.get(node) || []).forEach(neighbor => {
+            if (!indices.has(neighbor)) {
+                strongConnect(neighbor);
+                lowLink.set(node, Math.min(lowLink.get(node), lowLink.get(neighbor)));
+            } else if (onStack.has(neighbor)) {
+                lowLink.set(node, Math.min(lowLink.get(node), indices.get(neighbor)));
+            }
+        });
+
+        if (lowLink.get(node) === indices.get(node)) {
+            const scc = [];
+            let current;
+            do {
+                current = stack.pop();
+                onStack.delete(current);
+                scc.push(current);
+            } while (current !== node);
+            result.push(scc);
+        }
+    }
+
+    for (const node of graph.keys()) {
+        if (!indices.has(node)) {
+            strongConnect(node);
+        }
+    }
+    return result;
+}
+
+function transitiveReduction(relations) {
+    const graph = new Map();
+    relations.forEach(relation => {
+        if (!graph.has(relation.from)) graph.set(relation.from, []);
+        graph.get(relation.from).push(relation.to);
+    });
+
+    const sccs = detectStronglyConnectedComponents(graph);
+    const cyclicNodes = new Set(sccs.filter(scc => scc.length > 1).flat());
+    const cyclicEdges = new Set(
+        relations
+            .filter(edge => cyclicNodes.has(edge.from) && cyclicNodes.has(edge.to))
+            .map(edge => `${edge.from}::${edge.to}`)
+    );
+
+    const acyclicGraph = new Map();
+    relations.forEach(edge => {
+        if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
+        if (!acyclicGraph.has(edge.from)) acyclicGraph.set(edge.from, []);
+        acyclicGraph.get(edge.from).push(edge.to);
+    });
+
+    function isReachableWithoutDirect(start, end) {
+        const visited = new Set();
+
+        function dfs(current, target, skipDirect) {
+            if (current === target) return true;
+            visited.add(current);
+            const neighbors = acyclicGraph.get(current) || [];
+            for (const neighbor of neighbors) {
+                if (skipDirect && neighbor === target) continue;
+                if (visited.has(neighbor)) continue;
+                if (dfs(neighbor, target, false)) return true;
+            }
+            return false;
+        }
+
+        return dfs(start, end, true);
+    }
+
+    const toRemove = new Set();
+    relations.forEach(edge => {
+        if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
+        if (isReachableWithoutDirect(edge.from, edge.to)) {
+            toRemove.add(`${edge.from}::${edge.to}`);
+        }
+    });
+
+    return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
+}
+
 function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
@@ -487,6 +583,10 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         uniqueRelationMap.set(`${relation.from}::${relation.to}`, relation);
     });
     let uniqueRelations = Array.from(uniqueRelationMap.values());
+
+    if (transitiveReductionEnabled) {
+        uniqueRelations = transitiveReduction(uniqueRelations);
+    }
 
     if (aggregatedRoot) {
         const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations);
@@ -806,6 +906,30 @@ function setupDiagramDirectionControls() {
     });
 }
 
+function setupTransitiveReductionControl() {
+    const container = document.querySelector('input[name="diagram-direction"]')?.parentNode?.parentNode;
+    if (!container) return;
+
+    const controlContainer = document.createElement('div');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = 'transitive-reduction-toggle';
+    checkbox.checked = transitiveReductionEnabled;
+    checkbox.addEventListener('change', () => {
+        transitiveReductionEnabled = checkbox.checked;
+        renderDiagramAndTable();
+    });
+
+    const label = document.createElement('label');
+    label.htmlFor = checkbox.id;
+    label.textContent = '推移簡約';
+    label.style.marginLeft = '4px';
+
+    controlContainer.appendChild(checkbox);
+    controlContainer.appendChild(label);
+    container.appendChild(controlContainer);
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
         if (!document.body.classList.contains("package-list")) return;
@@ -815,6 +939,7 @@ if (typeof document !== 'undefined') {
         setupAggregationDepthControl();
         setupRelatedFilterControls();
         setupDiagramDirectionControls();
+        setupTransitiveReductionControl();
         const applied = applyDefaultPackageFilterIfPresent();
         if (!applied) {
             renderDiagramAndTable();
@@ -840,6 +965,9 @@ if (typeof module !== 'undefined' && module.exports) {
         },
         setDiagramDirection(value) {
             diagramDirection = value;
+        },
+        setTransitiveReductionEnabled(value) {
+            transitiveReductionEnabled = value;
         },
         setDiagramElement(value) {
             diagramElement = value;
@@ -884,5 +1012,8 @@ if (typeof module !== 'undefined' && module.exports) {
         applyDefaultPackageFilterIfPresent,
         setupRelatedFilterControls,
         setupDiagramDirectionControls,
+        setupTransitiveReductionControl,
+        detectStronglyConnectedComponents,
+        transitiveReduction,
     };
 }

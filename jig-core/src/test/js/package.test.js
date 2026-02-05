@@ -921,4 +921,97 @@ test.describe('package.js', () => {
             assert.equal(pkg.getDiagramDirection(), 'LR');
         });
     });
+
+    test.describe('推移簡約', () => {
+        test('detectStronglyConnectedComponents: 循環を検出する', () => {
+            const graph = new Map([
+                ['a', ['b']],
+                ['b', ['c']],
+                ['c', ['a', 'd']],
+                ['d', ['e']],
+                ['e', ['f']],
+                ['f', ['d']],
+            ]);
+            const sccs = pkg.detectStronglyConnectedComponents(graph);
+            const sortedSccs = sccs.map(scc => scc.sort()).sort((a, b) => a[0].localeCompare(b[0]));
+            assert.deepEqual(sortedSccs, [['a', 'b', 'c'], ['d', 'e', 'f']]);
+        });
+
+        test('transitiveReduction: 単純な推移関係を簡約する', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'b', to: 'c'},
+                {from: 'a', to: 'c'},
+            ];
+            const result = pkg.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'b>c']);
+        });
+
+        test('transitiveReduction: 循環参照は対象外とする', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'b', to: 'a'},
+                {from: 'a', to: 'c'},
+            ];
+            const result = pkg.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a']);
+        });
+
+        test('transitiveReduction: 循環ではないが簡約対象でもない', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'c', to: 'd'},
+            ];
+            const result = pkg.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'c>d']);
+        });
+
+        test('transitiveReduction: 循環からの関係は簡約対象にしない', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'b', to: 'a'}, // cycle
+                {from: 'b', to: 'c'},
+                {from: 'a', to: 'c'},
+            ];
+            const result = pkg.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
+        });
+
+        test('setupTransitiveReductionControl: UIをセットアップする', () => {
+            const doc = setupDocument();
+            const container = doc.createElement('div');
+            const pp = doc.createElement('div');
+            const input = doc.createElement('input');
+            input.name = 'diagram-direction';
+            pp.appendChild(input);
+            container.appendChild(pp);
+            doc.selectors.set('input[name="diagram-direction"]', input);
+            input.parentNode = pp;
+            pp.parentNode = container;
+
+            // renderDiagramAndTableの副作用をチェックするための準備
+            setupDiagramEnvironment(doc);
+            setPackageData(doc, {packages: [{fqn: 'a'}], relations: []});
+            const depthSelect = createDepthSelect(doc);
+            const dummyOption = doc.createElement('option');
+            dummyOption.id = 'dummy-option-for-test';
+            depthSelect.appendChild(dummyOption);
+
+            pkg.setupTransitiveReductionControl();
+
+            const checkbox = doc.getElementById('transitive-reduction-toggle');
+            assert.ok(checkbox, 'checkbox should be created');
+            assert.equal(checkbox.checked, true);
+
+            // 事前確認：ダミー要素が存在する
+            assert.strictEqual(depthSelect.children.some(c => c.id === 'dummy-option-for-test'), true);
+
+            // changeイベントを発火させる
+            checkbox.checked = false;
+            checkbox.eventListeners.get('change')();
+
+            // 事後確認：`renderDiagramAndTable`が呼ばれ、selectの中身が再構築され、dummy-optionが消えているはず
+            assert.strictEqual(depthSelect.children.some(c => c.id === 'dummy-option-for-test'), false);
+        });
+    });
 });

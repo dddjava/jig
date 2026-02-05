@@ -966,15 +966,15 @@ test.describe('package.js', () => {
             assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'c>d']);
         });
 
-        test('transitiveReduction: 循環と推移関係が混在', () => {
+        test('transitiveReduction: 循環からの関係は簡約対象にしない', () => {
             const relations = [
                 {from: 'a', to: 'b'},
                 {from: 'b', to: 'a'}, // cycle
                 {from: 'b', to: 'c'},
-                {from: 'a', to: 'c'}, // reducible
+                {from: 'a', to: 'c'},
             ];
             const result = pkg.transitiveReduction(relations);
-            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'b>a', 'b>c']);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
         });
 
         test('setupTransitiveReductionControl: UIをセットアップする', () => {

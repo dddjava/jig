@@ -989,21 +989,29 @@ test.describe('package.js', () => {
             input.parentNode = pp;
             pp.parentNode = container;
 
+            // renderDiagramAndTableの副作用をチェックするための準備
+            setupDiagramEnvironment(doc);
+            setPackageData(doc, {packages: [{fqn: 'a'}], relations: []});
+            const depthSelect = createDepthSelect(doc);
+            const dummyOption = doc.createElement('option');
+            dummyOption.id = 'dummy-option-for-test';
+            depthSelect.appendChild(dummyOption);
+
             pkg.setupTransitiveReductionControl();
 
             const checkbox = doc.getElementById('transitive-reduction-toggle');
             assert.ok(checkbox, 'checkbox should be created');
             assert.equal(checkbox.checked, true);
 
-            let renderCalled = false;
-            pkg.renderDiagramAndTable = () => {
-                renderCalled = true;
-            };
-            pkg.setTransitiveReductionEnabled(true);
+            // 事前確認：ダミー要素が存在する
+            assert.strictEqual(depthSelect.children.some(c => c.id === 'dummy-option-for-test'), true);
+
+            // changeイベントを発火させる
             checkbox.checked = false;
             checkbox.eventListeners.get('change')();
 
-            assert.equal(renderCalled, true);
+            // 事後確認：`renderDiagramAndTable`が呼ばれ、selectの中身が再構築され、dummy-optionが消えているはず
+            assert.strictEqual(depthSelect.children.some(c => c.id === 'dummy-option-for-test'), false);
         });
     });
 });

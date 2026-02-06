@@ -506,6 +506,16 @@ test.describe('package.js', () => {
                 assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(filtered.uniqueRelations.length, 2);
             });
+
+            test('buildDiagramEdgeLines: 相互依存で双方向リンクを生成', () => {
+                const {ensureNodeId} = pkg.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
+                const result = pkg.buildDiagramEdgeLines(
+                    [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
+                    ensureNodeId
+                );
+                assert.equal(result.edgeLines.some(line => line.includes('<-->')), true);
+                assert.equal(result.linkStyles.length, 1);
+            });
         });
 
         test.describe('テーブル', () => {

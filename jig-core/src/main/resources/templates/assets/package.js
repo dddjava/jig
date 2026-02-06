@@ -638,6 +638,27 @@ function buildParentFqns(visibleSet) {
 function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection) {
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const lines = [`graph ${diagramDirection}`];
+    const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
+    const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
+    const {nodeLines, hasParentStyle} = buildDiagramNodeLines(
+        visibleSet,
+        nodeIdByFqn,
+        nodeIdToFqn,
+        nodeLabelById,
+        escapeMermaidText
+    );
+
+    nodeLines.forEach(line => lines.push(line));
+    if (hasParentStyle) {
+        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
+    }
+    edgeLines.forEach(line => lines.push(line));
+    linkStyles.forEach(styleLine => lines.push(styleLine));
+
+    return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+}
+
+function buildDiagramNodeMaps(visibleSet, nameByFqn) {
     const nodeIdByFqn = new Map();
     const nodeIdToFqn = new Map();
     const nodeLabelById = new Map();
@@ -651,10 +672,12 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
         nodeLabelById.set(nodeId, label);
         return nodeId;
     };
-
     Array.from(visibleSet).sort().forEach(ensureNodeId);
-    const mutualPairs = buildMutualPairs(uniqueRelations);
+    return {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId};
+}
 
+function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
+    const mutualPairs = buildMutualPairs(uniqueRelations);
     const linkStyles = [];
     let linkIndex = 0;
     const edgeLines = [];
@@ -676,9 +699,13 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
         edgeLines.push(`${fromId} --> ${toId}`);
         linkIndex += 1;
     });
+    return {edgeLines, linkStyles, mutualPairs};
+}
 
+function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText) {
     const visibleFqns = Array.from(visibleSet).sort();
     const parentFqns = buildParentFqns(visibleSet);
+    const lines = [];
 
     const addNodeLines = (nodeId, parentSubgraphFqn) => {
         const fqn = nodeIdToFqn.get(nodeId);
@@ -734,14 +761,8 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
         });
     };
     renderGroup(rootGroup, true, rootGroup.key);
-    if (parentFqns.size > 0) {
-        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
-    }
 
-    edgeLines.forEach(line => lines.push(line));
-    linkStyles.forEach(styleLine => lines.push(styleLine));
-
-    return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+    return {nodeLines: lines, hasParentStyle: parentFqns.size > 0};
 }
 
 function getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
@@ -1138,6 +1159,9 @@ if (typeof module !== 'undefined' && module.exports) {
         renderMutualDependencyList,
         renderPackageDiagram,
         buildMermaidDiagramSource,
+        buildDiagramNodeMaps,
+        buildDiagramEdgeLines,
+        buildDiagramNodeLines,
         applyRelatedFilter,
         setupPackageFilterControls,
         setupAggregationDepthControl,

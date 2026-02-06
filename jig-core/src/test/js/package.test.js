@@ -652,11 +652,25 @@ test.describe('package.js', () => {
             });
 
             test('renderDiagramSvg: Mermaid描画を実行する', () => {
-                const doc = setupDocument();
-                const container = new Element('div', doc);
-                const diagram = new Element('div', doc);
-                container.appendChild(diagram);
-                testContext.diagramElement = diagram;
+                const diagramMock = {
+                    removeAttribute: test.mock.fn(),
+                    textContent: '',
+                    style: { display: '' } // Needs to be there for dom.setDiagramElementDisplay
+                };
+                testContext.diagramElement = diagramMock;
+
+                // Mock dom helpers used by hideDiagramErrorMessage and renderDiagramSvg itself
+                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => ({ style: {} }))); // Mock return for errorBox
+                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => ({ style: {} })));
+                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => ({ textContent: '' })));
+                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => ({ style: {}, onclick: null })));
+                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
+                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
+                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                test.mock.method(pkg.dom, 'setDiagramContent', test.mock.fn((el, content) => { el.textContent = content; }));
+                test.mock.method(pkg.dom, 'removeDiagramAttribute', test.mock.fn((el, attr) => { /* no-op */ }));
+
 
                 let runCalled = false;
                 global.window = {
@@ -672,7 +686,11 @@ test.describe('package.js', () => {
 
                 pkg.renderDiagramSvg('graph TD', 100, testContext);
 
-                assert.equal(diagram.textContent, 'graph TD');
+                assert.equal(diagramMock.textContent, 'graph TD'); // Check through the dom helper mock
+                assert.equal(pkg.dom.removeDiagramAttribute.mock.calls.length, 1);
+                assert.deepEqual(pkg.dom.removeDiagramAttribute.mock.calls[0].arguments, [diagramMock, 'data-processed']);
+                assert.equal(pkg.dom.setDiagramContent.mock.calls.length, 1);
+                assert.deepEqual(pkg.dom.setDiagramContent.mock.calls[0].arguments, [diagramMock, 'graph TD']);
                 assert.equal(runCalled, true);
             });
         });

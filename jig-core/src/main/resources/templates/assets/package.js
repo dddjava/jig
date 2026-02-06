@@ -53,6 +53,8 @@ const dom = {
     setNodeDisplay: (element, display) => { if (element) element.style.display = display; },
     setNodeOnClick: (element, handler) => { if (element) element.onclick = handler; },
     setDiagramElementDisplay: (diagram, display) => { if (diagram) diagram.style.display = display; },
+    setDiagramContent: (element, content) => { if (element) element.textContent = content; },
+    removeDiagramAttribute: (element, attribute) => { if (element) element.removeAttribute(attribute); },
 };
 
 function getOrCreateDiagramErrorBox(diagram) {
@@ -106,8 +108,8 @@ function renderDiagramSvg(text, maxEdges, context) {
     const diagram = context.diagramElement;
     if (!diagram || !window.mermaid) return;
     hideDiagramErrorMessage(diagram);
-    diagram.removeAttribute('data-processed');
-    diagram.textContent = text;
+    dom.removeDiagramAttribute(diagram, 'data-processed');
+    dom.setDiagramContent(diagram, text);
     mermaid.initialize({startOnLoad: false, securityLevel: 'loose', maxEdges: maxEdges});
     mermaid.run({nodes: [diagram]});
 }

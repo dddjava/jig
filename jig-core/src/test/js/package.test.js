@@ -870,7 +870,7 @@ test.describe('package.js', () => {
                         {from: 'app.alpha.A', to: 'app.beta.B'},
                         {from: 'app.beta.B', to: 'app.alpha.A'},
                     ],
-                    testContext
+                    testContext.aggregationDepth
                 );
 
                 assert.equal(container.style.display, '');

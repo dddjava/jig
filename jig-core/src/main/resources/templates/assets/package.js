@@ -930,10 +930,10 @@ function renderDiagramWithMermaid(diagram, text, maxEdges) {
 }
 
 // 描画/更新
-function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context) {
+function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth) {
     const container = dom.getMutualDependencyList();
     if (!container) return;
-    const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, context.aggregationDepth);
+    const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth);
     if (items.length === 0) {
         container.style.display = 'none';
         container.innerHTML = '';
@@ -1009,7 +1009,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
 
 function applyDiagramRenderPlan(context, renderPlan) {
     context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
-    renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context);
+    renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth);
     context.lastDiagramSource = renderPlan.source;
     context.lastDiagramEdgeCount = renderPlan.uniqueRelations.length;
 }

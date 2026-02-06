@@ -254,8 +254,6 @@ test.describe('package.js', () => {
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
             pendingDiagramRender: null,
-            lastDiagramSource: '',
-            lastDiagramEdgeCount: 0,
             DEFAULT_MAX_EDGES: 500,
             packageFilterFqn: null,
             relatedFilterMode: 'direct',

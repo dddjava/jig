@@ -192,7 +192,7 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
 
     if (relatedFilterFqn) {
         const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, context.aggregationDepth);
-        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context);
+        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context.aggregationDepth, context.relatedFilterMode);
         filteredPackages = filteredPackages.filter(item =>
             relatedSet.has(getAggregatedFqn(item.fqn, context.aggregationDepth))
         );
@@ -218,7 +218,7 @@ function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth,
         return buildAggregationStats(packages, relations, maxDepth);
     }
     const aggregatedRoot = getAggregatedFqn(rootFqn, context.aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, relations, context);
+    const relatedSet = collectRelatedSet(aggregatedRoot, relations, context.aggregationDepth, context.relatedFilterMode);
     const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, context.aggregationDepth)));
     const relatedRelations = relations.filter(relation => {
         const from = getAggregatedFqn(relation.from, context.aggregationDepth);
@@ -341,7 +341,7 @@ function applyRelatedFilterToTable(fqn, context) {
         )
         : relations;
     const aggregatedRoot = getAggregatedFqn(fqn, context.aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context);
+    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context.aggregationDepth, context.relatedFilterMode);
     rows.forEach(row => {
         const fqnCell = row.querySelector('td.fqn');
         const rowFqn = fqnCell ? fqnCell.textContent : '';
@@ -357,13 +357,13 @@ function renderRelatedFilterTarget(context) {
     target.textContent = context.relatedFilterFqn ? context.relatedFilterFqn : '未選択';
 }
 
-function collectRelatedSet(root, relations, context) {
+function collectRelatedSet(root, relations, aggregationDepth, relatedFilterMode) {
     if (!root) return new Set();
-    if (context.relatedFilterMode === 'direct') {
+    if (relatedFilterMode === 'direct') {
         const relatedSet = new Set([root]);
         relations.forEach(relation => {
-            const from = getAggregatedFqn(relation.from, context.aggregationDepth);
-            const to = getAggregatedFqn(relation.to, context.aggregationDepth);
+            const from = getAggregatedFqn(relation.from, aggregationDepth);
+            const to = getAggregatedFqn(relation.to, aggregationDepth);
             if (from === root) relatedSet.add(to);
             if (to === root) relatedSet.add(from);
         });
@@ -376,10 +376,10 @@ function collectRelatedSet(root, relations, context) {
         adjacency.get(from).add(to);
     };
     relations.forEach(relation => {
-        const from = getAggregatedFqn(relation.from, context.aggregationDepth);
-        const to = getAggregatedFqn(relation.to, context.aggregationDepth);
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
         addEdge(from, to);
-        if (context.relatedFilterMode === 'all') {
+        if (relatedFilterMode === 'all') {
             addEdge(to, from);
         }
     });
@@ -591,7 +591,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     }
 
     if (aggregatedRoot) {
-        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, context);
+        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, context.aggregationDepth, context.relatedFilterMode);
         if (context.relatedFilterMode === 'direct') {
             uniqueRelations = uniqueRelations.filter(relation =>
                 relation.from === aggregatedRoot || relation.to === aggregatedRoot

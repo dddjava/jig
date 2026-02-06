@@ -265,27 +265,27 @@ test.describe('package.js', () => {
     test.describe('データ/ヘルパー', () => {
         test.describe('collectRelatedSet', () => {
             test('directモード: 隣接のみを含める', () => {
-                testContext.aggregationDepth = 0;
-                testContext.relatedFilterMode = 'direct';
+                const aggregationDepth = 0;
+                const relatedFilterMode = 'direct';
                 const relations = [
                     {from: 'app.domain.a', to: 'app.domain.b'},
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectRelatedSet('app.domain.a', relations, testContext);
+                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
 
                 assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
             });
 
             test('allモード: 推移的に辿る', () => {
-                testContext.aggregationDepth = 0;
-                testContext.relatedFilterMode = 'all';
+                const aggregationDepth = 0;
+                const relatedFilterMode = 'all';
                 const relations = [
                     {from: 'app.domain.a', to: 'app.domain.b'},
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectRelatedSet('app.domain.a', relations, testContext);
+                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
 
                 assert.deepEqual(
                     Array.from(related).sort(),

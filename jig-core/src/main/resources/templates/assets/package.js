@@ -685,7 +685,7 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
-function buildMutualPairs(relations) {
+function buildMutualDependencyPairs(relations) {
     const relationKey = (from, to) => `${from}::${to}`;
     const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
     const relationSet = new Set(relations.map(relation => relationKey(relation.from, relation.to)));
@@ -752,7 +752,7 @@ function buildDiagramNodeMaps(visibleSet, nameByFqn) {
 }
 
 function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
-    const mutualPairs = buildMutualPairs(uniqueRelations);
+    const mutualPairs = buildMutualDependencyPairs(uniqueRelations);
     const linkStyles = [];
     let linkIndex = 0;
     const edgeLines = [];
@@ -1217,7 +1217,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildMutualDependencyItems,
         detectStronglyConnectedComponents,
         transitiveReduction,
-        buildMutualPairs,
+        buildMutualDependencyPairs,
         buildParentFqns,
         buildMermaidDiagramSource,
         buildDiagramNodeMaps,

@@ -554,11 +554,12 @@ function setRelatedFilterAndRender(fqn, context) {
     renderRelatedFilterLabel(context);
 }
 
-if (typeof window !== 'undefined') {
+function registerDiagramClickHandler(context, applyRelatedFilter = setRelatedFilterAndRender) {
+    if (typeof window === 'undefined') return;
     window.filterPackageDiagram = function (nodeId) {
-        const fqn = packageContext.diagramNodeIdToFqn.get(nodeId);
+        const fqn = context.diagramNodeIdToFqn.get(nodeId);
         if (!fqn) return;
-        setRelatedFilterAndRender(fqn, packageContext);
+        applyRelatedFilter(fqn, context);
     };
 }
 
@@ -1176,6 +1177,7 @@ if (typeof document !== 'undefined') {
         setupRelatedFilterControl(packageContext);
         setupDiagramDirectionControl(packageContext);
         setupTransitiveReductionControl(packageContext);
+        registerDiagramClickHandler(packageContext);
         const applied = applyDefaultPackageFilterIfPresent(packageContext);
         if (!applied) {
             renderDiagramAndTable(packageContext);
@@ -1242,6 +1244,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderMutualDependencyList,
         renderPackageDiagram,
         renderDiagramAndTable,
+        registerDiagramClickHandler,
         setupPackageFilterControl,
         setupAggregationDepthControl,
         renderAggregationDepthSelectOptions,

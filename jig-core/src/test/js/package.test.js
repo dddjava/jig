@@ -931,6 +931,21 @@ test.describe('package.js', () => {
                 assert.equal(actionNodeMock.style.display, '', 'actionNode should be displayed');
             });
 
+            test('registerDiagramClickHandler: クリックで関連フィルタへ切り替える', () => {
+                global.window = {};
+                testContext.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
+                let called = null;
+                const applyRelatedFilter = (fqn, context) => {
+                    called = {fqn, context};
+                };
+
+                pkg.registerDiagramClickHandler(testContext, applyRelatedFilter);
+
+                global.window.filterPackageDiagram('P1');
+
+                assert.deepEqual(called, {fqn: 'app.example', context: testContext});
+            });
+
             test('setupTransitiveReductionControl: UIをセットアップする', () => {
                 const doc = setupDocument();
                 const container = doc.createElement('div');

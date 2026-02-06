@@ -545,6 +545,20 @@ test.describe('package.js', () => {
 
                 assert.equal(lines.some(line => line.includes('node P0')), true);
             });
+
+            test('buildDiagramNodeLabel: サブグラフ配下のラベルを短縮する', () => {
+                const label = pkg.buildDiagramNodeLabel(
+                    'com.example.domain.model',
+                    'com.example.domain.model',
+                    'com.example.domain'
+                );
+                assert.equal(label, 'model');
+            });
+
+            test('buildDiagramNodeTooltip: FQNを返す', () => {
+                assert.equal(pkg.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
+                assert.equal(pkg.buildDiagramNodeTooltip(null), '');
+            });
         });
 
         test.describe('テーブル', () => {

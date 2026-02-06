@@ -724,21 +724,29 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
     const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
     const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
         const fqn = nodeIdToFqn.get(nodeId);
-        let displayLabel = nodeLabelById.get(nodeId);
-
-        if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
-            displayLabel = fqn.substring(parentSubgraphFqn.length + 1);
-        }
+        const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
         lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
-        const tooltip = fqn ? escapeMermaidText(fqn) : '';
+        const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
         lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
-        lines.push(`class ${nodeId} parentPackage`);
+            lines.push(`class ${nodeId} parentPackage`);
         }
     };
     const nodeLines = buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText);
 
     return {nodeLines, hasParentStyle: parentFqns.size > 0};
+}
+
+function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {
+    if (!fqn) return displayLabel ?? '';
+    if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
+        return fqn.substring(parentSubgraphFqn.length + 1);
+    }
+    return displayLabel ?? '';
+}
+
+function buildDiagramNodeTooltip(fqn) {
+    return fqn ?? '';
 }
 
 function buildDiagramGroupTree(visibleFqns, nodeIdByFqn) {
@@ -1195,6 +1203,8 @@ if (typeof module !== 'undefined' && module.exports) {
         buildDiagramNodeLines,
         buildDiagramGroupTree,
         buildSubgraphLines,
+        buildDiagramNodeLabel,
+        buildDiagramNodeTooltip,
         applyRelatedFilter,
         setupPackageFilterControls,
         setupAggregationDepthControl,

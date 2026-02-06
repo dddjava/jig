@@ -17,37 +17,48 @@ const packageContext = {
 const dom = {
     getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
     setRelatedFilterTargetText: (element, text) => { if (element) element.textContent = text; },
+
+    getDiagramErrorBox: () => document.getElementById('package-diagram-error'),
+    createDiagramErrorBox: (diagram) => {
+        let errorBox = document.createElement('div');
+        errorBox.id = 'package-diagram-error';
+        errorBox.setAttribute('role', 'alert');
+        errorBox.style.display = 'none'; // Initially hidden
+        errorBox.style.whiteSpace = 'pre-wrap';
+        errorBox.style.border = '1px solid #cc3333';
+        errorBox.style.background = '#fff5f5';
+        errorBox.style.color = '#222222';
+        errorBox.style.padding = '8px 12px';
+        errorBox.style.margin = '12px 0';
+        // Message and action nodes created here too and appended
+        const message = document.createElement('pre');
+        message.id = 'package-diagram-error-message';
+        message.style.whiteSpace = 'pre-wrap';
+        message.style.margin = '0 0 8px 0';
+
+        const action = document.createElement('button');
+        action.id = 'package-diagram-error-action';
+        action.type = 'button';
+        action.style.display = 'none';
+        action.textContent = '描画する';
+
+        errorBox.appendChild(message);
+        errorBox.appendChild(action);
+        diagram.parentNode.insertBefore(errorBox, diagram); // Insert into DOM
+        return errorBox;
+    },
+    getDiagramErrorMessageNode: () => document.getElementById('package-diagram-error-message'),
+    getDiagramErrorActionNode: () => document.getElementById('package-diagram-error-action'),
+    setNodeTextContent: (element, text) => { if (element) element.textContent = text; },
+    setNodeDisplay: (element, display) => { if (element) element.style.display = display; },
+    setNodeOnClick: (element, handler) => { if (element) element.onclick = handler; },
+    setDiagramElementDisplay: (diagram, display) => { if (diagram) diagram.style.display = display; },
 };
 
 function getOrCreateDiagramErrorBox(diagram) {
-    let errorBox = document.getElementById('package-diagram-error');
+    let errorBox = dom.getDiagramErrorBox();
     if (errorBox) return errorBox;
-    errorBox = document.createElement('div');
-    errorBox.id = 'package-diagram-error';
-    errorBox.setAttribute('role', 'alert');
-    errorBox.style.display = 'none';
-    errorBox.style.whiteSpace = 'pre-wrap';
-    errorBox.style.border = '1px solid #cc3333';
-    errorBox.style.background = '#fff5f5';
-    errorBox.style.color = '#222222';
-    errorBox.style.padding = '8px 12px';
-    errorBox.style.margin = '12px 0';
-
-    const message = document.createElement('pre');
-    message.id = 'package-diagram-error-message';
-    message.style.whiteSpace = 'pre-wrap';
-    message.style.margin = '0 0 8px 0';
-
-    const action = document.createElement('button');
-    action.id = 'package-diagram-error-action';
-    action.type = 'button';
-    action.style.display = 'none';
-    action.textContent = '描画する';
-
-    errorBox.appendChild(message);
-    errorBox.appendChild(action);
-    diagram.parentNode.insertBefore(errorBox, diagram);
-    return errorBox;
+    return dom.createDiagramErrorBox(diagram);
 }
 
 function showDiagramErrorMessage(message, withAction, err, hash, context) {
@@ -61,36 +72,34 @@ function showDiagramErrorMessage(message, withAction, err, hash, context) {
         console.error('Mermaid error location:', hash.line, hash.loc);
     }
     const errorBox = getOrCreateDiagramErrorBox(diagram);
-    const messageNode = document.getElementById('package-diagram-error-message');
-    const actionNode = document.getElementById('package-diagram-error-action');
-    if (messageNode) messageNode.textContent = message;
+    const messageNode = dom.getDiagramErrorMessageNode();
+    const actionNode = dom.getDiagramErrorActionNode();
+    dom.setNodeTextContent(messageNode, message);
     if (actionNode) {
-        actionNode.style.display = withAction ? '' : 'none';
+        dom.setNodeDisplay(actionNode, withAction ? '' : 'none');
         if (withAction) {
-            actionNode.onclick = function () {
+            dom.setNodeOnClick(actionNode, function () {
                 if (!context.pendingDiagramRender) return;
                 renderDiagramSvg(context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges, context);
                 context.pendingDiagramRender = null;
-            };
+            });
         } else {
-            actionNode.onclick = null;
+            dom.setNodeOnClick(actionNode, null);
         }
     }
-    errorBox.style.display = '';
-    diagram.style.display = 'none';
+    dom.setNodeDisplay(errorBox, '');
+    dom.setDiagramElementDisplay(diagram, 'none');
 }
 
 function hideDiagramErrorMessage(diagram) {
     const errorBox = getOrCreateDiagramErrorBox(diagram);
-    const messageNode = document.getElementById('package-diagram-error-message');
-    const actionNode = document.getElementById('package-diagram-error-action');
-    if (messageNode) messageNode.textContent = '';
-    if (actionNode) {
-        actionNode.style.display = 'none';
-        actionNode.onclick = null;
-    }
-    errorBox.style.display = 'none';
-    diagram.style.display = '';
+    const messageNode = dom.getDiagramErrorMessageNode();
+    const actionNode = dom.getDiagramErrorActionNode();
+    dom.setNodeTextContent(messageNode, '');
+    dom.setNodeDisplay(actionNode, 'none');
+    dom.setNodeOnClick(actionNode, null);
+    dom.setNodeDisplay(errorBox, 'none');
+    dom.setDiagramElementDisplay(diagram, '');
 }
 
 function renderDiagramSvg(text, maxEdges, context) {

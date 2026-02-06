@@ -584,40 +584,71 @@ test.describe('package.js', () => {
             });
 
             test('getOrCreateDiagramErrorBox: エラーボックスを作成/再利用する', () => {
-                const doc = setupDocument();
-                const container = new Element('div', doc);
-                const diagram = new Element('div', doc);
-                container.appendChild(diagram);
+                const diagram = { parentNode: { insertBefore: test.mock.fn() } }; // Minimal mock for diagram
 
-                const first = pkg.getOrCreateDiagramErrorBox(diagram, testContext);
-                const second = pkg.getOrCreateDiagramErrorBox(diagram, testContext);
+                const createdErrorBox = { id: 'package-diagram-error', appendChild: test.mock.fn() };
+                const createDiagramErrorBoxMock = test.mock.fn(() => createdErrorBox);
 
-                assert.equal(first, second);
-                assert.equal(first.id, 'package-diagram-error');
-                assert.equal(container.children[0], first);
+                // --- First call: Error box does not exist, should be created ---
+                const getDiagramErrorBoxMockInitialNull = test.mock.fn(() => null);
+                test.mock.method(pkg.dom, 'getDiagramErrorBox', getDiagramErrorBoxMockInitialNull);
+                test.mock.method(pkg.dom, 'createDiagramErrorBox', createDiagramErrorBoxMock);
+
+                const firstErrorBox = pkg.getOrCreateDiagramErrorBox(diagram);
+
+                assert.equal(getDiagramErrorBoxMockInitialNull.mock.calls.length, 1, 'getDiagramErrorBox should be called once initially');
+                assert.equal(createDiagramErrorBoxMock.mock.calls.length, 1, 'createDiagramErrorBox should be called once');
+                assert.deepEqual(createDiagramErrorBoxMock.mock.calls[0].arguments, [diagram], 'createDiagramErrorBox called with diagram');
+                assert.equal(firstErrorBox, createdErrorBox, 'First call returns newly created error box');
+
+                // --- Second call: Error box already exists ---
+                const getDiagramErrorBoxMockReturningCreated = test.mock.fn(() => createdErrorBox); // Returns the *same* instance
+                // Re-mock getDiagramErrorBox to return the existing one.
+                // It will override the previous mock, so the first mock will not be called again.
+                test.mock.method(pkg.dom, 'getDiagramErrorBox', getDiagramErrorBoxMockReturningCreated);
+
+                const secondErrorBox = pkg.getOrCreateDiagramErrorBox(diagram);
+
+                assert.equal(getDiagramErrorBoxMockReturningCreated.mock.calls.length, 1, 'getDiagramErrorBox should be called once more for existing');
+                // The createDiagramErrorBoxMock.mock.calls.length should still be 1 from the first call.
+                assert.equal(createDiagramErrorBoxMock.mock.calls.length, 1, 'createDiagramErrorBox should not be called again');
+                assert.equal(secondErrorBox, createdErrorBox, 'Second call returns existing error box');
+                assert.equal(firstErrorBox, secondErrorBox, 'Both calls should return the same instance when reused');
             });
 
             test('showDiagramErrorMessage/hideDiagramErrorMessage: 表示を切り替える', () => {
-                const doc = setupDocument();
-                const container = new Element('div', doc);
-                const diagram = new Element('div', doc);
-                container.appendChild(diagram);
-                testContext.diagramElement = diagram;
+                const diagramMock = { style: { display: '' } }; // Mock for context.diagramElement
+                const errorBoxMock = { style: { display: 'none' } }; // Mock for the error box element
+                const messageNodeMock = { textContent: '' }; // Mock for the message node
+                const actionNodeMock = { style: { display: 'none' }, onclick: null }; // Mock for the action node
+
+                // Mock dom helpers
+                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
+                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // getOrCreate will call this if not found
+                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
+                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
+                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
+                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
+                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+
+                testContext.diagramElement = diagramMock;
 
                 const errors = withConsoleErrorCapture(() => {
                     pkg.showDiagramErrorMessage('test-error-message', false, null, null, testContext);
                 });
-                const errorBox = doc.getElementById('package-diagram-error');
-                const messageNode = doc.getElementById('package-diagram-error-message');
 
-                assert.equal(errorBox.style.display, '');
-                assert.equal(diagram.style.display, 'none');
-                assert.equal(messageNode.textContent, 'test-error-message');
-                assert.equal(errors.some(line => line.includes('test-error-message')), true);
+                assert.equal(errorBoxMock.style.display, '', 'errorBox should be displayed');
+                assert.equal(diagramMock.style.display, 'none', 'diagram should be hidden');
+                assert.equal(messageNodeMock.textContent, 'test-error-message', 'messageNode content should be set');
+                assert.equal(errors.some(line => line.includes('test-error-message')), true, 'console.error should be called');
 
-                pkg.hideDiagramErrorMessage(diagram, testContext);
-                assert.equal(errorBox.style.display, 'none');
-                assert.equal(diagram.style.display, '');
+                pkg.hideDiagramErrorMessage(diagramMock); // Pass diagramMock directly as it's used
+                assert.equal(errorBoxMock.style.display, 'none', 'errorBox should be hidden');
+                assert.equal(diagramMock.style.display, '', 'diagram should be displayed');
+                assert.equal(messageNodeMock.textContent, '', 'messageNode content should be cleared');
+                assert.equal(actionNodeMock.style.display, 'none', 'actionNode should be hidden');
+                assert.equal(actionNodeMock.onclick, null, 'actionNode onclick should be cleared');
             });
 
             test('renderDiagramSvg: Mermaid描画を実行する', () => {
@@ -784,7 +815,24 @@ test.describe('package.js', () => {
         test.describe('分岐/エラー', () => {
             test('renderPackageDiagram: エッジ数超過で保留/エラー表示', () => {
                 const doc = setupDocument();
-                setupDiagramEnvironment(doc, testContext);
+                // setupDiagramEnvironmentはtestContext.diagramElementを設定する。
+                // そのdiagramElementがdomヘルパーによって操作されることをモックする。
+                const diagramMock = setupDiagramEnvironment(doc, testContext); // testContext.diagramElementも設定される
+
+                // Mock dom helpers used by showDiagramErrorMessage internally
+                const errorBoxMock = { style: { display: 'none' } };
+                const messageNodeMock = { textContent: '' };
+                const actionNodeMock = { style: { display: 'none' }, onclick: null };
+                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
+                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // called by getOrCreate
+                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
+                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
+                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
+                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
+                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+
+                // Data setup (same as before)
                 const packages = [];
                 const relations = [];
                 for (let i = 0; i < 501; i += 1) {
@@ -800,33 +848,47 @@ test.describe('package.js', () => {
                     pkg.renderPackageDiagram(testContext, null, null);
                 });
 
-                const errorBox = doc.getElementById('package-diagram-error');
-                assert.equal(errorBox.style.display, '');
+                assert.equal(errorBoxMock.style.display, '', 'errorBox should be displayed by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage
+                assert.equal(diagramMock.style.display, 'none', 'diagram should be hidden by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage
                 assert.equal(errors.some(line => line.includes('関連数が多すぎるため描画を省略しました。')), true);
+                assert.ok(actionNodeMock.onclick, 'actionNode should have onclick handler');
+                assert.equal(actionNodeMock.style.display, '', 'actionNode should be displayed');
             });
 
             test('mermaid.parseError: エラー内容を表示', () => {
                 const doc = setupDocument();
-                setupDiagramEnvironment(doc, testContext);
+                const diagramMock = setupDiagramEnvironment(doc, testContext); // testContext.diagramElement is set here
                 setPackageData(doc, {
                     packages: [{fqn: 'app.a', name: 'A', classCount: 1}],
                     relations: [],
                 }, testContext);
-                pkg.renderPackageDiagram(testContext, null, null);
+                pkg.renderPackageDiagram(testContext, null, null); // This prepares the diagram and sets mermaid.parseError
 
+                // Mock dom helpers used by showDiagramErrorMessage internally
+                const errorBoxMock = { style: { display: 'none' } };
+                const messageNodeMock = { textContent: '' };
+                const actionNodeMock = { style: { display: 'none' }, onclick: null };
+                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
+                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // called by getOrCreate
+                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
+                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
+                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
+                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
+                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                
                 // Mermaidはパース失敗時のみ呼ばれるため、テストでは直接呼び出す。
                 const errors = withConsoleErrorCapture(() => {
                     global.mermaid.parseError(
-                        {message: 'Edge limit exceeded'},
+                        {message: 'Mermaid parse error details'}, // Use a more specific message
                         {line: 10, loc: 2}
                     );
                 });
 
-                const messageNode = doc.getElementById('package-diagram-error-message');
-                assert.equal(messageNode.textContent.includes('Mermaid parse error:'), true);
-                assert.equal(messageNode.textContent.includes('Line: 10 Column: 2'), true);
+                assert.equal(messageNodeMock.textContent.includes('Mermaid parse error:'), true);
+                assert.equal(messageNodeMock.textContent.includes('Line: 10 Column: 2'), true);
                 assert.equal(errors.some(line => line.includes('Mermaid parse error:')), true);
-                assert.equal(errors.some(line => line.includes('Edge limit exceeded')), true);
+                assert.equal(errors.some(line => line.includes('Mermaid parse error details')), true); // Check for specific error message
                 assert.equal(errors.some(line => line.includes('Mermaid error location: 10 2')), true);
             });
 

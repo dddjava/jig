@@ -558,7 +558,7 @@ test.describe('package.js', () => {
         });
 
         test.describe('UI', () => {
-            test('applyRelatedFilterToTable: 関係する行のみ表示する', () => {
+            test('filterRelatedTableRows: 関係する行のみ表示する', () => {
                 const doc = setupDocument();
                 setPackageData({
                     packages: [
@@ -575,7 +575,7 @@ test.describe('package.js', () => {
                 testContext.relatedFilterMode = 'direct';
                 testContext.packageFilterFqn = null;
 
-                pkg.applyRelatedFilterToTable('app.a', testContext);
+                pkg.filterRelatedTableRows('app.a', testContext);
 
                 assert.equal(rows[0].classList.contains('hidden'), false);
                 assert.equal(rows[1].classList.contains('hidden'), false);

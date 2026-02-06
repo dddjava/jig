@@ -523,7 +523,7 @@ function applyPackageFilterToTable(packageFilterFqn) {
     });
 }
 
-function applyRelatedFilterToTable(fqn, context) {
+function filterRelatedTableRows(fqn, context) {
     const rows = dom.getPackageTableRows();
     const {relations} = getPackageSummaryData(context);
     const rowFqns = Array.from(rows, row => {
@@ -1002,7 +1002,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
 
 function updateDiagramAndTable(context) {
     renderPackageDiagram(context, context.packageFilterFqn, context.relatedFilterFqn);
-    applyRelatedFilterToTable(context.relatedFilterFqn, context);
+    filterRelatedTableRows(context.relatedFilterFqn, context);
     updateAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
 }
 
@@ -1210,7 +1210,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildPackageTableRowElement,
         renderPackageTable,
         applyPackageFilterToTable,
-        applyRelatedFilterToTable,
+        filterRelatedTableRows,
         renderRelatedFilterLabel,
         setRelatedFilterAndRender,
         applyDefaultPackageFilterIfPresent,

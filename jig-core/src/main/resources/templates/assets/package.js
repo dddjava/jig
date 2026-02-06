@@ -1,112 +1,95 @@
-let packageSummaryCache = null;
-let diagramNodeIdToFqn = new Map();
-let aggregationDepth = 0;
-let diagramElement = null;
-let pendingDiagramRender = null;
-let lastDiagramSource = '';
-let lastDiagramEdgeCount = 0;
-const DEFAULT_MAX_EDGES = 500;
-let packageFilterFqn = null;
-let relatedFilterMode = 'direct';
-let relatedFilterFqn = null;
-let diagramDirection = 'TD';
-let transitiveReductionEnabled = true;
+const packageContext = {
+    packageSummaryCache: null,
+    diagramNodeIdToFqn: new Map(),
+    aggregationDepth: 0,
+    diagramElement: null,
+    pendingDiagramRender: null,
+    lastDiagramSource: '',
+    lastDiagramEdgeCount: 0,
+    DEFAULT_MAX_EDGES: 500,
+    packageFilterFqn: null,
+    relatedFilterMode: 'direct',
+    relatedFilterFqn: null,
+    diagramDirection: 'TD',
+    transitiveReductionEnabled: true,
+};
 
-function getOrCreateDiagramErrorBox(diagram) {
-    let errorBox = document.getElementById('package-diagram-error');
-    if (errorBox) return errorBox;
-    errorBox = document.createElement('div');
-    errorBox.id = 'package-diagram-error';
-    errorBox.setAttribute('role', 'alert');
-    errorBox.style.display = 'none';
-    errorBox.style.whiteSpace = 'pre-wrap';
-    errorBox.style.border = '1px solid #cc3333';
-    errorBox.style.background = '#fff5f5';
-    errorBox.style.color = '#222222';
-    errorBox.style.padding = '8px 12px';
-    errorBox.style.margin = '12px 0';
+const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
 
-    const message = document.createElement('pre');
-    message.id = 'package-diagram-error-message';
-    message.style.whiteSpace = 'pre-wrap';
-    message.style.margin = '0 0 8px 0';
+const dom = {
+    getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
+    setRelatedFilterTargetText: (element, text) => { if (element) element.textContent = text; },
 
-    const action = document.createElement('button');
-    action.id = 'package-diagram-error-action';
-    action.type = 'button';
-    action.style.display = 'none';
-    action.textContent = '描画する';
+    getPackageTableBody: () => document.querySelector('#package-table tbody'),
+    getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
+    getPackageFilterInput: () => document.getElementById('package-filter-input'),
+    getApplyPackageFilterButton: () => document.getElementById('apply-package-filter'),
+    getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
+    getDepthSelect: () => document.getElementById('package-depth-select'),
+    getRelatedModeSelect: () => document.getElementById('related-mode-select'),
+    getClearRelatedFilterButton: () => document.getElementById('clear-related-filter'),
+    getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
+    getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
+    getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
+    getDiagram: () => document.getElementById('package-relation-diagram'),
+    getDocumentBody: () => document.body,
 
-    errorBox.appendChild(message);
-    errorBox.appendChild(action);
-    diagram.parentNode.insertBefore(errorBox, diagram);
-    return errorBox;
+    getDiagramErrorBox: () => document.getElementById('package-diagram-error'),
+    createDiagramErrorBox: (diagram) => {
+        let errorBox = document.createElement('div');
+        errorBox.id = 'package-diagram-error';
+        errorBox.setAttribute('role', 'alert');
+        errorBox.style.display = 'none'; // Initially hidden
+        errorBox.style.whiteSpace = 'pre-wrap';
+        errorBox.style.border = '1px solid #cc3333';
+        errorBox.style.background = '#fff5f5';
+        errorBox.style.color = '#222222';
+        errorBox.style.padding = '8px 12px';
+        errorBox.style.margin = '12px 0';
+        // Message and action nodes created here too and appended
+        const message = document.createElement('pre');
+        message.id = 'package-diagram-error-message';
+        message.style.whiteSpace = 'pre-wrap';
+        message.style.margin = '0 0 8px 0';
+
+        const action = document.createElement('button');
+        action.id = 'package-diagram-error-action';
+        action.type = 'button';
+        action.style.display = 'none';
+        action.textContent = '描画する';
+
+        errorBox.appendChild(message);
+        errorBox.appendChild(action);
+        diagram.parentNode.insertBefore(errorBox, diagram); // Insert into DOM
+        return errorBox;
+    },
+    getDiagramErrorMessageNode: () => document.getElementById('package-diagram-error-message'),
+    getDiagramErrorActionNode: () => document.getElementById('package-diagram-error-action'),
+    setNodeTextContent: (element, text) => { if (element) element.textContent = text; },
+    setNodeDisplay: (element, display) => { if (element) element.style.display = display; },
+    setNodeOnClick: (element, handler) => { if (element) element.onclick = handler; },
+    setDiagramElementDisplay: (diagram, display) => { if (diagram) diagram.style.display = display; },
+    setDiagramContent: (element, content) => { if (element) element.textContent = content; },
+    removeDiagramAttribute: (element, attribute) => { if (element) element.removeAttribute(attribute); },
+    getPackageDataScript: () => document.getElementById('package-data'),
+    getNodeTextContent: (element) => { return element ? element.textContent : ''; },
+};
+
+function getPackageSummaryData(context) {
+    if (context.packageSummaryCache) return context.packageSummaryCache;
+    const jsonText = dom.getNodeTextContent(dom.getPackageDataScript());
+    context.packageSummaryCache = parsePackageSummaryData(jsonText);
+    return context.packageSummaryCache;
 }
 
-function showDiagramErrorMessage(message, withAction, err, hash) {
-    const diagram = diagramElement;
-    if (!diagram) return;
-    console.error(message);
-    if (err) {
-        console.error(err);
-    }
-    if (hash) {
-        console.error('Mermaid error location:', hash.line, hash.loc);
-    }
-    const errorBox = getOrCreateDiagramErrorBox(diagram);
-    const messageNode = document.getElementById('package-diagram-error-message');
-    const actionNode = document.getElementById('package-diagram-error-action');
-    if (messageNode) messageNode.textContent = message;
-    if (actionNode) {
-        actionNode.style.display = withAction ? '' : 'none';
-        if (withAction) {
-            actionNode.onclick = function () {
-                if (!pendingDiagramRender) return;
-                renderDiagramSvg(pendingDiagramRender.text, pendingDiagramRender.maxEdges);
-                pendingDiagramRender = null;
-            };
-        } else {
-            actionNode.onclick = null;
-        }
-    }
-    errorBox.style.display = '';
-    diagram.style.display = 'none';
-}
-
-function hideDiagramErrorMessage(diagram) {
-    const errorBox = getOrCreateDiagramErrorBox(diagram);
-    const messageNode = document.getElementById('package-diagram-error-message');
-    const actionNode = document.getElementById('package-diagram-error-action');
-    if (messageNode) messageNode.textContent = '';
-    if (actionNode) {
-        actionNode.style.display = 'none';
-        actionNode.onclick = null;
-    }
-    errorBox.style.display = 'none';
-    diagram.style.display = '';
-}
-
-function renderDiagramSvg(text, maxEdges) {
-    const diagram = diagramElement;
-    if (!diagram || !window.mermaid) return;
-    hideDiagramErrorMessage(diagram);
-    diagram.removeAttribute('data-processed');
-    diagram.textContent = text;
-    mermaid.initialize({startOnLoad: false, securityLevel: 'loose', maxEdges: maxEdges});
-    mermaid.run({nodes: [diagram]});
-}
-
-function getPackageSummaryData() {
-    if (packageSummaryCache) return packageSummaryCache;
-    const jsonText = document.getElementById('package-data').textContent;
+function parsePackageSummaryData(jsonText) {
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>, causeRelationEvidence?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
-    packageSummaryCache = {
+    return {
         packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
         causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData.causeRelationEvidence ?? []),
     };
-    return packageSummaryCache;
 }
 
 function getPackageDepth(fqn) {
@@ -114,8 +97,8 @@ function getPackageDepth(fqn) {
     return fqn.split('.').length;
 }
 
-function getMaxPackageDepth() {
-    const {packages} = getPackageSummaryData();
+function getMaxPackageDepth(context) {
+    const {packages} = getPackageSummaryData(context);
     return packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
 }
 
@@ -177,7 +160,22 @@ function buildAggregationStatsForPackageFilter(packages, relations, packageFilte
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
-function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth) {
+function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth, aggregationDepth, relatedFilterMode) {
+    if (!rootFqn) {
+        return buildAggregationStats(packages, relations, maxDepth);
+    }
+    const aggregatedRoot = getAggregatedFqn(rootFqn, aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, relations, aggregationDepth, relatedFilterMode);
+    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth)));
+    const relatedRelations = relations.filter(relation => {
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
+        return relatedSet.has(from) && relatedSet.has(to);
+    });
+    return buildAggregationStats(relatedPackages, relatedRelations, maxDepth);
+}
+
+function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedFilterMode) {
     const withinPackageFilter = fqn => {
         if (!packageFilterFqn) return true;
         const prefix = `${packageFilterFqn}.`;
@@ -190,7 +188,7 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
 
     if (relatedFilterFqn) {
         const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
-        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations);
+        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedFilterMode);
         filteredPackages = filteredPackages.filter(item =>
             relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
         );
@@ -211,151 +209,64 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
-function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth) {
-    if (!rootFqn) {
-        return buildAggregationStats(packages, relations, maxDepth);
-    }
-    const aggregatedRoot = getAggregatedFqn(rootFqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, relations);
-    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth)));
-    const relatedRelations = relations.filter(relation => {
-        const from = getAggregatedFqn(relation.from, aggregationDepth);
-        const to = getAggregatedFqn(relation.to, aggregationDepth);
-        return relatedSet.has(from) && relatedSet.has(to);
-    });
-    return buildAggregationStats(relatedPackages, relatedRelations, maxDepth);
+function normalizePackageFilterValue(value) {
+    const trimmed = (value ?? '').trim();
+    return trimmed ? trimmed : null;
 }
 
-function renderPackageTable() {
-    const {packages, relations} = getPackageSummaryData();
-    const incomingCounts = new Map();
-    const outgoingCounts = new Map();
-    relations.forEach(relation => {
-        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
-        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
-    });
+function normalizeAggregationDepthValue(value) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+}
 
-    const tbody = document.querySelector('#package-table tbody');
-
-    const input = document.getElementById('package-filter-input');
-    const applyFilter = fqn => {
-        if (input) {
-            input.value = fqn;
-        }
-        packageFilterFqn = fqn;
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
-    };
-    const applyRelatedFilterForRow = fqn => {
-        applyRelatedFilter(fqn);
-    };
-
-    packages.forEach(item => {
-        const tr = document.createElement('tr');
-
-        const actionTd = document.createElement('td');
-        const actionButton = document.createElement('button');
-        actionButton.type = 'button';
-        actionButton.className = 'package-filter-icon';
-        actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
-        const actionText = document.createElement('span');
-        actionText.className = 'screen-reader-only';
-        actionText.textContent = '絞り込み';
-        actionButton.appendChild(actionText);
-        actionButton.addEventListener('click', () => applyFilter(item.fqn));
-        actionTd.appendChild(actionButton);
-        tr.appendChild(actionTd);
-
-        const relatedTd = document.createElement('td');
-        const relatedButton = document.createElement('button');
-        relatedButton.type = 'button';
-        relatedButton.className = 'related-icon';
-        relatedButton.setAttribute('aria-label', '関連のみ表示');
-        const relatedText = document.createElement('span');
-        relatedText.className = 'screen-reader-only';
-        relatedText.textContent = '関連のみ表示';
-        relatedButton.appendChild(relatedText);
-        relatedButton.addEventListener('click', () => applyRelatedFilterForRow(item.fqn));
-        relatedTd.appendChild(relatedButton);
-        tr.appendChild(relatedTd);
-
-        const fqnTd = document.createElement('td');
-        fqnTd.textContent = item.fqn;
-        fqnTd.className = 'fqn';
-        tr.appendChild(fqnTd);
-
-        const nameTd = document.createElement('td');
-        nameTd.textContent = item.name;
-        tr.appendChild(nameTd);
-
-        const classCountTd = document.createElement('td');
-        classCountTd.textContent = String(item.classCount);
-        classCountTd.className = 'number';
-        tr.appendChild(classCountTd);
-
-        const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(incomingCounts.get(item.fqn) ?? 0);
-        incomingCountTd.className = 'number';
-        tr.appendChild(incomingCountTd);
-
-        const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(outgoingCounts.get(item.fqn) ?? 0);
-        outgoingCountTd.className = 'number';
-        tr.appendChild(outgoingCountTd);
-
-        tbody.appendChild(tr);
+function findDefaultPackageFilterCandidate(packages) {
+    const domainRoots = packages
+        .map(item => item.fqn)
+        .map(fqn => {
+            const parts = fqn.split('.');
+            const domainIndex = parts.indexOf('domain');
+            if (domainIndex === -1) return null;
+            return parts.slice(0, domainIndex + 1).join('.');
+        })
+        .filter(Boolean);
+    if (domainRoots.length === 0) return null;
+    return domainRoots.reduce((best, current) => {
+        const bestDepth = best.split('.').length;
+        const currentDepth = current.split('.').length;
+        return currentDepth < bestDepth ? current : best;
     });
 }
 
-function applyPackageFilterToTable(packageFilterFqn) {
-    const rows = document.querySelectorAll('#package-table tbody tr');
+function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
     const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    rows.forEach(row => {
-        const fqnCell = row.querySelector('td.fqn');
-        const fqn = fqnCell ? fqnCell.textContent : '';
-        const visible = !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix);
-        row.classList.toggle('hidden', !visible);
-    });
+    return rowFqns.map(fqn =>
+        !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix)
+    );
 }
 
-function applyRelatedFilterToTable(fqn) {
-    const rows = document.querySelectorAll('#package-table tbody tr');
+function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, relatedFilterMode, relatedFilterFqn) {
     const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     const withinPackageFilter = rowFqn =>
         !packageFilterFqn || rowFqn === packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
 
-    if (!fqn) {
-        rows.forEach(row => {
-            const fqnCell = row.querySelector('td.fqn');
-            const rowFqn = fqnCell ? fqnCell.textContent : '';
-            row.classList.toggle('hidden', !withinPackageFilter(rowFqn));
-        });
-        return;
+    if (!relatedFilterFqn) {
+        return rowFqns.map(rowFqn => withinPackageFilter(rowFqn));
     }
-    const {relations} = getPackageSummaryData();
+
     const filteredRelations = packageFilterFqn
         ? relations.filter(relation =>
             withinPackageFilter(relation.from) && withinPackageFilter(relation.to)
         )
         : relations;
-    const aggregatedRoot = getAggregatedFqn(fqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations);
-    rows.forEach(row => {
-        const fqnCell = row.querySelector('td.fqn');
-        const rowFqn = fqnCell ? fqnCell.textContent : '';
+    const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedFilterMode);
+    return rowFqns.map(rowFqn => {
         const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
-        const visible = withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
-        row.classList.toggle('hidden', !visible);
+        return withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
     });
 }
 
-function renderRelatedFilterTarget() {
-    const target = document.getElementById('related-filter-target');
-    if (!target) return;
-    target.textContent = relatedFilterFqn ? relatedFilterFqn : '未選択';
-}
-
-function collectRelatedSet(root, relations) {
+function collectRelatedSet(root, relations, aggregationDepth, relatedFilterMode) {
     if (!root) return new Set();
     if (relatedFilterMode === 'direct') {
         const relatedSet = new Set([root]);
@@ -397,20 +308,277 @@ function collectRelatedSet(root, relations) {
     return relatedSet;
 }
 
-function renderDiagramAndTable() {
-    renderPackageDiagram(packageFilterFqn, relatedFilterFqn);
-    applyRelatedFilterToTable(relatedFilterFqn);
-    updateAggregationDepthOptions(getMaxPackageDepth());
+function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
+    const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
+    const withinPackageFilter = fqn =>
+        !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
+    const visiblePackages = packageFilterFqn
+        ? packages.filter(item => withinPackageFilter(item.fqn))
+        : packages;
+    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
+    const filteredRelations = packageFilterFqn
+        ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
+        : relations;
+    const filteredCauseRelationEvidence = packageFilterFqn
+        ? causeRelationEvidence.filter(relation => {
+            const fromPackage = getPackageFqnFromTypeFqn(relation.from);
+            const toPackage = getPackageFqnFromTypeFqn(relation.to);
+            return withinPackageFilter(fromPackage) && withinPackageFilter(toPackage);
+        })
+        : causeRelationEvidence;
+    const visibleRelations = filteredRelations
+        .map(relation => ({
+            from: getAggregatedFqn(relation.from, aggregationDepth),
+            to: getAggregatedFqn(relation.to, aggregationDepth),
+        }))
+        .filter(relation => relation.from !== relation.to);
+    const uniqueRelationMap = new Map();
+    visibleRelations.forEach(relation => {
+        uniqueRelationMap.set(`${relation.from}::${relation.to}`, relation);
+    });
+    let uniqueRelations = Array.from(uniqueRelationMap.values());
+
+    if (transitiveReductionEnabled) {
+        uniqueRelations = transitiveReduction(uniqueRelations);
+    }
+
+    return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
 }
 
-function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
-    const container = document.getElementById('mutual-dependency-list');
-    if (!container) return;
-    if (!mutualPairs || mutualPairs.size === 0) {
-        container.style.display = 'none';
-        container.innerHTML = '';
-        return;
+function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedFilterMode) {
+    const nextVisibleSet = new Set(visibleSet);
+    let nextRelations = uniqueRelations;
+    if (aggregatedRoot) {
+        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, aggregationDepth, relatedFilterMode);
+        if (relatedFilterMode === 'direct') {
+            nextRelations = uniqueRelations.filter(relation =>
+                relation.from === aggregatedRoot || relation.to === aggregatedRoot
+            );
+        } else {
+            nextRelations = uniqueRelations.filter(relation =>
+                relatedSet.has(relation.from) && relatedSet.has(relation.to)
+            );
+        }
+        nextVisibleSet.clear();
+        relatedSet.forEach(value => nextVisibleSet.add(value));
     }
+    nextRelations.forEach(relation => {
+        nextVisibleSet.add(relation.from);
+        nextVisibleSet.add(relation.to);
+    });
+    return {uniqueRelations: nextRelations, visibleSet: nextVisibleSet};
+}
+
+function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
+    const base = buildVisibleDiagramRelations(
+        packages,
+        relations,
+        causeRelationEvidence,
+        packageFilterFqn,
+        aggregationDepth,
+        transitiveReductionEnabled
+    );
+    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
+    const {uniqueRelations, visibleSet} = filterRelatedDiagramRelations(
+        base.uniqueRelations,
+        base.visibleSet,
+        aggregatedRoot,
+        aggregationDepth,
+        relatedFilterMode
+    );
+    return {
+        uniqueRelations,
+        visibleSet,
+        filteredCauseRelationEvidence: base.filteredCauseRelationEvidence,
+    };
+}
+
+function buildPackageTableRowData(packages, relations) {
+    const incomingCounts = new Map();
+    const outgoingCounts = new Map();
+    relations.forEach(relation => {
+        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
+        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
+    });
+    return packages.map(item => ({
+        ...item,
+        incomingCount: incomingCounts.get(item.fqn) ?? 0,
+        outgoingCount: outgoingCounts.get(item.fqn) ?? 0,
+    }));
+}
+
+function buildPackageTableRowSpecs(rows) {
+    return rows.map(item => ({
+        fqn: item.fqn,
+        name: item.name,
+        classCount: item.classCount,
+        incomingCount: item.incomingCount ?? 0,
+        outgoingCount: item.outgoingCount ?? 0,
+    }));
+}
+
+function buildPackageTableActionSpecs() {
+    return {
+        filter: {
+            ariaLabel: 'このパッケージで絞り込み',
+            screenReaderText: '絞り込み',
+        },
+        related: {
+            ariaLabel: '関連のみ表示',
+            screenReaderText: '関連のみ表示',
+        },
+    };
+}
+
+function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow) {
+    const tr = document.createElement('tr');
+    const actionSpecs = buildPackageTableActionSpecs();
+
+    const actionTd = document.createElement('td');
+    const actionButton = document.createElement('button');
+    actionButton.type = 'button';
+    actionButton.className = 'package-filter-icon';
+    actionButton.setAttribute('aria-label', actionSpecs.filter.ariaLabel);
+    const actionText = document.createElement('span');
+    actionText.className = 'screen-reader-only';
+    actionText.textContent = actionSpecs.filter.screenReaderText;
+    actionButton.appendChild(actionText);
+    actionButton.addEventListener('click', () => applyFilter(spec.fqn));
+    actionTd.appendChild(actionButton);
+    tr.appendChild(actionTd);
+
+    const relatedTd = document.createElement('td');
+    const relatedButton = document.createElement('button');
+    relatedButton.type = 'button';
+    relatedButton.className = 'related-icon';
+    relatedButton.setAttribute('aria-label', actionSpecs.related.ariaLabel);
+    const relatedText = document.createElement('span');
+    relatedText.className = 'screen-reader-only';
+    relatedText.textContent = actionSpecs.related.screenReaderText;
+    relatedButton.appendChild(relatedText);
+    relatedButton.addEventListener('click', () => applyRelatedFilterForRow(spec.fqn));
+    relatedTd.appendChild(relatedButton);
+    tr.appendChild(relatedTd);
+
+    const fqnTd = document.createElement('td');
+    fqnTd.textContent = spec.fqn;
+    fqnTd.className = 'fqn';
+    tr.appendChild(fqnTd);
+
+    const nameTd = document.createElement('td');
+    nameTd.textContent = spec.name;
+    tr.appendChild(nameTd);
+
+    const classCountTd = document.createElement('td');
+    classCountTd.textContent = String(spec.classCount);
+    classCountTd.className = 'number';
+    tr.appendChild(classCountTd);
+
+    const incomingCountTd = document.createElement('td');
+    incomingCountTd.textContent = String(spec.incomingCount ?? 0);
+    incomingCountTd.className = 'number';
+    tr.appendChild(incomingCountTd);
+
+    const outgoingCountTd = document.createElement('td');
+    outgoingCountTd.textContent = String(spec.outgoingCount ?? 0);
+    outgoingCountTd.className = 'number';
+    tr.appendChild(outgoingCountTd);
+
+    return tr;
+}
+
+function renderPackageTable(context) {
+    const {packages, relations} = getPackageSummaryData(context);
+    const rows = buildPackageTableRowData(packages, relations);
+    const rowSpecs = buildPackageTableRowSpecs(rows);
+
+    const tbody = dom.getPackageTableBody();
+
+    const input = dom.getPackageFilterInput();
+    const applyFilter = fqn => {
+        if (input) {
+            input.value = fqn;
+        }
+        context.packageFilterFqn = fqn;
+        renderDiagramAndTable(context);
+        renderRelatedFilterLabel(context);
+    };
+    const applyRelatedFilterForRow = fqn => {
+        setRelatedFilterAndRender(fqn, context);
+    };
+
+    rowSpecs.forEach(spec => {
+        const tr = buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow);
+        tbody.appendChild(tr);
+    });
+}
+
+function filterPackageTableRows(packageFilterFqn) {
+    const rows = dom.getPackageTableRows();
+    const rowFqns = Array.from(rows, row => {
+        const fqnCell = row.querySelector('td.fqn');
+        return fqnCell ? fqnCell.textContent : '';
+    });
+    const visibility = buildPackageRowVisibility(rowFqns, packageFilterFqn);
+    rows.forEach((row, index) => {
+        row.classList.toggle('hidden', !visibility[index]);
+    });
+}
+
+function filterRelatedTableRows(fqn, context) {
+    const rows = dom.getPackageTableRows();
+    const {relations} = getPackageSummaryData(context);
+    const rowFqns = Array.from(rows, row => {
+        const fqnCell = row.querySelector('td.fqn');
+        return fqnCell ? fqnCell.textContent : '';
+    });
+    const visibility = buildRelatedRowVisibility(
+        rowFqns,
+        relations,
+        context.packageFilterFqn,
+        context.aggregationDepth,
+        context.relatedFilterMode,
+        fqn
+    );
+    rows.forEach((row, index) => {
+        row.classList.toggle('hidden', !visibility[index]);
+    });
+}
+
+function renderRelatedFilterLabel(context) {
+    const target = dom.getRelatedFilterTarget();
+    dom.setRelatedFilterTargetText(target, context.relatedFilterFqn ? context.relatedFilterFqn : '未選択');
+}
+
+function setRelatedFilterAndRender(fqn, context) {
+    context.relatedFilterFqn = fqn;
+    renderDiagramAndTable(context);
+    renderRelatedFilterLabel(context);
+}
+
+function registerDiagramClickHandler(context, applyRelatedFilter = setRelatedFilterAndRender) {
+    if (typeof window === 'undefined') return;
+    window[DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+        const fqn = context.diagramNodeIdToFqn.get(nodeId);
+        if (!fqn) return;
+        applyRelatedFilter(fqn, context);
+    };
+}
+
+function applyDefaultPackageFilterIfPresent(context) {
+    const input = dom.getPackageFilterInput();
+    if (!input || input.value.trim()) return false;
+    const {packages} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(packages);
+    if (!candidate) return false;
+    input.value = candidate;
+    context.packageFilterFqn = candidate;
+    renderDiagramAndTable(context);
+    return true;
+}
+
+function buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth) {
+    if (!mutualPairs || mutualPairs.size === 0) return [];
     const relationMap = new Map();
     causeRelationEvidence.forEach(relation => {
         const fromPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.from), aggregationDepth);
@@ -422,32 +590,15 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
         }
         relationMap.get(key).add(`${relation.from} -> ${relation.to}`);
     });
-
-    container.style.display = '';
-    const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    summary.textContent = '相互依存と原因';
-    const list = document.createElement('ul');
-    Array.from(mutualPairs).sort().forEach(key => {
+    return Array.from(mutualPairs).sort().map(key => {
         const parts = key.split('::');
         const pairLabel = `${parts[0]} <-> ${parts[1]}`;
-        const item = document.createElement('li');
-        const pair = document.createElement('div');
-        pair.className = 'pair';
-        pair.textContent = pairLabel;
-        item.appendChild(pair);
         const causes = relationMap.get(key);
-        if (causes && causes.size > 0) {
-            const detailBody = document.createElement('pre');
-            detailBody.textContent = Array.from(causes).sort().join('\n');
-            item.appendChild(detailBody);
-        }
-        list.appendChild(item);
+        return {
+            pairLabel,
+            causes: causes ? Array.from(causes).sort() : [],
+        };
     });
-    container.innerHTML = '';
-    details.appendChild(summary);
-    details.appendChild(list);
-    container.appendChild(details);
 }
 
 function detectStronglyConnectedComponents(graph) {
@@ -545,100 +696,83 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
-function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
-    const diagram = document.getElementById('package-relation-diagram');
-    if (!diagram) return;
-    diagramElement = diagram;
-
-    const {packages, relations, causeRelationEvidence} = getPackageSummaryData();
-    const escapeMermaidText = text => text.replace(/"/g, '\\"');
-    const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const lines = [`graph ${diagramDirection}`];
-    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
-    const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    const withinPackageFilter = fqn =>
-        !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
-    const visiblePackages = packageFilterFqn
-        ? packages.filter(item => withinPackageFilter(item.fqn))
-        : packages;
-    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
-    const filteredRelations = packageFilterFqn
-        ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
-        : relations;
-    const filteredCauseRelationEvidence = packageFilterFqn
-        ? causeRelationEvidence.filter(relation => {
-            const fromPackage = getPackageFqnFromTypeFqn(relation.from);
-            const toPackage = getPackageFqnFromTypeFqn(relation.to);
-            return withinPackageFilter(fromPackage) && withinPackageFilter(toPackage);
-        })
-        : causeRelationEvidence;
-    const visibleRelations = filteredRelations
-        .map(relation => ({
-            from: getAggregatedFqn(relation.from, aggregationDepth),
-            to: getAggregatedFqn(relation.to, aggregationDepth),
-        }))
-        .filter(relation => relation.from !== relation.to);
-    const uniqueRelationMap = new Map();
-    visibleRelations.forEach(relation => {
-        uniqueRelationMap.set(`${relation.from}::${relation.to}`, relation);
-    });
-    let uniqueRelations = Array.from(uniqueRelationMap.values());
-
-    if (transitiveReductionEnabled) {
-        uniqueRelations = transitiveReduction(uniqueRelations);
-    }
-
-    if (aggregatedRoot) {
-        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations);
-        if (relatedFilterMode === 'direct') {
-            uniqueRelations = uniqueRelations.filter(relation =>
-                relation.from === aggregatedRoot || relation.to === aggregatedRoot
-            );
-        } else {
-            uniqueRelations = uniqueRelations.filter(relation =>
-                relatedSet.has(relation.from) && relatedSet.has(relation.to)
-            );
+function buildMutualDependencyPairs(relations) {
+    const relationKey = (from, to) => `${from}::${to}`;
+    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
+    const relationSet = new Set(relations.map(relation => relationKey(relation.from, relation.to)));
+    const mutualPairs = new Set();
+    relations.forEach(relation => {
+        if (relationSet.has(relationKey(relation.to, relation.from))) {
+            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
         }
-        visibleSet.clear();
-        relatedSet.forEach(value => visibleSet.add(value));
-    }
-    uniqueRelations.forEach(relation => {
-        visibleSet.add(relation.from);
-        visibleSet.add(relation.to);
     });
+    return mutualPairs;
+}
 
+function buildParentFqns(visibleSet) {
+    const parentFqns = new Set();
+    Array.from(visibleSet).sort().forEach(fqn => {
+        const parts = fqn.split('.');
+        for (let i = 1; i < parts.length; i += 1) {
+            const prefix = parts.slice(0, i).join('.');
+            if (visibleSet.has(prefix)) parentFqns.add(prefix);
+        }
+    });
+    return parentFqns;
+}
+
+function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection) {
+    const escapeMermaidText = text => text.replace(/"/g, '\\"');
+    const lines = [`graph ${diagramDirection}`];
+    const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
+    const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
+    const {nodeLines, hasParentStyle} = buildDiagramNodeLines(
+        visibleSet,
+        nodeIdByFqn,
+        nodeIdToFqn,
+        nodeLabelById,
+        escapeMermaidText
+    );
+
+    nodeLines.forEach(line => lines.push(line));
+    if (hasParentStyle) {
+        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
+    }
+    edgeLines.forEach(line => lines.push(line));
+    linkStyles.forEach(styleLine => lines.push(styleLine));
+
+    return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+}
+
+function buildDiagramNodeMaps(visibleSet, nameByFqn) {
     const nodeIdByFqn = new Map();
-    diagramNodeIdToFqn = new Map();
+    const nodeIdToFqn = new Map();
     const nodeLabelById = new Map();
     let nodeIndex = 0;
     const ensureNodeId = fqn => {
         if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
         const nodeId = `P${nodeIndex++}`;
         nodeIdByFqn.set(fqn, nodeId);
-        diagramNodeIdToFqn.set(nodeId, fqn);
+        nodeIdToFqn.set(nodeId, fqn);
         const label = nameByFqn.get(fqn) || fqn;
         nodeLabelById.set(nodeId, label);
         return nodeId;
     };
-
     Array.from(visibleSet).sort().forEach(ensureNodeId);
-    const relationKey = (from, to) => `${from}::${to}`;
-    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
-    const relationSet = new Set(uniqueRelations.map(relation => relationKey(relation.from, relation.to)));
-    const mutualPairs = new Set();
-    uniqueRelations.forEach(relation => {
-        if (relationSet.has(relationKey(relation.to, relation.from))) {
-            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
-        }
-    });
+    return {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId};
+}
 
+function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
+    const mutualPairs = buildMutualDependencyPairs(uniqueRelations);
     const linkStyles = [];
     let linkIndex = 0;
     const edgeLines = [];
     uniqueRelations.forEach(relation => {
         const fromId = ensureNodeId(relation.from);
         const toId = ensureNodeId(relation.to);
-        const pairKey = canonicalPairKey(relation.from, relation.to);
+        const pairKey = relation.from < relation.to
+            ? `${relation.from}::${relation.to}`
+            : `${relation.to}::${relation.from}`;
         if (mutualPairs.has(pairKey)) {
             if (relation.from > relation.to) {
                 return;
@@ -651,35 +785,43 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         edgeLines.push(`${fromId} --> ${toId}`);
         linkIndex += 1;
     });
+    return {edgeLines, linkStyles, mutualPairs};
+}
 
+function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText) {
     const visibleFqns = Array.from(visibleSet).sort();
-    const parentFqns = new Set();
-    visibleFqns.forEach(fqn => {
-        const parts = fqn.split('.');
-        for (let i = 1; i < parts.length; i += 1) {
-            const prefix = parts.slice(0, i).join('.');
-            if (visibleSet.has(prefix)) parentFqns.add(prefix);
-        }
-    });
-
-    const addNodeLines = (nodeId, parentSubgraphFqn) => {
-        const fqn = diagramNodeIdToFqn.get(nodeId);
-        let displayLabel = nodeLabelById.get(nodeId);
-
-        if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
-            displayLabel = fqn.substring(parentSubgraphFqn.length + 1);
-        }
+    const parentFqns = buildParentFqns(visibleSet);
+    const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+    const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
+        const fqn = nodeIdToFqn.get(nodeId);
+        const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
         lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
-        const tooltip = fqn ? escapeMermaidText(fqn) : '';
-        lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
+        const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
+        lines.push(`click ${nodeId} ${DIAGRAM_CLICK_HANDLER_NAME} "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
             lines.push(`class ${nodeId} parentPackage`);
         }
     };
+    const nodeLines = buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText);
 
+    return {nodeLines, hasParentStyle: parentFqns.size > 0};
+}
+
+function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {
+    if (!fqn) return displayLabel ?? '';
+    if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
+        return fqn.substring(parentSubgraphFqn.length + 1);
+    }
+    return displayLabel ?? '';
+}
+
+function buildDiagramNodeTooltip(fqn) {
+    return fqn ?? '';
+}
+
+function buildDiagramGroupTree(visibleFqns, nodeIdByFqn) {
     const prefixDepth = getCommonPrefixDepth(visibleFqns);
     const baseDepth = Math.max(prefixDepth - 1, 0);
-    let groupIndex = 0;
     const createGroupNode = key => ({key, children: new Map(), nodes: []});
     const rootGroup = createGroupNode('');
     visibleFqns.forEach(fqn => {
@@ -695,8 +837,14 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         }
         current.nodes.push(nodeIdByFqn.get(fqn));
     });
+    return rootGroup;
+}
+
+function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText) {
+    const lines = [];
+    let groupIndex = 0;
     const renderGroup = (group, isRoot, parentSubgraphFqnForNodes) => {
-        group.nodes.forEach(nodeId => addNodeLines(nodeId, parentSubgraphFqnForNodes));
+        group.nodes.forEach(nodeId => addNodeLines(lines, nodeId, parentSubgraphFqnForNodes));
         const childKeys = Array.from(group.children.keys()).sort();
         if (isRoot && group.nodes.length === 0 && childKeys.length === 1) {
             renderGroup(group.children.get(childKeys[0]), false, parentSubgraphFqnForNodes);
@@ -716,28 +864,137 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         });
     };
     renderGroup(rootGroup, true, rootGroup.key);
-    if (parentFqns.size > 0) {
-        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
+    return lines;
+}
+
+function getOrCreateDiagramErrorBox(diagram) {
+    let errorBox = dom.getDiagramErrorBox();
+    if (errorBox) return errorBox;
+    return dom.createDiagramErrorBox(diagram);
+}
+
+function showDiagramErrorMessage(message, withAction, err, hash, context) {
+    const diagram = context.diagramElement;
+    if (!diagram) return;
+    console.error(message);
+    if (err) {
+        console.error(err);
+    }
+    if (hash) {
+        console.error('Mermaid error location:', hash.line, hash.loc);
+    }
+    const errorBox = getOrCreateDiagramErrorBox(diagram);
+    const messageNode = dom.getDiagramErrorMessageNode();
+    const actionNode = dom.getDiagramErrorActionNode();
+    dom.setNodeTextContent(messageNode, message);
+    if (actionNode) {
+        dom.setNodeDisplay(actionNode, withAction ? '' : 'none');
+        if (withAction) {
+            dom.setNodeOnClick(actionNode, function () {
+                if (!context.pendingDiagramRender) return;
+                renderDiagramWithMermaid(context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges, context);
+                context.pendingDiagramRender = null;
+            });
+        } else {
+            dom.setNodeOnClick(actionNode, null);
+        }
+    }
+    dom.setNodeDisplay(errorBox, '');
+    dom.setDiagramElementDisplay(diagram, 'none');
+}
+
+function hideDiagramErrorMessage(diagram) {
+    const errorBox = getOrCreateDiagramErrorBox(diagram);
+    const messageNode = dom.getDiagramErrorMessageNode();
+    const actionNode = dom.getDiagramErrorActionNode();
+    dom.setNodeTextContent(messageNode, '');
+    dom.setNodeDisplay(actionNode, 'none');
+    dom.setNodeOnClick(actionNode, null);
+    dom.setNodeDisplay(errorBox, 'none');
+    dom.setDiagramElementDisplay(diagram, '');
+}
+
+function renderDiagramWithMermaid(text, maxEdges, context) {
+    const diagram = context.diagramElement;
+    if (!diagram || !window.mermaid) return;
+    hideDiagramErrorMessage(diagram);
+    dom.removeDiagramAttribute(diagram, 'data-processed');
+    dom.setDiagramContent(diagram, text);
+    mermaid.initialize({startOnLoad: false, securityLevel: 'loose', maxEdges: maxEdges});
+    mermaid.run({nodes: [diagram]});
+}
+
+function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context) {
+    const container = dom.getMutualDependencyList();
+    if (!container) return;
+    const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, context.aggregationDepth);
+    if (items.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
     }
 
-    edgeLines.forEach(line => lines.push(line));
-    linkStyles.forEach(styleLine => lines.push(styleLine));
-    renderMutualDependencyList(mutualPairs, filteredCauseRelationEvidence);
+    container.style.display = '';
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = '相互依存と原因';
+    const list = document.createElement('ul');
+    items.forEach(item => {
+        const itemNode = document.createElement('li');
+        const pair = document.createElement('div');
+        pair.className = 'pair';
+        pair.textContent = item.pairLabel;
+        itemNode.appendChild(pair);
+        if (item.causes.length > 0) {
+            const detailBody = document.createElement('pre');
+            detailBody.textContent = item.causes.join('\n');
+            itemNode.appendChild(detailBody);
+        }
+        list.appendChild(itemNode);
+    });
+    container.innerHTML = '';
+    details.appendChild(summary);
+    details.appendChild(list);
+    container.appendChild(details);
+}
 
-    lastDiagramSource = lines.join('\n');
-    lastDiagramEdgeCount = uniqueRelations.length;
-    if (lastDiagramEdgeCount > DEFAULT_MAX_EDGES) {
-        pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
+function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
+    const diagram = dom.getDiagram();
+    if (!diagram) return;
+    context.diagramElement = diagram;
+
+    const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
+
+    const {
+        uniqueRelations,
+        visibleSet,
+        filteredCauseRelationEvidence
+    } = buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, context.aggregationDepth, context.relatedFilterMode, context.transitiveReductionEnabled);
+
+    const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
+    const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
+        visibleSet,
+        uniqueRelations,
+        nameByFqn,
+        context.diagramDirection
+    );
+    context.diagramNodeIdToFqn = nodeIdToFqn;
+    renderMutualDependencyList(mutualPairs, filteredCauseRelationEvidence, context);
+
+    context.lastDiagramSource = source;
+    context.lastDiagramEdgeCount = uniqueRelations.length;
+    if (context.lastDiagramEdgeCount > context.DEFAULT_MAX_EDGES) {
+        context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
         const message = [
             '関連数が多すぎるため描画を省略しました。',
-            `エッジ数: ${lastDiagramEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+            `エッジ数: ${context.lastDiagramEdgeCount}（上限: ${context.DEFAULT_MAX_EDGES}）`,
             '描画する場合はボタンを押してください。',
         ].join('\n');
-        showDiagramErrorMessage(message, true);
+        showDiagramErrorMessage(message, true, null, null, context);
         return;
     }
     diagram.removeAttribute('data-processed');
-    diagram.textContent = lastDiagramSource;
+    diagram.textContent = context.lastDiagramSource;
     if (window.mermaid) {
         if (!mermaid.parseError) {
             mermaid.parseError = function (err, hash) {
@@ -745,47 +1002,37 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
                 const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
                 const isEdgeLimit = message.includes('Edge limit exceeded');
                 if (isEdgeLimit) {
-                    pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
+                    context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
                 }
-                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash);
+                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash, context);
             };
         }
-        renderDiagramSvg(lastDiagramSource, DEFAULT_MAX_EDGES);
+        renderDiagramWithMermaid(context.lastDiagramSource, context.DEFAULT_MAX_EDGES, context);
     }
 }
 
-function applyRelatedFilter(fqn) {
-    relatedFilterFqn = fqn;
-    renderDiagramAndTable();
-    renderRelatedFilterTarget();
+function renderDiagramAndTable(context) {
+    renderPackageDiagram(context, context.packageFilterFqn, context.relatedFilterFqn);
+    filterRelatedTableRows(context.relatedFilterFqn, context);
+    renderAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
 }
 
-if (typeof window !== 'undefined') {
-    window.filterPackageDiagram = function (nodeId) {
-        const fqn = diagramNodeIdToFqn.get(nodeId);
-        if (!fqn) return;
-        applyRelatedFilter(fqn);
-    };
-}
-
-function setupPackageFilterControls() {
-    const input = document.getElementById('package-filter-input');
-    const applyButton = document.getElementById('apply-package-filter');
-    const clearPackageButton = document.getElementById('clear-package-filter');
-    const depthSelect = document.getElementById('package-depth-select');
+function setupPackageFilterControl(context) {
+    const input = dom.getPackageFilterInput();
+    const applyButton = dom.getApplyPackageFilterButton();
+    const clearPackageButton = dom.getClearPackageFilterButton();
     if (!input || !applyButton || !clearPackageButton) return;
 
     const applyFilter = () => {
-        const value = input.value.trim();
-        packageFilterFqn = value || null;
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
+        context.packageFilterFqn = normalizePackageFilterValue(input.value);
+        renderDiagramAndTable(context);
+        renderRelatedFilterLabel(context);
     };
     const clearPackageFilter = () => {
         input.value = '';
-        packageFilterFqn = null;
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
+        context.packageFilterFqn = null;
+        renderDiagramAndTable(context);
+        renderRelatedFilterLabel(context);
     };
 
     applyButton.addEventListener('click', applyFilter);
@@ -798,126 +1045,117 @@ function setupPackageFilterControls() {
     });
 }
 
-function setupAggregationDepthControl() {
-    const select = document.getElementById('package-depth-select');
+function setupAggregationDepthControl(context) {
+    const select = dom.getDepthSelect();
     if (!select) return;
-    const {packages} = getPackageSummaryData();
+    const {packages} = getPackageSummaryData(context);
     const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
-    updateAggregationDepthOptions(maxDepth);
-    select.value = String(aggregationDepth);
+    renderAggregationDepthSelectOptions(maxDepth, context);
+    select.value = String(context.aggregationDepth);
     select.addEventListener('change', () => {
-        aggregationDepth = Number(select.value);
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
-        updateAggregationDepthOptions(maxDepth);
+        context.aggregationDepth = normalizeAggregationDepthValue(select.value);
+        renderDiagramAndTable(context);
+        renderRelatedFilterLabel(context);
+        renderAggregationDepthSelectOptions(maxDepth, context);
     });
 }
 
-function updateAggregationDepthOptions(maxDepth) {
-    const select = document.getElementById('package-depth-select');
+function renderAggregationDepthSelectOptions(maxDepth, context) {
+    const select = dom.getDepthSelect();
     if (!select) return;
-    const {packages, relations} = getPackageSummaryData();
-    let aggregationStats;
-    aggregationStats = buildAggregationStatsForFilters(
+    const {packages, relations} = getPackageSummaryData(context);
+    const aggregationStats = buildAggregationStatsForFilters(
         packages,
         relations,
-        packageFilterFqn,
-        relatedFilterFqn,
-        maxDepth
+        context.packageFilterFqn,
+        context.relatedFilterFqn,
+        maxDepth,
+        context.aggregationDepth,
+        context.relatedFilterMode
     );
-    select.innerHTML = '';
-    const noAggregationOption = document.createElement('option');
-    noAggregationOption.value = '0';
+    const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
+    renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
+}
+
+function buildAggregationDepthOptions(aggregationStats, maxDepth) {
+    const options = [];
     const noAggregationStats = aggregationStats.get(0);
-    noAggregationOption.textContent = `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`;
-    select.appendChild(noAggregationOption);
+    options.push({
+        value: '0',
+        text: `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`,
+    });
     for (let depth = 1; depth <= maxDepth; depth += 1) {
-        const option = document.createElement('option');
-        option.value = String(depth);
         const stats = aggregationStats.get(depth);
         if (!stats || stats.relationCount === 0) {
             continue;
         }
-        option.textContent = `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`;
-        select.appendChild(option);
+        options.push({
+            value: String(depth),
+            text: `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`,
+        });
     }
+    return options;
+}
+
+function renderAggregationDepthOptionsIntoSelect(select, options, aggregationDepth, maxDepth) {
+    select.innerHTML = '';
+    options.forEach(option => {
+        const node = document.createElement('option');
+        node.value = option.value;
+        node.textContent = option.text;
+        select.appendChild(node);
+    });
     const value = Math.min(aggregationDepth, maxDepth);
     select.value = String(value);
 }
 
-function applyDefaultPackageFilterIfPresent() {
-    const input = document.getElementById('package-filter-input');
-    if (!input || input.value.trim()) return false;
-    const {packages} = getPackageSummaryData();
-    const domainRoots = packages
-        .map(item => item.fqn)
-        .map(fqn => {
-            const parts = fqn.split('.');
-            const domainIndex = parts.indexOf('domain');
-            if (domainIndex === -1) return null;
-            return parts.slice(0, domainIndex + 1).join('.');
-        })
-        .filter(Boolean);
-    if (domainRoots.length === 0) return false;
-    const candidate = domainRoots.reduce((best, current) => {
-        const bestDepth = best.split('.').length;
-        const currentDepth = current.split('.').length;
-        return currentDepth < bestDepth ? current : best;
-    });
-    if (!candidate) return false;
-    input.value = candidate;
-    packageFilterFqn = candidate;
-    renderDiagramAndTable();
-    return true;
-}
-
-function setupRelatedFilterControls() {
-    const select = document.getElementById('related-mode-select');
-    const clearButton = document.getElementById('clear-related-filter');
+function setupRelatedFilterControl(context) {
+    const select = dom.getRelatedModeSelect();
+    const clearButton = dom.getClearRelatedFilterButton();
     if (!select) return;
-    select.value = relatedFilterMode;
+    select.value = context.relatedFilterMode;
     select.addEventListener('change', () => {
-        relatedFilterMode = select.value;
-        if (relatedFilterFqn) {
-            renderDiagramAndTable();
+        context.relatedFilterMode = select.value;
+        if (context.relatedFilterFqn) {
+            renderDiagramAndTable(context);
         }
     });
     if (clearButton) {
         clearButton.addEventListener('click', () => {
-            relatedFilterFqn = null;
-            packageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
-            renderDiagramAndTable();
-            renderRelatedFilterTarget();
+            context.relatedFilterFqn = null;
+            context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
+            renderDiagramAndTable(context);
+            renderRelatedFilterLabel(context);
         });
     }
 }
 
-function setupDiagramDirectionControls() {
-    const radios = document.querySelectorAll('input[name="diagram-direction"]');
+function setupDiagramDirectionControl(context) {
+    const radios = dom.getDiagramDirectionRadios();
     radios.forEach(radio => {
-        if (radio.value === diagramDirection) {
+        if (radio.value === context.diagramDirection) {
             radio.checked = true;
         }
         radio.addEventListener('change', () => {
             if (!radio.checked) return;
-            diagramDirection = radio.value;
-            renderDiagramAndTable();
+            context.diagramDirection = radio.value;
+            renderDiagramAndTable(context);
         });
     });
 }
 
-function setupTransitiveReductionControl() {
-    const container = document.querySelector('input[name="diagram-direction"]')?.parentNode?.parentNode;
+function setupTransitiveReductionControl(context) {
+    const container = dom.getDiagramDirectionRadio()?.parentNode?.parentNode;
     if (!container) return;
 
     const controlContainer = document.createElement('div');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = 'transitive-reduction-toggle';
-    checkbox.checked = transitiveReductionEnabled;
+    checkbox.checked = context.transitiveReductionEnabled;
     checkbox.addEventListener('change', () => {
-        transitiveReductionEnabled = checkbox.checked;
-        renderDiagramAndTable();
+        context.transitiveReductionEnabled = checkbox.checked;
+        renderDiagramAndTable(context);
     });
 
     const label = document.createElement('label');
@@ -932,88 +1170,91 @@ function setupTransitiveReductionControl() {
 
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
-        if (!document.body.classList.contains("package-list")) return;
+        const body = dom.getDocumentBody();
+        if (!body || !body.classList.contains("package-list")) return;
         setupSortableTables();
-        renderPackageTable();
-        setupPackageFilterControls();
-        setupAggregationDepthControl();
-        setupRelatedFilterControls();
-        setupDiagramDirectionControls();
-        setupTransitiveReductionControl();
-        const applied = applyDefaultPackageFilterIfPresent();
+        renderPackageTable(packageContext);
+        setupPackageFilterControl(packageContext);
+        setupAggregationDepthControl(packageContext);
+        setupRelatedFilterControl(packageContext);
+        setupDiagramDirectionControl(packageContext);
+        setupTransitiveReductionControl(packageContext);
+        registerDiagramClickHandler(packageContext);
+        const applied = applyDefaultPackageFilterIfPresent(packageContext);
         if (!applied) {
-            renderDiagramAndTable();
+            renderDiagramAndTable(packageContext);
         }
-        renderRelatedFilterTarget();
+        renderRelatedFilterLabel(packageContext);
     });
 }
 
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        setAggregationDepth(value) {
-            aggregationDepth = value;
-        },
-        setPackageFilterFqn(value) {
-            packageFilterFqn = value;
-        },
-        setRelatedFilterMode(value) {
-            relatedFilterMode = value;
-        },
-        setRelatedFilterFqn(value) {
-            relatedFilterFqn = value;
-        },
-        setDiagramDirection(value) {
-            diagramDirection = value;
-        },
-        setTransitiveReductionEnabled(value) {
-            transitiveReductionEnabled = value;
-        },
-        setDiagramElement(value) {
-            diagramElement = value;
-        },
-        getPackageFilterFqn() {
-            return packageFilterFqn;
-        },
-        getRelatedFilterFqn() {
-            return relatedFilterFqn;
-        },
-        getDiagramDirection() {
-            return diagramDirection;
-        },
-        resetPackageSummaryCache() {
-            packageSummaryCache = null;
-        },
-        getAggregatedFqn,
-        collectRelatedSet,
+        // public
+        packageContext,
+        DIAGRAM_CLICK_HANDLER_NAME,
+        dom,
+
+        // private
         getPackageSummaryData,
+        parsePackageSummaryData,
         getPackageDepth,
         getMaxPackageDepth,
+        getAggregatedFqn,
         getCommonPrefixDepth,
+        getPackageFqnFromTypeFqn,
         buildAggregationStats,
-        buildAggregationStatsForFilters,
         buildAggregationStatsForPackageFilter,
         buildAggregationStatsForRelated,
+        buildAggregationStatsForFilters,
+        normalizePackageFilterValue,
+        normalizeAggregationDepthValue,
+        findDefaultPackageFilterCandidate,
+        buildPackageRowVisibility,
+        buildRelatedRowVisibility,
+        collectRelatedSet,
+        buildVisibleDiagramRelations,
+        filterRelatedDiagramRelations,
+        buildVisibleDiagramElements,
+        buildPackageTableRowData,
+        buildPackageTableRowSpecs,
+        buildPackageTableActionSpecs,
+        buildPackageTableRowElement,
+        renderPackageTable,
+        filterPackageTableRows,
+        filterRelatedTableRows,
+        renderRelatedFilterLabel,
+        setRelatedFilterAndRender,
+        applyDefaultPackageFilterIfPresent,
+        buildMutualDependencyItems,
+        detectStronglyConnectedComponents,
+        transitiveReduction,
+        buildMutualDependencyPairs,
+        buildParentFqns,
+        buildMermaidDiagramSource,
+        buildDiagramNodeMaps,
+        buildDiagramEdgeLines,
+        buildDiagramNodeLines,
+        buildDiagramNodeLabel,
+        buildDiagramNodeTooltip,
+        buildDiagramGroupTree,
+        buildSubgraphLines,
         getOrCreateDiagramErrorBox,
         showDiagramErrorMessage,
         hideDiagramErrorMessage,
-        renderDiagramSvg,
-        renderPackageTable,
-        applyPackageFilterToTable,
-        applyRelatedFilterToTable,
-        renderRelatedFilterTarget,
-        renderDiagramAndTable,
+        renderDiagramWithMermaid,
         renderMutualDependencyList,
         renderPackageDiagram,
-        applyRelatedFilter,
-        setupPackageFilterControls,
+        renderDiagramAndTable,
+        registerDiagramClickHandler,
+        setupPackageFilterControl,
         setupAggregationDepthControl,
-        updateAggregationDepthOptions,
-        applyDefaultPackageFilterIfPresent,
-        setupRelatedFilterControls,
-        setupDiagramDirectionControls,
+        renderAggregationDepthSelectOptions,
+        buildAggregationDepthOptions,
+        renderAggregationDepthOptionsIntoSelect,
+        setupRelatedFilterControl,
+        setupDiagramDirectionControl,
         setupTransitiveReductionControl,
-        detectStronglyConnectedComponents,
-        transitiveReduction,
     };
 }

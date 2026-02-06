@@ -1,3 +1,4 @@
+// 状態/DOMヘルパー
 const packageContext = {
     packageSummaryCache: null,
     diagramNodeIdToFqn: new Map(),
@@ -75,6 +76,7 @@ const dom = {
     getNodeTextContent: (element) => { return element ? element.textContent : ''; },
 };
 
+// データ取得/整形
 function getPackageSummaryData(context) {
     if (context.packageSummaryCache) return context.packageSummaryCache;
     const jsonText = dom.getNodeTextContent(dom.getPackageDataScript());
@@ -133,6 +135,7 @@ function getPackageFqnFromTypeFqn(typeFqn) {
     return parts.slice(0, parts.length - 1).join('.');
 }
 
+// 集計
 function buildAggregationStats(packages, relations, maxDepth) {
     const stats = new Map();
     for (let depth = 0; depth <= maxDepth; depth += 1) {
@@ -209,6 +212,7 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
+// フィルタ/正規化
 function normalizePackageFilterValue(value) {
     const trimmed = (value ?? '').trim();
     return trimmed ? trimmed : null;
@@ -393,6 +397,7 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
     };
 }
 
+// テーブル描画
 function buildPackageTableRowData(packages, relations) {
     const incomingCounts = new Map();
     const outgoingCounts = new Map();
@@ -577,6 +582,7 @@ function applyDefaultPackageFilterIfPresent(context) {
     return true;
 }
 
+// 相互依存/推移簡約
 function buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth) {
     if (!mutualPairs || mutualPairs.size === 0) return [];
     const relationMap = new Map();
@@ -696,6 +702,7 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
+// ダイアグラム生成
 function buildMutualDependencyPairs(relations) {
     const relationKey = (from, to) => `${from}::${to}`;
     const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
@@ -867,6 +874,7 @@ function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText) {
     return lines;
 }
 
+// ダイアグラム表示/エラー
 function getOrCreateDiagramErrorBox(diagram) {
     let errorBox = dom.getDiagramErrorBox();
     if (errorBox) return errorBox;
@@ -924,6 +932,7 @@ function renderDiagramWithMermaid(text, maxEdges, context) {
     mermaid.run({nodes: [diagram]});
 }
 
+// 描画/更新
 function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context) {
     const container = dom.getMutualDependencyList();
     if (!container) return;
@@ -1017,6 +1026,7 @@ function renderDiagramAndTable(context) {
     renderAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
 }
 
+// UI配線
 function setupPackageFilterControl(context) {
     const input = dom.getPackageFilterInput();
     const applyButton = dom.getApplyPackageFilterButton();
@@ -1168,6 +1178,7 @@ function setupTransitiveReductionControl(context) {
     container.appendChild(controlContainer);
 }
 
+// 初期化
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
         const body = dom.getDocumentBody();
@@ -1189,6 +1200,7 @@ if (typeof document !== 'undefined') {
 }
 
 // Test-only exports for Node; no-op in browsers.
+// テスト用エクスポート
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         // public

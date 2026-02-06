@@ -582,7 +582,7 @@ test.describe('package.js', () => {
                 assert.equal(rows[2].classList.contains('hidden'), true);
             });
 
-            test('renderRelatedFilterTarget: 対象表示を更新する', () => {
+            test('renderRelatedFilterLabel: 対象表示を更新する', () => {
                 const mockTarget = { textContent: '' };
                 const getRelatedFilterTargetMock = test.mock.fn(() => mockTarget);
                 const setRelatedFilterTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
@@ -591,13 +591,13 @@ test.describe('package.js', () => {
                 test.mock.method(pkg.dom, 'setRelatedFilterTargetText', setRelatedFilterTargetTextMock);
 
                 testContext.relatedFilterFqn = null;
-                pkg.renderRelatedFilterTarget(testContext);
+                pkg.renderRelatedFilterLabel(testContext);
                 assert.equal(mockTarget.textContent, '未選択');
                 assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 1);
                 assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
 
                 testContext.relatedFilterFqn = 'app.domain';
-                pkg.renderRelatedFilterTarget(testContext);
+                pkg.renderRelatedFilterLabel(testContext);
                 assert.equal(mockTarget.textContent, 'app.domain');
                 assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 2);
                 assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
@@ -624,7 +624,7 @@ test.describe('package.js', () => {
                 assert.equal(input.value, 'app.domain');
             });
 
-            test('setupPackageFilterControls: 適用/解除を扱う', () => {
+            test('setupPackageFilterControl: 適用/解除を扱う', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -636,7 +636,7 @@ test.describe('package.js', () => {
 
                 const {input, applyButton, clearButton} = createPackageFilterControls(doc);
 
-                pkg.setupPackageFilterControls(testContext);
+                pkg.setupPackageFilterControl(testContext);
 
                 input.value = 'app.domain';
                 applyButton.eventListeners.get('click')();

@@ -4,7 +4,6 @@ const packageContext = {
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
     pendingDiagramRender: null,
-    DEFAULT_MAX_EDGES: 500,
     packageFilterFqn: null,
     relatedFilterMode: 'direct',
     relatedFilterFqn: null,
@@ -13,6 +12,7 @@ const packageContext = {
 };
 
 const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
+const DEFAULT_MAX_EDGES = 500;
 
 const dom = {
     getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
@@ -1012,11 +1012,11 @@ function applyDiagramRenderPlan(context, renderPlan) {
 
 function shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context) {
     const edgeCount = renderPlan.uniqueRelations.length;
-    if (edgeCount <= context.DEFAULT_MAX_EDGES) return false;
+    if (edgeCount <= DEFAULT_MAX_EDGES) return false;
     context.pendingDiagramRender = {text: renderPlan.source, maxEdges: edgeCount};
     const message = [
         '関連数が多すぎるため描画を省略しました。',
-        `エッジ数: ${edgeCount}（上限: ${context.DEFAULT_MAX_EDGES}）`,
+        `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
         '描画する場合はボタンを押してください。',
     ].join('\n');
     showDiagramErrorMessage(diagram, message, true, null, null, context);
@@ -1031,7 +1031,7 @@ function setDiagramSource(diagram, source) {
 function renderDiagramWithMermaidIfAvailable(diagram, renderPlan, context) {
     if (!window.mermaid) return;
     ensureMermaidParseErrorHandler(diagram, renderPlan, context);
-    renderDiagramWithMermaid(diagram, renderPlan.source, context.DEFAULT_MAX_EDGES);
+    renderDiagramWithMermaid(diagram, renderPlan.source, DEFAULT_MAX_EDGES);
 }
 
 function ensureMermaidParseErrorHandler(diagram, renderPlan, context) {

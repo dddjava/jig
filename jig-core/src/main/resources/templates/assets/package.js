@@ -1003,7 +1003,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
 function updateDiagramAndTable(context) {
     renderPackageDiagram(context, context.packageFilterFqn, context.relatedFilterFqn);
     applyRelatedFilterToTable(context.relatedFilterFqn, context);
-    updateAggregationDepthOptions(getMaxPackageDepth(context), context);
+    updateAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
 }
 
 function setupPackageFilterControls(context) {
@@ -1039,17 +1039,17 @@ function setupAggregationDepthControl(context) {
     if (!select) return;
     const {packages} = getPackageSummaryData(context);
     const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
-    updateAggregationDepthOptions(maxDepth, context);
+    updateAggregationDepthSelectOptions(maxDepth, context);
     select.value = String(context.aggregationDepth);
     select.addEventListener('change', () => {
         context.aggregationDepth = normalizeAggregationDepthValue(select.value);
         updateDiagramAndTable(context);
         renderRelatedFilterTarget(context);
-        updateAggregationDepthOptions(maxDepth, context);
+        updateAggregationDepthSelectOptions(maxDepth, context);
     });
 }
 
-function updateAggregationDepthOptions(maxDepth, context) {
+function updateAggregationDepthSelectOptions(maxDepth, context) {
     const select = dom.getDepthSelect();
     if (!select) return;
     const {packages, relations} = getPackageSummaryData(context);
@@ -1063,7 +1063,7 @@ function updateAggregationDepthOptions(maxDepth, context) {
         context.relatedFilterMode
     );
     const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
-    renderAggregationDepthOptions(select, options, context.aggregationDepth, maxDepth);
+    renderAggregationDepthSelectOptions(select, options, context.aggregationDepth, maxDepth);
 }
 
 function buildAggregationDepthOptions(aggregationStats, maxDepth) {
@@ -1086,7 +1086,7 @@ function buildAggregationDepthOptions(aggregationStats, maxDepth) {
     return options;
 }
 
-function renderAggregationDepthOptions(select, options, aggregationDepth, maxDepth) {
+function renderAggregationDepthSelectOptions(select, options, aggregationDepth, maxDepth) {
     select.innerHTML = '';
     options.forEach(option => {
         const node = document.createElement('option');
@@ -1236,9 +1236,9 @@ if (typeof module !== 'undefined' && module.exports) {
         updateDiagramAndTable,
         setupPackageFilterControls,
         setupAggregationDepthControl,
-        updateAggregationDepthOptions,
+        updateAggregationDepthSelectOptions,
         buildAggregationDepthOptions,
-        renderAggregationDepthOptions,
+        renderAggregationDepthSelectOptions,
         setupRelatedFilterControls,
         setupDiagramDirectionControls,
         setupTransitiveReductionControl,

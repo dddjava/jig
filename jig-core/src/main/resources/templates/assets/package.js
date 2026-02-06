@@ -356,13 +356,21 @@ function buildPackageTableRows(packages, relations) {
 
 function applyPackageFilterToTable(packageFilterFqn) {
     const rows = dom.getPackageTableRows();
-    const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    rows.forEach(row => {
+    const rowFqns = Array.from(rows, row => {
         const fqnCell = row.querySelector('td.fqn');
-        const fqn = fqnCell ? fqnCell.textContent : '';
-        const visible = !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix);
-        row.classList.toggle('hidden', !visible);
+        return fqnCell ? fqnCell.textContent : '';
     });
+    const visibility = buildPackageRowVisibility(rowFqns, packageFilterFqn);
+    rows.forEach((row, index) => {
+        row.classList.toggle('hidden', !visibility[index]);
+    });
+}
+
+function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
+    const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
+    return rowFqns.map(fqn =>
+        !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix)
+    );
 }
 
 function applyRelatedFilterToTable(fqn, context) {
@@ -1060,6 +1068,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildAggregationStatsForFilters,
         buildAggregationStatsForPackageFilter,
         buildAggregationStatsForRelated,
+        buildPackageRowVisibility,
         buildRelatedRowVisibility,
         getOrCreateDiagramErrorBox,
         showDiagramErrorMessage,

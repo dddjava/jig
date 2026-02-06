@@ -500,6 +500,14 @@ test.describe('package.js', () => {
                 assert.equal(rows[1].classList.contains('hidden'), true);
             });
 
+            test('buildPackageRowVisibility: パッケージフィルタのみ', () => {
+                const visibility = pkg.buildPackageRowVisibility(
+                    ['app.domain', 'app.other'],
+                    'app.domain'
+                );
+                assert.deepEqual(visibility, [true, false]);
+            });
+
             test('applyRelatedFilterToTable: 未指定ならパッケージフィルタのみ', () => {
                 const doc = setupDocument();
                 const rows = buildPackageRows(doc, ['app.domain', 'app.other']);

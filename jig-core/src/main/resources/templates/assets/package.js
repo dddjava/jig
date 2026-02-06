@@ -564,6 +564,128 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
+function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection) {
+    const escapeMermaidText = text => text.replace(/"/g, '\\"');
+    const lines = [`graph ${diagramDirection}`];
+    const nodeIdByFqn = new Map();
+    const nodeIdToFqn = new Map();
+    const nodeLabelById = new Map();
+    let nodeIndex = 0;
+    const ensureNodeId = fqn => {
+        if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
+        const nodeId = `P${nodeIndex++}`;
+        nodeIdByFqn.set(fqn, nodeId);
+        nodeIdToFqn.set(nodeId, fqn);
+        const label = nameByFqn.get(fqn) || fqn;
+        nodeLabelById.set(nodeId, label);
+        return nodeId;
+    };
+
+    Array.from(visibleSet).sort().forEach(ensureNodeId);
+    const relationKey = (from, to) => `${from}::${to}`;
+    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
+    const relationSet = new Set(uniqueRelations.map(relation => relationKey(relation.from, relation.to)));
+    const mutualPairs = new Set();
+    uniqueRelations.forEach(relation => {
+        if (relationSet.has(relationKey(relation.to, relation.from))) {
+            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
+        }
+    });
+
+    const linkStyles = [];
+    let linkIndex = 0;
+    const edgeLines = [];
+    uniqueRelations.forEach(relation => {
+        const fromId = ensureNodeId(relation.from);
+        const toId = ensureNodeId(relation.to);
+        const pairKey = canonicalPairKey(relation.from, relation.to);
+        if (mutualPairs.has(pairKey)) {
+            if (relation.from > relation.to) {
+                return;
+            }
+            edgeLines.push(`${fromId} <--> ${toId}`);
+            linkStyles.push(`linkStyle ${linkIndex} stroke:red,stroke-width:2px`);
+            linkIndex += 1;
+            return;
+        }
+        edgeLines.push(`${fromId} --> ${toId}`);
+        linkIndex += 1;
+    });
+
+    const visibleFqns = Array.from(visibleSet).sort();
+    const parentFqns = new Set();
+    visibleFqns.forEach(fqn => {
+        const parts = fqn.split('.');
+        for (let i = 1; i < parts.length; i += 1) {
+            const prefix = parts.slice(0, i).join('.');
+            if (visibleSet.has(prefix)) parentFqns.add(prefix);
+        }
+    });
+
+    const addNodeLines = (nodeId, parentSubgraphFqn) => {
+        const fqn = nodeIdToFqn.get(nodeId);
+        let displayLabel = nodeLabelById.get(nodeId);
+
+        if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
+            displayLabel = fqn.substring(parentSubgraphFqn.length + 1);
+        }
+        lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
+        const tooltip = fqn ? escapeMermaidText(fqn) : '';
+        lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
+        if (fqn && parentFqns.has(fqn)) {
+            lines.push(`class ${nodeId} parentPackage`);
+        }
+    };
+
+    const prefixDepth = getCommonPrefixDepth(visibleFqns);
+    const baseDepth = Math.max(prefixDepth - 1, 0);
+    let groupIndex = 0;
+    const createGroupNode = key => ({key, children: new Map(), nodes: []});
+    const rootGroup = createGroupNode('');
+    visibleFqns.forEach(fqn => {
+        const parts = fqn.split('.');
+        const maxDepth = parts.length;
+        let current = rootGroup;
+        for (let depth = baseDepth + 1; depth <= maxDepth; depth += 1) {
+            const key = parts.slice(0, depth).join('.');
+            if (!current.children.has(key)) {
+                current.children.set(key, createGroupNode(key));
+            }
+            current = current.children.get(key);
+        }
+        current.nodes.push(nodeIdByFqn.get(fqn));
+    });
+    const renderGroup = (group, isRoot, parentSubgraphFqnForNodes) => {
+        group.nodes.forEach(nodeId => addNodeLines(nodeId, parentSubgraphFqnForNodes));
+        const childKeys = Array.from(group.children.keys()).sort();
+        if (isRoot && group.nodes.length === 0 && childKeys.length === 1) {
+            renderGroup(group.children.get(childKeys[0]), false, parentSubgraphFqnForNodes);
+            return;
+        }
+        childKeys.forEach(key => {
+            const child = group.children.get(key);
+            const childNodeCount = child.nodes.length + child.children.size;
+            if (childNodeCount <= 1) {
+                renderGroup(child, false, parentSubgraphFqnForNodes);
+                return;
+            }
+            const groupId = `G${groupIndex++}`;
+            lines.push(`subgraph ${groupId}["${escapeMermaidText(child.key)}"]`);
+            renderGroup(child, false, child.key);
+            lines.push('end');
+        });
+    };
+    renderGroup(rootGroup, true, rootGroup.key);
+    if (parentFqns.size > 0) {
+        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
+    }
+
+    edgeLines.forEach(line => lines.push(line));
+    linkStyles.forEach(styleLine => lines.push(styleLine));
+
+    return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+}
+
 function getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
     const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
     const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
@@ -633,128 +755,17 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
         filteredCauseRelationEvidence
     } = getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, context.aggregationDepth, context.relatedFilterMode, context.transitiveReductionEnabled);
 
-    const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const lines = [`graph ${context.diagramDirection}`];
-
-    const nodeIdByFqn = new Map();
-    context.diagramNodeIdToFqn = new Map();
-    const nodeLabelById = new Map();
-    let nodeIndex = 0;
-    const ensureNodeId = fqn => {
-        if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
-        const nodeId = `P${nodeIndex++}`;
-        nodeIdByFqn.set(fqn, nodeId);
-        context.diagramNodeIdToFqn.set(nodeId, fqn);
-        const label = nameByFqn.get(fqn) || fqn;
-        nodeLabelById.set(nodeId, label);
-        return nodeId;
-    };
-
-    Array.from(visibleSet).sort().forEach(ensureNodeId);
-    const relationKey = (from, to) => `${from}::${to}`;
-    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
-    const relationSet = new Set(uniqueRelations.map(relation => relationKey(relation.from, relation.to)));
-    const mutualPairs = new Set();
-    uniqueRelations.forEach(relation => {
-        if (relationSet.has(relationKey(relation.to, relation.from))) {
-            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
-        }
-    });
-
-    const linkStyles = [];
-    let linkIndex = 0;
-    const edgeLines = [];
-    uniqueRelations.forEach(relation => {
-        const fromId = ensureNodeId(relation.from);
-        const toId = ensureNodeId(relation.to);
-        const pairKey = canonicalPairKey(relation.from, relation.to);
-        if (mutualPairs.has(pairKey)) {
-            if (relation.from > relation.to) {
-                return;
-            }
-            edgeLines.push(`${fromId} <--> ${toId}`);
-            linkStyles.push(`linkStyle ${linkIndex} stroke:red,stroke-width:2px`);
-            linkIndex += 1;
-            return;
-        }
-        edgeLines.push(`${fromId} --> ${toId}`);
-        linkIndex += 1;
-    });
-
-    const visibleFqns = Array.from(visibleSet).sort();
-    const parentFqns = new Set();
-    visibleFqns.forEach(fqn => {
-        const parts = fqn.split('.');
-        for (let i = 1; i < parts.length; i += 1) {
-            const prefix = parts.slice(0, i).join('.');
-            if (visibleSet.has(prefix)) parentFqns.add(prefix);
-        }
-    });
-
-    const addNodeLines = (nodeId, parentSubgraphFqn) => {
-        const fqn = context.diagramNodeIdToFqn.get(nodeId);
-        let displayLabel = nodeLabelById.get(nodeId);
-
-        if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
-            displayLabel = fqn.substring(parentSubgraphFqn.length + 1);
-        }
-        lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
-        const tooltip = fqn ? escapeMermaidText(fqn) : '';
-        lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
-        if (fqn && parentFqns.has(fqn)) {
-            lines.push(`class ${nodeId} parentPackage`);
-        }
-    };
-
-    const prefixDepth = getCommonPrefixDepth(visibleFqns);
-    const baseDepth = Math.max(prefixDepth - 1, 0);
-    let groupIndex = 0;
-    const createGroupNode = key => ({key, children: new Map(), nodes: []});
-    const rootGroup = createGroupNode('');
-    visibleFqns.forEach(fqn => {
-        const parts = fqn.split('.');
-        const maxDepth = parts.length;
-        let current = rootGroup;
-        for (let depth = baseDepth + 1; depth <= maxDepth; depth += 1) {
-            const key = parts.slice(0, depth).join('.');
-            if (!current.children.has(key)) {
-                current.children.set(key, createGroupNode(key));
-            }
-            current = current.children.get(key);
-        }
-        current.nodes.push(nodeIdByFqn.get(fqn));
-    });
-    const renderGroup = (group, isRoot, parentSubgraphFqnForNodes) => {
-        group.nodes.forEach(nodeId => addNodeLines(nodeId, parentSubgraphFqnForNodes));
-        const childKeys = Array.from(group.children.keys()).sort();
-        if (isRoot && group.nodes.length === 0 && childKeys.length === 1) {
-            renderGroup(group.children.get(childKeys[0]), false, parentSubgraphFqnForNodes);
-            return;
-        }
-        childKeys.forEach(key => {
-            const child = group.children.get(key);
-            const childNodeCount = child.nodes.length + child.children.size;
-            if (childNodeCount <= 1) {
-                renderGroup(child, false, parentSubgraphFqnForNodes);
-                return;
-            }
-            const groupId = `G${groupIndex++}`;
-            lines.push(`subgraph ${groupId}["${escapeMermaidText(child.key)}"]`);
-            renderGroup(child, false, child.key);
-            lines.push('end');
-        });
-    };
-    renderGroup(rootGroup, true, rootGroup.key);
-    if (parentFqns.size > 0) {
-        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
-    }
-
-    edgeLines.forEach(line => lines.push(line));
-    linkStyles.forEach(styleLine => lines.push(styleLine));
+    const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
+        visibleSet,
+        uniqueRelations,
+        nameByFqn,
+        context.diagramDirection
+    );
+    context.diagramNodeIdToFqn = nodeIdToFqn;
     renderMutualDependencyList(mutualPairs, filteredCauseRelationEvidence, context);
 
-    context.lastDiagramSource = lines.join('\n');
+    context.lastDiagramSource = source;
     context.lastDiagramEdgeCount = uniqueRelations.length;
     if (context.lastDiagramEdgeCount > context.DEFAULT_MAX_EDGES) {
         context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
@@ -1009,6 +1020,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderDiagramAndTable,
         renderMutualDependencyList,
         renderPackageDiagram,
+        buildMermaidDiagramSource,
         applyRelatedFilter,
         setupPackageFilterControls,
         setupAggregationDepthControl,

@@ -391,7 +391,7 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
     };
 }
 
-function buildPackageTableRows(packages, relations) {
+function buildPackageTableRowData(packages, relations) {
     const incomingCounts = new Map();
     const outgoingCounts = new Map();
     relations.forEach(relation => {
@@ -428,7 +428,7 @@ function buildPackageTableActionSpecs() {
     };
 }
 
-function createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow) {
+function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow) {
     const tr = document.createElement('tr');
     const actionSpecs = buildPackageTableActionSpecs();
 
@@ -487,7 +487,7 @@ function createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow) {
 
 function renderPackageTable(context) {
     const {packages, relations} = getPackageSummaryData(context);
-    const rows = buildPackageTableRows(packages, relations);
+    const rows = buildPackageTableRowData(packages, relations);
     const rowSpecs = buildPackageTableRowSpecs(rows);
 
     const tbody = dom.getPackageTableBody();
@@ -506,7 +506,7 @@ function renderPackageTable(context) {
     };
 
     rowSpecs.forEach(spec => {
-        const tr = createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow);
+        const tr = buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow);
         tbody.appendChild(tr);
     });
 }
@@ -1204,10 +1204,10 @@ if (typeof module !== 'undefined' && module.exports) {
         buildVisibleDiagramRelations,
         filterRelatedDiagramRelations,
         buildVisibleDiagramElements,
-        buildPackageTableRows,
+        buildPackageTableRowData,
         buildPackageTableRowSpecs,
         buildPackageTableActionSpecs,
-        createPackageTableRow,
+        buildPackageTableRowElement,
         renderPackageTable,
         applyPackageFilterToTable,
         applyRelatedFilterToTable,

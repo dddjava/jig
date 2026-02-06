@@ -522,15 +522,15 @@ test.describe('package.js', () => {
                 );
             });
 
-            test('buildFilteredDiagramRelations: パッケージフィルタを適用する', () => {
-                const base = pkg.buildFilteredDiagramRelations(packages, relations, [], 'app', 0, false);
+            test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], 'app', 0, false);
                 assert.deepEqual(Array.from(base.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
-            test('applyRelatedFilterToDiagramRelations: relatedSetで絞り込む', () => {
-                const base = pkg.buildFilteredDiagramRelations(packages, relations, [], null, 0, false);
-                const filtered = pkg.applyRelatedFilterToDiagramRelations(
+            test('filterRelatedDiagramRelations: relatedSetで絞り込む', () => {
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], null, 0, false);
+                const filtered = pkg.filterRelatedDiagramRelations(
                     base.uniqueRelations,
                     base.visibleSet,
                     'app.b',
@@ -541,18 +541,18 @@ test.describe('package.js', () => {
                 assert.equal(filtered.uniqueRelations.length, 2);
             });
 
-            test('getVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
-                const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], 'app', null, 0, 'direct', false);
+            test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], 'app', null, 0, 'direct', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
-            test('getVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
-                const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.b', 0, 'direct', false);
+            test('buildVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], null, 'app.b', 0, 'direct', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
-            test('getVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
-                const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
+            test('buildVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });

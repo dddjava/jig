@@ -306,7 +306,7 @@ function collectRelatedSet(root, relations, aggregationDepth, relatedFilterMode)
     return relatedSet;
 }
 
-function buildFilteredDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
+function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
     const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     const withinPackageFilter = fqn =>
         !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
@@ -343,7 +343,7 @@ function buildFilteredDiagramRelations(packages, relations, causeRelationEvidenc
     return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
 }
 
-function applyRelatedFilterToDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedFilterMode) {
+function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedFilterMode) {
     const nextVisibleSet = new Set(visibleSet);
     let nextRelations = uniqueRelations;
     if (aggregatedRoot) {
@@ -367,8 +367,8 @@ function applyRelatedFilterToDiagramRelations(uniqueRelations, visibleSet, aggre
     return {uniqueRelations: nextRelations, visibleSet: nextVisibleSet};
 }
 
-function getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
-    const base = buildFilteredDiagramRelations(
+function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
+    const base = buildVisibleDiagramRelations(
         packages,
         relations,
         causeRelationEvidence,
@@ -377,7 +377,7 @@ function getVisibleDiagramElements(packages, relations, causeRelationEvidence, p
         transitiveReductionEnabled
     );
     const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
-    const {uniqueRelations, visibleSet} = applyRelatedFilterToDiagramRelations(
+    const {uniqueRelations, visibleSet} = filterRelatedDiagramRelations(
         base.uniqueRelations,
         base.visibleSet,
         aggregatedRoot,
@@ -958,7 +958,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
         uniqueRelations,
         visibleSet,
         filteredCauseRelationEvidence
-    } = getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, context.aggregationDepth, context.relatedFilterMode, context.transitiveReductionEnabled);
+    } = buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, context.aggregationDepth, context.relatedFilterMode, context.transitiveReductionEnabled);
 
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
     const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
@@ -1201,9 +1201,9 @@ if (typeof module !== 'undefined' && module.exports) {
         buildPackageRowVisibility,
         buildRelatedRowVisibility,
         collectRelatedSet,
-        buildFilteredDiagramRelations,
-        applyRelatedFilterToDiagramRelations,
-        getVisibleDiagramElements,
+        buildVisibleDiagramRelations,
+        filterRelatedDiagramRelations,
+        buildVisibleDiagramElements,
         buildPackageTableRows,
         buildPackageTableRowSpecs,
         buildPackageTableActionSpecs,

@@ -534,6 +534,33 @@ test.describe('package.js', () => {
                 assert.equal(rows[1].classList.contains('hidden'), false);
                 assert.equal(rows[2].classList.contains('hidden'), true);
             });
+
+            test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみ', () => {
+                const rowFqns = ['app.domain', 'app.other'];
+                const visibility = pkg.buildRelatedRowVisibility(
+                    rowFqns,
+                    [],
+                    'app.domain',
+                    0,
+                    'direct',
+                    null
+                );
+                assert.deepEqual(visibility, [true, false]);
+            });
+
+            test('buildRelatedRowVisibility: 関係する行のみ表示', () => {
+                const rowFqns = ['app.a', 'app.b', 'app.c'];
+                const relations = [{from: 'app.a', to: 'app.b'}];
+                const visibility = pkg.buildRelatedRowVisibility(
+                    rowFqns,
+                    relations,
+                    null,
+                    0,
+                    'direct',
+                    'app.a'
+                );
+                assert.deepEqual(visibility, [true, true, false]);
+            });
         });
     });
 

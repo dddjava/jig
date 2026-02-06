@@ -367,32 +367,43 @@ function applyPackageFilterToTable(packageFilterFqn) {
 
 function applyRelatedFilterToTable(fqn, context) {
     const rows = dom.getPackageTableRows();
-    const packageFilterPrefix = context.packageFilterFqn ? `${context.packageFilterFqn}.` : null;
-    const withinPackageFilter = rowFqn =>
-        !context.packageFilterFqn || rowFqn === context.packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
-
-    if (!fqn) {
-        rows.forEach(row => {
-            const fqnCell = row.querySelector('td.fqn');
-            const rowFqn = fqnCell ? fqnCell.textContent : '';
-            row.classList.toggle('hidden', !withinPackageFilter(rowFqn));
-        });
-        return;
-    }
     const {relations} = getPackageSummaryData(context);
-    const filteredRelations = context.packageFilterFqn
+    const rowFqns = Array.from(rows, row => {
+        const fqnCell = row.querySelector('td.fqn');
+        return fqnCell ? fqnCell.textContent : '';
+    });
+    const visibility = buildRelatedRowVisibility(
+        rowFqns,
+        relations,
+        context.packageFilterFqn,
+        context.aggregationDepth,
+        context.relatedFilterMode,
+        fqn
+    );
+    rows.forEach((row, index) => {
+        row.classList.toggle('hidden', !visibility[index]);
+    });
+}
+
+function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, relatedFilterMode, relatedFilterFqn) {
+    const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
+    const withinPackageFilter = rowFqn =>
+        !packageFilterFqn || rowFqn === packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
+
+    if (!relatedFilterFqn) {
+        return rowFqns.map(rowFqn => withinPackageFilter(rowFqn));
+    }
+
+    const filteredRelations = packageFilterFqn
         ? relations.filter(relation =>
             withinPackageFilter(relation.from) && withinPackageFilter(relation.to)
         )
         : relations;
-    const aggregatedRoot = getAggregatedFqn(fqn, context.aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context.aggregationDepth, context.relatedFilterMode);
-    rows.forEach(row => {
-        const fqnCell = row.querySelector('td.fqn');
-        const rowFqn = fqnCell ? fqnCell.textContent : '';
-        const aggregatedRow = getAggregatedFqn(rowFqn, context.aggregationDepth);
-        const visible = withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
-        row.classList.toggle('hidden', !visible);
+    const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedFilterMode);
+    return rowFqns.map(rowFqn => {
+        const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
+        return withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
     });
 }
 
@@ -1049,6 +1060,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildAggregationStatsForFilters,
         buildAggregationStatsForPackageFilter,
         buildAggregationStatsForRelated,
+        buildRelatedRowVisibility,
         getOrCreateDiagramErrorBox,
         showDiagramErrorMessage,
         hideDiagramErrorMessage,

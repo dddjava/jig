@@ -498,7 +498,7 @@ function renderPackageTable(context) {
             input.value = fqn;
         }
         context.packageFilterFqn = fqn;
-        updateDiagramAndTable(context);
+        renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
     const applyRelatedFilterForRow = fqn => {
@@ -550,7 +550,7 @@ function renderRelatedFilterLabel(context) {
 
 function setRelatedFilterAndRender(fqn, context) {
     context.relatedFilterFqn = fqn;
-    updateDiagramAndTable(context);
+    renderDiagramAndTable(context);
     renderRelatedFilterLabel(context);
 }
 
@@ -562,7 +562,7 @@ function applyDefaultPackageFilterIfPresent(context) {
     if (!candidate) return false;
     input.value = candidate;
     context.packageFilterFqn = candidate;
-    updateDiagramAndTable(context);
+    renderDiagramAndTable(context);
     return true;
 }
 
@@ -1000,7 +1000,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     }
 }
 
-function updateDiagramAndTable(context) {
+function renderDiagramAndTable(context) {
     renderPackageDiagram(context, context.packageFilterFqn, context.relatedFilterFqn);
     filterRelatedTableRows(context.relatedFilterFqn, context);
     updateAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
@@ -1014,13 +1014,13 @@ function setupPackageFilterControl(context) {
 
     const applyFilter = () => {
         context.packageFilterFqn = normalizePackageFilterValue(input.value);
-        updateDiagramAndTable(context);
+        renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
     const clearPackageFilter = () => {
         input.value = '';
         context.packageFilterFqn = null;
-        updateDiagramAndTable(context);
+        renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
 
@@ -1043,7 +1043,7 @@ function setupAggregationDepthControl(context) {
     select.value = String(context.aggregationDepth);
     select.addEventListener('change', () => {
         context.aggregationDepth = normalizeAggregationDepthValue(select.value);
-        updateDiagramAndTable(context);
+        renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
         updateAggregationDepthSelectOptions(maxDepth, context);
     });
@@ -1106,14 +1106,14 @@ function setupRelatedFilterControl(context) {
     select.addEventListener('change', () => {
         context.relatedFilterMode = select.value;
         if (context.relatedFilterFqn) {
-            updateDiagramAndTable(context);
+            renderDiagramAndTable(context);
         }
     });
     if (clearButton) {
         clearButton.addEventListener('click', () => {
             context.relatedFilterFqn = null;
             context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
-            updateDiagramAndTable(context);
+            renderDiagramAndTable(context);
             renderRelatedFilterLabel(context);
         });
     }
@@ -1128,7 +1128,7 @@ function setupDiagramDirectionControl(context) {
         radio.addEventListener('change', () => {
             if (!radio.checked) return;
             context.diagramDirection = radio.value;
-            updateDiagramAndTable(context);
+            renderDiagramAndTable(context);
         });
     });
 }
@@ -1144,7 +1144,7 @@ function setupTransitiveReductionControl(context) {
     checkbox.checked = context.transitiveReductionEnabled;
     checkbox.addEventListener('change', () => {
         context.transitiveReductionEnabled = checkbox.checked;
-        updateDiagramAndTable(context);
+        renderDiagramAndTable(context);
     });
 
     const label = document.createElement('label');
@@ -1170,7 +1170,7 @@ if (typeof document !== 'undefined') {
         setupTransitiveReductionControl(packageContext);
         const applied = applyDefaultPackageFilterIfPresent(packageContext);
         if (!applied) {
-            updateDiagramAndTable(packageContext);
+            renderDiagramAndTable(packageContext);
         }
         renderRelatedFilterLabel(packageContext);
     });
@@ -1233,7 +1233,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderDiagramWithMermaid,
         renderMutualDependencyList,
         renderPackageDiagram,
-        updateDiagramAndTable,
+        renderDiagramAndTable,
         setupPackageFilterControl,
         setupAggregationDepthControl,
         updateAggregationDepthSelectOptions,

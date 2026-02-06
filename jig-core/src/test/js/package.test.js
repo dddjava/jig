@@ -615,7 +615,7 @@ test.describe('package.js', () => {
                 }, testContext);
                 doc.selectorsAll.set('#package-table tbody tr', []);
                 const {input} = createPackageFilterControls(doc);
-                createDepthSelect(doc); // for updateDiagramAndTable
+                createDepthSelect(doc); // for renderDiagramAndTable
 
                 const applied = pkg.applyDefaultPackageFilterIfPresent(testContext);
 

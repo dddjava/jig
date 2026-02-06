@@ -915,8 +915,7 @@ function updateAggregationDepthOptions(maxDepth, context) {
     const select = dom.getDepthSelect();
     if (!select) return;
     const {packages, relations} = getPackageSummaryData(context);
-    let aggregationStats;
-    aggregationStats = buildAggregationStatsForFilters(
+    const aggregationStats = buildAggregationStatsForFilters(
         packages,
         relations,
         context.packageFilterFqn,
@@ -925,23 +924,39 @@ function updateAggregationDepthOptions(maxDepth, context) {
         context.aggregationDepth,
         context.relatedFilterMode
     );
-    select.innerHTML = '';
-    const noAggregationOption = document.createElement('option');
-    noAggregationOption.value = '0';
+    const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
+    renderAggregationDepthOptions(select, options, context.aggregationDepth, maxDepth);
+}
+
+function buildAggregationDepthOptions(aggregationStats, maxDepth) {
+    const options = [];
     const noAggregationStats = aggregationStats.get(0);
-    noAggregationOption.textContent = `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`;
-    select.appendChild(noAggregationOption);
+    options.push({
+        value: '0',
+        text: `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`,
+    });
     for (let depth = 1; depth <= maxDepth; depth += 1) {
-        const option = document.createElement('option');
-        option.value = String(depth);
         const stats = aggregationStats.get(depth);
         if (!stats || stats.relationCount === 0) {
             continue;
         }
-        option.textContent = `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`;
-        select.appendChild(option);
+        options.push({
+            value: String(depth),
+            text: `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`,
+        });
     }
-    const value = Math.min(context.aggregationDepth, maxDepth);
+    return options;
+}
+
+function renderAggregationDepthOptions(select, options, aggregationDepth, maxDepth) {
+    select.innerHTML = '';
+    options.forEach(option => {
+        const node = document.createElement('option');
+        node.value = option.value;
+        node.textContent = option.text;
+        select.appendChild(node);
+    });
+    const value = Math.min(aggregationDepth, maxDepth);
     select.value = String(value);
 }
 
@@ -1092,6 +1107,8 @@ if (typeof module !== 'undefined' && module.exports) {
         setupPackageFilterControls,
         setupAggregationDepthControl,
         updateAggregationDepthOptions,
+        buildAggregationDepthOptions,
+        renderAggregationDepthOptions,
         applyDefaultPackageFilterIfPresent,
         findDefaultPackageFilterCandidate,
         setupRelatedFilterControls,

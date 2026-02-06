@@ -618,6 +618,37 @@ test.describe('package.js', () => {
                 assert.equal(select.children[0].textContent.includes('集約なし'), true);
                 assert.equal(select.value, '1');
             });
+
+            test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
+                const stats = new Map([
+                    [0, {packageCount: 2, relationCount: 1}],
+                    [1, {packageCount: 1, relationCount: 1}],
+                    [2, {packageCount: 1, relationCount: 0}],
+                ]);
+
+                const options = pkg.buildAggregationDepthOptions(stats, 2);
+
+                assert.deepEqual(options, [
+                    {value: '0', text: '集約なし（P2 / R1）'},
+                    {value: '1', text: '深さ1（P1 / R1）'},
+                ]);
+            });
+
+            test('renderAggregationDepthOptions: セレクトを更新する', () => {
+                const doc = setupDocument();
+                const select = new Element('select');
+                doc.elementsById.set('package-depth-select', select);
+                const options = [
+                    {value: '0', text: '集約なし（P2 / R1）'},
+                    {value: '1', text: '深さ1（P1 / R1）'},
+                ];
+
+                pkg.renderAggregationDepthOptions(select, options, 1, 2);
+
+                assert.equal(select.children.length, 2);
+                assert.equal(select.children[0].textContent, '集約なし（P2 / R1）');
+                assert.equal(select.value, '1');
+            });
         });
 
         test.describe('一覧/補助', () => {

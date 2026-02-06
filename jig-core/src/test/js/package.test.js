@@ -4,24 +4,11 @@ const assert = require('node:assert/strict');
 const pkg = require('../../main/resources/templates/assets/package.js');
 const originalDom = {...pkg.dom};
 
-// Creates a fresh deep copy of the initial context for each test
-function createInitialContext() {
-    return JSON.parse(JSON.stringify(pkg.packageContext));
-}
-
 let testContext;
 
 class ClassList {
     constructor() {
         this.values = new Set();
-    }
-
-    add(value) {
-        this.values.add(value);
-    }
-
-    remove(value) {
-        this.values.delete(value);
     }
 
     toggle(value, force) {

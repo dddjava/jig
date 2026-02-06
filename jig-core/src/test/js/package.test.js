@@ -516,6 +516,35 @@ test.describe('package.js', () => {
                 assert.equal(result.edgeLines.some(line => line.includes('<-->')), true);
                 assert.equal(result.linkStyles.length, 1);
             });
+
+            test('buildDiagramGroupTree: 共通プレフィックスでグループ化する', () => {
+                const visibleFqns = ['com.example.a', 'com.example.b'];
+                const nodeIdByFqn = new Map([
+                    ['com.example.a', 'P0'],
+                    ['com.example.b', 'P1'],
+                ]);
+
+                const rootGroup = pkg.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+
+                assert.equal(rootGroup.children.has('com.example'), true);
+            });
+
+            test('buildSubgraphLines: サブグラフ行を生成する', () => {
+                const rootGroup = {
+                    key: '',
+                    nodes: [],
+                    children: new Map([
+                        ['com.example', {key: 'com.example', nodes: ['P0', 'P1'], children: new Map()}],
+                    ]),
+                };
+                const addNodeLines = (lines, nodeId) => {
+                    lines.push(`node ${nodeId}`);
+                };
+
+                const lines = pkg.buildSubgraphLines(rootGroup, addNodeLines, text => text);
+
+                assert.equal(lines.some(line => line.includes('node P0')), true);
+            });
         });
 
         test.describe('テーブル', () => {

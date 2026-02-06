@@ -705,9 +705,8 @@ function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
 function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText) {
     const visibleFqns = Array.from(visibleSet).sort();
     const parentFqns = buildParentFqns(visibleSet);
-    const lines = [];
-
-    const addNodeLines = (nodeId, parentSubgraphFqn) => {
+    const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+    const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
         const fqn = nodeIdToFqn.get(nodeId);
         let displayLabel = nodeLabelById.get(nodeId);
 
@@ -718,13 +717,17 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
         const tooltip = fqn ? escapeMermaidText(fqn) : '';
         lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
-            lines.push(`class ${nodeId} parentPackage`);
+        lines.push(`class ${nodeId} parentPackage`);
         }
     };
+    const nodeLines = buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText);
 
+    return {nodeLines, hasParentStyle: parentFqns.size > 0};
+}
+
+function buildDiagramGroupTree(visibleFqns, nodeIdByFqn) {
     const prefixDepth = getCommonPrefixDepth(visibleFqns);
     const baseDepth = Math.max(prefixDepth - 1, 0);
-    let groupIndex = 0;
     const createGroupNode = key => ({key, children: new Map(), nodes: []});
     const rootGroup = createGroupNode('');
     visibleFqns.forEach(fqn => {
@@ -740,8 +743,14 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
         }
         current.nodes.push(nodeIdByFqn.get(fqn));
     });
+    return rootGroup;
+}
+
+function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText) {
+    const lines = [];
+    let groupIndex = 0;
     const renderGroup = (group, isRoot, parentSubgraphFqnForNodes) => {
-        group.nodes.forEach(nodeId => addNodeLines(nodeId, parentSubgraphFqnForNodes));
+        group.nodes.forEach(nodeId => addNodeLines(lines, nodeId, parentSubgraphFqnForNodes));
         const childKeys = Array.from(group.children.keys()).sort();
         if (isRoot && group.nodes.length === 0 && childKeys.length === 1) {
             renderGroup(group.children.get(childKeys[0]), false, parentSubgraphFqnForNodes);
@@ -761,8 +770,7 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
         });
     };
     renderGroup(rootGroup, true, rootGroup.key);
-
-    return {nodeLines: lines, hasParentStyle: parentFqns.size > 0};
+    return lines;
 }
 
 function getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
@@ -1167,6 +1175,8 @@ if (typeof module !== 'undefined' && module.exports) {
         buildDiagramNodeMaps,
         buildDiagramEdgeLines,
         buildDiagramNodeLines,
+        buildDiagramGroupTree,
+        buildSubgraphLines,
         applyRelatedFilter,
         setupPackageFilterControls,
         setupAggregationDepthControl,

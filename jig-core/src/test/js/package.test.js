@@ -270,7 +270,7 @@ test.describe('package.js', () => {
 
     test.describe('データ取得/整形', () => {
         test.describe('ロジック', () => {
-            test('parsePackageSummaryData: 配列/オブジェクト両対応', () => {
+            test('parsePackageSummaryData: 配列/オブジェクトに対応する', () => {
                 const arrayData = pkg.parsePackageSummaryData(JSON.stringify([
                     {fqn: 'app.a', name: 'A', classCount: 1, description: ''},
                 ]));
@@ -285,7 +285,7 @@ test.describe('package.js', () => {
                 assert.equal(objectData.relations.length, 1);
             });
 
-            test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
+            test('getPackageSummaryData: 配列/オブジェクトに対応する', () => {
                 setupDocument();
                 setPackageData([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}], testContext);
 
@@ -364,7 +364,7 @@ test.describe('package.js', () => {
                 assert.equal(depth1.relationCount, 0);
             });
 
-            test('buildAggregationStatsForFilters: directモードの複合集計', () => {
+            test('buildAggregationStatsForFilters: directモードの複合集計を行う', () => {
                 const packages = [
                     {fqn: 'app.domain.a'},
                     {fqn: 'app.domain.b'},
@@ -393,7 +393,7 @@ test.describe('package.js', () => {
                 assert.equal(depth0.relationCount, 1);
             });
 
-            test('buildAggregationStatsForFilters: allモードの複合集計', () => {
+            test('buildAggregationStatsForFilters: allモードの複合集計を行う', () => {
                 const packages = [
                     {fqn: 'app.domain.a'},
                     {fqn: 'app.domain.b'},
@@ -426,7 +426,7 @@ test.describe('package.js', () => {
 
     test.describe('フィルタ', () => {
         test.describe('ロジック', () => {
-            test('normalizePackageFilterValue: 空文字はnull', () => {
+            test('normalizePackageFilterValue: 空文字はnullを返す', () => {
                 assert.equal(pkg.normalizePackageFilterValue(''), null);
                 assert.equal(pkg.normalizePackageFilterValue('   '), null);
                 assert.equal(pkg.normalizePackageFilterValue('app.domain'), 'app.domain');
@@ -446,7 +446,7 @@ test.describe('package.js', () => {
                 assert.equal(candidate, 'app.domain');
             });
 
-            test('buildPackageRowVisibility: パッケージフィルタのみ', () => {
+            test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
                 const visibility = pkg.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],
                     'app.domain'
@@ -454,7 +454,7 @@ test.describe('package.js', () => {
                 assert.deepEqual(visibility, [true, false]);
             });
 
-            test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみ', () => {
+            test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみを表示する', () => {
                 const rowFqns = ['app.domain', 'app.other'];
                 const visibility = pkg.buildRelatedRowVisibility(
                     rowFqns,
@@ -467,7 +467,7 @@ test.describe('package.js', () => {
                 assert.deepEqual(visibility, [true, false]);
             });
 
-            test('buildRelatedRowVisibility: 関係する行のみ表示', () => {
+            test('buildRelatedRowVisibility: 関係する行のみ表示する', () => {
                 const rowFqns = ['app.a', 'app.b', 'app.c'];
                 const relations = [{from: 'app.a', to: 'app.b'}];
                 const visibility = pkg.buildRelatedRowVisibility(
@@ -493,7 +493,7 @@ test.describe('package.js', () => {
                 {from: 'app.c', to: 'lib.d'},
             ];
 
-            test('collectRelatedSet: directモードは隣接のみ含める', () => {
+            test('collectRelatedSet: directモードは隣接のみを含める', () => {
                 const aggregationDepth = 0;
                 const relatedFilterMode = 'direct';
                 const relations = [
@@ -541,24 +541,24 @@ test.describe('package.js', () => {
                 assert.equal(filtered.uniqueRelations.length, 2);
             });
 
-            test('getVisibleDiagramElements: packageFilterは配下のみ表示', () => {
+            test('getVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
                 const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], 'app', null, 0, 'direct', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
-            test('getVisibleDiagramElements: relatedFilter(direct)は隣接のみ表示', () => {
+            test('getVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
                 const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.b', 0, 'direct', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
-            test('getVisibleDiagramElements: relatedFilter(all)は到達可能を表示', () => {
+            test('getVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
                 const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });
 
         test.describe('UI', () => {
-            test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
+            test('applyRelatedFilterToTable: 関係する行のみ表示する', () => {
                 const doc = setupDocument();
                 setPackageData({
                     packages: [
@@ -603,7 +603,7 @@ test.describe('package.js', () => {
                 assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
-            test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用', () => {
+            test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用する', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -624,7 +624,7 @@ test.describe('package.js', () => {
                 assert.equal(input.value, 'app.domain');
             });
 
-            test('setupPackageFilterControls: 適用/解除をハンドリング', () => {
+            test('setupPackageFilterControls: 適用/解除を扱う', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -775,7 +775,7 @@ test.describe('package.js', () => {
                 assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
             });
 
-            test('buildDiagramEdgeLines: 相互依存で双方向リンクを生成', () => {
+            test('buildDiagramEdgeLines: 相互依存の双方向リンクを生成する', () => {
                 const {ensureNodeId} = pkg.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
                 const result = pkg.buildDiagramEdgeLines(
                     [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
@@ -845,7 +845,7 @@ test.describe('package.js', () => {
         });
 
         test.describe('UI', () => {
-            test('renderMutualDependencyList: 相互依存と原因を一覧化', () => {
+            test('renderMutualDependencyList: 相互依存と原因を一覧化する', () => {
                 const doc = setupDocument();
                 const container = new Element('div', doc);
                 doc.elementsById.set('mutual-dependency-list', container);
@@ -866,7 +866,7 @@ test.describe('package.js', () => {
                 assert.equal(container.children[0].children[1].tagName, 'ul');
             });
 
-            test('renderPackageDiagram: 相互依存を含む描画', () => {
+            test('renderPackageDiagram: 相互依存を含めて描画する', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -889,7 +889,7 @@ test.describe('package.js', () => {
                 assert.equal(mutual.children.length > 0, true);
             });
 
-            test('renderPackageDiagram: エッジ数超過で保留/エラー表示', () => {
+            test('renderPackageDiagram: エッジ数超過時は保留/エラー表示する', () => {
                 const doc = setupDocument();
                 // setupDiagramEnvironmentはtestContext.diagramElementを設定する。
                 // そのdiagramElementがdomヘルパーによって操作されることをモックする。

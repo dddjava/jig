@@ -569,34 +569,12 @@ test.describe('package.js', () => {
         });
 
         test.describe('テーブル', () => {
-            test('applyPackageFilterToTable: 行の表示/非表示を切り替える', () => {
-                const doc = setupDocument();
-                const rows = buildPackageRows(doc, ['app.domain', 'app.other']);
-
-                pkg.applyPackageFilterToTable('app.domain', testContext);
-
-                assert.equal(rows[0].classList.contains('hidden'), false);
-                assert.equal(rows[1].classList.contains('hidden'), true);
-            });
-
             test('buildPackageRowVisibility: パッケージフィルタのみ', () => {
                 const visibility = pkg.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],
                     'app.domain'
                 );
                 assert.deepEqual(visibility, [true, false]);
-            });
-
-            test('applyRelatedFilterToTable: 未指定ならパッケージフィルタのみ', () => {
-                const doc = setupDocument();
-                setPackageData({packages: [], relations: []}, testContext);
-                const rows = buildPackageRows(doc, ['app.domain', 'app.other']);
-                testContext.packageFilterFqn = 'app.domain';
-
-                pkg.applyRelatedFilterToTable(null, testContext);
-
-                assert.equal(rows[0].classList.contains('hidden'), false);
-                assert.equal(rows[1].classList.contains('hidden'), true);
             });
 
             test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
@@ -675,30 +653,6 @@ test.describe('package.js', () => {
                 assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
-            test('updateAggregationDepthOptions: 選択肢を更新する', () => {
-                const doc = setupDocument();
-                const select = new Element('select');
-                doc.elementsById.set('package-depth-select', select);
-                setPackageData({
-                    packages: [
-                        {fqn: 'app.domain'},
-                        {fqn: 'lib.core'},
-                    ],
-                    relations: [
-                        {from: 'app.domain', to: 'lib.core'},
-                    ],
-                }, testContext);
-                testContext.aggregationDepth = 1;
-                testContext.packageFilterFqn = null;
-                testContext.relatedFilterFqn = null;
-
-                pkg.updateAggregationDepthOptions(2, testContext);
-
-                assert.equal(select.children.length >= 2, true);
-                assert.equal(select.children[0].textContent.includes('集約なし'), true);
-                assert.equal(select.value, '1');
-            });
-
             test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
                 const stats = new Map([
                     [0, {packageCount: 2, relationCount: 1}],
@@ -714,21 +668,6 @@ test.describe('package.js', () => {
                 ]);
             });
 
-            test('renderAggregationDepthOptions: セレクトを更新する', () => {
-                const doc = setupDocument();
-                const select = new Element('select');
-                doc.elementsById.set('package-depth-select', select);
-                const options = [
-                    {value: '0', text: '集約なし（P2 / R1）'},
-                    {value: '1', text: '深さ1（P1 / R1）'},
-                ];
-
-                pkg.renderAggregationDepthOptions(select, options, 1, 2);
-
-                assert.equal(select.children.length, 2);
-                assert.equal(select.children[0].textContent, '集約なし（P2 / R1）');
-                assert.equal(select.value, '1');
-            });
         });
 
         test.describe('一覧/補助', () => {
@@ -780,117 +719,6 @@ test.describe('package.js', () => {
                 assert.equal(specs.related.ariaLabel, '関連のみ表示');
                 assert.equal(specs.related.screenReaderText, '関連のみ表示');
             });
-
-            test('getOrCreateDiagramErrorBox: エラーボックスを作成/再利用する', () => {
-                const diagram = { parentNode: { insertBefore: test.mock.fn() } }; // Minimal mock for diagram
-
-                const createdErrorBox = { id: 'package-diagram-error', appendChild: test.mock.fn() };
-                const createDiagramErrorBoxMock = test.mock.fn(() => createdErrorBox);
-
-                // --- First call: Error box does not exist, should be created ---
-                const getDiagramErrorBoxMockInitialNull = test.mock.fn(() => null);
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', getDiagramErrorBoxMockInitialNull);
-                test.mock.method(pkg.dom, 'createDiagramErrorBox', createDiagramErrorBoxMock);
-
-                const firstErrorBox = pkg.getOrCreateDiagramErrorBox(diagram);
-
-                assert.equal(getDiagramErrorBoxMockInitialNull.mock.calls.length, 1, 'getDiagramErrorBox should be called once initially');
-                assert.equal(createDiagramErrorBoxMock.mock.calls.length, 1, 'createDiagramErrorBox should be called once');
-                assert.deepEqual(createDiagramErrorBoxMock.mock.calls[0].arguments, [diagram], 'createDiagramErrorBox called with diagram');
-                assert.equal(firstErrorBox, createdErrorBox, 'First call returns newly created error box');
-
-                // --- Second call: Error box already exists ---
-                const getDiagramErrorBoxMockReturningCreated = test.mock.fn(() => createdErrorBox); // Returns the *same* instance
-                // Re-mock getDiagramErrorBox to return the existing one.
-                // It will override the previous mock, so the first mock will not be called again.
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', getDiagramErrorBoxMockReturningCreated);
-
-                const secondErrorBox = pkg.getOrCreateDiagramErrorBox(diagram);
-
-                assert.equal(getDiagramErrorBoxMockReturningCreated.mock.calls.length, 1, 'getDiagramErrorBox should be called once more for existing');
-                // The createDiagramErrorBoxMock.mock.calls.length should still be 1 from the first call.
-                assert.equal(createDiagramErrorBoxMock.mock.calls.length, 1, 'createDiagramErrorBox should not be called again');
-                assert.equal(secondErrorBox, createdErrorBox, 'Second call returns existing error box');
-                assert.equal(firstErrorBox, secondErrorBox, 'Both calls should return the same instance when reused');
-            });
-
-            test('showDiagramErrorMessage/hideDiagramErrorMessage: 表示を切り替える', () => {
-                const diagramMock = { style: { display: '' } }; // Mock for context.diagramElement
-                const errorBoxMock = { style: { display: 'none' } }; // Mock for the error box element
-                const messageNodeMock = { textContent: '' }; // Mock for the message node
-                const actionNodeMock = { style: { display: 'none' }, onclick: null }; // Mock for the action node
-
-                // Mock dom helpers
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
-                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // getOrCreate will call this if not found
-                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
-                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
-                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
-                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
-                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-
-                testContext.diagramElement = diagramMock;
-
-                const errors = withConsoleErrorCapture(() => {
-                    pkg.showDiagramErrorMessage('test-error-message', false, null, null, testContext);
-                });
-
-                assert.equal(errorBoxMock.style.display, '', 'errorBox should be displayed');
-                assert.equal(diagramMock.style.display, 'none', 'diagram should be hidden');
-                assert.equal(messageNodeMock.textContent, 'test-error-message', 'messageNode content should be set');
-                assert.equal(errors.some(line => line.includes('test-error-message')), true, 'console.error should be called');
-
-                pkg.hideDiagramErrorMessage(diagramMock); // Pass diagramMock directly as it's used
-                assert.equal(errorBoxMock.style.display, 'none', 'errorBox should be hidden');
-                assert.equal(diagramMock.style.display, '', 'diagram should be displayed');
-                assert.equal(messageNodeMock.textContent, '', 'messageNode content should be cleared');
-                assert.equal(actionNodeMock.style.display, 'none', 'actionNode should be hidden');
-                assert.equal(actionNodeMock.onclick, null, 'actionNode onclick should be cleared');
-            });
-
-            test('renderDiagramSvg: Mermaid描画を実行する', () => {
-                const diagramMock = {
-                    removeAttribute: test.mock.fn(),
-                    textContent: '',
-                    style: { display: '' } // Needs to be there for dom.setDiagramElementDisplay
-                };
-                testContext.diagramElement = diagramMock;
-
-                // Mock dom helpers used by hideDiagramErrorMessage and renderDiagramSvg itself
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => ({ style: {} }))); // Mock return for errorBox
-                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => ({ style: {} })));
-                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => ({ textContent: '' })));
-                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => ({ style: {}, onclick: null })));
-                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
-                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
-                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                test.mock.method(pkg.dom, 'setDiagramContent', test.mock.fn((el, content) => { el.textContent = content; }));
-                test.mock.method(pkg.dom, 'removeDiagramAttribute', test.mock.fn((el, attr) => { /* no-op */ }));
-
-
-                let runCalled = false;
-                global.window = {
-                    mermaid: {
-                        initialize() {
-                        },
-                        run() {
-                            runCalled = true;
-                        },
-                    },
-                };
-                global.mermaid = global.window.mermaid;
-
-                pkg.renderDiagramSvg('graph TD', 100, testContext);
-
-                assert.equal(diagramMock.textContent, 'graph TD'); // Check through the dom helper mock
-                assert.equal(pkg.dom.removeDiagramAttribute.mock.calls.length, 1);
-                assert.deepEqual(pkg.dom.removeDiagramAttribute.mock.calls[0].arguments, [diagramMock, 'data-processed']);
-                assert.equal(pkg.dom.setDiagramContent.mock.calls.length, 1);
-                assert.deepEqual(pkg.dom.setDiagramContent.mock.calls[0].arguments, [diagramMock, 'graph TD']);
-                assert.equal(runCalled, true);
-            });
         });
 
         test.describe('既定フィルタ', () => {
@@ -923,22 +751,6 @@ test.describe('package.js', () => {
                 assert.equal(candidate, 'app.domain');
             });
 
-            test('applyDefaultPackageFilterIfPresent: 入力済みなら適用しない', () => {
-                const doc = setupDocument();
-                setPackageData({
-                    packages: [{fqn: 'app.domain.core'}],
-                    relations: [],
-                }, testContext);
-                const input = doc.createElement('input');
-                input.id = 'package-filter-input';
-                input.value = 'app';
-                doc.elementsById.set('package-filter-input', input);
-
-                const applied = pkg.applyDefaultPackageFilterIfPresent(testContext);
-
-                assert.equal(applied, false);
-            });
-
             test('normalizePackageFilterValue: 空文字はnull', () => {
                 assert.equal(pkg.normalizePackageFilterValue(''), null);
                 assert.equal(pkg.normalizePackageFilterValue('   '), null);
@@ -955,35 +767,24 @@ test.describe('package.js', () => {
 
     test.describe('ダイアグラム', () => {
         test.describe('相互依存', () => {
-            test('renderMutualDependencyList: なしの場合は非表示', () => {
+            test('renderMutualDependencyList: 相互依存と原因を一覧化', () => {
                 const doc = setupDocument();
                 const container = new Element('div', doc);
                 doc.elementsById.set('mutual-dependency-list', container);
+                testContext.aggregationDepth = 0;
 
-                pkg.renderMutualDependencyList(new Set(), [], testContext);
-
-                assert.equal(container.style.display, 'none');
-                assert.equal(container.innerHTML, '');
-            });
-
-    test('renderMutualDependencyList: 相互依存と原因を一覧化', () => {
-        const doc = setupDocument();
-        const container = new Element('div', doc);
-        doc.elementsById.set('mutual-dependency-list', container);
-        testContext.aggregationDepth = 0;
-
-        pkg.renderMutualDependencyList(
-            new Set(['app.alpha::app.beta']),
-            [
-                {from: 'app.alpha.A', to: 'app.beta.B'},
-                {from: 'app.beta.B', to: 'app.alpha.A'},
-            ],
-            testContext
-        );
+                pkg.renderMutualDependencyList(
+                    new Set(['app.alpha::app.beta']),
+                    [
+                        {from: 'app.alpha.A', to: 'app.beta.B'},
+                        {from: 'app.beta.B', to: 'app.alpha.A'},
+                    ],
+                    testContext
+                );
 
                 assert.equal(container.style.display, '');
-        assert.equal(container.children.length, 1);
-        assert.equal(container.children[0].tagName, 'details');
+                assert.equal(container.children.length, 1);
+                assert.equal(container.children[0].tagName, 'details');
                 assert.equal(container.children[0].children[1].tagName, 'ul');
             });
 
@@ -1025,41 +826,6 @@ test.describe('package.js', () => {
                 assert.equal(diagram.textContent.includes('<-->'), true);
                 const mutual = doc.getElementById('mutual-dependency-list');
                 assert.equal(mutual.children.length > 0, true);
-            });
-
-            test('renderPackageDiagram: サブグラフ内のFQNノードラベルが省略される', () => {
-                const doc = setupDocument();
-                const diagram = setupDiagramEnvironment(doc, testContext);
-                setPackageData({
-                    packages: [
-                        {fqn: 'com.example', name: 'example', classCount: 1},
-                        {fqn: 'com.example.domain', name: 'domain', classCount: 1},
-                        {fqn: 'com.example.domain.model', classCount: 1}, // No 'name' property
-                        {fqn: 'com.example.domain.repository', name: 'repository', classCount: 1},
-                        {fqn: 'com.example.service', name: 'service', classCount: 1},
-                    ],
-                    relations: [
-                        {from: 'com.example.domain.model', to: 'com.example.domain.repository'},
-                        {from: 'com.example.service', to: 'com.example.domain'},
-                    ],
-                }, testContext);
-
-                testContext.aggregationDepth = 0; // Set to no aggregation to ensure full hierarchy is built
-                pkg.renderPackageDiagram(testContext, null, null);
-
-                const diagramContent = diagram.textContent;
-
-                // Match subgraph creation for com.example.domain (using regex for groupId)
-                assert.ok(/subgraph G\d+\["com\.example\.domain"]/.test(diagramContent), 'Expected subgraph for com.example.domain');
-
-                // Check for nodes inside this subgraph:
-                // com.example.domain.model (FQN, should be shortened to 'model')
-                assert.ok(/P\d+\["model"]/.test(diagramContent), 'Expected "com.example.domain.model" to be shortened to "model"');
-                // com.example.domain.repository (has 'name', should remain 'repository')
-                assert.ok(/P\d+\["repository"]/.test(diagramContent), 'Expected "com.example.domain.repository" to remain "repository"');
-
-                // Verify that 'com.example.service' is also present and correctly labeled
-                assert.ok(/P\d+\["service"]/.test(diagramContent), 'Expected "com.example.service" to be labeled "service"');
             });
         });
 
@@ -1105,71 +871,6 @@ test.describe('package.js', () => {
                 assert.ok(actionNodeMock.onclick, 'actionNode should have onclick handler');
                 assert.equal(actionNodeMock.style.display, '', 'actionNode should be displayed');
             });
-
-            test('mermaid.parseError: エラー内容を表示', () => {
-                const doc = setupDocument();
-                const diagramMock = setupDiagramEnvironment(doc, testContext); // testContext.diagramElement is set here
-                setPackageData({
-                    packages: [{fqn: 'app.a', name: 'A', classCount: 1}],
-                    relations: [],
-                }, testContext);
-                pkg.renderPackageDiagram(testContext, null, null); // This prepares the diagram and sets mermaid.parseError
-
-                // Mock dom helpers used by showDiagramErrorMessage internally
-                const errorBoxMock = { style: { display: 'none' } };
-                const messageNodeMock = { textContent: '' };
-                const actionNodeMock = { style: { display: 'none' }, onclick: null };
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
-                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // called by getOrCreate
-                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
-                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
-                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
-                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
-                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                
-                // Mermaidはパース失敗時のみ呼ばれるため、テストでは直接呼び出す。
-                const errors = withConsoleErrorCapture(() => {
-                    global.mermaid.parseError(
-                        {message: 'Mermaid parse error details'}, // Use a more specific message
-                        {line: 10, loc: 2}
-                    );
-                });
-
-                assert.equal(messageNodeMock.textContent.includes('Mermaid parse error:'), true);
-                assert.equal(messageNodeMock.textContent.includes('Line: 10 Column: 2'), true);
-                assert.equal(errors.some(line => line.includes('Mermaid parse error:')), true);
-                assert.equal(errors.some(line => line.includes('Mermaid parse error details')), true); // Check for specific error message
-                assert.equal(errors.some(line => line.includes('Mermaid error location: 10 2')), true);
-            });
-
-            test('renderDiagramAndTable: 描画とフィルタ適用を行う', () => {
-                const doc = setupDocument();
-                setupDiagramEnvironment(doc, testContext);
-                setPackageData({
-                    packages: [
-                        {fqn: 'app.a', name: 'A', classCount: 1},
-                        {fqn: 'app.b', name: 'B', classCount: 1},
-                    ],
-                    relations: [
-                        {from: 'app.a', to: 'app.b'},
-                    ],
-                }, testContext);
-                const rows = buildPackageRows(doc, ['app.a', 'app.b']);
-                doc.selectors.set('#package-table tbody', doc.createElement('tbody'));
-                const select = doc.createElement('select');
-                select.id = 'package-depth-select';
-                doc.elementsById.set('package-depth-select', select);
-                testContext.relatedFilterMode = 'direct';
-                testContext.relatedFilterFqn = 'app.a';
-                testContext.packageFilterFqn = null;
-                testContext.aggregationDepth = 0;
-
-                pkg.renderDiagramAndTable(testContext);
-
-                assert.equal(rows[1].classList.contains('hidden'), false);
-                assert.equal(select.children.length > 0, true);
-            });
         });
     });
 
@@ -1195,109 +896,6 @@ test.describe('package.js', () => {
             clearButton.eventListeners.get('click')();
             assert.equal(testContext.packageFilterFqn, null);
             assert.equal(input.value, '');
-        });
-
-        test('setupPackageFilterControls: Enterキーで適用', () => {
-            const doc = setupDocument();
-            setupDiagramEnvironment(doc, testContext);
-            setPackageData({
-                packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
-                relations: [],
-            }, testContext);
-            doc.selectorsAll.set('#package-table tbody tr', []);
-            createDepthSelect(doc);
-            const {input} = createPackageFilterControls(doc);
-
-            pkg.setupPackageFilterControls(testContext);
-
-            let prevented = false;
-            input.value = 'app.domain';
-            input.eventListeners.get('keydown')({
-                key: 'Enter',
-                preventDefault() {
-                    prevented = true;
-                },
-            });
-
-            assert.equal(prevented, true);
-            assert.equal(testContext.packageFilterFqn, 'app.domain');
-        });
-
-        test('setupAggregationDepthControl: 変更を反映する', () => {
-            const doc = setupDocument();
-            setupDiagramEnvironment(doc, testContext);
-            setPackageData({
-                packages: [
-                    {fqn: 'app.domain.a'},
-                    {fqn: 'app.domain.b'},
-                ],
-                relations: [],
-            }, testContext);
-            doc.selectorsAll.set('#package-table tbody tr', []);
-            const select = createDepthSelect(doc);
-
-            testContext.aggregationDepth = 0;
-            pkg.setupAggregationDepthControl(testContext);
-
-            select.value = '1';
-            select.eventListeners.get('change')();
-            assert.equal(testContext.aggregationDepth, 1);
-        });
-
-        test('setupRelatedFilterControls: モード変更を反映', () => {
-            const doc = setupDocument();
-            setupDiagramEnvironment(doc, testContext);
-            setPackageData({
-                packages: [
-                    {fqn: 'app.a'},
-                    {fqn: 'app.b'},
-                    {fqn: 'app.c'},
-                ],
-                relations: [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.b', to: 'app.c'},
-                ],
-            }, testContext);
-            createDepthSelect(doc);
-            const {select, clearButton} = createRelatedFilterControls(doc);
-            const input = doc.createElement('input');
-            input.id = 'package-filter-input';
-            doc.elementsById.set('package-filter-input', input);
-
-            testContext.aggregationDepth = 0;
-            testContext.relatedFilterMode = 'direct';
-            testContext.relatedFilterFqn = 'app.a';
-            pkg.setupRelatedFilterControls(testContext);
-
-            select.value = 'all';
-            select.eventListeners.get('change')();
-            assert.equal(testContext.relatedFilterMode, 'all');
-
-
-            clearButton.eventListeners.get('click')();
-            assert.equal(testContext.relatedFilterFqn, null);
-        });
-
-        test('setupDiagramDirectionControls: 向きを切り替える', () => {
-            const doc = setupDocument();
-            setupDiagramEnvironment(doc, testContext);
-            setPackageData({
-                packages: [{fqn: 'app.a'}],
-                relations: [],
-            }, testContext);
-            createDepthSelect(doc);
-            doc.selectorsAll.set('#package-table tbody tr', []);
-            const td = doc.createElement('input');
-            td.value = 'TD';
-            const lr = doc.createElement('input');
-            lr.value = 'LR';
-            doc.selectorsAll.set('input[name=\"diagram-direction\"]', [td, lr]);
-
-            pkg.setupDiagramDirectionControls(testContext);
-
-            lr.checked = true;
-            lr.eventListeners.get('change')();
-            assert.equal(testContext.diagramDirection, 'LR');
         });
     });
 

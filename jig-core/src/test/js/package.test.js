@@ -868,6 +868,12 @@ test.describe('package.js', () => {
                 assert.equal(pkg.normalizePackageFilterValue('   '), null);
                 assert.equal(pkg.normalizePackageFilterValue('app.domain'), 'app.domain');
             });
+
+            test('normalizeAggregationDepthValue: 数値化する', () => {
+                assert.equal(pkg.normalizeAggregationDepthValue('2'), 2);
+                assert.equal(pkg.normalizeAggregationDepthValue('0'), 0);
+                assert.equal(pkg.normalizeAggregationDepthValue('abc'), 0);
+            });
         });
     });
 

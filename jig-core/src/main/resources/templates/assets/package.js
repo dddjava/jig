@@ -953,7 +953,7 @@ function setupAggregationDepthControl(context) {
     updateAggregationDepthOptions(maxDepth, context);
     select.value = String(context.aggregationDepth);
     select.addEventListener('change', () => {
-        context.aggregationDepth = Number(select.value);
+        context.aggregationDepth = normalizeAggregationDepthValue(select.value);
         renderDiagramAndTable(context);
         renderRelatedFilterTarget(context);
         updateAggregationDepthOptions(maxDepth, context);
@@ -1065,6 +1065,11 @@ function normalizePackageFilterValue(value) {
     return trimmed ? trimmed : null;
 }
 
+function normalizeAggregationDepthValue(value) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function setupDiagramDirectionControls(context) {
     const radios = dom.getDiagramDirectionRadios();
     radios.forEach(radio => {
@@ -1171,6 +1176,7 @@ if (typeof module !== 'undefined' && module.exports) {
         applyDefaultPackageFilterIfPresent,
         findDefaultPackageFilterCandidate,
         normalizePackageFilterValue,
+        normalizeAggregationDepthValue,
         setupRelatedFilterControls,
         setupDiagramDirectionControls,
         setupTransitiveReductionControl,

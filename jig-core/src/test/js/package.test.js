@@ -487,6 +487,25 @@ test.describe('package.js', () => {
                 const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
+
+            test('buildFilteredDiagramRelations: パッケージフィルタを適用する', () => {
+                const base = pkg.buildFilteredDiagramRelations(packages, relations, [], 'app', 0, false);
+                assert.deepEqual(Array.from(base.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
+                assert.equal(base.uniqueRelations.length, 2);
+            });
+
+            test('applyRelatedFilterToDiagramRelations: relatedSetで絞り込む', () => {
+                const base = pkg.buildFilteredDiagramRelations(packages, relations, [], null, 0, false);
+                const filtered = pkg.applyRelatedFilterToDiagramRelations(
+                    base.uniqueRelations,
+                    base.visibleSet,
+                    'app.b',
+                    0,
+                    'direct'
+                );
+                assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
+                assert.equal(filtered.uniqueRelations.length, 2);
+            });
         });
 
         test.describe('テーブル', () => {

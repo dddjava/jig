@@ -745,7 +745,30 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
 }
 
 function getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
+    const base = buildFilteredDiagramRelations(
+        packages,
+        relations,
+        causeRelationEvidence,
+        packageFilterFqn,
+        aggregationDepth,
+        transitiveReductionEnabled
+    );
     const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
+    const {uniqueRelations, visibleSet} = applyRelatedFilterToDiagramRelations(
+        base.uniqueRelations,
+        base.visibleSet,
+        aggregatedRoot,
+        aggregationDepth,
+        relatedFilterMode
+    );
+    return {
+        uniqueRelations,
+        visibleSet,
+        filteredCauseRelationEvidence: base.filteredCauseRelationEvidence,
+    };
+}
+
+function buildFilteredDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
     const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     const withinPackageFilter = fqn =>
         !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
@@ -779,25 +802,31 @@ function getVisibleDiagramElements(packages, relations, causeRelationEvidence, p
         uniqueRelations = transitiveReduction(uniqueRelations);
     }
 
+    return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
+}
+
+function applyRelatedFilterToDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedFilterMode) {
+    const nextVisibleSet = new Set(visibleSet);
+    let nextRelations = uniqueRelations;
     if (aggregatedRoot) {
         const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, aggregationDepth, relatedFilterMode);
         if (relatedFilterMode === 'direct') {
-            uniqueRelations = uniqueRelations.filter(relation =>
+            nextRelations = uniqueRelations.filter(relation =>
                 relation.from === aggregatedRoot || relation.to === aggregatedRoot
             );
         } else {
-            uniqueRelations = uniqueRelations.filter(relation =>
+            nextRelations = uniqueRelations.filter(relation =>
                 relatedSet.has(relation.from) && relatedSet.has(relation.to)
             );
         }
-        visibleSet.clear();
-        relatedSet.forEach(value => visibleSet.add(value));
+        nextVisibleSet.clear();
+        relatedSet.forEach(value => nextVisibleSet.add(value));
     }
-    uniqueRelations.forEach(relation => {
-        visibleSet.add(relation.from);
-        visibleSet.add(relation.to);
+    nextRelations.forEach(relation => {
+        nextVisibleSet.add(relation.from);
+        nextVisibleSet.add(relation.to);
     });
-    return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
+    return {uniqueRelations: nextRelations, visibleSet: nextVisibleSet};
 }
 
 function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
@@ -1077,6 +1106,8 @@ if (typeof module !== 'undefined' && module.exports) {
 
         // private
         getVisibleDiagramElements,
+        buildFilteredDiagramRelations,
+        applyRelatedFilterToDiagramRelations,
         getAggregatedFqn,
         collectRelatedSet,
         getPackageSummaryData,

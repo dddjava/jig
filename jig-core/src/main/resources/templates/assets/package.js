@@ -881,8 +881,7 @@ function getOrCreateDiagramErrorBox(diagram) {
     return dom.createDiagramErrorBox(diagram);
 }
 
-function showDiagramErrorMessage(message, withAction, err, hash, context) {
-    const diagram = context.diagramElement;
+function showDiagramErrorMessage(diagram, message, withAction, err, hash, context) {
     if (!diagram) return;
     console.error(message);
     if (err) {
@@ -900,7 +899,7 @@ function showDiagramErrorMessage(message, withAction, err, hash, context) {
         if (withAction) {
             dom.setNodeOnClick(actionNode, function () {
                 if (!context.pendingDiagramRender) return;
-                renderDiagramWithMermaid(context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges, context);
+                renderDiagramWithMermaid(diagram, context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges);
                 context.pendingDiagramRender = null;
             });
         } else {
@@ -922,8 +921,7 @@ function hideDiagramErrorMessage(diagram) {
     dom.setDiagramElementDisplay(diagram, '');
 }
 
-function renderDiagramWithMermaid(text, maxEdges, context) {
-    const diagram = context.diagramElement;
+function renderDiagramWithMermaid(diagram, text, maxEdges) {
     if (!diagram || !window.mermaid) return;
     hideDiagramErrorMessage(diagram);
     dom.removeDiagramAttribute(diagram, 'data-processed');
@@ -970,13 +968,12 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context)
 function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     const diagram = dom.getDiagram();
     if (!diagram) return;
-    context.diagramElement = diagram;
 
     const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn);
     applyDiagramRenderPlan(context, renderPlan);
-    if (shouldSkipDiagramRenderByEdgeLimit(context)) return;
+    if (shouldSkipDiagramRenderByEdgeLimit(diagram, context)) return;
     setDiagramSource(diagram, context.lastDiagramSource);
-    renderDiagramWithMermaidIfAvailable(context);
+    renderDiagramWithMermaidIfAvailable(diagram, context);
 }
 
 function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
@@ -1018,7 +1015,7 @@ function applyDiagramRenderPlan(context, renderPlan) {
     context.lastDiagramEdgeCount = renderPlan.uniqueRelations.length;
 }
 
-function shouldSkipDiagramRenderByEdgeLimit(context) {
+function shouldSkipDiagramRenderByEdgeLimit(diagram, context) {
     if (context.lastDiagramEdgeCount <= context.DEFAULT_MAX_EDGES) return false;
     context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
     const message = [
@@ -1026,7 +1023,7 @@ function shouldSkipDiagramRenderByEdgeLimit(context) {
         `エッジ数: ${context.lastDiagramEdgeCount}（上限: ${context.DEFAULT_MAX_EDGES}）`,
         '描画する場合はボタンを押してください。',
     ].join('\n');
-    showDiagramErrorMessage(message, true, null, null, context);
+    showDiagramErrorMessage(diagram, message, true, null, null, context);
     return true;
 }
 
@@ -1035,13 +1032,13 @@ function setDiagramSource(diagram, source) {
     diagram.textContent = source;
 }
 
-function renderDiagramWithMermaidIfAvailable(context) {
+function renderDiagramWithMermaidIfAvailable(diagram, context) {
     if (!window.mermaid) return;
-    ensureMermaidParseErrorHandler(context);
-    renderDiagramWithMermaid(context.lastDiagramSource, context.DEFAULT_MAX_EDGES, context);
+    ensureMermaidParseErrorHandler(diagram, context);
+    renderDiagramWithMermaid(diagram, context.lastDiagramSource, context.DEFAULT_MAX_EDGES);
 }
 
-function ensureMermaidParseErrorHandler(context) {
+function ensureMermaidParseErrorHandler(diagram, context) {
     if (mermaid.parseError) return;
     mermaid.parseError = function (err, hash) {
         const message = err && err.message ? err.message : String(err);
@@ -1050,7 +1047,7 @@ function ensureMermaidParseErrorHandler(context) {
         if (isEdgeLimit) {
             context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
         }
-        showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash, context);
+        showDiagramErrorMessage(diagram, `Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash, context);
     };
 }
 

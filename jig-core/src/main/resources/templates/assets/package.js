@@ -3,7 +3,6 @@ const packageContext = {
     packageSummaryCache: null,
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
-    diagramElement: null,
     pendingDiagramRender: null,
     lastDiagramSource: '',
     lastDiagramEdgeCount: 0,

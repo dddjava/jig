@@ -426,6 +426,26 @@ test.describe('package.js', () => {
 
     test.describe('フィルタ', () => {
         test.describe('ロジック', () => {
+            test('normalizePackageFilterValue: 空文字はnull', () => {
+                assert.equal(pkg.normalizePackageFilterValue(''), null);
+                assert.equal(pkg.normalizePackageFilterValue('   '), null);
+                assert.equal(pkg.normalizePackageFilterValue('app.domain'), 'app.domain');
+            });
+
+            test('normalizeAggregationDepthValue: 数値化する', () => {
+                assert.equal(pkg.normalizeAggregationDepthValue('2'), 2);
+                assert.equal(pkg.normalizeAggregationDepthValue('0'), 0);
+                assert.equal(pkg.normalizeAggregationDepthValue('abc'), 0);
+            });
+
+            test('findDefaultPackageFilterCandidate: ドメイン候補を返す', () => {
+                const candidate = pkg.findDefaultPackageFilterCandidate([
+                    {fqn: 'app.domain.core'},
+                    {fqn: 'app.domain.sub'},
+                ]);
+                assert.equal(candidate, 'app.domain');
+            });
+
             test('buildPackageRowVisibility: パッケージフィルタのみ', () => {
                 const visibility = pkg.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],
@@ -461,6 +481,18 @@ test.describe('package.js', () => {
                 assert.deepEqual(visibility, [true, true, false]);
             });
 
+            const packages = [
+                {fqn: 'app.a'},
+                {fqn: 'app.b'},
+                {fqn: 'app.c'},
+                {fqn: 'lib.d'},
+            ];
+            const relations = [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.b', to: 'app.c'},
+                {from: 'app.c', to: 'lib.d'},
+            ];
+
             test('collectRelatedSet: directモードは隣接のみ含める', () => {
                 const aggregationDepth = 0;
                 const relatedFilterMode = 'direct';
@@ -489,18 +521,6 @@ test.describe('package.js', () => {
                     ['app.domain.a', 'app.domain.b', 'app.domain.c']
                 );
             });
-
-            const packages = [
-                {fqn: 'app.a'},
-                {fqn: 'app.b'},
-                {fqn: 'app.c'},
-                {fqn: 'lib.d'},
-            ];
-            const relations = [
-                {from: 'app.a', to: 'app.b'},
-                {from: 'app.b', to: 'app.c'},
-                {from: 'app.c', to: 'lib.d'},
-            ];
 
             test('buildFilteredDiagramRelations: パッケージフィルタを適用する', () => {
                 const base = pkg.buildFilteredDiagramRelations(packages, relations, [], 'app', 0, false);
@@ -535,26 +555,6 @@ test.describe('package.js', () => {
                 const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
-
-            test('findDefaultPackageFilterCandidate: ドメイン候補を返す', () => {
-                const candidate = pkg.findDefaultPackageFilterCandidate([
-                    {fqn: 'app.domain.core'},
-                    {fqn: 'app.domain.sub'},
-                ]);
-                assert.equal(candidate, 'app.domain');
-            });
-
-            test('normalizePackageFilterValue: 空文字はnull', () => {
-                assert.equal(pkg.normalizePackageFilterValue(''), null);
-                assert.equal(pkg.normalizePackageFilterValue('   '), null);
-                assert.equal(pkg.normalizePackageFilterValue('app.domain'), 'app.domain');
-            });
-
-            test('normalizeAggregationDepthValue: 数値化する', () => {
-                assert.equal(pkg.normalizeAggregationDepthValue('2'), 2);
-                assert.equal(pkg.normalizeAggregationDepthValue('0'), 0);
-                assert.equal(pkg.normalizeAggregationDepthValue('abc'), 0);
-            });
         });
 
         test.describe('UI', () => {
@@ -579,27 +579,28 @@ test.describe('package.js', () => {
                 assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
-            test('setupPackageFilterControls: 適用/解除をハンドリング', () => {
+            test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
                 const doc = setupDocument();
-                setupDiagramEnvironment(doc, testContext);
                 setPackageData({
-                    packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
-                    relations: [],
+                    packages: [
+                        {fqn: 'app.a'},
+                        {fqn: 'app.b'},
+                        {fqn: 'app.c'},
+                    ],
+                    relations: [
+                        {from: 'app.a', to: 'app.b'},
+                    ],
                 }, testContext);
-                doc.selectorsAll.set('#package-table tbody tr', []);
-                createDepthSelect(doc);
+                const rows = buildPackageRows(doc, ['app.a', 'app.b', 'app.c']);
+                testContext.aggregationDepth = 0;
+                testContext.relatedFilterMode = 'direct';
+                testContext.packageFilterFqn = null;
 
-                const {input, applyButton, clearButton} = createPackageFilterControls(doc);
+                pkg.applyRelatedFilterToTable('app.a', testContext);
 
-                pkg.setupPackageFilterControls(testContext);
-
-                input.value = 'app.domain';
-                applyButton.eventListeners.get('click')();
-                assert.equal(testContext.packageFilterFqn, 'app.domain');
-
-                clearButton.eventListeners.get('click')();
-                assert.equal(testContext.packageFilterFqn, null);
-                assert.equal(input.value, '');
+                assert.equal(rows[0].classList.contains('hidden'), false);
+                assert.equal(rows[1].classList.contains('hidden'), false);
+                assert.equal(rows[2].classList.contains('hidden'), true);
             });
 
             test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用', () => {
@@ -623,28 +624,27 @@ test.describe('package.js', () => {
                 assert.equal(input.value, 'app.domain');
             });
 
-            test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
+            test('setupPackageFilterControls: 適用/解除をハンドリング', () => {
                 const doc = setupDocument();
+                setupDiagramEnvironment(doc, testContext);
                 setPackageData({
-                    packages: [
-                        {fqn: 'app.a'},
-                        {fqn: 'app.b'},
-                        {fqn: 'app.c'},
-                    ],
-                    relations: [
-                        {from: 'app.a', to: 'app.b'},
-                    ],
+                    packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
+                    relations: [],
                 }, testContext);
-                const rows = buildPackageRows(doc, ['app.a', 'app.b', 'app.c']);
-                testContext.aggregationDepth = 0;
-                testContext.relatedFilterMode = 'direct';
-                testContext.packageFilterFqn = null;
+                doc.selectorsAll.set('#package-table tbody tr', []);
+                createDepthSelect(doc);
 
-                pkg.applyRelatedFilterToTable('app.a', testContext);
+                const {input, applyButton, clearButton} = createPackageFilterControls(doc);
 
-                assert.equal(rows[0].classList.contains('hidden'), false);
-                assert.equal(rows[1].classList.contains('hidden'), false);
-                assert.equal(rows[2].classList.contains('hidden'), true);
+                pkg.setupPackageFilterControls(testContext);
+
+                input.value = 'app.domain';
+                applyButton.eventListeners.get('click')();
+                assert.equal(testContext.packageFilterFqn, 'app.domain');
+
+                clearButton.eventListeners.get('click')();
+                assert.equal(testContext.packageFilterFqn, null);
+                assert.equal(input.value, '');
             });
         });
     });
@@ -721,59 +721,6 @@ test.describe('package.js', () => {
                 ]);
             });
 
-            test('buildDiagramEdgeLines: 相互依存で双方向リンクを生成', () => {
-                const {ensureNodeId} = pkg.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
-                const result = pkg.buildDiagramEdgeLines(
-                    [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
-                    ensureNodeId
-                );
-                assert.equal(result.edgeLines.some(line => line.includes('<-->')), true);
-                assert.equal(result.linkStyles.length, 1);
-            });
-
-            test('buildDiagramGroupTree: 共通プレフィックスでグループ化する', () => {
-                const visibleFqns = ['com.example.a', 'com.example.b'];
-                const nodeIdByFqn = new Map([
-                    ['com.example.a', 'P0'],
-                    ['com.example.b', 'P1'],
-                ]);
-
-                const rootGroup = pkg.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
-
-                assert.equal(rootGroup.children.has('com.example'), true);
-            });
-
-            test('buildSubgraphLines: サブグラフ行を生成する', () => {
-                const rootGroup = {
-                    key: '',
-                    nodes: [],
-                    children: new Map([
-                        ['com.example', {key: 'com.example', nodes: ['P0', 'P1'], children: new Map()}],
-                    ]),
-                };
-                const addNodeLines = (lines, nodeId) => {
-                    lines.push(`node ${nodeId}`);
-                };
-
-                const lines = pkg.buildSubgraphLines(rootGroup, addNodeLines, text => text);
-
-                assert.equal(lines.some(line => line.includes('node P0')), true);
-            });
-
-            test('buildDiagramNodeLabel: サブグラフ配下のラベルを短縮する', () => {
-                const label = pkg.buildDiagramNodeLabel(
-                    'com.example.domain.model',
-                    'com.example.domain.model',
-                    'com.example.domain'
-                );
-                assert.equal(label, 'model');
-            });
-
-            test('buildDiagramNodeTooltip: FQNを返す', () => {
-                assert.equal(pkg.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
-                assert.equal(pkg.buildDiagramNodeTooltip(null), '');
-            });
-
             test('buildMutualDependencyItems: 相互依存の原因を整形する', () => {
                 const items = pkg.buildMutualDependencyItems(
                     new Set(['app.alpha::app.beta']),
@@ -841,6 +788,59 @@ test.describe('package.js', () => {
                 ];
                 const result = pkg.transitiveReduction(relations);
                 assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
+            });
+
+            test('buildDiagramEdgeLines: 相互依存で双方向リンクを生成', () => {
+                const {ensureNodeId} = pkg.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
+                const result = pkg.buildDiagramEdgeLines(
+                    [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
+                    ensureNodeId
+                );
+                assert.equal(result.edgeLines.some(line => line.includes('<-->')), true);
+                assert.equal(result.linkStyles.length, 1);
+            });
+
+            test('buildDiagramNodeLabel: サブグラフ配下のラベルを短縮する', () => {
+                const label = pkg.buildDiagramNodeLabel(
+                    'com.example.domain.model',
+                    'com.example.domain.model',
+                    'com.example.domain'
+                );
+                assert.equal(label, 'model');
+            });
+
+            test('buildDiagramNodeTooltip: FQNを返す', () => {
+                assert.equal(pkg.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
+                assert.equal(pkg.buildDiagramNodeTooltip(null), '');
+            });
+
+            test('buildDiagramGroupTree: 共通プレフィックスでグループ化する', () => {
+                const visibleFqns = ['com.example.a', 'com.example.b'];
+                const nodeIdByFqn = new Map([
+                    ['com.example.a', 'P0'],
+                    ['com.example.b', 'P1'],
+                ]);
+
+                const rootGroup = pkg.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+
+                assert.equal(rootGroup.children.has('com.example'), true);
+            });
+
+            test('buildSubgraphLines: サブグラフ行を生成する', () => {
+                const rootGroup = {
+                    key: '',
+                    nodes: [],
+                    children: new Map([
+                        ['com.example', {key: 'com.example', nodes: ['P0', 'P1'], children: new Map()}],
+                    ]),
+                };
+                const addNodeLines = (lines, nodeId) => {
+                    lines.push(`node ${nodeId}`);
+                };
+
+                const lines = pkg.buildSubgraphLines(rootGroup, addNodeLines, text => text);
+
+                assert.equal(lines.some(line => line.includes('node P0')), true);
             });
         });
 

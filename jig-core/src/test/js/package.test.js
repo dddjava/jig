@@ -842,6 +842,21 @@ test.describe('package.js', () => {
                     {value: '1', text: '深さ1（P1 / R1）'},
                 ]);
             });
+
+            test('buildDiagramNodeLines: クリックハンドラ名を埋め込む', () => {
+                const visibleSet = new Set(['app.a']);
+                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkg.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
+                const {nodeLines} = pkg.buildDiagramNodeLines(
+                    visibleSet,
+                    nodeIdByFqn,
+                    nodeIdToFqn,
+                    nodeLabelById,
+                    text => text
+                );
+                const clickLine = nodeLines.find(line => line.startsWith('click '));
+                assert.ok(clickLine);
+                assert.equal(clickLine.includes(pkg.DIAGRAM_CLICK_HANDLER_NAME), true);
+            });
         });
 
         test.describe('UI', () => {
@@ -941,7 +956,7 @@ test.describe('package.js', () => {
 
                 pkg.registerDiagramClickHandler(testContext, applyRelatedFilter);
 
-                global.window.filterPackageDiagram('P1');
+                global.window[pkg.DIAGRAM_CLICK_HANDLER_NAME]('P1');
 
                 assert.deepEqual(called, {fqn: 'app.example', context: testContext});
             });

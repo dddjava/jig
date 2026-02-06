@@ -14,6 +14,8 @@ const packageContext = {
     transitiveReductionEnabled: true,
 };
 
+const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
+
 const dom = {
     getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
     setRelatedFilterTargetText: (element, text) => { if (element) element.textContent = text; },
@@ -556,7 +558,7 @@ function setRelatedFilterAndRender(fqn, context) {
 
 function registerDiagramClickHandler(context, applyRelatedFilter = setRelatedFilterAndRender) {
     if (typeof window === 'undefined') return;
-    window.filterPackageDiagram = function (nodeId) {
+    window[DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
         const fqn = context.diagramNodeIdToFqn.get(nodeId);
         if (!fqn) return;
         applyRelatedFilter(fqn, context);
@@ -795,7 +797,7 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
         const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
         lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
         const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
-        lines.push(`click ${nodeId} filterPackageDiagram "${tooltip}"`);
+        lines.push(`click ${nodeId} ${DIAGRAM_CLICK_HANDLER_NAME} "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
             lines.push(`class ${nodeId} parentPackage`);
         }
@@ -1191,6 +1193,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         // public
         packageContext,
+        DIAGRAM_CLICK_HANDLER_NAME,
         dom,
 
         // private

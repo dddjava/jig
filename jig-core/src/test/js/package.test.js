@@ -764,6 +764,15 @@ test.describe('package.js', () => {
                 }]);
             });
 
+            test('buildPackageTableActionSpecs: ボタン文言を返す', () => {
+                const specs = pkg.buildPackageTableActionSpecs();
+
+                assert.equal(specs.filter.ariaLabel, 'このパッケージで絞り込み');
+                assert.equal(specs.filter.screenReaderText, '絞り込み');
+                assert.equal(specs.related.ariaLabel, '関連のみ表示');
+                assert.equal(specs.related.screenReaderText, '関連のみ表示');
+            });
+
             test('getOrCreateDiagramErrorBox: エラーボックスを作成/再利用する', () => {
                 const diagram = { parentNode: { insertBefore: test.mock.fn() } }; // Minimal mock for diagram
 

@@ -316,15 +316,16 @@ function buildPackageTableRowSpecs(rows) {
 
 function createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow) {
     const tr = document.createElement('tr');
+    const actionSpecs = buildPackageTableActionSpecs();
 
     const actionTd = document.createElement('td');
     const actionButton = document.createElement('button');
     actionButton.type = 'button';
     actionButton.className = 'package-filter-icon';
-    actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
+    actionButton.setAttribute('aria-label', actionSpecs.filter.ariaLabel);
     const actionText = document.createElement('span');
     actionText.className = 'screen-reader-only';
-    actionText.textContent = '絞り込み';
+    actionText.textContent = actionSpecs.filter.screenReaderText;
     actionButton.appendChild(actionText);
     actionButton.addEventListener('click', () => applyFilter(spec.fqn));
     actionTd.appendChild(actionButton);
@@ -334,10 +335,10 @@ function createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow) {
     const relatedButton = document.createElement('button');
     relatedButton.type = 'button';
     relatedButton.className = 'related-icon';
-    relatedButton.setAttribute('aria-label', '関連のみ表示');
+    relatedButton.setAttribute('aria-label', actionSpecs.related.ariaLabel);
     const relatedText = document.createElement('span');
     relatedText.className = 'screen-reader-only';
-    relatedText.textContent = '関連のみ表示';
+    relatedText.textContent = actionSpecs.related.screenReaderText;
     relatedButton.appendChild(relatedText);
     relatedButton.addEventListener('click', () => applyRelatedFilterForRow(spec.fqn));
     relatedTd.appendChild(relatedButton);
@@ -368,6 +369,19 @@ function createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow) {
     tr.appendChild(outgoingCountTd);
 
     return tr;
+}
+
+function buildPackageTableActionSpecs() {
+    return {
+        filter: {
+            ariaLabel: 'このパッケージで絞り込み',
+            screenReaderText: '絞り込み',
+        },
+        related: {
+            ariaLabel: '関連のみ表示',
+            screenReaderText: '関連のみ表示',
+        },
+    };
 }
 
 function applyPackageFilterToTable(packageFilterFqn) {
@@ -1202,6 +1216,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildPackageTableRows,
         buildPackageTableRowSpecs,
         createPackageTableRow,
+        buildPackageTableActionSpecs,
         applyPackageFilterToTable,
         applyRelatedFilterToTable,
         renderRelatedFilterTarget,

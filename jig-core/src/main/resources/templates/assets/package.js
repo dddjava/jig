@@ -881,7 +881,7 @@ function showDiagramErrorMessage(message, withAction, err, hash, context) {
         if (withAction) {
             dom.setNodeOnClick(actionNode, function () {
                 if (!context.pendingDiagramRender) return;
-                renderDiagramSvg(context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges, context);
+                renderDiagramWithMermaid(context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges, context);
                 context.pendingDiagramRender = null;
             });
         } else {
@@ -903,7 +903,7 @@ function hideDiagramErrorMessage(diagram) {
     dom.setDiagramElementDisplay(diagram, '');
 }
 
-function renderDiagramSvg(text, maxEdges, context) {
+function renderDiagramWithMermaid(text, maxEdges, context) {
     const diagram = context.diagramElement;
     if (!diagram || !window.mermaid) return;
     hideDiagramErrorMessage(diagram);
@@ -996,7 +996,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
                 showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash, context);
             };
         }
-        renderDiagramSvg(context.lastDiagramSource, context.DEFAULT_MAX_EDGES, context);
+        renderDiagramWithMermaid(context.lastDiagramSource, context.DEFAULT_MAX_EDGES, context);
     }
 }
 
@@ -1230,7 +1230,7 @@ if (typeof module !== 'undefined' && module.exports) {
         getOrCreateDiagramErrorBox,
         showDiagramErrorMessage,
         hideDiagramErrorMessage,
-        renderDiagramSvg,
+        renderDiagramWithMermaid,
         renderMutualDependencyList,
         renderPackageDiagram,
         updateDiagramAndTable,

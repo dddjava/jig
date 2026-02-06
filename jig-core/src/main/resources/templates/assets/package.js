@@ -248,12 +248,7 @@ function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth,
 
 function renderPackageTable(context) {
     const {packages, relations} = getPackageSummaryData(context);
-    const incomingCounts = new Map();
-    const outgoingCounts = new Map();
-    relations.forEach(relation => {
-        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
-        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
-    });
+    const rows = buildPackageTableRows(packages, relations);
 
     const tbody = document.querySelector('#package-table tbody');
 
@@ -270,7 +265,7 @@ function renderPackageTable(context) {
         applyRelatedFilter(fqn, context);
     };
 
-    packages.forEach(item => {
+    rows.forEach(item => {
         const tr = document.createElement('tr');
 
         const actionTd = document.createElement('td');
@@ -314,17 +309,31 @@ function renderPackageTable(context) {
         tr.appendChild(classCountTd);
 
         const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(incomingCounts.get(item.fqn) ?? 0);
+        incomingCountTd.textContent = String(item.incomingCount ?? 0);
         incomingCountTd.className = 'number';
         tr.appendChild(incomingCountTd);
 
         const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(outgoingCounts.get(item.fqn) ?? 0);
+        outgoingCountTd.textContent = String(item.outgoingCount ?? 0);
         outgoingCountTd.className = 'number';
         tr.appendChild(outgoingCountTd);
 
         tbody.appendChild(tr);
     });
+}
+
+function buildPackageTableRows(packages, relations) {
+    const incomingCounts = new Map();
+    const outgoingCounts = new Map();
+    relations.forEach(relation => {
+        outgoingCounts.set(relation.from, (outgoingCounts.get(relation.from) ?? 0) + 1);
+        incomingCounts.set(relation.to, (incomingCounts.get(relation.to) ?? 0) + 1);
+    });
+    return packages.map(item => ({
+        ...item,
+        incomingCount: incomingCounts.get(item.fqn) ?? 0,
+        outgoingCount: outgoingCounts.get(item.fqn) ?? 0,
+    }));
 }
 
 function applyPackageFilterToTable(packageFilterFqn) {
@@ -1014,6 +1023,7 @@ if (typeof module !== 'undefined' && module.exports) {
         hideDiagramErrorMessage,
         renderDiagramSvg,
         renderPackageTable,
+        buildPackageTableRows,
         applyPackageFilterToTable,
         applyRelatedFilterToTable,
         renderRelatedFilterTarget,

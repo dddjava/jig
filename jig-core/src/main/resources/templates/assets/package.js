@@ -554,6 +554,14 @@ function setRelatedFilterAndRender(fqn, context) {
     renderRelatedFilterLabel(context);
 }
 
+if (typeof window !== 'undefined') {
+    window.filterPackageDiagram = function (nodeId) {
+        const fqn = packageContext.diagramNodeIdToFqn.get(nodeId);
+        if (!fqn) return;
+        setRelatedFilterAndRender(fqn, packageContext);
+    };
+}
+
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
     if (!input || input.value.trim()) return false;

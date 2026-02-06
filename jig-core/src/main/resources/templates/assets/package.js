@@ -267,6 +267,7 @@ function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth,
 function renderPackageTable(context) {
     const {packages, relations} = getPackageSummaryData(context);
     const rows = buildPackageTableRows(packages, relations);
+    const rowSpecs = buildPackageTableRowSpecs(rows);
 
     const tbody = dom.getPackageTableBody();
 
@@ -283,59 +284,8 @@ function renderPackageTable(context) {
         applyRelatedFilter(fqn, context);
     };
 
-    rows.forEach(item => {
-        const tr = document.createElement('tr');
-
-        const actionTd = document.createElement('td');
-        const actionButton = document.createElement('button');
-        actionButton.type = 'button';
-        actionButton.className = 'package-filter-icon';
-        actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
-        const actionText = document.createElement('span');
-        actionText.className = 'screen-reader-only';
-        actionText.textContent = '絞り込み';
-        actionButton.appendChild(actionText);
-        actionButton.addEventListener('click', () => applyFilter(item.fqn));
-        actionTd.appendChild(actionButton);
-        tr.appendChild(actionTd);
-
-        const relatedTd = document.createElement('td');
-        const relatedButton = document.createElement('button');
-        relatedButton.type = 'button';
-        relatedButton.className = 'related-icon';
-        relatedButton.setAttribute('aria-label', '関連のみ表示');
-        const relatedText = document.createElement('span');
-        relatedText.className = 'screen-reader-only';
-        relatedText.textContent = '関連のみ表示';
-        relatedButton.appendChild(relatedText);
-        relatedButton.addEventListener('click', () => applyRelatedFilterForRow(item.fqn));
-        relatedTd.appendChild(relatedButton);
-        tr.appendChild(relatedTd);
-
-        const fqnTd = document.createElement('td');
-        fqnTd.textContent = item.fqn;
-        fqnTd.className = 'fqn';
-        tr.appendChild(fqnTd);
-
-        const nameTd = document.createElement('td');
-        nameTd.textContent = item.name;
-        tr.appendChild(nameTd);
-
-        const classCountTd = document.createElement('td');
-        classCountTd.textContent = String(item.classCount);
-        classCountTd.className = 'number';
-        tr.appendChild(classCountTd);
-
-        const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(item.incomingCount ?? 0);
-        incomingCountTd.className = 'number';
-        tr.appendChild(incomingCountTd);
-
-        const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(item.outgoingCount ?? 0);
-        outgoingCountTd.className = 'number';
-        tr.appendChild(outgoingCountTd);
-
+    rowSpecs.forEach(spec => {
+        const tr = createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow);
         tbody.appendChild(tr);
     });
 }
@@ -352,6 +302,72 @@ function buildPackageTableRows(packages, relations) {
         incomingCount: incomingCounts.get(item.fqn) ?? 0,
         outgoingCount: outgoingCounts.get(item.fqn) ?? 0,
     }));
+}
+
+function buildPackageTableRowSpecs(rows) {
+    return rows.map(item => ({
+        fqn: item.fqn,
+        name: item.name,
+        classCount: item.classCount,
+        incomingCount: item.incomingCount ?? 0,
+        outgoingCount: item.outgoingCount ?? 0,
+    }));
+}
+
+function createPackageTableRow(spec, applyFilter, applyRelatedFilterForRow) {
+    const tr = document.createElement('tr');
+
+    const actionTd = document.createElement('td');
+    const actionButton = document.createElement('button');
+    actionButton.type = 'button';
+    actionButton.className = 'package-filter-icon';
+    actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
+    const actionText = document.createElement('span');
+    actionText.className = 'screen-reader-only';
+    actionText.textContent = '絞り込み';
+    actionButton.appendChild(actionText);
+    actionButton.addEventListener('click', () => applyFilter(spec.fqn));
+    actionTd.appendChild(actionButton);
+    tr.appendChild(actionTd);
+
+    const relatedTd = document.createElement('td');
+    const relatedButton = document.createElement('button');
+    relatedButton.type = 'button';
+    relatedButton.className = 'related-icon';
+    relatedButton.setAttribute('aria-label', '関連のみ表示');
+    const relatedText = document.createElement('span');
+    relatedText.className = 'screen-reader-only';
+    relatedText.textContent = '関連のみ表示';
+    relatedButton.appendChild(relatedText);
+    relatedButton.addEventListener('click', () => applyRelatedFilterForRow(spec.fqn));
+    relatedTd.appendChild(relatedButton);
+    tr.appendChild(relatedTd);
+
+    const fqnTd = document.createElement('td');
+    fqnTd.textContent = spec.fqn;
+    fqnTd.className = 'fqn';
+    tr.appendChild(fqnTd);
+
+    const nameTd = document.createElement('td');
+    nameTd.textContent = spec.name;
+    tr.appendChild(nameTd);
+
+    const classCountTd = document.createElement('td');
+    classCountTd.textContent = String(spec.classCount);
+    classCountTd.className = 'number';
+    tr.appendChild(classCountTd);
+
+    const incomingCountTd = document.createElement('td');
+    incomingCountTd.textContent = String(spec.incomingCount ?? 0);
+    incomingCountTd.className = 'number';
+    tr.appendChild(incomingCountTd);
+
+    const outgoingCountTd = document.createElement('td');
+    outgoingCountTd.textContent = String(spec.outgoingCount ?? 0);
+    outgoingCountTd.className = 'number';
+    tr.appendChild(outgoingCountTd);
+
+    return tr;
 }
 
 function applyPackageFilterToTable(packageFilterFqn) {
@@ -1165,6 +1181,8 @@ if (typeof module !== 'undefined' && module.exports) {
         parsePackageSummaryData,
         renderPackageTable,
         buildPackageTableRows,
+        buildPackageTableRowSpecs,
+        createPackageTableRow,
         applyPackageFilterToTable,
         applyRelatedFilterToTable,
         renderRelatedFilterTarget,

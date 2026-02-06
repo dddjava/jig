@@ -734,6 +734,22 @@ test.describe('package.js', () => {
                 assert.equal(tbody.children[0].children[6].textContent, '2');
             });
 
+            test('buildPackageTableRowSpecs: 行データを整形する', () => {
+                const rows = [
+                    {fqn: 'app.a', name: 'A', classCount: 2, incomingCount: 0, outgoingCount: 1},
+                ];
+
+                const specs = pkg.buildPackageTableRowSpecs(rows);
+
+                assert.deepEqual(specs, [{
+                    fqn: 'app.a',
+                    name: 'A',
+                    classCount: 2,
+                    incomingCount: 0,
+                    outgoingCount: 1,
+                }]);
+            });
+
             test('getOrCreateDiagramErrorBox: エラーボックスを作成/再利用する', () => {
                 const diagram = { parentNode: { insertBefore: test.mock.fn() } }; // Minimal mock for diagram
 

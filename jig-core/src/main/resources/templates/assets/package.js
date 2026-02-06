@@ -18,6 +18,20 @@ const dom = {
     getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
     setRelatedFilterTargetText: (element, text) => { if (element) element.textContent = text; },
 
+    getPackageTableBody: () => document.querySelector('#package-table tbody'),
+    getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
+    getPackageFilterInput: () => document.getElementById('package-filter-input'),
+    getApplyPackageFilterButton: () => document.getElementById('apply-package-filter'),
+    getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
+    getDepthSelect: () => document.getElementById('package-depth-select'),
+    getRelatedModeSelect: () => document.getElementById('related-mode-select'),
+    getClearRelatedFilterButton: () => document.getElementById('clear-related-filter'),
+    getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
+    getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
+    getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
+    getDiagram: () => document.getElementById('package-relation-diagram'),
+    getDocumentBody: () => document.body,
+
     getDiagramErrorBox: () => document.getElementById('package-diagram-error'),
     createDiagramErrorBox: (diagram) => {
         let errorBox = document.createElement('div');
@@ -250,9 +264,9 @@ function renderPackageTable(context) {
     const {packages, relations} = getPackageSummaryData(context);
     const rows = buildPackageTableRows(packages, relations);
 
-    const tbody = document.querySelector('#package-table tbody');
+    const tbody = dom.getPackageTableBody();
 
-    const input = document.getElementById('package-filter-input');
+    const input = dom.getPackageFilterInput();
     const applyFilter = fqn => {
         if (input) {
             input.value = fqn;
@@ -337,7 +351,7 @@ function buildPackageTableRows(packages, relations) {
 }
 
 function applyPackageFilterToTable(packageFilterFqn) {
-    const rows = document.querySelectorAll('#package-table tbody tr');
+    const rows = dom.getPackageTableRows();
     const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     rows.forEach(row => {
         const fqnCell = row.querySelector('td.fqn');
@@ -348,7 +362,7 @@ function applyPackageFilterToTable(packageFilterFqn) {
 }
 
 function applyRelatedFilterToTable(fqn, context) {
-    const rows = document.querySelectorAll('#package-table tbody tr');
+    const rows = dom.getPackageTableRows();
     const packageFilterPrefix = context.packageFilterFqn ? `${context.packageFilterFqn}.` : null;
     const withinPackageFilter = rowFqn =>
         !context.packageFilterFqn || rowFqn === context.packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
@@ -432,7 +446,7 @@ function renderDiagramAndTable(context) {
 }
 
 function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context) {
-    const container = document.getElementById('mutual-dependency-list');
+    const container = dom.getMutualDependencyList();
     if (!container) return;
     if (!mutualPairs || mutualPairs.size === 0) {
         container.style.display = 'none';
@@ -764,7 +778,7 @@ function getVisibleDiagramElements(packages, relations, causeRelationEvidence, p
 }
 
 function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
-    const diagram = document.getElementById('package-relation-diagram');
+    const diagram = dom.getDiagram();
     if (!diagram) return;
     context.diagramElement = diagram;
 
@@ -831,9 +845,9 @@ if (typeof window !== 'undefined') {
 }
 
 function setupPackageFilterControls(context) {
-    const input = document.getElementById('package-filter-input');
-    const applyButton = document.getElementById('apply-package-filter');
-    const clearPackageButton = document.getElementById('clear-package-filter');
+    const input = dom.getPackageFilterInput();
+    const applyButton = dom.getApplyPackageFilterButton();
+    const clearPackageButton = dom.getClearPackageFilterButton();
     if (!input || !applyButton || !clearPackageButton) return;
 
     const applyFilter = () => {
@@ -860,7 +874,7 @@ function setupPackageFilterControls(context) {
 }
 
 function setupAggregationDepthControl(context) {
-    const select = document.getElementById('package-depth-select');
+    const select = dom.getDepthSelect();
     if (!select) return;
     const {packages} = getPackageSummaryData(context);
     const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
@@ -875,7 +889,7 @@ function setupAggregationDepthControl(context) {
 }
 
 function updateAggregationDepthOptions(maxDepth, context) {
-    const select = document.getElementById('package-depth-select');
+    const select = dom.getDepthSelect();
     if (!select) return;
     const {packages, relations} = getPackageSummaryData(context);
     let aggregationStats;
@@ -909,7 +923,7 @@ function updateAggregationDepthOptions(maxDepth, context) {
 }
 
 function applyDefaultPackageFilterIfPresent(context) {
-    const input = document.getElementById('package-filter-input');
+    const input = dom.getPackageFilterInput();
     if (!input || input.value.trim()) return false;
     const {packages} = getPackageSummaryData(context);
     const domainRoots = packages
@@ -935,8 +949,8 @@ function applyDefaultPackageFilterIfPresent(context) {
 }
 
 function setupRelatedFilterControls(context) {
-    const select = document.getElementById('related-mode-select');
-    const clearButton = document.getElementById('clear-related-filter');
+    const select = dom.getRelatedModeSelect();
+    const clearButton = dom.getClearRelatedFilterButton();
     if (!select) return;
     select.value = context.relatedFilterMode;
     select.addEventListener('change', () => {
@@ -948,7 +962,7 @@ function setupRelatedFilterControls(context) {
     if (clearButton) {
         clearButton.addEventListener('click', () => {
             context.relatedFilterFqn = null;
-            context.packageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
+            context.packageFilterFqn = dom.getPackageFilterInput()?.value.trim() || null;
             renderDiagramAndTable(context);
             renderRelatedFilterTarget(context);
         });
@@ -956,7 +970,7 @@ function setupRelatedFilterControls(context) {
 }
 
 function setupDiagramDirectionControls(context) {
-    const radios = document.querySelectorAll('input[name="diagram-direction"]');
+    const radios = dom.getDiagramDirectionRadios();
     radios.forEach(radio => {
         if (radio.value === context.diagramDirection) {
             radio.checked = true;
@@ -970,7 +984,7 @@ function setupDiagramDirectionControls(context) {
 }
 
 function setupTransitiveReductionControl(context) {
-    const container = document.querySelector('input[name="diagram-direction"]')?.parentNode?.parentNode;
+    const container = dom.getDiagramDirectionRadio()?.parentNode?.parentNode;
     if (!container) return;
 
     const controlContainer = document.createElement('div');
@@ -995,7 +1009,8 @@ function setupTransitiveReductionControl(context) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
-        if (!document.body.classList.contains("package-list")) return;
+        const body = dom.getDocumentBody();
+        if (!body || !body.classList.contains("package-list")) return;
         setupSortableTables();
         renderPackageTable(packageContext);
         setupPackageFilterControls(packageContext);

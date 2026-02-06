@@ -3,7 +3,6 @@ const packageContext = {
     packageSummaryCache: null,
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
-    pendingDiagramRender: null,
     packageFilterFqn: null,
     relatedFilterMode: 'direct',
     relatedFilterFqn: null,
@@ -878,7 +877,7 @@ function getOrCreateDiagramErrorBox(diagram) {
     return dom.createDiagramErrorBox(diagram);
 }
 
-function showDiagramErrorMessage(diagram, message, withAction, err, hash, context) {
+function showDiagramErrorMessage(diagram, message, pendingRender, err, hash) {
     if (!diagram) return;
     console.error(message);
     if (err) {
@@ -892,12 +891,11 @@ function showDiagramErrorMessage(diagram, message, withAction, err, hash, contex
     const actionNode = dom.getDiagramErrorActionNode();
     dom.setNodeTextContent(messageNode, message);
     if (actionNode) {
-        dom.setNodeDisplay(actionNode, withAction ? '' : 'none');
-        if (withAction) {
+        const hasAction = Boolean(pendingRender);
+        dom.setNodeDisplay(actionNode, hasAction ? '' : 'none');
+        if (hasAction) {
             dom.setNodeOnClick(actionNode, function () {
-                if (!context.pendingDiagramRender) return;
-                renderDiagramWithMermaid(diagram, context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges);
-                context.pendingDiagramRender = null;
+                renderDiagramWithMermaid(diagram, pendingRender.text, pendingRender.maxEdges);
             });
         } else {
             dom.setNodeOnClick(actionNode, null);
@@ -1013,13 +1011,13 @@ function applyDiagramRenderPlan(context, renderPlan) {
 function shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context) {
     const edgeCount = renderPlan.uniqueRelations.length;
     if (edgeCount <= DEFAULT_MAX_EDGES) return false;
-    context.pendingDiagramRender = {text: renderPlan.source, maxEdges: edgeCount};
+    const pendingRender = {text: renderPlan.source, maxEdges: edgeCount};
     const message = [
         '関連数が多すぎるため描画を省略しました。',
         `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
         '描画する場合はボタンを押してください。',
     ].join('\n');
-    showDiagramErrorMessage(diagram, message, true, null, null, context);
+    showDiagramErrorMessage(diagram, message, pendingRender, null, null);
     return true;
 }
 
@@ -1039,11 +1037,10 @@ function ensureMermaidParseErrorHandler(diagram, renderPlan, context) {
         const message = err && err.message ? err.message : String(err);
         const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
         const isEdgeLimit = message.includes('Edge limit exceeded');
-        if (isEdgeLimit) {
-            const edgeCount = renderPlan.uniqueRelations.length;
-            context.pendingDiagramRender = {text: renderPlan.source, maxEdges: edgeCount};
-        }
-        showDiagramErrorMessage(diagram, `Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash, context);
+        const pendingRender = isEdgeLimit
+            ? {text: renderPlan.source, maxEdges: renderPlan.uniqueRelations.length}
+            : null;
+        showDiagramErrorMessage(diagram, `Mermaid parse error: ${message}${location}`, pendingRender, err, hash);
     };
 }
 

@@ -253,7 +253,6 @@ test.describe('package.js', () => {
             packageSummaryCache: null,
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
-            pendingDiagramRender: null,
             packageFilterFqn: null,
             relatedFilterMode: 'direct',
             relatedFilterFqn: null,

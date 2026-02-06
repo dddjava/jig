@@ -1,16 +1,18 @@
-let packageSummaryCache = null;
-let diagramNodeIdToFqn = new Map();
-let aggregationDepth = 0;
-let diagramElement = null;
-let pendingDiagramRender = null;
-let lastDiagramSource = '';
-let lastDiagramEdgeCount = 0;
-const DEFAULT_MAX_EDGES = 500;
-let packageFilterFqn = null;
-let relatedFilterMode = 'direct';
-let relatedFilterFqn = null;
-let diagramDirection = 'TD';
-let transitiveReductionEnabled = true;
+const packageContext = {
+    packageSummaryCache: null,
+    diagramNodeIdToFqn: new Map(),
+    aggregationDepth: 0,
+    diagramElement: null,
+    pendingDiagramRender: null,
+    lastDiagramSource: '',
+    lastDiagramEdgeCount: 0,
+    DEFAULT_MAX_EDGES: 500,
+    packageFilterFqn: null,
+    relatedFilterMode: 'direct',
+    relatedFilterFqn: null,
+    diagramDirection: 'TD',
+    transitiveReductionEnabled: true,
+};
 
 function getOrCreateDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
@@ -43,8 +45,8 @@ function getOrCreateDiagramErrorBox(diagram) {
     return errorBox;
 }
 
-function showDiagramErrorMessage(message, withAction, err, hash) {
-    const diagram = diagramElement;
+function showDiagramErrorMessage(message, withAction, err, hash, context) {
+    const diagram = context.diagramElement;
     if (!diagram) return;
     console.error(message);
     if (err) {
@@ -61,9 +63,9 @@ function showDiagramErrorMessage(message, withAction, err, hash) {
         actionNode.style.display = withAction ? '' : 'none';
         if (withAction) {
             actionNode.onclick = function () {
-                if (!pendingDiagramRender) return;
-                renderDiagramSvg(pendingDiagramRender.text, pendingDiagramRender.maxEdges);
-                pendingDiagramRender = null;
+                if (!context.pendingDiagramRender) return;
+                renderDiagramSvg(context.pendingDiagramRender.text, context.pendingDiagramRender.maxEdges, context);
+                context.pendingDiagramRender = null;
             };
         } else {
             actionNode.onclick = null;
@@ -86,8 +88,8 @@ function hideDiagramErrorMessage(diagram) {
     diagram.style.display = '';
 }
 
-function renderDiagramSvg(text, maxEdges) {
-    const diagram = diagramElement;
+function renderDiagramSvg(text, maxEdges, context) {
+    const diagram = context.diagramElement;
     if (!diagram || !window.mermaid) return;
     hideDiagramErrorMessage(diagram);
     diagram.removeAttribute('data-processed');
@@ -96,17 +98,17 @@ function renderDiagramSvg(text, maxEdges) {
     mermaid.run({nodes: [diagram]});
 }
 
-function getPackageSummaryData() {
-    if (packageSummaryCache) return packageSummaryCache;
+function getPackageSummaryData(context) {
+    if (context.packageSummaryCache) return context.packageSummaryCache;
     const jsonText = document.getElementById('package-data').textContent;
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>, causeRelationEvidence?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
-    packageSummaryCache = {
+    context.packageSummaryCache = {
         packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
         causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData.causeRelationEvidence ?? []),
     };
-    return packageSummaryCache;
+    return context.packageSummaryCache;
 }
 
 function getPackageDepth(fqn) {
@@ -114,8 +116,8 @@ function getPackageDepth(fqn) {
     return fqn.split('.').length;
 }
 
-function getMaxPackageDepth() {
-    const {packages} = getPackageSummaryData();
+function getMaxPackageDepth(context) {
+    const {packages} = getPackageSummaryData(context);
     return packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
 }
 
@@ -177,7 +179,7 @@ function buildAggregationStatsForPackageFilter(packages, relations, packageFilte
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
-function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth) {
+function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, context) {
     const withinPackageFilter = fqn => {
         if (!packageFilterFqn) return true;
         const prefix = `${packageFilterFqn}.`;
@@ -189,21 +191,21 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
         : relations;
 
     if (relatedFilterFqn) {
-        const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
-        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations);
+        const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, context.aggregationDepth);
+        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context);
         filteredPackages = filteredPackages.filter(item =>
-            relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
+            relatedSet.has(getAggregatedFqn(item.fqn, context.aggregationDepth))
         );
-        if (relatedFilterMode === 'direct') {
+        if (context.relatedFilterMode === 'direct') {
             filteredRelations = filteredRelations.filter(relation => {
-                const from = getAggregatedFqn(relation.from, aggregationDepth);
-                const to = getAggregatedFqn(relation.to, aggregationDepth);
+                const from = getAggregatedFqn(relation.from, context.aggregationDepth);
+                const to = getAggregatedFqn(relation.to, context.aggregationDepth);
                 return from === aggregatedRoot || to === aggregatedRoot;
             });
         } else {
             filteredRelations = filteredRelations.filter(relation => {
-                const from = getAggregatedFqn(relation.from, aggregationDepth);
-                const to = getAggregatedFqn(relation.to, aggregationDepth);
+                const from = getAggregatedFqn(relation.from, context.aggregationDepth);
+                const to = getAggregatedFqn(relation.to, context.aggregationDepth);
                 return relatedSet.has(from) && relatedSet.has(to);
             });
         }
@@ -211,23 +213,23 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
-function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth) {
+function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth, context) {
     if (!rootFqn) {
         return buildAggregationStats(packages, relations, maxDepth);
     }
-    const aggregatedRoot = getAggregatedFqn(rootFqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, relations);
-    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth)));
+    const aggregatedRoot = getAggregatedFqn(rootFqn, context.aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, relations, context);
+    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, context.aggregationDepth)));
     const relatedRelations = relations.filter(relation => {
-        const from = getAggregatedFqn(relation.from, aggregationDepth);
-        const to = getAggregatedFqn(relation.to, aggregationDepth);
+        const from = getAggregatedFqn(relation.from, context.aggregationDepth);
+        const to = getAggregatedFqn(relation.to, context.aggregationDepth);
         return relatedSet.has(from) && relatedSet.has(to);
     });
     return buildAggregationStats(relatedPackages, relatedRelations, maxDepth);
 }
 
-function renderPackageTable() {
-    const {packages, relations} = getPackageSummaryData();
+function renderPackageTable(context) {
+    const {packages, relations} = getPackageSummaryData(context);
     const incomingCounts = new Map();
     const outgoingCounts = new Map();
     relations.forEach(relation => {
@@ -242,12 +244,12 @@ function renderPackageTable() {
         if (input) {
             input.value = fqn;
         }
-        packageFilterFqn = fqn;
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
+        context.packageFilterFqn = fqn;
+        renderDiagramAndTable(context);
+        renderRelatedFilterTarget(context);
     };
     const applyRelatedFilterForRow = fqn => {
-        applyRelatedFilter(fqn);
+        applyRelatedFilter(fqn, context);
     };
 
     packages.forEach(item => {
@@ -318,11 +320,11 @@ function applyPackageFilterToTable(packageFilterFqn) {
     });
 }
 
-function applyRelatedFilterToTable(fqn) {
+function applyRelatedFilterToTable(fqn, context) {
     const rows = document.querySelectorAll('#package-table tbody tr');
-    const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
+    const packageFilterPrefix = context.packageFilterFqn ? `${context.packageFilterFqn}.` : null;
     const withinPackageFilter = rowFqn =>
-        !packageFilterFqn || rowFqn === packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
+        !context.packageFilterFqn || rowFqn === context.packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
 
     if (!fqn) {
         rows.forEach(row => {
@@ -332,36 +334,36 @@ function applyRelatedFilterToTable(fqn) {
         });
         return;
     }
-    const {relations} = getPackageSummaryData();
-    const filteredRelations = packageFilterFqn
+    const {relations} = getPackageSummaryData(context);
+    const filteredRelations = context.packageFilterFqn
         ? relations.filter(relation =>
             withinPackageFilter(relation.from) && withinPackageFilter(relation.to)
         )
         : relations;
-    const aggregatedRoot = getAggregatedFqn(fqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations);
+    const aggregatedRoot = getAggregatedFqn(fqn, context.aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context);
     rows.forEach(row => {
         const fqnCell = row.querySelector('td.fqn');
         const rowFqn = fqnCell ? fqnCell.textContent : '';
-        const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
+        const aggregatedRow = getAggregatedFqn(rowFqn, context.aggregationDepth);
         const visible = withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
         row.classList.toggle('hidden', !visible);
     });
 }
 
-function renderRelatedFilterTarget() {
+function renderRelatedFilterTarget(context) {
     const target = document.getElementById('related-filter-target');
     if (!target) return;
-    target.textContent = relatedFilterFqn ? relatedFilterFqn : '未選択';
+    target.textContent = context.relatedFilterFqn ? context.relatedFilterFqn : '未選択';
 }
 
-function collectRelatedSet(root, relations) {
+function collectRelatedSet(root, relations, context) {
     if (!root) return new Set();
-    if (relatedFilterMode === 'direct') {
+    if (context.relatedFilterMode === 'direct') {
         const relatedSet = new Set([root]);
         relations.forEach(relation => {
-            const from = getAggregatedFqn(relation.from, aggregationDepth);
-            const to = getAggregatedFqn(relation.to, aggregationDepth);
+            const from = getAggregatedFqn(relation.from, context.aggregationDepth);
+            const to = getAggregatedFqn(relation.to, context.aggregationDepth);
             if (from === root) relatedSet.add(to);
             if (to === root) relatedSet.add(from);
         });
@@ -374,10 +376,10 @@ function collectRelatedSet(root, relations) {
         adjacency.get(from).add(to);
     };
     relations.forEach(relation => {
-        const from = getAggregatedFqn(relation.from, aggregationDepth);
-        const to = getAggregatedFqn(relation.to, aggregationDepth);
+        const from = getAggregatedFqn(relation.from, context.aggregationDepth);
+        const to = getAggregatedFqn(relation.to, context.aggregationDepth);
         addEdge(from, to);
-        if (relatedFilterMode === 'all') {
+        if (context.relatedFilterMode === 'all') {
             addEdge(to, from);
         }
     });
@@ -397,13 +399,13 @@ function collectRelatedSet(root, relations) {
     return relatedSet;
 }
 
-function renderDiagramAndTable() {
-    renderPackageDiagram(packageFilterFqn, relatedFilterFqn);
-    applyRelatedFilterToTable(relatedFilterFqn);
-    updateAggregationDepthOptions(getMaxPackageDepth());
+function renderDiagramAndTable(context) {
+    renderPackageDiagram(context, context.packageFilterFqn, context.relatedFilterFqn);
+    applyRelatedFilterToTable(context.relatedFilterFqn, context);
+    updateAggregationDepthOptions(getMaxPackageDepth(context), context);
 }
 
-function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
+function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context) {
     const container = document.getElementById('mutual-dependency-list');
     if (!container) return;
     if (!mutualPairs || mutualPairs.size === 0) {
@@ -413,8 +415,8 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence) {
     }
     const relationMap = new Map();
     causeRelationEvidence.forEach(relation => {
-        const fromPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.from), aggregationDepth);
-        const toPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
+        const fromPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.from), context.aggregationDepth);
+        const toPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.to), context.aggregationDepth);
         if (fromPackage === toPackage) return;
         const key = fromPackage < toPackage ? `${fromPackage}::${toPackage}` : `${toPackage}::${fromPackage}`;
         if (!relationMap.has(key)) {
@@ -545,23 +547,23 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
-function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
+function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     const diagram = document.getElementById('package-relation-diagram');
     if (!diagram) return;
-    diagramElement = diagram;
+    context.diagramElement = diagram;
 
-    const {packages, relations, causeRelationEvidence} = getPackageSummaryData();
+    const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const lines = [`graph ${diagramDirection}`];
-    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
+    const lines = [`graph ${context.diagramDirection}`];
+    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, context.aggregationDepth) : null;
     const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     const withinPackageFilter = fqn =>
         !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
     const visiblePackages = packageFilterFqn
         ? packages.filter(item => withinPackageFilter(item.fqn))
         : packages;
-    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
+    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, context.aggregationDepth)));
     const filteredRelations = packageFilterFqn
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
@@ -574,8 +576,8 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
         : causeRelationEvidence;
     const visibleRelations = filteredRelations
         .map(relation => ({
-            from: getAggregatedFqn(relation.from, aggregationDepth),
-            to: getAggregatedFqn(relation.to, aggregationDepth),
+            from: getAggregatedFqn(relation.from, context.aggregationDepth),
+            to: getAggregatedFqn(relation.to, context.aggregationDepth),
         }))
         .filter(relation => relation.from !== relation.to);
     const uniqueRelationMap = new Map();
@@ -584,13 +586,13 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
     });
     let uniqueRelations = Array.from(uniqueRelationMap.values());
 
-    if (transitiveReductionEnabled) {
+    if (context.transitiveReductionEnabled) {
         uniqueRelations = transitiveReduction(uniqueRelations);
     }
 
     if (aggregatedRoot) {
-        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations);
-        if (relatedFilterMode === 'direct') {
+        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, context);
+        if (context.relatedFilterMode === 'direct') {
             uniqueRelations = uniqueRelations.filter(relation =>
                 relation.from === aggregatedRoot || relation.to === aggregatedRoot
             );
@@ -608,14 +610,14 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
     });
 
     const nodeIdByFqn = new Map();
-    diagramNodeIdToFqn = new Map();
+    context.diagramNodeIdToFqn = new Map();
     const nodeLabelById = new Map();
     let nodeIndex = 0;
     const ensureNodeId = fqn => {
         if (nodeIdByFqn.has(fqn)) return nodeIdByFqn.get(fqn);
         const nodeId = `P${nodeIndex++}`;
         nodeIdByFqn.set(fqn, nodeId);
-        diagramNodeIdToFqn.set(nodeId, fqn);
+        context.diagramNodeIdToFqn.set(nodeId, fqn);
         const label = nameByFqn.get(fqn) || fqn;
         nodeLabelById.set(nodeId, label);
         return nodeId;
@@ -663,7 +665,7 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
     });
 
     const addNodeLines = (nodeId, parentSubgraphFqn) => {
-        const fqn = diagramNodeIdToFqn.get(nodeId);
+        const fqn = context.diagramNodeIdToFqn.get(nodeId);
         let displayLabel = nodeLabelById.get(nodeId);
 
         if (displayLabel === fqn && parentSubgraphFqn && fqn.startsWith(`${parentSubgraphFqn}.`)) {
@@ -722,22 +724,22 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
 
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
-    renderMutualDependencyList(mutualPairs, filteredCauseRelationEvidence);
+    renderMutualDependencyList(mutualPairs, filteredCauseRelationEvidence, context);
 
-    lastDiagramSource = lines.join('\n');
-    lastDiagramEdgeCount = uniqueRelations.length;
-    if (lastDiagramEdgeCount > DEFAULT_MAX_EDGES) {
-        pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
+    context.lastDiagramSource = lines.join('\n');
+    context.lastDiagramEdgeCount = uniqueRelations.length;
+    if (context.lastDiagramEdgeCount > context.DEFAULT_MAX_EDGES) {
+        context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
         const message = [
             '関連数が多すぎるため描画を省略しました。',
-            `エッジ数: ${lastDiagramEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+            `エッジ数: ${context.lastDiagramEdgeCount}（上限: ${context.DEFAULT_MAX_EDGES}）`,
             '描画する場合はボタンを押してください。',
         ].join('\n');
-        showDiagramErrorMessage(message, true);
+        showDiagramErrorMessage(message, true, null, null, context);
         return;
     }
     diagram.removeAttribute('data-processed');
-    diagram.textContent = lastDiagramSource;
+    diagram.textContent = context.lastDiagramSource;
     if (window.mermaid) {
         if (!mermaid.parseError) {
             mermaid.parseError = function (err, hash) {
@@ -745,47 +747,46 @@ function renderPackageDiagram(packageFilterFqn, relatedFilterFqn) {
                 const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
                 const isEdgeLimit = message.includes('Edge limit exceeded');
                 if (isEdgeLimit) {
-                    pendingDiagramRender = {text: lastDiagramSource, maxEdges: lastDiagramEdgeCount};
+                    context.pendingDiagramRender = {text: context.lastDiagramSource, maxEdges: context.lastDiagramEdgeCount};
                 }
-                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash);
+                showDiagramErrorMessage(`Mermaid parse error: ${message}${location}`, isEdgeLimit, err, hash, context);
             };
         }
-        renderDiagramSvg(lastDiagramSource, DEFAULT_MAX_EDGES);
+        renderDiagramSvg(context.lastDiagramSource, context.DEFAULT_MAX_EDGES, context);
     }
 }
 
-function applyRelatedFilter(fqn) {
-    relatedFilterFqn = fqn;
-    renderDiagramAndTable();
-    renderRelatedFilterTarget();
+function applyRelatedFilter(fqn, context) {
+    context.relatedFilterFqn = fqn;
+    renderDiagramAndTable(context);
+    renderRelatedFilterTarget(context);
 }
 
 if (typeof window !== 'undefined') {
     window.filterPackageDiagram = function (nodeId) {
-        const fqn = diagramNodeIdToFqn.get(nodeId);
+        const fqn = packageContext.diagramNodeIdToFqn.get(nodeId);
         if (!fqn) return;
-        applyRelatedFilter(fqn);
+        applyRelatedFilter(fqn, packageContext);
     };
 }
 
-function setupPackageFilterControls() {
+function setupPackageFilterControls(context) {
     const input = document.getElementById('package-filter-input');
     const applyButton = document.getElementById('apply-package-filter');
     const clearPackageButton = document.getElementById('clear-package-filter');
-    const depthSelect = document.getElementById('package-depth-select');
     if (!input || !applyButton || !clearPackageButton) return;
 
     const applyFilter = () => {
         const value = input.value.trim();
-        packageFilterFqn = value || null;
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
+        context.packageFilterFqn = value || null;
+        renderDiagramAndTable(context);
+        renderRelatedFilterTarget(context);
     };
     const clearPackageFilter = () => {
         input.value = '';
-        packageFilterFqn = null;
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
+        context.packageFilterFqn = null;
+        renderDiagramAndTable(context);
+        renderRelatedFilterTarget(context);
     };
 
     applyButton.addEventListener('click', applyFilter);
@@ -798,32 +799,33 @@ function setupPackageFilterControls() {
     });
 }
 
-function setupAggregationDepthControl() {
+function setupAggregationDepthControl(context) {
     const select = document.getElementById('package-depth-select');
     if (!select) return;
-    const {packages} = getPackageSummaryData();
+    const {packages} = getPackageSummaryData(context);
     const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
-    updateAggregationDepthOptions(maxDepth);
-    select.value = String(aggregationDepth);
+    updateAggregationDepthOptions(maxDepth, context);
+    select.value = String(context.aggregationDepth);
     select.addEventListener('change', () => {
-        aggregationDepth = Number(select.value);
-        renderDiagramAndTable();
-        renderRelatedFilterTarget();
-        updateAggregationDepthOptions(maxDepth);
+        context.aggregationDepth = Number(select.value);
+        renderDiagramAndTable(context);
+        renderRelatedFilterTarget(context);
+        updateAggregationDepthOptions(maxDepth, context);
     });
 }
 
-function updateAggregationDepthOptions(maxDepth) {
+function updateAggregationDepthOptions(maxDepth, context) {
     const select = document.getElementById('package-depth-select');
     if (!select) return;
-    const {packages, relations} = getPackageSummaryData();
+    const {packages, relations} = getPackageSummaryData(context);
     let aggregationStats;
     aggregationStats = buildAggregationStatsForFilters(
         packages,
         relations,
-        packageFilterFqn,
-        relatedFilterFqn,
-        maxDepth
+        context.packageFilterFqn,
+        context.relatedFilterFqn,
+        maxDepth,
+        context
     );
     select.innerHTML = '';
     const noAggregationOption = document.createElement('option');
@@ -841,14 +843,14 @@ function updateAggregationDepthOptions(maxDepth) {
         option.textContent = `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`;
         select.appendChild(option);
     }
-    const value = Math.min(aggregationDepth, maxDepth);
+    const value = Math.min(context.aggregationDepth, maxDepth);
     select.value = String(value);
 }
 
-function applyDefaultPackageFilterIfPresent() {
+function applyDefaultPackageFilterIfPresent(context) {
     const input = document.getElementById('package-filter-input');
     if (!input || input.value.trim()) return false;
-    const {packages} = getPackageSummaryData();
+    const {packages} = getPackageSummaryData(context);
     const domainRoots = packages
         .map(item => item.fqn)
         .map(fqn => {
@@ -866,47 +868,47 @@ function applyDefaultPackageFilterIfPresent() {
     });
     if (!candidate) return false;
     input.value = candidate;
-    packageFilterFqn = candidate;
-    renderDiagramAndTable();
+    context.packageFilterFqn = candidate;
+    renderDiagramAndTable(context);
     return true;
 }
 
-function setupRelatedFilterControls() {
+function setupRelatedFilterControls(context) {
     const select = document.getElementById('related-mode-select');
     const clearButton = document.getElementById('clear-related-filter');
     if (!select) return;
-    select.value = relatedFilterMode;
+    select.value = context.relatedFilterMode;
     select.addEventListener('change', () => {
-        relatedFilterMode = select.value;
-        if (relatedFilterFqn) {
-            renderDiagramAndTable();
+        context.relatedFilterMode = select.value;
+        if (context.relatedFilterFqn) {
+            renderDiagramAndTable(context);
         }
     });
     if (clearButton) {
         clearButton.addEventListener('click', () => {
-            relatedFilterFqn = null;
-            packageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
-            renderDiagramAndTable();
-            renderRelatedFilterTarget();
+            context.relatedFilterFqn = null;
+            context.packageFilterFqn = document.getElementById('package-filter-input')?.value.trim() || null;
+            renderDiagramAndTable(context);
+            renderRelatedFilterTarget(context);
         });
     }
 }
 
-function setupDiagramDirectionControls() {
+function setupDiagramDirectionControls(context) {
     const radios = document.querySelectorAll('input[name="diagram-direction"]');
     radios.forEach(radio => {
-        if (radio.value === diagramDirection) {
+        if (radio.value === context.diagramDirection) {
             radio.checked = true;
         }
         radio.addEventListener('change', () => {
             if (!radio.checked) return;
-            diagramDirection = radio.value;
-            renderDiagramAndTable();
+            context.diagramDirection = radio.value;
+            renderDiagramAndTable(context);
         });
     });
 }
 
-function setupTransitiveReductionControl() {
+function setupTransitiveReductionControl(context) {
     const container = document.querySelector('input[name="diagram-direction"]')?.parentNode?.parentNode;
     if (!container) return;
 
@@ -914,10 +916,10 @@ function setupTransitiveReductionControl() {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.id = 'transitive-reduction-toggle';
-    checkbox.checked = transitiveReductionEnabled;
+    checkbox.checked = context.transitiveReductionEnabled;
     checkbox.addEventListener('change', () => {
-        transitiveReductionEnabled = checkbox.checked;
-        renderDiagramAndTable();
+        context.transitiveReductionEnabled = checkbox.checked;
+        renderDiagramAndTable(context);
     });
 
     const label = document.createElement('label');
@@ -934,56 +936,27 @@ if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
         if (!document.body.classList.contains("package-list")) return;
         setupSortableTables();
-        renderPackageTable();
-        setupPackageFilterControls();
-        setupAggregationDepthControl();
-        setupRelatedFilterControls();
-        setupDiagramDirectionControls();
-        setupTransitiveReductionControl();
-        const applied = applyDefaultPackageFilterIfPresent();
+        renderPackageTable(packageContext);
+        setupPackageFilterControls(packageContext);
+        setupAggregationDepthControl(packageContext);
+        setupRelatedFilterControls(packageContext);
+        setupDiagramDirectionControls(packageContext);
+        setupTransitiveReductionControl(packageContext);
+        const applied = applyDefaultPackageFilterIfPresent(packageContext);
         if (!applied) {
-            renderDiagramAndTable();
+            renderDiagramAndTable(packageContext);
         }
-        renderRelatedFilterTarget();
+        renderRelatedFilterTarget(packageContext);
     });
 }
 
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        setAggregationDepth(value) {
-            aggregationDepth = value;
-        },
-        setPackageFilterFqn(value) {
-            packageFilterFqn = value;
-        },
-        setRelatedFilterMode(value) {
-            relatedFilterMode = value;
-        },
-        setRelatedFilterFqn(value) {
-            relatedFilterFqn = value;
-        },
-        setDiagramDirection(value) {
-            diagramDirection = value;
-        },
-        setTransitiveReductionEnabled(value) {
-            transitiveReductionEnabled = value;
-        },
-        setDiagramElement(value) {
-            diagramElement = value;
-        },
-        getPackageFilterFqn() {
-            return packageFilterFqn;
-        },
-        getRelatedFilterFqn() {
-            return relatedFilterFqn;
-        },
-        getDiagramDirection() {
-            return diagramDirection;
-        },
-        resetPackageSummaryCache() {
-            packageSummaryCache = null;
-        },
+        // public
+        packageContext,
+
+        // private
         getAggregatedFqn,
         collectRelatedSet,
         getPackageSummaryData,

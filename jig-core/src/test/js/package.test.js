@@ -270,16 +270,6 @@ test.describe('package.js', () => {
 
     test.describe('データ取得/整形', () => {
         test.describe('ロジック', () => {
-            test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
-                setupDocument();
-                setPackageData([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}], testContext);
-
-                const data = pkg.getPackageSummaryData(testContext);
-
-                assert.equal(data.packages.length, 1);
-                assert.equal(data.relations.length, 0);
-            });
-
             test('parsePackageSummaryData: 配列/オブジェクト両対応', () => {
                 const arrayData = pkg.parsePackageSummaryData(JSON.stringify([
                     {fqn: 'app.a', name: 'A', classCount: 1, description: ''},
@@ -293,6 +283,16 @@ test.describe('package.js', () => {
                 }));
                 assert.equal(objectData.packages.length, 1);
                 assert.equal(objectData.relations.length, 1);
+            });
+
+            test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
+                setupDocument();
+                setPackageData([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}], testContext);
+
+                const data = pkg.getPackageSummaryData(testContext);
+
+                assert.equal(data.packages.length, 1);
+                assert.equal(data.relations.length, 0);
             });
 
             test('getPackageDepth: 深さを返す', () => {
@@ -558,27 +558,6 @@ test.describe('package.js', () => {
         });
 
         test.describe('UI', () => {
-            test('renderRelatedFilterTarget: 対象表示を更新する', () => {
-                const mockTarget = { textContent: '' };
-                const getRelatedFilterTargetMock = test.mock.fn(() => mockTarget);
-                const setRelatedFilterTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
-
-                test.mock.method(pkg.dom, 'getRelatedFilterTarget', getRelatedFilterTargetMock);
-                test.mock.method(pkg.dom, 'setRelatedFilterTargetText', setRelatedFilterTargetTextMock);
-
-                testContext.relatedFilterFqn = null;
-                pkg.renderRelatedFilterTarget(testContext);
-                assert.equal(mockTarget.textContent, '未選択');
-                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 1);
-                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
-
-                testContext.relatedFilterFqn = 'app.domain';
-                pkg.renderRelatedFilterTarget(testContext);
-                assert.equal(mockTarget.textContent, 'app.domain');
-                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 2);
-                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
-            });
-
             test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
                 const doc = setupDocument();
                 setPackageData({
@@ -601,6 +580,27 @@ test.describe('package.js', () => {
                 assert.equal(rows[0].classList.contains('hidden'), false);
                 assert.equal(rows[1].classList.contains('hidden'), false);
                 assert.equal(rows[2].classList.contains('hidden'), true);
+            });
+
+            test('renderRelatedFilterTarget: 対象表示を更新する', () => {
+                const mockTarget = { textContent: '' };
+                const getRelatedFilterTargetMock = test.mock.fn(() => mockTarget);
+                const setRelatedFilterTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
+
+                test.mock.method(pkg.dom, 'getRelatedFilterTarget', getRelatedFilterTargetMock);
+                test.mock.method(pkg.dom, 'setRelatedFilterTargetText', setRelatedFilterTargetTextMock);
+
+                testContext.relatedFilterFqn = null;
+                pkg.renderRelatedFilterTarget(testContext);
+                assert.equal(mockTarget.textContent, '未選択');
+                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 1);
+                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
+
+                testContext.relatedFilterFqn = 'app.domain';
+                pkg.renderRelatedFilterTarget(testContext);
+                assert.equal(mockTarget.textContent, 'app.domain');
+                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 2);
+                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
             test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用', () => {
@@ -706,21 +706,6 @@ test.describe('package.js', () => {
 
     test.describe('ダイアグラム', () => {
         test.describe('ロジック', () => {
-            test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
-                const stats = new Map([
-                    [0, {packageCount: 2, relationCount: 1}],
-                    [1, {packageCount: 1, relationCount: 1}],
-                    [2, {packageCount: 1, relationCount: 0}],
-                ]);
-
-                const options = pkg.buildAggregationDepthOptions(stats, 2);
-
-                assert.deepEqual(options, [
-                    {value: '0', text: '集約なし（P2 / R1）'},
-                    {value: '1', text: '深さ1（P1 / R1）'},
-                ]);
-            });
-
             test('buildMutualDependencyItems: 相互依存の原因を整形する', () => {
                 const items = pkg.buildMutualDependencyItems(
                     new Set(['app.alpha::app.beta']),
@@ -841,6 +826,21 @@ test.describe('package.js', () => {
                 const lines = pkg.buildSubgraphLines(rootGroup, addNodeLines, text => text);
 
                 assert.equal(lines.some(line => line.includes('node P0')), true);
+            });
+
+            test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
+                const stats = new Map([
+                    [0, {packageCount: 2, relationCount: 1}],
+                    [1, {packageCount: 1, relationCount: 1}],
+                    [2, {packageCount: 1, relationCount: 0}],
+                ]);
+
+                const options = pkg.buildAggregationDepthOptions(stats, 2);
+
+                assert.deepEqual(options, [
+                    {value: '0', text: '集約なし（P2 / R1）'},
+                    {value: '1', text: '深さ1（P1 / R1）'},
+                ]);
             });
         });
 

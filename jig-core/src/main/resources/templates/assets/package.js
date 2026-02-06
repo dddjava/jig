@@ -511,7 +511,7 @@ function renderPackageTable(context) {
     });
 }
 
-function applyPackageFilterToTable(packageFilterFqn) {
+function filterPackageTableRows(packageFilterFqn) {
     const rows = dom.getPackageTableRows();
     const rowFqns = Array.from(rows, row => {
         const fqnCell = row.querySelector('td.fqn');
@@ -1209,7 +1209,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildPackageTableActionSpecs,
         buildPackageTableRowElement,
         renderPackageTable,
-        applyPackageFilterToTable,
+        filterPackageTableRows,
         filterRelatedTableRows,
         renderRelatedFilterLabel,
         setRelatedFilterAndRender,

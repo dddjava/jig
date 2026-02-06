@@ -903,8 +903,7 @@ function setupPackageFilterControls(context) {
     if (!input || !applyButton || !clearPackageButton) return;
 
     const applyFilter = () => {
-        const value = input.value.trim();
-        context.packageFilterFqn = value || null;
+        context.packageFilterFqn = normalizePackageFilterValue(input.value);
         renderDiagramAndTable(context);
         renderRelatedFilterTarget(context);
     };
@@ -1033,11 +1032,16 @@ function setupRelatedFilterControls(context) {
     if (clearButton) {
         clearButton.addEventListener('click', () => {
             context.relatedFilterFqn = null;
-            context.packageFilterFqn = dom.getPackageFilterInput()?.value.trim() || null;
+            context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
             renderDiagramAndTable(context);
             renderRelatedFilterTarget(context);
         });
     }
+}
+
+function normalizePackageFilterValue(value) {
+    const trimmed = (value ?? '').trim();
+    return trimmed ? trimmed : null;
 }
 
 function setupDiagramDirectionControls(context) {
@@ -1142,6 +1146,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderAggregationDepthOptions,
         applyDefaultPackageFilterIfPresent,
         findDefaultPackageFilterCandidate,
+        normalizePackageFilterValue,
         setupRelatedFilterControls,
         setupDiagramDirectionControls,
         setupTransitiveReductionControl,

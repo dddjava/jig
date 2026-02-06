@@ -852,6 +852,12 @@ test.describe('package.js', () => {
 
                 assert.equal(applied, false);
             });
+
+            test('normalizePackageFilterValue: 空文字はnull', () => {
+                assert.equal(pkg.normalizePackageFilterValue(''), null);
+                assert.equal(pkg.normalizePackageFilterValue('   '), null);
+                assert.equal(pkg.normalizePackageFilterValue('app.domain'), 'app.domain');
+            });
         });
     });
 

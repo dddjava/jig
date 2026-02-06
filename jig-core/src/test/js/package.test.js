@@ -967,7 +967,22 @@ test.describe('package.js', () => {
                 assert.equal(container.style.display, '');
         assert.equal(container.children.length, 1);
         assert.equal(container.children[0].tagName, 'details');
-        assert.equal(container.children[0].children[1].tagName, 'ul');
+                assert.equal(container.children[0].children[1].tagName, 'ul');
+            });
+
+            test('buildMutualDependencyItems: 相互依存の原因を整形する', () => {
+                const items = pkg.buildMutualDependencyItems(
+                    new Set(['app.alpha::app.beta']),
+                    [
+                        {from: 'app.alpha.A', to: 'app.beta.B'},
+                        {from: 'app.beta.B', to: 'app.alpha.A'},
+                    ],
+                    0
+                );
+
+                assert.equal(items.length, 1);
+                assert.equal(items[0].pairLabel, 'app.alpha <-> app.beta');
+                assert.equal(items[0].causes.length, 2);
             });
         });
 

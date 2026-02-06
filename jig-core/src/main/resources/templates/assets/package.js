@@ -487,15 +487,43 @@ function renderDiagramAndTable(context) {
 function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context) {
     const container = dom.getMutualDependencyList();
     if (!container) return;
-    if (!mutualPairs || mutualPairs.size === 0) {
+    const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, context.aggregationDepth);
+    if (items.length === 0) {
         container.style.display = 'none';
         container.innerHTML = '';
         return;
     }
+
+    container.style.display = '';
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = '相互依存と原因';
+    const list = document.createElement('ul');
+    items.forEach(item => {
+        const itemNode = document.createElement('li');
+        const pair = document.createElement('div');
+        pair.className = 'pair';
+        pair.textContent = item.pairLabel;
+        itemNode.appendChild(pair);
+        if (item.causes.length > 0) {
+            const detailBody = document.createElement('pre');
+            detailBody.textContent = item.causes.join('\n');
+            itemNode.appendChild(detailBody);
+        }
+        list.appendChild(itemNode);
+    });
+    container.innerHTML = '';
+    details.appendChild(summary);
+    details.appendChild(list);
+    container.appendChild(details);
+}
+
+function buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth) {
+    if (!mutualPairs || mutualPairs.size === 0) return [];
     const relationMap = new Map();
     causeRelationEvidence.forEach(relation => {
-        const fromPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.from), context.aggregationDepth);
-        const toPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.to), context.aggregationDepth);
+        const fromPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.from), aggregationDepth);
+        const toPackage = getAggregatedFqn(getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
         if (fromPackage === toPackage) return;
         const key = fromPackage < toPackage ? `${fromPackage}::${toPackage}` : `${toPackage}::${fromPackage}`;
         if (!relationMap.has(key)) {
@@ -503,32 +531,15 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, context)
         }
         relationMap.get(key).add(`${relation.from} -> ${relation.to}`);
     });
-
-    container.style.display = '';
-    const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    summary.textContent = '相互依存と原因';
-    const list = document.createElement('ul');
-    Array.from(mutualPairs).sort().forEach(key => {
+    return Array.from(mutualPairs).sort().map(key => {
         const parts = key.split('::');
         const pairLabel = `${parts[0]} <-> ${parts[1]}`;
-        const item = document.createElement('li');
-        const pair = document.createElement('div');
-        pair.className = 'pair';
-        pair.textContent = pairLabel;
-        item.appendChild(pair);
         const causes = relationMap.get(key);
-        if (causes && causes.size > 0) {
-            const detailBody = document.createElement('pre');
-            detailBody.textContent = Array.from(causes).sort().join('\n');
-            item.appendChild(detailBody);
-        }
-        list.appendChild(item);
+        return {
+            pairLabel,
+            causes: causes ? Array.from(causes).sort() : [],
+        };
     });
-    container.innerHTML = '';
-    details.appendChild(summary);
-    details.appendChild(list);
-    container.appendChild(details);
 }
 
 function detectStronglyConnectedComponents(graph) {
@@ -1196,6 +1207,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderRelatedFilterTarget,
         renderDiagramAndTable,
         renderMutualDependencyList,
+        buildMutualDependencyItems,
         renderPackageDiagram,
         buildMermaidDiagramSource,
         buildDiagramNodeMaps,

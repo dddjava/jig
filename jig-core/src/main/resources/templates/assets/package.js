@@ -133,14 +133,18 @@ function renderDiagramSvg(text, maxEdges, context) {
 function getPackageSummaryData(context) {
     if (context.packageSummaryCache) return context.packageSummaryCache;
     const jsonText = dom.getNodeTextContent(dom.getPackageDataScript());
+    context.packageSummaryCache = parsePackageSummaryData(jsonText);
+    return context.packageSummaryCache;
+}
+
+function parsePackageSummaryData(jsonText) {
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>, causeRelationEvidence?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
-    context.packageSummaryCache = {
+    return {
         packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
         causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData.causeRelationEvidence ?? []),
     };
-    return context.packageSummaryCache;
 }
 
 function getPackageDepth(fqn) {
@@ -1049,6 +1053,7 @@ if (typeof module !== 'undefined' && module.exports) {
         showDiagramErrorMessage,
         hideDiagramErrorMessage,
         renderDiagramSvg,
+        parsePackageSummaryData,
         renderPackageTable,
         buildPackageTableRows,
         applyPackageFilterToTable,

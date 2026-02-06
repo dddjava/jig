@@ -317,6 +317,21 @@ test.describe('package.js', () => {
                 assert.deepEqual(pkg.dom.getNodeTextContent.mock.calls[0].arguments, [mockPackageDataElement]);
             });
 
+            test('parsePackageSummaryData: 配列/オブジェクト両対応', () => {
+                const arrayData = pkg.parsePackageSummaryData(JSON.stringify([
+                    {fqn: 'app.a', name: 'A', classCount: 1, description: ''},
+                ]));
+                assert.equal(arrayData.packages.length, 1);
+                assert.equal(arrayData.relations.length, 0);
+
+                const objectData = pkg.parsePackageSummaryData(JSON.stringify({
+                    packages: [{fqn: 'app.b', name: 'B', classCount: 2, description: ''}],
+                    relations: [{from: 'app.b', to: 'app.c'}],
+                }));
+                assert.equal(objectData.packages.length, 1);
+                assert.equal(objectData.relations.length, 1);
+            });
+
             test('getPackageDepth: 深さを返す', () => {
                 assert.equal(pkg.getPackageDepth(''), 0);
                 assert.equal(pkg.getPackageDepth('(default)'), 0);

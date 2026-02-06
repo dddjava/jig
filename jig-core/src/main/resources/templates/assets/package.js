@@ -1,4 +1,6 @@
 // 状態/DOMヘルパー
+// contextは「UI状態・設定値など長期的に保持する値」に限定する。
+// 一時的な中間データはcontextに保存せず、関数内のローカル変数で扱う。
 const packageContext = {
     packageSummaryCache: null,
     diagramNodeIdToFqn: new Map(),

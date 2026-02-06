@@ -231,7 +231,6 @@ function setupDiagramEnvironment(doc, context) {
     const diagram = doc.createElement('div');
     diagram.id = 'package-relation-diagram';
     container.appendChild(diagram);
-    context.diagramElement = diagram;
     const mutual = doc.createElement('div');
     mutual.id = 'mutual-dependency-list';
     doc.elementsById.set('mutual-dependency-list', mutual);
@@ -254,11 +253,6 @@ test.describe('package.js', () => {
             packageSummaryCache: null,
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
-            diagramElement: null,
-            pendingDiagramRender: null,
-            lastDiagramSource: '',
-            lastDiagramEdgeCount: 0,
-            DEFAULT_MAX_EDGES: 500,
             packageFilterFqn: null,
             relatedFilterMode: 'direct',
             relatedFilterFqn: null,
@@ -872,7 +866,7 @@ test.describe('package.js', () => {
                         {from: 'app.alpha.A', to: 'app.beta.B'},
                         {from: 'app.beta.B', to: 'app.alpha.A'},
                     ],
-                    testContext
+                    testContext.aggregationDepth
                 );
 
                 assert.equal(container.style.display, '');
@@ -906,9 +900,8 @@ test.describe('package.js', () => {
 
             test('renderPackageDiagram: エッジ数超過時は保留/エラー表示する', () => {
                 const doc = setupDocument();
-                // setupDiagramEnvironmentはtestContext.diagramElementを設定する。
-                // そのdiagramElementがdomヘルパーによって操作されることをモックする。
-                const diagramMock = setupDiagramEnvironment(doc, testContext); // testContext.diagramElementも設定される
+                // setupDiagramEnvironmentが作るdiagramをdomヘルパーが操作することをモックする。
+                const diagramMock = setupDiagramEnvironment(doc, testContext);
 
                 // Mock dom helpers used by showDiagramErrorMessage internally
                 const errorBoxMock = { style: { display: 'none' } };

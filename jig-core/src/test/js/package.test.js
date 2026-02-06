@@ -779,6 +779,14 @@ test.describe('package.js', () => {
                 assert.equal(input.value, 'app.domain');
             });
 
+            test('findDefaultPackageFilterCandidate: ドメイン候補を返す', () => {
+                const candidate = pkg.findDefaultPackageFilterCandidate([
+                    {fqn: 'app.domain.core'},
+                    {fqn: 'app.domain.sub'},
+                ]);
+                assert.equal(candidate, 'app.domain');
+            });
+
             test('applyDefaultPackageFilterIfPresent: 入力済みなら適用しない', () => {
                 const doc = setupDocument();
                 setPackageData({

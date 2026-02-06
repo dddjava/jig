@@ -949,6 +949,15 @@ function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
     if (!input || input.value.trim()) return false;
     const {packages} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(packages);
+    if (!candidate) return false;
+    input.value = candidate;
+    context.packageFilterFqn = candidate;
+    renderDiagramAndTable(context);
+    return true;
+}
+
+function findDefaultPackageFilterCandidate(packages) {
     const domainRoots = packages
         .map(item => item.fqn)
         .map(fqn => {
@@ -958,17 +967,12 @@ function applyDefaultPackageFilterIfPresent(context) {
             return parts.slice(0, domainIndex + 1).join('.');
         })
         .filter(Boolean);
-    if (domainRoots.length === 0) return false;
-    const candidate = domainRoots.reduce((best, current) => {
+    if (domainRoots.length === 0) return null;
+    return domainRoots.reduce((best, current) => {
         const bestDepth = best.split('.').length;
         const currentDepth = current.split('.').length;
         return currentDepth < bestDepth ? current : best;
     });
-    if (!candidate) return false;
-    input.value = candidate;
-    context.packageFilterFqn = candidate;
-    renderDiagramAndTable(context);
-    return true;
 }
 
 function setupRelatedFilterControls(context) {
@@ -1089,6 +1093,7 @@ if (typeof module !== 'undefined' && module.exports) {
         setupAggregationDepthControl,
         updateAggregationDepthOptions,
         applyDefaultPackageFilterIfPresent,
+        findDefaultPackageFilterCandidate,
         setupRelatedFilterControls,
         setupDiagramDirectionControls,
         setupTransitiveReductionControl,

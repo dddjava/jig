@@ -433,6 +433,35 @@ test.describe('package.js', () => {
     });
 
     test.describe('フィルタ', () => {
+        test.describe('getVisibleDiagramElements', () => {
+            const packages = [
+                {fqn: 'app.a'},
+                {fqn: 'app.b'},
+                {fqn: 'app.c'},
+                {fqn: 'lib.d'},
+            ];
+            const relations = [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.b', to: 'app.c'},
+                {from: 'app.c', to: 'lib.d'},
+            ];
+
+            test('packageFilter: 指定パッケージ配下のみ表示', () => {
+                const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], 'app', null, 0, 'direct', false);
+                assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
+            });
+
+            test('relatedFilter(direct): 指定パッケージの隣接のみ表示', () => {
+                const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.b', 0, 'direct', false);
+                assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
+            });
+
+            test('relatedFilter(all): 指定パッケージから到達可能なものすべて表示', () => {
+                const {visibleSet} = pkg.getVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
+                assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
+            });
+        });
+
         test.describe('テーブル', () => {
             test('applyPackageFilterToTable: 行の表示/非表示を切り替える', () => {
                 const doc = setupDocument();

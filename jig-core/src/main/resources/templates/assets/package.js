@@ -547,23 +547,15 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
-function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
-    const diagram = document.getElementById('package-relation-diagram');
-    if (!diagram) return;
-    context.diagramElement = diagram;
-
-    const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
-    const escapeMermaidText = text => text.replace(/"/g, '\\"');
-    const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const lines = [`graph ${context.diagramDirection}`];
-    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, context.aggregationDepth) : null;
+function getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
+    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
     const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
     const withinPackageFilter = fqn =>
         !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
     const visiblePackages = packageFilterFqn
         ? packages.filter(item => withinPackageFilter(item.fqn))
         : packages;
-    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, context.aggregationDepth)));
+    const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
     const filteredRelations = packageFilterFqn
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
@@ -576,8 +568,8 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
         : causeRelationEvidence;
     const visibleRelations = filteredRelations
         .map(relation => ({
-            from: getAggregatedFqn(relation.from, context.aggregationDepth),
-            to: getAggregatedFqn(relation.to, context.aggregationDepth),
+            from: getAggregatedFqn(relation.from, aggregationDepth),
+            to: getAggregatedFqn(relation.to, aggregationDepth),
         }))
         .filter(relation => relation.from !== relation.to);
     const uniqueRelationMap = new Map();
@@ -586,13 +578,13 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     });
     let uniqueRelations = Array.from(uniqueRelationMap.values());
 
-    if (context.transitiveReductionEnabled) {
+    if (transitiveReductionEnabled) {
         uniqueRelations = transitiveReduction(uniqueRelations);
     }
 
     if (aggregatedRoot) {
-        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, context.aggregationDepth, context.relatedFilterMode);
-        if (context.relatedFilterMode === 'direct') {
+        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, aggregationDepth, relatedFilterMode);
+        if (relatedFilterMode === 'direct') {
             uniqueRelations = uniqueRelations.filter(relation =>
                 relation.from === aggregatedRoot || relation.to === aggregatedRoot
             );
@@ -608,6 +600,25 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
         visibleSet.add(relation.from);
         visibleSet.add(relation.to);
     });
+    return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
+}
+
+function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
+    const diagram = document.getElementById('package-relation-diagram');
+    if (!diagram) return;
+    context.diagramElement = diagram;
+
+    const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
+
+    const {
+        uniqueRelations,
+        visibleSet,
+        filteredCauseRelationEvidence
+    } = getVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, context.aggregationDepth, context.relatedFilterMode, context.transitiveReductionEnabled);
+
+    const escapeMermaidText = text => text.replace(/"/g, '\\"');
+    const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
+    const lines = [`graph ${context.diagramDirection}`];
 
     const nodeIdByFqn = new Map();
     context.diagramNodeIdToFqn = new Map();
@@ -958,6 +969,7 @@ if (typeof module !== 'undefined' && module.exports) {
         packageContext,
 
         // private
+        getVisibleDiagramElements,
         getAggregatedFqn,
         collectRelatedSet,
         getPackageSummaryData,

@@ -268,38 +268,7 @@ test.describe('package.js', () => {
         setupDomMocks();
     });
 
-    test.describe('データ/ヘルパー', () => {
-        test.describe('collectRelatedSet', () => {
-            test('directモード: 隣接のみを含める', () => {
-                const aggregationDepth = 0;
-                const relatedFilterMode = 'direct';
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.domain.c'},
-                ];
-
-                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
-
-                assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
-            });
-
-            test('allモード: 推移的に辿る', () => {
-                const aggregationDepth = 0;
-                const relatedFilterMode = 'all';
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.domain.c'},
-                ];
-
-                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
-
-                assert.deepEqual(
-                    Array.from(related).sort(),
-                    ['app.domain.a', 'app.domain.b', 'app.domain.c']
-                );
-            });
-        });
-
+    test.describe('データ取得/整形', () => {
         test.describe('データ取得', () => {
             test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
                 setupDocument();
@@ -454,6 +423,37 @@ test.describe('package.js', () => {
     });
 
     test.describe('フィルタ', () => {
+        test.describe('collectRelatedSet', () => {
+            test('directモード: 隣接のみを含める', () => {
+                const aggregationDepth = 0;
+                const relatedFilterMode = 'direct';
+                const relations = [
+                    {from: 'app.domain.a', to: 'app.domain.b'},
+                    {from: 'app.domain.b', to: 'app.domain.c'},
+                ];
+
+                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
+
+                assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
+            });
+
+            test('allモード: 推移的に辿る', () => {
+                const aggregationDepth = 0;
+                const relatedFilterMode = 'all';
+                const relations = [
+                    {from: 'app.domain.a', to: 'app.domain.b'},
+                    {from: 'app.domain.b', to: 'app.domain.c'},
+                ];
+
+                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
+
+                assert.deepEqual(
+                    Array.from(related).sort(),
+                    ['app.domain.a', 'app.domain.b', 'app.domain.c']
+                );
+            });
+        });
+
         test.describe('getVisibleDiagramElements', () => {
             const packages = [
                 {fqn: 'app.a'},

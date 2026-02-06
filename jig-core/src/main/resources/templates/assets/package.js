@@ -573,6 +573,31 @@ function transitiveReduction(relations) {
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
+function buildMutualPairs(relations) {
+    const relationKey = (from, to) => `${from}::${to}`;
+    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
+    const relationSet = new Set(relations.map(relation => relationKey(relation.from, relation.to)));
+    const mutualPairs = new Set();
+    relations.forEach(relation => {
+        if (relationSet.has(relationKey(relation.to, relation.from))) {
+            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
+        }
+    });
+    return mutualPairs;
+}
+
+function buildParentFqns(visibleSet) {
+    const parentFqns = new Set();
+    Array.from(visibleSet).sort().forEach(fqn => {
+        const parts = fqn.split('.');
+        for (let i = 1; i < parts.length; i += 1) {
+            const prefix = parts.slice(0, i).join('.');
+            if (visibleSet.has(prefix)) parentFqns.add(prefix);
+        }
+    });
+    return parentFqns;
+}
+
 function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection) {
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const lines = [`graph ${diagramDirection}`];
@@ -591,15 +616,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     };
 
     Array.from(visibleSet).sort().forEach(ensureNodeId);
-    const relationKey = (from, to) => `${from}::${to}`;
-    const canonicalPairKey = (from, to) => (from < to ? `${from}::${to}` : `${to}::${from}`);
-    const relationSet = new Set(uniqueRelations.map(relation => relationKey(relation.from, relation.to)));
-    const mutualPairs = new Set();
-    uniqueRelations.forEach(relation => {
-        if (relationSet.has(relationKey(relation.to, relation.from))) {
-            mutualPairs.add(canonicalPairKey(relation.from, relation.to));
-        }
-    });
+    const mutualPairs = buildMutualPairs(uniqueRelations);
 
     const linkStyles = [];
     let linkIndex = 0;
@@ -607,7 +624,9 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     uniqueRelations.forEach(relation => {
         const fromId = ensureNodeId(relation.from);
         const toId = ensureNodeId(relation.to);
-        const pairKey = canonicalPairKey(relation.from, relation.to);
+        const pairKey = relation.from < relation.to
+            ? `${relation.from}::${relation.to}`
+            : `${relation.to}::${relation.from}`;
         if (mutualPairs.has(pairKey)) {
             if (relation.from > relation.to) {
                 return;
@@ -622,14 +641,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     });
 
     const visibleFqns = Array.from(visibleSet).sort();
-    const parentFqns = new Set();
-    visibleFqns.forEach(fqn => {
-        const parts = fqn.split('.');
-        for (let i = 1; i < parts.length; i += 1) {
-            const prefix = parts.slice(0, i).join('.');
-            if (visibleSet.has(prefix)) parentFqns.add(prefix);
-        }
-    });
+    const parentFqns = buildParentFqns(visibleSet);
 
     const addNodeLines = (nodeId, parentSubgraphFqn) => {
         const fqn = nodeIdToFqn.get(nodeId);

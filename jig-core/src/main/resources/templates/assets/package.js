@@ -55,6 +55,8 @@ const dom = {
     setDiagramElementDisplay: (diagram, display) => { if (diagram) diagram.style.display = display; },
     setDiagramContent: (element, content) => { if (element) element.textContent = content; },
     removeDiagramAttribute: (element, attribute) => { if (element) element.removeAttribute(attribute); },
+    getPackageDataScript: () => document.getElementById('package-data'),
+    getNodeTextContent: (element) => { return element ? element.textContent : ''; },
 };
 
 function getOrCreateDiagramErrorBox(diagram) {
@@ -116,7 +118,7 @@ function renderDiagramSvg(text, maxEdges, context) {
 
 function getPackageSummaryData(context) {
     if (context.packageSummaryCache) return context.packageSummaryCache;
-    const jsonText = document.getElementById('package-data').textContent;
+    const jsonText = dom.getNodeTextContent(dom.getPackageDataScript());
     /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>, causeRelationEvidence?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
     const packageData = JSON.parse(jsonText);
     context.packageSummaryCache = {

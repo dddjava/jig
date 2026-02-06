@@ -170,11 +170,15 @@ function buildPackageRows(doc, fqns) {
     return rows;
 }
 
-function setPackageData(doc, data, context) {
-    const dataElement = new Element('script', doc);
-    dataElement.textContent = JSON.stringify(data);
-    doc.elementsById.set('package-data', dataElement);
-    context.packageSummaryCache = null;
+function setPackageData(data, context) {
+    const mockDataContent = JSON.stringify(data);
+    const mockDataElement = { textContent: mockDataContent };
+
+    // Mock the dom helpers that getPackageSummaryData uses
+    test.mock.method(pkg.dom, 'getPackageDataScript', test.mock.fn(() => mockDataElement));
+    test.mock.method(pkg.dom, 'getNodeTextContent', test.mock.fn((el) => el.textContent));
+
+    context.packageSummaryCache = null; // Reset cache
 }
 
 function withConsoleErrorCapture(callback) {
@@ -296,13 +300,21 @@ test.describe('package.js', () => {
 
         test.describe('データ取得', () => {
             test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
-                const doc = setupDocument();
-                setPackageData(doc, [{fqn: 'app.a', name: 'A', classCount: 1, description: ''}], testContext);
+                const mockPackageDataContent = JSON.stringify([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}]);
+                const mockPackageDataElement = { textContent: mockPackageDataContent };
+
+                test.mock.method(pkg.dom, 'getPackageDataScript', test.mock.fn(() => mockPackageDataElement));
+                test.mock.method(pkg.dom, 'getNodeTextContent', test.mock.fn((el) => el.textContent));
+
+                testContext.packageSummaryCache = null; // Ensure cache is clear before test
 
                 const data = pkg.getPackageSummaryData(testContext);
 
                 assert.equal(data.packages.length, 1);
                 assert.equal(data.relations.length, 0);
+                assert.equal(pkg.dom.getPackageDataScript.mock.calls.length, 1);
+                assert.equal(pkg.dom.getNodeTextContent.mock.calls.length, 1);
+                assert.deepEqual(pkg.dom.getNodeTextContent.mock.calls[0].arguments, [mockPackageDataElement]);
             });
 
             test('getPackageDepth: 深さを返す', () => {
@@ -313,7 +325,7 @@ test.describe('package.js', () => {
 
             test('getMaxPackageDepth: 最大深さを返す', () => {
                 const doc = setupDocument();
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.domain.a'},
                         {fqn: 'app.b'},
@@ -486,7 +498,7 @@ test.describe('package.js', () => {
 
             test('applyRelatedFilterToTable: 関係する行のみ表示', () => {
                 const doc = setupDocument();
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.a'},
                         {fqn: 'app.b'},
@@ -537,7 +549,7 @@ test.describe('package.js', () => {
                 const doc = setupDocument();
                 const select = new Element('select');
                 doc.elementsById.set('package-depth-select', select);
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.domain'},
                         {fqn: 'lib.core'},
@@ -561,7 +573,7 @@ test.describe('package.js', () => {
         test.describe('一覧/補助', () => {
             test('renderPackageTable: 行とカウントを描画する', () => {
                 const doc = setupDocument();
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.a', name: 'A', classCount: 2},
                         {fqn: 'app.b', name: 'B', classCount: 1},
@@ -699,7 +711,7 @@ test.describe('package.js', () => {
             test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.domain.core'},
                         {fqn: 'app.domain.sub'},
@@ -719,7 +731,7 @@ test.describe('package.js', () => {
 
             test('applyDefaultPackageFilterIfPresent: 入力済みなら適用しない', () => {
                 const doc = setupDocument();
-                setPackageData(doc, {
+                setPackageData({
                     packages: [{fqn: 'app.domain.core'}],
                     relations: [],
                 }, testContext);
@@ -774,7 +786,7 @@ test.describe('package.js', () => {
             test('renderPackageDiagram: 相互依存を含む描画', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.a', name: 'A', classCount: 1},
                         {fqn: 'app.b', name: 'B', classCount: 1},
@@ -797,7 +809,7 @@ test.describe('package.js', () => {
             test('renderPackageDiagram: サブグラフ内のFQNノードラベルが省略される', () => {
                 const doc = setupDocument();
                 const diagram = setupDiagramEnvironment(doc, testContext);
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'com.example', name: 'example', classCount: 1},
                         {fqn: 'com.example.domain', name: 'domain', classCount: 1},
@@ -860,7 +872,7 @@ test.describe('package.js', () => {
                     packages.push({fqn: to, name: to, classCount: 1});
                     relations.push({from, to});
                 }
-                setPackageData(doc, {packages, relations}, testContext);
+                setPackageData({packages, relations}, testContext);
 
                 const errors = withConsoleErrorCapture(() => {
                     pkg.renderPackageDiagram(testContext, null, null);
@@ -876,7 +888,7 @@ test.describe('package.js', () => {
             test('mermaid.parseError: エラー内容を表示', () => {
                 const doc = setupDocument();
                 const diagramMock = setupDiagramEnvironment(doc, testContext); // testContext.diagramElement is set here
-                setPackageData(doc, {
+                setPackageData({
                     packages: [{fqn: 'app.a', name: 'A', classCount: 1}],
                     relations: [],
                 }, testContext);
@@ -913,7 +925,7 @@ test.describe('package.js', () => {
             test('renderDiagramAndTable: 描画とフィルタ適用を行う', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
-                setPackageData(doc, {
+                setPackageData({
                     packages: [
                         {fqn: 'app.a', name: 'A', classCount: 1},
                         {fqn: 'app.b', name: 'B', classCount: 1},
@@ -944,7 +956,7 @@ test.describe('package.js', () => {
         test('setupPackageFilterControls: 適用/解除をハンドリング', () => {
             const doc = setupDocument();
             setupDiagramEnvironment(doc, testContext);
-            setPackageData(doc, {
+            setPackageData({
                 packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
                 relations: [],
             }, testContext);
@@ -967,7 +979,7 @@ test.describe('package.js', () => {
         test('setupPackageFilterControls: Enterキーで適用', () => {
             const doc = setupDocument();
             setupDiagramEnvironment(doc, testContext);
-            setPackageData(doc, {
+            setPackageData({
                 packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
                 relations: [],
             }, testContext);
@@ -993,7 +1005,7 @@ test.describe('package.js', () => {
         test('setupAggregationDepthControl: 変更を反映する', () => {
             const doc = setupDocument();
             setupDiagramEnvironment(doc, testContext);
-            setPackageData(doc, {
+            setPackageData({
                 packages: [
                     {fqn: 'app.domain.a'},
                     {fqn: 'app.domain.b'},
@@ -1014,7 +1026,7 @@ test.describe('package.js', () => {
         test('setupRelatedFilterControls: モード変更を反映', () => {
             const doc = setupDocument();
             setupDiagramEnvironment(doc, testContext);
-            setPackageData(doc, {
+            setPackageData({
                 packages: [
                     {fqn: 'app.a'},
                     {fqn: 'app.b'},
@@ -1048,7 +1060,7 @@ test.describe('package.js', () => {
         test('setupDiagramDirectionControls: 向きを切り替える', () => {
             const doc = setupDocument();
             setupDiagramEnvironment(doc, testContext);
-            setPackageData(doc, {
+            setPackageData({
                 packages: [{fqn: 'app.a'}],
                 relations: [],
             }, testContext);
@@ -1137,7 +1149,7 @@ test.describe('package.js', () => {
 
             // renderDiagramAndTableの副作用をチェックするための準備
             setupDiagramEnvironment(doc, testContext);
-            setPackageData(doc, {packages: [{fqn: 'a'}], relations: []}, testContext);
+            setPackageData({packages: [{fqn: 'a'}], relations: []}, testContext);
             const depthSelect = createDepthSelect(doc);
             const dummyOption = doc.createElement('option');
             dummyOption.id = 'dummy-option-for-test';

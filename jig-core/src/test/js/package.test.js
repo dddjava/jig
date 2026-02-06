@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const pkg = require('../../main/resources/templates/assets/package.js');
+const originalDom = {...pkg.dom};
 
 // Creates a fresh deep copy of the initial context for each test
 function createInitialContext() {
@@ -172,13 +173,26 @@ function buildPackageRows(doc, fqns) {
 
 function setPackageData(data, context) {
     const mockDataContent = JSON.stringify(data);
-    const mockDataElement = { textContent: mockDataContent };
-
-    // Mock the dom helpers that getPackageSummaryData uses
-    test.mock.method(pkg.dom, 'getPackageDataScript', test.mock.fn(() => mockDataElement));
-    test.mock.method(pkg.dom, 'getNodeTextContent', test.mock.fn((el) => el.textContent));
+    const doc = global.document;
+    if (doc && doc.elementsById) {
+        const dataElement = new Element('script', doc);
+        dataElement.textContent = mockDataContent;
+        doc.elementsById.set('package-data', dataElement);
+    } else {
+        const mockDataElement = { textContent: mockDataContent };
+        test.mock.method(pkg.dom, 'getPackageDataScript', test.mock.fn(() => mockDataElement));
+        test.mock.method(pkg.dom, 'getNodeTextContent', test.mock.fn((el) => el.textContent));
+    }
 
     context.packageSummaryCache = null; // Reset cache
+}
+
+function setupDomMocks() {
+    const methods = Object.keys(originalDom);
+    methods.forEach(name => {
+        if (typeof originalDom[name] !== 'function') return;
+        test.mock.method(pkg.dom, name, test.mock.fn((...args) => originalDom[name](...args)));
+    });
 }
 
 function withConsoleErrorCapture(callback) {
@@ -264,6 +278,7 @@ test.describe('package.js', () => {
             diagramDirection: 'TD',
             transitiveReductionEnabled: true,
         };
+        setupDomMocks();
     });
 
     test.describe('データ/ヘルパー', () => {
@@ -300,21 +315,13 @@ test.describe('package.js', () => {
 
         test.describe('データ取得', () => {
             test('getPackageSummaryData: 配列/オブジェクト両対応', () => {
-                const mockPackageDataContent = JSON.stringify([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}]);
-                const mockPackageDataElement = { textContent: mockPackageDataContent };
-
-                test.mock.method(pkg.dom, 'getPackageDataScript', test.mock.fn(() => mockPackageDataElement));
-                test.mock.method(pkg.dom, 'getNodeTextContent', test.mock.fn((el) => el.textContent));
-
-                testContext.packageSummaryCache = null; // Ensure cache is clear before test
+                setupDocument();
+                setPackageData([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}], testContext);
 
                 const data = pkg.getPackageSummaryData(testContext);
 
                 assert.equal(data.packages.length, 1);
                 assert.equal(data.relations.length, 0);
-                assert.equal(pkg.dom.getPackageDataScript.mock.calls.length, 1);
-                assert.equal(pkg.dom.getNodeTextContent.mock.calls.length, 1);
-                assert.deepEqual(pkg.dom.getNodeTextContent.mock.calls[0].arguments, [mockPackageDataElement]);
             });
 
             test('parsePackageSummaryData: 配列/オブジェクト両対応', () => {
@@ -582,6 +589,7 @@ test.describe('package.js', () => {
 
             test('applyRelatedFilterToTable: 未指定ならパッケージフィルタのみ', () => {
                 const doc = setupDocument();
+                setPackageData({packages: [], relations: []}, testContext);
                 const rows = buildPackageRows(doc, ['app.domain', 'app.other']);
                 testContext.packageFilterFqn = 'app.domain';
 

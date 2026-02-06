@@ -14,6 +14,11 @@ const packageContext = {
     transitiveReductionEnabled: true,
 };
 
+const dom = {
+    getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
+    setRelatedFilterTargetText: (element, text) => { if (element) element.textContent = text; },
+};
+
 function getOrCreateDiagramErrorBox(diagram) {
     let errorBox = document.getElementById('package-diagram-error');
     if (errorBox) return errorBox;
@@ -352,9 +357,8 @@ function applyRelatedFilterToTable(fqn, context) {
 }
 
 function renderRelatedFilterTarget(context) {
-    const target = document.getElementById('related-filter-target');
-    if (!target) return;
-    target.textContent = context.relatedFilterFqn ? context.relatedFilterFqn : '未選択';
+    const target = dom.getRelatedFilterTarget();
+    dom.setRelatedFilterTargetText(target, context.relatedFilterFqn ? context.relatedFilterFqn : '未選択');
 }
 
 function collectRelatedSet(root, relations, aggregationDepth, relatedFilterMode) {
@@ -967,6 +971,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         // public
         packageContext,
+        dom,
 
         // private
         getVisibleDiagramElements,

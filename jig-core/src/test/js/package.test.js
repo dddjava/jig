@@ -513,17 +513,24 @@ test.describe('package.js', () => {
     test.describe('描画', () => {
         test.describe('UI表示', () => {
             test('renderRelatedFilterTarget: 対象表示を更新する', () => {
-                const doc = setupDocument();
-                const target = new Element('span');
-                doc.elementsById.set('related-filter-target', target);
+                const mockTarget = { textContent: '' };
+                const getRelatedFilterTargetMock = test.mock.fn(() => mockTarget);
+                const setRelatedFilterTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
+
+                test.mock.method(pkg.dom, 'getRelatedFilterTarget', getRelatedFilterTargetMock);
+                test.mock.method(pkg.dom, 'setRelatedFilterTargetText', setRelatedFilterTargetTextMock);
 
                 testContext.relatedFilterFqn = null;
                 pkg.renderRelatedFilterTarget(testContext);
-                assert.equal(target.textContent, '未選択');
+                assert.equal(mockTarget.textContent, '未選択');
+                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 1);
+                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
 
                 testContext.relatedFilterFqn = 'app.domain';
                 pkg.renderRelatedFilterTarget(testContext);
-                assert.equal(target.textContent, 'app.domain');
+                assert.equal(mockTarget.textContent, 'app.domain');
+                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 2);
+                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
             test('updateAggregationDepthOptions: 選択肢を更新する', () => {

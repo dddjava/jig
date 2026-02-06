@@ -179,7 +179,7 @@ function buildAggregationStatsForPackageFilter(packages, relations, packageFilte
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
-function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, context) {
+function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedFilterMode) {
     const withinPackageFilter = fqn => {
         if (!packageFilterFqn) return true;
         const prefix = `${packageFilterFqn}.`;
@@ -191,21 +191,21 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
         : relations;
 
     if (relatedFilterFqn) {
-        const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, context.aggregationDepth);
-        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, context.aggregationDepth, context.relatedFilterMode);
+        const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
+        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedFilterMode);
         filteredPackages = filteredPackages.filter(item =>
-            relatedSet.has(getAggregatedFqn(item.fqn, context.aggregationDepth))
+            relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
         );
-        if (context.relatedFilterMode === 'direct') {
+        if (relatedFilterMode === 'direct') {
             filteredRelations = filteredRelations.filter(relation => {
-                const from = getAggregatedFqn(relation.from, context.aggregationDepth);
-                const to = getAggregatedFqn(relation.to, context.aggregationDepth);
+                const from = getAggregatedFqn(relation.from, aggregationDepth);
+                const to = getAggregatedFqn(relation.to, aggregationDepth);
                 return from === aggregatedRoot || to === aggregatedRoot;
             });
         } else {
             filteredRelations = filteredRelations.filter(relation => {
-                const from = getAggregatedFqn(relation.from, context.aggregationDepth);
-                const to = getAggregatedFqn(relation.to, context.aggregationDepth);
+                const from = getAggregatedFqn(relation.from, aggregationDepth);
+                const to = getAggregatedFqn(relation.to, aggregationDepth);
                 return relatedSet.has(from) && relatedSet.has(to);
             });
         }
@@ -213,16 +213,16 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
     return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
-function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth, context) {
+function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth, aggregationDepth, relatedFilterMode) {
     if (!rootFqn) {
         return buildAggregationStats(packages, relations, maxDepth);
     }
-    const aggregatedRoot = getAggregatedFqn(rootFqn, context.aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, relations, context.aggregationDepth, context.relatedFilterMode);
-    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, context.aggregationDepth)));
+    const aggregatedRoot = getAggregatedFqn(rootFqn, aggregationDepth);
+    const relatedSet = collectRelatedSet(aggregatedRoot, relations, aggregationDepth, relatedFilterMode);
+    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth)));
     const relatedRelations = relations.filter(relation => {
-        const from = getAggregatedFqn(relation.from, context.aggregationDepth);
-        const to = getAggregatedFqn(relation.to, context.aggregationDepth);
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
         return relatedSet.has(from) && relatedSet.has(to);
     });
     return buildAggregationStats(relatedPackages, relatedRelations, maxDepth);
@@ -825,7 +825,8 @@ function updateAggregationDepthOptions(maxDepth, context) {
         context.packageFilterFqn,
         context.relatedFilterFqn,
         maxDepth,
-        context
+        context.aggregationDepth,
+        context.relatedFilterMode
     );
     select.innerHTML = '';
     const noAggregationOption = document.createElement('option');

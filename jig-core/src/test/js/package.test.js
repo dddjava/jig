@@ -354,8 +354,8 @@ test.describe('package.js', () => {
         });
 
         test('buildAggregationStatsForRelated: 集計深さを反映する', () => {
-            testContext.aggregationDepth = 1;
-            testContext.relatedFilterMode = 'all';
+            const aggregationDepth = 1;
+            const relatedFilterMode = 'all';
             const packages = [
                 {fqn: 'app.domain.a'},
                 {fqn: 'app.domain.b'},
@@ -366,7 +366,7 @@ test.describe('package.js', () => {
                 {from: 'app.domain.b', to: 'app.other.c'},
             ];
 
-            const stats = pkg.buildAggregationStatsForRelated(packages, relations, 'app.domain.a', 1, testContext);
+            const stats = pkg.buildAggregationStatsForRelated(packages, relations, 'app.domain.a', 1, aggregationDepth, relatedFilterMode);
             const depth1 = stats.get(1);
 
             assert.equal(depth1.packageCount, 1);
@@ -374,8 +374,6 @@ test.describe('package.js', () => {
         });
 
         test('buildAggregationStatsForFilters: directモードの複合集計', () => {
-            testContext.aggregationDepth = 0;
-            testContext.relatedFilterMode = 'direct';
             const packages = [
                 {fqn: 'app.domain.a'},
                 {fqn: 'app.domain.b'},
@@ -395,7 +393,8 @@ test.describe('package.js', () => {
                 'app.domain',
                 'app.domain.a',
                 0,
-                testContext
+                0,
+                'direct'
             );
             const depth0 = stats.get(0);
 
@@ -404,8 +403,6 @@ test.describe('package.js', () => {
         });
 
         test('buildAggregationStatsForFilters: allモードの複合集計', () => {
-            testContext.aggregationDepth = 0;
-            testContext.relatedFilterMode = 'all';
             const packages = [
                 {fqn: 'app.domain.a'},
                 {fqn: 'app.domain.b'},
@@ -425,7 +422,8 @@ test.describe('package.js', () => {
                 'app.domain',
                 'app.domain.a',
                 0,
-                testContext
+                0,
+                'all'
             );
             const depth0 = stats.get(0);
 

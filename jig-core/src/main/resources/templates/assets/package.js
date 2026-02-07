@@ -153,29 +153,6 @@ function buildAggregationStats(packages, relations, maxDepth) {
     return stats;
 }
 
-function buildAggregationStatsForPackageFilter(packages, relations, packageFilterFqn, maxDepth) {
-    const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    const withinFilter = fqn => !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix);
-    const filteredPackages = packages.filter(item => withinFilter(item.fqn));
-    const filteredRelations = relations.filter(relation => withinFilter(relation.from) && withinFilter(relation.to));
-    return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
-}
-
-function buildAggregationStatsForRelated(packages, relations, rootFqn, maxDepth, aggregationDepth, relatedFilterMode) {
-    if (!rootFqn) {
-        return buildAggregationStats(packages, relations, maxDepth);
-    }
-    const aggregatedRoot = getAggregatedFqn(rootFqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, relations, aggregationDepth, relatedFilterMode);
-    const relatedPackages = packages.filter(item => relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth)));
-    const relatedRelations = relations.filter(relation => {
-        const from = getAggregatedFqn(relation.from, aggregationDepth);
-        const to = getAggregatedFqn(relation.to, aggregationDepth);
-        return relatedSet.has(from) && relatedSet.has(to);
-    });
-    return buildAggregationStats(relatedPackages, relatedRelations, maxDepth);
-}
-
 function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedFilterMode) {
     const withinPackageFilter = fqn => {
         if (!packageFilterFqn) return true;
@@ -513,18 +490,6 @@ function renderPackageTable(context) {
     rowSpecs.forEach(spec => {
         const tr = buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow);
         tbody.appendChild(tr);
-    });
-}
-
-function filterPackageTableRows(packageFilterFqn) {
-    const rows = dom.getPackageTableRows();
-    const rowFqns = Array.from(rows, row => {
-        const fqnCell = row.querySelector('td.fqn');
-        return fqnCell ? fqnCell.textContent : '';
-    });
-    const visibility = buildPackageRowVisibility(rowFqns, packageFilterFqn);
-    rows.forEach((row, index) => {
-        row.classList.toggle('hidden', !visibility[index]);
     });
 }
 
@@ -1252,8 +1217,6 @@ if (typeof module !== 'undefined' && module.exports) {
         getCommonPrefixDepth,
         getPackageFqnFromTypeFqn,
         buildAggregationStats,
-        buildAggregationStatsForPackageFilter,
-        buildAggregationStatsForRelated,
         buildAggregationStatsForFilters,
         normalizePackageFilterValue,
         normalizeAggregationDepthValue,
@@ -1269,7 +1232,6 @@ if (typeof module !== 'undefined' && module.exports) {
         buildPackageTableActionSpecs,
         buildPackageTableRowElement,
         renderPackageTable,
-        filterPackageTableRows,
         filterRelatedTableRows,
         renderRelatedFilterLabel,
         setRelatedFilterAndRender,

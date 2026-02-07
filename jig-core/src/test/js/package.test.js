@@ -319,45 +319,6 @@ test.describe('package.js', () => {
 
     test.describe('集計', () => {
         test.describe('ロジック', () => {
-            test('buildAggregationStatsForPackageFilter: 対象のみ数える', () => {
-                testContext.aggregationDepth = 0;
-                const packages = [
-                    {fqn: 'app.domain.a'},
-                    {fqn: 'app.domain.b'},
-                    {fqn: 'app.other.c'},
-                ];
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.other.c', to: 'app.domain.a'},
-                ];
-
-                const stats = pkg.buildAggregationStatsForPackageFilter(packages, relations, 'app.domain', 0);
-                const depth0 = stats.get(0);
-
-                assert.equal(depth0.packageCount, 2);
-                assert.equal(depth0.relationCount, 1);
-            });
-
-            test('buildAggregationStatsForRelated: 集計深さを反映する', () => {
-                const aggregationDepth = 1;
-                const relatedFilterMode = 'all';
-                const packages = [
-                    {fqn: 'app.domain.a'},
-                    {fqn: 'app.domain.b'},
-                    {fqn: 'app.other.c'},
-                ];
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.other.c'},
-                ];
-
-                const stats = pkg.buildAggregationStatsForRelated(packages, relations, 'app.domain.a', 1, aggregationDepth, relatedFilterMode);
-                const depth1 = stats.get(1);
-
-                assert.equal(depth1.packageCount, 1);
-                assert.equal(depth1.relationCount, 0);
-            });
-
             test('buildAggregationStatsForFilters: directモードの複合集計を行う', () => {
                 const packages = [
                     {fqn: 'app.domain.a'},

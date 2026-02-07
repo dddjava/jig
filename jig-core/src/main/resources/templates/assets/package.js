@@ -29,6 +29,7 @@ const dom = {
     getClearRelatedFilterButton: () => document.getElementById('clear-related-filter'),
     getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
     getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
+    getTransitiveReductionToggle: () => document.getElementById('transitive-reduction-toggle'),
     getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
     getDiagram: () => document.getElementById('package-relation-diagram'),
     getDocumentBody: () => document.body,
@@ -1155,27 +1156,13 @@ function setupDiagramDirectionControl(context) {
 }
 
 function setupTransitiveReductionControl(context) {
-    const container = dom.getDiagramDirectionRadio()?.parentNode?.parentNode;
-    if (!container) return;
-
-    const controlContainer = document.createElement('div');
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.id = 'transitive-reduction-toggle';
+    const checkbox = dom.getTransitiveReductionToggle();
+    if (!checkbox) return;
     checkbox.checked = context.transitiveReductionEnabled;
     checkbox.addEventListener('change', () => {
         context.transitiveReductionEnabled = checkbox.checked;
         renderDiagramAndTable(context);
     });
-
-    const label = document.createElement('label');
-    label.htmlFor = checkbox.id;
-    label.textContent = '推移簡約';
-    label.style.marginLeft = '4px';
-
-    controlContainer.appendChild(checkbox);
-    controlContainer.appendChild(label);
-    container.appendChild(controlContainer);
 }
 
 // 初期化

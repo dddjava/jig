@@ -1,36 +1,173 @@
 # AGENTS.md
 
-## 目的
-このリポジトリで作業するコーディングエージェント向けの指示です。
+This document defines mandatory rules for AI coding agents working in this repository.  
+Follow these instructions exactly.
 
-## 作業範囲
-- 変更は原則このリポジトリ内に限定する。
-- 生成ファイルは明示的な依頼がない限り編集しない。
+---
 
-## 実行方針
-- 可能なら、変更後に最小限のテストやチェックを実行する。
-- テストが重い場合は、実行前に確認する。
-- 通常のテストコマンドは `./gradlew clean test`。
-- ドキュメント表示用のJavaScriptのみ編集した場合は `npm run test` を実行する。
-  - 対象パスは `jig-core/src/main/resources/templates/assets` と `jig-core/src/test/js`。
+## Principles
 
-## コーディング指針
-- 既存の実装パターンに合わせる。
-- 変更は最小限・依頼内容に集中させる。
-- コメントは日本語を使用する。
+- Choose safe and reversible actions.
+- Make the smallest change necessary to accomplish the task.
+- Preserve the existing architecture and conventions.
+- When unsure, stop and ask for clarification.
 
-## 変更ポリシー
-- 明示的な指示がない限り、外部仕様（公開挙動）を変えない。
-- 依頼と無関係なリファクタリングは避ける。
+---
 
-## エスカレーション
-- 新規依存追加、重いコマンド実行、破壊的操作の前に確認する。
+## Language Policy
 
-## コミット方針
-- 変更が完了したらコミットする。
+- All commit messages must be written in Japanese.
+- All agent responses must be written in Japanese.
+- Code comments should be written in Japanese unless the existing codebase uses English-only comments.
+ 
+---
 
-## ブランチ運用
-- 依頼ごとに `agent/<topic>` 形式のブランチを作成して作業する。
+## Guardrails (Must Follow)
 
-## 参照
-- 詳細はこのリポジトリ内の README や docs を参照する。
+- Never perform destructive operations.
+- Never rewrite shared history (e.g., force push, unsafe rebase).
+- Never modify repository internals (e.g., `.git`).
+- Do not make large or unrelated changes in a single task.
+
+If a task appears to require any of the above, **stop and ask for instructions**.
+
+---
+
+## Scope of Work
+
+- Limit all changes to this repository.
+- Do not edit generated files or directories such as:
+  - `build/`
+  - `coverage/`
+  - `node_modules/`
+  - `dist/`
+
+If modification seems necessary, **stop and ask**.
+
+---
+
+## Testing Policy
+
+Never bypass failing tests.Prefer fixing the root cause over disabling tests.
+
+Do not skip tests to save time.
+
+Run tests based on the type of change:
+
+- **JavaScript-only changes** → `npm run test`
+- **All other changes** → `./gradlew clean test`
+
+If tests cannot be executed, report:
+
+- the reason (e.g., permissions, environment issues)
+- that the tests were not run
+
+### Test Exceptions
+
+Tests are not required for the following changes:
+
+- CSS-only changes that do not affect JavaScript behavior
+- Documentation-only changes (e.g., `README.md`, files under `docs/`)
+
+If there is any possibility that runtime behavior is affected, run the tests.
+
+When unsure, run the tests.
+
+---
+
+## Coding Guidelines
+
+- Follow existing implementation patterns.
+- Keep changes minimal and focused on the request.
+- Write comments in Japanese.
+- If existing comments are English-only, do not force translation — mixed language is acceptable.
+
+---
+
+## Change Policy
+
+- Avoid refactoring unrelated to the request.
+- For new features or bug fixes, prefer adding a failing test before making the change when feasible.
+- After changes, check for duplication and refactor if it is clearly safe.
+- If uncertain whether refactoring is appropriate, report instead of modifying.
+
+---
+
+## Commit Policy
+
+- Commit in meaningful, minimal units.
+- Split commits when a task naturally involves multiple steps.
+- Always run tests before committing.
+
+### Commit Messages
+
+Use **Conventional Commits**:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Allowed `type` values:
+
+- `feat` — new feature
+- `fix` — bug fix
+- `refactor` — code improvement without behavior change
+- `docs` — documentation only
+- `test` — test additions or updates
+  - Use `test(red)` when adding a failing test
+- `other` — if none apply
+
+Footer:
+
+- `JigDocument:<documentName>` — when a modified JigDocument is identifiable.
+
+### Commit Message Style
+
+Keep commit messages concise and factual.
+
+- Do not exaggerate impact or value.
+- Do not include promotional language.
+- Avoid unnecessary background or justification.
+- Describe what changed, not why it is great.
+
+Prefer short bodies. Omit the body if it is not necessary.
+
+#### JIG-DOCUMENT Rule
+
+If a change targets a specific JigDocument, add a footer:
+`JIG-DOCUMENT: <documentName>`
+
+Determine the document name from `JigDocument.java`:
+
+- If a modified file matches `jig-core/src/main/resources/templates/<documentFileName>.html`,
+  add the corresponding `JigDocument`.
+- If a modified file matches `jig-core/src/main/resources/templates/assets/<documentFileName>.*`,
+  add the corresponding `JigDocument`.
+- If multiple documents match, add all relevant `JIG-DOCUMENT` footers.
+- For shared assets (e.g., `assets/jig.js`) that affect multiple documents, add a footer
+  **only when the task explicitly targets a document**. Otherwise omit to avoid false attribution.
+
+---
+
+## Branch Strategy
+
+- Create a branch per request using: `agent/<topic>`
+- Branch from `main`.
+- Use short, lowercase, hyphenated names describing the work.
+
+Example: `agent/package-glossary-link`
+
+---
+
+## Decision Rule
+
+When multiple approaches are possible:
+
+👉 **Choose the least invasive option.**
+
+Do exactly what was requested — nothing more.
+Do not proactively "improve" unrelated areas.

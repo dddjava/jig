@@ -259,7 +259,8 @@ label {
 }
 
 /* パッケージ概要の表示設定 */
-.package-list details.controls {
+.package-list details.controls,
+.package-list details.usage {
     background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -269,13 +270,15 @@ label {
     width: 95%;
     max-width: 980px;
 }
-.package-list details.controls summary {
+.package-list details.controls summary,
+.package-list details.usage summary {
     list-style: none;
     cursor: pointer;
     padding: 6px 0;
     font-weight: 600;
 }
-.package-list details.controls > :not(summary) {
+.package-list details.controls > :not(summary),
+.package-list details.usage > :not(summary) {
     display: block;
     margin: 8px 0;
 }

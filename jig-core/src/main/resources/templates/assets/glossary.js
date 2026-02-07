@@ -118,6 +118,10 @@ function renderGlossaryTerms(terms) {
     terms.forEach(term => {
         const article = document.createElement("article");
         article.className = "term";
+        if (term.fqn) {
+            // 他ドキュメントからのリンク用にFQNをIDとして設定する
+            article.id = term.fqn;
+        }
 
         const title = document.createElement("h2");
         title.className = "term-title";

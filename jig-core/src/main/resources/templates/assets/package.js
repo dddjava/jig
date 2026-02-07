@@ -1284,6 +1284,7 @@ if (typeof module !== 'undefined' && module.exports) {
         buildDiagramEdgeLines,
         buildDiagramNodeLines,
         buildDiagramNodeLabel,
+        buildDiagramSubgraphLabel,
         buildDiagramNodeTooltip,
         buildDiagramGroupTree,
         buildSubgraphLines,

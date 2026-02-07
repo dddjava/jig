@@ -788,6 +788,11 @@ test.describe('package.js', () => {
                 assert.equal(label, 'model');
             });
 
+            test('buildDiagramSubgraphLabel: 親サブグラフ配下ならプレフィックスを省略する', () => {
+                const label = pkg.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
+                assert.equal(label, 'domain');
+            });
+
             test('buildDiagramNodeTooltip: FQNを返す', () => {
                 assert.equal(pkg.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
                 assert.equal(pkg.buildDiagramNodeTooltip(null), '');
@@ -808,9 +813,15 @@ test.describe('package.js', () => {
             test('buildSubgraphLines: サブグラフ行を生成する', () => {
                 const rootGroup = {
                     key: '',
-                    nodes: [],
+                    nodes: ['ROOT'],
                     children: new Map([
-                        ['com.example', {key: 'com.example', nodes: ['P0', 'P1'], children: new Map()}],
+                        ['com.example', {
+                            key: 'com.example',
+                            nodes: ['P0'],
+                            children: new Map([
+                                ['com.example.domain', {key: 'com.example.domain', nodes: ['P1', 'P2'], children: new Map()}],
+                            ]),
+                        }],
                     ]),
                 };
                 const addNodeLines = (lines, nodeId) => {
@@ -819,7 +830,10 @@ test.describe('package.js', () => {
 
                 const lines = pkg.buildSubgraphLines(rootGroup, addNodeLines, text => text);
 
+                assert.equal(lines.some(line => line.includes('node ROOT')), true);
                 assert.equal(lines.some(line => line.includes('node P0')), true);
+                assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["com.example"]')), true);
+                assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["domain"]')), true);
             });
 
             test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {

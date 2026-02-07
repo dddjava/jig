@@ -29,6 +29,14 @@
             <label><input type="checkbox" id="show-field" checked>フィールド</label>
         </div>
         <div>
+            <label for="sort-order">並び順：</label>
+            <select id="sort-order">
+                <option value="name" selected>名前</option>
+                <option value="fqn">完全修飾名</option>
+                <option value="simple">単純名</option>
+            </select>
+        </div>
+        <div>
             <button id="export-csv" type="button">CSV出力</button>
         </div>
     </details>

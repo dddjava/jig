@@ -92,6 +92,24 @@ test.describe('glossary.js', () => {
         });
     });
 
+    test.describe('ソート', () => {
+        test('名前・完全修飾名・単純名で並び替える', () => {
+            const terms = [
+                {title: 'Order', simpleText: 'Order', fqn: 'app.Order'},
+                {title: 'Account', simpleText: 'Account', fqn: 'app.Account'},
+                {title: 'User', simpleText: 'User', fqn: 'app.domain.User'},
+            ];
+
+            const byName = glossary.sortTerms(terms, 'name').map(term => term.title);
+            const byFqn = glossary.sortTerms(terms, 'fqn').map(term => term.fqn);
+            const bySimple = glossary.sortTerms(terms, 'simple').map(term => term.simpleText);
+
+            assert.deepEqual(byName, ['Account', 'Order', 'User']);
+            assert.deepEqual(byFqn, ['app.Account', 'app.domain.User', 'app.Order']);
+            assert.deepEqual(bySimple, ['Account', 'Order', 'User']);
+        });
+    });
+
     test.describe('データ読み込み', () => {
         test('glossary-dataから用語一覧を取得する', () => {
             const doc = setupDocument();

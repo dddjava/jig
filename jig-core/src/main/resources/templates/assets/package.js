@@ -450,6 +450,19 @@ function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow
     nameTd.textContent = spec.name;
     tr.appendChild(nameTd);
 
+    const glossaryTd = document.createElement('td');
+    glossaryTd.className = 'glossary-cell';
+    const glossaryLink = document.createElement('a');
+    glossaryLink.className = 'glossary-link-icon';
+    glossaryLink.href = `glossary.html#${encodeURIComponent(spec.fqn)}`;
+    glossaryLink.setAttribute('aria-label', '用語集');
+    const glossaryText = document.createElement('span');
+    glossaryText.className = 'screen-reader-only';
+    glossaryText.textContent = '用語集';
+    glossaryLink.appendChild(glossaryText);
+    glossaryTd.appendChild(glossaryLink);
+    tr.appendChild(glossaryTd);
+
     const classCountTd = document.createElement('td');
     classCountTd.textContent = String(spec.classCount);
     classCountTd.className = 'number';

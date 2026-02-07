@@ -351,6 +351,21 @@ label {
 .package-list button.related-icon:hover {
     background-color: #f5f5f5;
 }
+.package-list a.glossary-link-icon {
+    display: inline-block;
+    width: 1.8em;
+    height: 1.8em;
+    box-sizing: border-box;
+    border-radius: 999px;
+    border: 1px solid #999;
+    background: #fff no-repeat center;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/><path d='M4 4v15.5A2.5 2.5 0 0 0 6.5 22H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4A2.5 2.5 0 0 1 6.5 2z'/></svg>");
+    text-decoration: none;
+    vertical-align: middle;
+}
+.package-list a.glossary-link-icon:hover {
+    background-color: #f5f5f5;
+}
 .package-list .mutual-dependencies {
     margin: 12px 0 16px 0;
     padding: 8px 12px;
@@ -377,6 +392,12 @@ label {
 }
 .package-list table .col-action {
     width: 2.5em;
+}
+.package-list table .col-glossary {
+    width: 2.5em;
+}
+.package-list td.glossary-cell {
+    text-align: center;
 }
 .package-list table th.no-sort {
     cursor: default;

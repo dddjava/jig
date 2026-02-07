@@ -234,6 +234,10 @@ function setupDiagramEnvironment(doc, context) {
     const mutual = doc.createElement('div');
     mutual.id = 'mutual-dependency-list';
     doc.elementsById.set('mutual-dependency-list', mutual);
+    const transitiveReductionToggle = doc.createElement('input');
+    transitiveReductionToggle.id = 'transitive-reduction-toggle';
+    transitiveReductionToggle.type = 'checkbox';
+    doc.elementsById.set('transitive-reduction-toggle', transitiveReductionToggle);
     global.window = {
         mermaid: {
             initialize() {
@@ -652,9 +656,9 @@ test.describe('package.js', () => {
 
                 assert.equal(tbody.children.length, 2);
                 assert.equal(tbody.children[0].children[3].textContent, 'A');
-                assert.equal(tbody.children[0].children[4].textContent, '2');
-                assert.equal(tbody.children[0].children[5].textContent, '0');
-                assert.equal(tbody.children[0].children[6].textContent, '2');
+                assert.equal(tbody.children[0].children[5].textContent, '2');
+                assert.equal(tbody.children[0].children[6].textContent, '0');
+                assert.equal(tbody.children[0].children[7].textContent, '2');
             });
         });
     });

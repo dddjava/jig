@@ -820,6 +820,14 @@ function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {
     return displayLabel ?? '';
 }
 
+function buildDiagramSubgraphLabel(subgraphFqn, parentSubgraphFqn) {
+    if (!subgraphFqn) return '';
+    if (parentSubgraphFqn && subgraphFqn.startsWith(`${parentSubgraphFqn}.`)) {
+        return subgraphFqn.substring(parentSubgraphFqn.length + 1);
+    }
+    return subgraphFqn;
+}
+
 function buildDiagramNodeTooltip(fqn) {
     return fqn ?? '';
 }
@@ -863,7 +871,8 @@ function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText) {
                 return;
             }
             const groupId = `G${groupIndex++}`;
-            lines.push(`subgraph ${groupId}["${escapeMermaidText(child.key)}"]`);
+            const label = buildDiagramSubgraphLabel(child.key, parentSubgraphFqnForNodes);
+            lines.push(`subgraph ${groupId}["${escapeMermaidText(label)}"]`);
             renderGroup(child, false, child.key);
             lines.push('end');
         });

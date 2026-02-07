@@ -378,6 +378,9 @@ label {
 .package-list table .col-action {
     width: 2.5em;
 }
+.package-list table .col-glossary {
+    width: 6em;
+}
 .package-list table th.no-sort {
     cursor: default;
 }

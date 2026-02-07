@@ -40,6 +40,25 @@ function updateArticleVisibility(controls) {
 
 }
 
+// 文字列の比較は日本語を優先しつつ大小を無視する
+const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
+
+function sortTerms(terms, sortKey) {
+    const keyMap = {
+        name: "title",
+        fqn: "fqn",
+        simple: "simpleText",
+    };
+    const key = keyMap[sortKey] ?? "title";
+    return [...terms].sort((left, right) => {
+        const leftValue = left?.[key] ?? "";
+        const rightValue = right?.[key] ?? "";
+        const primary = termCollator.compare(leftValue, rightValue);
+        if (primary !== 0) return primary;
+        return termCollator.compare(left?.fqn ?? "", right?.fqn ?? "");
+    });
+}
+
 function getFilteredTerms(terms, controls) {
     if (!controls) return terms;
     const showEmptyDescription = controls.showEmptyDescription.checked;
@@ -167,13 +186,18 @@ function renderMarkdownDescriptions() {
         .forEach(node => node.innerHTML = marked.parse(node.innerHTML));
 }
 
+function renderFilteredTerms(terms, controls) {
+    const filteredTerms = getFilteredTerms(terms, controls);
+    const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
+    renderGlossaryTerms(sortedTerms);
+    renderMarkdownDescriptions();
+}
+
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
         if (!document.body.classList.contains("glossary")) return;
 
         const terms = getGlossaryData();
-        renderGlossaryTerms(terms);
-        renderMarkdownDescriptions();
 
         const controls = {
             searchInput: document.getElementById("search-input"),
@@ -182,9 +206,10 @@ if (typeof document !== "undefined") {
             showClass: document.getElementById("show-class"),
             showMethod: document.getElementById("show-method"),
             showField: document.getElementById("show-field"),
+            sortOrder: document.getElementById("sort-order"),
         };
 
-        const updateArticles = () => updateArticleVisibility(controls);
+        const updateArticles = () => renderFilteredTerms(terms, controls);
 
         controls.searchInput.addEventListener("input", updateArticles);
         controls.showEmptyDescription.addEventListener("change", updateArticles);
@@ -192,6 +217,9 @@ if (typeof document !== "undefined") {
         controls.showClass.addEventListener("change", updateArticles);
         controls.showMethod.addEventListener("change", updateArticles);
         controls.showField.addEventListener("change", updateArticles);
+        if (controls.sortOrder) {
+            controls.sortOrder.addEventListener("change", updateArticles);
+        }
         const exportButton = document.getElementById("export-csv");
         if (exportButton) {
             exportButton.addEventListener("click", () => {
@@ -209,11 +237,13 @@ if (typeof document !== "undefined") {
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         updateArticleVisibility,
+        sortTerms,
         getFilteredTerms,
         getGlossaryData,
         escapeCsvValue,
         buildGlossaryCsv,
         renderGlossaryTerms,
+        renderFilteredTerms,
         renderMarkdownDescriptions,
     };
 }

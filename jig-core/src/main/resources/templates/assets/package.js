@@ -451,6 +451,7 @@ function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow
     tr.appendChild(nameTd);
 
     const glossaryTd = document.createElement('td');
+    glossaryTd.className = 'glossary-cell';
     const glossaryLink = document.createElement('a');
     glossaryLink.className = 'glossary-link-icon';
     glossaryLink.href = `glossary.html#${encodeURIComponent(spec.fqn)}`;

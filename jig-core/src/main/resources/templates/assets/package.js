@@ -452,8 +452,13 @@ function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow
 
     const glossaryTd = document.createElement('td');
     const glossaryLink = document.createElement('a');
+    glossaryLink.className = 'glossary-link-icon';
     glossaryLink.href = `glossary.html#${encodeURIComponent(spec.fqn)}`;
-    glossaryLink.textContent = '用語集';
+    glossaryLink.setAttribute('aria-label', '用語集');
+    const glossaryText = document.createElement('span');
+    glossaryText.className = 'screen-reader-only';
+    glossaryText.textContent = '用語集';
+    glossaryLink.appendChild(glossaryText);
     glossaryTd.appendChild(glossaryLink);
     tr.appendChild(glossaryTd);
 

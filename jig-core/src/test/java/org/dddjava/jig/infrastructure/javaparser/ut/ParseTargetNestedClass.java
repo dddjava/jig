@@ -15,4 +15,23 @@ public class ParseTargetNestedClass {
         void innerMethod() {
         }
     }
+
+    /**
+     * 内側enumコメント
+     */
+    enum InnerEnum {
+        VALUE
+    }
+
+    /**
+     * 内側recordコメント
+     */
+    record InnerRecord(String name) {
+        /**
+         * 内側recordメソッドコメント
+         */
+        String label() {
+            return name;
+        }
+    }
 }

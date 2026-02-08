@@ -132,10 +132,21 @@ class JavaparserReaderTest {
                 JigMethodId.from(innerTypeId, "innerMethod", List.of()).value(),
                 TermKind.メソッド
         );
+        var innerEnumTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerEnum");
+        var innerEnumTerm = glossary.termOf(innerEnumTypeId.value(), TermKind.クラス);
+        var innerRecordTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerRecord");
+        var innerRecordTerm = glossary.termOf(innerRecordTypeId.value(), TermKind.クラス);
+        var innerRecordMethodTerm = glossary.termOf(
+                JigMethodId.from(innerRecordTypeId, "label", List.of()).value(),
+                TermKind.メソッド
+        );
 
         assertEquals("外側クラスコメント", outerTerm.title());
         assertEquals("内側クラスコメント", innerTerm.title());
         assertEquals("内側メソッドコメント", innerMethodTerm.title());
+        assertEquals("内側enumコメント", innerEnumTerm.title());
+        assertEquals("内側recordコメント", innerRecordTerm.title());
+        assertEquals("内側recordメソッドコメント", innerRecordMethodTerm.title());
     }
 
     private Path getJavaFilePath(Path requireJavaFilePath) {

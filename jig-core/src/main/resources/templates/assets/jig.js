@@ -1,5 +1,9 @@
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
 
+if (window.mermaid) {
+    mermaid.initialize({startOnLoad: false, securityLevel: "loose"});
+}
+
 function sortTable(event) {
     const headerColumn = event.target;
     const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
@@ -84,22 +88,73 @@ function setupLazyMermaidRender() {
     const diagrams = Array.from(document.querySelectorAll(".mermaid"));
     if (diagrams.length === 0) return;
 
-    mermaid.initialize({startOnLoad: false, securityLevel: "loose"});
+    const sourceMap = new WeakMap();
+    const rendered = new WeakSet();
+    const queued = new WeakSet();
+    const renderQueue = [];
+    let isRendering = false;
 
-    const renderDiagram = (diagram) => {
-        if (!diagram || diagram.getAttribute("data-processed") === "true") return;
-        mermaid.run({nodes: [diagram]});
+    const processRenderQueue = () => {
+        if (isRendering) return;
+        const diagram = renderQueue.shift();
+        if (!diagram) return;
+        isRendering = true;
+
+        if (rendered.has(diagram)) {
+            isRendering = false;
+            processRenderQueue();
+            return;
+        }
+
+        const source = sourceMap.get(diagram) || diagram.textContent;
+        if (!source) {
+            isRendering = false;
+            processRenderQueue();
+            return;
+        }
+
+        sourceMap.set(diagram, source);
+        diagram.innerHTML = source;
+
+        const renderResult = mermaid.run({nodes: [diagram]});
+        const handleFinish = () => {
+            rendered.add(diagram);
+            queued.delete(diagram);
+            isRendering = false;
+            processRenderQueue();
+        };
+        if (renderResult && typeof renderResult.then === "function") {
+            renderResult.then(handleFinish).catch(handleFinish);
+        } else {
+            handleFinish();
+        }
+    };
+
+    const enqueueRender = (diagram) => {
+        if (!diagram) return;
+        if (diagram.getAttribute("data-processed") === "true") {
+            rendered.add(diagram);
+            return;
+        }
+        if (rendered.has(diagram)) return;
+        if (queued.has(diagram)) return;
+        const source = sourceMap.get(diagram) || diagram.textContent;
+        if (!source) return;
+        sourceMap.set(diagram, source);
+        queued.add(diagram);
+        renderQueue.push(diagram);
+        processRenderQueue();
     };
 
     if (!("IntersectionObserver" in window)) {
-        diagrams.forEach(renderDiagram);
+        diagrams.forEach(enqueueRender);
         return;
     }
 
     const observer = new IntersectionObserver((entries, currentObserver) => {
         entries.forEach(entry => {
             if (!entry.isIntersecting) return;
-            renderDiagram(entry.target);
+            enqueueRender(entry.target);
             currentObserver.unobserve(entry.target);
         });
     }, {rootMargin: "200px 0px"});

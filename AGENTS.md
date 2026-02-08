@@ -33,6 +33,20 @@ If a task appears to require any of the above, **stop and ask for instructions**
 
 ---
 
+## Required Workflow (Must Follow)
+
+For any code change:
+
+1. Create a working branch from `main`.
+2. Make the required changes.
+3. Run tests according to the Testing Policy.
+4. Commit the changes.
+5. Provide a clear summary of the work.
+
+Do not modify code without creating a branch and commit.
+
+---
+
 ## Scope of Work
 
 - Limit all changes to this repository.

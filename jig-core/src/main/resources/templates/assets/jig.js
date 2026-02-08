@@ -1,7 +1,14 @@
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
 
+const DEFAULT_MAX_TEXT_SIZE = 50000;
+const EXTENDED_MAX_TEXT_SIZE = 200000;
+
 if (window.mermaid) {
-    mermaid.initialize({startOnLoad: false, securityLevel: "loose"});
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        maxTextSize: DEFAULT_MAX_TEXT_SIZE
+    });
 }
 
 function sortTable(event) {
@@ -114,6 +121,15 @@ function setupLazyMermaidRender() {
         }
 
         sourceMap.set(diagram, source);
+        if (isTooLarge(source)) {
+            renderTooLargeDiagram(diagram, source);
+            rendered.add(diagram);
+            queued.delete(diagram);
+            isRendering = false;
+            processRenderQueue();
+            return;
+        }
+
         diagram.innerHTML = source;
 
         const renderResult = mermaid.run({nodes: [diagram]});
@@ -140,6 +156,11 @@ function setupLazyMermaidRender() {
         if (queued.has(diagram)) return;
         const source = sourceMap.get(diagram) || diagram.textContent;
         if (!source) return;
+        if (isTooLarge(source)) {
+            renderTooLargeDiagram(diagram, source);
+            rendered.add(diagram);
+            return;
+        }
         sourceMap.set(diagram, source);
         queued.add(diagram);
         renderQueue.push(diagram);
@@ -165,3 +186,107 @@ function setupLazyMermaidRender() {
 document.addEventListener("DOMContentLoaded", function () {
     setupLazyMermaidRender();
 });
+
+function isTooLarge(source) {
+    return source.length > DEFAULT_MAX_TEXT_SIZE;
+}
+
+function renderTooLargeDiagram(diagram, source) {
+    if (!diagram) return;
+    diagram.classList.add("too-large");
+    diagram.textContent = "";
+
+    const container = document.createElement("div");
+    container.className = "mermaid-too-large";
+
+    const message = document.createElement("p");
+    message.className = "mermaid-too-large__message";
+    message.textContent = "Mermaidのテキストが大きすぎるため描画を省略しました。";
+    container.appendChild(message);
+
+    const actions = document.createElement("div");
+    actions.className = "mermaid-too-large__actions";
+
+    const copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.textContent = "Mermaidテキストをコピー";
+    copyButton.addEventListener("click", () => {
+        copyMermaidText(source, copyButton);
+    });
+    actions.appendChild(copyButton);
+
+    const renderButton = document.createElement("button");
+    renderButton.type = "button";
+    renderButton.textContent = "上限を上げて描画する";
+    renderButton.addEventListener("click", () => {
+        renderWithExtendedLimit(diagram, source, renderButton);
+    });
+    actions.appendChild(renderButton);
+
+    container.appendChild(actions);
+    diagram.appendChild(container);
+}
+
+function copyMermaidText(source, button) {
+    if (!source) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(source).then(() => {
+            flashButtonLabel(button, "コピーしました");
+        }).catch(() => {
+            fallbackCopyText(source, button);
+        });
+        return;
+    }
+    fallbackCopyText(source, button);
+}
+
+function fallbackCopyText(source, button) {
+    const textarea = document.createElement("textarea");
+    textarea.value = source;
+    textarea.style.position = "fixed";
+    textarea.style.top = "-1000px";
+    textarea.style.left = "-1000px";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand("copy");
+        flashButtonLabel(button, "コピーしました");
+    } catch (e) {
+        flashButtonLabel(button, "コピーに失敗しました");
+    } finally {
+        document.body.removeChild(textarea);
+    }
+}
+
+function flashButtonLabel(button, text) {
+    if (!button) return;
+    const original = button.textContent;
+    button.textContent = text;
+    window.setTimeout(() => {
+        button.textContent = original;
+    }, 1500);
+}
+
+function renderWithExtendedLimit(diagram, source, button) {
+    if (!diagram || !source) return;
+    if (source.length > EXTENDED_MAX_TEXT_SIZE) {
+        flashButtonLabel(button, "さらに大きいため描画できません");
+        return;
+    }
+
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        maxTextSize: EXTENDED_MAX_TEXT_SIZE
+    });
+    diagram.classList.remove("too-large");
+    diagram.innerHTML = source;
+
+    const renderResult = mermaid.run({nodes: [diagram]});
+    if (renderResult && typeof renderResult.catch === "function") {
+        renderResult.catch(() => {
+            flashButtonLabel(button, "描画に失敗しました");
+        });
+    }
+}

@@ -199,6 +199,36 @@ main table.fields thead {
 pre.mermaid {
     font-size: 0;
 }
+.mermaid.too-large {
+    font-size: 14px;
+    white-space: normal;
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px 14px;
+}
+.mermaid.too-large * {
+    font-size: 14px;
+}
+.mermaid-too-large__message {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+.mermaid-too-large__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.mermaid-too-large__actions button {
+    padding: 6px 10px;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+.mermaid-too-large__actions button:hover {
+    background-color: #f0f0f0;
+}
 /* Mermaidのツールチップ表示を調整 */
 /* ツールチップ自体がおまけ機能的な位置付けらしい。 */
 .mermaidTooltip {

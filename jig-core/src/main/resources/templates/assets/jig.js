@@ -201,19 +201,11 @@ function renderTooLargeDiagram(diagram, source) {
 
     const message = document.createElement("p");
     message.className = "mermaid-too-large__message";
-    message.textContent = "Mermaidのテキストが大きすぎるため描画を省略しました。";
+    message.textContent = "図の内容が大きすぎるため描画を省略しました。";
     container.appendChild(message);
 
     const actions = document.createElement("div");
     actions.className = "mermaid-too-large__actions";
-
-    const copyButton = document.createElement("button");
-    copyButton.type = "button";
-    copyButton.textContent = "Mermaidテキストをコピー";
-    copyButton.addEventListener("click", () => {
-        copyMermaidText(source, copyButton);
-    });
-    actions.appendChild(copyButton);
 
     const renderButton = document.createElement("button");
     renderButton.type = "button";
@@ -222,6 +214,14 @@ function renderTooLargeDiagram(diagram, source) {
         renderWithExtendedLimit(diagram, source, renderButton);
     });
     actions.appendChild(renderButton);
+
+    const copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.textContent = "図の内容をコピー";
+    copyButton.addEventListener("click", () => {
+        copyMermaidText(source, copyButton);
+    });
+    actions.appendChild(copyButton);
 
     container.appendChild(actions);
     diagram.appendChild(container);

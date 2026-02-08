@@ -267,6 +267,63 @@ label {
     padding: 5px 0;
 }
 
+.glossary .glossary-content {
+    display: grid;
+    grid-template-columns: minmax(180px, 260px) 1fr;
+    gap: 16px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.glossary .term-sidebar {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px 14px;
+    background-color: #fafafa;
+    height: fit-content;
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+}
+
+.glossary .term-sidebar h2 {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+}
+
+.glossary .term-sidebar__list {
+    display: block;
+}
+
+.glossary .term-sidebar__item {
+    display: block;
+    padding: 3px 0;
+    color: #1a1a1a;
+    text-decoration: none;
+}
+
+.glossary .term-sidebar__item:hover {
+    text-decoration: underline;
+}
+
+.glossary .term-list {
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .glossary .glossary-content {
+        grid-template-columns: 1fr;
+    }
+
+    .glossary .term-sidebar {
+        position: static;
+        max-height: none;
+    }
+}
+
 .glossary details.controls > div,
 .glossary details.controls > label {
     display: block;

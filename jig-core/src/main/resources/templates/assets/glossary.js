@@ -95,33 +95,8 @@ function getGlossaryData() {
     return glossaryData.terms ?? [];
 }
 
-function getIndexKey(title) {
-    const text = (title || "").trim();
-    if (!text) return "#";
-    const firstChar = text[0];
-    if (/[0-9]/.test(firstChar)) return "0-9";
-    if (/[A-Za-z]/.test(firstChar)) return firstChar.toUpperCase();
-    return firstChar;
-}
-
-function buildIndexAnchorId(key) {
-    const normalized = Array.from(key)
-        .map(char => char.codePointAt(0).toString(16))
-        .join("-");
-    return `index-${normalized}`;
-}
-
-function buildIndexEntries(terms) {
-    const entries = [];
-    let lastKey = null;
-    terms.forEach(term => {
-        const key = getIndexKey(term.title);
-        if (key !== lastKey) {
-            entries.push({key, anchorId: buildIndexAnchorId(key)});
-            lastKey = key;
-        }
-    });
-    return entries;
+function buildTermAnchorId(term, index) {
+    return term.fqn || `term-${index}`;
 }
 
 function escapeCsvValue(value) {
@@ -157,62 +132,35 @@ function downloadCsv(text, filename) {
     URL.revokeObjectURL(url);
 }
 
-function renderTermIndex(indexEntries) {
-    const list = document.getElementById("term-list");
+function renderTermSidebar(terms) {
+    const list = document.getElementById("term-sidebar-list");
     if (!list) return;
 
-    let indexRoot = document.getElementById("term-index");
-    if (!indexRoot) {
-        indexRoot = document.createElement("nav");
-        indexRoot.id = "term-index";
-        indexRoot.className = "term-index";
-        list.parentNode.insertBefore(indexRoot, list);
-    }
+    list.innerHTML = "";
+    if (terms.length === 0) return;
 
-    indexRoot.innerHTML = "";
-    if (indexEntries.length === 0) {
-        indexRoot.style.display = "none";
-        return;
-    }
-
-    indexRoot.style.display = "";
     const fragment = document.createDocumentFragment();
-    indexEntries.forEach(entry => {
+    terms.forEach((term, index) => {
         const link = document.createElement("a");
-        link.className = "term-index__item";
-        link.href = `#${entry.anchorId}`;
-        link.textContent = entry.key;
+        link.className = "term-sidebar__item";
+        link.href = `#${buildTermAnchorId(term, index)}`;
+        link.textContent = term.title || "";
         fragment.appendChild(link);
     });
-    indexRoot.appendChild(fragment);
+    list.appendChild(fragment);
 }
 
-function renderGlossaryTerms(terms, indexEntries = []) {
+function renderGlossaryTerms(terms) {
     const list = document.getElementById("term-list");
     if (!list) return;
     list.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
-    let indexCursor = 0;
-    let nextIndexEntry = indexEntries[indexCursor];
-    terms.forEach(term => {
-        const indexKey = getIndexKey(term.title);
-        if (nextIndexEntry && indexKey === nextIndexEntry.key) {
-            const anchor = document.createElement("div");
-            anchor.className = "term-index-anchor";
-            anchor.id = nextIndexEntry.anchorId;
-            anchor.textContent = nextIndexEntry.key;
-            fragment.appendChild(anchor);
-            indexCursor += 1;
-            nextIndexEntry = indexEntries[indexCursor];
-        }
-
+    terms.forEach((term, index) => {
         const article = document.createElement("article");
         article.className = "term";
-        if (term.fqn) {
-            // 他ドキュメントからのリンク用にFQNをIDとして設定する
-            article.id = term.fqn;
-        }
+        // 他ドキュメントからのリンク用にFQNをIDとして設定する
+        article.id = buildTermAnchorId(term, index);
 
         const title = document.createElement("h2");
         title.className = "term-title";
@@ -265,9 +213,8 @@ function renderMarkdownDescriptions() {
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
     const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
-    const indexEntries = buildIndexEntries(sortedTerms);
-    renderTermIndex(indexEntries);
-    renderGlossaryTerms(sortedTerms, indexEntries);
+    renderTermSidebar(sortedTerms);
+    renderGlossaryTerms(sortedTerms);
     renderMarkdownDescriptions();
 }
 
@@ -318,12 +265,10 @@ if (typeof module !== "undefined" && module.exports) {
         sortTerms,
         getFilteredTerms,
         getGlossaryData,
-        getIndexKey,
-        buildIndexAnchorId,
-        buildIndexEntries,
+        buildTermAnchorId,
         escapeCsvValue,
         buildGlossaryCsv,
-        renderTermIndex,
+        renderTermSidebar,
         renderGlossaryTerms,
         renderFilteredTerms,
         renderMarkdownDescriptions,

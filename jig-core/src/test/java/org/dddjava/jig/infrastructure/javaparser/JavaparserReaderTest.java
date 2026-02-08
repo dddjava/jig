@@ -6,7 +6,9 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
+import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,6 +112,30 @@ class JavaparserReaderTest {
                 "field").value(), TermKind.フィールド);
 
         assertEquals("フィールドコメント", term.title());
+    }
+
+    @Test
+    void ネストしたクラスとメソッドを読み取れる() {
+        Path path = Path.of("ut", "ParseTargetNestedClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var outerTerm = glossary.termOf(
+                TestSupport.getTypeIdFromClass(ParseTargetNestedClass.class).value(),
+                TermKind.クラス
+        );
+        var innerTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.Inner");
+        var innerTerm = glossary.termOf(innerTypeId.value(), TermKind.クラス);
+        var innerMethodTerm = glossary.termOf(
+                JigMethodId.from(innerTypeId, "innerMethod", List.of()).value(),
+                TermKind.メソッド
+        );
+
+        assertEquals("外側クラスコメント", outerTerm.title());
+        assertEquals("内側クラスコメント", innerTerm.title());
+        assertEquals("内側メソッドコメント", innerMethodTerm.title());
     }
 
     private Path getJavaFilePath(Path requireJavaFilePath) {

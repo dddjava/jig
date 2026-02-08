@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
+import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetMultipleTopLevelClass;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -147,6 +148,24 @@ class JavaparserReaderTest {
         assertEquals("内側enumコメント", innerEnumTerm.title());
         assertEquals("内側recordコメント", innerRecordTerm.title());
         assertEquals("内側recordメソッドコメント", innerRecordMethodTerm.title());
+    }
+
+    @Test
+    void トップレベルに複数クラスを定義した場合も読み取れる() {
+        Path path = Path.of("ut", "ParseTargetMultipleTopLevelClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var firstTypeId = TestSupport.getTypeIdFromClass(ParseTargetMultipleTopLevelClass.class);
+        var secondTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.SecondTopLevelClass");
+
+        var firstTerm = glossary.termOf(firstTypeId.value(), TermKind.クラス);
+        var secondTerm = glossary.termOf(secondTypeId.value(), TermKind.クラス);
+
+        assertEquals("最初のクラスコメント", firstTerm.title());
+        assertEquals("2つ目のクラスコメント", secondTerm.title());
     }
 
     private Path getJavaFilePath(Path requireJavaFilePath) {

@@ -60,16 +60,23 @@ If modification seems necessary, **stop and ask**.
 
 ---
 
+## Test Commands
+
+- JavaScript tests: `npm run test`
+- Full test suite: `./gradlew clean test`
+
+---
+
 ## Testing Policy
 
-Never bypass failing tests.Prefer fixing the root cause over disabling tests.
-
+Never bypass failing tests. Prefer fixing the root cause over disabling tests.
 Do not skip tests to save time.
 
 Run tests based on the type of change:
 
-- **JavaScript-only changes** → `npm run test`
-- **All other changes** → `./gradlew clean test`
+- Run the JavaScript tests only when ALL modified files match `*.js`.
+- If ANY file not matching `*.js` is modified, run the full test suite.
+- When unsure, run the full test suite.
 
 If tests cannot be executed, report:
 
@@ -85,7 +92,7 @@ Tests are not required for the following changes:
 
 If there is any possibility that runtime behavior is affected, run the tests.
 
-When unsure, run the tests.
+When unsure, run the tests for the most specific applicable category.
 
 ---
 

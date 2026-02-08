@@ -95,6 +95,35 @@ function getGlossaryData() {
     return glossaryData.terms ?? [];
 }
 
+function getIndexKey(title) {
+    const text = (title || "").trim();
+    if (!text) return "#";
+    const firstChar = text[0];
+    if (/[0-9]/.test(firstChar)) return "0-9";
+    if (/[A-Za-z]/.test(firstChar)) return firstChar.toUpperCase();
+    return firstChar;
+}
+
+function buildIndexAnchorId(key) {
+    const normalized = Array.from(key)
+        .map(char => char.codePointAt(0).toString(16))
+        .join("-");
+    return `index-${normalized}`;
+}
+
+function buildIndexEntries(terms) {
+    const entries = [];
+    let lastKey = null;
+    terms.forEach(term => {
+        const key = getIndexKey(term.title);
+        if (key !== lastKey) {
+            entries.push({key, anchorId: buildIndexAnchorId(key)});
+            lastKey = key;
+        }
+    });
+    return entries;
+}
+
 function escapeCsvValue(value) {
     const text = String(value ?? "")
         .replace(/\r\n/g, "\n")
@@ -128,13 +157,56 @@ function downloadCsv(text, filename) {
     URL.revokeObjectURL(url);
 }
 
-function renderGlossaryTerms(terms) {
+function renderTermIndex(indexEntries) {
+    const list = document.getElementById("term-list");
+    if (!list) return;
+
+    let indexRoot = document.getElementById("term-index");
+    if (!indexRoot) {
+        indexRoot = document.createElement("nav");
+        indexRoot.id = "term-index";
+        indexRoot.className = "term-index";
+        list.parentNode.insertBefore(indexRoot, list);
+    }
+
+    indexRoot.innerHTML = "";
+    if (indexEntries.length === 0) {
+        indexRoot.style.display = "none";
+        return;
+    }
+
+    indexRoot.style.display = "";
+    const fragment = document.createDocumentFragment();
+    indexEntries.forEach(entry => {
+        const link = document.createElement("a");
+        link.className = "term-index__item";
+        link.href = `#${entry.anchorId}`;
+        link.textContent = entry.key;
+        fragment.appendChild(link);
+    });
+    indexRoot.appendChild(fragment);
+}
+
+function renderGlossaryTerms(terms, indexEntries = []) {
     const list = document.getElementById("term-list");
     if (!list) return;
     list.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
+    let indexCursor = 0;
+    let nextIndexEntry = indexEntries[indexCursor];
     terms.forEach(term => {
+        const indexKey = getIndexKey(term.title);
+        if (nextIndexEntry && indexKey === nextIndexEntry.key) {
+            const anchor = document.createElement("div");
+            anchor.className = "term-index-anchor";
+            anchor.id = nextIndexEntry.anchorId;
+            anchor.textContent = nextIndexEntry.key;
+            fragment.appendChild(anchor);
+            indexCursor += 1;
+            nextIndexEntry = indexEntries[indexCursor];
+        }
+
         const article = document.createElement("article");
         article.className = "term";
         if (term.fqn) {
@@ -193,7 +265,9 @@ function renderMarkdownDescriptions() {
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
     const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
-    renderGlossaryTerms(sortedTerms);
+    const indexEntries = buildIndexEntries(sortedTerms);
+    renderTermIndex(indexEntries);
+    renderGlossaryTerms(sortedTerms, indexEntries);
     renderMarkdownDescriptions();
 }
 
@@ -244,8 +318,12 @@ if (typeof module !== "undefined" && module.exports) {
         sortTerms,
         getFilteredTerms,
         getGlossaryData,
+        getIndexKey,
+        buildIndexAnchorId,
+        buildIndexEntries,
         escapeCsvValue,
         buildGlossaryCsv,
+        renderTermIndex,
         renderGlossaryTerms,
         renderFilteredTerms,
         renderMarkdownDescriptions,

@@ -122,3 +122,37 @@ document.addEventListener("DOMContentLoaded", function () {
         setupSortableTables();
     }
 });
+
+function setupLazyMermaidRender() {
+    if (!window.mermaid) return;
+    if (document.body.classList.contains("package-list")) return;
+
+    const diagrams = Array.from(document.querySelectorAll(".mermaid"));
+    if (diagrams.length === 0) return;
+
+    mermaid.initialize({startOnLoad: false, securityLevel: "loose"});
+
+    const renderDiagram = (diagram) => {
+        if (!diagram || diagram.getAttribute("data-processed") === "true") return;
+        mermaid.run({nodes: [diagram]});
+    };
+
+    if (!("IntersectionObserver" in window)) {
+        diagrams.forEach(renderDiagram);
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            renderDiagram(entry.target);
+            currentObserver.unobserve(entry.target);
+        });
+    }, {rootMargin: "200px 0px"});
+
+    diagrams.forEach(diagram => observer.observe(diagram));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupLazyMermaidRender();
+});

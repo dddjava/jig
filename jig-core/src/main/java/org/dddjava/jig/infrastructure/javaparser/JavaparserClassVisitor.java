@@ -9,6 +9,7 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
@@ -73,6 +74,11 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     @Override
+    public void visit(AnnotationDeclaration annotationDeclaration, GlossaryRepository arg) {
+        visitClassOrInterfaceOrEnumOrRecord(annotationDeclaration, arg);
+    }
+
+    @Override
     public void visit(LocalRecordDeclarationStmt localRecordDeclarationStmt, GlossaryRepository arg) {
         // ローカルレコード（メソッド内のRecord）はJIGの関心ある構造でないので対応予定はない
         super.visit(localRecordDeclarationStmt, arg);
@@ -123,6 +129,10 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         if (node instanceof RecordDeclaration recordDeclaration) {
             return recordDeclaration.getFullyQualifiedName()
                     .orElse(packageName + recordDeclaration.getNameAsString());
+        }
+        if (node instanceof AnnotationDeclaration annotationDeclaration) {
+            return annotationDeclaration.getFullyQualifiedName()
+                    .orElse(packageName + annotationDeclaration.getNameAsString());
         }
         if (node instanceof NodeWithSimpleName<?> namedNode) {
             return packageName + namedNode.getNameAsString();

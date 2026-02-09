@@ -34,4 +34,10 @@ public class ParseTargetNestedClass {
             return name;
         }
     }
+
+    /**
+     * 内側annotationコメント
+     */
+    @interface InnerAnnotation {
+    }
 }

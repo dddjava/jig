@@ -141,6 +141,8 @@ class JavaparserReaderTest {
                 JigMethodId.from(innerRecordTypeId, "label", List.of()).value(),
                 TermKind.メソッド
         );
+        var innerAnnotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerAnnotation");
+        var innerAnnotationTerm = glossary.termOf(innerAnnotationTypeId.value(), TermKind.クラス);
 
         assertEquals("外側クラスコメント", outerTerm.title());
         assertEquals("内側クラスコメント", innerTerm.title());
@@ -148,6 +150,7 @@ class JavaparserReaderTest {
         assertEquals("内側enumコメント", innerEnumTerm.title());
         assertEquals("内側recordコメント", innerRecordTerm.title());
         assertEquals("内側recordメソッドコメント", innerRecordMethodTerm.title());
+        assertEquals("内側annotationコメント", innerAnnotationTerm.title());
     }
 
     @Test

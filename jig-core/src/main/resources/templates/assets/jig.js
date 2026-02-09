@@ -1,18 +1,6 @@
 /* ===== Markdown ===== */
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
 
-/* ===== Mermaid ===== */
-const DEFAULT_MAX_TEXT_SIZE = 50000;
-const EXTENDED_MAX_TEXT_SIZE = 200000;
-
-if (window.mermaid) {
-    mermaid.initialize({
-        startOnLoad: false,
-        securityLevel: "loose",
-        maxTextSize: DEFAULT_MAX_TEXT_SIZE
-    });
-}
-
 /* ===== テーブルソート ===== */
 function sortTable(event) {
     const headerColumn = event.target;
@@ -93,6 +81,17 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* ===== Mermaid（遅延描画・サイズ制限・コピー） ===== */
+const DEFAULT_MAX_TEXT_SIZE = 50000;
+const EXTENDED_MAX_TEXT_SIZE = 200000;
+
+if (window.mermaid) {
+    mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        maxTextSize: DEFAULT_MAX_TEXT_SIZE
+    });
+}
+
 function setupLazyMermaidRender() {
     if (!window.mermaid) return;
     if (document.body.classList.contains("package-list")) return;

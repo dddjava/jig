@@ -295,3 +295,12 @@ function renderWithExtendedLimit(diagram, source, button) {
         });
     }
 }
+
+// Test-only exports for Node; no-op in browsers.
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = {
+        isTooLarge,
+        renderTooLargeDiagram,
+        flashButtonLabel,
+    };
+}

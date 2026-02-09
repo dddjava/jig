@@ -90,14 +90,13 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             String javadocText = javadoc.getDescription().toText();
             glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeId(typeId), javadocText));
         });
-        // メンバの情報を別のVisitorで読む（ネストした型のメンバは対象外）
+        // メンバの情報を別のVisitorで読む（型は再帰先で処理する）
         var memberVisitor = new JavaparserMemberVisitor(typeId);
         node.getMembers().forEach(member -> {
-            if (member instanceof FieldDeclaration || member instanceof MethodDeclaration) {
-                member.accept(memberVisitor, glossaryRepository);
-            }
             if (member instanceof TypeDeclaration<?> typeDeclaration) {
                 typeDeclaration.accept(this, glossaryRepository);
+            } else {
+                member.accept(memberVisitor, glossaryRepository);
             }
         });
 

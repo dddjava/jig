@@ -1,5 +1,7 @@
+/* ===== Markdown ===== */
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
 
+/* ===== Mermaid ===== */
 const DEFAULT_MAX_TEXT_SIZE = 50000;
 const EXTENDED_MAX_TEXT_SIZE = 200000;
 
@@ -11,6 +13,7 @@ if (window.mermaid) {
     });
 }
 
+/* ===== テーブルソート ===== */
 function sortTable(event) {
     const headerColumn = event.target;
     const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
@@ -49,6 +52,7 @@ function sortTable(event) {
     headerColumn.dataset.orderFlag = (!orderFlag).toString();
 }
 
+/* ===== 画面遷移（ハッシュ移動） ===== */
 // ブラウザバックなどで該当要素に移動する
 // Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
 // なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
@@ -88,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+/* ===== Mermaid（遅延描画・サイズ制限・コピー） ===== */
 function setupLazyMermaidRender() {
     if (!window.mermaid) return;
     if (document.body.classList.contains("package-list")) return;

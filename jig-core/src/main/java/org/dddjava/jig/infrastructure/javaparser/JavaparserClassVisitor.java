@@ -2,13 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.RecordDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -51,12 +45,12 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     @Override
     public void visit(ClassOrInterfaceDeclaration node, GlossaryRepository arg) {
-        visitClassOrInterfaceOrEnumOrRecord(node, arg);
+        visitTypeDeclaration(node, arg);
     }
 
     @Override
     public void visit(EnumDeclaration enumDeclaration, GlossaryRepository arg) {
-        TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(enumDeclaration, arg);
+        TypeId typeId = visitTypeDeclaration(enumDeclaration, arg);
 
         // enum　固有の読み取りを行う
         var visitor = new JavaparserEnumVisitor(typeId);
@@ -66,12 +60,12 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     @Override
     public void visit(RecordDeclaration recordDeclaration, GlossaryRepository arg) {
-        visitClassOrInterfaceOrEnumOrRecord(recordDeclaration, arg);
+        visitTypeDeclaration(recordDeclaration, arg);
     }
 
     @Override
     public void visit(AnnotationDeclaration annotationDeclaration, GlossaryRepository arg) {
-        visitClassOrInterfaceOrEnumOrRecord(annotationDeclaration, arg);
+        visitTypeDeclaration(annotationDeclaration, arg);
     }
 
     @Override
@@ -87,9 +81,9 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     /**
-     * class/interface/enum/record の共通処理
+     * 型定義の共通処理
      */
-    private TypeId visitClassOrInterfaceOrEnumOrRecord(TypeDeclaration<?> node, GlossaryRepository glossaryRepository) {
+    private TypeId visitTypeDeclaration(TypeDeclaration<?> node, GlossaryRepository glossaryRepository) {
         var typeId = TypeId.valueOf(resolveFqn(node));
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {

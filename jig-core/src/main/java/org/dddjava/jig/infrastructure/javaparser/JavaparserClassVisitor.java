@@ -54,7 +54,6 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     @Override
     public void visit(ClassOrInterfaceDeclaration node, GlossaryRepository arg) {
         visitClassOrInterfaceOrEnumOrRecord(node, arg);
-        super.visit(node, arg);
     }
 
     @Override
@@ -65,14 +64,11 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         var visitor = new JavaparserEnumVisitor(typeId);
         enumDeclaration.accept(visitor, arg);
         enumModels.add(visitor.createEnumModel());
-
-        super.visit(enumDeclaration, arg);
     }
 
     @Override
     public void visit(RecordDeclaration recordDeclaration, GlossaryRepository arg) {
         visitClassOrInterfaceOrEnumOrRecord(recordDeclaration, arg);
-        super.visit(recordDeclaration, arg);
     }
 
     @Override
@@ -102,6 +98,11 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         node.getMembers().forEach(member -> {
             if (member instanceof FieldDeclaration || member instanceof MethodDeclaration) {
                 member.accept(memberVisitor, glossaryRepository);
+            }
+            if (member instanceof ClassOrInterfaceDeclaration
+                    || member instanceof EnumDeclaration
+                    || member instanceof RecordDeclaration) {
+                member.accept(this, glossaryRepository);
             }
             if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
                 logger.debug("nested class or interface: {}", classOrInterfaceDeclaration.getFullyQualifiedName());

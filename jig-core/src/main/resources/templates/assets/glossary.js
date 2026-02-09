@@ -95,6 +95,10 @@ function getGlossaryData() {
     return glossaryData.terms ?? [];
 }
 
+function buildTermAnchorId(term, index) {
+    return term.fqn || `term-${index}`;
+}
+
 function escapeCsvValue(value) {
     const text = String(value ?? "")
         .replace(/\r\n/g, "\n")
@@ -128,19 +132,35 @@ function downloadCsv(text, filename) {
     URL.revokeObjectURL(url);
 }
 
+function renderTermSidebar(terms) {
+    const list = document.getElementById("term-sidebar-list");
+    if (!list) return;
+
+    list.innerHTML = "";
+    if (terms.length === 0) return;
+
+    const fragment = document.createDocumentFragment();
+    terms.forEach((term, index) => {
+        const link = document.createElement("a");
+        link.className = "term-sidebar__item";
+        link.href = `#${buildTermAnchorId(term, index)}`;
+        link.textContent = term.title || "";
+        fragment.appendChild(link);
+    });
+    list.appendChild(fragment);
+}
+
 function renderGlossaryTerms(terms) {
     const list = document.getElementById("term-list");
     if (!list) return;
     list.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
-    terms.forEach(term => {
+    terms.forEach((term, index) => {
         const article = document.createElement("article");
         article.className = "term";
-        if (term.fqn) {
-            // 他ドキュメントからのリンク用にFQNをIDとして設定する
-            article.id = term.fqn;
-        }
+        // 他ドキュメントからのリンク用にFQNをIDとして設定する
+        article.id = buildTermAnchorId(term, index);
 
         const title = document.createElement("h2");
         title.className = "term-title";
@@ -193,6 +213,7 @@ function renderMarkdownDescriptions() {
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
     const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
+    renderTermSidebar(sortedTerms);
     renderGlossaryTerms(sortedTerms);
     renderMarkdownDescriptions();
 }
@@ -244,8 +265,10 @@ if (typeof module !== "undefined" && module.exports) {
         sortTerms,
         getFilteredTerms,
         getGlossaryData,
+        buildTermAnchorId,
         escapeCsvValue,
         buildGlossaryCsv,
+        renderTermSidebar,
         renderGlossaryTerms,
         renderFilteredTerms,
         renderMarkdownDescriptions,

@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
@@ -10,9 +9,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
-import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
-import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
-import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -93,7 +89,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     /**
      * class/interface/enum/record の共通処理
      */
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeId visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
+    private TypeId visitClassOrInterfaceOrEnumOrRecord(TypeDeclaration<?> node, GlossaryRepository glossaryRepository) {
         var typeId = TypeId.valueOf(resolveFqn(node));
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
@@ -117,27 +113,9 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
         return typeId;
     }
 
-    private String resolveFqn(Node node) {
-        if (node instanceof ClassOrInterfaceDeclaration classDeclaration) {
-            return classDeclaration.getFullyQualifiedName()
-                    .orElse(packageName + classDeclaration.getNameAsString());
-        }
-        if (node instanceof EnumDeclaration enumDeclaration) {
-            return enumDeclaration.getFullyQualifiedName()
-                    .orElse(packageName + enumDeclaration.getNameAsString());
-        }
-        if (node instanceof RecordDeclaration recordDeclaration) {
-            return recordDeclaration.getFullyQualifiedName()
-                    .orElse(packageName + recordDeclaration.getNameAsString());
-        }
-        if (node instanceof AnnotationDeclaration annotationDeclaration) {
-            return annotationDeclaration.getFullyQualifiedName()
-                    .orElse(packageName + annotationDeclaration.getNameAsString());
-        }
-        if (node instanceof NodeWithSimpleName<?> namedNode) {
-            return packageName + namedNode.getNameAsString();
-        }
-        return packageName;
+    private String resolveFqn(TypeDeclaration<?> node) {
+        return node.getFullyQualifiedName()
+                .orElse(packageName + node.getNameAsString());
     }
 
     public JavaSourceModel javaSourceModel() {

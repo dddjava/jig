@@ -9,7 +9,6 @@ import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
@@ -101,8 +100,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             if (member instanceof FieldDeclaration || member instanceof MethodDeclaration) {
                 member.accept(memberVisitor, glossaryRepository);
             }
-            if (member instanceof TypeDeclaration<?> typeDeclaration
-                    && !(typeDeclaration instanceof AnnotationDeclaration)) {
+            if (member instanceof TypeDeclaration<?> typeDeclaration) {
                 typeDeclaration.accept(this, glossaryRepository);
             }
             if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {

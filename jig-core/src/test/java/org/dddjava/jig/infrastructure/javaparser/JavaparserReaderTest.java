@@ -6,7 +6,10 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetCanonicalClass;
+import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetMultipleTopLevelClass;
+import org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,6 +113,76 @@ class JavaparserReaderTest {
                 "field").value(), TermKind.フィールド);
 
         assertEquals("フィールドコメント", term.title());
+    }
+
+    @Test
+    void ネストしたクラスとメソッドを読み取れる() {
+        Path path = Path.of("ut", "ParseTargetNestedClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var outerTerm = glossary.termOf(
+                TestSupport.getTypeIdFromClass(ParseTargetNestedClass.class).value(),
+                TermKind.クラス
+        );
+        var innerTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.Inner");
+        var innerTerm = glossary.termOf(innerTypeId.value(), TermKind.クラス);
+        var innerMethodTerm = glossary.termOf(
+                JigMethodId.from(innerTypeId, "innerMethod", List.of()).value(),
+                TermKind.メソッド
+        );
+        var innerEnumTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerEnum");
+        var innerEnumTerm = glossary.termOf(innerEnumTypeId.value(), TermKind.クラス);
+        var innerRecordTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerRecord");
+        var innerRecordTerm = glossary.termOf(innerRecordTypeId.value(), TermKind.クラス);
+        var innerRecordMethodTerm = glossary.termOf(
+                JigMethodId.from(innerRecordTypeId, "label", List.of()).value(),
+                TermKind.メソッド
+        );
+        var innerAnnotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetNestedClass.InnerAnnotation");
+        var innerAnnotationTerm = glossary.termOf(innerAnnotationTypeId.value(), TermKind.クラス);
+
+        assertEquals("外側クラスコメント", outerTerm.title());
+        assertEquals("内側クラスコメント", innerTerm.title());
+        assertEquals("内側メソッドコメント", innerMethodTerm.title());
+        assertEquals("内側enumコメント", innerEnumTerm.title());
+        assertEquals("内側recordコメント", innerRecordTerm.title());
+        assertEquals("内側recordメソッドコメント", innerRecordMethodTerm.title());
+        assertEquals("内側annotationコメント", innerAnnotationTerm.title());
+    }
+
+    @Test
+    void トップレベルに複数クラスを定義した場合も読み取れる() {
+        Path path = Path.of("ut", "ParseTargetMultipleTopLevelClass.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var firstTypeId = TestSupport.getTypeIdFromClass(ParseTargetMultipleTopLevelClass.class);
+        var secondTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.SecondTopLevelClass");
+
+        var firstTerm = glossary.termOf(firstTypeId.value(), TermKind.クラス);
+        var secondTerm = glossary.termOf(secondTypeId.value(), TermKind.クラス);
+
+        assertEquals("最初のクラスコメント", firstTerm.title());
+        assertEquals("2つ目のクラスコメント", secondTerm.title());
+    }
+
+    @Test
+    void トップレベルのアノテーションを読み取れる() {
+        Path path = Path.of("ut", "ParseTargetTopLevelAnnotation.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var annotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetTopLevelAnnotation");
+        var annotationTerm = glossary.termOf(annotationTypeId.value(), TermKind.クラス);
+
+        assertEquals("トップレベルannotationコメント", annotationTerm.title());
     }
 
     private Path getJavaFilePath(Path requireJavaFilePath) {

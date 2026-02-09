@@ -1,14 +1,8 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.RecordDeclaration;
-import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
-import com.github.javaparser.ast.nodeTypes.NodeWithMembers;
-import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -16,12 +10,11 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * クラスからの情報の読み取り
@@ -32,10 +25,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     private static final Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
-    @Nullable
-    private TypeId typeId;
-
-    private Optional<EnumModel> enumModel = Optional.empty();
+    private final List<EnumModel> enumModels = new ArrayList<>();
 
     public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
@@ -55,24 +45,27 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
 
     @Override
     public void visit(ClassOrInterfaceDeclaration node, GlossaryRepository arg) {
-        visitClassOrInterfaceOrEnumOrRecord(node, arg);
+        visitTypeDeclaration(node, arg);
     }
 
     @Override
     public void visit(EnumDeclaration enumDeclaration, GlossaryRepository arg) {
-        TypeId typeId = visitClassOrInterfaceOrEnumOrRecord(enumDeclaration, arg);
+        TypeId typeId = visitTypeDeclaration(enumDeclaration, arg);
 
         // enum　固有の読み取りを行う
         var visitor = new JavaparserEnumVisitor(typeId);
         enumDeclaration.accept(visitor, arg);
-        enumModel = Optional.of(visitor.createEnumModel());
-
-        super.visit(enumDeclaration, arg);
+        enumModels.add(visitor.createEnumModel());
     }
 
     @Override
     public void visit(RecordDeclaration recordDeclaration, GlossaryRepository arg) {
-        visitClassOrInterfaceOrEnumOrRecord(recordDeclaration, arg);
+        visitTypeDeclaration(recordDeclaration, arg);
+    }
+
+    @Override
+    public void visit(AnnotationDeclaration annotationDeclaration, GlossaryRepository arg) {
+        visitTypeDeclaration(annotationDeclaration, arg);
     }
 
     @Override
@@ -88,37 +81,34 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
     }
 
     /**
-     * class/interface/enum/record の共通処理
+     * 型定義の共通処理
      */
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?> & NodeWithMembers<?>> TypeId visitClassOrInterfaceOrEnumOrRecord(T node, GlossaryRepository glossaryRepository) {
-        var fqn = packageName + node.getNameAsString();
-
-        if (typeId != null) {
-            logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum/record には対応していません。{} のロードはスキップされます。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。",
-                    fqn
-            );
-            return typeId;
-        }
-
-        typeId = TypeId.valueOf(fqn);
+    private TypeId visitTypeDeclaration(TypeDeclaration<?> node, GlossaryRepository glossaryRepository) {
+        var typeId = TypeId.valueOf(resolveFqn(node));
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
             glossaryRepository.register(TermFactory.fromClass(glossaryRepository.fromTypeId(typeId), javadocText));
         });
-        // メンバの情報を別のVisitorで読む
-        node.accept(new JavaparserMemberVisitor(typeId), glossaryRepository);
-
+        // メンバの情報を別のVisitorで読む（型は再帰先で処理する）
+        var memberVisitor = new JavaparserMemberVisitor(typeId);
         node.getMembers().forEach(member -> {
-            if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
-                logger.debug("nested class or interface: {}", classOrInterfaceDeclaration.getFullyQualifiedName());
+            if (member instanceof TypeDeclaration<?> typeDeclaration) {
+                typeDeclaration.accept(this, glossaryRepository);
+            } else {
+                member.accept(memberVisitor, glossaryRepository);
             }
         });
 
         return typeId;
     }
 
+    private String resolveFqn(TypeDeclaration<?> node) {
+        return node.getFullyQualifiedName()
+                .orElse(packageName + node.getNameAsString());
+    }
+
     public JavaSourceModel javaSourceModel() {
-        return JavaSourceModel.from(enumModel.map(List::of).orElseGet(List::of));
+        return JavaSourceModel.from(enumModels);
     }
 }

@@ -107,9 +107,14 @@ When unsure, run the tests for the most specific applicable category.
 
 ## Change Policy
 
+- For any new feature or bug fix, adding or updating tests is REQUIRED.
+- Tests must demonstrate the failure before the change and pass after the change, when feasible.
+- Tests may be omitted ONLY IF adding or updating tests is impractical.
+- When tests are omitted, clearly explain the reason (e.g., technical constraints, environment limitations).
+
 - Avoid refactoring unrelated to the request.
-- For new features or bug fixes, prefer adding a failing test before making the change when feasible.
-- After changes, check for duplication and refactor if it is clearly safe.
+- After changes, check for duplication and refactor only if it is clearly safe.
+- Perform refactoring in a SEPARATE commit from functional changes.
 - If uncertain whether refactoring is appropriate, report instead of modifying.
 
 ---

@@ -171,6 +171,20 @@ class JavaparserReaderTest {
         assertEquals("2つ目のクラスコメント", secondTerm.title());
     }
 
+    @Test
+    void トップレベルのアノテーションを読み取れる() {
+        Path path = Path.of("ut", "ParseTargetTopLevelAnnotation.java");
+        GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
+
+        sut.parseJavaFile(getJavaFilePath(path), glossaryRepository);
+
+        var glossary = glossaryRepository.all();
+        var annotationTypeId = TypeId.valueOf("org.dddjava.jig.infrastructure.javaparser.ut.ParseTargetTopLevelAnnotation");
+        var annotationTerm = glossary.termOf(annotationTypeId.value(), TermKind.クラス);
+
+        assertEquals("トップレベルannotationコメント", annotationTerm.title());
+    }
+
     private Path getJavaFilePath(Path requireJavaFilePath) {
         StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 

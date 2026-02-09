@@ -99,9 +99,6 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<GlossaryRepository> {
             if (member instanceof TypeDeclaration<?> typeDeclaration) {
                 typeDeclaration.accept(this, glossaryRepository);
             }
-            if (member instanceof ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
-                logger.debug("nested class or interface: {}", classOrInterfaceDeclaration.getFullyQualifiedName());
-            }
         });
 
         return typeId;

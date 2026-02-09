@@ -1,5 +1,18 @@
-/* ===== Markdown ===== */
-Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
+/* ===== 共通 ===== */
+
+// ブラウザバックなどで該当要素に移動する
+// Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
+// なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
+window.addEventListener("popstate", function (event) {
+    const hash = event.target.location.hash;
+
+    if (hash) {
+        const anchor = document.getElementById(hash.substring(1))
+        if (anchor) {
+            anchor.scrollIntoView();
+        }
+    }
+});
 
 /* ===== テーブルソート ===== */
 function sortTable(event) {
@@ -40,21 +53,6 @@ function sortTable(event) {
     headerColumn.dataset.orderFlag = (!orderFlag).toString();
 }
 
-/* ===== 画面遷移（ハッシュ移動） ===== */
-// ブラウザバックなどで該当要素に移動する
-// Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
-// なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
-window.addEventListener("popstate", function (event) {
-    const hash = event.target.location.hash;
-
-    if (hash) {
-        const anchor = document.getElementById(hash.substring(1))
-        if (anchor) {
-            anchor.scrollIntoView();
-        }
-    }
-});
-
 function setupSortableTables() {
     document.querySelectorAll("table.sortable").forEach(table => {
         const headers = table.querySelectorAll("thead th");
@@ -80,7 +78,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-/* ===== Mermaid（遅延描画・サイズ制限・コピー） ===== */
+/* ===== marked ===== */
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
+
+/* ===== Mermaid ===== */
 const DEFAULT_MAX_TEXT_SIZE = 50000;
 const EXTENDED_MAX_TEXT_SIZE = 200000;
 

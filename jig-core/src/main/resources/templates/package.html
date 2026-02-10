@@ -46,6 +46,8 @@
         <div class="control-row">
             <button type="button" class="related-icon icon-only" aria-label="関連フィルタ"><span class="screen-reader-only">関連フィルタ</span></button>
             <span class="control-label">関連フィルタ:</span>
+            <span class="note" id="related-filter-target">未選択</span>
+            <button id="clear-related-filter" type="button">解除</button>
             <div class="related-filter-group">
                 <label for="related-caller-mode-select">依存元:</label>
                 <select id="related-caller-mode-select">
@@ -60,8 +62,7 @@
                     <option value="-1">すべて</option>
                 </select>
             </div>
-            <span class="note" id="related-filter-target">未選択</span>
-            <button id="clear-related-filter" type="button">解除</button>
+        </div>
         <div class="control-row">
             <span class="control-label">図の向き:</span>
             <label class="radio-label">

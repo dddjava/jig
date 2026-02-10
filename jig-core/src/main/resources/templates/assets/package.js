@@ -946,40 +946,34 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
     summary.textContent = '相互依存と原因';
     const list = document.createElement('ul');
 
-    const applyFilterAndRender = (fqn) => {
+    const applyFilterAndRender = (fqnsString) => {
         const input = dom.getPackageFilterInput();
         if (input) {
-            input.value = fqn;
+            input.value = fqnsString;
         }
-        context.packageFilterFqn = normalizePackageFilterValue(fqn);
+        context.packageFilterFqn = normalizePackageFilterValue(fqnsString);
         renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
 
     items.forEach(item => {
         const itemNode = document.createElement('li');
-        const pair = document.createElement('div');
-        pair.className = 'pair';
-        
+        const pairDiv = document.createElement('div');
+        pairDiv.className = 'pair';
+
+        const pairLabelSpan = document.createElement('span');
+        pairLabelSpan.textContent = item.pairLabel;
+        pairDiv.appendChild(pairLabelSpan);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'フィルタにセット';
+        button.className = 'filter-button';
         const [package1, package2] = item.pairLabel.split(' <-> ');
+        button.addEventListener('click', () => applyFilterAndRender(`${package1}\n${package2}`));
+        pairDiv.appendChild(button);
 
-        const createPackageSpanWithButton = (pkgName) => {
-            const span = document.createElement('span');
-            span.textContent = pkgName;
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = 'フィルタにセット';
-            button.className = 'filter-button';
-            button.addEventListener('click', () => applyFilterAndRender(pkgName));
-            span.appendChild(button);
-            return span;
-        };
-
-        pair.appendChild(createPackageSpanWithButton(package1));
-        pair.appendChild(document.createTextNode(' <-> '));
-        pair.appendChild(createPackageSpanWithButton(package2));
-
-        itemNode.appendChild(pair);
+        itemNode.appendChild(pairDiv);
         if (item.causes.length > 0) {
             const detailBody = document.createElement('pre');
             detailBody.textContent = item.causes.join('\n');

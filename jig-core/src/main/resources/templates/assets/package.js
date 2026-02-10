@@ -11,7 +11,6 @@ const packageContext = {
     relatedFilterFqn: null,
     diagramDirection: 'TD',
     transitiveReductionEnabled: true,
-    lastHighlightedNodeId: null, // 追加: 最後にハイライトされたノードのIDを保持
 };
 
 const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
@@ -787,7 +786,7 @@ function buildParentFqns(visibleSet) {
     return parentFqns;
 }
 
-function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection) {
+function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection, relatedFilterFqn) {
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const lines = [`graph ${diagramDirection}`];
     const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
@@ -797,13 +796,17 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
         nodeIdByFqn,
         nodeIdToFqn,
         nodeLabelById,
-        escapeMermaidText
+        escapeMermaidText,
+        relatedFilterFqn // Pass relatedFilterFqn here
     );
 
     nodeLines.forEach(line => lines.push(line));
     if (hasParentStyle) {
         lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
     }
+    // Add classDef for highlighting here
+    lines.push('classDef related-filter-highlight stroke:#FF6347,stroke-width:3px,fill:#FFF0F0');
+
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
 
@@ -854,14 +857,18 @@ function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
     return {edgeLines, linkStyles, mutualPairs};
 }
 
-function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText) {
+function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, relatedFilterFqn) {
     const visibleFqns = Array.from(visibleSet).sort();
     const parentFqns = buildParentFqns(visibleSet);
     const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
     const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
         const fqn = nodeIdToFqn.get(nodeId);
         const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
-        lines.push(`${nodeId}["${escapeMermaidText(displayLabel)}"]`);
+        let nodeDefinition = `${nodeId}["${escapeMermaidText(displayLabel)}"]`;
+        if (fqn === relatedFilterFqn) {
+            nodeDefinition += ':::related-filter-highlight';
+        }
+        lines.push(nodeDefinition);
         const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
         lines.push(`click ${nodeId} ${DIAGRAM_CLICK_HANDLER_NAME} "${tooltip}"`);
         if (fqn && parentFqns.has(fqn)) {
@@ -1132,45 +1139,14 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     const diagram = dom.getDiagram();
     if (!diagram) return;
 
-    // 以前のハイライトを解除
-    if (context.lastHighlightedNodeId) {
-        const oldNodeElement = diagram.querySelector(`[id$="${context.lastHighlightedNodeId}"]`);
-        if (oldNodeElement) {
-            oldNodeElement.classList.remove('related-filter-highlight');
-        }
-        context.lastHighlightedNodeId = null;
-    }
+
 
     const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn);
     applyDiagramRenderPlan(context, renderPlan);
     if (shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context)) return;
     setDiagramSource(diagram, renderPlan.source);
 
-    // Mermaidでの描画後にハイライトを適用
     renderDiagramWithMermaidIfAvailable(diagram, renderPlan, context);
-
-    if (relatedFilterFqn) {
-        // Mermaidのレンダリングは非同期なので、少し遅延させてからハイライトを適用
-        setTimeout(() => {
-            const nodeId = context.diagramNodeIdByFqn.get(relatedFilterFqn);
-            if (nodeId) {
-                const svgElement = diagram.querySelector('svg');
-                if (!svgElement) {
-                    console.warn('Mermaid SVG element not found after rendering.');
-                    return;
-                }
-                const mermaidNodes = svgElement.querySelectorAll('.node');
-                for (const nodeElement of mermaidNodes) {
-                    const titleElement = nodeElement.querySelector('title');
-                    if (titleElement && titleElement.textContent === nodeId) {
-                        nodeElement.classList.add('related-filter-highlight');
-                        context.lastHighlightedNodeId = nodeId;
-                        break;
-                    }
-                }
-            }
-        }, 500); // Mermaidのレンダリングを待つための遅延
-    }
 }
 
 function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
@@ -1195,7 +1171,8 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
         visibleSet,
         uniqueRelations,
         nameByFqn,
-        context.diagramDirection
+        context.diagramDirection,
+        relatedFilterFqn // Pass relatedFilterFqn here
     );
     return {
         source,

@@ -24,6 +24,7 @@ const dom = {
     getPackageFilterInput: () => document.getElementById('package-filter-input'),
     getApplyPackageFilterButton: () => document.getElementById('apply-package-filter'),
     getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
+    getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
     getDepthSelect: () => document.getElementById('package-depth-select'),
     getRelatedModeSelect: () => document.getElementById('related-mode-select'),
     getClearRelatedFilterButton: () => document.getElementById('clear-related-filter'),
@@ -1082,7 +1083,16 @@ function setupPackageFilterControl(context) {
     const input = dom.getPackageFilterInput();
     const applyButton = dom.getApplyPackageFilterButton();
     const clearPackageButton = dom.getClearPackageFilterButton();
-    if (!input || !applyButton || !clearPackageButton) return;
+    const resetButton = dom.getResetPackageFilterButton(); // 新しいボタンの参照を取得
+    if (!input || !applyButton || !clearPackageButton) return; // resetButtonはオプションなのでチェックしない
+
+    // ページの初期ロード時に適用されるデフォルトフィルタを保持
+    let initialDefaultFilterValue = '';
+    const {packages} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(packages);
+    if (candidate) {
+        initialDefaultFilterValue = candidate;
+    }
 
     const applyFilter = () => {
         context.packageFilterFqn = normalizePackageFilterValue(input.value);
@@ -1095,9 +1105,18 @@ function setupPackageFilterControl(context) {
         renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
+    const resetPackageFilter = () => {
+        input.value = initialDefaultFilterValue; // 初期デフォルト値でinputを更新
+        context.packageFilterFqn = normalizePackageFilterValue(initialDefaultFilterValue); // contextも更新
+        renderDiagramAndTable(context);
+        renderRelatedFilterLabel(context);
+    };
 
     applyButton.addEventListener('click', applyFilter);
-    clearPackageButton.addEventListener('click', clearPackageFilter);
+    clearButton.addEventListener('click', clearPackageFilter);
+    if (resetButton) { // ボタンが存在する場合のみイベントリスナーを設定
+        resetButton.addEventListener('click', resetPackageFilter);
+    }
     input.addEventListener('keydown', event => {
         // Enterキーで改行を行うため、デフォルトの動作を妨げない
         // フィルタ適用はボタンクリックのみで行う

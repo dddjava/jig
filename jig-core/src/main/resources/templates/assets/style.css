@@ -618,3 +618,16 @@ table.zebra tbody tr:nth-child(even) {
 table td.number {
     text-align: right;
 }
+/* Mermaid diagram node highlighting */
+.related-filter-highlight .node rect,
+.related-filter-highlight .node polygon,
+.related-filter-highlight .node circle,
+.related-filter-highlight .node ellipse {
+    stroke: #FF6347 !important; /* Tomato color for highlight */
+    stroke-width: 3px !important;
+}
+
+.related-filter-highlight .node text {
+    fill: #B22222 !important; /* Firebrick color for text */
+    font-weight: bold !important;
+}

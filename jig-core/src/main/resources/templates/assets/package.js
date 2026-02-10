@@ -11,6 +11,7 @@ const packageContext = {
     relatedFilterFqn: null,
     diagramDirection: 'TD',
     transitiveReductionEnabled: true,
+    lastHighlightedNodeId: null, // 追加: 最後にハイライトされたノードのIDを保持
 };
 
 const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
@@ -806,7 +807,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
 
-    return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
+    return {source: lines.join('\n'), nodeIdToFqn, nodeIdByFqn, mutualPairs};
 }
 
 function buildDiagramNodeMaps(visibleSet, nameByFqn) {
@@ -1131,11 +1132,43 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     const diagram = dom.getDiagram();
     if (!diagram) return;
 
+    // 以前のハイライトを解除
+    if (context.lastHighlightedNodeId) {
+        const oldNodeElement = diagram.querySelector(`[id$="${context.lastHighlightedNodeId}"]`);
+        if (oldNodeElement) {
+            oldNodeElement.classList.remove('related-filter-highlight');
+        }
+        context.lastHighlightedNodeId = null;
+    }
+
     const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn);
     applyDiagramRenderPlan(context, renderPlan);
     if (shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context)) return;
     setDiagramSource(diagram, renderPlan.source);
+
+    // Mermaidでの描画後にハイライトを適用
     renderDiagramWithMermaidIfAvailable(diagram, renderPlan, context);
+
+    if (relatedFilterFqn) {
+        // Mermaidのレンダリングは非同期なので、少し遅延させてからハイライトを適用
+        setTimeout(() => {
+            const nodeId = context.diagramNodeIdByFqn.get(relatedFilterFqn);
+            if (nodeId) {
+                // MermaidはノードIDをSVG要素のDOM IDの一部として使用する
+                // 例: id="flowchart-P0-1" のような形式
+                // .nodeセレクタでノードグループを特定し、その中の<title>要素のテキストコンテンツがnodeIdと一致するものを探す
+                const mermaidNodes = diagram.querySelectorAll('.node');
+                for (const nodeElement of mermaidNodes) {
+                    const titleElement = nodeElement.querySelector('title');
+                    if (titleElement && titleElement.textContent === nodeId) {
+                        nodeElement.classList.add('related-filter-highlight');
+                        context.lastHighlightedNodeId = nodeId; // 最後にハイライトしたノードを記憶
+                        break;
+                    }
+                }
+            }
+        }, 500); // Mermaidのレンダリングを待つための遅延
+    }
 }
 
 function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
@@ -1165,6 +1198,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
     return {
         source,
         nodeIdToFqn,
+        nodeIdByFqn,
         mutualPairs,
         uniqueRelations,
         filteredCauseRelationEvidence,
@@ -1173,6 +1207,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
 
 function applyDiagramRenderPlan(context, renderPlan) {
     context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
+    context.diagramNodeIdByFqn = renderPlan.nodeIdByFqn;
     renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
 }
 

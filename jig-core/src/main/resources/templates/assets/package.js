@@ -5,7 +5,7 @@ const packageContext = {
     packageSummaryCache: null,
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
-    packageFilterFqn: null,
+    packageFilterFqn: [],
     relatedFilterMode: 'direct',
     relatedFilterFqn: null,
     diagramDirection: 'TD',
@@ -156,12 +156,14 @@ function buildAggregationStats(packages, relations, maxDepth) {
 
 function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedFilterMode) {
     const withinPackageFilter = fqn => {
-        if (!packageFilterFqn) return true;
-        const prefix = `${packageFilterFqn}.`;
-        return fqn === packageFilterFqn || fqn.startsWith(prefix);
+        if (packageFilterFqn.length === 0) return true;
+        return packageFilterFqn.some(filter => {
+            const prefix = `${filter}.`;
+            return fqn === filter || fqn.startsWith(prefix);
+        });
     };
-    let filteredPackages = packageFilterFqn ? packages.filter(item => withinPackageFilter(item.fqn)) : packages;
-    let filteredRelations = packageFilterFqn
+    let filteredPackages = packageFilterFqn.length > 0 ? packages.filter(item => withinPackageFilter(item.fqn)) : packages;
+    let filteredRelations = packageFilterFqn.length > 0
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
 
@@ -191,7 +193,8 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
 // フィルタ/正規化
 function normalizePackageFilterValue(value) {
     const trimmed = (value ?? '').trim();
-    return trimmed ? trimmed : null;
+    if (!trimmed) return [];
+    return trimmed.split('\n').map(s => s.trim()).filter(s => s);
 }
 
 function normalizeAggregationDepthValue(value) {
@@ -218,22 +221,29 @@ function findDefaultPackageFilterCandidate(packages) {
 }
 
 function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
-    const filterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    return rowFqns.map(fqn =>
-        !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(filterPrefix)
-    );
+    return rowFqns.map(fqn => {
+        if (packageFilterFqn.length === 0) return true;
+        return packageFilterFqn.some(filter => {
+            const prefix = `${filter}.`;
+            return fqn === filter || fqn.startsWith(prefix);
+        });
+    });
 }
 
 function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, relatedFilterMode, relatedFilterFqn) {
-    const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    const withinPackageFilter = rowFqn =>
-        !packageFilterFqn || rowFqn === packageFilterFqn || rowFqn.startsWith(packageFilterPrefix);
+    const withinPackageFilter = rowFqn => {
+        if (packageFilterFqn.length === 0) return true;
+        return packageFilterFqn.some(filter => {
+            const prefix = `${filter}.`;
+            return rowFqn === filter || rowFqn.startsWith(prefix);
+        });
+    };
 
     if (!relatedFilterFqn) {
         return rowFqns.map(rowFqn => withinPackageFilter(rowFqn));
     }
 
-    const filteredRelations = packageFilterFqn
+    const filteredRelations = packageFilterFqn.length > 0
         ? relations.filter(relation =>
             withinPackageFilter(relation.from) && withinPackageFilter(relation.to)
         )
@@ -289,17 +299,21 @@ function collectRelatedSet(root, relations, aggregationDepth, relatedFilterMode)
 }
 
 function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
-    const packageFilterPrefix = packageFilterFqn ? `${packageFilterFqn}.` : null;
-    const withinPackageFilter = fqn =>
-        !packageFilterFqn || fqn === packageFilterFqn || fqn.startsWith(packageFilterPrefix);
-    const visiblePackages = packageFilterFqn
+    const withinPackageFilter = fqn => {
+        if (packageFilterFqn.length === 0) return true;
+        return packageFilterFqn.some(filter => {
+            const prefix = `${filter}.`;
+            return fqn === filter || fqn.startsWith(prefix);
+        });
+    };
+    const visiblePackages = packageFilterFqn.length > 0
         ? packages.filter(item => withinPackageFilter(item.fqn))
         : packages;
     const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
-    const filteredRelations = packageFilterFqn
+    const filteredRelations = packageFilterFqn.length > 0
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
-    const filteredCauseRelationEvidence = packageFilterFqn
+    const filteredCauseRelationEvidence = packageFilterFqn.length > 0
         ? causeRelationEvidence.filter(relation => {
             const fromPackage = getPackageFqnFromTypeFqn(relation.from);
             const toPackage = getPackageFqnFromTypeFqn(relation.to);
@@ -493,7 +507,7 @@ function renderPackageTable(context) {
         if (input) {
             input.value = fqn;
         }
-        context.packageFilterFqn = fqn;
+        context.packageFilterFqn = normalizePackageFilterValue(input.value);
         renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
@@ -549,12 +563,12 @@ function registerDiagramClickHandler(context, applyRelatedFilter = setRelatedFil
 
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
-    if (!input || input.value.trim()) return false;
+    if (!input || normalizePackageFilterValue(input.value).length > 0) return false;
     const {packages} = getPackageSummaryData(context);
     const candidate = findDefaultPackageFilterCandidate(packages);
     if (!candidate) return false;
     input.value = candidate;
-    context.packageFilterFqn = candidate;
+    context.packageFilterFqn = normalizePackageFilterValue(input.value);
     renderDiagramAndTable(context);
     return true;
 }
@@ -1054,7 +1068,7 @@ function setupPackageFilterControl(context) {
     };
     const clearPackageFilter = () => {
         input.value = '';
-        context.packageFilterFqn = null;
+        context.packageFilterFqn = [];
         renderDiagramAndTable(context);
         renderRelatedFilterLabel(context);
     };
@@ -1062,7 +1076,7 @@ function setupPackageFilterControl(context) {
     applyButton.addEventListener('click', applyFilter);
     clearPackageButton.addEventListener('click', clearPackageFilter);
     input.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !event.shiftKey) { // Shift+Enter for new line
             event.preventDefault();
             applyFilter();
         }

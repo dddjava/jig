@@ -197,7 +197,7 @@ function withConsoleErrorCapture(callback) {
 }
 
 function createPackageFilterControls(doc) {
-    const input = doc.createElement('input');
+    const input = doc.createElement('textarea');
     input.id = 'package-filter-input';
     const applyButton = doc.createElement('button');
     applyButton.id = 'apply-package-filter';
@@ -257,7 +257,7 @@ test.describe('package.js', () => {
             packageSummaryCache: null,
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
-            packageFilterFqn: null,
+            packageFilterFqn: [],
             relatedFilterMode: 'direct',
             relatedFilterFqn: null,
             diagramDirection: 'TD',
@@ -340,7 +340,7 @@ test.describe('package.js', () => {
                 const stats = pkg.buildAggregationStatsForFilters(
                     packages,
                     relations,
-                    'app.domain',
+                    ['app.domain'],
                     'app.domain.a',
                     0,
                     0,
@@ -369,7 +369,7 @@ test.describe('package.js', () => {
                 const stats = pkg.buildAggregationStatsForFilters(
                     packages,
                     relations,
-                    'app.domain',
+                    ['app.domain'],
                     'app.domain.a',
                     0,
                     0,
@@ -385,10 +385,15 @@ test.describe('package.js', () => {
 
     test.describe('フィルタ', () => {
         test.describe('ロジック', () => {
-            test('normalizePackageFilterValue: 空文字はnullを返す', () => {
-                assert.equal(pkg.normalizePackageFilterValue(''), null);
-                assert.equal(pkg.normalizePackageFilterValue('   '), null);
-                assert.equal(pkg.normalizePackageFilterValue('app.domain'), 'app.domain');
+            test('normalizePackageFilterValue: 空文字または空白のみの文字列は空の配列を返す', () => {
+                assert.deepEqual(pkg.normalizePackageFilterValue(''), []);
+                assert.deepEqual(pkg.normalizePackageFilterValue('   '), []);
+            });
+
+            test('normalizePackageFilterValue: 改行区切りの文字列を配列として返す', () => {
+                assert.deepEqual(pkg.normalizePackageFilterValue('app.domain\napp.other'), ['app.domain', 'app.other']);
+                assert.deepEqual(pkg.normalizePackageFilterValue('  app.domain  \n  app.other  '), ['app.domain', 'app.other']);
+                assert.deepEqual(pkg.normalizePackageFilterValue('app.domain\n\napp.other'), ['app.domain', 'app.other']);
             });
 
             test('normalizeAggregationDepthValue: 数値化する', () => {
@@ -408,9 +413,17 @@ test.describe('package.js', () => {
             test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
                 const visibility = pkg.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],
-                    'app.domain'
+                    ['app.domain']
                 );
                 assert.deepEqual(visibility, [true, false]);
+            });
+
+            test('buildPackageRowVisibility: 複数パッケージフィルタのうちいずれかに一致するものを表示する', () => {
+                const visibility = pkg.buildPackageRowVisibility(
+                    ['app.domain.model', 'app.domain.service', 'app.other'],
+                    ['app.domain.model', 'app.other']
+                );
+                assert.deepEqual(visibility, [true, false, true]);
             });
 
             test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみを表示する', () => {
@@ -418,7 +431,7 @@ test.describe('package.js', () => {
                 const visibility = pkg.buildRelatedRowVisibility(
                     rowFqns,
                     [],
-                    'app.domain',
+                    ['app.domain'],
                     0,
                     'direct',
                     null
@@ -432,7 +445,7 @@ test.describe('package.js', () => {
                 const visibility = pkg.buildRelatedRowVisibility(
                     rowFqns,
                     relations,
-                    null,
+                    [],
                     0,
                     'direct',
                     'app.a'
@@ -482,13 +495,13 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], 'app', 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], ['app'], 0, false);
                 assert.deepEqual(Array.from(base.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
             test('filterRelatedDiagramRelations: relatedSetで絞り込む', () => {
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], null, 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
                 const filtered = pkg.filterRelatedDiagramRelations(
                     base.uniqueRelations,
                     base.visibleSet,
@@ -501,17 +514,17 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], 'app', null, 0, 'direct', false);
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, 'direct', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
             test('buildVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], null, 'app.b', 0, 'direct', false);
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.b', 0, 'direct', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
             test('buildVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], null, 'app.a', 0, 'all', false);
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, 'all', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });
@@ -532,7 +545,7 @@ test.describe('package.js', () => {
                 const rows = buildPackageRows(doc, ['app.a', 'app.b', 'app.c']);
                 testContext.aggregationDepth = 0;
                 testContext.relatedFilterMode = 'direct';
-                testContext.packageFilterFqn = null;
+                testContext.packageFilterFqn = [];
 
                 pkg.filterRelatedTableRows('app.a', testContext);
 
@@ -579,7 +592,7 @@ test.describe('package.js', () => {
                 const applied = pkg.applyDefaultPackageFilterIfPresent(testContext);
 
                 assert.equal(applied, true);
-                assert.equal(testContext.packageFilterFqn, 'app.domain');
+                assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
                 assert.equal(input.value, 'app.domain');
             });
 
@@ -597,12 +610,12 @@ test.describe('package.js', () => {
 
                 pkg.setupPackageFilterControl(testContext);
 
-                input.value = 'app.domain';
+                input.value = 'app.domain\napp.other';
                 applyButton.eventListeners.get('click')();
-                assert.equal(testContext.packageFilterFqn, 'app.domain');
+                assert.deepEqual(testContext.packageFilterFqn, ['app.domain', 'app.other']);
 
                 clearButton.eventListeners.get('click')();
-                assert.equal(testContext.packageFilterFqn, null);
+                assert.deepEqual(testContext.packageFilterFqn, []);
                 assert.equal(input.value, '');
             });
         });
@@ -868,7 +881,7 @@ test.describe('package.js', () => {
                     ],
                 }, testContext);
 
-                pkg.renderPackageDiagram(testContext, null, null);
+                pkg.renderPackageDiagram(testContext, [], null);
 
                 const diagram = doc.getElementById('package-relation-diagram');
                 assert.equal(diagram.textContent.includes('graph'), true);
@@ -908,7 +921,7 @@ test.describe('package.js', () => {
                 setPackageData({packages, relations}, testContext);
 
                 const errors = withConsoleErrorCapture(() => {
-                    pkg.renderPackageDiagram(testContext, null, null);
+                    pkg.renderPackageDiagram(testContext, [], null);
                 });
 
                 assert.equal(errorBoxMock.style.display, '', 'errorBox should be displayed by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage

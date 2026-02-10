@@ -6,7 +6,8 @@ const packageContext = {
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
     packageFilterFqn: [],
-    relatedFilterMode: 'direct',
+    relatedCallerFilterMode: '0', // '0':なし, '1':直接, '-1':すべて
+    relatedCalleeFilterMode: '0', // '0':なし, '1':直接, '-1':すべて
     relatedFilterFqn: null,
     diagramDirection: 'TD',
     transitiveReductionEnabled: true,
@@ -26,7 +27,8 @@ const dom = {
     getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
     getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
     getDepthSelect: () => document.getElementById('package-depth-select'),
-    getRelatedModeSelect: () => document.getElementById('related-mode-select'),
+    getRelatedCallerModeSelect: () => document.getElementById('related-caller-mode-select'),
+    getRelatedCalleeModeSelect: () => document.getElementById('related-callee-mode-select'),
     getClearRelatedFilterButton: () => document.getElementById('clear-related-filter'),
     getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
     getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
@@ -155,7 +157,7 @@ function buildAggregationStats(packages, relations, maxDepth) {
     return stats;
 }
 
-function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedFilterMode) {
+function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode) {
     const withinPackageFilter = fqn => {
         if (packageFilterFqn.length === 0) return true;
         return packageFilterFqn.some(filter => {
@@ -168,27 +170,33 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
 
-    if (relatedFilterFqn) {
-        const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
-        const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedFilterMode);
-        filteredPackages = filteredPackages.filter(item =>
-            relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
-        );
-        if (relatedFilterMode === 'direct') {
-            filteredRelations = filteredRelations.filter(relation => {
-                const from = getAggregatedFqn(relation.from, aggregationDepth);
-                const to = getAggregatedFqn(relation.to, aggregationDepth);
-                return from === aggregatedRoot || to === aggregatedRoot;
-            });
-        } else {
-            filteredRelations = filteredRelations.filter(relation => {
-                const from = getAggregatedFqn(relation.from, aggregationDepth);
-                const to = getAggregatedFqn(relation.to, aggregationDepth);
-                return relatedSet.has(from) && relatedSet.has(to);
-            });
-        }
-    }
-    return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
+            if (relatedFilterFqn) {
+                const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
+                const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode);
+                filteredPackages = filteredPackages.filter(item =>
+                    relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
+                );
+                // 依存元/依存先のモードに応じてフィルタリングロジックを調整する
+                const filterDirectRelation = (relation) => {
+                    const from = getAggregatedFqn(relation.from, aggregationDepth);
+                    const to = getAggregatedFqn(relation.to, aggregationDepth);
+                    const isCaller = relatedCallerFilterMode === '1' && to === aggregatedRoot;
+                    const isCallee = relatedCalleeFilterMode === '1' && from === aggregatedRoot;
+                    return isCaller || isCallee;
+                };
+    
+                const filterTransitiveRelation = (relation) => {
+                    const from = getAggregatedFqn(relation.from, aggregationDepth);
+                    const to = getAggregatedFqn(relation.to, aggregationDepth);
+                    return relatedSet.has(from) && relatedSet.has(to);
+                };
+    
+                if (relatedCallerFilterMode === '1' || relatedCalleeFilterMode === '1') {
+                    filteredRelations = filteredRelations.filter(filterDirectRelation);
+                } else if (relatedCallerFilterMode === '-1' || relatedCalleeFilterMode === '-1') {
+                    filteredRelations = filteredRelations.filter(filterTransitiveRelation);
+                }
+            }    return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
 
 // フィルタ/正規化
@@ -231,7 +239,7 @@ function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
     });
 }
 
-function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, relatedFilterMode, relatedFilterFqn) {
+function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode, relatedFilterFqn) {
     const withinPackageFilter = rowFqn => {
         if (packageFilterFqn.length === 0) return true;
         return packageFilterFqn.some(filter => {
@@ -250,52 +258,88 @@ function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggrega
         )
         : relations;
     const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedFilterMode);
+    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode);
     return rowFqns.map(rowFqn => {
         const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
         return withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
     });
 }
 
-function collectRelatedSet(root, relations, aggregationDepth, relatedFilterMode) {
+function collectRelatedSet(root, relations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode) {
     if (!root) return new Set();
-    if (relatedFilterMode === 'direct') {
-        const relatedSet = new Set([root]);
-        relations.forEach(relation => {
-            const from = getAggregatedFqn(relation.from, aggregationDepth);
-            const to = getAggregatedFqn(relation.to, aggregationDepth);
-            if (from === root) relatedSet.add(to);
-            if (to === root) relatedSet.add(from);
-        });
-        return relatedSet;
-    }
 
-    const adjacency = new Map();
-    const addEdge = (from, to) => {
-        if (!adjacency.has(from)) adjacency.set(from, new Set());
-        adjacency.get(from).add(to);
-    };
-    relations.forEach(relation => {
-        const from = getAggregatedFqn(relation.from, aggregationDepth);
-        const to = getAggregatedFqn(relation.to, aggregationDepth);
-        addEdge(from, to);
-        if (relatedFilterMode === 'all') {
-            addEdge(to, from);
+    const relatedSet = new Set([root]); // 常にルート自身を含める
+
+    // 呼び出し元 (依存元) の関係を収集
+    if (relatedCallerFilterMode !== '0') { // 'なし' でない場合
+        if (relatedCallerFilterMode === '1') { // '直接' (direct callers)
+            relations.forEach(relation => {
+                const from = getAggregatedFqn(relation.from, aggregationDepth);
+                const to = getAggregatedFqn(relation.to, aggregationDepth);
+                if (to === root) relatedSet.add(from);
+            });
+        } else { // '-1' ('すべて' - all transitive callers)
+            const reverseAdjacency = new Map();
+            relations.forEach(relation => {
+                const from = getAggregatedFqn(relation.from, aggregationDepth);
+                const to = getAggregatedFqn(relation.to, aggregationDepth);
+                if (!reverseAdjacency.has(to)) reverseAdjacency.set(to, new Set());
+                reverseAdjacency.get(to).add(from);
+            });
+
+            const queue = [root];
+            const visited = new Set([root]);
+            while (queue.length > 0) {
+                const current = queue.shift();
+                const callers = reverseAdjacency.get(current);
+                if (callers) {
+                    callers.forEach(caller => {
+                        if (!visited.has(caller)) {
+                            visited.add(caller);
+                            relatedSet.add(caller);
+                            queue.push(caller);
+                        }
+                    });
+                }
+            }
         }
-    });
-
-    const relatedSet = new Set([root]);
-    const queue = [root];
-    while (queue.length) {
-        const current = queue.shift();
-        const nextSet = adjacency.get(current);
-        if (!nextSet) continue;
-        nextSet.forEach(next => {
-            if (relatedSet.has(next)) return;
-            relatedSet.add(next);
-            queue.push(next);
-        });
     }
+
+    // 呼び出し先 (依存先) の関係を収集
+    if (relatedCalleeFilterMode !== '0') { // 'なし' でない場合
+        if (relatedCalleeFilterMode === '1') { // '直接' (direct callees)
+            relations.forEach(relation => {
+                const from = getAggregatedFqn(relation.from, aggregationDepth);
+                const to = getAggregatedFqn(relation.to, aggregationDepth);
+                if (from === root) relatedSet.add(to);
+            });
+        } else { // '-1' ('すべて' - all transitive callees)
+            const forwardAdjacency = new Map();
+            relations.forEach(relation => {
+                const from = getAggregatedFqn(relation.from, aggregationDepth);
+                const to = getAggregatedFqn(relation.to, aggregationDepth);
+                if (!forwardAdjacency.has(from)) forwardAdjacency.set(from, new Set());
+                forwardAdjacency.get(from).add(to);
+            });
+
+            const queue = [root];
+            const visited = new Set([root]);
+            while (queue.length > 0) {
+                const current = queue.shift();
+                const callees = forwardAdjacency.get(current);
+                if (callees) {
+                    callees.forEach(callee => {
+                        if (!visited.has(callee)) {
+                            visited.add(callee);
+                            relatedSet.add(callee);
+                            queue.push(callee);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
     return relatedSet;
 }
 
@@ -340,20 +384,40 @@ function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence
     return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
 }
 
-function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedFilterMode) {
+function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode) {
     const nextVisibleSet = new Set(visibleSet);
     let nextRelations = uniqueRelations;
     if (aggregatedRoot) {
-        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, aggregationDepth, relatedFilterMode);
-        if (relatedFilterMode === 'direct') {
-            nextRelations = uniqueRelations.filter(relation =>
-                relation.from === aggregatedRoot || relation.to === aggregatedRoot
-            );
+        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode);
+        
+        // 依存元/依存先のモードに応じてフィルタリングロジックを調整する
+        const filterDirectRelation = (relation) => {
+            const from = getAggregatedFqn(relation.from, aggregationDepth);
+            const to = getAggregatedFqn(relation.to, aggregationDepth);
+            const isCaller = relatedCallerFilterMode === '1' && to === aggregatedRoot;
+            const isCallee = relatedCalleeFilterMode === '1' && from === aggregatedRoot;
+            return isCaller || isCallee;
+        };
+
+        const filterTransitiveRelation = (relation) => {
+            const from = getAggregatedFqn(relation.from, aggregationDepth);
+            const to = getAggregatedFqn(relation.to, aggregationDepth);
+            return relatedSet.has(from) && relatedSet.has(to);
+        };
+
+        if (relatedCallerFilterMode === '1' || relatedCalleeFilterMode === '1') {
+            nextRelations = uniqueRelations.filter(filterDirectRelation);
+        } else if (relatedCallerFilterMode === '-1' || relatedCalleeFilterMode === '-1') {
+            nextRelations = uniqueRelations.filter(filterTransitiveRelation);
         } else {
+            // モードが '0' (なし) の場合、関連フィルタが適用されないため、
+            // 関係はそのまま (relatedSet に含まれるノード間の関係のみ)
             nextRelations = uniqueRelations.filter(relation =>
-                relatedSet.has(relation.from) && relatedSet.has(relation.to)
+                relatedSet.has(getAggregatedFqn(relation.from, aggregationDepth)) &&
+                relatedSet.has(getAggregatedFqn(relation.to, aggregationDepth))
             );
         }
+
         nextVisibleSet.clear();
         relatedSet.forEach(value => nextVisibleSet.add(value));
     }
@@ -364,7 +428,7 @@ function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRo
     return {uniqueRelations: nextRelations, visibleSet: nextVisibleSet};
 }
 
-function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedFilterMode, transitiveReductionEnabled) {
+function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode, transitiveReductionEnabled) {
     const base = buildVisibleDiagramRelations(
         packages,
         relations,
@@ -379,7 +443,8 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
         base.visibleSet,
         aggregatedRoot,
         aggregationDepth,
-        relatedFilterMode
+        relatedCallerFilterMode,
+        relatedCalleeFilterMode
     );
     return {
         uniqueRelations,
@@ -534,7 +599,8 @@ function filterRelatedTableRows(fqn, context) {
         relations,
         context.packageFilterFqn,
         context.aggregationDepth,
-        context.relatedFilterMode,
+        context.relatedCallerFilterMode,
+        context.relatedCalleeFilterMode,
         fqn
     );
     rows.forEach((row, index) => {
@@ -1085,7 +1151,8 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
         packageFilterFqn,
         relatedFilterFqn,
         context.aggregationDepth,
-        context.relatedFilterMode,
+        context.relatedCallerFilterMode,
+        context.relatedCalleeFilterMode,
         context.transitiveReductionEnabled
     );
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
@@ -1222,7 +1289,8 @@ function renderAggregationDepthSelectOptions(maxDepth, context) {
         context.relatedFilterFqn,
         maxDepth,
         context.aggregationDepth,
-        context.relatedFilterMode
+        context.relatedCallerFilterMode,
+        context.relatedCalleeFilterMode
     );
     const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
     renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
@@ -1261,19 +1329,36 @@ function renderAggregationDepthOptionsIntoSelect(select, options, aggregationDep
 }
 
 function setupRelatedFilterControl(context) {
-    const select = dom.getRelatedModeSelect();
+    const callerSelect = dom.getRelatedCallerModeSelect();
+    const calleeSelect = dom.getRelatedCalleeModeSelect();
     const clearButton = dom.getClearRelatedFilterButton();
-    if (!select) return;
-    select.value = context.relatedFilterMode;
-    select.addEventListener('change', () => {
-        context.relatedFilterMode = select.value;
-        if (context.relatedFilterFqn) {
+    if (!callerSelect || !calleeSelect) return;
+
+    callerSelect.value = context.relatedCallerFilterMode;
+    calleeSelect.value = context.relatedCalleeFilterMode;
+
+    const applyFilter = () => {
+        if (context.relatedFilterFqn) { // フィルタ対象が選択されている場合のみ再描画
             renderDiagramAndTable(context);
         }
+    };
+
+    callerSelect.addEventListener('change', () => {
+        context.relatedCallerFilterMode = callerSelect.value;
+        applyFilter();
     });
+    calleeSelect.addEventListener('change', () => {
+        context.relatedCalleeFilterMode = calleeSelect.value;
+        applyFilter();
+    });
+
     if (clearButton) {
         clearButton.addEventListener('click', () => {
             context.relatedFilterFqn = null;
+            context.relatedCallerFilterMode = '0';
+            context.relatedCalleeFilterMode = '0';
+            callerSelect.value = '0';
+            calleeSelect.value = '0';
             context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
             renderDiagramAndTable(context);
             renderRelatedFilterLabel(context);

@@ -60,17 +60,17 @@ class CliConfig {
                 directory.classes=%s
                 directory.resources=%s
                 directory.sources=%s""".formatted(
-                        mode,
-                        documentTypeText,
-                        modelPattern,
-                        outputDirectory,
-                        diagramFormat,
-                        dotTimeout,
-                        diagramTransitiveReduction,
-                        projectPath,
-                        directoryClasses,
-                        directoryResources,
-                        directorySources);
+                mode,
+                documentTypeText,
+                modelPattern,
+                outputDirectory,
+                diagramFormat,
+                dotTimeout,
+                diagramTransitiveReduction,
+                projectPath,
+                directoryClasses,
+                directoryResources,
+                directorySources);
     }
 
     List<JigDocument> jigDocuments() {
@@ -100,26 +100,18 @@ class CliConfig {
         try {
             Path projectRoot = Paths.get(projectPath).toAbsolutePath().normalize();
 
-            if (mode.contains(Mode.MAVEN)) {
-                directoryClasses = "target/classes";
-                directoryResources = "target/classes";
-                directorySources = "src/main/java";
-                logger.warn("--mode=maven が指定されています。このモードは2025.9.1以降に廃止予定です。" +
-                        "2025.8.1にて自動検出が導入されました。プロジェクトディレクトリにpom.xmlがある場合はMavenデフォルト構造で検出します。");
-            } else {
-                if (directoryClasses.isEmpty() && directoryResources.isEmpty() && directorySources.isEmpty()) {
-                    if (Files.exists(projectRoot.resolve("pom.xml"))) {
-                        logger.info("pom.xml が検出されたため、Maven構成で読み取ります。");
-                        directoryClasses = "target/classes";
-                        directoryResources = "target/classes";
-                        directorySources = "src/main/java";
-                    }
+            if (directoryClasses.isEmpty() && directoryResources.isEmpty() && directorySources.isEmpty()) {
+                if (Files.exists(projectRoot.resolve("pom.xml"))) {
+                    logger.info("pom.xml が検出されたため、Maven構成で読み取ります。");
+                    directoryClasses = "target/classes";
+                    directoryResources = "target/classes";
+                    directorySources = "src/main/java";
                 }
-                // デフォルトの設定
-                directoryClasses = getOrDefault(directoryClasses, "build/classes/java/main");
-                directoryResources = getOrDefault(directoryResources, "build/resources/main");
-                directorySources = getOrDefault(directorySources, "src/main/java");
             }
+            // デフォルトの設定
+            directoryClasses = getOrDefault(directoryClasses, "build/classes/java/main");
+            directoryResources = getOrDefault(directoryResources, "build/resources/main");
+            directorySources = getOrDefault(directorySources, "src/main/java");
 
             DirectoryCollector sourcesCollector = new DirectoryCollector(directoryClasses, directoryResources, directorySources);
             Files.walkFileTree(projectRoot, sourcesCollector);

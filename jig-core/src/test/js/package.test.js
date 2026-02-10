@@ -344,7 +344,8 @@ test.describe('package.js', () => {
                     'app.domain.a',
                     0,
                     0,
-                    'direct'
+                    '1', // relatedCallerFilterMode: direct
+                    '1'  // relatedCalleeFilterMode: direct
                 );
                 const depth0 = stats.get(0);
 
@@ -447,7 +448,8 @@ test.describe('package.js', () => {
                     relations,
                     [],
                     0,
-                    'direct',
+                    '0', // relatedCallerFilterMode
+                    '1', // relatedCalleeFilterMode
                     'app.a'
                 );
                 assert.deepEqual(visibility, [true, true, false]);
@@ -467,13 +469,12 @@ test.describe('package.js', () => {
 
             test('collectRelatedSet: directモードは隣接のみを含める', () => {
                 const aggregationDepth = 0;
-                const relatedFilterMode = 'direct';
                 const relations = [
                     {from: 'app.domain.a', to: 'app.domain.b'},
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
+                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, '0', '1');
 
                 assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
             });
@@ -507,7 +508,8 @@ test.describe('package.js', () => {
                     base.visibleSet,
                     'app.b',
                     0,
-                    'direct'
+                    '1', // relatedCallerFilterMode
+                    '1'  // relatedCalleeFilterMode
                 );
                 assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(filtered.uniqueRelations.length, 2);
@@ -519,7 +521,7 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.b', 0, 'direct', false);
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.b', 0, '1', '1', false);
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 

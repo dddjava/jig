@@ -1154,15 +1154,17 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
         setTimeout(() => {
             const nodeId = context.diagramNodeIdByFqn.get(relatedFilterFqn);
             if (nodeId) {
-                // MermaidはノードIDをSVG要素のDOM IDの一部として使用する
-                // 例: id="flowchart-P0-1" のような形式
-                // .nodeセレクタでノードグループを特定し、その中の<title>要素のテキストコンテンツがnodeIdと一致するものを探す
-                const mermaidNodes = diagram.querySelectorAll('.node');
+                const svgElement = diagram.querySelector('svg');
+                if (!svgElement) {
+                    console.warn('Mermaid SVG element not found after rendering.');
+                    return;
+                }
+                const mermaidNodes = svgElement.querySelectorAll('.node');
                 for (const nodeElement of mermaidNodes) {
                     const titleElement = nodeElement.querySelector('title');
                     if (titleElement && titleElement.textContent === nodeId) {
                         nodeElement.classList.add('related-filter-highlight');
-                        context.lastHighlightedNodeId = nodeId; // 最後にハイライトしたノードを記憶
+                        context.lastHighlightedNodeId = nodeId;
                         break;
                     }
                 }

@@ -1189,7 +1189,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
         context.transitiveReductionEnabled
     );
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
+    const {source, nodeIdToFqn, nodeIdByFqn, mutualPairs} = buildMermaidDiagramSource(
         visibleSet,
         uniqueRelations,
         nameByFqn,

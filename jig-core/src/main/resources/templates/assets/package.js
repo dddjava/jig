@@ -1113,7 +1113,7 @@ function setupPackageFilterControl(context) {
     };
 
     applyButton.addEventListener('click', applyFilter);
-    clearButton.addEventListener('click', clearPackageFilter);
+    clearPackageButton.addEventListener('click', clearPackageFilter);
     if (resetButton) { // ボタンが存在する場合のみイベントリスナーを設定
         resetButton.addEventListener('click', resetPackageFilter);
     }

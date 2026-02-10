@@ -149,7 +149,8 @@ Allowed `type` values:
 
 Footer:
 
-- `JigDocument:<documentName>` — when a modified JigDocument is identifiable.
+- `JIG-DOCUMENT: <documentName>` — when a modified JigDocument is identifiable.
+- `AGENT: <agentName>` — when the commit is made by an automated agent. `<agentName>` should be the specific name of the agent (e.g., `Gemini`, `Codex`, `Copilot`).
 
 ### Commit Message Style
 

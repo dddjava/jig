@@ -45,20 +45,21 @@
         </div>
         <div class="control-row">
             <button type="button" class="related-icon icon-only" aria-label="関連フィルタ"><span class="screen-reader-only">関連フィルタ</span></button>
-            <label class="control-label" for="related-caller-mode-select">関連フィルタ (依存元):</label>
-            <select id="related-caller-mode-select">
-                <option value="0">なし</option>
-                <option value="1">直接</option>
-                <option value="-1">すべて</option>
-            </select>
-        </div>
-        <div class="control-row">
-            <label class="control-label" for="related-callee-mode-select">関連フィルタ (依存先):</label>
-            <select id="related-callee-mode-select">
-                <option value="0">なし</option>
-                <option value="1">直接</option>
-                <option value="-1">すべて</option>
-            </select>
+            <span class="control-label">関連フィルタ:</span>
+            <div class="related-filter-group">
+                <label for="related-caller-mode-select">依存元:</label>
+                <select id="related-caller-mode-select">
+                    <option value="0">なし</option>
+                    <option value="1">直接</option>
+                    <option value="-1">すべて</option>
+                </select>
+                <label for="related-callee-mode-select">依存先:</label>
+                <select id="related-callee-mode-select">
+                    <option value="0">なし</option>
+                    <option value="1">直接</option>
+                    <option value="-1">すべて</option>
+                </select>
+            </div>
             <span class="note" id="related-filter-target">未選択</span>
             <button id="clear-related-filter" type="button">解除</button>
         <div class="control-row">

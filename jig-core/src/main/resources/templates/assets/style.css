@@ -375,6 +375,12 @@ label {
     flex-wrap: wrap;
     gap: 8px;
 }
+
+.package-list details.controls .related-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* スペースを調整 */
+}
 .package-list details.controls .control-label {
     font-weight: 600;
 }

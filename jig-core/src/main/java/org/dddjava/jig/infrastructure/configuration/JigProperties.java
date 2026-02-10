@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
@@ -89,14 +88,6 @@ public class JigProperties {
 
     public String getDomainPattern() {
         return domainPattern;
-    }
-
-    public Path resolveOutputPath(DocumentName documentName) {
-        return outputDirectory.resolve(outputPath(documentName, outputDiagramFormat)).toAbsolutePath();
-    }
-
-    private String outputPath(DocumentName documentName, JigDiagramFormat JigDiagramFormat) {
-        return documentName.fileName() + '.' + JigDiagramFormat.extension();
     }
 
     public void override(JigProperties overrideProperties) {

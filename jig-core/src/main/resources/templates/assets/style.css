@@ -390,7 +390,8 @@ label {
     border-radius: 6px;
     background-color: #fff;
 }
-.package-list details.controls input[type="text"] {
+.package-list details.controls input[type="text"],
+.package-list details.controls textarea {
     min-width: 50ch;
 }
 .package-list details.controls button {

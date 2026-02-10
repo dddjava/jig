@@ -1076,10 +1076,8 @@ function setupPackageFilterControl(context) {
     applyButton.addEventListener('click', applyFilter);
     clearPackageButton.addEventListener('click', clearPackageFilter);
     input.addEventListener('keydown', event => {
-        if (event.key === 'Enter' && !event.shiftKey) { // Shift+Enter for new line
-            event.preventDefault();
-            applyFilter();
-        }
+        // Enterキーで改行を行うため、デフォルトの動作を妨げない
+        // フィルタ適用はボタンクリックのみで行う
     });
 }
 

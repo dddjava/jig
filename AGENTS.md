@@ -7,17 +7,16 @@ Follow these instructions exactly.
 
 ## Principles
 
-- Choose safe and reversible actions.
-- Make the smallest change necessary to accomplish the task.
+- Always choose safe and reversible actions.
+- Make the smallest, most focused change necessary to accomplish the task.
 - Preserve the existing architecture and conventions.
-- When unsure, stop and ask for clarification.
+- When unsure or if a task appears to require large, unrelated, or destructive changes, always stop and ask for clarification or instructions.
 
 ---
 
 ## Language Policy
 
 - All commit messages must be written in Japanese.
-- All agent responses must be written in Japanese.
 - Code comments should be written in Japanese unless the existing codebase uses English-only comments.
  
 ---
@@ -27,7 +26,6 @@ Follow these instructions exactly.
 - Never perform destructive operations.
 - Never rewrite shared history (e.g., force push, unsafe rebase).
 - Never modify repository internals (e.g., `.git`).
-- Do not make large or unrelated changes in a single task.
 
 If a task appears to require any of the above, **stop and ask for instructions**.
 
@@ -39,7 +37,7 @@ For any code change:
 
 1. Create a working branch from `main`.
 2. Make the required changes.
-3. Run tests according to the Testing Policy.
+3. Run tests according to the Testing Policy before committing.
 4. Commit the changes.
 5. Provide a clear summary of the work.
 
@@ -55,8 +53,6 @@ Do not modify code without creating a branch and commit.
   - `coverage/`
   - `node_modules/`
   - `dist/`
-
-If modification seems necessary, **stop and ask**.
 
 ---
 
@@ -88,18 +84,15 @@ If tests cannot be executed, report:
 Tests are not required for the following changes:
 
 - CSS-only changes that do not affect JavaScript behavior
-- Documentation-only changes (e.g., `README.md`, files under `docs/`)
+- Developer-documentation-only changes (i.e., changes that qualify for the `docs` commit type, such as `README.md` or files under `docs/`).
 
 If there is any possibility that runtime behavior is affected, run the tests.
-
-When unsure, run the tests for the most specific applicable category.
 
 ---
 
 ## Coding Guidelines
 
 - Follow existing implementation patterns.
-- Keep changes minimal and focused on the request.
 - Write comments in Japanese.
 - If existing comments are English-only, do not force translation — mixed language is acceptable.
 
@@ -112,10 +105,8 @@ When unsure, run the tests for the most specific applicable category.
 - Tests may be omitted ONLY IF adding or updating tests is impractical.
 - When tests are omitted, clearly explain the reason (e.g., technical constraints, environment limitations).
 
-- Avoid refactoring unrelated to the request.
 - After changes, check for duplication and refactor only if it is clearly safe.
 - Perform refactoring in a SEPARATE commit from functional changes.
-- If uncertain whether refactoring is appropriate, report instead of modifying.
 
 ---
 
@@ -123,7 +114,6 @@ When unsure, run the tests for the most specific applicable category.
 
 - Commit in meaningful, minimal units.
 - Split commits when a task naturally involves multiple steps.
-- Always run tests before committing.
 
 ### Commit Messages
 
@@ -187,14 +177,3 @@ Determine the document name from [`JigDocument.java`](jig-core/src/main/java/org
 - Use short, lowercase, hyphenated names describing the work.
 
 Example: `agent/package-glossary-link`
-
----
-
-## Decision Rule
-
-When multiple approaches are possible:
-
-👉 **Choose the least invasive option.**
-
-Do exactly what was requested — nothing more.
-Do not proactively "improve" unrelated areas.

@@ -930,7 +930,7 @@ function renderDiagramWithMermaid(diagram, text, maxEdges) {
 }
 
 // 描画/更新
-function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth) {
+function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context) {
     const container = dom.getMutualDependencyList();
     if (!container) return;
     const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth);
@@ -945,11 +945,40 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
     const summary = document.createElement('summary');
     summary.textContent = '相互依存と原因';
     const list = document.createElement('ul');
+
+    const applyFilterAndRender = (fqn) => {
+        const input = dom.getPackageFilterInput();
+        if (input) {
+            input.value = fqn;
+        }
+        context.packageFilterFqn = normalizePackageFilterValue(fqn);
+        renderDiagramAndTable(context);
+        renderRelatedFilterLabel(context);
+    };
+
     items.forEach(item => {
         const itemNode = document.createElement('li');
         const pair = document.createElement('div');
         pair.className = 'pair';
-        pair.textContent = item.pairLabel;
+        
+        const [package1, package2] = item.pairLabel.split(' <-> ');
+
+        const createPackageSpanWithButton = (pkgName) => {
+            const span = document.createElement('span');
+            span.textContent = pkgName;
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = 'フィルタにセット';
+            button.className = 'filter-button';
+            button.addEventListener('click', () => applyFilterAndRender(pkgName));
+            span.appendChild(button);
+            return span;
+        };
+
+        pair.appendChild(createPackageSpanWithButton(package1));
+        pair.appendChild(document.createTextNode(' <-> '));
+        pair.appendChild(createPackageSpanWithButton(package2));
+
         itemNode.appendChild(pair);
         if (item.causes.length > 0) {
             const detailBody = document.createElement('pre');
@@ -1009,7 +1038,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
 
 function applyDiagramRenderPlan(context, renderPlan) {
     context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
-    renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth);
+    renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
 }
 
 function shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context) {

@@ -6,8 +6,8 @@ const packageContext = {
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
     packageFilterFqn: [],
-    relatedCallerFilterMode: '0', // '0':なし, '1':直接, '-1':すべて
-    relatedCalleeFilterMode: '0', // '0':なし, '1':直接, '-1':すべて
+    relatedCallerFilterMode: '1', // '0':なし, '1':直接, '-1':すべて
+    relatedCalleeFilterMode: '1', // '0':なし, '1':直接, '-1':すべて
     relatedFilterFqn: null,
     diagramDirection: 'TD',
     transitiveReductionEnabled: true,

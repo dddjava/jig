@@ -23,7 +23,7 @@
             <li>関連フィルタ: 選択したパッケージの依存関係だけを絞り込みます。</li>
             <li>図の向き: 横/縦の切り替えで読みやすい方向に調整できます。</li>
             <li>図のノードクリック: クリックしたパッケージを関連フィルタの対象にします。</li>
-            <li>推移簡約: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
+            <li>依存関係の簡略表示: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
         </ul>
         <p>相互依存は赤い双方向の矢印で強調表示され、下の一覧に原因となるクラス関係が表示されます。</p>
         <p>依存が多い場合は階層集約やフィルタを活用し、関係が密な範囲から確認するのがおすすめです。</p>
@@ -66,7 +66,7 @@
             </label>
         </div>
         <div class="control-row">
-            <label class="control-label" for="transitive-reduction-toggle">推移簡約:</label>
+            <label class="control-label" for="transitive-reduction-toggle">依存関係の簡略表示:</label>
             <label class="radio-label">
                 <input type="checkbox" id="transitive-reduction-toggle" checked>
                 有効

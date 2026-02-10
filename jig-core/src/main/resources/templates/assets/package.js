@@ -574,7 +574,7 @@ function applyDefaultPackageFilterIfPresent(context) {
     return true;
 }
 
-// 相互依存/推移簡約
+// 相互依存/依存関係の簡略表示
 function buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth) {
     if (!mutualPairs || mutualPairs.size === 0) return [];
     const relationMap = new Map();

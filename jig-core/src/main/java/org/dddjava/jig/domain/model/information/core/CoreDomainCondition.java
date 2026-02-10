@@ -17,7 +17,7 @@ public class CoreDomainCondition {
         this.businessRulePattern = Pattern.compile(domainPattern);
     }
 
-    public boolean isCoreDomain(JigType jigType) {
+    private boolean isCoreDomain(JigType jigType) {
         if (jigType.isCompilerGenerated()) return false;
 
         String fqn = jigType.id().fqn();

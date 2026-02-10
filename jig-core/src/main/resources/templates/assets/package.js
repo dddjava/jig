@@ -810,7 +810,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
 
-    return {source: lines.join('\n'), nodeIdToFqn, nodeIdByFqn, mutualPairs};
+    return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
 }
 
 function buildDiagramNodeMaps(visibleSet, nameByFqn) {
@@ -1167,7 +1167,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
         context.transitiveReductionEnabled
     );
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
-    const {source, nodeIdToFqn, nodeIdByFqn, mutualPairs} = buildMermaidDiagramSource(
+    const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
         visibleSet,
         uniqueRelations,
         nameByFqn,
@@ -1177,7 +1177,6 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
     return {
         source,
         nodeIdToFqn,
-        nodeIdByFqn,
         mutualPairs,
         uniqueRelations,
         filteredCauseRelationEvidence,
@@ -1186,7 +1185,6 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
 
 function applyDiagramRenderPlan(context, renderPlan) {
     context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
-    context.diagramNodeIdByFqn = renderPlan.nodeIdByFqn;
     renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
 }
 

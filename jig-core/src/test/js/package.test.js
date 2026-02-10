@@ -693,6 +693,26 @@ test.describe('package.js', () => {
                 assert.equal(items[0].causes.length, 2);
             });
 
+            test('buildMutualDependencyDiagramSource: 相互依存のMermaidソースを生成する', () => {
+                const causes = [
+                    'app.alpha.A -> app.beta.B',
+                    'app.beta.B -> app.alpha.A',
+                    'app.beta.B -> app.gamma.C'
+                ];
+                const {source} = pkg.buildMutualDependencyDiagramSource(causes, 'LR');
+                const lines = source.split('\n').map(l => l.trim());
+                assert.ok(lines.includes('graph LR;'));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["alpha"\]/)));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["beta"\]/)));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["gamma"\]/)));
+                assert.ok(lines.includes('app_alpha_A["A"]'));
+                assert.ok(lines.includes('app_beta_B["B"]'));
+                assert.ok(lines.includes('app_gamma_C["C"]'));
+                assert.ok(lines.includes('app_alpha_A --> app_beta_B'));
+                assert.ok(lines.includes('app_beta_B --> app_alpha_A'));
+                assert.ok(lines.includes('app_beta_B --> app_gamma_C'));
+            });
+
             test('detectStronglyConnectedComponents: 循環を検出する', () => {
                 const graph = new Map([
                     ['a', ['b']],

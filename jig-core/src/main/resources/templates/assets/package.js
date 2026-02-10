@@ -974,6 +974,13 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
         button.addEventListener('click', () => applyFilterAndRender(`${package1}\n${package2}`));
         pairDiv.appendChild(button);
 
+        const diagramButton = document.createElement('button');
+        diagramButton.type = 'button';
+        diagramButton.textContent = '関連図を描画';
+        diagramButton.className = 'diagram-button';
+        diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, container, context));
+        pairDiv.appendChild(diagramButton);
+
         itemNode.appendChild(pairDiv);
         if (item.causes.length > 0) {
             const detailBody = document.createElement('pre');
@@ -985,7 +992,73 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
     container.innerHTML = '';
     details.appendChild(summary);
     details.appendChild(list);
+    const diagramContainer = document.createElement('pre');
+    diagramContainer.id = 'mutual-dependency-diagram';
+    diagramContainer.className = 'mermaid';
+    details.appendChild(diagramContainer);
     container.appendChild(details);
+}
+
+function renderMutualDependencyDiagram(item, container, context) {
+    const diagram = container.querySelector('#mutual-dependency-diagram');
+    if (!diagram) return;
+
+    const {source} = buildMutualDependencyDiagramSource(item.causes, context.diagramDirection);
+    if (!source) {
+        diagram.innerHTML = ''; // Clear previous diagram
+        diagram.style.display = 'none';
+        return;
+    }
+
+    diagram.style.display = 'block';
+    renderDiagramWithMermaid(diagram, source);
+}
+
+function buildMutualDependencyDiagramSource(causes, direction) {
+    if (causes.length === 0) return {source: null};
+
+    const edges = causes.map(cause => {
+        const [from, to] = cause.split(' -> ');
+        return {from, to};
+    });
+
+    const nodes = new Set();
+    edges.forEach(edge => {
+        nodes.add(edge.from);
+        nodes.add(edge.to);
+    });
+
+    const packages = new Map(); // packageFqn -> { nodes: Set<string>, name: string }
+    nodes.forEach(node => {
+        const packageFqn = node.substring(0, node.lastIndexOf('.'));
+        const packageName = packageFqn.substring(packageFqn.lastIndexOf('.') + 1);
+        if (!packages.has(packageFqn)) {
+            packages.set(packageFqn, {nodes: new Set(), name: packageName});
+        }
+        packages.get(packageFqn).nodes.add(node);
+    });
+
+    const escapeId = id => id.replace(/\./g, '_');
+    const escapeLabel = label => `"${label.replace(/"/g, '#quot;')}"`;
+
+    let lines = [`graph ${direction || 'TD'};`];
+
+    let packageIndex = 0;
+    for (const [packageFqn, {nodes: packageNodes, name}] of packages.entries()) {
+        lines.push(`subgraph P${packageIndex++}[${escapeLabel(name)}]`);
+        for (const node of packageNodes) {
+            const nodeId = escapeId(node);
+            const className = node.substring(node.lastIndexOf('.') + 1);
+            lines.push(`${nodeId}[${escapeLabel(className)}]`);
+        }
+        lines.push('end');
+    }
+
+    edges.forEach(({from, to}) => {
+        lines.push(`${escapeId(from)} --> ${escapeId(to)}`);
+    });
+
+    return {source: lines.join('\n')};
 }
 
 function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
@@ -1309,6 +1382,8 @@ if (typeof module !== 'undefined' && module.exports) {
         hideDiagramErrorMessage,
         renderDiagramWithMermaid,
         renderMutualDependencyList,
+        renderMutualDependencyDiagram,
+        buildMutualDependencyDiagramSource,
         renderPackageDiagram,
         renderDiagramAndTable,
         registerDiagramClickHandler,

@@ -23,6 +23,8 @@ import java.util.Optional;
 public class AsmClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
+    private static volatile boolean loggedSkippedModules = false;
+
     private final Counter counter = Metrics.counter("jig.analysis.class.count");
 
     public Collection<ClassDeclaration> readClasses(ClassFilePaths classFilePaths) {
@@ -35,7 +37,10 @@ public class AsmClassSourceReader {
     public Optional<ClassDeclaration> classDeclaration(Path path) {
         // そのまま読ませると予期しないエラーになりがちなのでスキップしておく。package-infoはsuperがObjectだけど、module-infoはsuperが無しでnullになるとか。
         if (path.endsWith(Path.of("module-info.class")) || path.endsWith(Path.of("package-info.class"))) {
-            logger.info("package-info や module-info の情報（アノテーションなど）は現在読み取っていません。skip={}", path);
+            if (!loggedSkippedModules) {
+                logger.info("package-info や module-info の情報（アノテーションなど）は現在読み取っていません。");
+                loggedSkippedModules = true;
+            }
             return Optional.empty();
         }
 

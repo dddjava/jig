@@ -139,10 +139,10 @@ Use **Conventional Commits**:
 
 Allowed `type` values:
 
-- `feat` — new feature
+- `feat` — New feature, or changes affecting user-facing functionality/content (e.g., UI text, new reports).
 - `fix` — bug fix
 - `refactor` — code improvement without behavior change
-- `docs` — documentation only
+- `docs` — Developer-focused documentation (e.g., `README.md`, files under `docs/`). For user-facing content changes, use `feat`.
 - `test` — test additions or updates
   - Use `test(red)` when adding a failing test
 - `other` — if none apply
@@ -168,12 +168,12 @@ Prefer short bodies. Omit the body if it is not necessary.
 If a change targets a specific JigDocument, add a footer:
 `JIG-DOCUMENT: <documentName>`
 
-Determine the document name from `JigDocument.java`:
+Determine the document name from [`JigDocument.java`](jig-core/src/main/java/org/dddjava/jig/domain/model/documents/documentformat/JigDocument.java):
 
 - If a modified file matches `jig-core/src/main/resources/templates/<documentFileName>.html`,
-  add the corresponding `JigDocument`.
+  the `JIG-DOCUMENT` footer should use the corresponding enum *name* from `JigDocument.java`.
 - If a modified file matches `jig-core/src/main/resources/templates/assets/<documentFileName>.*`,
-  add the corresponding `JigDocument`.
+  and the change explicitly targets a document, the `JIG-DOCUMENT` footer should use the corresponding enum *name* from `JigDocument.java`.
 - If multiple documents match, add all relevant `JIG-DOCUMENT` footers.
 - For shared assets (e.g., `assets/jig.js`) that affect multiple documents, add a footer
   **only when the task explicitly targets a document**. Otherwise omit to avoid false attribution.

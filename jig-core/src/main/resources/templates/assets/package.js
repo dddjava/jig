@@ -1372,10 +1372,6 @@ function setupRelatedFilterControl(context) {
     if (clearButton) {
         clearButton.addEventListener('click', () => {
             context.relatedFilterFqn = null;
-            context.relatedCallerFilterMode = '0';
-            context.relatedCalleeFilterMode = '0';
-            callerSelect.value = '0';
-            calleeSelect.value = '0';
             context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
             renderDiagramAndTable(context);
             renderRelatedFilterLabel(context);

@@ -20,7 +20,7 @@
         <ul>
             <li>階層集約: 深さを上げるとサブパッケージがまとめられ、全体像を把握しやすくなります。</li>
             <li>パッケージフィルタ: 対象のパッケージ配下だけを表示します。</li>
-            <li>関連フィルタ: 選択したパッケージの依存関係だけを絞り込みます。</li>
+            <li>フォーカス: 特定のパッケージに焦点を当て、その依存関係のみを表示します。</li>
             <li>図の向き: 横/縦の切り替えで読みやすい方向に調整できます。</li>
             <li>図のノードクリック: クリックしたパッケージを関連フィルタの対象にします。</li>
             <li>依存関係の簡略表示: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
@@ -44,19 +44,19 @@
             <button id="reset-package-filter" type="button">デフォルトに戻す</button>
         </div>
         <div class="control-row">
-            <button type="button" class="related-icon icon-only" aria-label="関連フィルタ"><span class="screen-reader-only">関連フィルタ</span></button>
-            <span class="control-label">関連フィルタ:</span>
-            <span class="note" id="related-filter-target">未選択</span>
-            <button id="clear-related-filter" type="button">解除</button>
-            <div class="related-filter-group">
-                <label for="related-caller-mode-select">依存元:</label>
-                <select id="related-caller-mode-select">
+            <button type="button" class="focus-icon icon-only" aria-label="フォーカス"><span class="screen-reader-only">フォーカス</span></button>
+            <span class="control-label">フォーカス:</span>
+            <span class="note" id="focus-target">未選択</span>
+            <button id="clear-focus" type="button">解除</button>
+            <div class="focus-group">
+                <label for="focus-caller-mode-select">依存元:</label>
+                <select id="focus-caller-mode-select">
                     <option value="0">なし</option>
                     <option value="1">直接</option>
                     <option value="-1">すべて</option>
                 </select>
-                <label for="related-callee-mode-select">依存先:</label>
-                <select id="related-callee-mode-select">
+                <label for="focus-callee-mode-select">依存先:</label>
+                <select id="focus-callee-mode-select">
                     <option value="0">なし</option>
                     <option value="1">直接</option>
                     <option value="-1">すべて</option>

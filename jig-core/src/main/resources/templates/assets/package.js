@@ -6,9 +6,9 @@ const packageContext = {
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
     packageFilterFqn: [],
-    relatedCallerFilterMode: '1', // '0':なし, '1':直接, '-1':すべて
-    relatedCalleeFilterMode: '1', // '0':なし, '1':直接, '-1':すべて
-    relatedFilterFqn: null,
+    focusCallerMode: '1', // '0':なし, '1':直接, '-1':すべて
+    focusCalleeMode: '1', // '0':なし, '1':直接, '-1':すべて
+    focusedPackageFqn: null,
     diagramDirection: 'TD',
     transitiveReductionEnabled: true,
 };
@@ -17,8 +17,8 @@ const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
 const DEFAULT_MAX_EDGES = 500;
 
 const dom = {
-    getRelatedFilterTarget: () => document.getElementById('related-filter-target'),
-    setRelatedFilterTargetText: (element, text) => { if (element) element.textContent = text; },
+    getFocusTarget: () => document.getElementById('focus-target'),
+    setFocusTargetText: (element, text) => { if (element) element.textContent = text; },
 
     getPackageTableBody: () => document.querySelector('#package-table tbody'),
     getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
@@ -27,9 +27,9 @@ const dom = {
     getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
     getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
     getDepthSelect: () => document.getElementById('package-depth-select'),
-    getRelatedCallerModeSelect: () => document.getElementById('related-caller-mode-select'),
-    getRelatedCalleeModeSelect: () => document.getElementById('related-callee-mode-select'),
-    getClearRelatedFilterButton: () => document.getElementById('clear-related-filter'),
+    getFocusCallerModeSelect: () => document.getElementById('focus-caller-mode-select'), // IDは変更しない
+    getFocusCalleeModeSelect: () => document.getElementById('focus-callee-mode-select'), // IDは変更しない
+    getClearFocusButton: () => document.getElementById('clear-focus'),
     getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
     getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
     getTransitiveReductionToggle: () => document.getElementById('transitive-reduction-toggle'),
@@ -157,7 +157,7 @@ function buildAggregationStats(packages, relations, maxDepth) {
     return stats;
 }
 
-function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, relatedFilterFqn, maxDepth, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode) {
+function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, focusedPackageFqn, maxDepth, aggregationDepth, focusCallerMode, focusCalleeMode) {
     const withinPackageFilter = fqn => {
         if (packageFilterFqn.length === 0) return true;
         return packageFilterFqn.some(filter => {
@@ -170,30 +170,30 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
         ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
         : relations;
 
-            if (relatedFilterFqn) {
-                const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
-                const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode);
+            if (focusedPackageFqn) {
+                const aggregatedRoot = getAggregatedFqn(focusedPackageFqn, aggregationDepth);
+                const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
                 filteredPackages = filteredPackages.filter(item =>
-                    relatedSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
+                    focusSet.has(getAggregatedFqn(item.fqn, aggregationDepth))
                 );
                 // 依存元/依存先のモードに応じてフィルタリングロジックを調整する
                 const filterDirectRelation = (relation) => {
                     const from = getAggregatedFqn(relation.from, aggregationDepth);
                     const to = getAggregatedFqn(relation.to, aggregationDepth);
-                    const isCaller = relatedCallerFilterMode === '1' && to === aggregatedRoot;
-                    const isCallee = relatedCalleeFilterMode === '1' && from === aggregatedRoot;
+                    const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
+                    const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
                     return isCaller || isCallee;
                 };
     
                 const filterTransitiveRelation = (relation) => {
                     const from = getAggregatedFqn(relation.from, aggregationDepth);
                     const to = getAggregatedFqn(relation.to, aggregationDepth);
-                    return relatedSet.has(from) && relatedSet.has(to);
+                    return focusSet.has(from) && focusSet.has(to);
                 };
     
-                if (relatedCallerFilterMode === '1' || relatedCalleeFilterMode === '1') {
+                if (focusCallerMode === '1' || focusCalleeMode === '1') {
                     filteredRelations = filteredRelations.filter(filterDirectRelation);
-                } else if (relatedCallerFilterMode === '-1' || relatedCalleeFilterMode === '-1') {
+                } else if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
                     filteredRelations = filteredRelations.filter(filterTransitiveRelation);
                 }
             }    return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
@@ -239,7 +239,7 @@ function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
     });
 }
 
-function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode, relatedFilterFqn) {
+function buildFocusRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, focusCallerMode, focusCalleeMode, focusedPackageFqn) {
     const withinPackageFilter = rowFqn => {
         if (packageFilterFqn.length === 0) return true;
         return packageFilterFqn.some(filter => {
@@ -248,7 +248,7 @@ function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggrega
         });
     };
 
-    if (!relatedFilterFqn) {
+    if (!focusedPackageFqn) {
         return rowFqns.map(rowFqn => withinPackageFilter(rowFqn));
     }
 
@@ -257,26 +257,26 @@ function buildRelatedRowVisibility(rowFqns, relations, packageFilterFqn, aggrega
             withinPackageFilter(relation.from) && withinPackageFilter(relation.to)
         )
         : relations;
-    const aggregatedRoot = getAggregatedFqn(relatedFilterFqn, aggregationDepth);
-    const relatedSet = collectRelatedSet(aggregatedRoot, filteredRelations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode);
+    const aggregatedRoot = getAggregatedFqn(focusedPackageFqn, aggregationDepth);
+    const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
     return rowFqns.map(rowFqn => {
         const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
-        return withinPackageFilter(rowFqn) && relatedSet.has(aggregatedRow);
+        return withinPackageFilter(rowFqn) && focusSet.has(aggregatedRow);
     });
 }
 
-function collectRelatedSet(root, relations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode) {
+function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, focusCalleeMode) {
     if (!root) return new Set();
 
-    const relatedSet = new Set([root]); // 常にルート自身を含める
+    const focusSet = new Set([root]); // 常にルート自身を含める
 
     // 呼び出し元 (依存元) の関係を収集
-    if (relatedCallerFilterMode !== '0') { // 'なし' でない場合
-        if (relatedCallerFilterMode === '1') { // '直接' (direct callers)
+    if (focusCallerMode !== '0') { // 'なし' でない場合
+        if (focusCallerMode === '1') { // '直接' (direct callers)
             relations.forEach(relation => {
                 const from = getAggregatedFqn(relation.from, aggregationDepth);
                 const to = getAggregatedFqn(relation.to, aggregationDepth);
-                if (to === root) relatedSet.add(from);
+                if (to === root) focusSet.add(from);
             });
         } else { // '-1' ('すべて' - all transitive callers)
             const reverseAdjacency = new Map();
@@ -296,7 +296,7 @@ function collectRelatedSet(root, relations, aggregationDepth, relatedCallerFilte
                     callers.forEach(caller => {
                         if (!visited.has(caller)) {
                             visited.add(caller);
-                            relatedSet.add(caller);
+                            focusSet.add(caller);
                             queue.push(caller);
                         }
                     });
@@ -306,12 +306,12 @@ function collectRelatedSet(root, relations, aggregationDepth, relatedCallerFilte
     }
 
     // 呼び出し先 (依存先) の関係を収集
-    if (relatedCalleeFilterMode !== '0') { // 'なし' でない場合
-        if (relatedCalleeFilterMode === '1') { // '直接' (direct callees)
+    if (focusCalleeMode !== '0') { // 'なし' でない場合
+        if (focusCalleeMode === '1') { // '直接' (direct callees)
             relations.forEach(relation => {
                 const from = getAggregatedFqn(relation.from, aggregationDepth);
                 const to = getAggregatedFqn(relation.to, aggregationDepth);
-                if (from === root) relatedSet.add(to);
+                if (from === root) focusSet.add(to);
             });
         } else { // '-1' ('すべて' - all transitive callees)
             const forwardAdjacency = new Map();
@@ -331,7 +331,7 @@ function collectRelatedSet(root, relations, aggregationDepth, relatedCallerFilte
                     callees.forEach(callee => {
                         if (!visited.has(callee)) {
                             visited.add(callee);
-                            relatedSet.add(callee);
+                            focusSet.add(callee);
                             queue.push(callee);
                         }
                     });
@@ -340,7 +340,7 @@ function collectRelatedSet(root, relations, aggregationDepth, relatedCallerFilte
         }
     }
 
-    return relatedSet;
+    return focusSet;
 }
 
 function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
@@ -384,42 +384,42 @@ function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence
     return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
 }
 
-function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode) {
+function filterFocusDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, focusCallerMode, focusCalleeMode) {
     const nextVisibleSet = new Set(visibleSet);
     let nextRelations = uniqueRelations;
     if (aggregatedRoot) {
-        const relatedSet = collectRelatedSet(aggregatedRoot, uniqueRelations, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode);
+        const focusSet = collectFocusSet(aggregatedRoot, uniqueRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
         
         // 依存元/依存先のモードに応じてフィルタリングロジックを調整する
         const filterDirectRelation = (relation) => {
             const from = getAggregatedFqn(relation.from, aggregationDepth);
             const to = getAggregatedFqn(relation.to, aggregationDepth);
-            const isCaller = relatedCallerFilterMode === '1' && to === aggregatedRoot;
-            const isCallee = relatedCalleeFilterMode === '1' && from === aggregatedRoot;
+            const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
+            const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
             return isCaller || isCallee;
         };
 
         const filterTransitiveRelation = (relation) => {
             const from = getAggregatedFqn(relation.from, aggregationDepth);
             const to = getAggregatedFqn(relation.to, aggregationDepth);
-            return relatedSet.has(from) && relatedSet.has(to);
+            return focusSet.has(from) && focusSet.has(to);
         };
 
-        if (relatedCallerFilterMode === '1' || relatedCalleeFilterMode === '1') {
+        if (focusCallerMode === '1' || focusCalleeMode === '1') {
             nextRelations = uniqueRelations.filter(filterDirectRelation);
-        } else if (relatedCallerFilterMode === '-1' || relatedCalleeFilterMode === '-1') {
+        } else if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
             nextRelations = uniqueRelations.filter(filterTransitiveRelation);
         } else {
             // モードが '0' (なし) の場合、関連フィルタが適用されないため、
-            // 関係はそのまま (relatedSet に含まれるノード間の関係のみ)
+            // 関係はそのまま (focusSet に含まれるノード間の関係のみ)
             nextRelations = uniqueRelations.filter(relation =>
-                relatedSet.has(getAggregatedFqn(relation.from, aggregationDepth)) &&
-                relatedSet.has(getAggregatedFqn(relation.to, aggregationDepth))
+                focusSet.has(getAggregatedFqn(relation.from, aggregationDepth)) &&
+                focusSet.has(getAggregatedFqn(relation.to, aggregationDepth))
             );
         }
 
         nextVisibleSet.clear();
-        relatedSet.forEach(value => nextVisibleSet.add(value));
+        focusSet.forEach(value => nextVisibleSet.add(value));
     }
     nextRelations.forEach(relation => {
         nextVisibleSet.add(relation.from);
@@ -428,7 +428,7 @@ function filterRelatedDiagramRelations(uniqueRelations, visibleSet, aggregatedRo
     return {uniqueRelations: nextRelations, visibleSet: nextVisibleSet};
 }
 
-function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, relatedFilterFqn, aggregationDepth, relatedCallerFilterMode, relatedCalleeFilterMode, transitiveReductionEnabled) {
+function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, focusedPackageFqn, aggregationDepth, focusCallerMode, focusCalleeMode, transitiveReductionEnabled) {
     const base = buildVisibleDiagramRelations(
         packages,
         relations,
@@ -437,14 +437,14 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
         aggregationDepth,
         transitiveReductionEnabled
     );
-    const aggregatedRoot = relatedFilterFqn ? getAggregatedFqn(relatedFilterFqn, aggregationDepth) : null;
-    const {uniqueRelations, visibleSet} = filterRelatedDiagramRelations(
+    const aggregatedRoot = focusedPackageFqn ? getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
+    const {uniqueRelations, visibleSet} = filterFocusDiagramRelations(
         base.uniqueRelations,
         base.visibleSet,
         aggregatedRoot,
         aggregationDepth,
-        relatedCallerFilterMode,
-        relatedCalleeFilterMode
+        focusCallerMode,
+        focusCalleeMode
     );
     return {
         uniqueRelations,
@@ -484,14 +484,14 @@ function buildPackageTableActionSpecs() {
             ariaLabel: 'このパッケージで絞り込み',
             screenReaderText: '絞り込み',
         },
-        related: {
-            ariaLabel: '関連のみ表示',
-            screenReaderText: '関連のみ表示',
+        focus: {
+            ariaLabel: 'フォーカス',
+            screenReaderText: 'フォーカス',
         },
     };
 }
 
-function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow) {
+function buildPackageTableRowElement(spec, applyFilter, applyFocusForRow) {
     const tr = document.createElement('tr');
     const actionSpecs = buildPackageTableActionSpecs();
 
@@ -508,18 +508,18 @@ function buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow
     actionTd.appendChild(actionButton);
     tr.appendChild(actionTd);
 
-    const relatedTd = document.createElement('td');
-    const relatedButton = document.createElement('button');
-    relatedButton.type = 'button';
-    relatedButton.className = 'related-icon';
-    relatedButton.setAttribute('aria-label', actionSpecs.related.ariaLabel);
-    const relatedText = document.createElement('span');
-    relatedText.className = 'screen-reader-only';
-    relatedText.textContent = actionSpecs.related.screenReaderText;
-    relatedButton.appendChild(relatedText);
-    relatedButton.addEventListener('click', () => applyRelatedFilterForRow(spec.fqn));
-    relatedTd.appendChild(relatedButton);
-    tr.appendChild(relatedTd);
+    const focusTd = document.createElement('td');
+    const focusButton = document.createElement('button');
+    focusButton.type = 'button';
+    focusButton.className = 'focus-icon';
+    focusButton.setAttribute('aria-label', actionSpecs.focus.ariaLabel);
+    const focusText = document.createElement('span');
+    focusText.className = 'screen-reader-only';
+    focusText.textContent = actionSpecs.focus.screenReaderText;
+    focusButton.appendChild(focusText);
+    focusButton.addEventListener('click', () => applyFocusForRow(spec.fqn));
+    focusTd.appendChild(focusButton);
+    tr.appendChild(focusTd);
 
     const fqnTd = document.createElement('td');
     fqnTd.textContent = spec.fqn;
@@ -575,32 +575,32 @@ function renderPackageTable(context) {
         }
         context.packageFilterFqn = normalizePackageFilterValue(input.value);
         renderDiagramAndTable(context);
-        renderRelatedFilterLabel(context);
+        renderFocusLabel(context);
     };
-    const applyRelatedFilterForRow = fqn => {
-        setRelatedFilterAndRender(fqn, context);
+    const applyFocusForRow = fqn => {
+        setFocusAndRender(fqn, context);
     };
 
     rowSpecs.forEach(spec => {
-        const tr = buildPackageTableRowElement(spec, applyFilter, applyRelatedFilterForRow);
+        const tr = buildPackageTableRowElement(spec, applyFilter, applyFocusForRow);
         tbody.appendChild(tr);
     });
 }
 
-function filterRelatedTableRows(fqn, context) {
+function filterFocusTableRows(fqn, context) {
     const rows = dom.getPackageTableRows();
     const {relations} = getPackageSummaryData(context);
     const rowFqns = Array.from(rows, row => {
         const fqnCell = row.querySelector('td.fqn');
         return fqnCell ? fqnCell.textContent : '';
     });
-    const visibility = buildRelatedRowVisibility(
+    const visibility = buildFocusRowVisibility(
         rowFqns,
         relations,
         context.packageFilterFqn,
         context.aggregationDepth,
-        context.relatedCallerFilterMode,
-        context.relatedCalleeFilterMode,
+        context.focusCallerMode,
+        context.focusCalleeMode,
         fqn
     );
     rows.forEach((row, index) => {
@@ -608,23 +608,23 @@ function filterRelatedTableRows(fqn, context) {
     });
 }
 
-function renderRelatedFilterLabel(context) {
-    const target = dom.getRelatedFilterTarget();
-    dom.setRelatedFilterTargetText(target, context.relatedFilterFqn ? context.relatedFilterFqn : '未選択');
+function renderFocusLabel(context) {
+    const target = dom.getFocusTarget();
+    dom.setFocusTargetText(target, context.focusedPackageFqn ? context.focusedPackageFqn : '未選択');
 }
 
-function setRelatedFilterAndRender(fqn, context) {
-    context.relatedFilterFqn = fqn;
+function setFocusAndRender(fqn, context) {
+    context.focusedPackageFqn = fqn;
     renderDiagramAndTable(context);
-    renderRelatedFilterLabel(context);
+    renderFocusLabel(context);
 }
 
-function registerDiagramClickHandler(context, applyRelatedFilter = setRelatedFilterAndRender) {
+function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
     if (typeof window === 'undefined') return;
     window[DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
         const fqn = context.diagramNodeIdToFqn.get(nodeId);
         if (!fqn) return;
-        applyRelatedFilter(fqn, context);
+        applyFocus(fqn, context);
     };
 }
 
@@ -786,7 +786,7 @@ function buildParentFqns(visibleSet) {
     return parentFqns;
 }
 
-function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection, relatedFilterFqn) {
+function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn) {
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
     const lines = [
         "---",
@@ -804,7 +804,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
         nodeIdToFqn,
         nodeLabelById,
         escapeMermaidText,
-        relatedFilterFqn // Pass relatedFilterFqn here
+        focusedPackageFqn // Pass focusedPackageFqn here
     );
 
     nodeLines.forEach(line => lines.push(line));
@@ -815,7 +815,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
     lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
     // 選択されたものを強調表示する
-    lines.push('classDef related-filter-highlight stroke-width:3px,font-weight:bold');
+    lines.push('classDef focused-package-highlight stroke-width:3px,font-weight:bold');
 
     return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
 }
@@ -864,7 +864,7 @@ function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
     return {edgeLines, linkStyles, mutualPairs};
 }
 
-function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, relatedFilterFqn) {
+function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, focusedPackageFqn) {
     const visibleFqns = Array.from(visibleSet).sort();
     const parentFqns = buildParentFqns(visibleSet);
     const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
@@ -872,8 +872,8 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
         const fqn = nodeIdToFqn.get(nodeId);
         const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
         let nodeDefinition = `${nodeId}["${escapeMermaidText(displayLabel)}"]`;
-        if (fqn === relatedFilterFqn) {
-            nodeDefinition += ':::related-filter-highlight';
+        if (fqn === focusedPackageFqn) {
+            nodeDefinition += ':::focused-package-highlight';
         }
         lines.push(nodeDefinition);
         const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
@@ -1033,7 +1033,7 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
         }
         context.packageFilterFqn = normalizePackageFilterValue(fqnsString);
         renderDiagramAndTable(context);
-        renderRelatedFilterLabel(context);
+        renderFocusLabel(context);
     };
 
     items.forEach(item => {
@@ -1140,13 +1140,13 @@ function buildMutualDependencyDiagramSource(causes, direction) {
     return {source: lines.join('\n')};
 }
 
-function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
+function renderPackageDiagram(context, packageFilterFqn, focusedPackageFqn) {
     const diagram = dom.getDiagram();
     if (!diagram) return;
 
 
 
-    const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn);
+    const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn);
     applyDiagramRenderPlan(context, renderPlan);
     if (shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context)) return;
     setDiagramSource(diagram, renderPlan.source);
@@ -1154,7 +1154,7 @@ function renderPackageDiagram(context, packageFilterFqn, relatedFilterFqn) {
     renderDiagramWithMermaidIfAvailable(diagram, renderPlan, context);
 }
 
-function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
+function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
     const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
     const {
         uniqueRelations,
@@ -1165,7 +1165,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
         relations,
         causeRelationEvidence,
         packageFilterFqn,
-        relatedFilterFqn,
+        focusedPackageFqn,
         context.aggregationDepth,
         context.relatedCallerFilterMode,
         context.relatedCalleeFilterMode,
@@ -1177,7 +1177,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, relatedFilterFqn) {
         uniqueRelations,
         nameByFqn,
         context.diagramDirection,
-        relatedFilterFqn // Pass relatedFilterFqn here
+        focusedPackageFqn // Pass focusedPackageFqn here
     );
     return {
         source,
@@ -1230,8 +1230,8 @@ function ensureMermaidParseErrorHandler(diagram, renderPlan, context) {
 }
 
 function renderDiagramAndTable(context) {
-    renderPackageDiagram(context, context.packageFilterFqn, context.relatedFilterFqn);
-    filterRelatedTableRows(context.relatedFilterFqn, context);
+    renderPackageDiagram(context, context.packageFilterFqn, context.focusedPackageFqn);
+    filterFocusTableRows(context.focusedPackageFqn, context);
     renderAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
 }
 
@@ -1254,19 +1254,19 @@ function setupPackageFilterControl(context) {
     const applyFilter = () => {
         context.packageFilterFqn = normalizePackageFilterValue(input.value);
         renderDiagramAndTable(context);
-        renderRelatedFilterLabel(context);
+        renderFocusLabel(context);
     };
     const clearPackageFilter = () => {
         input.value = '';
         context.packageFilterFqn = [];
         renderDiagramAndTable(context);
-        renderRelatedFilterLabel(context);
+        renderFocusLabel(context);
     };
     const resetPackageFilter = () => {
         input.value = initialDefaultFilterValue; // 初期デフォルト値でinputを更新
         context.packageFilterFqn = normalizePackageFilterValue(initialDefaultFilterValue); // contextも更新
         renderDiagramAndTable(context);
-        renderRelatedFilterLabel(context);
+        renderFocusLabel(context);
     };
 
     applyButton.addEventListener('click', applyFilter);
@@ -1290,7 +1290,7 @@ function setupAggregationDepthControl(context) {
     select.addEventListener('change', () => {
         context.aggregationDepth = normalizeAggregationDepthValue(select.value);
         renderDiagramAndTable(context);
-        renderRelatedFilterLabel(context);
+        renderFocusLabel(context);
         renderAggregationDepthSelectOptions(maxDepth, context);
     });
 }
@@ -1306,8 +1306,8 @@ function renderAggregationDepthSelectOptions(maxDepth, context) {
         context.relatedFilterFqn,
         maxDepth,
         context.aggregationDepth,
-        context.relatedCallerFilterMode,
-        context.relatedCalleeFilterMode
+        context.focusCallerMode,
+        context.focusCalleeMode
     );
     const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
     renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
@@ -1345,36 +1345,36 @@ function renderAggregationDepthOptionsIntoSelect(select, options, aggregationDep
     select.value = String(value);
 }
 
-function setupRelatedFilterControl(context) {
-    const callerSelect = dom.getRelatedCallerModeSelect();
-    const calleeSelect = dom.getRelatedCalleeModeSelect();
-    const clearButton = dom.getClearRelatedFilterButton();
+function setupFocusControl(context) {
+    const callerSelect = dom.getFocusCallerModeSelect();
+    const calleeSelect = dom.getFocusCalleeModeSelect();
+    const clearButton = dom.getClearFocusButton();
     if (!callerSelect || !calleeSelect) return;
 
-    callerSelect.value = context.relatedCallerFilterMode;
-    calleeSelect.value = context.relatedCalleeFilterMode;
+    callerSelect.value = context.focusCallerMode;
+    calleeSelect.value = context.focusCalleeMode;
 
     const applyFilter = () => {
-        if (context.relatedFilterFqn) { // フィルタ対象が選択されている場合のみ再描画
+        if (context.focusedPackageFqn) { // フィルタ対象が選択されている場合のみ再描画
             renderDiagramAndTable(context);
         }
     };
 
     callerSelect.addEventListener('change', () => {
-        context.relatedCallerFilterMode = callerSelect.value;
+        context.focusCallerMode = callerSelect.value;
         applyFilter();
     });
     calleeSelect.addEventListener('change', () => {
-        context.relatedCalleeFilterMode = calleeSelect.value;
+        context.focusCalleeMode = calleeSelect.value;
         applyFilter();
     });
 
     if (clearButton) {
         clearButton.addEventListener('click', () => {
-            context.relatedFilterFqn = null;
+            context.focusedPackageFqn = null;
             context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
             renderDiagramAndTable(context);
-            renderRelatedFilterLabel(context);
+            renderFocusLabel(context);
         });
     }
 }
@@ -1412,7 +1412,7 @@ if (typeof document !== 'undefined') {
         renderPackageTable(packageContext);
         setupPackageFilterControl(packageContext);
         setupAggregationDepthControl(packageContext);
-        setupRelatedFilterControl(packageContext);
+        setupFocusControl(packageContext);
         setupDiagramDirectionControl(packageContext);
         setupTransitiveReductionControl(packageContext);
         registerDiagramClickHandler(packageContext);
@@ -1420,7 +1420,7 @@ if (typeof document !== 'undefined') {
         if (!applied) {
             renderDiagramAndTable(packageContext);
         }
-        renderRelatedFilterLabel(packageContext);
+        renderFocusLabel(packageContext);
     });
 }
 
@@ -1447,19 +1447,19 @@ if (typeof module !== 'undefined' && module.exports) {
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,
         buildPackageRowVisibility,
-        buildRelatedRowVisibility,
-        collectRelatedSet,
+        buildFocusRowVisibility,
+        collectFocusSet,
         buildVisibleDiagramRelations,
-        filterRelatedDiagramRelations,
+        filterFocusDiagramRelations,
         buildVisibleDiagramElements,
         buildPackageTableRowData,
         buildPackageTableRowSpecs,
         buildPackageTableActionSpecs,
         buildPackageTableRowElement,
         renderPackageTable,
-        filterRelatedTableRows,
-        renderRelatedFilterLabel,
-        setRelatedFilterAndRender,
+        filterFocusTableRows,
+        renderFocusLabel,
+        setFocusAndRender,
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         detectStronglyConnectedComponents,
@@ -1490,7 +1490,7 @@ if (typeof module !== 'undefined' && module.exports) {
         renderAggregationDepthSelectOptions,
         buildAggregationDepthOptions,
         renderAggregationDepthOptionsIntoSelect,
-        setupRelatedFilterControl,
+        setupFocusControl,
         setupDiagramDirectionControl,
         setupTransitiveReductionControl,
     };

@@ -258,9 +258,9 @@ test.describe('package.js', () => {
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
             packageFilterFqn: [],
-            relatedCallerFilterMode: '1',
-            relatedCalleeFilterMode: '1',
-            relatedFilterFqn: null,
+            focusCallerMode: '1',
+            focusCalleeMode: '1',
+            focusedPackageFqn: null,
             diagramDirection: 'TD',
             transitiveReductionEnabled: true,
         };
@@ -430,7 +430,7 @@ test.describe('package.js', () => {
 
             test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみを表示する', () => {
                 const rowFqns = ['app.domain', 'app.other'];
-                const visibility = pkg.buildRelatedRowVisibility(
+                const visibility = pkg.buildFocusRowVisibility(
                     rowFqns,
                     [],
                     ['app.domain'],
@@ -444,7 +444,7 @@ test.describe('package.js', () => {
             test('buildRelatedRowVisibility: 関係する行のみ表示する', () => {
                 const rowFqns = ['app.a', 'app.b', 'app.c'];
                 const relations = [{from: 'app.a', to: 'app.b'}];
-                const visibility = pkg.buildRelatedRowVisibility(
+                const visibility = pkg.buildFocusRowVisibility(
                     rowFqns,
                     relations,
                     [],
@@ -475,7 +475,7 @@ test.describe('package.js', () => {
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, '0', '1');
+                const related = pkg.collectFocusSet('app.domain.a', relations, aggregationDepth, '0', '1');
 
                 assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
             });
@@ -488,7 +488,7 @@ test.describe('package.js', () => {
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode, relatedFilterMode);
+                const related = pkg.collectFocusSet('app.domain.a', relations, aggregationDepth, relatedFilterMode, relatedFilterMode);
 
                 assert.deepEqual(
                     Array.from(related).sort(),
@@ -504,7 +504,7 @@ test.describe('package.js', () => {
 
             test('filterRelatedDiagramRelations: relatedSetで絞り込む', () => {
                 const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
-                const filtered = pkg.filterRelatedDiagramRelations(
+                const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.visibleSet,
                     'app.b',
@@ -551,32 +551,32 @@ test.describe('package.js', () => {
                 testContext.relatedCalleeFilterMode = '1';
                 testContext.packageFilterFqn = [];
 
-                pkg.filterRelatedTableRows('app.a', testContext);
+                pkg.filterFocusTableRows('app.a', testContext);
 
                 assert.equal(rows[0].classList.contains('hidden'), false);
                 assert.equal(rows[1].classList.contains('hidden'), false);
                 assert.equal(rows[2].classList.contains('hidden'), true);
             });
 
-            test('renderRelatedFilterLabel: 対象表示を更新する', () => {
+            test('renderFocusLabel: 対象表示を更新する', () => {
                 const mockTarget = { textContent: '' };
-                const getRelatedFilterTargetMock = test.mock.fn(() => mockTarget);
-                const setRelatedFilterTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
+                const getFocusTargetMock = test.mock.fn(() => mockTarget);
+                const setFocusTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
 
-                test.mock.method(pkg.dom, 'getRelatedFilterTarget', getRelatedFilterTargetMock);
-                test.mock.method(pkg.dom, 'setRelatedFilterTargetText', setRelatedFilterTargetTextMock);
+                test.mock.method(pkg.dom, 'getFocusTarget', getFocusTargetMock);
+                test.mock.method(pkg.dom, 'setFocusTargetText', setFocusTargetTextMock);
 
-                testContext.relatedFilterFqn = null;
-                pkg.renderRelatedFilterLabel(testContext);
+                testContext.focusedPackageFqn = null;
+                pkg.renderFocusLabel(testContext);
                 assert.equal(mockTarget.textContent, '未選択');
-                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 1);
-                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
+                assert.equal(setFocusTargetTextMock.mock.calls.length, 1);
+                assert.deepEqual(setFocusTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
 
-                testContext.relatedFilterFqn = 'app.domain';
-                pkg.renderRelatedFilterLabel(testContext);
+                testContext.focusedPackageFqn = 'app.domain';
+                pkg.renderFocusLabel(testContext);
                 assert.equal(mockTarget.textContent, 'app.domain');
-                assert.equal(setRelatedFilterTargetTextMock.mock.calls.length, 2);
-                assert.deepEqual(setRelatedFilterTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
+                assert.equal(setFocusTargetTextMock.mock.calls.length, 2);
+                assert.deepEqual(setFocusTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
             test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用する', () => {
@@ -648,8 +648,8 @@ test.describe('package.js', () => {
 
                 assert.equal(specs.filter.ariaLabel, 'このパッケージで絞り込み');
                 assert.equal(specs.filter.screenReaderText, '絞り込み');
-                assert.equal(specs.related.ariaLabel, '関連のみ表示');
-                assert.equal(specs.related.screenReaderText, '関連のみ表示');
+                assert.equal(specs.focus.ariaLabel, 'フォーカス');
+                assert.equal(specs.focus.screenReaderText, 'フォーカス');
             });
         });
 
@@ -959,11 +959,11 @@ test.describe('package.js', () => {
                 global.window = {};
                 testContext.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
                 let called = null;
-                const applyRelatedFilter = (fqn, context) => {
+                const applyFocus = (fqn, context) => {
                     called = {fqn, context};
                 };
 
-                pkg.registerDiagramClickHandler(testContext, applyRelatedFilter);
+                pkg.registerDiagramClickHandler(testContext, applyFocus);
 
                 global.window[pkg.DIAGRAM_CLICK_HANDLER_NAME]('P1');
 

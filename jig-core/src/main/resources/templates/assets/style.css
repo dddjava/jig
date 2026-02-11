@@ -376,7 +376,7 @@ label {
     gap: 8px;
 }
 
-.package-summary details.controls .related-filter-group {
+.package-summary details.controls .focus-group {
     display: flex;
     align-items: center;
     gap: 8px; /* スペースを調整 */
@@ -432,7 +432,7 @@ label {
     pointer-events: none;
     background-color: transparent;
 }
-.package-summary button.related-icon {
+.package-summary button.focus-icon {
     width: 1.8em;
     height: 1.8em;
     border-radius: 999px;
@@ -442,7 +442,7 @@ label {
     padding: 0;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='2'/><circle cx='18' cy='6' r='2'/><circle cx='18' cy='18' r='2'/><path d='M8 11l8-4'/><path d='M8 13l8 4'/></svg>");
 }
-.package-summary button.related-icon:hover {
+.package-summary button.focus-icon:hover {
     background-color: #f5f5f5;
 }
 .package-summary a.glossary-link-icon {

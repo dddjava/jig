@@ -9,8 +9,8 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 実行時に設定するプロパティ。
@@ -94,22 +94,19 @@ public class JigProperties {
     public void override(JigProperties overrideProperties) {
         try {
             for (Field field : this.getClass().getDeclaredFields()) {
-                field.setAccessible(true); // private フィールドにもアクセスできるようにする
+                Object overriddenValue = field.get(overrideProperties);
 
-                Object overriddenValue = field.get(overrideProperties); // overrideProperties からの値
-
-                if (field.getType().equals(Optional.class)) {
-                    @SuppressWarnings("unchecked")
-                    Optional<Object> optionalValue = (Optional<Object>) overriddenValue;
-                    if (optionalValue.isPresent()) {
-                        field.set(this, optionalValue);
-                        logger.info("configure {} from {} to {}", field.getName(), field.get(this), optionalValue);
-                    }
-                } else if (overriddenValue != null) {
+                if (overriddenValue != null) {
                     if (field.getType().equals(String.class) && ((String) overriddenValue).isEmpty()) {
                         continue;
                     }
                     if (field.getType().equals(List.class) && ((List<?>) overriddenValue).isEmpty()) {
+                        continue;
+                    }
+                    if (field.getType().equals(Path.class) && ((Path) overriddenValue).toString().isEmpty()) {
+                        continue;
+                    }
+                    if (field.getType().equals(Optional.class) && ((Optional<?>) overriddenValue).isEmpty()) {
                         continue;
                     }
 

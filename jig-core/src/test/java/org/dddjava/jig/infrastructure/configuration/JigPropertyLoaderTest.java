@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -13,12 +12,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DisplayName("JigPropertyLoaderTest")
 class JigPropertyLoaderTest {
 
     @TempDir
@@ -29,29 +26,35 @@ class JigPropertyLoaderTest {
 
     @BeforeEach
     void setUp() {
+        // テストが終わったら戻す用
         userHomeBackup = Paths.get(System.getProperty("user.home"));
         userDirBackup = Paths.get(System.getProperty("user.dir"));
+        // テストのために上書き
         System.setProperty("user.home", tempDir.toAbsolutePath().toString());
         System.setProperty("user.dir", tempDir.toAbsolutePath().toString());
     }
 
     @AfterEach
     void tearDown() {
+        // 終わったので戻す
         System.setProperty("user.home", userHomeBackup.toAbsolutePath().toString());
         System.setProperty("user.dir", userDirBackup.toAbsolutePath().toString());
     }
 
     @Test
-    void defaultInstance_domainPatternIsEmpty() {
+    void デフォルト値の確認() {
         JigProperties defaultProps = JigProperties.defaultInstance();
+
         assertTrue(defaultProps.getDomainPattern().isEmpty());
+        assertEquals(JigDocument.values().length, defaultProps.jigDocuments.size());
+        assertEquals(JigProperty.defaultOutputDirectory(), defaultProps.outputDirectory.toString());
     }
 
     @Test
-    void load_primaryPropertyOverridesDefault() {
+    void 指定あり_設定ファイルなし__指定() {
         // given
         JigProperties primaryProperties = new JigProperties(
-                List.of(JigDocument.ApplicationList),
+                List.of(JigDocument.ApplicationList, JigDocument.ListOutput),
                 Optional.of("com.example.primary.+"),
                 tempDir.resolve("primary_output")
         );
@@ -61,70 +64,76 @@ class JigPropertyLoaderTest {
         JigProperties loadedProperties = loader.load();
 
         // then
-        assertEquals("com.example.primary.+", loadedProperties.getDomainPattern().get());
-        assertEquals(List.of(JigDocument.ApplicationList), loadedProperties.jigDocuments);
+        assertEquals("com.example.primary.+", loadedProperties.getDomainPattern().orElseThrow());
+        assertEquals(List.of(JigDocument.ApplicationList, JigDocument.ListOutput), loadedProperties.jigDocuments);
+        assertEquals(tempDir.resolve("primary_output"), loadedProperties.outputDirectory);
     }
 
     @Test
-    void load_homeDirectoryPropertyOverridesDefault() throws IOException {
+    void 指定あり_設定ファイルあり__指定() throws IOException {
         // given
         Path homeConfigDir = tempDir.resolve(".jig");
         Files.createDirectory(homeConfigDir);
-        Properties homeProps = new Properties();
-        homeProps.setProperty("jig.pattern.domain", "com.example.home.+");
-        homeProps.setProperty("jig.document.types", "BusinessRuleList");
-        homeProps.store(Files.newOutputStream(homeConfigDir.resolve("jig.properties")), "");
 
-        JigPropertyLoader loader = new JigPropertyLoader(new JigProperties(List.of(), Optional.empty(), tempDir)); // Empty primary
-        
+        Files.writeString(homeConfigDir.resolve("jig.properties"), """
+                jig.pattern.domain=com.example.home.+
+                jig.document.types=BusinessRuleList
+                """);
+
+        JigProperties primaryProperties = new JigProperties(
+                List.of(JigDocument.ApplicationList, JigDocument.ListOutput),
+                Optional.of("com.example.primary.+"),
+                tempDir.resolve("primary_output")
+        );
+        JigPropertyLoader loader = new JigPropertyLoader(primaryProperties);
+
         // when
         JigProperties loadedProperties = loader.load();
 
         // then
-        assertEquals("com.example.home.+", loadedProperties.getDomainPattern().get());
+        assertEquals("com.example.primary.+", loadedProperties.getDomainPattern().orElseThrow());
+        assertEquals(List.of(JigDocument.ApplicationList, JigDocument.ListOutput), loadedProperties.jigDocuments);
+        assertEquals(tempDir.resolve("primary_output"), loadedProperties.outputDirectory);
+    }
+
+    @Test
+    void 指定なし_設定ファイルなし__デフォルト() {
+        // given
+        JigProperties 何も指定しない = new JigProperties(List.of(), Optional.empty(), Path.of(""));
+        JigPropertyLoader loader = new JigPropertyLoader(何も指定しない);
+
+        // when
+        JigProperties loadedProperties = loader.load();
+
+        // then
+        var defaultProperties = JigProperties.defaultInstance();
+        assertEquals(defaultProperties.getDomainPattern(), loadedProperties.getDomainPattern());
+        assertEquals(defaultProperties.jigDocuments, loadedProperties.jigDocuments);
+        assertEquals(defaultProperties.outputDirectory, loadedProperties.outputDirectory);
+    }
+
+    @Test
+    void 指定なし_設定ファイルあり__設定ファイル() throws IOException {
+        // given
+        Path homeConfigDir = tempDir.resolve(".jig");
+        Files.createDirectory(homeConfigDir);
+
+        Files.writeString(homeConfigDir.resolve("jig.properties"), """
+                jig.pattern.domain=com.example.home.+
+                jig.document.types=BusinessRuleList
+                jig.output.directory=/hoge/fuga
+                """);
+
+        var 何も指定しない = new JigProperties(List.of(), Optional.empty(), Path.of(""));
+        JigPropertyLoader loader = new JigPropertyLoader(何も指定しない);
+
+        // when
+        JigProperties loadedProperties = loader.load();
+
+        // then
+        assertEquals("com.example.home.+", loadedProperties.getDomainPattern().orElseThrow());
         assertEquals(List.of(JigDocument.BusinessRuleList), loadedProperties.jigDocuments);
+        assertEquals(Path.of("/hoge/fuga"), loadedProperties.outputDirectory);
     }
 
-    @Test
-    void override_optionalEmptyInOverridePropertiesDoesNotOverrideExistingValue() {
-        // given
-        JigProperties baseProperties = new JigProperties(
-                List.of(JigDocument.ApplicationList),
-                Optional.of("com.example.base.+"),
-                tempDir.resolve("base_output")
-        );
-        JigProperties overrideProperties = new JigProperties(
-                List.of(), // jigDocuments will be empty, not overriding
-                Optional.empty(), // domainPattern will be Optional.empty, should NOT override base
-                null // outputDirectory will be null, not overriding
-        );
-
-        // when
-        baseProperties.override(overrideProperties);
-
-        // then
-        assertEquals("com.example.base.+", baseProperties.getDomainPattern().get()); // Should remain unchanged
-        assertEquals(List.of(JigDocument.ApplicationList), baseProperties.jigDocuments); // Should remain unchanged
-    }
-
-    @Test
-    void override_optionalPresentInOverridePropertiesOverridesExistingValue() {
-        // given
-        JigProperties baseProperties = new JigProperties(
-                List.of(JigDocument.ApplicationList),
-                Optional.of("com.example.base.+"),
-                tempDir.resolve("base_output")
-        );
-        JigProperties overrideProperties = new JigProperties(
-                List.of(),
-                Optional.of("com.example.overridden.+"), // This should override base
-                null
-        );
-
-        // when
-        baseProperties.override(overrideProperties);
-
-        // then
-        assertEquals("com.example.overridden.+", baseProperties.getDomainPattern().get()); // Should be overridden
-    }
 }

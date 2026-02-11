@@ -346,8 +346,8 @@ label {
 }
 
 /* パッケージ概要の表示設定 */
-.package-list details.controls,
-.package-list details.usage {
+.package-summary details.controls,
+.package-summary details.usage {
     background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -357,64 +357,64 @@ label {
     width: 95%;
     max-width: 980px;
 }
-.package-list details.controls summary,
-.package-list details.usage summary {
+.package-summary details.controls summary,
+.package-summary details.usage summary {
     list-style: none;
     cursor: pointer;
     padding: 6px 0;
     font-weight: 600;
 }
-.package-list details.controls > :not(summary),
-.package-list details.usage > :not(summary) {
+.package-summary details.controls > :not(summary),
+.package-summary details.usage > :not(summary) {
     display: block;
     margin: 8px 0;
 }
-.package-list details.controls .control-row {
+.package-summary details.controls .control-row {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-.package-list details.controls .related-filter-group {
+.package-summary details.controls .related-filter-group {
     display: flex;
     align-items: center;
     gap: 8px; /* スペースを調整 */
 }
-.package-list details.controls .control-label {
+.package-summary details.controls .control-label {
     font-weight: 600;
 }
-.package-list details.controls .radio-label {
+.package-summary details.controls .radio-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
-.package-list details.controls input[type="text"],
-.package-list details.controls select {
+.package-summary details.controls input[type="text"],
+.package-summary details.controls select {
     padding: 6px 8px;
     border: 1px solid #bbb;
     border-radius: 6px;
     background-color: #fff;
 }
-.package-list details.controls input[type="text"],
-.package-list details.controls textarea {
+.package-summary details.controls input[type="text"],
+.package-summary details.controls textarea {
     min-width: 50ch;
 }
-.package-list details.controls button {
+.package-summary details.controls button {
     padding: 6px 10px;
     border: 1px solid #888;
     border-radius: 6px;
     background-color: #f2f2f2;
     cursor: pointer;
 }
-.package-list details.controls button:hover {
+.package-summary details.controls button:hover {
     background-color: #e6e6e6;
 }
-.package-list details.controls .note {
+.package-summary details.controls .note {
     font-size: 0.9em;
     color: #555;
 }
-.package-list button.package-filter-icon {
+.package-summary button.package-filter-icon {
     width: 1.8em;
     height: 1.8em;
     border-radius: 999px;
@@ -424,15 +424,15 @@ label {
     padding: 0;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></svg>");
 }
-.package-list button.package-filter-icon:hover {
+.package-summary button.package-filter-icon:hover {
     background-color: #f5f5f5;
 }
-.package-list button.icon-only {
+.package-summary button.icon-only {
     cursor: default;
     pointer-events: none;
     background-color: transparent;
 }
-.package-list button.related-icon {
+.package-summary button.related-icon {
     width: 1.8em;
     height: 1.8em;
     border-radius: 999px;
@@ -442,10 +442,10 @@ label {
     padding: 0;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='12' r='2'/><circle cx='18' cy='6' r='2'/><circle cx='18' cy='18' r='2'/><path d='M8 11l8-4'/><path d='M8 13l8 4'/></svg>");
 }
-.package-list button.related-icon:hover {
+.package-summary button.related-icon:hover {
     background-color: #f5f5f5;
 }
-.package-list a.glossary-link-icon {
+.package-summary a.glossary-link-icon {
     display: inline-block;
     width: 1.8em;
     height: 1.8em;
@@ -457,78 +457,78 @@ label {
     text-decoration: none;
     vertical-align: middle;
 }
-.package-list a.glossary-link-icon:hover {
+.package-summary a.glossary-link-icon:hover {
     background-color: #f5f5f5;
 }
-.package-list .mutual-dependencies {
+.package-summary .mutual-dependencies {
     margin: 12px 0 16px 0;
     padding: 8px 12px;
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
-.package-list .mutual-dependencies h2 {
+.package-summary .mutual-dependencies h2 {
     margin: 0 0 6px 0;
     font-size: 1em;
 }
-.package-list .mutual-dependencies ul {
+.package-summary .mutual-dependencies ul {
     margin: 0 0 0 1.2em;
     padding: 0;
 }
-.package-list .mutual-dependencies li {
+.package-summary .mutual-dependencies li {
     margin: 6px 0;
 }
-.package-list .mutual-dependencies .pair {
+.package-summary .mutual-dependencies .pair {
     font-weight: bold;
 }
-.package-list .mutual-dependencies pre {
+.package-summary .mutual-dependencies pre {
     margin: 4px 0 0 0;
     white-space: pre-wrap;
 }
-.package-list table .col-action {
+.package-summary table .col-action {
     width: 2.5em;
 }
-.package-list table .col-glossary {
+.package-summary table .col-glossary {
     width: 2.5em;
 }
-.package-list td.glossary-cell {
+.package-summary td.glossary-cell {
     text-align: center;
 }
-.package-list table th.no-sort {
+.package-summary table th.no-sort {
     cursor: default;
 }
-.package-list table {
+.package-summary table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 10px;
     font-size: 16px;
     table-layout: fixed;
 }
-.package-list td {
+.package-summary td {
     text-align: left;
     vertical-align: top;
     overflow-wrap: anywhere;
     word-break: break-word;
     white-space: normal;
 }
-.package-list td.fqn {
+.package-summary td.fqn {
     white-space: nowrap;
     overflow: scroll;
     max-width: 20em;
     overflow-wrap: normal;
     word-break: normal;
 }
-.package-list tr:nth-child(even) {
+.package-summary tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 @media (max-width: 720px) {
-    .package-list details.controls .control-row {
+    .package-summary details.controls .control-row {
         align-items: flex-start;
     }
-    .package-list details.controls .control-label {
+    .package-summary details.controls .control-label {
         width: 100%;
     }
-    .package-list details.controls input[type="text"],
-    .package-list details.controls select {
+    .package-summary details.controls input[type="text"],
+    .package-summary details.controls select {
         width: 100%;
     }
 }

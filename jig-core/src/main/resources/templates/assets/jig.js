@@ -95,7 +95,7 @@ if (window.mermaid) {
 
 function setupLazyMermaidRender() {
     if (!window.mermaid) return;
-    if (document.body.classList.contains("package-list")) return;
+    if (document.body.classList.contains("package-summary")) return;
 
     const diagrams = Array.from(document.querySelectorAll(".mermaid"));
     if (diagrams.length === 0) return;

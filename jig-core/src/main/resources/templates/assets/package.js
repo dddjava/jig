@@ -1407,7 +1407,7 @@ function setupTransitiveReductionControl(context) {
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
         const body = dom.getDocumentBody();
-        if (!body || !body.classList.contains("package-list")) return;
+        if (!body || !body.classList.contains("package-summary")) return;
         setupSortableTables();
         renderPackageTable(packageContext);
         setupPackageFilterControl(packageContext);

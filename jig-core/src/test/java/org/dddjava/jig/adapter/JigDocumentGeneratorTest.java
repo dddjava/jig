@@ -45,6 +45,7 @@ class JigDocumentGeneratorTest {
 
         var sut = new JigDocumentGenerator(jigDocumentContextMock, jigServiceMock);
 
+        @SuppressWarnings("removal")
         var handleResult = sut.generateDocument(JigDocument.TermList, tempDir, jigDataProvider);
 
         assert handleResult.success();

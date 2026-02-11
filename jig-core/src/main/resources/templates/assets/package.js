@@ -788,7 +788,14 @@ function buildParentFqns(visibleSet) {
 
 function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection, relatedFilterFqn) {
     const escapeMermaidText = text => text.replace(/"/g, '\\"');
-    const lines = [`graph ${diagramDirection}`];
+    const lines = [
+        "---",
+        "config:",
+        "  theme: 'default'",
+        "  themeVariables:",
+        "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
+        "---",
+        `graph ${diagramDirection}`];
     const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
     const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
     const nodeLines = buildDiagramNodeLines(
@@ -803,8 +810,8 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     nodeLines.forEach(line => lines.push(line));
 
     // ノードのスタイルを指定。どちらも存在しない場合もあるが、classDefに害はないので出力する。
-    // ルートパッケージの色はサブグラフに合わせ、境界線を破線にする
-    lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-dasharray:10 3');
+    // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
+    lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
     // 選択されたものを強調表示する
     lines.push('classDef related-filter-highlight stroke-width:3px,font-weight:bold');
 

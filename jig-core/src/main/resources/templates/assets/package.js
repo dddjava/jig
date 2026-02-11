@@ -791,7 +791,7 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     const lines = [`graph ${diagramDirection}`];
     const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
     const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
-    const {nodeLines, hasParentStyle} = buildDiagramNodeLines(
+    const nodeLines = buildDiagramNodeLines(
         visibleSet,
         nodeIdByFqn,
         nodeIdToFqn,
@@ -801,11 +801,12 @@ function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagr
     );
 
     nodeLines.forEach(line => lines.push(line));
-    if (hasParentStyle) {
-        lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-width:2px');
-    }
-    // Add classDef for highlighting here
-    lines.push('classDef related-filter-highlight stroke:#FF6347,stroke-width:3px,fill:#FFF0F0');
+
+    // ノードのスタイルを指定。どちらも存在しない場合もあるが、classDefに害はないので出力する。
+    // ルートパッケージの色はサブグラフに合わせ、境界線を破線にする
+    lines.push('classDef parentPackage fill:#ffffde,stroke:#aaaa00,stroke-dasharray:10 3');
+    // 選択されたものを強調表示する
+    lines.push('classDef related-filter-highlight stroke-width:3px,font-weight:bold');
 
     edgeLines.forEach(line => lines.push(line));
     linkStyles.forEach(styleLine => lines.push(styleLine));
@@ -875,9 +876,7 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
             lines.push(`class ${nodeId} parentPackage`);
         }
     };
-    const nodeLines = buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText);
-
-    return {nodeLines, hasParentStyle: parentFqns.size > 0};
+    return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText);
 }
 
 function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {

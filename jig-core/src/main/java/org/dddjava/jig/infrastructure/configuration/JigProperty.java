@@ -6,7 +6,7 @@ public enum JigProperty {
 
     OUTPUT_DIRECTORY("") {
         @Override
-        String defaultValue() {
+        public String defaultValue() {
             return Paths.get(System.getProperty("user.dir")).resolve(".jig").toAbsolutePath().toString();
         }
     },
@@ -21,7 +21,7 @@ public enum JigProperty {
         this.defaultValue = defaultValue;
     }
 
-    String defaultValue() {
+    public String defaultValue() {
         return defaultValue;
     }
 }

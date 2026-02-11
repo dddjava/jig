@@ -258,7 +258,8 @@ test.describe('package.js', () => {
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
             packageFilterFqn: [],
-            relatedFilterMode: 'direct',
+            relatedCallerFilterMode: '1',
+            relatedCalleeFilterMode: '1',
             relatedFilterFqn: null,
             diagramDirection: 'TD',
             transitiveReductionEnabled: true,
@@ -434,8 +435,8 @@ test.describe('package.js', () => {
                     [],
                     ['app.domain'],
                     0,
-                    'direct',
-                    null
+                    '1', // relatedCallerFilterMode
+                    '0' // relatedCalleeFilterMode
                 );
                 assert.deepEqual(visibility, [true, false]);
             });
@@ -487,7 +488,7 @@ test.describe('package.js', () => {
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode);
+                const related = pkg.collectRelatedSet('app.domain.a', relations, aggregationDepth, relatedFilterMode, relatedFilterMode);
 
                 assert.deepEqual(
                     Array.from(related).sort(),
@@ -516,7 +517,7 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, 'direct', false);
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, '1', '1');
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
@@ -526,7 +527,7 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, 'all', false);
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, 'all', 'all');
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });
@@ -546,7 +547,8 @@ test.describe('package.js', () => {
                 }, testContext);
                 const rows = buildPackageRows(doc, ['app.a', 'app.b', 'app.c']);
                 testContext.aggregationDepth = 0;
-                testContext.relatedFilterMode = 'direct';
+                testContext.relatedCallerFilterMode = '1';
+                testContext.relatedCalleeFilterMode = '1';
                 testContext.packageFilterFqn = [];
 
                 pkg.filterRelatedTableRows('app.a', testContext);

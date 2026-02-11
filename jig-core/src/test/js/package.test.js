@@ -480,20 +480,41 @@ test.describe('package.js', () => {
                 assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
             });
 
-            test('collectRelatedSet: allモードは推移的に辿る', () => {
+            test('collectFocusSet: allモードは推移的に辿る', () => {
                 const aggregationDepth = 0;
-                const relatedFilterMode = 'all';
                 const relations = [
                     {from: 'app.domain.a', to: 'app.domain.b'},
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectFocusSet('app.domain.a', relations, aggregationDepth, relatedFilterMode, relatedFilterMode);
+                const focusSet = pkg.collectFocusSet('app.domain.a', relations, aggregationDepth, '-1', '-1');
 
                 assert.deepEqual(
-                    Array.from(related).sort(),
+                    Array.from(focusSet).sort(),
                     ['app.domain.a', 'app.domain.b', 'app.domain.c']
                 );
+            });
+
+            test('collectFocusSet: 依存元なし、依存先直接の場合', () => {
+                const aggregationDepth = 0;
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.c', to: 'app.a'},
+                    {from: 'app.a', to: 'app.d'},
+                ];
+                const focusSet = pkg.collectFocusSet('app.a', relations, aggregationDepth, '0', '1');
+                assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.b', 'app.d']); // a -> b, a -> d (direct callees)
+            });
+
+            test('collectFocusSet: 依存元直接、依存先なしの場合', () => {
+                const aggregationDepth = 0;
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.c', to: 'app.a'},
+                    {from: 'app.d', to: 'app.a'},
+                ];
+                const focusSet = pkg.collectFocusSet('app.a', relations, aggregationDepth, '1', '0');
+                assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.c', 'app.d']); // c -> a, d -> a (direct callers)
             });
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
@@ -502,18 +523,81 @@ test.describe('package.js', () => {
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
-            test('filterRelatedDiagramRelations: relatedSetで絞り込む', () => {
+            test('filterFocusDiagramRelations: relatedSetで絞り込む', () => {
                 const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.visibleSet,
                     'app.b',
                     0,
-                    '1', // relatedCallerFilterMode
-                    '1'  // relatedCalleeFilterMode
+                    '1', // focusCallerMode
+                    '1'  // focusCalleeMode
                 );
                 assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(filtered.uniqueRelations.length, 2);
+            });
+
+            test('filterFocusDiagramRelations: 依存元なし、依存先なしの場合', () => {
+                const packages = [
+                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}
+                ];
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.b', to: 'app.c'}
+                ];
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const filtered = pkg.filterFocusDiagramRelations(
+                    base.uniqueRelations,
+                    base.visibleSet,
+                    'app.b',
+                    0,
+                    '0', // focusCallerMode: なし
+                    '0'  // focusCalleeMode: なし
+                );
+                assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.b']); // Only the focused package
+                assert.equal(filtered.uniqueRelations.length, 0); // No relations
+            });
+
+            test('filterFocusDiagramRelations: 依存元すべて、依存先なしの場合', () => {
+                const packages = [
+                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}
+                ];
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.b', to: 'app.c'}
+                ];
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const filtered = pkg.filterFocusDiagramRelations(
+                    base.uniqueRelations,
+                    base.visibleSet,
+                    'app.b',
+                    0,
+                    '-1', // focusCallerMode: すべて
+                    '0'  // focusCalleeMode: なし
+                );
+                assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b']); // a -> b (all callers)
+                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`), ['app.a>app.b']);
+            });
+
+            test('filterFocusDiagramRelations: 依存元なし、依存先すべての場合', () => {
+                const packages = [
+                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}
+                ];
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.b', to: 'app.c'}
+                ];
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const filtered = pkg.filterFocusDiagramRelations(
+                    base.uniqueRelations,
+                    base.visibleSet,
+                    'app.b',
+                    0,
+                    '0', // focusCallerMode: なし
+                    '-1'  // focusCalleeMode: すべて
+                );
+                assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.b', 'app.c']); // b -> c (all callees)
+                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`), ['app.b>app.c']);
             });
 
             test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {

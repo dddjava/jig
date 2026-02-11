@@ -1167,8 +1167,8 @@ function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
         packageFilterFqn,
         focusedPackageFqn,
         context.aggregationDepth,
-        context.relatedCallerFilterMode,
-        context.relatedCalleeFilterMode,
+        context.focusCallerMode,
+        context.focusCalleeMode,
         context.transitiveReductionEnabled
     );
     const nameByFqn = new Map(packages.map(item => [item.fqn, item.name || item.fqn]));
@@ -1303,7 +1303,7 @@ function renderAggregationDepthSelectOptions(maxDepth, context) {
         packages,
         relations,
         context.packageFilterFqn,
-        context.relatedFilterFqn,
+        context.focusedPackageFqn,
         maxDepth,
         context.aggregationDepth,
         context.focusCallerMode,

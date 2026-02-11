@@ -23,12 +23,7 @@ public record Configuration(
         GlossaryRepository glossaryRepository = new OnMemoryGlossaryRepository();
         JigEventRepository jigEventRepository = new JigEventRepository();
 
-        CoreDomainCondition architecture;
-        if (properties.getDomainPattern().equals(CoreDomainCondition.DEFAULT_DOMAIN_PATTERN)) {
-            architecture = CoreDomainCondition.defaultCondition();
-        } else {
-            architecture = new CoreDomainCondition(properties.getDomainPattern());
-        }
+        CoreDomainCondition architecture = new CoreDomainCondition(properties.getDomainPattern());
         JigService jigService = new JigService(architecture, jigEventRepository);
 
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);

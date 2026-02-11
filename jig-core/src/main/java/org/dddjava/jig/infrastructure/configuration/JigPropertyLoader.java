@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.stationery.JigPropertyHolder;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Optional;
 
 /**
  * JIGの設定を読み込みます。
@@ -97,7 +99,10 @@ public class JigPropertyLoader {
                 jigProperties.outputDiagramFormat = JigDiagramFormat.valueOf(value.toUpperCase(Locale.ENGLISH));
                 break;
             case PATTERN_DOMAIN:
-                jigProperties.domainPattern = value;
+                jigProperties.domainPattern = Optional.of(value);
+                break;
+            case DOCUMENT_TYPES:
+                jigProperties.jigDocuments = JigDocument.resolve(value);
                 break;
         }
     }

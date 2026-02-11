@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class JigProperties {
     /**
      * 主要: ドメイン（主として扱うクラス名）のパターン
      */
-    String domainPattern;
+    Optional<String> domainPattern;
     /**
      * 主要: ドキュメントの出力先ディレクトリ
      */
@@ -52,7 +53,7 @@ public class JigProperties {
     /**
      * 最小のコンストラクタ。あまり変更しない。
      */
-    public JigProperties(List<JigDocument> jigDocuments, String domainPattern, Path outputDirectory) {
+    public JigProperties(List<JigDocument> jigDocuments, Optional<String> domainPattern, Path outputDirectory) {
         this(
                 jigDocuments,
                 domainPattern,
@@ -67,7 +68,7 @@ public class JigProperties {
      * 実験的な項目も含むコンストラクタ。よく変わる。
      */
     public JigProperties(List<JigDocument> jigDocuments,
-                         String domainPattern,
+                         Optional<String> domainPattern,
                          Path outputDirectory,
                          JigDiagramFormat outputDiagramFormat,
                          boolean diagramTransitiveReduction,
@@ -83,25 +84,40 @@ public class JigProperties {
     }
 
     static JigProperties defaultInstance() {
-        return new JigProperties(JigDocument.canonical(), JigProperty.defaultPatternDomain(), Paths.get(JigProperty.defaultOutputDirectory()));
+        return new JigProperties(JigDocument.canonical(), Optional.empty(), Paths.get(JigProperty.defaultOutputDirectory()));
     }
 
-    public String getDomainPattern() {
+    public Optional<String> getDomainPattern() {
         return domainPattern;
     }
 
     public void override(JigProperties overrideProperties) {
         try {
             for (Field field : this.getClass().getDeclaredFields()) {
-                Object currentValue = field.get(this);
-                // nullでないフィールドは全て上書きする
-                Object value = field.get(overrideProperties);
-                if (value != null) {
-                    if (value.equals(currentValue)) continue;
-                    if (value.equals("")) continue;
+                field.setAccessible(true); // private フィールドにもアクセスできるようにする
 
-                    field.set(this, value);
-                    logger.info("configure {} from {} to {}", field.getName(), currentValue, value);
+                Object overriddenValue = field.get(overrideProperties); // overrideProperties からの値
+
+                if (field.getType().equals(Optional.class)) {
+                    @SuppressWarnings("unchecked")
+                    Optional<Object> optionalValue = (Optional<Object>) overriddenValue;
+                    if (optionalValue.isPresent()) {
+                        field.set(this, optionalValue);
+                        logger.info("configure {} from {} to {}", field.getName(), field.get(this), optionalValue);
+                    }
+                } else if (overriddenValue != null) {
+                    if (field.getType().equals(String.class) && ((String) overriddenValue).isEmpty()) {
+                        continue;
+                    }
+                    if (field.getType().equals(List.class) && ((List<?>) overriddenValue).isEmpty()) {
+                        continue;
+                    }
+
+                    Object currentValue = field.get(this);
+                    if (!overriddenValue.equals(currentValue)) {
+                        field.set(this, overriddenValue);
+                        logger.info("configure {} from {} to {}", field.getName(), currentValue, overriddenValue);
+                    }
                 }
             }
         } catch (IllegalAccessException e) {

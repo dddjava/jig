@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.List;
 
 @Component
@@ -89,7 +90,7 @@ class CliConfig {
         return Configuration.from(
                 new JigProperties(
                         jigDocuments(),
-                        modelPattern, Paths.get(this.outputDirectory),
+                        Optional.ofNullable(modelPattern).filter(s -> !s.isEmpty()), Paths.get(this.outputDirectory),
                         diagramFormat,
                         diagramTransitiveReduction,
                         dotTimeout

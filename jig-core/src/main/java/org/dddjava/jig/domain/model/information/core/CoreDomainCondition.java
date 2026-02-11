@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -16,13 +17,11 @@ public class CoreDomainCondition {
 
     private final Pattern businessRulePattern;
 
-    public CoreDomainCondition(String domainPattern) {
-        this.businessRulePattern = Pattern.compile(domainPattern);
+    public CoreDomainCondition(Optional<String> domainPattern) {
+        this.businessRulePattern = Pattern.compile(domainPattern.orElse(DEFAULT_DOMAIN_PATTERN));
     }
 
-    public static CoreDomainCondition defaultCondition() {
-        return new CoreDomainCondition(DEFAULT_DOMAIN_PATTERN);
-    }
+
 
     private boolean isCoreDomain(JigType jigType) {
         if (jigType.isCompilerGenerated()) return false;

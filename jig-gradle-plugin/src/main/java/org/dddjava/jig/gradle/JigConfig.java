@@ -8,6 +8,7 @@ import org.gradle.api.Project;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -52,7 +53,7 @@ public class JigConfig {
     public JigProperties toJigProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
-                modelPattern, resolveOutputDirectory(project),
+                Optional.ofNullable(modelPattern).filter(s -> !s.isEmpty()), resolveOutputDirectory(project),
                 diagramFormat,
                 diagramTransitiveReduction,
                 parseDotTimeout()

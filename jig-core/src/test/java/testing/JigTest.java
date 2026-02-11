@@ -19,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -38,7 +39,7 @@ public @interface JigTest {
         public JigTestExtension() throws Exception {
             Path tempDir = Files.createTempDirectory("jig");
             Configuration configuration = Configuration.from(
-                    new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir));
+                    new JigProperties(JigDocument.canonical(), Optional.of("stub.domain.model.+"), tempDir));
             parameterTypeSupplierMap = Map.of(
                     Configuration.class, () -> configuration,
                     SourceBasePaths.class, () -> TestSupport.getRawSourceLocations(),

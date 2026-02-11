@@ -7,6 +7,7 @@ public enum JigProperty {
     OUTPUT_DIRECTORY,
     OUTPUT_DIAGRAM_FORMAT,
     PATTERN_DOMAIN,
+    DOCUMENT_TYPES,
     ;
 
     public static String defaultOutputDirectory() {
@@ -17,9 +18,7 @@ public enum JigProperty {
         return "SVG";
     }
 
-    public static String defaultPatternDomain() {
-        return ".+\\.domain\\.(model|type)\\..+";
-    }
+
 
 
 

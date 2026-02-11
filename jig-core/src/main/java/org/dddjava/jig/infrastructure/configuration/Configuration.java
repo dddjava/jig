@@ -7,7 +7,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
-import org.dddjava.jig.infrastructure.configuration.JigProperty;
 
 // Configurationという名前だけど実態は設定されたインスタンスを管理している（SpringのApplicationContextみたいな感じになっている）
 public record Configuration(
@@ -25,7 +24,7 @@ public record Configuration(
         JigEventRepository jigEventRepository = new JigEventRepository();
 
         CoreDomainCondition architecture;
-        if (properties.getDomainPattern().equals(JigProperty.PATTERN_DOMAIN.defaultValue())) {
+        if (properties.getDomainPattern().equals(CoreDomainCondition.DEFAULT_DOMAIN_PATTERN)) {
             architecture = CoreDomainCondition.defaultCondition();
         } else {
             architecture = new CoreDomainCondition(properties.getDomainPattern());

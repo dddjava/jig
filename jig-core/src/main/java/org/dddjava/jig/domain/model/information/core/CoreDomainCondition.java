@@ -4,13 +4,15 @@ package org.dddjava.jig.domain.model.information.core;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import org.dddjava.jig.infrastructure.configuration.JigProperty;
+
 import java.util.regex.Pattern;
 
 /**
  * コアドメインの判定条件
  */
 public class CoreDomainCondition {
+
+    public static final String DEFAULT_DOMAIN_PATTERN = ".+\\.domain\\.(model|type)\\..+";
 
     private final Pattern businessRulePattern;
 
@@ -19,7 +21,7 @@ public class CoreDomainCondition {
     }
 
     public static CoreDomainCondition defaultCondition() {
-        return new CoreDomainCondition(JigProperty.PATTERN_DOMAIN.defaultValue());
+        return new CoreDomainCondition(DEFAULT_DOMAIN_PATTERN);
     }
 
     private boolean isCoreDomain(JigType jigType) {

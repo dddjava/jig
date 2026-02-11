@@ -57,7 +57,7 @@ public class JigProperties {
                 jigDocuments,
                 domainPattern,
                 outputDirectory,
-                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue()),
+                JigDiagramFormat.valueOf(JigProperty.defaultOutputDiagramFormat()),
                 true,
                 Duration.ofSeconds(10)
         );
@@ -83,7 +83,7 @@ public class JigProperties {
     }
 
     static JigProperties defaultInstance() {
-        return new JigProperties(JigDocument.canonical(), JigProperty.PATTERN_DOMAIN.defaultValue(), Paths.get(JigProperty.OUTPUT_DIRECTORY.defaultValue()));
+        return new JigProperties(JigDocument.canonical(), JigProperty.defaultPatternDomain(), Paths.get(JigProperty.defaultOutputDirectory()));
     }
 
     public String getDomainPattern() {

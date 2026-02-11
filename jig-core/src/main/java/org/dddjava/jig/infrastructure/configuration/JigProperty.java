@@ -4,24 +4,23 @@ import java.nio.file.Paths;
 
 public enum JigProperty {
 
-    OUTPUT_DIRECTORY("") {
-        @Override
-        public String defaultValue() {
-            return Paths.get(System.getProperty("user.dir")).resolve(".jig").toAbsolutePath().toString();
-        }
-    },
-    OUTPUT_DIAGRAM_FORMAT("SVG"),
-
-    PATTERN_DOMAIN(".+\\.domain\\.(model|type)\\..+"),
+    OUTPUT_DIRECTORY,
+    OUTPUT_DIAGRAM_FORMAT,
+    PATTERN_DOMAIN,
     ;
 
-    private final String defaultValue;
-
-    JigProperty(String defaultValue) {
-        this.defaultValue = defaultValue;
+    public static String defaultOutputDirectory() {
+        return Paths.get(System.getProperty("user.dir")).resolve(".jig").toAbsolutePath().toString();
     }
 
-    public String defaultValue() {
-        return defaultValue;
+    public static String defaultOutputDiagramFormat() {
+        return "SVG";
     }
+
+    public static String defaultPatternDomain() {
+        return ".+\\.domain\\.(model|type)\\..+";
+    }
+
+
+
 }

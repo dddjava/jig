@@ -856,7 +856,7 @@ test.describe('package.js', () => {
             test('buildDiagramNodeLines: クリックハンドラ名を埋め込む', () => {
                 const visibleSet = new Set(['app.a']);
                 const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkg.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
-                const {nodeLines} = pkg.buildDiagramNodeLines(
+                const nodeLines = pkg.buildDiagramNodeLines(
                     visibleSet,
                     nodeIdByFqn,
                     nodeIdToFqn,

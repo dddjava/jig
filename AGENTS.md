@@ -59,7 +59,7 @@ Do not modify code without creating a branch and commit.
 ## Test Commands
 
 - JavaScript tests: `npm run test`
-- Full test suite: `./gradlew clean test`
+- Full test suite: `npm run test:full`
 
 ---
 

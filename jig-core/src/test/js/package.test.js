@@ -622,6 +622,50 @@ test.describe('package.js', () => {
                 assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`), ['app.b>app.c']);
             });
 
+            test('filterFocusDiagramRelations: 依存元すべて、依存先直接の場合', () => {
+                const packages = [
+                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}, {fqn: 'app.d'}
+                ];
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.b', to: 'app.c'},
+                    {from: 'app.d', to: 'app.b'},
+                ];
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const filtered = pkg.filterFocusDiagramRelations(
+                    base.uniqueRelations,
+                    base.visibleSet,
+                    'app.b', // focus target
+                    0,       // aggregation depth
+                    '-1',    // focusCallerMode: すべて
+                    '1'      // focusCalleeMode: 直接
+                );
+                assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'app.d']);
+                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`).sort(), ['app.a>app.b', 'app.b>app.c', 'app.d>app.b']);
+            });
+
+            test('filterFocusDiagramRelations: 依存元直接、依存先すべての場合', () => {
+                const packages = [
+                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}, {fqn: 'app.d'}
+                ];
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.b', to: 'app.c'},
+                    {from: 'app.c', to: 'app.d'},
+                ];
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const filtered = pkg.filterFocusDiagramRelations(
+                    base.uniqueRelations,
+                    base.visibleSet,
+                    'app.b', // focus target
+                    0,       // aggregation depth
+                    '1',     // focusCallerMode: 直接
+                    '-1'     // focusCalleeMode: すべて
+                );
+                assert.deepEqual(Array.from(filtered.visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'app.d']);
+                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`).sort(), ['app.a>app.b', 'app.b>app.c', 'app.c>app.d']);
+            });
+
             test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
                 const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, '1', '1');
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
@@ -633,7 +677,7 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
-                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, 'all', 'all');
+                const {visibleSet} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, '-1', '-1');
                 assert.deepEqual(Array.from(visibleSet).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });

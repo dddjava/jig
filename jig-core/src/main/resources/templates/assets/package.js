@@ -1057,7 +1057,7 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
         diagramButton.type = 'button';
         diagramButton.textContent = '関連図を描画';
         diagramButton.className = 'diagram-button';
-        diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, container, context));
+        diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, itemNode, context));
         pairDiv.appendChild(diagramButton);
 
         itemNode.appendChild(pairDiv);
@@ -1066,20 +1066,22 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
             detailBody.textContent = item.causes.join('\n');
             itemNode.appendChild(detailBody);
         }
+
+        const diagramContainer = document.createElement('pre');
+        diagramContainer.className = 'mermaid mutual-dependency-diagram';
+        diagramContainer.style.display = 'none';
+        itemNode.appendChild(diagramContainer);
+
         list.appendChild(itemNode);
     });
     container.innerHTML = '';
     details.appendChild(summary);
     details.appendChild(list);
-    const diagramContainer = document.createElement('pre');
-    diagramContainer.id = 'mutual-dependency-diagram';
-    diagramContainer.className = 'mermaid';
-    details.appendChild(diagramContainer);
     container.appendChild(details);
 }
 
-function renderMutualDependencyDiagram(item, container, context) {
-    const diagram = container.querySelector('#mutual-dependency-diagram');
+function renderMutualDependencyDiagram(item, itemNode, context) {
+    const diagram = itemNode.querySelector('.mutual-dependency-diagram');
     if (!diagram) return;
 
     const {source} = buildMutualDependencyDiagramSource(item.causes, context.diagramDirection);

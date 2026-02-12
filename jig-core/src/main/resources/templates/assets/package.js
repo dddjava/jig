@@ -1091,23 +1091,19 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
         button.addEventListener('click', () => applyFilterAndRender(`${package1}\n${package2}`));
         pairDiv.appendChild(button);
 
+        itemNode.appendChild(pairDiv);
+
+        const diagramContainer = document.createElement('pre');
+        diagramContainer.className = 'mermaid mutual-dependency-diagram';
+        diagramContainer.style.display = 'none';
+
         const diagramButton = document.createElement('button');
         diagramButton.type = 'button';
         diagramButton.textContent = '関連図を描画';
         diagramButton.className = 'diagram-button';
         diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, itemNode, context));
-        pairDiv.appendChild(diagramButton);
+        itemNode.appendChild(diagramButton);
 
-        itemNode.appendChild(pairDiv);
-        if (item.causes.length > 0) {
-            const detailBody = document.createElement('pre');
-            detailBody.textContent = item.causes.join('\n');
-            itemNode.appendChild(detailBody);
-        }
-
-        const diagramContainer = document.createElement('pre');
-        diagramContainer.className = 'mermaid mutual-dependency-diagram';
-        diagramContainer.style.display = 'none';
         itemNode.appendChild(diagramContainer);
 
         list.appendChild(itemNode);
@@ -1128,6 +1124,11 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
         diagram.innerHTML = ''; // Clear previous diagram
         diagram.style.display = 'none';
         return;
+    }
+
+    const button = itemNode.querySelector('.diagram-button');
+    if (button) {
+        button.style.display = 'none';
     }
 
     diagram.style.display = 'block';

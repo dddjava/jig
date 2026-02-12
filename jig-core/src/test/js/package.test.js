@@ -110,6 +110,9 @@ class Element {
         if (selector === '.mutual-dependency-diagram') {
             return this.children.find(child => child.className && child.className.includes('mutual-dependency-diagram')) || null;
         }
+        if (selector === '.diagram-button') {
+            return this.children.find(child => child.className && child.className.includes('diagram-button')) || null;
+        }
         if (selector === '.pair span') {
             const pair = this.children.find(child => child.className === 'pair');
             return pair ? pair.children.find(child => child.tagName === 'span') : null;
@@ -997,6 +1000,11 @@ test.describe('package.js', () => {
                 assert.equal(details.children[0].tagName, 'summary');
                 assert.equal(details.children[1].className, 'control-row');
                 assert.equal(details.children[2].tagName, 'ul');
+
+                const li = details.children[2].children[0];
+                assert.equal(li.children[0].className, 'pair');
+                assert.equal(li.children[1].className, 'diagram-button');
+                assert.equal(li.children[2].className, 'mermaid mutual-dependency-diagram');
             });
 
             test('renderMutualDependencyList: 図の向きを変更するとcontextが更新される', () => {
@@ -1023,6 +1031,27 @@ test.describe('package.js', () => {
                 tdRadio.eventListeners.get('change')();
 
                 assert.equal(testContext.mutualDependencyDiagramDirection, 'TD');
+            });
+
+            test('renderMutualDependencyDiagram: 描画後にボタンを非表示にする', () => {
+                const doc = setupDocument();
+                const itemNode = new Element('li', doc);
+                const diagram = new Element('pre', doc);
+                diagram.className = 'mutual-dependency-diagram';
+                itemNode.appendChild(diagram);
+                const button = new Element('button', doc);
+                button.className = 'diagram-button';
+                button.style = {}; // Initialize style object
+                itemNode.appendChild(button);
+
+                global.window = { mermaid: { initialize: () => {}, run: () => {} } };
+                global.mermaid = global.window.mermaid;
+
+                const item = { causes: ['a.A -> b.B'] };
+                pkg.renderMutualDependencyDiagram(item, itemNode, testContext);
+
+                assert.equal(button.style.display, 'none');
+                assert.ok(diagram.style.display === 'block' || diagram.style.display === ''); // Mermaid rendering might change this
             });
 
             test('renderPackageDiagram: 相互依存を含めて描画する', () => {

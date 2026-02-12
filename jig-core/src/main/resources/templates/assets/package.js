@@ -10,6 +10,7 @@ const packageContext = {
     focusCalleeMode: '1', // '0':なし, '1':直接, '-1':すべて
     focusedPackageFqn: null,
     diagramDirection: 'TD',
+    mutualDependencyDiagramDirection: 'LR',
     transitiveReductionEnabled: true,
 };
 
@@ -1026,6 +1027,43 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
     summary.textContent = '相互依存と原因';
     const list = document.createElement('ul');
 
+    const settingsRow = document.createElement('div');
+    settingsRow.className = 'control-row';
+    const settingsLabel = document.createElement('span');
+    settingsLabel.className = 'control-label';
+    settingsLabel.textContent = '図の向き:';
+    settingsRow.appendChild(settingsLabel);
+
+    ['TD', 'LR'].forEach(direction => {
+        const label = document.createElement('label');
+        label.className = 'radio-label';
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'mutual-dependency-diagram-direction';
+        radio.value = direction;
+        radio.checked = context.mutualDependencyDiagramDirection === direction;
+        radio.addEventListener('change', () => {
+            if (radio.checked) {
+                context.mutualDependencyDiagramDirection = direction;
+                // 表示されている図をすべて更新
+                const itemsWithDiagram = Array.from(list.querySelectorAll('li')).filter(li => {
+                    const diag = li.querySelector('.mutual-dependency-diagram');
+                    return diag && diag.style.display !== 'none';
+                });
+                itemsWithDiagram.forEach(li => {
+                    const itemLabel = li.querySelector('.pair span').textContent;
+                    const item = items.find(i => i.pairLabel === itemLabel);
+                    if (item) {
+                        renderMutualDependencyDiagram(item, li, context);
+                    }
+                });
+            }
+        });
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(direction === 'TD' ? ' 縦' : ' 横'));
+        settingsRow.appendChild(label);
+    });
+
     const applyFilterAndRender = (fqnsString) => {
         const input = dom.getPackageFilterInput();
         if (input) {
@@ -1076,6 +1114,7 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
     });
     container.innerHTML = '';
     details.appendChild(summary);
+    details.appendChild(settingsRow);
     details.appendChild(list);
     container.appendChild(details);
 }
@@ -1084,7 +1123,7 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
     const diagram = itemNode.querySelector('.mutual-dependency-diagram');
     if (!diagram) return;
 
-    const {source} = buildMutualDependencyDiagramSource(item.causes, context.diagramDirection);
+    const {source} = buildMutualDependencyDiagramSource(item.causes, context.mutualDependencyDiagramDirection);
     if (!source) {
         diagram.innerHTML = ''; // Clear previous diagram
         diagram.style.display = 'none';

@@ -107,7 +107,21 @@ class Element {
                 child => child.tagName === 'td' && child.className.split(' ').includes('fqn')
             ) || null;
         }
+        if (selector === '.mutual-dependency-diagram') {
+            return this.children.find(child => child.className && child.className.includes('mutual-dependency-diagram')) || null;
+        }
+        if (selector === '.pair span') {
+            const pair = this.children.find(child => child.className === 'pair');
+            return pair ? pair.children.find(child => child.tagName === 'span') : null;
+        }
         return null;
+    }
+
+    querySelectorAll(selector) {
+        if (selector === 'li') {
+            return this.children.filter(child => child.tagName === 'li');
+        }
+        return [];
     }
 
     addEventListener(eventName, handler) {
@@ -128,6 +142,10 @@ class DocumentStub {
 
     getElementById(id) {
         return this.elementsById.get(id) || null;
+    }
+
+    createTextNode(text) {
+        return { textContent: text, parentNode: null };
     }
 
     querySelector(selector) {
@@ -262,6 +280,7 @@ test.describe('package.js', () => {
             focusCalleeMode: '1',
             focusedPackageFqn: null,
             diagramDirection: 'TD',
+            mutualDependencyDiagramDirection: 'LR',
             transitiveReductionEnabled: true,
         };
         setupDomMocks();
@@ -966,13 +985,44 @@ test.describe('package.js', () => {
                         {from: 'app.alpha.A', to: 'app.beta.B'},
                         {from: 'app.beta.B', to: 'app.alpha.A'},
                     ],
-                    testContext.aggregationDepth
+                    testContext.aggregationDepth,
+                    testContext
                 );
 
                 assert.equal(container.style.display, '');
                 assert.equal(container.children.length, 1);
-                assert.equal(container.children[0].tagName, 'details');
-                assert.equal(container.children[0].children[1].tagName, 'ul');
+                const details = container.children[0];
+                assert.equal(details.tagName, 'details');
+                // summary, settingsRow(div), list(ul)
+                assert.equal(details.children[0].tagName, 'summary');
+                assert.equal(details.children[1].className, 'control-row');
+                assert.equal(details.children[2].tagName, 'ul');
+            });
+
+            test('renderMutualDependencyList: 図の向きを変更するとcontextが更新される', () => {
+                const doc = setupDocument();
+                const container = new Element('div', doc);
+                doc.elementsById.set('mutual-dependency-list', container);
+
+                pkg.renderMutualDependencyList(
+                    new Set(['a::b']),
+                    [{from: 'a.A', to: 'b.B'}, {from: 'b.B', to: 'a.A'}],
+                    0,
+                    testContext
+                );
+
+                const details = container.children[0];
+                const settingsRow = details.children[1];
+                const tdRadio = settingsRow.children[1].children[0]; // 縦 TD
+                const lrRadio = settingsRow.children[2].children[0]; // 横 LR
+
+                assert.equal(testContext.mutualDependencyDiagramDirection, 'LR');
+                assert.equal(lrRadio.checked, true);
+
+                tdRadio.checked = true;
+                tdRadio.eventListeners.get('change')();
+
+                assert.equal(testContext.mutualDependencyDiagramDirection, 'TD');
             });
 
             test('renderPackageDiagram: 相互依存を含めて描画する', () => {

@@ -192,10 +192,10 @@ function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, 
                     return focusSet.has(from) && focusSet.has(to);
                 };
     
-                if (focusCallerMode === '1' || focusCalleeMode === '1') {
-                    filteredRelations = filteredRelations.filter(filterDirectRelation);
-                } else if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
+                if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
                     filteredRelations = filteredRelations.filter(filterTransitiveRelation);
+                } else if (focusCallerMode === '1' || focusCalleeMode === '1') {
+                    filteredRelations = filteredRelations.filter(filterDirectRelation);
                 }
             }    return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
 }
@@ -406,10 +406,10 @@ function filterFocusDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot
             return focusSet.has(from) && focusSet.has(to);
         };
 
-        if (focusCallerMode === '1' || focusCalleeMode === '1') {
-            nextRelations = uniqueRelations.filter(filterDirectRelation);
-        } else if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
+        if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
             nextRelations = uniqueRelations.filter(filterTransitiveRelation);
+        } else if (focusCallerMode === '1' || focusCalleeMode === '1') {
+            nextRelations = uniqueRelations.filter(filterDirectRelation);
         } else {
             // モードが '0' (なし) の場合、関連フィルタが適用されないため、
             // 関係はそのまま (focusSet に含まれるノード間の関係のみ)

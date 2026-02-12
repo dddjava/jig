@@ -1093,9 +1093,12 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
 
         itemNode.appendChild(pairDiv);
 
-        const diagramContainer = document.createElement('pre');
-        diagramContainer.className = 'mermaid mutual-dependency-diagram';
-        diagramContainer.style.display = 'none';
+        if (item.causes.length > 0) {
+            const detailBody = document.createElement('pre');
+            detailBody.className = 'causes';
+            detailBody.textContent = item.causes.join('\n');
+            itemNode.appendChild(detailBody);
+        }
 
         const diagramButton = document.createElement('button');
         diagramButton.type = 'button';
@@ -1104,6 +1107,9 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
         diagramButton.addEventListener('click', () => renderMutualDependencyDiagram(item, itemNode, context));
         itemNode.appendChild(diagramButton);
 
+        const diagramContainer = document.createElement('pre');
+        diagramContainer.className = 'mermaid mutual-dependency-diagram';
+        diagramContainer.style.display = 'none';
         itemNode.appendChild(diagramContainer);
 
         list.appendChild(itemNode);

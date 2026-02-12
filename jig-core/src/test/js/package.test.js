@@ -1003,8 +1003,9 @@ test.describe('package.js', () => {
 
                 const li = details.children[2].children[0];
                 assert.equal(li.children[0].className, 'pair');
-                assert.equal(li.children[1].className, 'diagram-button');
-                assert.equal(li.children[2].className, 'mermaid mutual-dependency-diagram');
+                assert.equal(li.children[1].className, 'causes');
+                assert.equal(li.children[2].className, 'diagram-button');
+                assert.equal(li.children[3].className, 'mermaid mutual-dependency-diagram');
             });
 
             test('renderMutualDependencyList: 図の向きを変更するとcontextが更新される', () => {

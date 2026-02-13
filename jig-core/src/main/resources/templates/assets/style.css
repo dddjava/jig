@@ -296,6 +296,7 @@ label {
 
 .glossary .term-sidebar__list {
     display: block;
+    overflow-x: auto; /* 用語一覧全体で横スクロールを有効にする */
 }
 
 .glossary .term-sidebar__item {
@@ -303,6 +304,7 @@ label {
     padding: 3px 0;
     color: #1a1a1a;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 .glossary .term-sidebar__item:hover {

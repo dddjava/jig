@@ -266,53 +266,78 @@ label {
     margin-bottom: 10px;
     padding: 5px 0;
 }
+.glossary details.controls .controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.glossary details.controls .control-group {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+}
 
 .glossary .glossary-content {
     display: grid;
     grid-template-columns: minmax(180px, 260px) 1fr;
     gap: 16px;
-    width: 90%;
-    max-width: 1200px;
+    width: 95%; /* 幅を少し広げる */
+    max-width: 1400px; /* 最大幅を広げる */
     margin: 0 auto;
 }
 
 .glossary .term-sidebar {
-    border: 1px solid #ccc;
+    border: 1px solid #e0e0e0; /* 枠線を薄く */
     border-radius: 6px;
-    padding: 12px 14px;
-    background-color: #fafafa;
+    padding: 12px; /* パディングを調整 */
+    background-color: #ffffff; /* 背景を白に */
     height: fit-content;
     position: sticky;
     top: 16px;
     align-self: start;
     max-height: calc(100vh - 32px);
     overflow: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 影を追加 */
 }
 
 .glossary .term-sidebar h2 {
-    font-size: 16px;
-    margin: 0 0 8px 0;
+    font-size: 1.1em; /* フォントサイズを少し大きく */
+    margin: 0 0 10px 0; /* マージンを調整 */
+    color: #333; /* 文字色を濃く */
+    border-bottom: 1px solid #eee; /* 下線を追加 */
+    padding-bottom: 8px; /* パディングを追加 */
 }
 
 .glossary .term-sidebar__list {
     display: block;
-    overflow-x: auto; /* 用語一覧全体で横スクロールを有効にする */
+    overflow-x: hidden; /* 横スクロールは不要な場合が多いのでhiddenに */
+    overflow-y: auto; /* 縦スクロールは残す */
+    max-height: calc(100vh - 120px); /* サイドバーの高さに合わせて調整 */
 }
 
 .glossary .term-sidebar__item {
     display: block;
-    padding: 3px 0;
-    color: #1a1a1a;
+    padding: 5px 0; /* パディングを調整 */
+    color: #555; /* 文字色を調整 */
     text-decoration: none;
     white-space: nowrap;
+    font-size: 0.9em; /* フォントサイズを調整 */
+    transition: all 0.2s ease; /* ホバーアニメーション */
 }
 
 .glossary .term-sidebar__item:hover {
+    color: #007bff; /* ホバー時の色 */
     text-decoration: underline;
+    background-color: #f8f8f8; /* ホバー時の背景色 */
+    padding-left: 5px; /* ホバー時のパディング */
 }
 
 .glossary .term-list {
     width: 100%;
+    margin-top: 0; /* マージンを調整 */
 }
 
 @media (max-width: 900px) {
@@ -326,26 +351,7 @@ label {
     }
 }
 
-.glossary details.controls > div,
-.glossary details.controls > label {
-    display: block;
-    margin-right: 10px;
-}
 
-.glossary details.controls input[type="text"],
-.glossary details.controls input[type="checkbox"] {
-    margin-left: 8px;
-}
-.glossary details.controls button {
-    padding: 6px 10px;
-    border: 1px solid #888;
-    border-radius: 6px;
-    background-color: #f2f2f2;
-    cursor: pointer;
-}
-.glossary details.controls button:hover {
-    background-color: #e6e6e6;
-}
 
 /* パッケージ概要の表示設定 */
 .package-summary details.controls,
@@ -544,33 +550,42 @@ label {
 
 /* 用語集 / 用語 */
 .glossary .term-list {
-    margin: 1em auto;
-    width: 90%;
-    max-width: 800px;
+    width: 100%;
+    margin-top: 0;
 }
 .glossary .term {
-    padding: 1em;
-    border-bottom: 1px solid #ccc;
+    padding: 1.5em;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .glossary .term h2 {
-    margin: 0;
-    color: #0073e6;
+    margin: 0 0 0.5em 0;
+    color: #2c3e50;
+    font-size: 1.8em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.3em;
 }
 .glossary .term p {
     margin: 0.5em 0 0 0;
 }
 .glossary .term dl {
-    color: #666;
-    font-size: 0.7em;
+    color: #555;
+    font-size: 0.9em;
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: 0.5rem 1rem;
-    margin: 0;
+    gap: 0.5rem 1.5rem;
+    margin: 1em 0;
+    padding-left: 1em;
+    border-left: 3px solid #f0f0f0;
 }
 .glossary .term dl dt {
     font-weight: bold;
     width: 100px;
     margin: 0;
+    color: #34495e;
 }
 .glossary .term dl dd {
     margin: 0;

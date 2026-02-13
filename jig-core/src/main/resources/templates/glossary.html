@@ -13,32 +13,36 @@
 <main>
     <details class="controls" open>
         <summary>⚙️ 表示設定</summary>
-        <label id="search">
-            部分一致で絞り込む
-            <input id="search-input" type="text" placeholder="検索ワード">
-        </label>
-        <label>
+        <div class="controls-grid">
+            <div class="control-group">
+                <label id="search">
+                    部分一致で絞り込む
+                    <input id="search-input" type="text" placeholder="検索ワード">
+                </label>
+            </div>
+            <div class="control-group">
+                種類：
+                <label><input type="checkbox" id="show-package" checked>パッケージ</label>
+                <label><input type="checkbox" id="show-class" checked>クラス</label>
+                <label><input type="checkbox" id="show-method" checked>メソッド</label>
+                <label><input type="checkbox" id="show-field" type="checkbox" checked>フィールド</label>
+            </div>
+            <div class="control-group">
+                <label for="sort-order">並び順：</label>
+                <select id="sort-order">
+                    <option value="name" selected>名前</option>
+                    <option value="fqn">完全修飾名</option>
+                    <option value="simple">単純名</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <button id="export-csv" type="button">CSV出力</button>
+            </div>
+        </div>
+        <label class="control-group">
             <input id="show-empty-description" type="checkbox" checked>
             説明のない用語を表示する
         </label>
-        <div>
-            種類：
-            <label><input type="checkbox" id="show-package" checked>パッケージ</label>
-            <label><input type="checkbox" id="show-class" checked>クラス</label>
-            <label><input type="checkbox" id="show-method" checked>メソッド</label>
-            <label><input type="checkbox" id="show-field" checked>フィールド</label>
-        </div>
-        <div>
-            <label for="sort-order">並び順：</label>
-            <select id="sort-order">
-                <option value="name" selected>名前</option>
-                <option value="fqn">完全修飾名</option>
-                <option value="simple">単純名</option>
-            </select>
-        </div>
-        <div>
-            <button id="export-csv" type="button">CSV出力</button>
-        </div>
     </details>
 
     <div class="glossary-content">

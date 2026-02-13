@@ -256,9 +256,6 @@ label {
     border-radius: 5px;
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: 1em auto;
-    width: 90%;
-    max-width: 800px;
 }
 .glossary details.controls summary {
     list-style: none;
@@ -287,6 +284,12 @@ label {
     width: 95%; /* 幅を少し広げる */
     max-width: 1400px; /* 最大幅を広げる */
     margin: 0 auto;
+}
+
+.glossary .glossary-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .glossary .term-sidebar {
@@ -337,7 +340,6 @@ label {
 
 .glossary .term-list {
     width: 100%;
-    margin-top: 0; /* マージンを調整 */
 }
 
 @media (max-width: 900px) {

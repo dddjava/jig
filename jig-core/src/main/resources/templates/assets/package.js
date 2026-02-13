@@ -28,6 +28,8 @@ const dom = {
     getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
     getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
     getDepthSelect: () => document.getElementById('package-depth-select'),
+    getDepthUpButton: () => document.getElementById('depth-up-button'),
+    getDepthDownButton: () => document.getElementById('depth-down-button'),
     getFocusCallerModeSelect: () => document.getElementById('focus-caller-mode-select'), // IDは変更しない
     getFocusCalleeModeSelect: () => document.getElementById('focus-callee-mode-select'), // IDは変更しない
     getClearFocusButton: () => document.getElementById('clear-focus'),
@@ -1328,6 +1330,16 @@ function setupPackageFilterControl(context) {
     });
 }
 
+function updateDepthButtonStates(select, upButton, downButton) {
+    if (!select || !upButton || !downButton) return;
+    const currentValue = normalizeAggregationDepthValue(select.value);
+    const options = Array.from(select.options).map(opt => Number(opt.value));
+    const currentIndex = options.indexOf(currentValue);
+
+    upButton.disabled = currentIndex <= 0;
+    downButton.disabled = currentIndex < 0 || currentIndex >= options.length - 1;
+}
+
 function setupAggregationDepthControl(context) {
     const select = dom.getDepthSelect();
     if (!select) return;
@@ -1335,12 +1347,43 @@ function setupAggregationDepthControl(context) {
     const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
     renderAggregationDepthSelectOptions(maxDepth, context);
     select.value = String(context.aggregationDepth);
+
+    const upButton = dom.getDepthUpButton();
+    const downButton = dom.getDepthDownButton();
+
     select.addEventListener('change', () => {
         context.aggregationDepth = normalizeAggregationDepthValue(select.value);
         renderDiagramAndTable(context);
         renderFocusLabel(context);
         renderAggregationDepthSelectOptions(maxDepth, context);
+        updateDepthButtonStates(select, upButton, downButton);
     });
+
+    if (upButton) {
+        upButton.addEventListener('click', () => {
+            const currentValue = normalizeAggregationDepthValue(select.value);
+            const options = Array.from(select.options).map(opt => Number(opt.value));
+            const currentIndex = options.indexOf(currentValue);
+            if (currentIndex > 0) {
+                select.value = String(options[currentIndex - 1]);
+                select.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+    if (downButton) {
+        downButton.addEventListener('click', () => {
+            const currentValue = normalizeAggregationDepthValue(select.value);
+            const options = Array.from(select.options).map(opt => Number(opt.value));
+            const currentIndex = options.indexOf(currentValue);
+            if (currentIndex >= 0 && currentIndex < options.length - 1) {
+                select.value = String(options[currentIndex + 1]);
+                select.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+
+    // 初期状態でボタンの状態を更新
+    updateDepthButtonStates(select, upButton, downButton);
 }
 
 function renderAggregationDepthSelectOptions(maxDepth, context) {
@@ -1359,6 +1402,11 @@ function renderAggregationDepthSelectOptions(maxDepth, context) {
     );
     const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
     renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
+
+    // オプション変更後にボタンの状態を更新
+    const upButton = dom.getDepthUpButton();
+    const downButton = dom.getDepthDownButton();
+    updateDepthButtonStates(select, upButton, downButton);
 }
 
 function buildAggregationDepthOptions(aggregationStats, maxDepth) {

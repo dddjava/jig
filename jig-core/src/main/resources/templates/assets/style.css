@@ -407,6 +407,13 @@ label {
     background-color: #f2f2f2;
     cursor: pointer;
 }
+.package-summary details.controls #depth-up-button,
+.package-summary details.controls #depth-down-button {
+    padding: 4px 8px;
+    min-width: 32px;
+    font-size: 14px;
+    line-height: 1;
+}
 .package-summary details.controls button:hover {
     background-color: #e6e6e6;
 }

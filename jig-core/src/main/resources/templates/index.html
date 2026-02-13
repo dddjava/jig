@@ -9,7 +9,7 @@
 
 <header>
     <h1 th:text="${title}">JIG</h1>
-    <p th:inline="text">出力日時: [[${timestamp}]] [# th:if="${jigVersion}"]Version: [[${jigVersion}]][/]</p>
+    <p th:inline="text">出力日時: <span id="jig-timestamp" th:attr="data-jig-timestamp=${timestamp}">[[${timestamp}]]</span> [# th:if="${jigVersion}"]Version: [[${jigVersion}]][/]</p>
 </header>
 
 <main>
@@ -55,6 +55,8 @@
         </div>
     </section>
 </main>
+
+<th:block th:replace="~{fragment-base::scripts}"></th:block>
 
 </body>
 </html>

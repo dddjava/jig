@@ -52,7 +52,7 @@ public class IndexView {
     private void write(Path outputDirectory) {
         contextMap.put("title", "JIG");
         contextMap.put("jigVersion", resolveJigVersion());
-        contextMap.put("timestamp", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        contextMap.put("timestamp", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS).toOffsetDateTime());
 
         Path outputFilePath = indexFilePath(outputDirectory);
         try (OutputStream out = Files.newOutputStream(outputFilePath);

@@ -70,12 +70,44 @@ function setupSortableTables() {
     });
 }
 
+function updateRelativeTime() {
+    const element = document.getElementById("jig-timestamp");
+    if (!element) return;
+
+    const timestampStr = element.getAttribute("data-jig-timestamp");
+    if (!timestampStr) return;
+
+    const timestamp = new Date(timestampStr);
+    if (isNaN(timestamp.getTime())) return;
+
+    const now = new Date();
+    const diffMs = now - timestamp;
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    let relativeTime = "";
+    if (diffDay > 0) {
+        relativeTime = `${diffDay}日前`;
+    } else if (diffHour > 0) {
+        relativeTime = `${diffHour}時間前`;
+    } else if (diffMin > 0) {
+        relativeTime = `${diffMin}分前`;
+    } else {
+        relativeTime = "たった今";
+    }
+
+    element.textContent = `${element.textContent.split(' (')[0]} (${relativeTime})`;
+}
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
     if (document.body.classList.contains("repository")) {
         setupSortableTables();
     }
+    updateRelativeTime();
 });
 
 /* ===== marked ===== */

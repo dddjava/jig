@@ -381,14 +381,6 @@ label {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 影を追加 */
 }
 
-.glossary .term-sidebar h2 {
-    font-size: 1.1em; /* フォントサイズを少し大きく */
-    margin: 0 0 10px 0; /* マージンを調整 */
-    color: #333; /* 文字色を濃く */
-    border-bottom: 1px solid #eee; /* 下線を追加 */
-    padding-bottom: 8px; /* パディングを追加 */
-}
-
 .glossary .term-sidebar__list {
     display: block;
     overflow-x: hidden; /* 横スクロールは不要な場合が多いのでhiddenに */

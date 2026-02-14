@@ -18,30 +18,26 @@
         </aside>
         <div class="glossary-main-content">
             <details class="controls" open>
-                <summary>⚙️ 表示設定</summary>
-                <div class="controls-container">
-                    <div class="control-group filtering-group">
-                        <div class="filtering-options">
-                            <div class="search-option">
-                                <label for="search-input">部分一致で絞り込む</label>
-                                <input id="search-input" type="text" placeholder="検索ワード">
-                            </div>
-                            <div class="kind-option">
-                                <p class="kind-option-title">種類</p>
-                                <div class="checkbox-options">
-                                    <label><input type="checkbox" id="show-package" checked>パッケージ</label>
-                                    <label><input type="checkbox" id="show-class" checked>クラス</label>
-                                    <label><input type="checkbox" id="show-method" checked>メソッド</label>
-                                    <label><input type="checkbox" id="show-field" checked>フィールド</label>
-                                </div>
-                            </div>
-                            <div class="misc-option">
-                                <label>
-                                    <input id="show-empty-description" type="checkbox" checked>
-                                    説明のない用語を表示する
-                                </label>
-                            </div>
+                <summary>⚙️ 絞り込み</summary>
+                <div class="filter-controls">
+                    <div class="search-option">
+                        <label for="search-input">部分一致で絞り込む</label>
+                        <input id="search-input" type="text" placeholder="検索ワード">
+                    </div>
+                    <div class="kind-option">
+                        <p class="kind-option-title">種類</p>
+                        <div class="checkbox-options">
+                            <label><input type="checkbox" id="show-package" checked>パッケージ</label>
+                            <label><input type="checkbox" id="show-class" checked>クラス</label>
+                            <label><input type="checkbox" id="show-method" checked>メソッド</label>
+                            <label><input type="checkbox" id="show-field" checked>フィールド</label>
                         </div>
+                    </div>
+                    <div class="misc-option">
+                        <label>
+                            <input id="show-empty-description" type="checkbox" checked>
+                            説明のない用語を表示する
+                        </label>
                     </div>
                 </div>
             </details>

@@ -263,44 +263,66 @@ label {
     margin-bottom: 10px;
     padding: 5px 0;
 }
-.glossary details.controls .controls-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.glossary details.controls .control-group {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 16px;
-    background-color: #fcfcfc;
+.glossary .filter-controls {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
-
-.glossary .filtering-group {
-    flex: 2 1 400px;
+.glossary .search-option,
+.glossary .kind-option,
+.glossary .misc-option {
+    padding: 12px;
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+.glossary .search-option label,
+.glossary .misc-option label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.glossary .kind-option-title {
+    margin: 0 0 8px 0;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+.glossary .checkbox-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+}
+.glossary .checkbox-options label,
+.glossary .misc-option label {
+    align-items: center;
+    flex-direction: row;
+}
+.glossary details.controls input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .glossary .term-list-header {
     display: flex;
-    justify-content: flex-start; /* 左寄せに変更 */
+    justify-content: flex-start;
     align-items: center;
-    margin-bottom: 16px; /* term-list との間隔 */
+    margin-bottom: 16px;
     padding: 8px;
     border-bottom: 2px solid #3498db;
     background-color: #fcfcfc;
     border-radius: 8px;
-    gap: 16px; /* 要素間のスペースを追加 */
+    gap: 16px;
 }
 .glossary .term-list-header h2 {
-    margin: 0; /* flex-grow を使うので auto は不要 */
+    margin: 0;
     font-size: 1.5em;
     color: #2c3e50;
-    flex-grow: 1; /* 残りのスペースを埋める */
+    flex-grow: 1;
 }
-.glossary .term-list-header .sorting-controls { /* 新設 */
+.glossary .term-list-header .sorting-controls {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -314,86 +336,6 @@ label {
     padding: 6px 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-.glossary .term-list-header #export-csv {
-    padding: 8px 16px;
-    border: 1px solid #2980b9;
-    border-radius: 4px;
-    background-color: #3498db;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    white-space: nowrap;
-}
-.glossary .term-list-header #export-csv:hover {
-    background-color: #2980b9;
-}
-
-.glossary .filtering-options {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-.glossary .kind-option-title {
-    margin: 0 0 8px 0;
-    font-weight: bold;
-    font-size: 0.9em;
-}
-.glossary .checkbox-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 16px;
-}
-.glossary .control-group label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.9em;
-}
-.glossary .sorting-options label {
-    font-weight: bold;
-    font-size: 0.9em;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.glossary details.controls input[type="text"],
-.glossary details.controls select {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-.glossary details.controls button {
-    width: 100%;
-    padding: 10px 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    font-weight: bold;
-    text-align: center;
-    margin-top: auto; /* ボタンをグループの下端に配置 */
-}
-.glossary details.controls button:hover {
-    background-color: #e0e0e0;
-}
-
-.glossary .term-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px; /* term-list との間隔 */
-    padding: 8px;
-    border-bottom: 2px solid #3498db;
-    background-color: #fcfcfc;
-    border-radius: 8px;
-}
-.glossary .term-list-header h2 {
-    margin: 0;
-    font-size: 1.5em;
-    color: #2c3e50;
 }
 .glossary .term-list-header #export-csv {
     padding: 8px 16px;

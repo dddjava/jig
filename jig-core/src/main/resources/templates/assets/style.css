@@ -249,7 +249,7 @@ label {
     cursor: pointer;
 }
 
-/* 用語集の表示設定 */
+/* 用語集 */
 .glossary details.controls {
     background-color: #fff;
     border: 1px solid #ccc;
@@ -290,7 +290,7 @@ label {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    min-width: 0; /* 追加 */
+    min-width: 0;
 }
 
 .glossary .term-sidebar {
@@ -341,8 +341,46 @@ label {
 
 .glossary .term-list {
     width: 100%;
+    margin-top: 0;
 }
-.glossary .term-list dd {
+
+.glossary .term {
+    padding: 1.5em;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #ffffff;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.glossary .term h2 {
+    margin: 0 0 0.5em 0;
+    color: #2c3e50;
+    font-size: 1.8em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.3em;
+}
+.glossary .term p {
+    margin: 0.5em 0 0 0;
+}
+.glossary .term dl {
+    color: #555;
+    font-size: 0.9em;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1.5rem;
+    margin: 1em 0;
+    padding-left: 1em;
+    border-left: 3px solid #f0f0f0;
+    overflow-x: hidden;
+}
+.glossary .term dl dt {
+    font-weight: bold;
+    width: 100px;
+    margin: 0;
+    color: #34495e;
+}
+.glossary .term dl dd {
+    margin: 0;
     white-space: nowrap;
 }
 
@@ -356,8 +394,6 @@ label {
         max-height: none;
     }
 }
-
-
 
 /* パッケージ概要の表示設定 */
 .package-summary details.controls,
@@ -552,50 +588,6 @@ label {
     .package-summary details.controls select {
         width: 100%;
     }
-}
-
-/* 用語集 / 用語 */
-.glossary .term-list {
-    width: 100%;
-    margin-top: 0;
-}
-.glossary .term {
-    padding: 1.5em;
-    border-bottom: 1px solid #e0e0e0;
-    background-color: #ffffff;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    overflow-x: hidden;
-}
-.glossary .term h2 {
-    margin: 0 0 0.5em 0;
-    color: #2c3e50;
-    font-size: 1.8em;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 0.3em;
-}
-.glossary .term p {
-    margin: 0.5em 0 0 0;
-}
-.glossary .term dl {
-    color: #555;
-    font-size: 0.9em;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.5rem 1.5rem;
-    margin: 1em 0;
-    padding-left: 1em;
-    border-left: 3px solid #f0f0f0;
-}
-.glossary .term dl dt {
-    font-weight: bold;
-    width: 100px;
-    margin: 0;
-    color: #34495e;
-}
-.glossary .term dl dd {
-    margin: 0;
 }
 
 .insight table {

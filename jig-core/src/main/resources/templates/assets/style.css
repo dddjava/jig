@@ -342,6 +342,9 @@ label {
 .glossary .term-list {
     width: 100%;
     margin-top: 0;
+    max-height: calc(100vh - 250px); /* 画面の高さからヘッダーとコントロールパネルの高さ、および余白を引いた値 */
+    overflow-y: auto; /* 縦方向のスクロールを有効にする */
+    padding-right: 15px; /* スクロールバーがコンテンツに重ならないように調整 */
 }
 
 .glossary .term {

@@ -71,7 +71,7 @@ function renderTermSidebar(terms) {
     list.appendChild(fragment);
 }
 
-function renderGlossaryTerms(terms) {
+function renderGlossaryTerms(terms, displayMode) { // displayMode を引数に追加
     const list = document.getElementById("term-list");
     if (!list) return;
     list.innerHTML = "";
@@ -88,31 +88,34 @@ function renderGlossaryTerms(terms) {
         title.textContent = term.title || "";
         article.appendChild(title);
 
-        const dl = document.createElement("dl");
+        // 概要表示の場合はdlタグを出力しない
+        if (displayMode === 'full') {
+            const dl = document.createElement("dl");
 
-        const simpleNameTitle = document.createElement("dt");
-        simpleNameTitle.textContent = "単純名";
-        const simpleNameValue = document.createElement("dd");
-        simpleNameValue.textContent = term.simpleText || "";
+            const simpleNameTitle = document.createElement("dt");
+            simpleNameTitle.textContent = "単純名";
+            const simpleNameValue = document.createElement("dd");
+            simpleNameValue.textContent = term.simpleText || "";
 
-        const fqnTitle = document.createElement("dt");
-        fqnTitle.textContent = "完全修飾名";
-        const fqnValue = document.createElement("dd");
-        fqnValue.textContent = term.fqn || "";
+            const fqnTitle = document.createElement("dt");
+            fqnTitle.textContent = "完全修飾名";
+            const fqnValue = document.createElement("dd");
+            fqnValue.textContent = term.fqn || "";
 
-        const kindTitle = document.createElement("dt");
-        kindTitle.textContent = "種類";
-        const kindValue = document.createElement("dd");
-        kindValue.className = "kind";
-        kindValue.textContent = term.kind || "";
+            const kindTitle = document.createElement("dt");
+            kindTitle.textContent = "種類";
+            const kindValue = document.createElement("dd");
+            kindValue.className = "kind";
+            kindValue.textContent = term.kind || "";
 
-        dl.appendChild(simpleNameTitle);
-        dl.appendChild(simpleNameValue);
-        dl.appendChild(fqnTitle);
-        dl.appendChild(fqnValue);
-        dl.appendChild(kindTitle);
-        dl.appendChild(kindValue);
-        article.appendChild(dl);
+            dl.appendChild(simpleNameTitle);
+            dl.appendChild(simpleNameValue);
+            dl.appendChild(fqnTitle);
+            dl.appendChild(fqnValue);
+            dl.appendChild(kindTitle);
+            dl.appendChild(kindValue);
+            article.appendChild(dl);
+        }
 
         const description = document.createElement("div");
         description.className = "description markdown";
@@ -128,8 +131,9 @@ function renderGlossaryTerms(terms) {
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
     const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
+    // renderGlossaryTerms に表示モードを渡す
     renderTermSidebar(sortedTerms);
-    renderGlossaryTerms(sortedTerms);
+    renderGlossaryTerms(sortedTerms, controls.displayModeSelect?.value);
     renderMarkdownDescriptions();
 }
 
@@ -198,8 +202,6 @@ function getFilteredTerms(terms, controls) {
     });
 }
 
-// ... (省略) ...
-
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
         if (!document.body.classList.contains("glossary")) return;
@@ -221,6 +223,9 @@ if (typeof document !== "undefined") {
             searchTargetFqn: document.getElementById('search-target-fqn'),
             searchTargetSimple: document.getElementById('search-target-simple'),
             searchTargetKind: document.getElementById('search-target-kind'),
+
+            // 新しい表示モード選択
+            displayModeSelect: document.getElementById('display-mode-select'),
         };
 
         const updateArticles = () => renderFilteredTerms(terms, controls);
@@ -233,6 +238,10 @@ if (typeof document !== "undefined") {
         controls.showField.addEventListener("change", updateArticles);
         if (controls.sortOrder) {
             controls.sortOrder.addEventListener("change", updateArticles);
+        }
+        // 新しい表示モード選択のイベントリスナー
+        if (controls.displayModeSelect) {
+            controls.displayModeSelect.addEventListener("change", updateArticles);
         }
 
         // 新しい検索オプションのイベントリスナー

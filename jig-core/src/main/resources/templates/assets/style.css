@@ -448,6 +448,9 @@ label {
     border-left: 3px solid #f0f0f0;
     overflow-x: hidden;
 }
+.glossary .term dl.hidden-dl { /* dlタグを非表示にするクラス */
+    display: none;
+}
 .glossary .term dl dt {
     font-weight: bold;
     width: 100px;

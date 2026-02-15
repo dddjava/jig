@@ -292,7 +292,13 @@ label {
     flex-wrap: wrap;
     gap: 8px 16px;
 }
+.glossary .radio-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+}
 .glossary .checkbox-options label,
+.glossary .radio-options label,
 .glossary .misc-option label {
     align-items: center;
     flex-direction: row;

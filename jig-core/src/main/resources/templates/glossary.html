@@ -25,7 +25,6 @@
                             <input id="search-input" type="text" placeholder="検索ワード">
                         </div>
                         <div class="search-target-option">
-                            <p class="option-title">対象</p>
                             <div class="checkbox-options">
                                 <label><input type="checkbox" id="search-target-name" checked>名前</label>
                                 <label><input type="checkbox" id="search-target-description" checked>説明</label>
@@ -35,10 +34,9 @@
                             </div>
                         </div>
                         <div class="search-method-option">
-                            <p class="option-title">方式</p>
                             <div class="radio-options">
-                                <label><input type="radio" name="search-method" value="partial" checked>部分一致</label>
                                 <label><input type="radio" name="search-method" value="exact">完全一致</label>
+                                <label><input type="radio" name="search-method" value="partial" checked>部分一致</label>
                                 <label><input type="radio" name="search-method" value="regex">正規表現</label>
                             </div>
                         </div>
@@ -48,8 +46,8 @@
                         <div class="checkbox-options">
                             <label><input type="checkbox" id="show-package" checked>パッケージ</label>
                             <label><input type="checkbox" id="show-class" checked>クラス</label>
-                            <label><input type="checkbox" id="show-method" checked>メソッド</label>
-                            <label><input type="checkbox" id="show-field" checked>フィールド</label>
+                            <label><input type="checkbox" id="show-method">メソッド</label>
+                            <label><input type="checkbox" id="show-field">フィールド</label>
                         </div>
                     </div>
                     <div class="misc-option">

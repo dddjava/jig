@@ -1,44 +1,3 @@
-function updateArticleVisibility(controls) {
-    const showEmptyDescription = controls.showEmptyDescription.checked;
-    const kindVisibilityMap = {
-        "パッケージ": controls.showPackage.checked,
-        "クラス": controls.showClass.checked,
-        "メソッド": controls.showMethod.checked,
-        "フィールド": controls.showField.checked,
-    };
-
-    const searchKeyword = controls.searchInput.value.toLowerCase();
-    const termArticles = document.getElementsByClassName("term");
-
-    Array.from(termArticles).forEach(term => {
-        const kindText = term.getElementsByClassName("kind")[0]?.textContent || "";
-
-        // 種類で絞り込む
-        if (!kindVisibilityMap[kindText]) {
-            term.classList.add("hidden");
-            return;
-        }
-
-        // 以降の判定で使用する説明文を取得
-        const description = term.getElementsByClassName("description")[0]?.textContent?.toLowerCase() || "";
-
-        // 説明文有無での判定
-        if (!showEmptyDescription && !description) {
-            term.classList.add("hidden");
-            return;
-        }
-        // 検索キーワードでの判定（タイトルと説明文）
-        const title = term.getElementsByClassName("term-title")[0]?.textContent?.toLowerCase() || "";
-        if (searchKeyword && !title.includes(searchKeyword) && !description.includes(searchKeyword)) {
-            term.classList.add("hidden");
-            return;
-        }
-
-        // すべての条件をパスした場合に表示
-        term.classList.remove("hidden");
-    });
-
-}
 
 // 文字列の比較は日本語を優先しつつ大小を無視する
 const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
@@ -56,32 +15,6 @@ function sortTerms(terms, sortKey) {
         const primary = termCollator.compare(leftValue, rightValue);
         if (primary !== 0) return primary;
         return termCollator.compare(left?.fqn ?? "", right?.fqn ?? "");
-    });
-}
-
-function getFilteredTerms(terms, controls) {
-    if (!controls) return terms;
-    const showEmptyDescription = controls.showEmptyDescription.checked;
-    const kindVisibilityMap = {
-        "パッケージ": controls.showPackage.checked,
-        "クラス": controls.showClass.checked,
-        "メソッド": controls.showMethod.checked,
-        "フィールド": controls.showField.checked,
-    };
-    const searchKeyword = controls.searchInput.value.toLowerCase();
-
-    return terms.filter(term => {
-        const kindText = term.kind || "";
-        if (!kindVisibilityMap[kindText]) return false;
-
-        const description = (term.description || "").toLowerCase();
-        if (!showEmptyDescription && !description) return false;
-
-        const title = (term.title || "").toLowerCase();
-        if (searchKeyword && !title.includes(searchKeyword) && !description.includes(searchKeyword)) {
-            return false;
-        }
-        return true;
     });
 }
 
@@ -118,18 +51,6 @@ function buildGlossaryCsv(terms) {
 
     const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
     return lines.join("\r\n");
-}
-
-function downloadCsv(text, filename) {
-    const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
 }
 
 function renderTermSidebar(terms) {
@@ -204,12 +125,6 @@ function renderGlossaryTerms(terms) {
     list.appendChild(fragment);
 }
 
-function renderMarkdownDescriptions() {
-    if (!window.marked) return;
-    Array.from(document.getElementsByClassName("markdown"))
-        .forEach(node => node.innerHTML = marked.parse(node.innerHTML));
-}
-
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
     const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
@@ -217,6 +132,73 @@ function renderFilteredTerms(terms, controls) {
     renderGlossaryTerms(sortedTerms);
     renderMarkdownDescriptions();
 }
+
+function renderMarkdownDescriptions() {
+    if (!window.marked) return;
+    Array.from(document.getElementsByClassName("markdown"))
+        .forEach(node => node.innerHTML = marked.parse(node.innerHTML));
+}
+
+function getFilteredTerms(terms, controls) {
+    if (!controls) return terms;
+    const showEmptyDescription = controls.showEmptyDescription.checked;
+    const kindVisibilityMap = {
+        "パッケージ": controls.showPackage.checked,
+        "クラス": controls.showClass.checked,
+        "メソッド": controls.showMethod.checked,
+        "フィールド": controls.showField.checked,
+    };
+    const searchKeyword = controls.searchInput.value;
+
+    const searchMethod = document.querySelector('input[name="search-method"]:checked')?.value || 'partial';
+    const targetsToSearch = {
+        title: controls.searchTargetName.checked,
+        description: controls.searchTargetDescription.checked,
+        fqn: controls.searchTargetFqn.checked,
+        simpleText: controls.searchTargetSimple.checked,
+        kind: controls.searchTargetKind.checked,
+    };
+
+    return terms.filter(term => {
+        // 種類で絞り込む
+        const kindText = term.kind || "";
+        if (!kindVisibilityMap[kindText]) return false;
+
+        // 説明文有無での判定
+        const description = (term.description || "");
+        if (!showEmptyDescription && !description) return false;
+
+        // キーワード検索
+        if (searchKeyword) {
+            const isMatch = Object.keys(targetsToSearch).some(prop => {
+                if (!targetsToSearch[prop]) return false;
+
+                const targetText = term[prop] || "";
+
+                switch (searchMethod) {
+                    case "exact":
+                        return targetText.toLowerCase() === searchKeyword.toLowerCase();
+                    case "regex":
+                        try {
+                            if (searchKeyword.trim() === '') return false;
+                            return new RegExp(searchKeyword, 'i').test(targetText);
+                        } catch (e) {
+                            return false; // 不正な正規表現
+                        }
+                    case "partial":
+                    default:
+                        return targetText.toLowerCase().includes(searchKeyword.toLowerCase());
+                }
+            });
+
+            if (!isMatch) return false;
+        }
+
+        return true;
+    });
+}
+
+// ... (省略) ...
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
@@ -232,6 +214,13 @@ if (typeof document !== "undefined") {
             showMethod: document.getElementById("show-method"),
             showField: document.getElementById("show-field"),
             sortOrder: document.getElementById("sort-order"),
+
+            // 新しい検索オプション
+            searchTargetName: document.getElementById('search-target-name'),
+            searchTargetDescription: document.getElementById('search-target-description'),
+            searchTargetFqn: document.getElementById('search-target-fqn'),
+            searchTargetSimple: document.getElementById('search-target-simple'),
+            searchTargetKind: document.getElementById('search-target-kind'),
         };
 
         const updateArticles = () => renderFilteredTerms(terms, controls);
@@ -245,6 +234,15 @@ if (typeof document !== "undefined") {
         if (controls.sortOrder) {
             controls.sortOrder.addEventListener("change", updateArticles);
         }
+
+        // 新しい検索オプションのイベントリスナー
+        document.querySelectorAll('input[name="search-method"]').forEach(radio => radio.addEventListener('change', updateArticles));
+        controls.searchTargetName.addEventListener('change', updateArticles);
+        controls.searchTargetDescription.addEventListener('change', updateArticles);
+        controls.searchTargetFqn.addEventListener('change', updateArticles);
+        controls.searchTargetSimple.addEventListener('change', updateArticles);
+        controls.searchTargetKind.addEventListener('change', updateArticles);
+
         const exportButton = document.getElementById("export-csv");
         if (exportButton) {
             exportButton.addEventListener("click", () => {
@@ -257,11 +255,10 @@ if (typeof document !== "undefined") {
         updateArticles();
     });
 }
-
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-        updateArticleVisibility,
+
         sortTerms,
         getFilteredTerms,
         getGlossaryData,

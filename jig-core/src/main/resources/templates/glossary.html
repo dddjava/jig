@@ -20,8 +20,28 @@
                 <summary>⚙️ 絞り込み</summary>
                 <div class="filter-controls">
                     <div class="search-option">
-                        <label for="search-input">部分一致で絞り込む</label>
-                        <input id="search-input" type="text" placeholder="検索ワード">
+                        <div class="keyword-search">
+                            <label for="search-input">キーワード</label>
+                            <input id="search-input" type="text" placeholder="検索ワード">
+                        </div>
+                        <div class="search-target-option">
+                            <p class="option-title">対象</p>
+                            <div class="checkbox-options">
+                                <label><input type="checkbox" id="search-target-name" checked>名前</label>
+                                <label><input type="checkbox" id="search-target-description" checked>説明</label>
+                                <label><input type="checkbox" id="search-target-fqn">完全修飾名</label>
+                                <label><input type="checkbox" id="search-target-simple">単純名</label>
+                                <label><input type="checkbox" id="search-target-kind">種類</label>
+                            </div>
+                        </div>
+                        <div class="search-method-option">
+                            <p class="option-title">方式</p>
+                            <div class="radio-options">
+                                <label><input type="radio" name="search-method" value="partial" checked>部分一致</label>
+                                <label><input type="radio" name="search-method" value="exact">完全一致</label>
+                                <label><input type="radio" name="search-method" value="regex">正規表現</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="kind-option">
                         <p class="kind-option-title">種類</p>

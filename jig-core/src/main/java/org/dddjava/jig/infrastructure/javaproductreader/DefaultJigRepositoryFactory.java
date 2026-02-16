@@ -150,7 +150,7 @@ public class DefaultJigRepositoryFactory {
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
         if (myBatisReadResult.status().not正常()) {
-            jigEventRepository.recordEvent(ReadStatus.fromSqlReadStatus(myBatisReadResult.status()));
+            jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
         }
         return myBatisReadResult.myBatisStatements();
     }

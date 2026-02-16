@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.sources;
 
-import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
-
 import java.util.Locale;
 
 /**
@@ -34,15 +32,6 @@ public enum ReadStatus {
 
     public String localizedMessage() {
         return message;
-    }
-
-    public static ReadStatus fromSqlReadStatus(SqlReadStatus sqlReadStatus) {
-        return switch (sqlReadStatus) {
-            case SQLなし -> SQLなし;
-            case 読み取り失敗あり -> SQL読み込み一部失敗;
-            case 失敗 -> SQL読み込み失敗;
-            default -> throw new IllegalArgumentException(sqlReadStatus.toString());
-        };
     }
 
     public boolean isError() {

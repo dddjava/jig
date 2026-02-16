@@ -138,7 +138,7 @@ Allowed `type` values:
 - `other` — if none apply
 
 Footer:
-
+- When adding a footer, please use the `--trailer` option like `git commit -m "..." --trailer "KEY: VALUE"`.
 - `JIG-DOCUMENT: <documentName>` — when a modified JigDocument is identifiable.
 - `AGENT: <agentName>` — when the commit is made by an automated agent. `<agentName>` should be the specific name of the agent (e.g., `Gemini`, `Codex`, `Copilot`).
 

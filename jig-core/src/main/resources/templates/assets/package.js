@@ -1127,7 +1127,7 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
     const diagram = itemNode.querySelector('.mutual-dependency-diagram');
     if (!diagram) return;
 
-    const {source} = buildMutualDependencyDiagramSource(item.causes, context.mutualDependencyDiagramDirection);
+    const {source} = buildMutualDependencyDiagramSource(item.causes, context.mutualDependencyDiagramDirection, item.pairLabel);
     if (!source) {
         diagram.innerHTML = ''; // Clear previous diagram
         diagram.style.display = 'none';
@@ -1143,7 +1143,7 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
     renderDiagramWithMermaid(diagram, source);
 }
 
-function buildMutualDependencyDiagramSource(causes, direction) {
+function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
     if (causes.length === 0) return {source: null};
 
     const edges = causes.map(cause => {
@@ -1159,8 +1159,10 @@ function buildMutualDependencyDiagramSource(causes, direction) {
 
     const packages = new Map(); // packageFqn -> { nodes: Set<string>, name: string }
     nodes.forEach(node => {
-        const packageFqn = node.substring(0, node.lastIndexOf('.'));
-        const packageName = packageFqn.substring(packageFqn.lastIndexOf('.') + 1);
+        const packageFqn = getPackageFqnFromTypeFqn(node);
+        const packageName = packageFqn === '(default)'
+            ? '(default)'
+            : packageFqn.substring(packageFqn.lastIndexOf('.') + 1);
         if (!packages.has(packageFqn)) {
             packages.set(packageFqn, {nodes: new Set(), name: packageName});
         }
@@ -1169,18 +1171,156 @@ function buildMutualDependencyDiagramSource(causes, direction) {
 
     const escapeId = id => id.replace(/\./g, '_');
     const escapeLabel = label => `"${label.replace(/"/g, '#quot;')}"`;
+    const pairPackages = typeof mutualPairLabel === 'string'
+        ? mutualPairLabel.split(' <-> ').map(value => value.trim()).filter(value => value)
+        : [];
+    const uniquePairPackages = [];
+    pairPackages.forEach(packageFqn => {
+        if (!uniquePairPackages.includes(packageFqn)) uniquePairPackages.push(packageFqn);
+    });
+    const collapsedPairPackages = new Set(
+        uniquePairPackages.filter(packageFqn =>
+            uniquePairPackages.some(other => other !== packageFqn && packageFqn.startsWith(`${other}.`))
+        )
+    );
+    const outerRoots = uniquePairPackages
+        .filter(packageFqn => packageFqn && packageFqn !== '(default)' && !collapsedPairPackages.has(packageFqn))
+        .slice(0, 2);
+
+    const packageRelations = edges.map(({from, to}) => ({
+        from: getPackageFqnFromTypeFqn(from),
+        to: getPackageFqnFromTypeFqn(to),
+    }));
+    const packageAdjacency = new Map();
+    const ensureAdjacent = packageFqn => {
+        if (!packageAdjacency.has(packageFqn)) packageAdjacency.set(packageFqn, new Set());
+        return packageAdjacency.get(packageFqn);
+    };
+    packageRelations.forEach(({from, to}) => {
+        if (!from || !to || from === to) return;
+        ensureAdjacent(from).add(to);
+        ensureAdjacent(to).add(from);
+    });
+    const shortestDistance = (start, goal) => {
+        if (!start || !goal) return Number.POSITIVE_INFINITY;
+        if (start === goal) return 0;
+        const queue = [{node: start, distance: 0}];
+        const visited = new Set([start]);
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const adjacent = packageAdjacency.get(current.node);
+            if (!adjacent) continue;
+            for (const next of adjacent) {
+                if (visited.has(next)) continue;
+                if (next === goal) return current.distance + 1;
+                visited.add(next);
+                queue.push({node: next, distance: current.distance + 1});
+            }
+        }
+        return Number.POSITIVE_INFINITY;
+    };
+    const chooseOuterRoot = packageFqn => {
+        if (outerRoots.length === 0) return null;
+        const directMatches = outerRoots.filter(root => packageFqn === root || packageFqn.startsWith(`${root}.`));
+        if (directMatches.length === 1) return directMatches[0];
+        if (directMatches.length > 1) {
+            return directMatches.reduce((best, current) => current.length > best.length ? current : best, directMatches[0]);
+        }
+
+        let bestRoot = outerRoots[0];
+        let bestDepth = -1;
+        let tiedRoots = [];
+        outerRoots.forEach(root => {
+            const depth = getCommonPrefixDepth([packageFqn, root]);
+            if (depth > bestDepth) {
+                bestDepth = depth;
+                bestRoot = root;
+                tiedRoots = [root];
+            } else if (depth === bestDepth) {
+                tiedRoots.push(root);
+            }
+        });
+        if (tiedRoots.length <= 1) return bestRoot;
+
+        let bestDistance = Number.POSITIVE_INFINITY;
+        let nearestRoot = tiedRoots[0];
+        tiedRoots.forEach(root => {
+            const distance = shortestDistance(packageFqn, root);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                nearestRoot = root;
+            }
+        });
+        return nearestRoot;
+    };
+    const appendClassNodes = (targetLines, classNodes) => {
+        classNodes.forEach(classFqn => {
+            const nodeId = escapeId(classFqn);
+            const className = classFqn.substring(classFqn.lastIndexOf('.') + 1);
+            targetLines.push(`${nodeId}[${escapeLabel(className)}]`);
+        });
+    };
+    const createTreeNode = () => ({classes: new Set(), children: new Map()});
+    const appendTreePackage = (treeRoot, relativePath, classNodes) => {
+        let current = treeRoot;
+        relativePath.forEach(segment => {
+            if (!current.children.has(segment)) current.children.set(segment, createTreeNode());
+            current = current.children.get(segment);
+        });
+        classNodes.forEach(classFqn => current.classes.add(classFqn));
+    };
+    const renderTreeNode = (targetLines, label, node, counter) => {
+        targetLines.push(`subgraph P${counter.value++}[${escapeLabel(label)}]`);
+        appendClassNodes(targetLines, node.classes);
+        Array.from(node.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([segment, child]) => {
+            renderTreeNode(targetLines, segment, child, counter);
+        });
+        targetLines.push('end');
+    };
 
     let lines = [`graph ${direction || 'TD'};`];
 
-    let packageIndex = 0;
-    for (const [packageFqn, {nodes: packageNodes, name}] of packages.entries()) {
-        lines.push(`subgraph P${packageIndex++}[${escapeLabel(name)}]`);
-        for (const node of packageNodes) {
-            const nodeId = escapeId(node);
-            const className = node.substring(node.lastIndexOf('.') + 1);
-            lines.push(`${nodeId}[${escapeLabel(className)}]`);
+    if (outerRoots.length >= 1) {
+        const groups = new Map(outerRoots.map(root => [root, []]));
+        for (const packageEntry of packages.entries()) {
+            const packageFqn = packageEntry[0];
+            const selectedRoot = chooseOuterRoot(packageFqn) || outerRoots[0];
+            groups.get(selectedRoot).push(packageEntry);
         }
-        lines.push('end');
+        const subgraphCounter = {value: 0};
+        outerRoots.forEach((root, outerIndex) => {
+            const rootLabel = root.substring(root.lastIndexOf('.') + 1);
+            lines.push(`subgraph O${outerIndex}[${escapeLabel(rootLabel || root)}]`);
+            const groupedPackages = groups.get(root) || [];
+            const treeRoot = createTreeNode();
+            const outerDirectClasses = new Set();
+            groupedPackages.forEach(([packageFqn, {nodes: classNodes, name}]) => {
+                if (packageFqn === root || collapsedPairPackages.has(packageFqn)) {
+                    classNodes.forEach(classFqn => outerDirectClasses.add(classFqn));
+                    return;
+                }
+                if (!packageFqn.startsWith(`${root}.`)) {
+                    lines.push(`subgraph X${subgraphCounter.value++}[${escapeLabel(name)}]`);
+                    appendClassNodes(lines, classNodes);
+                    lines.push('end');
+                    return;
+                }
+                const relativePath = packageFqn.substring(root.length + 1).split('.').filter(Boolean);
+                appendTreePackage(treeRoot, relativePath, classNodes);
+            });
+            appendClassNodes(lines, outerDirectClasses);
+            Array.from(treeRoot.children.entries()).sort((a, b) => a[0].localeCompare(b[0])).forEach(([segment, child]) => {
+                renderTreeNode(lines, segment, child, subgraphCounter);
+            });
+            lines.push('end');
+        });
+    } else {
+        let packageIndex = 0;
+        for (const [, {nodes: packageNodes, name}] of packages.entries()) {
+            lines.push(`subgraph P${packageIndex++}[${escapeLabel(name)}]`);
+            appendClassNodes(lines, packageNodes);
+            lines.push('end');
+        }
     }
 
     edges.forEach(({from, to}) => {

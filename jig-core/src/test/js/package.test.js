@@ -849,22 +849,35 @@ test.describe('package.js', () => {
 
             test('buildMutualDependencyDiagramSource: 相互依存のMermaidソースを生成する', () => {
                 const causes = [
-                    'app.alpha.A -> app.beta.B',
-                    'app.beta.B -> app.alpha.A',
-                    'app.beta.B -> app.gamma.C'
+                    'a.b.c.d.A -> a.b.x.y.B',
+                    'a.b.x.y.B -> a.b.c.d.A',
+                    'a.b.c.d.sub.C -> a.b.x.y.sub.D',
+                    'a.b.x.y.sub.D -> a.b.c.d.sub.C'
                 ];
-                const {source} = pkg.buildMutualDependencyDiagramSource(causes, 'LR');
+                const {source} = pkg.buildMutualDependencyDiagramSource(causes, 'LR', 'a.b.c.d <-> a.b.x.y');
                 const lines = source.split('\n').map(l => l.trim());
                 assert.ok(lines.includes('graph LR;'));
-                assert.ok(lines.some(l => l.match(/subgraph P\d+\["alpha"\]/)));
-                assert.ok(lines.some(l => l.match(/subgraph P\d+\["beta"\]/)));
-                assert.ok(lines.some(l => l.match(/subgraph P\d+\["gamma"\]/)));
-                assert.ok(lines.includes('app_alpha_A["A"]'));
-                assert.ok(lines.includes('app_beta_B["B"]'));
-                assert.ok(lines.includes('app_gamma_C["C"]'));
-                assert.ok(lines.includes('app_alpha_A --> app_beta_B'));
-                assert.ok(lines.includes('app_beta_B --> app_alpha_A'));
-                assert.ok(lines.includes('app_beta_B --> app_gamma_C'));
+                assert.ok(lines.includes('subgraph O0["d"]'));
+                assert.ok(lines.includes('subgraph O1["y"]'));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["sub"\]/)));
+                assert.ok(lines.includes('a_b_c_d_A["A"]'));
+                assert.ok(lines.includes('a_b_x_y_B["B"]'));
+                assert.ok(lines.includes('a_b_c_d_sub_C["C"]'));
+                assert.ok(lines.includes('a_b_x_y_sub_D["D"]'));
+                assert.ok(lines.includes('a_b_c_d_A --> a_b_x_y_B'));
+                assert.ok(lines.includes('a_b_x_y_B --> a_b_c_d_A'));
+                assert.ok(lines.includes('a_b_c_d_sub_C --> a_b_x_y_sub_D'));
+            });
+
+            test('buildMutualDependencyDiagramSource: 包含関係の相互依存では外側の子パッケージsubgraphを作らない', () => {
+                const causes = [
+                    'a.b.c.A -> a.b.c.d.B',
+                    'a.b.c.d.B -> a.b.c.A',
+                ];
+                const {source} = pkg.buildMutualDependencyDiagramSource(causes, 'LR', 'a.b.c <-> a.b.c.d');
+                const lines = source.split('\n').map(l => l.trim());
+                assert.ok(lines.includes('subgraph O0["c"]'));
+                assert.ok(!lines.includes('subgraph O1["d"]'));
             });
 
             test('detectStronglyConnectedComponents: 循環を検出する', () => {

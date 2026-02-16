@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
 import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
 import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;

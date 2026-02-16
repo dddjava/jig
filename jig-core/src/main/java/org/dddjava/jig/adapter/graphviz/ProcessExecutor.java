@@ -36,8 +36,7 @@ public class ProcessExecutor {
 
         logger.fine("command: " + command);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        try (Closeable ignored = executorService::shutdown) {
+        try (ExecutorService executorService = Executors.newFixedThreadPool(2)) {
             Process process = new ProcessBuilder()
                     .command(command)
                     .redirectErrorStream(true)

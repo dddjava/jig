@@ -1,4 +1,4 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig.domain.model.data;
 
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;

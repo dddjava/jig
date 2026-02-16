@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.javaproductreader;
 
-import org.dddjava.jig.application.JigDataProvider;
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;

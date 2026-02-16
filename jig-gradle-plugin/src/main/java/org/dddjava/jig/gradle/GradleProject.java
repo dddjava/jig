@@ -8,10 +8,10 @@ import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.util.GradleVersion;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -31,7 +31,9 @@ public class GradleProject {
     public Set<Path> classPaths() {
         return sourceSets()
                 .map(SourceSet::getOutput)
-                .flatMap(output -> Stream.concat(output.getClassesDirs().getFiles().stream(), Stream.of(output.getResourcesDir())))
+                .flatMap(output -> Stream.concat(
+                        output.getClassesDirs().getFiles().stream(),
+                        Stream.of(output.getResourcesDir()).filter(Objects::nonNull)))
                 .map(File::toPath)
                 .collect(toSet());
     }

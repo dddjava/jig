@@ -1,8 +1,8 @@
 package org.dddjava.jig.adapter.mermaid;
 
-import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;

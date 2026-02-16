@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;

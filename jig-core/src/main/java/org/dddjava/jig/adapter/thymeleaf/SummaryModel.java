@@ -2,8 +2,8 @@ package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.UsecaseMermaidDiagram;
-import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
+import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 

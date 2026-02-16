@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.graphviz;
 
 import org.dddjava.jig.adapter.HandleDocument;
-import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;

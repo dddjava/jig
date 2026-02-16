@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.poi;
 
 import org.dddjava.jig.adapter.HandleDocument;
-import org.dddjava.jig.application.CoreTypesAndRelations;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
@@ -9,6 +8,7 @@ import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;

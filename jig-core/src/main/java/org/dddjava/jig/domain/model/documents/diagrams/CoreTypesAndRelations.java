@@ -1,4 +1,4 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;

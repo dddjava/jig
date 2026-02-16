@@ -1295,7 +1295,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
             const treeRoot = createTreeNode();
             const outerDirectClasses = new Set();
             groupedPackages.forEach(([packageFqn, {nodes: classNodes, name}]) => {
-                if (packageFqn === root || collapsedPairPackages.has(packageFqn)) {
+                if (packageFqn === root) {
                     classNodes.forEach(classFqn => outerDirectClasses.add(classFqn));
                     return;
                 }

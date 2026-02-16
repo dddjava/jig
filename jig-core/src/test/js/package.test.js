@@ -880,6 +880,30 @@ test.describe('package.js', () => {
                 assert.ok(!lines.includes('subgraph O1["d"]'));
             });
 
+            test('buildMutualDependencyDiagramSource: 包含関係の相互依存でも子パッケージはネストsubgraphに配置する', () => {
+                const causes = [
+                    'org.dddjava.jig.JigExecutor -> org.dddjava.jig.adapter.JigDocumentGenerator',
+                    'org.dddjava.jig.adapter.JigDocumentGenerator -> org.dddjava.jig.HandleResult',
+                    'org.dddjava.jig.adapter.JigDocumentGenerator -> org.dddjava.jig.JigResult',
+                    'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.HandleResult',
+                    'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.JigResult',
+                    'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.JigResult$JigSummary',
+                    'org.dddjava.jig.adapter.thymeleaf.IndexView -> org.dddjava.jig.HandleResult',
+                ];
+                const {source} = pkg.buildMutualDependencyDiagramSource(
+                    causes,
+                    'LR',
+                    'org.dddjava.jig <-> org.dddjava.jig.adapter'
+                );
+                const lines = source.split('\n').map(l => l.trim());
+                assert.ok(lines.includes('subgraph O0["jig"]'));
+                assert.ok(!lines.includes('subgraph O1["adapter"]'));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["adapter"\]/)));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["thymeleaf"\]/)));
+                assert.ok(lines.includes('org_dddjava_jig_adapter_JigDocumentGenerator["JigDocumentGenerator"]'));
+                assert.ok(lines.includes('org_dddjava_jig_adapter_JigResultData["JigResultData"]'));
+            });
+
             test('detectStronglyConnectedComponents: 循環を検出する', () => {
                 const graph = new Map([
                     ['a', ['b']],

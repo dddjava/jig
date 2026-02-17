@@ -15,22 +15,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * ファイルシステムを走査し、クラスファイル、リソースファイル、ソースファイルのベースパスを収集するFileVisitorの実装。
+ * 指定されたディレクトリ名に合致するパスをバイナリソースパスまたはテキストソースパスとして登録します。
+ */
 public class DirectoryCollector implements FileVisitor<Path> {
     private static final Logger logger = LoggerFactory.getLogger(DirectoryCollector.class);
 
-    private final String directoryClasses;
-    private final String directoryResources;
-    private final String directorySources;
+    /**
+     * クラスファイルが出力されるディレクトリ名。
+     * ex: "target/classes"
+     */
+    private final String classOutputDirectoryName;
+
+    /**
+     * リソースファイルが出力されるディレクトリ名。
+     * ex: "target/classes"
+     */
+    private final String resourceOutputDirectoryName;
+
+    /**
+     * ソースコードが格納されているディレクトリ名。
+     * ex: "src/main/java"
+     */
+    private final String sourceCodeDirectoryName;
 
     private final List<Path> binarySourcePaths = new ArrayList<>();
     private final List<Path> textSourcesPaths = new ArrayList<>();
 
     private final AtomicLong visitCounter = new AtomicLong();
 
-    public DirectoryCollector(String directoryClasses, String directoryResources, String directorySources) {
-        this.directoryClasses = directoryClasses;
-        this.directoryResources = directoryResources;
-        this.directorySources = directorySources;
+    public DirectoryCollector(String classOutputDirectoryName, String resourceOutputDirectoryName, String sourceCodeDirectoryName) {
+        this.classOutputDirectoryName = classOutputDirectoryName;
+        this.resourceOutputDirectoryName = resourceOutputDirectoryName;
+        this.sourceCodeDirectoryName = sourceCodeDirectoryName;
     }
 
     @Override
@@ -45,14 +63,14 @@ public class DirectoryCollector implements FileVisitor<Path> {
             return FileVisitResult.SKIP_SUBTREE;
         }
 
-        if (path.endsWith(directoryClasses) || path.endsWith(directoryResources)) {
+        if (path.endsWith(classOutputDirectoryName) || path.endsWith(resourceOutputDirectoryName)) {
             // 末尾が合致するディレクトリを見つけたら採用する
             binarySourcePaths.add(path);
             logger.debug("binary: {}", path);
             // このディレクトリの中は見る必要がないのでSKIP
             return FileVisitResult.SKIP_SUBTREE;
         }
-        if (path.endsWith(directorySources)) {
+        if (path.endsWith(sourceCodeDirectoryName)) {
             textSourcesPaths.add(path);
             logger.debug("text: {}", path);
             // このディレクトリの中は見る必要がないのでSKIP

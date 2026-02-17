@@ -114,7 +114,10 @@ class CliConfig {
             directoryResources = getOrDefault(directoryResources, "build/resources/main");
             directorySources = getOrDefault(directorySources, "src/main/java");
 
-            DirectoryCollector sourcesCollector = new DirectoryCollector(directoryClasses, directoryResources, directorySources);
+            DirectoryCollector sourcesCollector = new DirectoryCollector(
+                    Paths.get(directoryClasses),
+                    Paths.get(directoryResources),
+                    Paths.get(directorySources));
             Files.walkFileTree(projectRoot, sourcesCollector);
 
             return sourcesCollector.toSourcePaths();

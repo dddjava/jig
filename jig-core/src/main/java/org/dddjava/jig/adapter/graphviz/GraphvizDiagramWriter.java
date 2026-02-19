@@ -49,17 +49,16 @@ public class GraphvizDiagramWriter {
             outputPaths.add(resultPath);
         });
 
-        // 追加のテキストファイル
-        AdditionalText additionalText = diagramSource.additionalText();
-        if (additionalText.enable()) {
+        // 追加のテキストファイルが存在する場合は内容を書き出す
+        diagramSource.additionalText().ifPresent(value -> {
             jigDocumentWriter.write(
                     outputStream -> {
                         try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-                            writer.write(additionalText.value());
+                            writer.write(value);
                         }
                     },
                     documentName.fileName() + ".additional.txt"
             );
-        }
+        });
     }
 }

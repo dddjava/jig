@@ -25,25 +25,7 @@ public class GraphvizDiagramWriter {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         int count = model.write(diagramOption, diagramSource -> {
-            DocumentName documentName = diagramSource.documentName();
-
-            jigDocumentWriter.writePath((directory, outputPaths) -> {
-                Path resultPath = dotCommandRunner.run(diagramSource, directory);
-                outputPaths.add(resultPath);
-            });
-
-            // 追加のテキストファイル
-            AdditionalText additionalText = diagramSource.additionalText();
-            if (additionalText.enable()) {
-                jigDocumentWriter.write(
-                        outputStream -> {
-                            try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-                                writer.write(additionalText.value());
-                            }
-                        },
-                        documentName.fileName() + ".additional.txt"
-                );
-            }
+            extracted(diagramSource, jigDocumentWriter);
         });
 
         if (count == 0) {
@@ -56,28 +38,32 @@ public class GraphvizDiagramWriter {
             }
 
             diagramSources.each(diagramSource -> {
-                DocumentName documentName = diagramSource.documentName();
-
-                jigDocumentWriter.writePath((directory, outputPaths) -> {
-                    Path resultPath = dotCommandRunner.run(diagramSource, directory);
-                    outputPaths.add(resultPath);
-                });
-
-                // 追加のテキストファイル
-                AdditionalText additionalText = diagramSource.additionalText();
-                if (additionalText.enable()) {
-                    jigDocumentWriter.write(
-                            outputStream -> {
-                                try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-                                    writer.write(additionalText.value());
-                                }
-                            },
-                            documentName.fileName() + ".additional.txt"
-                    );
-                }
+                extracted(diagramSource, jigDocumentWriter);
             });
         }
 
         return jigDocumentWriter.outputFilePaths();
+    }
+
+    private void extracted(DiagramSource diagramSource, JigDocumentWriter jigDocumentWriter) {
+        DocumentName documentName = diagramSource.documentName();
+
+        jigDocumentWriter.writePath((directory, outputPaths) -> {
+            Path resultPath = dotCommandRunner.run(diagramSource, directory);
+            outputPaths.add(resultPath);
+        });
+
+        // 追加のテキストファイル
+        AdditionalText additionalText = diagramSource.additionalText();
+        if (additionalText.enable()) {
+            jigDocumentWriter.write(
+                    outputStream -> {
+                        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                            writer.write(additionalText.value());
+                        }
+                    },
+                    documentName.fileName() + ".additional.txt"
+            );
+        }
     }
 }

@@ -24,9 +24,7 @@ public class GraphvizDiagramWriter {
     public List<Path> write(DiagramSourceWriter model, JigDocument jigDocument) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        int count = model.write(diagramOption, diagramSource -> {
-            extracted(diagramSource, jigDocumentWriter);
-        });
+        int count = model.write(diagramOption, diagramSource -> extracted(diagramSource, jigDocumentWriter));
 
         if (count == 0) {
             jigDocumentWriter.markSkip();
@@ -37,9 +35,7 @@ public class GraphvizDiagramWriter {
                 jigDocumentWriter.markSkip();
             }
 
-            diagramSources.each(diagramSource -> {
-                extracted(diagramSource, jigDocumentWriter);
-            });
+            diagramSources.each(diagramSource -> extracted(diagramSource, jigDocumentWriter));
         }
 
         return jigDocumentWriter.outputFilePaths();

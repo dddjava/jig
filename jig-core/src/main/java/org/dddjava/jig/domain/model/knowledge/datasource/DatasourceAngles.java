@@ -21,8 +21,10 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
 
                     var crudTables = myBatisStatements.filterRelationOn(myBatisStatement -> {
                         MyBatisStatementId myBatisStatementId = myBatisStatement.myBatisStatementId();
+                        boolean matchesSelf = outputImplementation.outputPortGateway().jigMethodId().namespace().equals(myBatisStatementId.namespace())
+                                && outputImplementation.outputPortGateway().name().equals(myBatisStatementId.id());
                         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                        return outputImplementation.usingMethods()
+                        return matchesSelf || outputImplementation.usingMethods()
                                 .containsAny(methodCall -> methodCall.methodOwner().fqn().equals(myBatisStatementId.namespace())
                                         && methodCall.methodName().equals(myBatisStatementId.id()));
                     }).crudTables();

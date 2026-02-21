@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatement;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatement;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.Query;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -28,7 +28,7 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_QUERY = "org.springframework.data.jdbc.repository.query.Query";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
 
-    public List<MyBatisStatement> readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
+    public List<SqlStatement> readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         Collection<String> classNames = jigTypeHeaders.stream()
                 .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributes()
                         .declaredAnnotation(TypeId.valueOf(REPOSITORY_ANNOTATION)))
@@ -52,7 +52,7 @@ public class SpringDataJdbcStatementsReader {
             Class<?> repositoryInterface = loadClassIfPresent(classLoader, SPRING_DATA_REPOSITORY).orElse(null);
             if (repositoryInterface == null) return List.of();
 
-            Map<MyBatisStatementId, MyBatisStatement> statements = new LinkedHashMap<>();
+            Map<SqlStatementId, SqlStatement> statements = new LinkedHashMap<>();
             for (String className : classNames) {
                 Class<?> repositoryType = Class.forName(className, false, classLoader);
                 if (!repositoryType.isInterface()) continue;
@@ -60,7 +60,7 @@ public class SpringDataJdbcStatementsReader {
 
                 Optional<String> tableName = resolveTableName(repositoryType);
                 extractStatements(repositoryType, tableName).forEach(statement ->
-                        statements.put(statement.myBatisStatementId(), statement));
+                        statements.put(statement.sqlStatementId(), statement));
             }
             return List.copyOf(statements.values());
         } catch (Exception e) {
@@ -69,21 +69,21 @@ public class SpringDataJdbcStatementsReader {
         }
     }
 
-    private Stream<MyBatisStatement> extractStatements(Class<?> repositoryType, Optional<String> tableName) {
+    private Stream<SqlStatement> extractStatements(Class<?> repositoryType, Optional<String> tableName) {
         return Arrays.stream(repositoryType.getMethods())
                 .filter(method -> method.getDeclaringClass() != Object.class)
                 .flatMap(method -> createStatement(repositoryType, method, tableName).stream());
     }
 
-    private Optional<MyBatisStatement> createStatement(Class<?> repositoryType, Method method, Optional<String> tableName) {
+    private Optional<SqlStatement> createStatement(Class<?> repositoryType, Method method, Optional<String> tableName) {
         SqlType sqlType = inferSqlType(method).orElse(null);
         if (sqlType == null) return Optional.empty();
 
         Query query = readQuery(method).orElseGet(() ->
                 tableName.map(name -> Query.from(defaultQuery(sqlType, name))).orElse(Query.unsupported()));
 
-        MyBatisStatementId statementId = MyBatisStatementId.from(repositoryType.getCanonicalName() + "." + method.getName());
-        return Optional.of(new MyBatisStatement(statementId, query, sqlType));
+        SqlStatementId statementId = SqlStatementId.from(repositoryType.getCanonicalName() + "." + method.getName());
+        return Optional.of(new SqlStatement(statementId, query, sqlType));
     }
 
     private Optional<SqlType> inferSqlType(Method method) {

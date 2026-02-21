@@ -2,15 +2,15 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
-                              MyBatisStatements myBatisStatements) implements JigDataProvider {
+                              SqlStatements sqlStatements) implements JigDataProvider {
 
     @Override
-    public MyBatisStatements fetchMybatisStatements() {
-        return myBatisStatements;
+    public SqlStatements fetchSqlStatements() {
+        return sqlStatements;
     }
 
     @Override

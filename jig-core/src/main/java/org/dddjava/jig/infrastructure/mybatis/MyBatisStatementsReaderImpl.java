@@ -50,7 +50,7 @@ public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
                 .toList();
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
-        if (classNames.isEmpty()) return new MyBatisReadResult(MyBatisStatements.empty(), SqlReadStatus.成功);
+        if (classNames.isEmpty()) return new MyBatisReadResult(SqlStatements.empty(), SqlReadStatus.成功);
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -99,14 +99,14 @@ public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
             }
         }
 
-        List<MyBatisStatement> list = new ArrayList<>();
+        List<SqlStatement> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
         logger.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                MyBatisStatementId myBatisStatementId = MyBatisStatementId.from(mappedStatement.getId());
+                SqlStatementId myBatisStatementId = SqlStatementId.from(mappedStatement.getId());
 
                 Query query;
                 try {
@@ -130,13 +130,13 @@ public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
                         yield SqlType.SELECT;
                     }
                 };
-                MyBatisStatement myBatisStatement = new MyBatisStatement(myBatisStatementId, query, sqlType);
+                SqlStatement myBatisStatement = new SqlStatement(myBatisStatementId, query, sqlType);
                 list.add(myBatisStatement);
             }
         }
 
         logger.debug("取得したSQL: {}件", list.size());
-        return new MyBatisReadResult(new MyBatisStatements(list), sqlReadStatus);
+        return new MyBatisReadResult(new SqlStatements(list), sqlReadStatus);
     }
 
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {

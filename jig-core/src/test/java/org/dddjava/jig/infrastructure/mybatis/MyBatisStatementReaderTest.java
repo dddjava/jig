@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatement;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatement;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
@@ -22,17 +22,17 @@ class MyBatisStatementReaderTest {
 
     @Test
     void bindを使ってても解析できる(JigRepository jigRepository) {
-        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
+        SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
-        MyBatisStatement myBatisStatement = myBatisStatements.findById(MyBatisStatementId.from(SampleMapper.class.getCanonicalName() + ".binding")).orElseThrow();
+        SqlStatement myBatisStatement = myBatisStatements.findById(SqlStatementId.from(SampleMapper.class.getCanonicalName() + ".binding")).orElseThrow();
         assertEquals("[fuga]", myBatisStatement.tables().asText());
     }
 
     @Test
     void OGNLを使ったSELECTが解析できない(JigRepository jigRepository) {
-        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
+        SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
-        MyBatisStatement myBatisStatement = myBatisStatements.findById(MyBatisStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl")).orElseThrow();
+        SqlStatement myBatisStatement = myBatisStatements.findById(SqlStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl")).orElseThrow();
         assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
         // OGNLを使ったSQLは現時点では空になる
         assertEquals("", myBatisStatement.query().text());
@@ -40,9 +40,9 @@ class MyBatisStatementReaderTest {
 
     @Test
     void OGNLを使ったSELECTが解析できない2(JigRepository jigRepository) {
-        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
+        SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
-        MyBatisStatement myBatisStatement = myBatisStatements.findById(MyBatisStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl_where")).orElseThrow();
+        SqlStatement myBatisStatement = myBatisStatements.findById(SqlStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl_where")).orElseThrow();
 
         assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
         // OGNLを使ったSQLは現時点では空になる
@@ -53,9 +53,9 @@ class MyBatisStatementReaderTest {
     @ParameterizedTest
     @MethodSource
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigRepository jigRepository) {
-        MyBatisStatements myBatisStatements = jigRepository.jigDataProvider().fetchMybatisStatements();
+        SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
-        MyBatisStatement myBatisStatement = myBatisStatements.findById(MyBatisStatementId.from("stub.infrastructure.datasource.CanonicalMapper." + methodName)).orElseThrow();
+        SqlStatement myBatisStatement = myBatisStatements.findById(SqlStatementId.from("stub.infrastructure.datasource.CanonicalMapper." + methodName)).orElseThrow();
         assertEquals("[" + tableName + "]", myBatisStatement.tables().asText());
         assertEquals(sqlType, myBatisStatement.sqlType());
     }

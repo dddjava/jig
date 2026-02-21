@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
@@ -15,18 +15,18 @@ class SpringDataJdbcStatementReaderTest {
 
     @Test
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる(JigRepository jigRepository) {
-        var statements = jigRepository.jigDataProvider().fetchMybatisStatements();
+        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
         var namespace = SpringDataJdbcOrderRepository.class.getCanonicalName();
 
-        var save = statements.findById(MyBatisStatementId.from(namespace + ".save")).orElseThrow();
+        var save = statements.findById(SqlStatementId.from(namespace + ".save")).orElseThrow();
         assertEquals("[spring_data_jdbc_orders]", save.tables().asText());
         assertEquals(SqlType.INSERT, save.sqlType());
 
-        var findById = statements.findById(MyBatisStatementId.from(namespace + ".findById")).orElseThrow();
+        var findById = statements.findById(SqlStatementId.from(namespace + ".findById")).orElseThrow();
         assertEquals("[spring_data_jdbc_orders]", findById.tables().asText());
         assertEquals(SqlType.SELECT, findById.sqlType());
 
-        var deleteById = statements.findById(MyBatisStatementId.from(namespace + ".deleteById")).orElseThrow();
+        var deleteById = statements.findById(SqlStatementId.from(namespace + ".deleteById")).orElseThrow();
         assertEquals("[spring_data_jdbc_orders]", deleteById.tables().asText());
         assertEquals(SqlType.DELETE, deleteById.sqlType());
     }

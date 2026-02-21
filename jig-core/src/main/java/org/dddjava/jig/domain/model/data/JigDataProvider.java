@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data;
 
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ public interface JigDataProvider {
     static JigDataProvider none() {
         return new JigDataProvider() {
             @Override
-            public MyBatisStatements fetchMybatisStatements() {
-                return MyBatisStatements.empty();
+            public SqlStatements fetchSqlStatements() {
+                return SqlStatements.empty();
             }
 
             @Override
@@ -21,7 +21,7 @@ public interface JigDataProvider {
         };
     }
 
-    MyBatisStatements fetchMybatisStatements();
+    SqlStatements fetchSqlStatements();
 
     EnumModels fetchEnumModels();
 }

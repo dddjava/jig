@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatement;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.Query;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -28,14 +29,14 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_QUERY = "org.springframework.data.jdbc.repository.query.Query";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
 
-    public List<SqlStatement> readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
+    public SqlStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         Collection<String> classNames = jigTypeHeaders.stream()
                 .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributes()
                         .declaredAnnotation(TypeId.valueOf(REPOSITORY_ANNOTATION)))
                 .map(JigTypeHeader::fqn)
                 .toList();
 
-        if (classNames.isEmpty()) return List.of();
+        if (classNames.isEmpty()) return SqlStatements.empty();
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -50,7 +51,7 @@ public class SpringDataJdbcStatementsReader {
 
         try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, ClassLoader.getSystemClassLoader())) {
             Class<?> repositoryInterface = loadClassIfPresent(classLoader, SPRING_DATA_REPOSITORY).orElse(null);
-            if (repositoryInterface == null) return List.of();
+            if (repositoryInterface == null) return SqlStatements.empty();
 
             Map<SqlStatementId, SqlStatement> statements = new LinkedHashMap<>();
             for (String className : classNames) {
@@ -62,10 +63,10 @@ public class SpringDataJdbcStatementsReader {
                 extractStatements(repositoryType, tableName).forEach(statement ->
                         statements.put(statement.sqlStatementId(), statement));
             }
-            return List.copyOf(statements.values());
+            return new SqlStatements(List.copyOf(statements.values()));
         } catch (Exception e) {
             logger.warn("Spring Data JDBC の読み取りに失敗しました。", e);
-            return List.of();
+            return SqlStatements.empty();
         }
     }
 

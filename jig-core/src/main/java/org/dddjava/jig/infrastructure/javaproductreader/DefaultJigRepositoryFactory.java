@@ -6,7 +6,6 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatement;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -168,10 +167,10 @@ public class DefaultJigRepositoryFactory {
         return mergedStatements;
     }
 
-    private SqlStatements mergeStatements(SqlStatements myBatisStatements, List<SqlStatement> springDataJdbcStatements) {
+    private SqlStatements mergeStatements(SqlStatements myBatisStatements, SqlStatements springDataJdbcStatements) {
         return new SqlStatements(Stream.concat(
                         myBatisStatements.list().stream(),
-                        springDataJdbcStatements.stream())
+                        springDataJdbcStatements.list().stream())
                 .distinct()
                 .toList());
     }

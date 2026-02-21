@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatementId;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.rdbaccess.Query;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -10,7 +9,6 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -30,14 +28,14 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_QUERY = "org.springframework.data.jdbc.repository.query.Query";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
 
-    public MyBatisStatements readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
+    public List<MyBatisStatement> readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         Collection<String> classNames = jigTypeHeaders.stream()
                 .filter(jigTypeHeader -> jigTypeHeader.jigTypeAttributes()
                         .declaredAnnotation(TypeId.valueOf(REPOSITORY_ANNOTATION)))
                 .map(JigTypeHeader::fqn)
                 .toList();
 
-        if (classNames.isEmpty()) return MyBatisStatements.empty();
+        if (classNames.isEmpty()) return List.of();
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -52,7 +50,7 @@ public class SpringDataJdbcStatementsReader {
 
         try (URLClassLoader classLoader = new URLClassLoader(classLocationUrls, ClassLoader.getSystemClassLoader())) {
             Class<?> repositoryInterface = loadClassIfPresent(classLoader, SPRING_DATA_REPOSITORY).orElse(null);
-            if (repositoryInterface == null) return MyBatisStatements.empty();
+            if (repositoryInterface == null) return List.of();
 
             Map<MyBatisStatementId, MyBatisStatement> statements = new LinkedHashMap<>();
             for (String className : classNames) {
@@ -64,10 +62,10 @@ public class SpringDataJdbcStatementsReader {
                 extractStatements(repositoryType, tableName).forEach(statement ->
                         statements.put(statement.myBatisStatementId(), statement));
             }
-            return new MyBatisStatements(List.copyOf(statements.values()));
+            return List.copyOf(statements.values());
         } catch (Exception e) {
             logger.warn("Spring Data JDBC の読み取りに失敗しました。", e);
-            return MyBatisStatements.empty();
+            return List.of();
         }
     }
 

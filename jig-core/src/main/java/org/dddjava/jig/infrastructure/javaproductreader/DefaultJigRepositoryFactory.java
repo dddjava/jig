@@ -6,6 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -154,7 +155,7 @@ public class DefaultJigRepositoryFactory {
         List<Path> classPaths = sources.sourceBasePaths().classSourceBasePaths();
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
-        MyBatisStatements springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(jigTypeHeaders, classPaths);
+        var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
         MyBatisStatements mergedStatements = mergeStatements(myBatisReadResult.myBatisStatements(), springDataJdbcStatements);
 
@@ -167,10 +168,10 @@ public class DefaultJigRepositoryFactory {
         return mergedStatements;
     }
 
-    private MyBatisStatements mergeStatements(MyBatisStatements myBatisStatements, MyBatisStatements springDataJdbcStatements) {
+    private MyBatisStatements mergeStatements(MyBatisStatements myBatisStatements, List<MyBatisStatement> springDataJdbcStatements) {
         return new MyBatisStatements(Stream.concat(
                         myBatisStatements.list().stream(),
-                        springDataJdbcStatements.list().stream())
+                        springDataJdbcStatements.stream())
                 .distinct()
                 .toList());
     }

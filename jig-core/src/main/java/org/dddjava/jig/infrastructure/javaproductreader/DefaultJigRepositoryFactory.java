@@ -154,7 +154,7 @@ public class DefaultJigRepositoryFactory {
         List<Path> classPaths = sources.sourceBasePaths().classSourceBasePaths();
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
-        var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(jigTypeHeaders, classPaths);
+        var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(classDeclarations);
 
         SqlStatements mergedStatements = mergeStatements(myBatisReadResult.sqlStatements(), springDataJdbcStatements);
 

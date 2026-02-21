@@ -1,20 +1,19 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.Query;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatement;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
-import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
+import org.dddjava.jig.domain.model.data.rdbaccess.*;
+import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class SpringDataJdbcStatementsReader {
+    private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
+
     private static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
@@ -110,6 +109,11 @@ public class SpringDataJdbcStatementsReader {
         return Optional.empty();
     }
 
+    /**
+     * SQLの種類を推測する
+     *
+     * @see <a href="https://docs.spring.io/spring-data/relational/reference/data-commons/repositories/query-methods-details.html">Defining Query Methods</a>
+     */
     private Optional<SqlType> inferSqlType(String methodName) {
         String normalizedMethodName = methodName.toLowerCase(Locale.ROOT);
 
@@ -135,6 +139,9 @@ public class SpringDataJdbcStatementsReader {
                 || normalizedMethodName.startsWith("remove")) {
             return Optional.of(SqlType.DELETE);
         }
+
+        // 判別できないものは空にしておく
+        logger.info("SQLの種類がメソッド名 {} から判別できませんでした。CRUDのどれかに該当する場合は対象にしたいのでissueお願いします。", methodName);
         return Optional.empty();
     }
 

@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.data.rdbaccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,7 +61,7 @@ public enum SqlType {
         if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
         if (normalizedQuery.startsWith("delete")) return Optional.of(DELETE);
 
-        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query.text());
+        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query.rawText());
         return Optional.empty();
     }
 }

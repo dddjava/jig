@@ -48,9 +48,6 @@ public class SpringDataJdbcStatementsReader {
                                             .findFirst()
                                             .flatMap(annotation -> annotation.elementTextOf("value"))
                                             .map(Query::from)
-                                            .map(Query::normalizedQuery)
-                                            .filter(value -> !value.isBlank())
-                                            .map(Query::from)
                                             .orElse(Query.unsupported()),
                                     (left, right) -> left.supported() ? left : right.supported() ? right : left,
                                     LinkedHashMap::new))

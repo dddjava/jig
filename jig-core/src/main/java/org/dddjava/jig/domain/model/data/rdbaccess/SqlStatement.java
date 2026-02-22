@@ -7,7 +7,7 @@ public record SqlStatement(SqlStatementId sqlStatementId, Query query, SqlType s
 
     public Tables tables() {
         if (query.supported()) {
-            Table table = sqlType.extractTable(query.text(), sqlStatementId);
+            Table table = sqlType.extractTable(query.normalizedQuery(), sqlStatementId);
             return new Tables(table);
         }
         return new Tables(sqlType.unexpectedTable());

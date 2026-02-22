@@ -16,6 +16,7 @@ import testing.JigTest;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @JigTest
 class MyBatisStatementReaderTest {
@@ -34,8 +35,8 @@ class MyBatisStatementReaderTest {
 
         SqlStatement myBatisStatement = myBatisStatements.findById(SqlStatementId.from(ComplexMapper.class.getCanonicalName() + ".select_ognl")).orElseThrow();
         assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
-        // OGNLを使ったSQLは現時点では空になる
-        assertEquals("", myBatisStatement.query().text());
+        // OGNLを使ったSQLは現時点では空になりunsupportedになる
+        assertFalse(myBatisStatement.query().supported());
     }
 
     @Test
@@ -47,7 +48,7 @@ class MyBatisStatementReaderTest {
         assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
         // OGNLを使ったSQLは現時点では空になる
         // ・・・のだが、 <where>タグなどで分割されているとOGNLを使用していない部分だけクエリが出てくる
-        assertEquals("order by 1", myBatisStatement.query().text());
+        assertEquals("order by 1", myBatisStatement.query().rawText());
     }
 
     @ParameterizedTest

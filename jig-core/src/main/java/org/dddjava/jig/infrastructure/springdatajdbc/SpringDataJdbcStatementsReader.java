@@ -47,7 +47,8 @@ public class SpringDataJdbcStatementsReader {
                                             .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY))
                                             .findFirst()
                                             .flatMap(annotation -> annotation.elementTextOf("value"))
-                                            .map(Query::normalizeSql)
+                                            .map(Query::from)
+                                            .map(Query::normalizedQuery)
                                             .filter(value -> !value.isBlank())
                                             .map(Query::from)
                                             .orElse(Query.unsupported()),
@@ -67,7 +68,7 @@ public class SpringDataJdbcStatementsReader {
                             .forEach(methodName -> {
                                 Query query = queryByMethodName.getOrDefault(methodName, Query.unsupported());
                                 Optional<SqlType> inferredSqlType = query.supported()
-                                        ? SqlType.inferSqlTypeFromQuery(query.text())
+                                        ? SqlType.inferSqlTypeFromQuery(query)
                                         : inferSqlType(methodName);
                                 inferredSqlType.ifPresent(sqlType -> {
                                     Query resolvedQuery = query.supported()

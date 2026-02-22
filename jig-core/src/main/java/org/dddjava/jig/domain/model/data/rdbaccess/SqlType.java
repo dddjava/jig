@@ -54,14 +54,14 @@ public enum SqlType {
         return new Table("（解析失敗）");
     }
 
-    public static Optional<SqlType> inferSqlTypeFromQuery(String query) {
-        String normalizedQuery = Query.normalizeSql(query).toLowerCase(Locale.ROOT);
+    public static Optional<SqlType> inferSqlTypeFromQuery(Query query) {
+        String normalizedQuery = query.normalizedQuery().toLowerCase(Locale.ROOT);
         if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
         if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);
         if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
         if (normalizedQuery.startsWith("delete")) return Optional.of(DELETE);
 
-        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query);
+        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query.text());
         return Optional.empty();
     }
 }

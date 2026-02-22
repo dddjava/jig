@@ -32,7 +32,11 @@ public record Query(String text) {
         return !UNSUPPORTED.equals(text);
     }
 
-    public static String normalizeSql(String query) {
+    public String normalizedQuery() {
+        return normalizeSql(text());
+    }
+
+    private static String normalizeSql(String query) {
         String remaining = query;
         while (true) {
             String trimmed = remaining.stripLeading();

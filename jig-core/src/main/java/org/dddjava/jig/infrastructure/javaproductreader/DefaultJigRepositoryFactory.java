@@ -16,13 +16,12 @@ import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;
 import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
-import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
-import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReaderImpl;
+import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.infrastructure.springdatajdbc.SpringDataJdbcStatementsReader;
 
 import java.nio.file.Path;
@@ -58,7 +57,7 @@ public class DefaultJigRepositoryFactory {
                 new ClassOrJavaSourceCollector(configuration.jigEventRepository()),
                 new AsmClassSourceReader(),
                 new JavaparserReader(),
-                new MyBatisStatementsReaderImpl(),
+                new MyBatisStatementsReader(),
                 new SpringDataJdbcStatementsReader(),
                 configuration.jigEventRepository(), configuration.glossaryRepository()
         );

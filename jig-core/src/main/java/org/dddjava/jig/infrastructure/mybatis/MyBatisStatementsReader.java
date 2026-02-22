@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.data.rdbaccess.*;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisReadResult;
-import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +37,10 @@ import java.util.stream.Stream;
  * クラスパスにMapperが依存しているクラスが存在しない場合、MyBatisがMapperを読み取れないため解析できません。
  * それでも出力したい場合は、実行時に該当のクラスをクラスパスに含めてください。
  */
-public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
+public class MyBatisStatementsReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyBatisStatementsReaderImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyBatisStatementsReader.class);
 
-    @Override
     public MyBatisReadResult readFrom(Collection<JigTypeHeader> jigTypeHeaders, List<Path> classPaths) {
         // Mapperアノテーションがついているクラスを対象にする
         Collection<String> classNames = jigTypeHeaders.stream()

@@ -113,23 +113,20 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private Optional<String> resolveTableName(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        Optional<TypeId> entityTypeId = resolveEntityTypeId(repositoryHeader, declarationMap, visited);
-        if (entityTypeId.isEmpty()) return Optional.empty();
+        return resolveEntityTypeId(repositoryHeader, declarationMap, visited)
+                .map(typeId -> {
+                    ClassDeclaration entityDeclaration = declarationMap.get(typeId);
+                    if (entityDeclaration == null) {
+                        return toSnakeCase(typeId.asSimpleText());
+                    }
 
-        TypeId typeId = entityTypeId.orElseThrow();
-        ClassDeclaration entityDeclaration = declarationMap.get(typeId);
-        if (entityDeclaration == null) {
-            return Optional.of(toSnakeCase(typeId.asSimpleText()));
-        }
-
-        Optional<String> tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
-                .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
-                .findFirst()
-                .flatMap(annotation -> annotation.elementTextOf("value"))
-                .filter(value -> !value.isBlank());
-
-        if (tableName.isPresent()) return tableName;
-        return Optional.of(toSnakeCase(entityDeclaration.jigTypeHeader().simpleName()));
+                    return entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
+                            .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
+                            .findFirst()
+                            .flatMap(annotation -> annotation.elementTextOf("value"))
+                            .filter(value -> !value.isBlank())
+                            .orElseGet(() -> toSnakeCase(entityDeclaration.jigTypeHeader().simpleName()));
+                });
     }
 
     private Optional<TypeId> resolveEntityTypeId(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {

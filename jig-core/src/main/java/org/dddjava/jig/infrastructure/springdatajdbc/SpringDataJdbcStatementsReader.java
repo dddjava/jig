@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toMap;
+
 public class SpringDataJdbcStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
 
@@ -27,7 +29,7 @@ public class SpringDataJdbcStatementsReader {
      */
     public SqlStatements readFrom(Collection<ClassDeclaration> classDeclarations) {
         Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
-                .collect(java.util.stream.Collectors.toMap(
+                .collect(toMap(
                         declaration -> declaration.jigTypeHeader().id(),
                         declaration -> declaration,
                         (left, right) -> left,
@@ -41,7 +43,7 @@ public class SpringDataJdbcStatementsReader {
                 .forEach(declaration -> {
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
                     Map<String, Query> queryByMethodName = declaration.jigMethodDeclarations().stream()
-                            .collect(java.util.stream.Collectors.toMap(
+                            .collect(toMap(
                                     methodDeclaration -> methodDeclaration.header().name(),
                                     methodDeclaration -> methodDeclaration.header().declarationAnnotationStream()
                                             .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY))
@@ -53,7 +55,7 @@ public class SpringDataJdbcStatementsReader {
                                     LinkedHashMap::new))
                             .entrySet().stream()
                             .filter(entry -> entry.getValue().supported())
-                            .collect(java.util.stream.Collectors.toMap(
+                            .collect(toMap(
                                     Map.Entry::getKey,
                                     Map.Entry::getValue,
                                     (left, right) -> left,
@@ -71,8 +73,8 @@ public class SpringDataJdbcStatementsReader {
                                     Query resolvedQuery = query.supported()
                                             ? query
                                             : tableName.map(name -> Query.from(defaultQuery(sqlType, name))).orElse(Query.unsupported());
-                                String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
-                                SqlStatementId statementId = SqlStatementId.from(statementValue);
+                                    String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
+                                    SqlStatementId statementId = SqlStatementId.from(statementValue);
                                     statements.put(statementId, new SqlStatement(statementId, resolvedQuery, sqlType));
                                 });
                             });

@@ -13,7 +13,7 @@
 </header>
 
 <main>
-    <section>
+    <section th:if="${PackageSummary != null or Glossary != null or DomainSummary != null or ApplicationSummary != null or UsecaseSummary != null or EntrypointSummary != null or EnumSummary != null or RepositorySummary != null or Insight != null}">
         <h2>概要: HTML</h2>
         <ul>
             <li th:if="${PackageSummary}"><a href="#" th:href="${PackageSummary}">パッケージ概要</a></li>
@@ -27,13 +27,13 @@
             <li th:if="${Insight}"><a href="#" th:href="${Insight}">インサイト</a> (incubate)</li>
         </ul>
     </section>
-    <section>
+    <section th:if="${ListOutput != null}">
         <h2>一覧: HTML</h2>
         <ul>
             <li th:if="${ListOutput}"><a href="#" th:href="${ListOutput}">一覧出力</a> (incubate)</li>
         </ul>
     </section>
-    <section>
+    <section th:if="${BusinessRuleList != null or ApplicationList != null or TermList != null}">
         <h2>一覧: Excel</h2>
         <ul>
             <li th:if="${BusinessRuleList}"><a href="#" th:href="${BusinessRuleList}">ビジネスルール一覧</a></li>

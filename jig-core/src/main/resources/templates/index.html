@@ -42,7 +42,7 @@
         </ul>
     </section>
 
-    <section class="diagram">
+    <section class="diagram" th:if="${not #lists.isEmpty(diagrams)}">
         <h2>図: <span th:text="${diagramFormat}">SVG</span></h2>
         <div th:each="diagram : ${diagrams}">
             <h3 th:text="${diagram.label()}">XXX</h3>

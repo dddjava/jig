@@ -55,7 +55,7 @@ public enum SqlType {
     }
 
     public static Optional<SqlType> inferSqlTypeFromQuery(String query) {
-        String normalizedQuery = skipLeadingSqlDecorations(query).toLowerCase(Locale.ROOT);
+        String normalizedQuery = Query.normalizeSql(query).toLowerCase(Locale.ROOT);
         if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
         if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);
         if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
@@ -63,33 +63,5 @@ public enum SqlType {
 
         logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query);
         return Optional.empty();
-    }
-
-    private static String skipLeadingSqlDecorations(String query) {
-        String remaining = query;
-        while (true) {
-            String trimmed = remaining.stripLeading();
-            if (trimmed.startsWith("\uFEFF")) {
-                remaining = trimmed.substring(1);
-                continue;
-            }
-            if (trimmed.startsWith("--")) {
-                int newlineIndex = trimmed.indexOf('\n');
-                if (newlineIndex < 0) return "";
-                remaining = trimmed.substring(newlineIndex + 1);
-                continue;
-            }
-            if (trimmed.startsWith("/*")) {
-                int commentEndIndex = trimmed.indexOf("*/");
-                if (commentEndIndex < 0) return "";
-                remaining = trimmed.substring(commentEndIndex + 2);
-                continue;
-            }
-            if (trimmed.startsWith("(")) {
-                remaining = trimmed.substring(1);
-                continue;
-            }
-            return trimmed;
-        }
     }
 }

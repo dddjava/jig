@@ -47,7 +47,7 @@ public class SpringDataJdbcStatementsReader {
                                             .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY))
                                             .findFirst()
                                             .flatMap(annotation -> annotation.elementTextOf("value"))
-                                            .map(this::normalizeQuery)
+                                            .map(Query::normalizeSql)
                                             .filter(value -> !value.isBlank())
                                             .map(Query::from)
                                             .orElse(Query.unsupported()),
@@ -178,38 +178,6 @@ public class SpringDataJdbcStatementsReader {
         // 判別できないものは空にしておく
         logger.info("SQLの種類がメソッド名 {} から判別できませんでした。CRUDのどれかに該当する場合は対象にしたいのでissueお願いします。", methodName);
         return Optional.empty();
-    }
-
-    private String normalizeQuery(String query) {
-        return skipLeadingSqlDecorations(query);
-    }
-
-    private String skipLeadingSqlDecorations(String query) {
-        String remaining = query;
-        while (true) {
-            String trimmed = remaining.stripLeading();
-            if (trimmed.startsWith("\uFEFF")) {
-                remaining = trimmed.substring(1);
-                continue;
-            }
-            if (trimmed.startsWith("--")) {
-                int newlineIndex = trimmed.indexOf('\n');
-                if (newlineIndex < 0) return "";
-                remaining = trimmed.substring(newlineIndex + 1);
-                continue;
-            }
-            if (trimmed.startsWith("/*")) {
-                int commentEndIndex = trimmed.indexOf("*/");
-                if (commentEndIndex < 0) return "";
-                remaining = trimmed.substring(commentEndIndex + 2);
-                continue;
-            }
-            if (trimmed.startsWith("(")) {
-                remaining = trimmed.substring(1);
-                continue;
-            }
-            return trimmed;
-        }
     }
 
     private String defaultQuery(SqlType sqlType, String tableName) {

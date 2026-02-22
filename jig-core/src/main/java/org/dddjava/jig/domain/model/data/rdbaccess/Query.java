@@ -31,4 +31,32 @@ public record Query(String text) {
     public boolean supported() {
         return !UNSUPPORTED.equals(text);
     }
+
+    public static String normalizeSql(String query) {
+        String remaining = query;
+        while (true) {
+            String trimmed = remaining.stripLeading();
+            if (trimmed.startsWith("\uFEFF")) {
+                remaining = trimmed.substring(1);
+                continue;
+            }
+            if (trimmed.startsWith("--")) {
+                int newlineIndex = trimmed.indexOf('\n');
+                if (newlineIndex < 0) return "";
+                remaining = trimmed.substring(newlineIndex + 1);
+                continue;
+            }
+            if (trimmed.startsWith("/*")) {
+                int commentEndIndex = trimmed.indexOf("*/");
+                if (commentEndIndex < 0) return "";
+                remaining = trimmed.substring(commentEndIndex + 2);
+                continue;
+            }
+            if (trimmed.startsWith("(")) {
+                remaining = trimmed.substring(1);
+                continue;
+            }
+            return trimmed;
+        }
+    }
 }

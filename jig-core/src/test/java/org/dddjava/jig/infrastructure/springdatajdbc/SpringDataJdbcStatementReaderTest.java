@@ -4,72 +4,68 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
 import testing.JigTest;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JigTest
 class SpringDataJdbcStatementReaderTest {
 
-    @Test
-    void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる(JigRepository jigRepository) {
+    @ParameterizedTest
+    @MethodSource("repositoryMethodAndSqlType")
+    void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる(
+            String methodName,
+            SqlType expectedSqlType,
+            JigRepository jigRepository
+    ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
         var namespace = SpringDataJdbcOrderRepository.class.getCanonicalName();
+        var statement = statements.findById(SqlStatementId.from(namespace + "." + methodName)).orElseThrow();
 
-        var save = statements.findById(SqlStatementId.from(namespace + ".save")).orElseThrow();
-        assertEquals("[spring_data_jdbc_orders]", save.tables().asText());
-        assertEquals(SqlType.INSERT, save.sqlType());
-
-        var findById = statements.findById(SqlStatementId.from(namespace + ".findById")).orElseThrow();
-        assertEquals("[spring_data_jdbc_orders]", findById.tables().asText());
-        assertEquals(SqlType.SELECT, findById.sqlType());
-
-        var deleteById = statements.findById(SqlStatementId.from(namespace + ".deleteById")).orElseThrow();
-        assertEquals("[spring_data_jdbc_orders]", deleteById.tables().asText());
-        assertEquals(SqlType.DELETE, deleteById.sqlType());
-
-        var updateById = statements.findById(SqlStatementId.from(namespace + ".updateById")).orElseThrow();
-        assertEquals("[spring_data_jdbc_orders]", updateById.tables().asText());
-        assertEquals(SqlType.UPDATE, updateById.sqlType());
-
-        var updateByIdWithComment = statements.findById(SqlStatementId.from(namespace + ".updateByIdWithComment")).orElseThrow();
-        assertEquals("[spring_data_jdbc_orders]", updateByIdWithComment.tables().asText());
-        assertEquals(SqlType.UPDATE, updateByIdWithComment.sqlType());
+        assertEquals("[spring_data_jdbc_orders]", statement.tables().asText());
+        assertEquals(expectedSqlType, statement.sqlType());
     }
 
-    @Test
-    void DatasourceAnglesにSpringDataJdbcのCRUDが反映される(JigService jigService, JigRepository jigRepository) {
+    @ParameterizedTest
+    @MethodSource("repositoryMethodAndSqlType")
+    void DatasourceAnglesにSpringDataJdbcのCRUDが反映される(
+            String methodName,
+            SqlType expectedSqlType,
+            JigService jigService,
+            JigRepository jigRepository
+    ) {
         var datasourceAngles = jigService.datasourceAngles(jigRepository).list().stream()
                 .filter(angle -> angle.declaringType().fqn().equals(SpringDataJdbcOrderRepository.class.getCanonicalName()))
                 .toList();
+        var angle = datasourceAngles.stream()
+                .filter(found -> found.interfaceMethod().name().equals(methodName))
+                .findFirst()
+                .orElseThrow();
 
         assertEquals(5, datasourceAngles.size());
-        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
-                .filter(angle -> angle.interfaceMethod().name().equals("save"))
-                .findFirst()
-                .orElseThrow()
-                .insertTables());
-        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
-                .filter(angle -> angle.interfaceMethod().name().equals("findById"))
-                .findFirst()
-                .orElseThrow()
-                .selectTables());
-        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
-                .filter(angle -> angle.interfaceMethod().name().equals("updateById"))
-                .findFirst()
-                .orElseThrow()
-                .updateTables());
-        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
-                .filter(angle -> angle.interfaceMethod().name().equals("updateByIdWithComment"))
-                .findFirst()
-                .orElseThrow()
-                .updateTables());
-        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
-                .filter(angle -> angle.interfaceMethod().name().equals("deleteById"))
-                .findFirst()
-                .orElseThrow()
-                .deleteTables());
+        var expectedTables = "[spring_data_jdbc_orders]";
+        switch (expectedSqlType) {
+            case INSERT -> assertEquals(expectedTables, angle.insertTables());
+            case SELECT -> assertEquals(expectedTables, angle.selectTables());
+            case UPDATE -> assertEquals(expectedTables, angle.updateTables());
+            case DELETE -> assertEquals(expectedTables, angle.deleteTables());
+            default -> throw new IllegalStateException("未対応のSQL種別: " + expectedSqlType);
+        }
+    }
+
+    static Stream<Arguments> repositoryMethodAndSqlType() {
+        return Stream.of(
+                Arguments.of("save", SqlType.INSERT),
+                Arguments.of("findById", SqlType.SELECT),
+                Arguments.of("deleteById", SqlType.DELETE),
+                Arguments.of("updateById", SqlType.UPDATE),
+                Arguments.of("updateByIdWithComment", SqlType.UPDATE)
+        );
     }
 }

@@ -43,7 +43,8 @@ public class SpringDataJdbcStatementsReader {
                 .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
                 .forEach(declaration -> {
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
-                    Map<String, Query> queryByMethodName = declaration.jigMethodDeclarations().stream()
+
+                    Map<String, Query> queryByMethodAnnotation = declaration.jigMethodDeclarations().stream()
                             .collect(toMap(
                                     methodDeclaration -> methodDeclaration.header().name(),
                                     methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
@@ -61,7 +62,7 @@ public class SpringDataJdbcStatementsReader {
                             .map(jigMethodDeclaration -> jigMethodDeclaration.header().name())
                             .distinct()
                             .forEach(methodName -> {
-                                Query query = queryByMethodName.getOrDefault(methodName, Query.unsupported());
+                                Query query = queryByMethodAnnotation.getOrDefault(methodName, Query.unsupported());
                                 Optional<SqlType> inferredSqlType = query.supported()
                                         ? SqlType.inferSqlTypeFromQuery(query)
                                         : inferSqlType(methodName);

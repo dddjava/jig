@@ -108,7 +108,7 @@ public class DefaultJigRepositoryFactory {
                             asmClassSourceReader.readClasses(sources.classFilePaths())));
 
             SqlStatements sqlStatements = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
-                    readMyBatisStatements(sources, classDeclarations)));
+                    readSqlStatements(sources, classDeclarations)));
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, sqlStatements);
@@ -144,7 +144,7 @@ public class DefaultJigRepositoryFactory {
         }));
     }
 
-    private SqlStatements readMyBatisStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
+    private SqlStatements readSqlStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)

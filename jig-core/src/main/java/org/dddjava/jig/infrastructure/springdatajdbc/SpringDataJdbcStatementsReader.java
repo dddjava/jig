@@ -40,23 +40,43 @@ public class SpringDataJdbcStatementsReader {
                 .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
                 .forEach(declaration -> {
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
-                    Set<String> queryAnnotatedMethodNames = declaration.jigMethodDeclarations().stream()
-                            .filter(methodDeclaration -> methodDeclaration.header().declarationAnnotationStream()
-                                    .anyMatch(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY)))
-                            .map(methodDeclaration -> methodDeclaration.header().name())
-                            .collect(java.util.stream.Collectors.toSet());
+                    Map<String, Query> queryByMethodName = declaration.jigMethodDeclarations().stream()
+                            .collect(java.util.stream.Collectors.toMap(
+                                    methodDeclaration -> methodDeclaration.header().name(),
+                                    methodDeclaration -> methodDeclaration.header().declarationAnnotationStream()
+                                            .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY))
+                                            .findFirst()
+                                            .flatMap(annotation -> annotation.elementTextOf("value"))
+                                            .filter(value -> !value.isBlank())
+                                            .map(Query::from)
+                                            .orElse(Query.unsupported()),
+                                    (left, right) -> left.supported() ? left : right.supported() ? right : left,
+                                    LinkedHashMap::new))
+                            .entrySet().stream()
+                            .filter(entry -> entry.getValue().supported())
+                            .collect(java.util.stream.Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (left, right) -> left,
+                                    LinkedHashMap::new));
+
                     declaration.jigMethodDeclarations().stream()
                             .map(jigMethodDeclaration -> jigMethodDeclaration.header().name())
                             .distinct()
-                            .filter(methodName -> !queryAnnotatedMethodNames.contains(methodName))
-                            .forEach(methodName -> inferSqlType(methodName).ifPresent(sqlType -> {
-                                Query query = tableName
-                                        .map(name -> Query.from(defaultQuery(sqlType, name)))
-                                        .orElse(Query.unsupported());
+                            .forEach(methodName -> {
+                                Query query = queryByMethodName.getOrDefault(methodName, Query.unsupported());
+                                Optional<SqlType> inferredSqlType = query.supported()
+                                        ? inferSqlTypeFromQuery(query.text())
+                                        : inferSqlType(methodName);
+                                inferredSqlType.ifPresent(sqlType -> {
+                                    Query resolvedQuery = query.supported()
+                                            ? query
+                                            : tableName.map(name -> Query.from(defaultQuery(sqlType, name))).orElse(Query.unsupported());
                                 String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
                                 SqlStatementId statementId = SqlStatementId.from(statementValue);
-                                statements.put(statementId, new SqlStatement(statementId, query, sqlType));
-                            }));
+                                    statements.put(statementId, new SqlStatement(statementId, resolvedQuery, sqlType));
+                                });
+                            });
                 });
 
         return new SqlStatements(List.copyOf(statements.values()));
@@ -156,6 +176,17 @@ public class SpringDataJdbcStatementsReader {
 
         // 判別できないものは空にしておく
         logger.info("SQLの種類がメソッド名 {} から判別できませんでした。CRUDのどれかに該当する場合は対象にしたいのでissueお願いします。", methodName);
+        return Optional.empty();
+    }
+
+    private Optional<SqlType> inferSqlTypeFromQuery(String query) {
+        String normalizedQuery = query.stripLeading().toLowerCase(Locale.ROOT);
+        if (normalizedQuery.startsWith("insert")) return Optional.of(SqlType.INSERT);
+        if (normalizedQuery.startsWith("select")) return Optional.of(SqlType.SELECT);
+        if (normalizedQuery.startsWith("update")) return Optional.of(SqlType.UPDATE);
+        if (normalizedQuery.startsWith("delete")) return Optional.of(SqlType.DELETE);
+
+        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query);
         return Optional.empty();
     }
 

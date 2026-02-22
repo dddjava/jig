@@ -9,7 +9,6 @@ import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
 import testing.JigTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigTest
 class SpringDataJdbcStatementReaderTest {
@@ -31,7 +30,9 @@ class SpringDataJdbcStatementReaderTest {
         assertEquals("[spring_data_jdbc_orders]", deleteById.tables().asText());
         assertEquals(SqlType.DELETE, deleteById.sqlType());
 
-        assertTrue(statements.findById(SqlStatementId.from(namespace + ".updateById")).isEmpty());
+        var updateById = statements.findById(SqlStatementId.from(namespace + ".updateById")).orElseThrow();
+        assertEquals("[spring_data_jdbc_orders]", updateById.tables().asText());
+        assertEquals(SqlType.UPDATE, updateById.sqlType());
     }
 
     @Test
@@ -51,7 +52,7 @@ class SpringDataJdbcStatementReaderTest {
                 .findFirst()
                 .orElseThrow()
                 .selectTables());
-        assertEquals("[]", datasourceAngles.stream()
+        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
                 .filter(angle -> angle.interfaceMethod().name().equals("updateById"))
                 .findFirst()
                 .orElseThrow()

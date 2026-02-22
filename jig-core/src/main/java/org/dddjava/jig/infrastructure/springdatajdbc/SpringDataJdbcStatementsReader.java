@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class SpringDataJdbcStatementsReader {
 
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
-    private static final String SPRING_DATA_QUERY = "org.springframework.data.jdbc.repository.query.Query";
+    private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
     /**
      * ASMで読み取ったクラス情報から、Spring Data JDBCのRepositoryメソッドをSQLステートメントとして抽出する。
@@ -45,12 +46,7 @@ public class SpringDataJdbcStatementsReader {
                     Map<String, Query> queryByMethodName = declaration.jigMethodDeclarations().stream()
                             .collect(toMap(
                                     methodDeclaration -> methodDeclaration.header().name(),
-                                    methodDeclaration -> methodDeclaration.header().declarationAnnotationStream()
-                                            .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY))
-                                            .findFirst()
-                                            .flatMap(annotation -> annotation.elementTextOf("value"))
-                                            .map(Query::from)
-                                            .orElse(Query.unsupported()),
+                                    methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
                                     (left, right) -> left.supported() ? left : right.supported() ? right : left,
                                     LinkedHashMap::new))
                             .entrySet().stream()
@@ -81,6 +77,20 @@ public class SpringDataJdbcStatementsReader {
                 });
 
         return new SqlStatements(List.copyOf(statements.values()));
+    }
+
+    /**
+     * SpringDataJDBCのQueryアノテーションからクエリを取得する
+     *
+     * アノテーションがない場合は `Query.unsupported()` になる
+     */
+    private static Query resolveQueryFromAnnotation(JigMethodDeclaration methodDeclaration) {
+        return methodDeclaration.header().declarationAnnotationStream()
+                .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY_ANNOTATION))
+                .findFirst()
+                .flatMap(annotation -> annotation.elementTextOf("value"))
+                .map(Query::from)
+                .orElse(Query.unsupported());
     }
 
     private boolean isInterface(ClassDeclaration declaration) {

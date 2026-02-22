@@ -33,7 +33,7 @@ class IndexViewTest {
         assertFalse(actual.contains("<h2>概要: HTML</h2>"));
         assertFalse(actual.contains("<h2>一覧: HTML</h2>"));
         assertFalse(actual.contains("<h2>一覧: Excel</h2>"));
-        assertFalse(actual.contains("<section class=\"diagram\""));
+        assertFalse(actual.contains("<h2>図: "));
     }
 
     @Test
@@ -52,7 +52,7 @@ class IndexViewTest {
         assertTrue(actual.contains("<h2>概要: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: Excel</h2>"));
-        assertTrue(actual.contains("<section class=\"diagram\""));
+        assertTrue(actual.contains("<h2>図: "));
     }
 
     private String readIndex() throws IOException {

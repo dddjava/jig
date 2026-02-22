@@ -41,8 +41,7 @@ public enum SqlType {
             }
         }
 
-        logger.warn("{} {} を {} としてテーブル名が解析できませんでした。このMapper由来の解析結果はドキュメントに出力されません。" +
-                        "MyBatisの動的なSQLなどは完全に再現できません。JIGが認識しているSQL文=[{}]",
+        logger.warn("{} {} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
                 sqlStatementId.namespace(),
                 sqlStatementId.id(),
                 this, sql);

@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
+ * MyBatis用のSQL読み取り機
+ *
  * 本クラスではMyBatisの内部APIを使用してSQLを取得しています。
  * ごくシンプルな使い方のみを想定しているため、高度な使い方をしている場合は正確な情報が取得できません。
  *

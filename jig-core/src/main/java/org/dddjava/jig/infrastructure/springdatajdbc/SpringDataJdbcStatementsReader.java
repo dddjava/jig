@@ -17,6 +17,7 @@ public class SpringDataJdbcStatementsReader {
     private static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
+    private static final String SPRING_DATA_QUERY = "org.springframework.data.jdbc.repository.query.Query";
 
     /**
      * ASMで読み取ったクラス情報から、Spring Data JDBCのRepositoryメソッドをSQLステートメントとして抽出する。
@@ -41,9 +42,15 @@ public class SpringDataJdbcStatementsReader {
                 .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
                 .forEach(declaration -> {
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
+                    Set<String> queryAnnotatedMethodNames = declaration.jigMethodDeclarations().stream()
+                            .filter(methodDeclaration -> methodDeclaration.header().declarationAnnotationStream()
+                                    .anyMatch(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY)))
+                            .map(methodDeclaration -> methodDeclaration.header().name())
+                            .collect(java.util.stream.Collectors.toSet());
                     declaration.jigMethodDeclarations().stream()
                             .map(jigMethodDeclaration -> jigMethodDeclaration.header().name())
                             .distinct()
+                            .filter(methodName -> !queryAnnotatedMethodNames.contains(methodName))
                             .forEach(methodName -> inferSqlType(methodName).ifPresent(sqlType -> {
                                 Query query = tableName
                                         .map(name -> Query.from(defaultQuery(sqlType, name)))

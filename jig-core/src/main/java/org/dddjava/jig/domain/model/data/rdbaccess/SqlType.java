@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.data.rdbaccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -50,5 +52,44 @@ public enum SqlType {
 
     public Table unexpectedTable() {
         return new Table("（解析失敗）");
+    }
+
+    public static Optional<SqlType> inferSqlTypeFromQuery(String query) {
+        String normalizedQuery = skipLeadingSqlDecorations(query).toLowerCase(Locale.ROOT);
+        if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
+        if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);
+        if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
+        if (normalizedQuery.startsWith("delete")) return Optional.of(DELETE);
+
+        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query);
+        return Optional.empty();
+    }
+
+    private static String skipLeadingSqlDecorations(String query) {
+        String remaining = query;
+        while (true) {
+            String trimmed = remaining.stripLeading();
+            if (trimmed.startsWith("\uFEFF")) {
+                remaining = trimmed.substring(1);
+                continue;
+            }
+            if (trimmed.startsWith("--")) {
+                int newlineIndex = trimmed.indexOf('\n');
+                if (newlineIndex < 0) return "";
+                remaining = trimmed.substring(newlineIndex + 1);
+                continue;
+            }
+            if (trimmed.startsWith("/*")) {
+                int commentEndIndex = trimmed.indexOf("*/");
+                if (commentEndIndex < 0) return "";
+                remaining = trimmed.substring(commentEndIndex + 2);
+                continue;
+            }
+            if (trimmed.startsWith("(")) {
+                remaining = trimmed.substring(1);
+                continue;
+            }
+            return trimmed;
+        }
     }
 }

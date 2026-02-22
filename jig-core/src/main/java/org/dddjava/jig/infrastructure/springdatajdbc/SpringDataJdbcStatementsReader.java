@@ -67,7 +67,7 @@ public class SpringDataJdbcStatementsReader {
                             .forEach(methodName -> {
                                 Query query = queryByMethodName.getOrDefault(methodName, Query.unsupported());
                                 Optional<SqlType> inferredSqlType = query.supported()
-                                        ? inferSqlTypeFromQuery(query.text())
+                                        ? SqlType.inferSqlTypeFromQuery(query.text())
                                         : inferSqlType(methodName);
                                 inferredSqlType.ifPresent(sqlType -> {
                                     Query resolvedQuery = query.supported()
@@ -177,17 +177,6 @@ public class SpringDataJdbcStatementsReader {
 
         // 判別できないものは空にしておく
         logger.info("SQLの種類がメソッド名 {} から判別できませんでした。CRUDのどれかに該当する場合は対象にしたいのでissueお願いします。", methodName);
-        return Optional.empty();
-    }
-
-    private Optional<SqlType> inferSqlTypeFromQuery(String query) {
-        String normalizedQuery = normalizeQuery(query).toLowerCase(Locale.ROOT);
-        if (normalizedQuery.startsWith("insert")) return Optional.of(SqlType.INSERT);
-        if (normalizedQuery.startsWith("select")) return Optional.of(SqlType.SELECT);
-        if (normalizedQuery.startsWith("update")) return Optional.of(SqlType.UPDATE);
-        if (normalizedQuery.startsWith("delete")) return Optional.of(SqlType.DELETE);
-
-        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query);
         return Optional.empty();
     }
 

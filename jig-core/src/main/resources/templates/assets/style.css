@@ -601,6 +601,14 @@ label {
     border: 1px solid #ccc;
     background-color: #f9f9f9;
 }
+.package-summary #package-relation-diagram {
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+}
+.package-summary #package-relation-diagram svg {
+    margin: 0 auto;
+}
 .package-summary .mutual-dependencies h2 {
     margin: 0 0 6px 0;
     font-size: 1em;

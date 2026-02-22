@@ -42,6 +42,7 @@ public class SpringDataJdbcStatementsReader {
                 .filter(this::isInterface)
                 .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
                 .forEach(declaration -> {
+                    // TODO: ここでテーブル名が決まっているのに、一回SQLにしてからパースしてTableにするとかしてる。無駄。
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
 
                     Map<String, Query> queryByMethodAnnotation = collectQueryByMethodAnnotation(declaration);
@@ -113,19 +114,23 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private Optional<String> resolveTableName(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+        // TODO: @MappedCollection などを辿って複数テーブル引っ張れるようにする
         return resolveEntityTypeId(repositoryHeader, declarationMap, visited)
                 .map(typeId -> {
                     ClassDeclaration entityDeclaration = declarationMap.get(typeId);
                     if (entityDeclaration == null) {
+                        // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
                         return toSnakeCase(typeId.asSimpleText());
                     }
 
                     return entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                             .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                             .findFirst()
-                            .flatMap(annotation -> annotation.elementTextOf("value"))
+                            .flatMap(annotation -> annotation.elementTextOf("value")) // TODO nameがaliasなので対応する？
                             .filter(value -> !value.isBlank())
-                            .orElseGet(() -> toSnakeCase(entityDeclaration.jigTypeHeader().simpleName()));
+                            // Tableアノテーションがついていない or valueがない
+                            // テーブル名が指定されていないので、エンティティの型名をテーブル名としておく
+                            .orElseGet(() -> toSnakeCase(typeId.asSimpleText()));
                 });
     }
 
@@ -185,6 +190,7 @@ public class SpringDataJdbcStatementsReader {
         return Optional.empty();
     }
 
+    // TODO: あとでSQLをパースしてテーブル名を取り出すためだけに存在する。なくせるはず。
     private String defaultQuery(SqlType sqlType, String tableName) {
         return switch (sqlType) {
             case INSERT -> "insert into " + tableName + " values (?)";

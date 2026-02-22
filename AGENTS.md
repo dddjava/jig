@@ -167,13 +167,3 @@ Determine the document name from [`JigDocument.java`](jig-core/src/main/java/org
 - If multiple documents match, add all relevant `JIG-DOCUMENT` footers.
 - For shared assets (e.g., `assets/jig.js`) that affect multiple documents, add a footer
   **only when the task explicitly targets a document**. Otherwise omit to avoid false attribution.
-
----
-
-## Branch Strategy
-
-- Create a branch per request using: `agent/<topic>`
-- Branch from `main`.
-- Use short, lowercase, hyphenated names describing the work.
-
-Example: `agent/package-glossary-link`

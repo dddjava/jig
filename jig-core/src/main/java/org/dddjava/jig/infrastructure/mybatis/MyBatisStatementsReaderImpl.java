@@ -106,7 +106,7 @@ public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                SqlStatementId myBatisStatementId = SqlStatementId.from(mappedStatement.getId());
+                SqlStatementId sqlStatementId = resolveStatementId(mappedStatement);
 
                 Query query;
                 try {
@@ -130,13 +130,40 @@ public class MyBatisStatementsReaderImpl implements MyBatisStatementsReader {
                         yield SqlType.SELECT;
                     }
                 };
-                SqlStatement myBatisStatement = new SqlStatement(myBatisStatementId, query, sqlType);
+                SqlStatement myBatisStatement = new SqlStatement(sqlStatementId, query, sqlType);
                 list.add(myBatisStatement);
             }
         }
 
         logger.debug("取得したSQL: {}件", list.size());
         return new MyBatisReadResult(new SqlStatements(list), sqlReadStatus);
+    }
+
+    /**
+     * MyBatisのステートメント情報からSQLステートメントIDを作成する
+     *
+     * 以下のMapperXMLとMapperインタフェースの場合、ステートメントIDは `com.example.mybatis.ExampleMapper.selectAll` となる。
+     *
+     * <pre>
+     * {@code
+     * <mapper namespace="com.example.mybatis.ExampleMapper">
+     *     <select id="selectAll">
+     *         SELECT * FROM EXAMPLE
+     *     </select>
+     * </mapper>
+     * }
+     * </pre>
+     * <pre>
+     * {@code
+     * package com.example.mybatis;
+     * interface ExampleMapper {
+     *     List selectAll();
+     * }
+     * }
+     * </pre>
+     */
+    private static SqlStatementId resolveStatementId(MappedStatement mappedStatement) {
+        return SqlStatementId.from(mappedStatement.getId());
     }
 
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {

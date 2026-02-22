@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -33,7 +35,7 @@ public enum SqlType {
      * 現在は1テーブルのみ対応
      * 複問い合わせやWITHなどは未対応
      */
-    public Table extractTable(String sql, MyBatisStatementId myBatisStatementId) {
+    public Table extractTable(String sql, SqlStatementId sqlStatementId) {
         for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
             if (matcher.matches()) {
@@ -41,15 +43,25 @@ public enum SqlType {
             }
         }
 
-        logger.warn("{} {} を {} としてテーブル名が解析できませんでした。このMapper由来の解析結果はドキュメントに出力されません。" +
-                        "MyBatisの動的なSQLなどは完全に再現できません。JIGが認識しているSQL文=[{}]",
-                myBatisStatementId.namespace(),
-                myBatisStatementId.id(),
+        logger.warn("{} {} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
+                sqlStatementId.namespace(),
+                sqlStatementId.id(),
                 this, sql);
         return unexpectedTable();
     }
 
     public Table unexpectedTable() {
         return new Table("（解析失敗）");
+    }
+
+    public static Optional<SqlType> inferSqlTypeFromQuery(Query query) {
+        String normalizedQuery = query.normalizedQuery().toLowerCase(Locale.ROOT);
+        if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
+        if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);
+        if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
+        if (normalizedQuery.startsWith("delete")) return Optional.of(DELETE);
+
+        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query.rawText());
+        return Optional.empty();
     }
 }

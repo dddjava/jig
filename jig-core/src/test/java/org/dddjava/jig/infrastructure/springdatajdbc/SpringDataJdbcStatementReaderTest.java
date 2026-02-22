@@ -1,0 +1,71 @@
+package org.dddjava.jig.infrastructure.springdatajdbc;
+
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
+import org.dddjava.jig.domain.model.information.JigRepository;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
+import testing.JigTest;
+
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+@JigTest
+class SpringDataJdbcStatementReaderTest {
+
+    @ParameterizedTest
+    @MethodSource("repositoryMethodAndSqlType")
+    void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる(
+            String methodName,
+            SqlType expectedSqlType,
+            JigRepository jigRepository
+    ) {
+        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var namespace = SpringDataJdbcOrderRepository.class.getCanonicalName();
+        var statement = statements.findById(SqlStatementId.from(namespace + "." + methodName)).orElseThrow();
+
+        assertEquals("[spring_data_jdbc_orders]", statement.tables().asText());
+        assertEquals(expectedSqlType, statement.sqlType());
+    }
+
+    @ParameterizedTest
+    @MethodSource("repositoryMethodAndSqlType")
+    void DatasourceAnglesにSpringDataJdbcのCRUDが反映される(
+            String methodName,
+            SqlType expectedSqlType,
+            JigService jigService,
+            JigRepository jigRepository
+    ) {
+        var datasourceAngles = jigService.datasourceAngles(jigRepository).list().stream()
+                .filter(angle -> angle.declaringType().fqn().equals(SpringDataJdbcOrderRepository.class.getCanonicalName()))
+                .toList();
+        var angle = datasourceAngles.stream()
+                .filter(found -> found.interfaceMethod().name().equals(methodName))
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals(5, datasourceAngles.size());
+        var expectedTables = "[spring_data_jdbc_orders]";
+        switch (expectedSqlType) {
+            case INSERT -> assertEquals(expectedTables, angle.insertTables());
+            case SELECT -> assertEquals(expectedTables, angle.selectTables());
+            case UPDATE -> assertEquals(expectedTables, angle.updateTables());
+            case DELETE -> assertEquals(expectedTables, angle.deleteTables());
+            default -> throw new IllegalStateException("未対応のSQL種別: " + expectedSqlType);
+        }
+    }
+
+    static Stream<Arguments> repositoryMethodAndSqlType() {
+        return Stream.of(
+                Arguments.of("save", SqlType.INSERT),
+                Arguments.of("findById", SqlType.SELECT),
+                Arguments.of("deleteById", SqlType.DELETE),
+                Arguments.of("updateById", SqlType.UPDATE),
+                Arguments.of("updateByIdWithComment", SqlType.UPDATE)
+        );
+    }
+}

@@ -6,7 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -17,16 +17,19 @@ import org.dddjava.jig.domain.model.sources.filesystem.JavaFilePaths;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.mybatis.MyBatisStatementsReader;
+import org.dddjava.jig.domain.model.sources.mybatis.SqlReadStatus;
 import org.dddjava.jig.infrastructure.asm.AsmClassSourceReader;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReaderImpl;
+import org.dddjava.jig.infrastructure.springdatajdbc.SpringDataJdbcStatementsReader;
 
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class DefaultJigRepositoryFactory {
 
@@ -35,15 +38,17 @@ public class DefaultJigRepositoryFactory {
     private final AsmClassSourceReader asmClassSourceReader;
     private final JavaparserReader javaparserReader;
     private final MyBatisStatementsReader myBatisStatementsReader;
+    private final SpringDataJdbcStatementsReader springDataJdbcStatementsReader;
 
     private final JigEventRepository jigEventRepository;
     private final GlossaryRepository glossaryRepository;
 
-    public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
+    public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, SpringDataJdbcStatementsReader springDataJdbcStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         this.sourceCollector = sourceCollector;
         this.asmClassSourceReader = asmClassSourceReader;
         this.javaparserReader = javaparserReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
+        this.springDataJdbcStatementsReader = springDataJdbcStatementsReader;
         this.glossaryRepository = glossaryRepository;
         this.jigEventRepository = jigEventRepository;
     }
@@ -54,6 +59,7 @@ public class DefaultJigRepositoryFactory {
                 new AsmClassSourceReader(),
                 new JavaparserReader(),
                 new MyBatisStatementsReaderImpl(),
+                new SpringDataJdbcStatementsReader(),
                 configuration.jigEventRepository(), configuration.glossaryRepository()
         );
     }
@@ -102,11 +108,11 @@ public class DefaultJigRepositoryFactory {
                     Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
                             asmClassSourceReader.readClasses(sources.classFilePaths())));
 
-            MyBatisStatements myBatisStatements = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
+            SqlStatements sqlStatements = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
                     readMyBatisStatements(sources, classDeclarations)));
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
-                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, myBatisStatements);
+                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, sqlStatements);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
                 return new JigRepository() {
                     @Override
@@ -139,7 +145,7 @@ public class DefaultJigRepositoryFactory {
         }));
     }
 
-    private MyBatisStatements readMyBatisStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
+    private SqlStatements readMyBatisStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)
@@ -148,10 +154,24 @@ public class DefaultJigRepositoryFactory {
         List<Path> classPaths = sources.sourceBasePaths().classSourceBasePaths();
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
+        var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(classDeclarations);
 
-        if (myBatisReadResult.status().not正常()) {
+        SqlStatements mergedStatements = mergeStatements(myBatisReadResult.sqlStatements(), springDataJdbcStatements);
+
+        SqlReadStatus sqlReadStatus = myBatisReadResult.status();
+        if (sqlReadStatus == SqlReadStatus.SQLなし && mergedStatements.isEmpty()) {
+            jigEventRepository.recordEvent(sqlReadStatus.toReadStatus());
+        } else if (sqlReadStatus != SqlReadStatus.成功 && sqlReadStatus != SqlReadStatus.SQLなし) {
             jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
         }
-        return myBatisReadResult.myBatisStatements();
+        return mergedStatements;
+    }
+
+    private SqlStatements mergeStatements(SqlStatements myBatisStatements, SqlStatements springDataJdbcStatements) {
+        return new SqlStatements(Stream.concat(
+                        myBatisStatements.list().stream(),
+                        springDataJdbcStatements.list().stream())
+                .distinct()
+                .toList());
     }
 }

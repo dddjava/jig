@@ -8,34 +8,34 @@ import java.util.function.Predicate;
 /**
  * SQL一覧
  */
-public record MyBatisStatements(List<MyBatisStatement> list) {
+public record SqlStatements(List<SqlStatement> list) {
 
-    public static MyBatisStatements empty() {
-        return new MyBatisStatements(Collections.emptyList());
+    public static SqlStatements empty() {
+        return new SqlStatements(Collections.emptyList());
     }
 
     private Tables tables(SqlType sqlType) {
         return list.stream()
-                .filter(myBatisStatement -> myBatisStatement.sqlType() == sqlType)
-                .map(MyBatisStatement::tables)
+                .filter(sqlStatement -> sqlStatement.sqlType() == sqlType)
+                .map(SqlStatement::tables)
                 .reduce(Tables::merge)
                 .orElse(Tables.nothing());
     }
 
-    public Optional<MyBatisStatement> findById(MyBatisStatementId myBatisStatementId) {
+    public Optional<SqlStatement> findById(SqlStatementId sqlStatementId) {
         return list.stream()
-                .filter(myBatisStatement -> myBatisStatement.myBatisStatementId().equals(myBatisStatementId))
+                .filter(sqlStatement -> sqlStatement.sqlStatementId().equals(sqlStatementId))
                 .findFirst();
     }
 
     /**
      * 引数のメソッドに関連するステートメントに絞り込む
      */
-    public MyBatisStatements filterRelationOn(Predicate<MyBatisStatement> myBatisStatementPredicate) {
-        List<MyBatisStatement> myBatisStatements = list.stream()
-                .filter(myBatisStatementPredicate)
+    public SqlStatements filterRelationOn(Predicate<SqlStatement> sqlStatementPredicate) {
+        List<SqlStatement> sqlStatements = list.stream()
+                .filter(sqlStatementPredicate)
                 .toList();
-        return new MyBatisStatements(myBatisStatements);
+        return new SqlStatements(sqlStatements);
     }
 
     public boolean isEmpty() {

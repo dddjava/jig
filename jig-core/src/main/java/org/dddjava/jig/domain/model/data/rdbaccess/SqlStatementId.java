@@ -6,6 +6,8 @@ import java.util.Objects;
  * SQLステートメントID
  *
  * namespaceとidを.で連結したもの。
+ *
+ * TODO namespaceやidはMyBatisの用語なのでこの形のままとするかは一考の余地がある
  */
 public record SqlStatementId(String value, String namespace, String id) {
 

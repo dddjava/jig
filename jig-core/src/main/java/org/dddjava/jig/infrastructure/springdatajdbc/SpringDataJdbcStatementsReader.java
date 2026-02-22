@@ -74,13 +74,6 @@ public class SpringDataJdbcStatementsReader {
                         methodDeclaration -> methodDeclaration.header().name(),
                         methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
                         (left, right) -> left.supported() ? left : right.supported() ? right : left,
-                        LinkedHashMap::new))
-                .entrySet().stream()
-                .filter(entry -> entry.getValue().supported())
-                .collect(toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (left, right) -> left,
                         LinkedHashMap::new));
     }
 

@@ -33,6 +33,10 @@ class SpringDataJdbcStatementReaderTest {
         var updateById = statements.findById(SqlStatementId.from(namespace + ".updateById")).orElseThrow();
         assertEquals("[spring_data_jdbc_orders]", updateById.tables().asText());
         assertEquals(SqlType.UPDATE, updateById.sqlType());
+
+        var updateByIdWithComment = statements.findById(SqlStatementId.from(namespace + ".updateByIdWithComment")).orElseThrow();
+        assertEquals("[spring_data_jdbc_orders]", updateByIdWithComment.tables().asText());
+        assertEquals(SqlType.UPDATE, updateByIdWithComment.sqlType());
     }
 
     @Test
@@ -41,7 +45,7 @@ class SpringDataJdbcStatementReaderTest {
                 .filter(angle -> angle.declaringType().fqn().equals(SpringDataJdbcOrderRepository.class.getCanonicalName()))
                 .toList();
 
-        assertEquals(4, datasourceAngles.size());
+        assertEquals(5, datasourceAngles.size());
         assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
                 .filter(angle -> angle.interfaceMethod().name().equals("save"))
                 .findFirst()
@@ -54,6 +58,11 @@ class SpringDataJdbcStatementReaderTest {
                 .selectTables());
         assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
                 .filter(angle -> angle.interfaceMethod().name().equals("updateById"))
+                .findFirst()
+                .orElseThrow()
+                .updateTables());
+        assertEquals("[spring_data_jdbc_orders]", datasourceAngles.stream()
+                .filter(angle -> angle.interfaceMethod().name().equals("updateByIdWithComment"))
                 .findFirst()
                 .orElseThrow()
                 .updateTables());

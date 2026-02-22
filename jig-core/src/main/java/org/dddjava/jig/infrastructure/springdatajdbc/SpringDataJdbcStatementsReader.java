@@ -47,6 +47,7 @@ public class SpringDataJdbcStatementsReader {
                                             .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY))
                                             .findFirst()
                                             .flatMap(annotation -> annotation.elementTextOf("value"))
+                                            .map(this::normalizeQuery)
                                             .filter(value -> !value.isBlank())
                                             .map(Query::from)
                                             .orElse(Query.unsupported()),
@@ -180,7 +181,7 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private Optional<SqlType> inferSqlTypeFromQuery(String query) {
-        String normalizedQuery = query.stripLeading().toLowerCase(Locale.ROOT);
+        String normalizedQuery = normalizeQuery(query).toLowerCase(Locale.ROOT);
         if (normalizedQuery.startsWith("insert")) return Optional.of(SqlType.INSERT);
         if (normalizedQuery.startsWith("select")) return Optional.of(SqlType.SELECT);
         if (normalizedQuery.startsWith("update")) return Optional.of(SqlType.UPDATE);
@@ -188,6 +189,38 @@ public class SpringDataJdbcStatementsReader {
 
         logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query);
         return Optional.empty();
+    }
+
+    private String normalizeQuery(String query) {
+        return skipLeadingSqlDecorations(query);
+    }
+
+    private String skipLeadingSqlDecorations(String query) {
+        String remaining = query;
+        while (true) {
+            String trimmed = remaining.stripLeading();
+            if (trimmed.startsWith("\uFEFF")) {
+                remaining = trimmed.substring(1);
+                continue;
+            }
+            if (trimmed.startsWith("--")) {
+                int newlineIndex = trimmed.indexOf('\n');
+                if (newlineIndex < 0) return "";
+                remaining = trimmed.substring(newlineIndex + 1);
+                continue;
+            }
+            if (trimmed.startsWith("/*")) {
+                int commentEndIndex = trimmed.indexOf("*/");
+                if (commentEndIndex < 0) return "";
+                remaining = trimmed.substring(commentEndIndex + 2);
+                continue;
+            }
+            if (trimmed.startsWith("(")) {
+                remaining = trimmed.substring(1);
+                continue;
+            }
+            return trimmed;
+        }
     }
 
     private String defaultQuery(SqlType sqlType, String tableName) {

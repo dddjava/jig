@@ -14,7 +14,6 @@ import java.util.*;
 public class SpringDataJdbcStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
 
-    private static final String REPOSITORY_ANNOTATION = "org.springframework.stereotype.Repository";
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
     private static final String SPRING_DATA_QUERY = "org.springframework.data.jdbc.repository.query.Query";
@@ -24,8 +23,7 @@ public class SpringDataJdbcStatementsReader {
      *
      * 対象は次の条件をすべて満たす型:
      * 1) interface である
-     * 2) {@code @org.springframework.stereotype.Repository} が付与されている
-     * 3) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
+     * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
     public SqlStatements readFrom(Collection<ClassDeclaration> classDeclarations) {
         Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
@@ -38,7 +36,7 @@ public class SpringDataJdbcStatementsReader {
         Map<SqlStatementId, SqlStatement> statements = new LinkedHashMap<>();
 
         classDeclarations.stream()
-                .filter(this::isRepositoryInterface)
+                .filter(this::isInterface)
                 .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
                 .forEach(declaration -> {
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
@@ -64,11 +62,9 @@ public class SpringDataJdbcStatementsReader {
         return new SqlStatements(List.copyOf(statements.values()));
     }
 
-    private boolean isRepositoryInterface(ClassDeclaration declaration) {
+    private boolean isInterface(ClassDeclaration declaration) {
         JigTypeHeader header = declaration.jigTypeHeader();
-        // Spring DataのRepositoryとして扱う入口条件
-        return header.javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE
-                && header.jigTypeAttributes().declaredAnnotation(TypeId.valueOf(REPOSITORY_ANNOTATION));
+        return header.javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE;
     }
 
     private boolean extendsSpringDataRepository(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {

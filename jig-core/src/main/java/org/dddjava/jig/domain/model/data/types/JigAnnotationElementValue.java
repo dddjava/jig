@@ -16,7 +16,9 @@ public sealed interface JigAnnotationElementValue permits
 }
 
 /**
- * アノテーションの要素値が通常の値（配列、クラスリテラル、enumの列挙でないもの）
+ * アノテーションの要素値が通常の値
+ *
+ * 配列、クラスリテラル、enumの列挙でないもの
  *
  * <code>@Hoge(value = "hoge")</code>
  */

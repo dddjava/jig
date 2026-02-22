@@ -18,6 +18,14 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
 
+    /**
+     * ASMで読み取ったクラス情報から、Spring Data JDBCのRepositoryメソッドをSQLステートメントとして抽出する。
+     *
+     * 対象は次の条件をすべて満たす型:
+     * 1) interface である
+     * 2) {@code @org.springframework.stereotype.Repository} が付与されている
+     * 3) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
+     */
     public SqlStatements readFrom(Collection<ClassDeclaration> classDeclarations) {
         Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
                 .collect(java.util.stream.Collectors.toMap(
@@ -51,6 +59,7 @@ public class SpringDataJdbcStatementsReader {
 
     private boolean isRepositoryInterface(ClassDeclaration declaration) {
         JigTypeHeader header = declaration.jigTypeHeader();
+        // Spring DataのRepositoryとして扱う入口条件
         return header.javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE
                 && header.jigTypeAttributes().declaredAnnotation(TypeId.valueOf(REPOSITORY_ANNOTATION));
     }
@@ -60,6 +69,7 @@ public class SpringDataJdbcStatementsReader {
 
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
+            // CrudRepository / PagingAndSortingRepository / Repository などを包含するプレフィックス判定
             if (interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX)) return true;
 
             ClassDeclaration declaration = declarationMap.get(interfaceId);
@@ -97,6 +107,7 @@ public class SpringDataJdbcStatementsReader {
             TypeId interfaceId = interfaceType.id();
             if (interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX)
                     && !interfaceType.typeArgumentList().isEmpty()) {
+                // Repository<T, ID> の先頭型引数Tをエンティティ型として扱う
                 return Optional.of(interfaceType.typeArgumentList().getFirst().typeId());
             }
 

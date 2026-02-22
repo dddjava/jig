@@ -44,19 +44,7 @@ public class SpringDataJdbcStatementsReader {
                 .forEach(declaration -> {
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
 
-                    Map<String, Query> queryByMethodAnnotation = declaration.jigMethodDeclarations().stream()
-                            .collect(toMap(
-                                    methodDeclaration -> methodDeclaration.header().name(),
-                                    methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
-                                    (left, right) -> left.supported() ? left : right.supported() ? right : left,
-                                    LinkedHashMap::new))
-                            .entrySet().stream()
-                            .filter(entry -> entry.getValue().supported())
-                            .collect(toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    (left, right) -> left,
-                                    LinkedHashMap::new));
+                    Map<String, Query> queryByMethodAnnotation = collectQueryByMethodAnnotation(declaration);
 
                     declaration.jigMethodDeclarations().stream()
                             .map(jigMethodDeclaration -> jigMethodDeclaration.header().name())
@@ -78,6 +66,22 @@ public class SpringDataJdbcStatementsReader {
                 });
 
         return new SqlStatements(List.copyOf(statements.values()));
+    }
+
+    private static Map<String, Query> collectQueryByMethodAnnotation(ClassDeclaration declaration) {
+        return declaration.jigMethodDeclarations().stream()
+                .collect(toMap(
+                        methodDeclaration -> methodDeclaration.header().name(),
+                        methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
+                        (left, right) -> left.supported() ? left : right.supported() ? right : left,
+                        LinkedHashMap::new))
+                .entrySet().stream()
+                .filter(entry -> entry.getValue().supported())
+                .collect(toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (left, right) -> left,
+                        LinkedHashMap::new));
     }
 
     /**

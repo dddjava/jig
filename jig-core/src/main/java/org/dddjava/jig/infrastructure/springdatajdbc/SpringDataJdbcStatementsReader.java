@@ -106,6 +106,7 @@ public class SpringDataJdbcStatementsReader {
                         ? Optional.empty()
                         : Optional.of(interfaceType.typeArgumentList().getFirst().typeId());
                 return Optional.of(new SpringDataRepositoryInfo(entityTypeId));
+                // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
             }
 
             // インタフェースの親インタフェースもたどる。declarationMapになければロードしたクラスにないので諦める。

@@ -111,7 +111,7 @@ public class SpringDataJdbcStatementsReader {
         return false;
     }
 
-    private Optional<Tables> resolveTablesFromEntityTableAnnotation(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private static Optional<Tables> resolveTablesFromEntityTableAnnotation(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         // TODO: @MappedCollection などを辿って複数テーブル引っ張れるようにする
         return resolveEntityTypeId(repositoryHeader, declarationMap, visited)
                 .map(typeId -> {
@@ -135,7 +135,7 @@ public class SpringDataJdbcStatementsReader {
                 });
     }
 
-    private Optional<TypeId> resolveEntityTypeId(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private static Optional<TypeId> resolveEntityTypeId(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         if (!visited.add(header.id())) return Optional.empty();
 
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
@@ -191,7 +191,7 @@ public class SpringDataJdbcStatementsReader {
         return Optional.empty();
     }
 
-    private String toSnakeCase(String text) {
+    private static String toSnakeCase(String text) {
         StringBuilder builder = new StringBuilder(text.length() + 4);
         for (int i = 0; i < text.length(); i++) {
             char current = text.charAt(i);

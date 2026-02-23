@@ -7,12 +7,14 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import stub.infrastructure.datasource.springdata.SpringDataJdbcMixedOrderRepository;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
 import testing.JigTest;
 
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigTest
 class SpringDataJdbcStatementReaderTest {
@@ -59,6 +61,22 @@ class SpringDataJdbcStatementReaderTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource("crudRepositoryMethodAndSqlType")
+    void 型引数なしのSpringDataRepository継承があっても後続の継承からエンティティ型を解決できる(
+            String methodName,
+            SqlType expectedSqlType,
+            JigRepository jigRepository
+    ) {
+        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var namespace = SpringDataJdbcMixedOrderRepository.class.getCanonicalName();
+        var statement = statements.findById(SqlStatementId.from(namespace + "." + methodName));
+
+        assertTrue(statement.isPresent());
+        assertEquals("[spring_data_jdbc_orders]", statement.get().tables().asText());
+        assertEquals(expectedSqlType, statement.get().sqlType());
+    }
+
     static Stream<Arguments> repositoryMethodAndSqlType() {
         return Stream.of(
                 Arguments.of("save", SqlType.INSERT),
@@ -66,6 +84,14 @@ class SpringDataJdbcStatementReaderTest {
                 Arguments.of("deleteById", SqlType.DELETE),
                 Arguments.of("updateById", SqlType.UPDATE),
                 Arguments.of("updateByIdWithComment", SqlType.UPDATE)
+        );
+    }
+
+    static Stream<Arguments> crudRepositoryMethodAndSqlType() {
+        return Stream.of(
+                Arguments.of("save", SqlType.INSERT),
+                Arguments.of("findById", SqlType.SELECT),
+                Arguments.of("deleteById", SqlType.DELETE)
         );
     }
 }

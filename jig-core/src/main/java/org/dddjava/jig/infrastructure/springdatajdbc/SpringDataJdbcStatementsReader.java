@@ -100,14 +100,13 @@ public class SpringDataJdbcStatementsReader {
             TypeId interfaceId = interfaceType.id();
             if (isSpringDataRepository(interfaceId)) {
                 List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
-                Optional<TypeId> entityTypeId;
                 if (jigTypeArguments.isEmpty()) {
-                    // FIXME これをemptyで処理続行するのは無駄に後が複雑になるだけ。型引数が取れない場合は「SpringDataRepositoryのはずなのに型引数が解決できない」のようなWARNINGログを出力し、このインタフェースはSpringDataRepositoryでないものとして次のインタフェースを処理する。
-                    entityTypeId = Optional.empty();
-                } else {
-                    entityTypeId = Optional.of(jigTypeArguments.getFirst().typeId());
+                    logger.warn("Spring Data Repository {} の型引数が解決できないため、この継承はスキップします。宣言元: {}",
+                            interfaceId.fqn(),
+                            header.fqn());
+                    continue;
                 }
-                return Optional.of(new SpringDataRepositoryInfo(entityTypeId));
+                return Optional.of(new SpringDataRepositoryInfo(Optional.of(jigTypeArguments.getFirst().typeId())));
                 // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
             }
 

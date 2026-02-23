@@ -39,8 +39,9 @@ public class SpringDataJdbcStatementsReader {
 
         Map<SqlStatementId, SqlStatement> statements = classDeclarations.stream()
                 .filter(this::isInterface)
-                .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
-                .flatMap(declaration -> extractSqlStatements(declaration, declarationMap))
+                .flatMap(declaration -> resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, new HashSet<>())
+                        .stream()
+                        .flatMap(repositoryInfo -> extractSqlStatements(declaration, repositoryInfo.entityTypeId(), declarationMap)))
                 .collect(toMap(
                         SqlStatement::sqlStatementId,
                         Function.identity(),
@@ -49,8 +50,8 @@ public class SpringDataJdbcStatementsReader {
         return new SqlStatements(List.copyOf(statements.values()));
     }
 
-    private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
-        Optional<Tables> resolvedTables = resolveTablesFromEntityTableAnnotation(declaration.jigTypeHeader(), declarationMap);
+    private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Optional<TypeId> entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+        Optional<Tables> resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
         return declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
@@ -95,26 +96,31 @@ public class SpringDataJdbcStatementsReader {
         return header.javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE;
     }
 
-    private boolean extendsSpringDataRepository(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        if (!visited.add(header.id())) return false;
+    private Optional<SpringDataRepositoryInfo> resolveSpringDataRepositoryInfo(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+        if (!visited.add(header.id())) return Optional.empty();
 
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
             // CrudRepository / PagingAndSortingRepository / Repository などを包含するプレフィックス判定
-            if (interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX)) return true;
+            if (isSpringDataRepository(interfaceId)) {
+                Optional<TypeId> entityTypeId = interfaceType.typeArgumentList().isEmpty()
+                        ? Optional.empty()
+                        : Optional.of(interfaceType.typeArgumentList().getFirst().typeId());
+                return Optional.of(new SpringDataRepositoryInfo(entityTypeId));
+            }
 
             ClassDeclaration declaration = declarationMap.get(interfaceId);
-            if (declaration != null && extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, visited)) {
-                return true;
+            if (declaration != null) {
+                Optional<SpringDataRepositoryInfo> repositoryInfo = resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, visited);
+                if (repositoryInfo.isPresent()) return repositoryInfo;
             }
         }
-        return false;
+        return Optional.empty();
     }
 
-    private static Optional<Tables> resolveTablesFromEntityTableAnnotation(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap) {
+    private static Optional<Tables> resolveTablesFromEntityTableAnnotation(Optional<TypeId> entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
         // TODO: @MappedCollection などを辿って複数テーブル引っ張れるようにする
-        return resolveEntityTypeId(repositoryHeader, declarationMap, new HashSet<>())
-                .map(typeId -> {
+        return entityTypeId.map(typeId -> {
                     ClassDeclaration entityDeclaration = declarationMap.get(typeId);
                     String tableName;
                     if (entityDeclaration == null) {
@@ -135,24 +141,11 @@ public class SpringDataJdbcStatementsReader {
                 });
     }
 
-    private static Optional<TypeId> resolveEntityTypeId(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        if (!visited.add(header.id())) return Optional.empty();
+    private static boolean isSpringDataRepository(TypeId interfaceId) {
+        return interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX);
+    }
 
-        for (JigTypeReference interfaceType : header.interfaceTypeList()) {
-            TypeId interfaceId = interfaceType.id();
-            if (interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX)
-                    && !interfaceType.typeArgumentList().isEmpty()) {
-                // Repository<T, ID> の先頭型引数Tをエンティティ型として扱う
-                return Optional.of(interfaceType.typeArgumentList().getFirst().typeId());
-            }
-
-            ClassDeclaration declaration = declarationMap.get(interfaceId);
-            if (declaration != null) {
-                Optional<TypeId> entityTypeId = resolveEntityTypeId(declaration.jigTypeHeader(), declarationMap, visited);
-                if (entityTypeId.isPresent()) return entityTypeId;
-            }
-        }
-        return Optional.empty();
+    private record SpringDataRepositoryInfo(Optional<TypeId> entityTypeId) {
     }
 
     /**

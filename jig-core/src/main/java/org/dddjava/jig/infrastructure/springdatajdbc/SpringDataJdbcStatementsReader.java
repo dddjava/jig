@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -33,9 +34,8 @@ public class SpringDataJdbcStatementsReader {
         Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
                 .collect(toMap(
                         declaration -> declaration.jigTypeHeader().id(),
-                        declaration -> declaration,
-                        (left, right) -> left,
-                        LinkedHashMap::new));
+                        Function.identity(),
+                        (left, right) -> right));
 
         Map<SqlStatementId, SqlStatement> statements = classDeclarations.stream()
                 .filter(this::isInterface)
@@ -43,9 +43,8 @@ public class SpringDataJdbcStatementsReader {
                 .flatMap(declaration -> extractSqlStatements(declaration, declarationMap))
                 .collect(toMap(
                         SqlStatement::sqlStatementId,
-                        statement -> statement,
-                        (left, right) -> right,
-                        LinkedHashMap::new));
+                        Function.identity(),
+                        (left, right) -> right));
 
         return new SqlStatements(List.copyOf(statements.values()));
     }
@@ -81,8 +80,7 @@ public class SpringDataJdbcStatementsReader {
                 .collect(toMap(
                         methodDeclaration -> methodDeclaration.header().name(),
                         methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
-                        (left, right) -> left.supported() ? left : right.supported() ? right : left,
-                        LinkedHashMap::new));
+                        (left, right) -> left.supported() ? left : right.supported() ? right : left));
     }
 
     /**

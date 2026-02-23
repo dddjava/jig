@@ -108,6 +108,7 @@ public class SpringDataJdbcStatementsReader {
                 return Optional.of(new SpringDataRepositoryInfo(entityTypeId));
             }
 
+            // インタフェースの親インタフェースもたどる。declarationMapになければロードしたクラスにないので諦める。
             ClassDeclaration declaration = declarationMap.get(interfaceId);
             if (declaration != null) {
                 Optional<SpringDataRepositoryInfo> repositoryInfo = resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, visited);

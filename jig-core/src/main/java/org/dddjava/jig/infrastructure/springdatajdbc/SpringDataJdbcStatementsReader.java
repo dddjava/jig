@@ -49,8 +49,8 @@ public class SpringDataJdbcStatementsReader {
         return new SqlStatements(List.copyOf(statements.values()));
     }
 
-    private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Optional<TypeId> entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        Optional<Tables> resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
+    private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+        Tables resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
         return declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
@@ -65,12 +65,8 @@ public class SpringDataJdbcStatementsReader {
                         if (query.supported()) {
                             return new SqlStatement(statementId, query, sqlType);
                         }
-                        return resolvedTables
-                                // クエリなしは @Table で記述されているもの
-                                .map(tables -> new SqlStatement(statementId, Query.unsupported(), sqlType, tables))
-                                // クエリもテーブルも見当たらないもの
-                                // TODO これはSqlStatementではないのでは？
-                                .orElseGet(() -> new SqlStatement(statementId, Query.unsupported(), sqlType));
+                        // クエリなしは @Table で記述されているもの
+                        return new SqlStatement(statementId, Query.unsupported(), sqlType, resolvedTables);
                     });
                 })
                 .flatMap(Optional::stream);
@@ -108,7 +104,7 @@ public class SpringDataJdbcStatementsReader {
                             header.fqn());
                     continue;
                 }
-                return Optional.of(new SpringDataRepositoryInfo(Optional.of(jigTypeArguments.getFirst().typeId())));
+                return Optional.of(new SpringDataRepositoryInfo(jigTypeArguments.getFirst().typeId()));
                 // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
             }
 

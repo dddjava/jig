@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.*;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
+import org.dddjava.jig.domain.model.data.rdbaccess.*;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
@@ -118,8 +118,8 @@ public class SpringDataJdbcStatementsReader {
         return Optional.empty();
     }
 
-    private static Optional<Tables> resolveTablesFromEntityTableAnnotation(Optional<TypeId> entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        return entityTypeId.map(typeId -> resolveTablesFromEntity(typeId, declarationMap, new HashSet<>()));
+    private static Tables resolveTablesFromEntityTableAnnotation(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+        return resolveTablesFromEntity(entityTypeId, declarationMap, new HashSet<>());
     }
 
     private static Tables resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
@@ -182,7 +182,7 @@ public class SpringDataJdbcStatementsReader {
         return interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX);
     }
 
-    private record SpringDataRepositoryInfo(Optional<TypeId> entityTypeId) {
+    private record SpringDataRepositoryInfo(TypeId entityTypeId) {
     }
 
     /**

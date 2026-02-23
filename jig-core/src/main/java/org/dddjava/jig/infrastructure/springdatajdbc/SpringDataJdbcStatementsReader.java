@@ -50,7 +50,7 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
-        Optional<Tables> resolvedTables = resolveTablesFromEntityTableAnnotation(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
+        Optional<Tables> resolvedTables = resolveTablesFromEntityTableAnnotation(declaration.jigTypeHeader(), declarationMap);
 
         return declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
@@ -111,9 +111,9 @@ public class SpringDataJdbcStatementsReader {
         return false;
     }
 
-    private static Optional<Tables> resolveTablesFromEntityTableAnnotation(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private static Optional<Tables> resolveTablesFromEntityTableAnnotation(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap) {
         // TODO: @MappedCollection などを辿って複数テーブル引っ張れるようにする
-        return resolveEntityTypeId(repositoryHeader, declarationMap, visited)
+        return resolveEntityTypeId(repositoryHeader, declarationMap, new HashSet<>())
                 .map(typeId -> {
                     ClassDeclaration entityDeclaration = declarationMap.get(typeId);
                     String tableName;

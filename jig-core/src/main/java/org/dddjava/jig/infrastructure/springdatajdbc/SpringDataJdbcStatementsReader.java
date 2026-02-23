@@ -1,10 +1,7 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.*;
-import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
-import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.slf4j.Logger;
@@ -102,9 +99,14 @@ public class SpringDataJdbcStatementsReader {
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
             if (isSpringDataRepository(interfaceId)) {
-                Optional<TypeId> entityTypeId = interfaceType.typeArgumentList().isEmpty()
-                        ? Optional.empty()
-                        : Optional.of(interfaceType.typeArgumentList().getFirst().typeId());
+                List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
+                Optional<TypeId> entityTypeId;
+                if (jigTypeArguments.isEmpty()) {
+                    // FIXME これをemptyで処理続行するのは無駄に後が複雑になるだけ。型引数が取れない場合は「SpringDataRepositoryのはずなのに型引数が解決できない」のようなWARNINGログを出力し、このインタフェースはSpringDataRepositoryでないものとして次のインタフェースを処理する。
+                    entityTypeId = Optional.empty();
+                } else {
+                    entityTypeId = Optional.of(jigTypeArguments.getFirst().typeId());
+                }
                 return Optional.of(new SpringDataRepositoryInfo(entityTypeId));
                 // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
             }

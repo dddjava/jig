@@ -12,7 +12,7 @@ class SqlStatementTest {
                 SqlStatementId.from("example.ExampleRepository.findById"),
                 Query.unsupported(),
                 SqlType.SELECT,
-                new Table("example_table"));
+                new Tables(new Table("example_table")));
 
         assertEquals("[example_table]", statement.tables().asText());
     }

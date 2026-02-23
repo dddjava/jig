@@ -50,7 +50,7 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
-        Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
+        Optional<Tables> resolvedTables = resolveTables(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
 
         Map<String, Query> queryByMethodAnnotation = collectQueryByMethodAnnotation(declaration);
 
@@ -66,7 +66,7 @@ public class SpringDataJdbcStatementsReader {
                         String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
                         SqlStatementId statementId = SqlStatementId.from(statementValue);
                         if (query.supported()) return new SqlStatement(statementId, query, sqlType);
-                        return tableName.map(name -> new SqlStatement(statementId, Query.unsupported(), sqlType, new Table(name)))
+                        return resolvedTables.map(tables -> new SqlStatement(statementId, Query.unsupported(), sqlType, tables))
                                 .orElseGet(() -> new SqlStatement(statementId, Query.unsupported(), sqlType));
                     });
                 })
@@ -116,17 +116,19 @@ public class SpringDataJdbcStatementsReader {
         return false;
     }
 
-    private Optional<String> resolveTableName(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private Optional<Tables> resolveTables(JigTypeHeader repositoryHeader, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         // TODO: @MappedCollection などを辿って複数テーブル引っ張れるようにする
         return resolveEntityTypeId(repositoryHeader, declarationMap, visited)
                 .map(typeId -> {
                     ClassDeclaration entityDeclaration = declarationMap.get(typeId);
+                    String tableName;
                     if (entityDeclaration == null) {
                         // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
-                        return toSnakeCase(typeId.asSimpleText());
+                        tableName = toSnakeCase(typeId.asSimpleText());
+                        return new Tables(new Table(tableName));
                     }
 
-                    return entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
+                    tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                             .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                             .findFirst()
                             .flatMap(annotation -> annotation.elementTextOf("value")) // TODO nameがaliasなので対応する？
@@ -134,6 +136,7 @@ public class SpringDataJdbcStatementsReader {
                             // Tableアノテーションがついていない or valueがない
                             // テーブル名が指定されていないので、エンティティの型名をテーブル名としておく
                             .orElseGet(() -> toSnakeCase(typeId.asSimpleText()));
+                    return new Tables(new Table(tableName));
                 });
     }
 

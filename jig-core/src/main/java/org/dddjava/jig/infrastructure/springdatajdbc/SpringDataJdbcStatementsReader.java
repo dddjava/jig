@@ -50,7 +50,6 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
-        // TODO: ここでテーブル名が決まっているのに、一回SQLにしてからパースしてTableにするとかしてる。無駄。
         Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
 
         Map<String, Query> queryByMethodAnnotation = collectQueryByMethodAnnotation(declaration);
@@ -64,12 +63,11 @@ public class SpringDataJdbcStatementsReader {
                             ? SqlType.inferSqlTypeFromQuery(query)
                             : inferSqlType(methodName);
                     return inferredSqlType.map(sqlType -> {
-                        Query resolvedQuery = query.supported()
-                                ? query
-                                : tableName.map(name -> Query.from(defaultQuery(sqlType, name))).orElse(Query.unsupported());
                         String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
                         SqlStatementId statementId = SqlStatementId.from(statementValue);
-                        return new SqlStatement(statementId, resolvedQuery, sqlType);
+                        if (query.supported()) return new SqlStatement(statementId, query, sqlType);
+                        return tableName.map(name -> new SqlStatement(statementId, Query.unsupported(), sqlType, new Table(name)))
+                                .orElseGet(() -> new SqlStatement(statementId, Query.unsupported(), sqlType));
                     });
                 })
                 .flatMap(Optional::stream);
@@ -193,16 +191,6 @@ public class SpringDataJdbcStatementsReader {
         // 判別できないものは空にしておく
         logger.info("SQLの種類がメソッド名 {} から判別できませんでした。CRUDのどれかに該当する場合は対象にしたいのでissueお願いします。", methodName);
         return Optional.empty();
-    }
-
-    // TODO: あとでSQLをパースしてテーブル名を取り出すためだけに存在する。なくせるはず。
-    private String defaultQuery(SqlType sqlType, String tableName) {
-        return switch (sqlType) {
-            case INSERT -> "insert into " + tableName + " values (?)";
-            case SELECT -> "select * from " + tableName;
-            case UPDATE -> "update " + tableName + " set id = id";
-            case DELETE -> "delete from " + tableName;
-        };
     }
 
     private String toSnakeCase(String text) {

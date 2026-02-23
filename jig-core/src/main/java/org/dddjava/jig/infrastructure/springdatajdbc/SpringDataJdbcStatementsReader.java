@@ -36,35 +36,39 @@ public class SpringDataJdbcStatementsReader {
                         (left, right) -> left,
                         LinkedHashMap::new));
 
-        Map<SqlStatementId, SqlStatement> statements = new LinkedHashMap<>();
-
-        classDeclarations.stream()
+        Map<SqlStatementId, SqlStatement> statements = classDeclarations.stream()
                 .filter(this::isInterface)
                 .filter(declaration -> extendsSpringDataRepository(declaration.jigTypeHeader(), declarationMap, new HashSet<>()))
-                .forEach(declaration -> {
+                .flatMap(declaration -> {
                     // TODO: ここでテーブル名が決まっているのに、一回SQLにしてからパースしてTableにするとかしてる。無駄。
                     Optional<String> tableName = resolveTableName(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
 
                     Map<String, Query> queryByMethodAnnotation = collectQueryByMethodAnnotation(declaration);
 
-                    declaration.jigMethodDeclarations().stream()
+                    return declaration.jigMethodDeclarations().stream()
                             .map(jigMethodDeclaration -> jigMethodDeclaration.header().name())
                             .distinct()
-                            .forEach(methodName -> {
+                            .map(methodName -> {
                                 Query query = queryByMethodAnnotation.getOrDefault(methodName, Query.unsupported());
                                 Optional<SqlType> inferredSqlType = query.supported()
                                         ? SqlType.inferSqlTypeFromQuery(query)
                                         : inferSqlType(methodName);
-                                inferredSqlType.ifPresent(sqlType -> {
+                                return inferredSqlType.map(sqlType -> {
                                     Query resolvedQuery = query.supported()
                                             ? query
                                             : tableName.map(name -> Query.from(defaultQuery(sqlType, name))).orElse(Query.unsupported());
                                     String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
                                     SqlStatementId statementId = SqlStatementId.from(statementValue);
-                                    statements.put(statementId, new SqlStatement(statementId, resolvedQuery, sqlType));
+                                    return new SqlStatement(statementId, resolvedQuery, sqlType);
                                 });
-                            });
-                });
+                            })
+                            .flatMap(Optional::stream);
+                })
+                .collect(toMap(
+                        SqlStatement::sqlStatementId,
+                        statement -> statement,
+                        (left, right) -> right,
+                        LinkedHashMap::new));
 
         return new SqlStatements(List.copyOf(statements.values()));
     }

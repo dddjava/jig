@@ -63,10 +63,16 @@ public class SpringDataJdbcStatementsReader {
                             ? SqlType.inferSqlTypeFromQuery(query)
                             : inferSqlType(methodName);
                     return inferredSqlType.map(sqlType -> {
-                        String statementValue = declaration.jigTypeHeader().fqn() + "." + methodName;
-                        SqlStatementId statementId = SqlStatementId.from(statementValue);
-                        if (query.supported()) return new SqlStatement(statementId, query, sqlType);
-                        return resolvedTables.map(tables -> new SqlStatement(statementId, Query.unsupported(), sqlType, tables))
+                        SqlStatementId statementId = SqlStatementId.fromNamespaceAndId(declaration.jigTypeHeader().fqn(), methodName);
+                        // クエリがあればクエリを優先
+                        if (query.supported()) {
+                            return new SqlStatement(statementId, query, sqlType);
+                        }
+                        return resolvedTables
+                                // クエリなしは @Table で記述されているもの
+                                .map(tables -> new SqlStatement(statementId, Query.unsupported(), sqlType, tables))
+                                // クエリもテーブルも見当たらないもの
+                                // TODO これはSqlStatementではないのでは？
                                 .orElseGet(() -> new SqlStatement(statementId, Query.unsupported(), sqlType));
                     });
                 })

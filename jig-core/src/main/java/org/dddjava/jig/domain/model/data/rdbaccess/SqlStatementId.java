@@ -8,6 +8,7 @@ import java.util.Objects;
  * namespaceとidを.で連結したもの。
  *
  * TODO namespaceやidはMyBatisの用語なのでこの形のままとするかは一考の余地がある
+ * TODO idは全体の一意でなくnamespace内の一意なので誤解を招きそう
  */
 public record SqlStatementId(String value, String namespace, String id) {
 
@@ -18,6 +19,10 @@ public record SqlStatementId(String value, String namespace, String id) {
         } else {
             return new SqlStatementId(value, "<unknown namespace>", value);
         }
+    }
+
+    public static SqlStatementId fromNamespaceAndId(String namespace, String id) {
+        return from(namespace + "." + id);
     }
 
     @Override

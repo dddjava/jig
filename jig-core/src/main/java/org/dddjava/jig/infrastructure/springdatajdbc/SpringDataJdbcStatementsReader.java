@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.*;
+import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
@@ -18,6 +19,7 @@ public class SpringDataJdbcStatementsReader {
 
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
+    private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
     /**
@@ -121,26 +123,62 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private static Optional<Tables> resolveTablesFromEntityTableAnnotation(Optional<TypeId> entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        // TODO: @MappedCollection などを辿って複数テーブル引っ張れるようにする
-        return entityTypeId.map(typeId -> {
-                    ClassDeclaration entityDeclaration = declarationMap.get(typeId);
-                    String tableName;
-                    if (entityDeclaration == null) {
-                        // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
-                        tableName = toSnakeCase(typeId.asSimpleText());
-                        return new Tables(new Table(tableName));
-                    }
+        return entityTypeId.map(typeId -> resolveTablesFromEntity(typeId, declarationMap, new HashSet<>()));
+    }
 
-                    tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
-                            .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
-                            .findFirst()
-                            .flatMap(annotation -> annotation.elementTextOf("value")) // TODO nameがaliasなので対応する？
-                            .filter(value -> !value.isBlank())
-                            // Tableアノテーションがついていない or valueがない
-                            // テーブル名が指定されていないので、エンティティの型名をテーブル名としておく
-                            .orElseGet(() -> toSnakeCase(typeId.asSimpleText()));
-                    return new Tables(new Table(tableName));
-                });
+    private static Tables resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+        if (!visited.add(entityTypeId)) return Tables.nothing();
+
+        return resolveOwnTable(entityTypeId, declarationMap)
+                .merge(resolveMappedCollectionTables(entityTypeId, declarationMap, visited));
+    }
+
+    private static Tables resolveOwnTable(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+        ClassDeclaration entityDeclaration = declarationMap.get(entityTypeId);
+        String tableName;
+        if (entityDeclaration == null) {
+            // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
+            tableName = toSnakeCase(entityTypeId.asSimpleText());
+            return new Tables(new Table(tableName));
+        }
+
+        tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
+                .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
+                .findFirst()
+                .flatMap(annotation -> annotation.elementTextOf("value")) // TODO nameがaliasなので対応する？
+                .filter(value -> !value.isBlank())
+                // Tableアノテーションがついていない or valueがない
+                // テーブル名が指定されていないので、エンティティの型名をテーブル名としておく
+                .orElseGet(() -> toSnakeCase(entityTypeId.asSimpleText()));
+        return new Tables(new Table(tableName));
+    }
+
+    private static Tables resolveMappedCollectionTables(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+        ClassDeclaration entityDeclaration = declarationMap.get(entityTypeId);
+        if (entityDeclaration == null) return Tables.nothing();
+
+        return entityDeclaration.jigFieldHeaders().stream()
+                .flatMap(jigFieldHeader -> resolveMappedCollectionEntityTypeId(jigFieldHeader).stream())
+                .map(mappedTypeId -> resolveTablesFromEntity(mappedTypeId, declarationMap, visited))
+                .reduce(Tables::merge)
+                .orElse(Tables.nothing());
+    }
+
+    private static Optional<TypeId> resolveMappedCollectionEntityTypeId(JigFieldHeader jigFieldHeader) {
+        boolean hasMappedCollection = jigFieldHeader.declarationAnnotationStream()
+                .map(JigAnnotationReference::id)
+                .anyMatch(annotationTypeId -> annotationTypeId.fqn().equals(SPRING_DATA_MAPPED_COLLECTION));
+        if (!hasMappedCollection) return Optional.empty();
+
+        List<JigTypeArgument> typeArguments = jigFieldHeader.jigTypeReference().typeArgumentList();
+        if (typeArguments.isEmpty()) {
+            logger.warn("@MappedCollection が指定されたフィールド {} の型引数が解決できないため、このフィールドはスキップします。",
+                    jigFieldHeader.id().fqn());
+            return Optional.empty();
+        }
+
+        // Collection<T> / Map<K, V> のどちらでも末尾を集約対象エンティティとして扱う
+        return Optional.of(typeArguments.getLast().typeId());
     }
 
     private static boolean isSpringDataRepository(TypeId interfaceId) {

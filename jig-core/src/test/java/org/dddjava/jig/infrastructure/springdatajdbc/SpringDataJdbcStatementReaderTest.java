@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcMixedOrderRepository;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
+import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderWithItemsRepository;
 import testing.JigTest;
 
 import java.util.stream.Stream;
@@ -74,6 +75,22 @@ class SpringDataJdbcStatementReaderTest {
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_orders]", statement.get().tables().asText());
+        assertEquals(expectedSqlType, statement.get().sqlType());
+    }
+
+    @ParameterizedTest
+    @MethodSource("crudRepositoryMethodAndSqlType")
+    void MappedCollectionを辿って複数テーブルを解決できる(
+            String methodName,
+            SqlType expectedSqlType,
+            JigRepository jigRepository
+    ) {
+        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var namespace = SpringDataJdbcOrderWithItemsRepository.class.getCanonicalName();
+        var statement = statements.findById(SqlStatementId.from(namespace + "." + methodName));
+
+        assertTrue(statement.isPresent());
+        assertEquals("[spring_data_jdbc_order_items, spring_data_jdbc_orders_with_items]", statement.get().tables().asText());
         assertEquals(expectedSqlType, statement.get().sqlType());
     }
 

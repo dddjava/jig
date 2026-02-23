@@ -101,7 +101,6 @@ public class SpringDataJdbcStatementsReader {
 
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
-            // CrudRepository / PagingAndSortingRepository / Repository などを包含するプレフィックス判定
             if (isSpringDataRepository(interfaceId)) {
                 Optional<TypeId> entityTypeId = interfaceType.typeArgumentList().isEmpty()
                         ? Optional.empty()
@@ -142,6 +141,7 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private static boolean isSpringDataRepository(TypeId interfaceId) {
+        // CrudRepository / PagingAndSortingRepository / Repository などを包含するプレフィックス判定
         return interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX);
     }
 

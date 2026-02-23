@@ -52,13 +52,10 @@ public class SpringDataJdbcStatementsReader {
     private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
         Optional<Tables> resolvedTables = resolveTablesFromEntityTableAnnotation(declaration.jigTypeHeader(), declarationMap, new HashSet<>());
 
-        Map<String, Query> queryByMethodAnnotation = collectQueryByMethodAnnotation(declaration);
-
         return declaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> jigMethodDeclaration.header().name())
-                .distinct()
-                .map(methodName -> {
-                    Query query = queryByMethodAnnotation.getOrDefault(methodName, Query.unsupported());
+                .map(jigMethodDeclaration -> {
+                    String methodName = jigMethodDeclaration.header().name();
+                    Query query = resolveQueryFromAnnotation(jigMethodDeclaration);
                     Optional<SqlType> inferredSqlType = query.supported()
                             ? SqlType.inferSqlTypeFromQuery(query)
                             : inferSqlType(methodName);
@@ -77,14 +74,6 @@ public class SpringDataJdbcStatementsReader {
                     });
                 })
                 .flatMap(Optional::stream);
-    }
-
-    private static Map<String, Query> collectQueryByMethodAnnotation(ClassDeclaration declaration) {
-        return declaration.jigMethodDeclarations().stream()
-                .collect(toMap(
-                        methodDeclaration -> methodDeclaration.header().name(),
-                        methodDeclaration -> resolveQueryFromAnnotation(methodDeclaration),
-                        (left, right) -> left.supported() ? left : right.supported() ? right : left));
     }
 
     /**

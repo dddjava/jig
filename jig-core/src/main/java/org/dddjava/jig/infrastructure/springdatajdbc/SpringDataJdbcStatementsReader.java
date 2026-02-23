@@ -141,7 +141,9 @@ public class SpringDataJdbcStatementsReader {
         tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                 .findFirst()
-                .flatMap(annotation -> annotation.elementTextOf("value")) // TODO nameがaliasなので対応する？
+                .flatMap(annotation -> annotation.elementTextOf("value")
+                        .or(() -> annotation.elementTextOf("name"))
+                )
                 .filter(value -> !value.isBlank())
                 // Tableアノテーションがついていない or valueがない
                 // テーブル名が指定されていないので、エンティティの型名をテーブル名としておく

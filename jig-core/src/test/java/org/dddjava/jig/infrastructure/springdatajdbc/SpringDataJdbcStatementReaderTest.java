@@ -4,10 +4,12 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcMixedOrderRepository;
+import stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderWithItemsRepository;
 import testing.JigTest;
@@ -34,6 +36,17 @@ class SpringDataJdbcStatementReaderTest {
         assertEquals("[spring_data_jdbc_orders]", statement.tables().asText());
         assertEquals(expectedSqlType, statement.sqlType());
     }
+
+    @Test
+    void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
+        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var namespace = SpringDataJdbcNameRepository.class.getCanonicalName();
+        var statement = statements.findById(SqlStatementId.from(namespace + "." + "findByHoge")).orElseThrow();
+
+        assertEquals("[spring_data_table_name]", statement.tables().asText());
+        assertEquals(SqlType.SELECT, statement.sqlType());
+    }
+
 
     @ParameterizedTest
     @MethodSource("repositoryMethodAndSqlType")

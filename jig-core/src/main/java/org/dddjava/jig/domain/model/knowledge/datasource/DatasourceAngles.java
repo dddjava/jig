@@ -39,7 +39,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      */
     private static boolean invocationUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
         return outputImplementation.usingMethods()
-                .containsAny(methodCall -> matchStatement(sqlStatementId, methodCall.methodOwner().fqn(), methodCall.methodName()));
+                // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
+                .containsAny(methodCall -> sqlStatementId.matches(methodCall.methodOwner().fqn(), methodCall.methodName()));
     }
 
     /**
@@ -49,11 +50,7 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      */
     private static boolean gatewayUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
         var gatewayMethodId = outputImplementation.outputPortGateway().jigMethodId();
-        return matchStatement(sqlStatementId, gatewayMethodId.namespace(), gatewayMethodId.name());
-    }
-
-    private static boolean matchStatement(SqlStatementId sqlStatementId, String namespace, String name) {
         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return namespace.equals(sqlStatementId.namespace()) && name.equals(sqlStatementId.id());
+        return sqlStatementId.matches(gatewayMethodId.namespace(), gatewayMethodId.name());
     }
 }

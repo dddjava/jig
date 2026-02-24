@@ -25,6 +25,10 @@ public record SqlStatementId(String value, String namespace, String id) {
         return from(namespace + "." + id);
     }
 
+    public boolean matches(String namespace, String name) {
+        return namespace.equals(this.namespace) && name.equals(this.id);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,14 +40,6 @@ public record SqlStatementId(String value, String namespace, String id) {
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    public String namespace() {
-        return namespace;
-    }
-
-    public String id() {
-        return id;
     }
 
     public String logText() {

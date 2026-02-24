@@ -5,7 +5,6 @@ import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
-import org.dddjava.jig.adapter.poi.GlossaryAdapter;
 import org.dddjava.jig.adapter.poi.ListAdapter;
 import org.dddjava.jig.adapter.thymeleaf.*;
 import org.dddjava.jig.adapter.thymeleaf.dialect.JigDialect;
@@ -120,8 +119,6 @@ public class JigDocumentGenerator {
                 var outputFilePaths = switch (jigDocument) {
                     case Glossary -> new TableView(jigDocument, thymeleafTemplateEngine)
                             .write(outputDirectory, jigService.glossary(jigRepository));
-                    case TermList ->
-                            GlossaryAdapter.invoke(jigService.glossary(jigRepository), jigDocument, outputDirectory);
                     case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
                             .write(
                                     outputDirectory,

@@ -33,12 +33,11 @@
             <li th:if="${ListOutput}"><a href="#" th:href="${ListOutput}">一覧出力</a> (incubate)</li>
         </ul>
     </section>
-    <section th:if="${BusinessRuleList != null or ApplicationList != null or TermList != null}">
+    <section th:if="${BusinessRuleList != null or ApplicationList != null}">
         <h2>一覧: Excel</h2>
         <ul>
             <li th:if="${BusinessRuleList}"><a href="#" th:href="${BusinessRuleList}">ビジネスルール一覧</a></li>
             <li th:if="${ApplicationList}"><a href="#" th:href="${ApplicationList}">機能一覧</a></li>
-            <li th:if="${TermList}"><a href="#" th:href="${TermList}">用語一覧</a></li>
         </ul>
     </section>
 

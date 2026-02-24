@@ -139,12 +139,7 @@ public enum JigDocument {
 
     /**
      * 用語集
-     * @deprecated GlossaryでCSV出力できるようになったため 2026.2.1 で削除予定。
      */
-    @Deprecated(forRemoval = true, since = "2026.1.1")
-    TermList(
-            JigDocumentLabel.of("用語集", "term"),
-            "term"),
     Glossary(
             JigDocumentLabel.of("用語集", "glossary"),
             "glossary");

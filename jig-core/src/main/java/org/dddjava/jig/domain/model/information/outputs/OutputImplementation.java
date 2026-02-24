@@ -6,8 +6,11 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
  * 出力ポート／アダプタの実装
+ *
+ * TODO: 一覧出力で使用するための橋渡し。不要にしたい。
  */
-public record OutputImplementation(OutputPortOperation outputPortOperation, OutputAdapterExecution outputAdapterExecution, OutputPort outputPort) {
+public record OutputImplementation(OutputPortOperation outputPortOperation,
+                                   OutputAdapterExecution outputAdapterExecution, OutputPort outputPort) {
 
     public UsingMethods usingMethods() {
         return concreteMethod().usingMethods();

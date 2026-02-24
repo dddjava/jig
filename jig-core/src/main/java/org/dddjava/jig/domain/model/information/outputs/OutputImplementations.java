@@ -14,6 +14,8 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * 出力ポート／アダプタの実装群
+ *
+ * TODO: 一覧出力で使用するための橋渡し。不要にしたい。
  */
 public record OutputImplementations(Collection<OutputImplementation> values) {
 

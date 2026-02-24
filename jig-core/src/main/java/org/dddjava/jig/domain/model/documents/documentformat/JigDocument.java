@@ -119,9 +119,12 @@ public enum JigDocument {
             JigDocumentLabel.of("エントリーポイント概要", "entrypoint"),
             "entrypoint"),
 
-    RepositorySummary(
-            JigDocumentLabel.of("リポジトリ概要", "repository"),
-            "repository"),
+    /**
+     * 外部利用概要
+     */
+    OutputsSummary(
+            JigDocumentLabel.of("外部利用概要", "outputs"),
+            "outputs"),
 
     /**
      * インサイト

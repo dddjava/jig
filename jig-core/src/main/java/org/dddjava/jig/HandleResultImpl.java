@@ -49,7 +49,7 @@ public class HandleResultImpl implements HandleResult {
                  ApplicationSummary,
                  UsecaseSummary,
                  EntrypointSummary,
-                 RepositorySummary,
+                 OutputsSummary,
                  TermList,
                  Insight,
                  Sequence,

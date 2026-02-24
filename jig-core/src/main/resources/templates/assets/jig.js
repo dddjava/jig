@@ -104,7 +104,7 @@ function updateRelativeTime() {
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
-    if (document.body.classList.contains("repository")) {
+    if (document.body.classList.contains("outputs")) {
         setupSortableTables();
     }
     updateRelativeTime();

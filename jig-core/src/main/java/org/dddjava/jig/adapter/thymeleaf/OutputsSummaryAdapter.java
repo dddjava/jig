@@ -15,12 +15,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class RepositorySummaryAdapter {
+/**
+ * 外部利用概要
+ */
+public class OutputsSummaryAdapter {
     private final JigService jigService;
     private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
 
-    public RepositorySummaryAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public OutputsSummaryAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
@@ -29,7 +32,7 @@ public class RepositorySummaryAdapter {
     public record OutputSummaryItem(String port, String portOperation, String adapter, String adapterExecution) {
     }
 
-    @HandleDocument(JigDocument.RepositorySummary)
+    @HandleDocument(JigDocument.OutputsSummary)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
         var outputAdapters = OutputAdapters.from(jigTypes);

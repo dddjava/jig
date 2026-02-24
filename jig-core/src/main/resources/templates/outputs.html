@@ -5,10 +5,10 @@
     <link rel="icon" href="./assets/favicon.ico">
     <title th:text="${title}">出力</title>
 </head>
-<body class="repository">
+<body class="outputs">
 <header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
 <main>
-    <h1>出力ポート＆アダプタ</h1>
+    <h1>外部利用概要</h1>
     <aside class="notice">
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
@@ -24,7 +24,7 @@
         <dd>実装メソッド。</dd>
     </dl>
 
-    <table id="repository-list" class="zebra sortable">
+    <table id="outputs-list" class="zebra sortable">
         <thead>
         <tr>
             <th>OutputPort</th>

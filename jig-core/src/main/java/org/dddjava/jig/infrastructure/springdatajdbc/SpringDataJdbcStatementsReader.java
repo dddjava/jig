@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -36,23 +35,21 @@ public class SpringDataJdbcStatementsReader {
                         Function.identity(),
                         (left, right) -> right));
 
-        Map<SqlStatementId, SqlStatement> statements = classDeclarations.stream()
+        Collection<SqlStatementGroup> statements = classDeclarations.stream()
                 .filter(this::isInterface)
                 .flatMap(declaration -> resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, new HashSet<>())
                         .stream()
-                        .flatMap(repositoryInfo -> extractSqlStatements(declaration, repositoryInfo.entityTypeId(), declarationMap)))
-                .collect(toMap(
-                        SqlStatement::sqlStatementId,
-                        Function.identity(),
-                        (left, right) -> right));
+                        .map(repositoryInfo -> extractSqlStatements(declaration, repositoryInfo.entityTypeId(), declarationMap)))
+                .toList();
 
-        return new SqlStatements(List.copyOf(statements.values()));
+        return SqlStatements.from(statements);
     }
 
-    private Stream<SqlStatement> extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+    private SqlStatementGroup extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
         Tables resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
-        return declaration.jigMethodDeclarations().stream()
+        String namespace = declaration.jigTypeHeader().fqn();
+        List<SqlStatement> sqlStatements = declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
                     String methodName = jigMethodDeclaration.header().name();
                     Query query = resolveQueryFromAnnotation(jigMethodDeclaration);
@@ -60,7 +57,7 @@ public class SpringDataJdbcStatementsReader {
                             ? SqlType.inferSqlTypeFromQuery(query)
                             : inferSqlType(methodName);
                     return inferredSqlType.map(sqlType -> {
-                        SqlStatementId statementId = SqlStatementId.fromNamespaceAndId(declaration.jigTypeHeader().fqn(), methodName);
+                        SqlStatementId statementId = SqlStatementId.fromNamespaceAndId(namespace, methodName);
                         // クエリがあればクエリを優先
                         if (query.supported()) {
                             return SqlStatement.from(statementId, query, sqlType);
@@ -69,7 +66,10 @@ public class SpringDataJdbcStatementsReader {
                         return SqlStatement.from(statementId, sqlType, resolvedTables);
                     });
                 })
-                .flatMap(Optional::stream);
+                .flatMap(Optional::stream)
+                .toList();
+
+        return new SqlStatementGroup(namespace, sqlStatements);
     }
 
     /**

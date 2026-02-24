@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,13 @@ public record SqlStatements(List<SqlStatement> list) {
 
     public static SqlStatements empty() {
         return new SqlStatements(Collections.emptyList());
+    }
+
+    public static SqlStatements from(Collection<SqlStatementGroup> statements) {
+        // SqlStatementsが直接SqlStatementGroupのコレクションを保持するようにするまでのつなぎ
+        return new SqlStatements(statements.stream()
+                .flatMap(sqlStatementGroup -> sqlStatementGroup.sqlStatements().stream())
+                .toList());
     }
 
     private Tables tables(SqlType sqlType) {

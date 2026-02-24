@@ -134,11 +134,11 @@ public class SpringDataJdbcStatementsReader {
             return Stream.of(new Table(tableName));
         }
 
-        return Stream.concat(resolveOwnTable(entityDeclaration, entityTypeId, declarationMap),
+        return Stream.concat(resolveOwnTable(entityDeclaration, entityTypeId),
                 resolveMappedCollectionTables(entityDeclaration, declarationMap, visited));
     }
 
-    private static Stream<Table> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+    private static Stream<Table> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId) {
         String tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                 .findFirst()

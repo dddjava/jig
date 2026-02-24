@@ -45,10 +45,8 @@ public enum SqlType {
                 }
             }
 
-            logger.warn("{} {} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
-                    sqlStatementId.namespace(),
-                    sqlStatementId.id(),
-                    this, sql);
+            logger.warn("{} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
+                    sqlStatementId.logText(), this, sql);
         }
 
         return new Tables(unexpectedTable());

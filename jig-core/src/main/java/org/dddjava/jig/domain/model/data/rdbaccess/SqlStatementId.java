@@ -45,4 +45,8 @@ public record SqlStatementId(String value, String namespace, String id) {
     public String id() {
         return id;
     }
+
+    public String logText() {
+        return value;
+    }
 }

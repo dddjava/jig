@@ -35,19 +35,23 @@ public enum SqlType {
      * 現在は1テーブルのみ対応
      * 複問い合わせやWITHなどは未対応
      */
-    public Table extractTable(String sql, SqlStatementId sqlStatementId) {
-        for (Pattern pattern : patterns) {
-            Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
-            if (matcher.matches()) {
-                return new Table(matcher.group(1));
+    public Tables extractTable(Query query, SqlStatementId sqlStatementId) {
+        if (query.supported()) {
+            String sql = query.normalizedQuery();
+            for (Pattern pattern : patterns) {
+                Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
+                if (matcher.matches()) {
+                    return new Tables(new Table(matcher.group(1)));
+                }
             }
+
+            logger.warn("{} {} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
+                    sqlStatementId.namespace(),
+                    sqlStatementId.id(),
+                    this, sql);
         }
 
-        logger.warn("{} {} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
-                sqlStatementId.namespace(),
-                sqlStatementId.id(),
-                this, sql);
-        return unexpectedTable();
+        return new Tables(unexpectedTable());
     }
 
     public Table unexpectedTable() {

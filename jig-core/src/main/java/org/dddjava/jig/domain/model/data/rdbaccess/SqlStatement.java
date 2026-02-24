@@ -1,27 +1,16 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
-import java.util.Optional;
-
 /**
  * SQL
  */
-public record SqlStatement(SqlStatementId sqlStatementId, Query query, SqlType sqlType, Optional<Tables> resolvedTables) {
+public record SqlStatement(SqlStatementId sqlStatementId, Query query, SqlType sqlType, Tables tables) {
 
-    public SqlStatement(SqlStatementId sqlStatementId, Query query, SqlType sqlType) {
-        this(sqlStatementId, query, sqlType, Optional.<Tables>empty());
+    public static SqlStatement from(SqlStatementId sqlStatementId, Query query, SqlType sqlType) {
+        return new SqlStatement(sqlStatementId, query, sqlType, sqlType.extractTable(query, sqlStatementId));
     }
 
-    public SqlStatement(SqlStatementId sqlStatementId, Query query, SqlType sqlType, Tables resolvedTables) {
-        this(sqlStatementId, query, sqlType, Optional.of(resolvedTables));
-    }
-
-    public Tables tables() {
-        if (resolvedTables.isPresent()) return resolvedTables.get();
-
-        if (query.supported()) {
-            Table table = sqlType.extractTable(query.normalizedQuery(), sqlStatementId);
-            return new Tables(table);
-        }
-        return new Tables(sqlType.unexpectedTable());
+    public static SqlStatement from(SqlStatementId statementId, SqlType sqlType, Tables tables) {
+        // TODO: Queryはunsupportedではなくauto-generateとかそんな感じかと思う
+        return new SqlStatement(statementId, Query.unsupported(), sqlType, tables);
     }
 }

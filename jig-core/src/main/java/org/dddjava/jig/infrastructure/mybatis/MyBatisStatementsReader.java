@@ -130,7 +130,7 @@ public class MyBatisStatementsReader {
                         yield SqlType.SELECT;
                     }
                 };
-                SqlStatement myBatisStatement = new SqlStatement(sqlStatementId, query, sqlType);
+                SqlStatement myBatisStatement = SqlStatement.from(sqlStatementId, query, sqlType);
                 list.add(myBatisStatement);
             }
         }

@@ -63,10 +63,10 @@ public class SpringDataJdbcStatementsReader {
                         SqlStatementId statementId = SqlStatementId.fromNamespaceAndId(declaration.jigTypeHeader().fqn(), methodName);
                         // クエリがあればクエリを優先
                         if (query.supported()) {
-                            return new SqlStatement(statementId, query, sqlType);
+                            return SqlStatement.from(statementId, query, sqlType);
                         }
                         // クエリなしは @Table で記述されているもの
-                        return new SqlStatement(statementId, Query.unsupported(), sqlType, resolvedTables);
+                        return SqlStatement.from(statementId, sqlType, resolvedTables);
                     });
                 })
                 .flatMap(Optional::stream);

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -119,26 +120,26 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private static Tables resolveTablesFromEntityTableAnnotation(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        return resolveTablesFromEntity(entityTypeId, declarationMap, new HashSet<>());
+        return new Tables(resolveTablesFromEntity(entityTypeId, declarationMap, new HashSet<>()).toList());
     }
 
-    private static Tables resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        if (!visited.add(entityTypeId)) return Tables.nothing();
+    private static Stream<Table> resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+        if (!visited.add(entityTypeId)) return Stream.empty();
 
-        return resolveOwnTable(entityTypeId, declarationMap)
-                .merge(resolveMappedCollectionTables(entityTypeId, declarationMap, visited));
-    }
-
-    private static Tables resolveOwnTable(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
         ClassDeclaration entityDeclaration = declarationMap.get(entityTypeId);
-        String tableName;
         if (entityDeclaration == null) {
             // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
-            tableName = toSnakeCase(entityTypeId.asSimpleText());
-            return new Tables(new Table(tableName));
+            String tableName = toSnakeCase(entityTypeId.asSimpleText());
+            logger.warn("Entity {} のクラス情報が読み取り対象に含まれていません。テーブル名を仮に {} として続行します。", entityTypeId, tableName);
+            return Stream.of(new Table(tableName));
         }
 
-        tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
+        return Stream.concat(resolveOwnTable(entityDeclaration, entityTypeId, declarationMap),
+                resolveMappedCollectionTables(entityDeclaration, declarationMap, visited));
+    }
+
+    private static Stream<Table> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+        String tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                 .findFirst()
                 .flatMap(annotation -> annotation.elementTextOf("value")
@@ -147,21 +148,30 @@ public class SpringDataJdbcStatementsReader {
                 .filter(value -> !value.isBlank())
                 // Tableアノテーションがついていない or valueがない
                 // テーブル名が指定されていないので、エンティティの型名をテーブル名としておく
-                .orElseGet(() -> toSnakeCase(entityTypeId.asSimpleText()));
-        return new Tables(new Table(tableName));
+                // 本来は属性なしはクラス名から命名戦略に基づいてテーブル名は決定される
+                // https://spring.pleiades.io/spring-data/relational/reference/jdbc/mapping.html#entity-persistence.naming-strategy
+                .orElseGet(() -> {
+                    String name = toSnakeCase(entityTypeId.asSimpleText());
+                    logger.info("Entity {} に@Tableが付与されていない or valueが指定されていません。テーブル名を仮に {} として続行します。", entityTypeId, name);
+                    return name;
+                });
+        return Stream.of(new Table(tableName));
     }
 
-    private static Tables resolveMappedCollectionTables(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        ClassDeclaration entityDeclaration = declarationMap.get(entityTypeId);
-        if (entityDeclaration == null) return Tables.nothing();
-
+    private static Stream<Table> resolveMappedCollectionTables(ClassDeclaration entityDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         return entityDeclaration.jigFieldHeaders().stream()
                 .flatMap(jigFieldHeader -> resolveMappedCollectionEntityTypeId(jigFieldHeader).stream())
-                .map(mappedTypeId -> resolveTablesFromEntity(mappedTypeId, declarationMap, visited))
-                .reduce(Tables::merge)
-                .orElse(Tables.nothing());
+                // 再帰的に拾ってくる
+                .flatMap(mappedTypeId -> resolveTablesFromEntity(mappedTypeId, declarationMap, visited));
     }
 
+    /**
+     * MappedCollectionが付与されているフィールドのエンティティ型を抽出する
+     * フィールドは総称型コンテナなので型引数からエンティティ型を解決する。
+     * ドキュメント的にはList,Set,Mapのいずれか。
+     *
+     * https://spring.pleiades.io/spring-data/relational/reference/api/java/org/springframework/data/relational/core/mapping/MappedCollection.html
+     */
     private static Optional<TypeId> resolveMappedCollectionEntityTypeId(JigFieldHeader jigFieldHeader) {
         boolean hasMappedCollection = jigFieldHeader.declarationAnnotationStream()
                 .map(JigAnnotationReference::id)

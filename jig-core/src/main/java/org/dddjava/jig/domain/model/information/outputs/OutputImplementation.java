@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 /**
  * 出力ポート／アダプタの実装
  */
-public record OutputImplementation(OutputPortOperation outputPortOperation, Invocation invocation, OutputPort outputPort) {
+public record OutputImplementation(OutputPortOperation outputPortOperation, OutputAdapterExecution outputAdapterExecution, OutputPort outputPort) {
 
     public UsingMethods usingMethods() {
         return concreteMethod().usingMethods();
@@ -18,7 +18,7 @@ public record OutputImplementation(OutputPortOperation outputPortOperation, Invo
     }
 
     public JigMethod concreteMethod() {
-        return invocation.jigMethod();
+        return outputAdapterExecution.jigMethod();
     }
 
     public JigType interfaceJigType() {

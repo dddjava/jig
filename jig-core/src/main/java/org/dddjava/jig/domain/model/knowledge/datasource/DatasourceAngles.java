@@ -22,7 +22,7 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
 
                     var crudTables = sqlStatements.filterRelationOn(sqlStatement -> {
                         SqlStatementId sqlStatementId = sqlStatement.sqlStatementId();
-                        return outputPortOperationUseSQL(outputImplementation, sqlStatementId) || invocationUseSQL(outputImplementation, sqlStatementId);
+                        return outputPortOperationUseSQL(outputImplementation, sqlStatementId) || outputAdapterExecutionUseSQL(outputImplementation, sqlStatementId);
                     }).crudTables();
 
                     return new DatasourceAngle(outputImplementation, crudTables, callerMethods);
@@ -32,12 +32,12 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     }
 
     /**
-     * InvocationがDBアクセスしているかを判定する
+     * OutputAdapterExecutionがDBアクセスしているかを判定する
      *
      * 使用しているメソッドがSQLステートメントかで判断する
      * TODO プライベートメソッドとか辿らないといけないような・・・
      */
-    private static boolean invocationUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
+    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
         return outputImplementation.usingMethods()
                 // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
                 .containsAny(methodCall -> sqlStatementId.matches(methodCall.methodOwner().fqn(), methodCall.methodName()));

@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
- * 出力ポートのゲートウェイ
+ * 出力ポートの操作
  */
 public record OutputPortOperations(Collection<OutputPortOperation> values) {
 

@@ -18,10 +18,10 @@ public record OutputAdapter(JigType jigType) {
                 .map(OutputPort::new);
     }
 
-    public Optional<Invocation> resolveInvocation(OutputPortOperation outputPortOperation) {
+    public Optional<OutputAdapterExecution> findExecution(OutputPortOperation outputPortOperation) {
         return jigType.instanceJigMethodStream()
                 .filter(jigMethod -> outputPortOperation.matches(jigMethod))
-                .map(Invocation::new)
+                .map(OutputAdapterExecution::new)
                 .findAny();
     }
 }

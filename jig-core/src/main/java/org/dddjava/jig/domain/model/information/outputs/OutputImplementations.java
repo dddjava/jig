@@ -32,9 +32,9 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
                 // interfaceのRepository(Spring Data JDBCなど)は実装クラスが存在しないため、自身をoutput portとして扱う
                 .flatMap(outputAdapter -> outputPorts(outputAdapter, jigTypes)
                         .flatMap(outputPort -> outputPort.operationStream()
-                                // 実装しているinvocationが
-                                .flatMap(outputPortOperation -> outputAdapter.resolveInvocation(outputPortOperation).stream()
-                                        .map(invocation -> new OutputImplementation(outputPortOperation, invocation, outputPort)))))
+                                // 実装しているexecutionが
+                                .flatMap(outputPortOperation -> outputAdapter.findExecution(outputPortOperation).stream()
+                                        .map(outputAdapterExecution -> new OutputImplementation(outputPortOperation, outputAdapterExecution, outputPort)))))
                 .collect(collectingAndThen(toList(), outputImplementations ->
                         new OutputImplementations(outputImplementations.stream()
                                 .collect(collectingAndThen(

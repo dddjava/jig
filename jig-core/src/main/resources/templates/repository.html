@@ -16,11 +16,11 @@
     <dl>
         <dt>OutputPort</dt>
         <dd>Repositoryインタフェース。</dd>
-        <dt>OutputPortOperation</dt>
+        <dt>Operation</dt>
         <dd>Repositoryインタフェースのメソッド。ポートの操作。</dd>
         <dt>OutputAdapter</dt>
         <dd>Repository実装クラス。@Repositoryがつけられるもの。</dd>
-        <dt>Invocation</dt>
+        <dt>Execution</dt>
         <dd>実装メソッド。</dd>
     </dl>
 
@@ -28,9 +28,9 @@
         <thead>
         <tr>
             <th>OutputPort</th>
-            <th>OutputPortOperation</th>
+            <th>Operation</th>
             <th>OutputAdapter</th>
-            <th>Invocation</th>
+            <th>Execution</th>
         </tr>
         </thead>
         <tbody>
@@ -38,7 +38,7 @@
             <td th:text="${item.port()}"></td>
             <td th:text="${item.portOperation()}"></td>
             <td th:text="${item.adapter()}"></td>
-            <td th:text="${item.invocation()}"></td>
+            <td th:text="${item.adapterExecution()}"></td>
         </tr>
         </tbody>
     </table>

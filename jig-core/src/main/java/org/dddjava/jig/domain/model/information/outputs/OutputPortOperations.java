@@ -13,18 +13,18 @@ import static java.util.stream.Collectors.toList;
 /**
  * 出力ポートのゲートウェイ
  */
-public record Gateways(Collection<Gateway> values) {
+public record OutputPortOperations(Collection<OutputPortOperation> values) {
 
-    public Gateways filter(UsingMethods usingMethods) {
+    public OutputPortOperations filter(UsingMethods usingMethods) {
         return values.stream()
-                .filter(gateway -> usingMethods.invokedMethodStream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(gateway.jigMethodId())))
-                .collect(collectingAndThen(toList(), Gateways::new));
+                .filter(outputPortOperation -> usingMethods.invokedMethodStream().anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(outputPortOperation.jigMethodId())))
+                .collect(collectingAndThen(toList(), OutputPortOperations::new));
     }
 
     public List<JigMethod> list() {
         return values.stream()
-                .sorted(Comparator.comparing(Gateway::jigMethodId))
-                .map(Gateway::jigMethod)
+                .sorted(Comparator.comparing(OutputPortOperation::jigMethodId))
+                .map(OutputPortOperation::jigMethod)
                 .toList();
     }
 }

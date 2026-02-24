@@ -18,11 +18,11 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     public static DatasourceAngles from(OutputImplementations outputImplementations, SqlStatements sqlStatements, CallerMethodsFactory callerMethodsFactory) {
         return new DatasourceAngles(outputImplementations.stream()
                 .map(outputImplementation -> {
-                    CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortGateway().jigMethodId());
+                    CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortOperaionAsJigMethod().jigMethodId());
 
                     var crudTables = sqlStatements.filterRelationOn(sqlStatement -> {
                         SqlStatementId sqlStatementId = sqlStatement.sqlStatementId();
-                        return gatewayUseSQL(outputImplementation, sqlStatementId) || invocationUseSQL(outputImplementation, sqlStatementId);
+                        return outputPortOperationUseSQL(outputImplementation, sqlStatementId) || invocationUseSQL(outputImplementation, sqlStatementId);
                     }).crudTables();
 
                     return new DatasourceAngle(outputImplementation, crudTables, callerMethods);
@@ -44,13 +44,13 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     }
 
     /**
-     * GatewayがDBアクセスするものかを判定する
+     * OutputPortOperationがDBアクセスするものかを判定する
      *
      * SpringDataJDBCを直接Serviceで使用している場合などにRepositoryインタフェースとSQLステートメントが一致する。
      */
-    private static boolean gatewayUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
-        var gatewayMethodId = outputImplementation.outputPortGateway().jigMethodId();
+    private static boolean outputPortOperationUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
+        var operationMethodId = outputImplementation.outputPortOperaionAsJigMethod().jigMethodId();
         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return sqlStatementId.matches(gatewayMethodId.namespace(), gatewayMethodId.name());
+        return sqlStatementId.matches(operationMethodId.namespace(), operationMethodId.name());
     }
 }

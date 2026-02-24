@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -21,9 +21,9 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
         return values.isEmpty();
     }
 
-    public Gateways repositoryMethods() {
-        return values.stream().map(OutputImplementation::gateway)
-                .collect(collectingAndThen(toList(), Gateways::new));
+    public OutputPortOperations repositoryMethods() {
+        return values.stream().map(OutputImplementation::outputPortOperation)
+                .collect(collectingAndThen(toList(), OutputPortOperations::new));
     }
 
     // FIXME これのテストがない
@@ -31,16 +31,16 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
         return outputAdapters.stream()
                 // interfaceのRepository(Spring Data JDBCなど)は実装クラスが存在しないため、自身をoutput portとして扱う
                 .flatMap(outputAdapter -> outputPorts(outputAdapter, jigTypes)
-                        .flatMap(outputPort -> outputPort.gatewayStream()
+                        .flatMap(outputPort -> outputPort.operationStream()
                                 // 実装しているinvocationが
-                                .flatMap(gateway -> outputAdapter.resolveInvocation(gateway).stream()
-                                        .map(invocation -> new OutputImplementation(gateway, invocation, outputPort)))))
+                                .flatMap(outputPortOperation -> outputAdapter.resolveInvocation(outputPortOperation).stream()
+                                        .map(invocation -> new OutputImplementation(outputPortOperation, invocation, outputPort)))))
                 .collect(collectingAndThen(toList(), outputImplementations ->
                         new OutputImplementations(outputImplementations.stream()
                                 .collect(collectingAndThen(
                                         java.util.stream.Collectors.toMap(
-                                                outputImplementation -> outputImplementation.outputPortGateway().jigMethodId().namespace()
-                                                        + "#" + outputImplementation.outputPortGateway().name(),
+                                                outputImplementation -> outputImplementation.outputPortOperaionAsJigMethod().jigMethodId().namespace()
+                                                        + "#" + outputImplementation.outputPortOperaionAsJigMethod().name(),
                                                 Function.identity(),
                                                 (existing, ignored) -> existing,
                                                 LinkedHashMap::new),

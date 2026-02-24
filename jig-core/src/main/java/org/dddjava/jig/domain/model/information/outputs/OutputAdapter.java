@@ -18,9 +18,9 @@ public record OutputAdapter(JigType jigType) {
                 .map(OutputPort::new);
     }
 
-    public Optional<Invocation> resolveInvocation(Gateway gateway) {
+    public Optional<Invocation> resolveInvocation(OutputPortOperation outputPortOperation) {
         return jigType.instanceJigMethodStream()
-                .filter(jigMethod -> gateway.matches(jigMethod))
+                .filter(jigMethod -> outputPortOperation.matches(jigMethod))
                 .map(Invocation::new)
                 .findAny();
     }

@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
-import org.dddjava.jig.domain.model.information.outputs.Gateways;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
+import org.dddjava.jig.domain.model.information.outputs.OutputPortOperations;
 
 import java.util.Collection;
 
@@ -27,7 +27,7 @@ import java.util.Collection;
  * ハンドラはユースケースだが、ハンドラでないものもユースケースの可能性がある。実装上の区別はつけづらいので、
  * Javadocコメントの記述有無などで判断する？
  */
-public record Usecase(ServiceMethod serviceMethod, Gateways usingGateways,
+public record Usecase(ServiceMethod serviceMethod, OutputPortOperations usingOutputPortOperations,
                       Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
                       UsecaseCategory usecaseCategory) {
 
@@ -38,10 +38,10 @@ public record Usecase(ServiceMethod serviceMethod, Gateways usingGateways,
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
-        Gateways usingGateways = outputImplementations.repositoryMethods().filter(usingMethods);
+        OutputPortOperations usingOutputPortOperations = outputImplementations.repositoryMethods().filter(usingMethods);
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
-        return new Usecase(serviceMethod, usingGateways, usingServiceMethods, userServiceMethods, usecaseCategory);
+        return new Usecase(serviceMethod, usingOutputPortOperations, usingServiceMethods, userServiceMethods, usecaseCategory);
     }
 
     public boolean usingFromController() {
@@ -52,8 +52,8 @@ public record Usecase(ServiceMethod serviceMethod, Gateways usingGateways,
         return serviceMethod.methodUsingFields();
     }
 
-    public Gateways usingRepositoryMethods() {
-        return usingGateways;
+    public OutputPortOperations usingRepositoryMethods() {
+        return usingOutputPortOperations;
     }
 
     public boolean useStream() {

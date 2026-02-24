@@ -16,8 +16,8 @@
     <dl>
         <dt>OutputPort</dt>
         <dd>Repositoryインタフェース。</dd>
-        <dt>Gateway</dt>
-        <dd>Repositoryインタフェースのメソッド。外界への出口。</dd>
+        <dt>OutputPortOperation</dt>
+        <dd>Repositoryインタフェースのメソッド。ポートの操作。</dd>
         <dt>OutputAdapter</dt>
         <dd>Repository実装クラス。@Repositoryがつけられるもの。</dd>
         <dt>Invocation</dt>
@@ -28,7 +28,7 @@
         <thead>
         <tr>
             <th>OutputPort</th>
-            <th>Gateway</th>
+            <th>OutputPortOperation</th>
             <th>OutputAdapter</th>
             <th>Invocation</th>
         </tr>
@@ -36,7 +36,7 @@
         <tbody>
         <tr th:each="item : ${outputs}">
             <td th:text="${item.port()}"></td>
-            <td th:text="${item.gateway()}"></td>
+            <td th:text="${item.portOperation()}"></td>
             <td th:text="${item.adapter()}"></td>
             <td th:text="${item.invocation()}"></td>
         </tr>

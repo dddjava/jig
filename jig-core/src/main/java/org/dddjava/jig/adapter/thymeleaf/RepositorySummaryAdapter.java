@@ -26,7 +26,7 @@ public class RepositorySummaryAdapter {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    public record OutputSummaryItem(String port, String gateway, String adapter, String invocation) {
+    public record OutputSummaryItem(String port, String portOperation, String adapter, String invocation) {
     }
 
     @HandleDocument(JigDocument.RepositorySummary)
@@ -34,14 +34,14 @@ public class RepositorySummaryAdapter {
         var jigTypes = jigService.jigTypes(repository);
         var outputAdapters = OutputAdapters.from(jigTypes);
         var result = outputAdapters.stream()
-                // output adapterの実装しているoutput portのgatewayを
+                // output adapterが実装しているoutput portのoperationを
                 .flatMap(outputAdapter -> outputAdapter.implementsPortStream(jigTypes)
-                        .flatMap(outputPort -> outputPort.gatewayStream()
+                        .flatMap(outputPort -> outputPort.operationStream()
                                 // 実装しているinvocationが
-                                .flatMap(gateway -> outputAdapter.resolveInvocation(gateway).stream()
+                                .flatMap(outputPortOperation -> outputAdapter.resolveInvocation(outputPortOperation).stream()
                                         .map(invocation -> new OutputSummaryItem(
                                                 outputPort.jigType().label(),
-                                                gateway.jigMethod().name(),
+                                                outputPortOperation.jigMethod().name(),
                                                 outputAdapter.jigType().label(),
                                                 invocation.jigMethod().name())))))
                 .toList();

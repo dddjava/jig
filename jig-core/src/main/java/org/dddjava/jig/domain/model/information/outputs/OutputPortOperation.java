@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 /**
  * 出力ポートのゲートウェイ
  */
-public record Gateway(JigMethod jigMethod) {
+public record OutputPortOperation(JigMethod jigMethod) {
 
     public boolean matches(JigMethod invocationJigMethod) {
         var invocationJigMethodId = invocationJigMethod.jigMethodId();

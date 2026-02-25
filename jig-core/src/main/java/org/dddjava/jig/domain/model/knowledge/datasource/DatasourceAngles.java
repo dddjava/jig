@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.rdbaccess.PersistenceOperationId;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
@@ -40,7 +41,7 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
         return outputImplementation.usingMethods()
                 // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                .containsAny(methodCall -> persistenceOperationId.matches(methodCall.methodOwner().fqn(), methodCall.methodName()));
+                .containsAny(methodCall -> persistenceOperationId.matches(methodCall.methodOwner(), methodCall.methodName()));
     }
 
     /**
@@ -51,6 +52,6 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     private static boolean outputPortOperationUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
         var operationMethodId = outputImplementation.outputPortOperaionAsJigMethod().jigMethodId();
         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return persistenceOperationId.matches(operationMethodId.namespace(), operationMethodId.name());
+        return persistenceOperationId.matches(TypeId.valueOf(operationMethodId.namespace()), operationMethodId.name());
     }
 }

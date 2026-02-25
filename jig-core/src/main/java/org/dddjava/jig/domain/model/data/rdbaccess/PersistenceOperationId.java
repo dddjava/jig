@@ -12,23 +12,23 @@ import java.util.Objects;
  * TODO namespaceやidはMyBatisの用語なのでこの形のままとするかは一考の余地がある
  * TODO idは全体の一意でなくnamespace内の一意なので誤解を招きそう
  */
-public record PersistenceOperationId(String value, String namespace, String id) {
+public record PersistenceOperationId(String value, TypeId typeId, String id) {
 
     public static PersistenceOperationId from(String value) {
         var namespaceIdSeparateIndex = value.lastIndexOf('.');
         if (namespaceIdSeparateIndex != -1) {
-            return new PersistenceOperationId(value, value.substring(0, namespaceIdSeparateIndex), value.substring(namespaceIdSeparateIndex + 1));
+            return new PersistenceOperationId(value, TypeId.valueOf(value.substring(0, namespaceIdSeparateIndex)), value.substring(namespaceIdSeparateIndex + 1));
         } else {
-            return new PersistenceOperationId(value, "<unknown namespace>", value);
+            return new PersistenceOperationId(value, TypeId.valueOf("JigEmptyNamespace"), value);
         }
     }
 
     public static PersistenceOperationId fromTypeIdAndName(TypeId typeId, String methodName) {
-        return from(typeId.fqn() + "." + methodName);
+        return new PersistenceOperationId(typeId.fqn() + "." + methodName, typeId, methodName);
     }
 
-    public boolean matches(String namespace, String name) {
-        return namespace.equals(this.namespace) && name.equals(this.id);
+    public boolean matches(TypeId typeId, String name) {
+        return typeId.equals(this.typeId) && name.equals(this.id);
     }
 
     @Override

@@ -18,6 +18,11 @@ public record OutputAdapter(JigType jigType) {
                 .map(OutputPort::new);
     }
 
+    /**
+     * 操作に対する実行を取り出す
+     *
+     * ポートはアダプタに依存しないので起点がポートだと探すことになるが、これが必要な理由はいまいちわからない。
+     */
     public Optional<OutputAdapterExecution> findExecution(OutputPortOperation outputPortOperation) {
         return jigType.instanceJigMethodStream()
                 .filter(jigMethod -> outputPortOperation.matches(jigMethod))

@@ -35,7 +35,7 @@ public enum SqlType {
      * 現在は1テーブルのみ対応
      * 複問い合わせやWITHなどは未対応
      */
-    public Tables extractTable(Query query, SqlStatementId sqlStatementId) {
+    public Tables extractTable(Query query, PersistenceOperationId persistenceOperationId) {
         if (query.supported()) {
             String sql = query.normalizedQuery();
             for (Pattern pattern : patterns) {
@@ -46,7 +46,7 @@ public enum SqlType {
             }
 
             logger.warn("{} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
-                    sqlStatementId.logText(), this, sql);
+                    persistenceOperationId.logText(), this, sql);
         }
 
         return new Tables(unexpectedTable());

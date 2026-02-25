@@ -106,7 +106,7 @@ public class MyBatisStatementsReader {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                SqlStatementId sqlStatementId = resolveStatementId(mappedStatement);
+                PersistenceOperationId persistenceOperationId = resolveStatementId(mappedStatement);
 
                 Query query;
                 try {
@@ -130,7 +130,7 @@ public class MyBatisStatementsReader {
                         yield SqlType.SELECT;
                     }
                 };
-                PersistenceOperation myBatisStatement = PersistenceOperation.from(sqlStatementId, query, sqlType);
+                PersistenceOperation myBatisStatement = PersistenceOperation.from(persistenceOperationId, query, sqlType);
                 list.add(myBatisStatement);
             }
         }
@@ -162,8 +162,8 @@ public class MyBatisStatementsReader {
      * }
      * </pre>
      */
-    private static SqlStatementId resolveStatementId(MappedStatement mappedStatement) {
-        return SqlStatementId.from(mappedStatement.getId());
+    private static PersistenceOperationId resolveStatementId(MappedStatement mappedStatement) {
+        return PersistenceOperationId.from(mappedStatement.getId());
     }
 
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {

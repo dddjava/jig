@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatementId;
+import org.dddjava.jig.domain.model.data.rdbaccess.PersistenceOperationId;
 import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
@@ -21,8 +21,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortOperaionAsJigMethod().jigMethodId());
 
                     var crudTables = sqlStatements.filterRelationOn(sqlStatement -> {
-                        SqlStatementId sqlStatementId = sqlStatement.sqlStatementId();
-                        return outputPortOperationUseSQL(outputImplementation, sqlStatementId) || outputAdapterExecutionUseSQL(outputImplementation, sqlStatementId);
+                        PersistenceOperationId persistenceOperationId = sqlStatement.persistenceOperationId();
+                        return outputPortOperationUseSQL(outputImplementation, persistenceOperationId) || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
                     }).crudTables();
 
                     return new DatasourceAngle(outputImplementation, crudTables, callerMethods);
@@ -37,10 +37,10 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      * 使用しているメソッドがSQLステートメントかで判断する
      * TODO プライベートメソッドとか辿らないといけないような・・・
      */
-    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
+    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
         return outputImplementation.usingMethods()
                 // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                .containsAny(methodCall -> sqlStatementId.matches(methodCall.methodOwner().fqn(), methodCall.methodName()));
+                .containsAny(methodCall -> persistenceOperationId.matches(methodCall.methodOwner().fqn(), methodCall.methodName()));
     }
 
     /**
@@ -48,9 +48,9 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      *
      * SpringDataJDBCを直接Serviceで使用している場合などにRepositoryインタフェースとSQLステートメントが一致する。
      */
-    private static boolean outputPortOperationUseSQL(OutputImplementation outputImplementation, SqlStatementId sqlStatementId) {
+    private static boolean outputPortOperationUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
         var operationMethodId = outputImplementation.outputPortOperaionAsJigMethod().jigMethodId();
         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return sqlStatementId.matches(operationMethodId.namespace(), operationMethodId.name());
+        return persistenceOperationId.matches(operationMethodId.namespace(), operationMethodId.name());
     }
 }

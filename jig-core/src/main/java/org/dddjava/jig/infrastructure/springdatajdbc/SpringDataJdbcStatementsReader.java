@@ -58,7 +58,7 @@ public class SpringDataJdbcStatementsReader {
                             ? SqlType.inferSqlTypeFromQuery(query)
                             : inferSqlType(methodName);
                     return inferredSqlType.map(sqlType -> {
-                        SqlStatementId statementId = SqlStatementId.fromNamespaceAndId(namespace, methodName);
+                        PersistenceOperationId statementId = PersistenceOperationId.fromNamespaceAndId(namespace, methodName);
                         // クエリがあればクエリを優先
                         if (query.supported()) {
                             return PersistenceOperation.from(statementId, query, sqlType);

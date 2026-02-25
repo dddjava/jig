@@ -30,9 +30,9 @@ public record SqlStatements(List<PersistenceOperation> list) {
                 .orElse(Tables.nothing());
     }
 
-    public Optional<PersistenceOperation> findById(SqlStatementId sqlStatementId) {
+    public Optional<PersistenceOperation> findById(PersistenceOperationId persistenceOperationId) {
         return list.stream()
-                .filter(sqlStatement -> sqlStatement.sqlStatementId().equals(sqlStatementId))
+                .filter(sqlStatement -> sqlStatement.persistenceOperationId().equals(persistenceOperationId))
                 .findFirst();
     }
 

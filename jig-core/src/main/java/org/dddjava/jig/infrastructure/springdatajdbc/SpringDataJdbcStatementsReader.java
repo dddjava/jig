@@ -36,7 +36,7 @@ public class SpringDataJdbcStatementsReader {
                         Function.identity(),
                         (left, right) -> right));
 
-        Collection<PersistenceOperationGroup> statements = classDeclarations.stream()
+        Collection<PersistenceOperations> statements = classDeclarations.stream()
                 .filter(this::isInterface)
                 .flatMap(declaration -> resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, new HashSet<>())
                         .stream()
@@ -46,7 +46,7 @@ public class SpringDataJdbcStatementsReader {
         return SqlStatements.from(statements);
     }
 
-    private PersistenceOperationGroup extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+    private PersistenceOperations extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
         Tables resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
         TypeId typeId = declaration.jigTypeHeader().id();
@@ -70,7 +70,7 @@ public class SpringDataJdbcStatementsReader {
                 .flatMap(Optional::stream)
                 .toList();
 
-        return new PersistenceOperationGroup(typeId, persistenceOperations);
+        return new PersistenceOperations(typeId, persistenceOperations);
     }
 
     /**

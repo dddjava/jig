@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import java.util.Objects;
 
 /**
- * SQLステートメントID
+ * 永続化操作ID
  *
  * namespaceとidを.で連結したもの。
  *

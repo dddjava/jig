@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import java.util.Collection;
 
 /**
- * DBアクセスグループ
+ * 型単位の永続化操作群
  */
-public record PersistenceOperationGroup(
+public record PersistenceOperations(
         TypeId typeId,
         Collection<PersistenceOperation> persistenceOperations
 ) {

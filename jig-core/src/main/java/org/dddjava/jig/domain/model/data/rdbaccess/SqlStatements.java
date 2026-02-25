@@ -15,10 +15,10 @@ public record SqlStatements(List<PersistenceOperation> list) {
         return new SqlStatements(Collections.emptyList());
     }
 
-    public static SqlStatements from(Collection<PersistenceOperationGroup> statements) {
+    public static SqlStatements from(Collection<PersistenceOperations> statements) {
         // SqlStatementsが直接SqlStatementGroupのコレクションを保持するようにするまでのつなぎ
         return new SqlStatements(statements.stream()
-                .flatMap(persistenceOperationGroup -> persistenceOperationGroup.persistenceOperations().stream())
+                .flatMap(persistenceOperations -> persistenceOperations.persistenceOperations().stream())
                 .toList());
     }
 

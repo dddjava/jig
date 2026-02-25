@@ -23,12 +23,8 @@ public record PersistenceOperationId(String value, String namespace, String id) 
         }
     }
 
-    public static PersistenceOperationId fromNamespaceAndId(String namespace, String id) {
-        return from(namespace + "." + id);
-    }
-
     public static PersistenceOperationId fromTypeIdAndName(TypeId typeId, String methodName) {
-        return fromNamespaceAndId(typeId.fqn(), methodName);
+        return from(typeId.fqn() + "." + methodName);
     }
 
     public boolean matches(String namespace, String name) {

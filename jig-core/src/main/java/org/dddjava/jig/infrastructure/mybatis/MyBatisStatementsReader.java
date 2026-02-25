@@ -163,7 +163,19 @@ public class MyBatisStatementsReader {
      * </pre>
      */
     private static PersistenceOperationId resolveStatementId(MappedStatement mappedStatement) {
-        return PersistenceOperationId.from(mappedStatement.getId());
+        var mappedStatementId = mappedStatement.getId();
+
+        var namespaceIdSeparateIndex = mappedStatementId.lastIndexOf('.');
+        if (namespaceIdSeparateIndex != -1) {
+            return PersistenceOperationId.fromTypeIdAndName(
+                    TypeId.valueOf(mappedStatementId.substring(0, namespaceIdSeparateIndex)),
+                    mappedStatementId.substring(namespaceIdSeparateIndex + 1));
+        } else {
+            return PersistenceOperationId.fromTypeIdAndName(
+                    // ダミー値を入れておく
+                    TypeId.valueOf("jig.mybatis.unnamed"),
+                    mappedStatementId);
+        }
     }
 
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {

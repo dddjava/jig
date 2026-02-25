@@ -99,7 +99,7 @@ public class MyBatisStatementsReader {
             }
         }
 
-        List<SqlStatement> list = new ArrayList<>();
+        List<PersistenceOperation> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
         logger.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
@@ -130,7 +130,7 @@ public class MyBatisStatementsReader {
                         yield SqlType.SELECT;
                     }
                 };
-                SqlStatement myBatisStatement = SqlStatement.from(sqlStatementId, query, sqlType);
+                PersistenceOperation myBatisStatement = PersistenceOperation.from(sqlStatementId, query, sqlType);
                 list.add(myBatisStatement);
             }
         }

@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * SQL一覧
  */
-public record SqlStatements(List<SqlStatement> list) {
+public record SqlStatements(List<PersistenceOperation> list) {
 
     public static SqlStatements empty() {
         return new SqlStatements(Collections.emptyList());
@@ -18,19 +18,19 @@ public record SqlStatements(List<SqlStatement> list) {
     public static SqlStatements from(Collection<SqlStatementGroup> statements) {
         // SqlStatementsが直接SqlStatementGroupのコレクションを保持するようにするまでのつなぎ
         return new SqlStatements(statements.stream()
-                .flatMap(sqlStatementGroup -> sqlStatementGroup.sqlStatements().stream())
+                .flatMap(sqlStatementGroup -> sqlStatementGroup.persistenceOperations().stream())
                 .toList());
     }
 
     private Tables tables(SqlType sqlType) {
         return list.stream()
                 .filter(sqlStatement -> sqlStatement.sqlType() == sqlType)
-                .map(SqlStatement::tables)
+                .map(PersistenceOperation::tables)
                 .reduce(Tables::merge)
                 .orElse(Tables.nothing());
     }
 
-    public Optional<SqlStatement> findById(SqlStatementId sqlStatementId) {
+    public Optional<PersistenceOperation> findById(SqlStatementId sqlStatementId) {
         return list.stream()
                 .filter(sqlStatement -> sqlStatement.sqlStatementId().equals(sqlStatementId))
                 .findFirst();
@@ -39,11 +39,11 @@ public record SqlStatements(List<SqlStatement> list) {
     /**
      * 引数のメソッドに関連するステートメントに絞り込む
      */
-    public SqlStatements filterRelationOn(Predicate<SqlStatement> sqlStatementPredicate) {
-        List<SqlStatement> sqlStatements = list.stream()
+    public SqlStatements filterRelationOn(Predicate<PersistenceOperation> sqlStatementPredicate) {
+        List<PersistenceOperation> persistenceOperations = list.stream()
                 .filter(sqlStatementPredicate)
                 .toList();
-        return new SqlStatements(sqlStatements);
+        return new SqlStatements(persistenceOperations);
     }
 
     public boolean isEmpty() {

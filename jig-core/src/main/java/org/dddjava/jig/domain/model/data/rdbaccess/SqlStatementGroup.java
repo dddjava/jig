@@ -10,6 +10,6 @@ import java.util.Collection;
  */
 public record SqlStatementGroup(
         String namespace,
-        Collection<SqlStatement> sqlStatements
+        Collection<PersistenceOperation> persistenceOperations
 ) {
 }

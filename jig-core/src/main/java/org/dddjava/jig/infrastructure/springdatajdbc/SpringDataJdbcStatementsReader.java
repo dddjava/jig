@@ -50,7 +50,7 @@ public class SpringDataJdbcStatementsReader {
         Tables resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
         String namespace = declaration.jigTypeHeader().fqn();
-        List<SqlStatement> sqlStatements = declaration.jigMethodDeclarations().stream()
+        List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
                     String methodName = jigMethodDeclaration.header().name();
                     Query query = resolveQueryFromAnnotation(jigMethodDeclaration);
@@ -61,16 +61,16 @@ public class SpringDataJdbcStatementsReader {
                         SqlStatementId statementId = SqlStatementId.fromNamespaceAndId(namespace, methodName);
                         // クエリがあればクエリを優先
                         if (query.supported()) {
-                            return SqlStatement.from(statementId, query, sqlType);
+                            return PersistenceOperation.from(statementId, query, sqlType);
                         }
                         // クエリなしは @Table で記述されているもの
-                        return SqlStatement.from(statementId, sqlType, resolvedTables);
+                        return PersistenceOperation.from(statementId, sqlType, resolvedTables);
                     });
                 })
                 .flatMap(Optional::stream)
                 .toList();
 
-        return new SqlStatementGroup(namespace, sqlStatements);
+        return new SqlStatementGroup(namespace, persistenceOperations);
     }
 
     /**

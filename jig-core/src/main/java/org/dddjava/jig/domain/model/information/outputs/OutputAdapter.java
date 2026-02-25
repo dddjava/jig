@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -10,6 +11,12 @@ import java.util.stream.Stream;
  * 出力アダプタとなるクラス
  */
 public record OutputAdapter(JigType jigType) {
+
+    public static OutputAdapter from(JigType jigType, SqlStatements sqlStatements) {
+        // TODO OutputAdapterExecutionをこのタイミングで作成し、レコードコンポーネントに持たせる。
+        //   OutputAdapterExecutionには使用しているPersistenceAccessorを持たせる。
+        return new OutputAdapter(jigType);
+    }
 
     public Stream<OutputPort> implementsPortStream(JigTypes contextJigTypes) {
         return jigType().jigTypeHeader().interfaceTypeList()

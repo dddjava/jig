@@ -20,7 +20,9 @@ public class InfrastructureQueryService {
 
     public OutputImplementations outputImplementations(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
-        var outputAdapters = OutputAdapters.from(jigTypes);
+
+        var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
         var outputImplementations = OutputImplementations.from(jigTypes, outputAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;

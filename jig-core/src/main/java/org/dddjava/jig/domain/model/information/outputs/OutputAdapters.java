@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
+import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 
@@ -14,10 +15,10 @@ import static java.util.stream.Collectors.toUnmodifiableList;
  */
 public record OutputAdapters(Collection<OutputAdapter> values) {
 
-    public static OutputAdapters from(JigTypes jigTypes) {
+    public static OutputAdapters from(JigTypes jigTypes, SqlStatements sqlStatements) {
         return jigTypes.orderedStream()
                 .filter(jigType -> jigType.typeCategory() == TypeCategory.OutputAdapter)
-                .map(OutputAdapter::new)
+                .map(jigType -> OutputAdapter.from(jigType, sqlStatements))
                 .collect(collectingAndThen(toUnmodifiableList(), OutputAdapters::new));
     }
 

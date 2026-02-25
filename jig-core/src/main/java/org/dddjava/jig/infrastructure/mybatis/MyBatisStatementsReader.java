@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -136,7 +137,15 @@ public class MyBatisStatementsReader {
         }
 
         logger.debug("取得したSQL: {}件", list.size());
-        return new MyBatisReadResult(new SqlStatements(list), sqlReadStatus);
+
+        List<PersistenceOperations> persistenceOperations = list.stream()
+                .collect(Collectors.groupingBy(persistenceOperation -> persistenceOperation.persistenceOperationId().typeId()))
+                .entrySet()
+                .stream()
+                .map(entry -> new PersistenceOperations(entry.getKey(), entry.getValue()))
+                .toList();
+
+        return new MyBatisReadResult(SqlStatements.from(persistenceOperations), sqlReadStatus);
     }
 
     /**

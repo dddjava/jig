@@ -1,15 +1,14 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
+import org.dddjava.jig.domain.model.data.types.TypeId;
+
 import java.util.Collection;
 
 /**
  * DBアクセスグループ
- *
- * namespace単位でまとめたもの。
- * 通常namespaceはtypeId
  */
-public record SqlStatementGroup(
-        String namespace,
+public record PersistenceOperationGroup(
+        TypeId typeId,
         Collection<PersistenceOperation> persistenceOperations
 ) {
 }

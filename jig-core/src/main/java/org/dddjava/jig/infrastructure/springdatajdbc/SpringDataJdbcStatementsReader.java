@@ -36,7 +36,7 @@ public class SpringDataJdbcStatementsReader {
                         Function.identity(),
                         (left, right) -> right));
 
-        Collection<SqlStatementGroup> statements = classDeclarations.stream()
+        Collection<PersistenceOperationGroup> statements = classDeclarations.stream()
                 .filter(this::isInterface)
                 .flatMap(declaration -> resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, new HashSet<>())
                         .stream()
@@ -46,10 +46,10 @@ public class SpringDataJdbcStatementsReader {
         return SqlStatements.from(statements);
     }
 
-    private SqlStatementGroup extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+    private PersistenceOperationGroup extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
         Tables resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
-        String namespace = declaration.jigTypeHeader().fqn();
+        TypeId typeId = declaration.jigTypeHeader().id();
         List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
                     String methodName = jigMethodDeclaration.header().name();
@@ -58,7 +58,7 @@ public class SpringDataJdbcStatementsReader {
                             ? SqlType.inferSqlTypeFromQuery(query)
                             : inferSqlType(methodName);
                     return inferredSqlType.map(sqlType -> {
-                        PersistenceOperationId statementId = PersistenceOperationId.fromNamespaceAndId(namespace, methodName);
+                        PersistenceOperationId statementId = PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
                         // クエリがあればクエリを優先
                         if (query.supported()) {
                             return PersistenceOperation.from(statementId, query, sqlType);
@@ -70,7 +70,7 @@ public class SpringDataJdbcStatementsReader {
                 .flatMap(Optional::stream)
                 .toList();
 
-        return new SqlStatementGroup(namespace, persistenceOperations);
+        return new PersistenceOperationGroup(typeId, persistenceOperations);
     }
 
     /**

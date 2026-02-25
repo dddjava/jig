@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.rdbaccess;
 
+import org.dddjava.jig.domain.model.data.types.TypeId;
+
 import java.util.Objects;
 
 /**
@@ -23,6 +25,10 @@ public record PersistenceOperationId(String value, String namespace, String id) 
 
     public static PersistenceOperationId fromNamespaceAndId(String namespace, String id) {
         return from(namespace + "." + id);
+    }
+
+    public static PersistenceOperationId fromTypeIdAndName(TypeId typeId, String methodName) {
+        return fromNamespaceAndId(typeId.fqn(), methodName);
     }
 
     public boolean matches(String namespace, String name) {

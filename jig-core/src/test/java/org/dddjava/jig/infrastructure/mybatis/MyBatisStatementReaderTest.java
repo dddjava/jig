@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.PersistenceOperation;
-import org.dddjava.jig.domain.model.data.rdbaccess.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
+import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;

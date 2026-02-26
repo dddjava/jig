@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
+import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;

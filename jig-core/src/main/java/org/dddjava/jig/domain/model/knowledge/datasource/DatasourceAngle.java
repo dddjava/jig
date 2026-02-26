@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.CrudTables;
-import org.dddjava.jig.domain.model.data.rdbaccess.Tables;
+import org.dddjava.jig.domain.model.data.persistence.CrudTables;
+import org.dddjava.jig.domain.model.data.persistence.Tables;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -104,7 +104,7 @@ public class DatasourceAngle {
 
     private List<String> tableNames(Tables tables) {
         return tables.tables().stream()
-                .map(org.dddjava.jig.domain.model.data.rdbaccess.Table::name)
+                .map(org.dddjava.jig.domain.model.data.persistence.Table::name)
                 .distinct()
                 .sorted()
                 .toList();

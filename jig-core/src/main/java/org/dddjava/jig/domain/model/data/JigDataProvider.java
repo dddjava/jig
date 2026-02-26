@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data;
 
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
 
 import java.util.List;
 

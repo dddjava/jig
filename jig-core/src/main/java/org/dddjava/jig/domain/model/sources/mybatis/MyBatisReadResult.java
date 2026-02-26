@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.sources.mybatis;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
 
 public record MyBatisReadResult(SqlStatements sqlStatements, SqlReadStatus sqlReadStatus) {
 

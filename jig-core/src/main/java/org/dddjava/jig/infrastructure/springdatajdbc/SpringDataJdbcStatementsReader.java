@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
-import org.dddjava.jig.domain.model.data.rdbaccess.*;
+import org.dddjava.jig.domain.model.data.persistence.*;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;

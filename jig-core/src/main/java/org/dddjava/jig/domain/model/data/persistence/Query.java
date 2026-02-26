@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.rdbaccess;
+package org.dddjava.jig.domain.model.data.persistence;
 
 import org.jspecify.annotations.Nullable;
 

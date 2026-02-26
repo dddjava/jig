@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
-import org.dddjava.jig.domain.model.data.rdbaccess.Table;
-import org.dddjava.jig.domain.model.data.rdbaccess.Tables;
+import org.dddjava.jig.domain.model.data.persistence.Table;
+import org.dddjava.jig.domain.model.data.persistence.Tables;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

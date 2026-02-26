@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.rdbaccess.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.rdbaccess.SqlType;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
+import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

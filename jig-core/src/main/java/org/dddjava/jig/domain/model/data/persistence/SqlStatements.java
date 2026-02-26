@@ -2,28 +2,25 @@ package org.dddjava.jig.domain.model.data.persistence;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
  * SQL一覧
  */
-public record SqlStatements(List<PersistenceOperation> list) {
+public record SqlStatements(Collection<PersistenceOperations> values) {
 
     public static SqlStatements empty() {
         return new SqlStatements(Collections.emptyList());
     }
 
     public static SqlStatements from(Collection<PersistenceOperations> statements) {
-        // SqlStatementsが直接SqlStatementGroupのコレクションを保持するようにするまでのつなぎ
-        return new SqlStatements(statements.stream()
-                .flatMap(persistenceOperations -> persistenceOperations.persistenceOperations().stream())
-                .toList());
+        return new SqlStatements(statements);
     }
 
     private PersistenceTargets tables(SqlType sqlType) {
-        return list.stream()
+        return values.stream()
+                .flatMap(ops -> ops.persistenceOperations().stream())
                 .filter(sqlStatement -> sqlStatement.sqlType() == sqlType)
                 .map(PersistenceOperation::persistenceTargets)
                 .reduce(PersistenceTargets::merge)
@@ -31,7 +28,8 @@ public record SqlStatements(List<PersistenceOperation> list) {
     }
 
     public Optional<PersistenceOperation> findById(PersistenceOperationId persistenceOperationId) {
-        return list.stream()
+        return values.stream()
+                .flatMap(ops -> ops.persistenceOperations().stream())
                 .filter(sqlStatement -> sqlStatement.persistenceOperationId().equals(persistenceOperationId))
                 .findFirst();
     }
@@ -40,14 +38,20 @@ public record SqlStatements(List<PersistenceOperation> list) {
      * 引数のメソッドに関連するステートメントに絞り込む
      */
     public SqlStatements filterRelationOn(Predicate<PersistenceOperation> sqlStatementPredicate) {
-        List<PersistenceOperation> persistenceOperations = list.stream()
-                .filter(sqlStatementPredicate)
+        Collection<PersistenceOperations> filteredOperations = values.stream()
+                .map(ops -> new PersistenceOperations(
+                        ops.typeId(),
+                        ops.persistenceOperations().stream()
+                                .filter(sqlStatementPredicate)
+                                .toList()
+                ))
+                .filter(ops -> !ops.persistenceOperations().isEmpty())
                 .toList();
-        return new SqlStatements(persistenceOperations);
+        return new SqlStatements(filteredOperations);
     }
 
     public boolean isEmpty() {
-        return list.isEmpty();
+        return values.isEmpty();
     }
 
     public CrudTables crudTables() {

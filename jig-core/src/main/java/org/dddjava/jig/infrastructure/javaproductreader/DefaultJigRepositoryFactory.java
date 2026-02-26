@@ -168,8 +168,8 @@ public class DefaultJigRepositoryFactory {
 
     private SqlStatements mergeStatements(SqlStatements myBatisStatements, SqlStatements springDataJdbcStatements) {
         return new SqlStatements(Stream.concat(
-                        myBatisStatements.list().stream(),
-                        springDataJdbcStatements.list().stream())
+                        myBatisStatements.values().stream(),
+                        springDataJdbcStatements.values().stream())
                 .distinct()
                 .toList());
     }

@@ -28,7 +28,7 @@ class MyBatisStatementReaderTest {
         SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
         PersistenceOperation myBatisStatement = myBatisStatements.findById(persistenceOperationIdOf(SampleMapper.class, "binding")).orElseThrow();
-        assertEquals("[fuga]", myBatisStatement.tables().asText());
+        assertEquals("[fuga]", myBatisStatement.persistenceTargets().asText());
     }
 
     @Test
@@ -36,7 +36,7 @@ class MyBatisStatementReaderTest {
         SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
         PersistenceOperation myBatisStatement = myBatisStatements.findById(persistenceOperationIdOf(ComplexMapper.class, "select_ognl")).orElseThrow();
-        assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
+        assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
         // OGNLを使ったSQLは現時点では空になりunsupportedになる
         assertFalse(myBatisStatement.query().supported());
     }
@@ -51,7 +51,7 @@ class MyBatisStatementReaderTest {
 
         PersistenceOperation myBatisStatement = myBatisStatements.findById(persistenceOperationIdOf(ComplexMapper.class, "select_ognl_where")).orElseThrow();
 
-        assertEquals("[（解析失敗）]", myBatisStatement.tables().asText());
+        assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
         // OGNLを使ったSQLは現時点では空になる
         // ・・・のだが、 <where>タグなどで分割されているとOGNLを使用していない部分だけクエリが出てくる
         assertEquals("order by 1", myBatisStatement.query().rawText());
@@ -63,7 +63,7 @@ class MyBatisStatementReaderTest {
         SqlStatements myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
 
         PersistenceOperation myBatisStatement = myBatisStatements.findById(persistenceOperationIdOf(CanonicalMapper.class, methodName)).orElseThrow();
-        assertEquals("[" + tableName + "]", myBatisStatement.tables().asText());
+        assertEquals("[" + tableName + "]", myBatisStatement.persistenceTargets().asText());
         assertEquals(sqlType, myBatisStatement.sqlType());
     }
 

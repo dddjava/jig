@@ -35,13 +35,13 @@ public enum SqlType {
      * 現在は1テーブルのみ対応
      * 複問い合わせやWITHなどは未対応
      */
-    public Tables extractTable(Query query, PersistenceOperationId persistenceOperationId) {
+    public PersistenceTargets extractTable(Query query, PersistenceOperationId persistenceOperationId) {
         if (query.supported()) {
             String sql = query.normalizedQuery();
             for (Pattern pattern : patterns) {
                 Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
                 if (matcher.matches()) {
-                    return new Tables(new Table(matcher.group(1)));
+                    return new PersistenceTargets(new PersistenceTarget(matcher.group(1)));
                 }
             }
 
@@ -49,11 +49,11 @@ public enum SqlType {
                     persistenceOperationId.logText(), this, sql);
         }
 
-        return new Tables(unexpectedTable());
+        return new PersistenceTargets(unexpectedTable());
     }
 
-    public Table unexpectedTable() {
-        return new Table("（解析失敗）");
+    public PersistenceTarget unexpectedTable() {
+        return new PersistenceTarget("（解析失敗）");
     }
 
     public static Optional<SqlType> inferSqlTypeFromQuery(Query query) {

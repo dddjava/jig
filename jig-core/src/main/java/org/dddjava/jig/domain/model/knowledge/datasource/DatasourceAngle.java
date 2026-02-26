@@ -1,7 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.persistence.CrudTables;
-import org.dddjava.jig.domain.model.data.persistence.Tables;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceTarget;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceTargets;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -102,9 +103,9 @@ public class DatasourceAngle {
         return outputImplementation.interfaceJigType().label();
     }
 
-    private List<String> tableNames(Tables tables) {
-        return tables.tables().stream()
-                .map(org.dddjava.jig.domain.model.data.persistence.Table::name)
+    private List<String> tableNames(PersistenceTargets persistenceTargets) {
+        return persistenceTargets.persistenceTargets().stream()
+                .map(PersistenceTarget::name)
                 .distinct()
                 .sorted()
                 .toList();

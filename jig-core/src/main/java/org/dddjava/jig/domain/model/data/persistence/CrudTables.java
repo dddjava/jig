@@ -1,4 +1,4 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
-public record CrudTables(Tables create, Tables read, Tables update, Tables delete) {
+public record CrudTables(PersistenceTargets create, PersistenceTargets read, PersistenceTargets update, PersistenceTargets delete) {
 }

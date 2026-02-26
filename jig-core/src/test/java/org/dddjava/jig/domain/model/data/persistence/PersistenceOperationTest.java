@@ -12,8 +12,8 @@ class PersistenceOperationTest {
                 PersistenceOperationId.from("example.ExampleRepository.findById"),
                 Query.unsupported(),
                 SqlType.SELECT,
-                new Tables(new Table("example_table")));
+                new PersistenceTargets(new PersistenceTarget("example_table")));
 
-        assertEquals("[example_table]", statement.tables().asText());
+        assertEquals("[example_table]", statement.persistenceTargets().asText());
     }
 }

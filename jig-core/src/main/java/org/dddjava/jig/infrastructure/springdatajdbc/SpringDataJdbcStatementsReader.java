@@ -47,7 +47,7 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private PersistenceOperations extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        Tables resolvedTables = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
+        PersistenceTargets resolvedPersistenceTargets = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
 
         TypeId typeId = declaration.jigTypeHeader().id();
         List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
@@ -64,7 +64,7 @@ public class SpringDataJdbcStatementsReader {
                             return PersistenceOperation.from(statementId, query, sqlType);
                         }
                         // クエリなしは @Table で記述されているもの
-                        return PersistenceOperation.from(statementId, sqlType, resolvedTables);
+                        return PersistenceOperation.from(statementId, sqlType, resolvedPersistenceTargets);
                     });
                 })
                 .flatMap(Optional::stream)
@@ -119,11 +119,11 @@ public class SpringDataJdbcStatementsReader {
         return Optional.empty();
     }
 
-    private static Tables resolveTablesFromEntityTableAnnotation(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        return new Tables(resolveTablesFromEntity(entityTypeId, declarationMap, new HashSet<>()).toList());
+    private static PersistenceTargets resolveTablesFromEntityTableAnnotation(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
+        return new PersistenceTargets(resolveTablesFromEntity(entityTypeId, declarationMap, new HashSet<>()).toList());
     }
 
-    private static Stream<Table> resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private static Stream<PersistenceTarget> resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         if (!visited.add(entityTypeId)) return Stream.empty();
 
         ClassDeclaration entityDeclaration = declarationMap.get(entityTypeId);
@@ -131,14 +131,14 @@ public class SpringDataJdbcStatementsReader {
             // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
             String tableName = toSnakeCase(entityTypeId.asSimpleText());
             logger.warn("Entity {} のクラス情報が読み取り対象に含まれていません。テーブル名を仮に {} として続行します。", entityTypeId, tableName);
-            return Stream.of(new Table(tableName));
+            return Stream.of(new PersistenceTarget(tableName));
         }
 
         return Stream.concat(resolveOwnTable(entityDeclaration, entityTypeId),
                 resolveMappedCollectionTables(entityDeclaration, declarationMap, visited));
     }
 
-    private static Stream<Table> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId) {
+    private static Stream<PersistenceTarget> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId) {
         String tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                 .findFirst()
@@ -155,10 +155,10 @@ public class SpringDataJdbcStatementsReader {
                     logger.info("Entity {} に@Tableが付与されていない or valueが指定されていません。テーブル名を仮に {} として続行します。", entityTypeId, name);
                     return name;
                 });
-        return Stream.of(new Table(tableName));
+        return Stream.of(new PersistenceTarget(tableName));
     }
 
-    private static Stream<Table> resolveMappedCollectionTables(ClassDeclaration entityDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private static Stream<PersistenceTarget> resolveMappedCollectionTables(ClassDeclaration entityDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         return entityDeclaration.jigFieldHeaders().stream()
                 .flatMap(jigFieldHeader -> resolveMappedCollectionEntityTypeId(jigFieldHeader).stream())
                 // 再帰的に拾ってくる

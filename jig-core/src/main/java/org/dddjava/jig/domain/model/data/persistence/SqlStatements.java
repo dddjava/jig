@@ -22,12 +22,12 @@ public record SqlStatements(List<PersistenceOperation> list) {
                 .toList());
     }
 
-    private Tables tables(SqlType sqlType) {
+    private PersistenceTargets tables(SqlType sqlType) {
         return list.stream()
                 .filter(sqlStatement -> sqlStatement.sqlType() == sqlType)
-                .map(PersistenceOperation::tables)
-                .reduce(Tables::merge)
-                .orElse(Tables.nothing());
+                .map(PersistenceOperation::persistenceTargets)
+                .reduce(PersistenceTargets::merge)
+                .orElse(PersistenceTargets.nothing());
     }
 
     public Optional<PersistenceOperation> findById(PersistenceOperationId persistenceOperationId) {

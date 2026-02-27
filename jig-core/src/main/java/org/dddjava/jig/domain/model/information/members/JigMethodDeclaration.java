@@ -18,6 +18,11 @@ import static java.util.stream.Collectors.toSet;
  * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4">Method Declaration</a>
  */
 public record JigMethodDeclaration(JigMethodHeader header, Instructions instructions) {
+
+    public String fqn() {
+        return header.id().value();
+    }
+
     public String name() {
         return header.name();
     }

@@ -52,19 +52,28 @@ public class SpringDataJdbcStatementsReader {
         TypeId typeId = declaration.jigTypeHeader().id();
         List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> {
-                    String methodName = jigMethodDeclaration.header().name();
-                    Query query = resolveQueryFromAnnotation(jigMethodDeclaration);
-                    Optional<SqlType> inferredSqlType = query.supported()
-                            ? SqlType.inferSqlTypeFromQuery(query)
-                            : inferSqlType(methodName);
-                    return inferredSqlType.map(sqlType -> {
-                        PersistenceOperationId statementId = PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
-                        // クエリがあればクエリを優先
-                        if (query.supported()) {
-                            return PersistenceOperation.from(statementId, query, sqlType);
+                    String methodName = jigMethodDeclaration.name();
+                    PersistenceOperationId statementId = PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
+
+                    return resolveQueryFromAnnotation(jigMethodDeclaration).flatMap(annotationQueryString -> {
+                        // @Queryがあればそのクエリから推測する
+                        Optional<Query> optQuery = Query.fromSafety(annotationQueryString);
+                        if (optQuery.isEmpty()) {
+                            logger.warn("{} の@Queryがうまく処理できませんでした。出力対象から除外されます。value=[{}]",
+                                    jigMethodDeclaration.fqn(), annotationQueryString);
                         }
+                        return optQuery.map(query -> {
+                            Optional<SqlType> optSqlType = SqlType.inferSqlTypeFromQuery(query);
+                            if (optSqlType.isEmpty()) {
+                                logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
+                                        jigMethodDeclaration.fqn(), annotationQueryString);
+                            }
+                            return optSqlType.map(sqlType -> PersistenceOperation.from(statementId, query, sqlType));
+                        });
+                    }).orElseGet(() -> {
                         // クエリなしは @Table で記述されているもの
-                        return PersistenceOperation.from(statementId, sqlType, resolvedPersistenceTargets);
+                        return inferSqlType(methodName)
+                                .map(sqlType -> PersistenceOperation.from(statementId, sqlType, resolvedPersistenceTargets));
                     });
                 })
                 .flatMap(Optional::stream)
@@ -74,17 +83,13 @@ public class SpringDataJdbcStatementsReader {
     }
 
     /**
-     * SpringDataJDBCのQueryアノテーションからクエリを取得する
-     *
-     * アノテーションがない場合は `Query.unsupported()` になる
+     * SpringDataJDBCのQueryアノテーションからクエリ文字列を取得する
      */
-    private static Query resolveQueryFromAnnotation(JigMethodDeclaration methodDeclaration) {
+    private static Optional<String> resolveQueryFromAnnotation(JigMethodDeclaration methodDeclaration) {
         return methodDeclaration.header().declarationAnnotationStream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY_ANNOTATION))
                 .findFirst()
-                .flatMap(annotation -> annotation.elementTextOf("value"))
-                .map(Query::from)
-                .orElse(Query.unsupported());
+                .flatMap(annotation -> annotation.elementTextOf("value"));
     }
 
     private boolean isInterface(ClassDeclaration declaration) {

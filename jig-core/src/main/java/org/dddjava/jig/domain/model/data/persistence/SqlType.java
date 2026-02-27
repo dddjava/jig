@@ -62,8 +62,6 @@ public enum SqlType {
         if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);
         if (normalizedQuery.startsWith("update")) return Optional.of(UPDATE);
         if (normalizedQuery.startsWith("delete")) return Optional.of(DELETE);
-
-        logger.info("SQLの種類がQuery文字列 [{}] から判別できませんでした。", query.rawText());
         return Optional.empty();
     }
 }

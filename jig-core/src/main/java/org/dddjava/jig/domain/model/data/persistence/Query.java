@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.data.persistence;
 
 import org.jspecify.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * クエリ
  */
@@ -18,6 +20,13 @@ public record Query(String rawText, String normalizedQuery) {
 
     public static Query unsupported() {
         return new Query(UNSUPPORTED, UNSUPPORTED);
+    }
+
+    public static Optional<Query> fromSafety(String annotationQueryString) {
+        // TODO: Queryのunsupportedをなくしたくて作成したメソッド
+        Query query = from(annotationQueryString);
+        if (query.supported()) return Optional.of(query);
+        return Optional.empty();
     }
 
     @Override

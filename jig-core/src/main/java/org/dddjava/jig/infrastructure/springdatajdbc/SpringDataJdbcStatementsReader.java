@@ -38,48 +38,94 @@ public class SpringDataJdbcStatementsReader {
 
         Collection<PersistenceOperations> statements = classDeclarations.stream()
                 .filter(this::isInterface)
-                .flatMap(declaration -> resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, new HashSet<>())
+                .flatMap(declaration -> findSpringDataRepositoryEntity(declaration, declarationMap, new HashSet<>())
                         .stream()
-                        .map(repositoryInfo -> extractSqlStatements(declaration, repositoryInfo.entityTypeId(), declarationMap)))
+                        .map(springDataRepositoryInfo -> resolvePersistenceOperations(declaration, springDataRepositoryInfo, declarationMap)))
                 .toList();
 
         return SqlStatements.from(statements);
     }
 
-    private PersistenceOperations extractSqlStatements(ClassDeclaration declaration, TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        PersistenceTargets resolvedPersistenceTargets = resolveTablesFromEntityTableAnnotation(entityTypeId, declarationMap);
+    private Optional<SpringDataRepositoryInfo> findSpringDataRepositoryEntity(ClassDeclaration classDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+        var header = classDeclaration.jigTypeHeader();
+        // 再帰しているので一応チェック。普通に作れば型継承の循環はコンパイルエラーになるため、このチェックに出番はない。
+        if (!visited.add(header.id())) return Optional.empty();
 
+        for (JigTypeReference interfaceType : header.interfaceTypeList()) {
+            TypeId interfaceId = interfaceType.id();
+            if (isSpringDataRepository(interfaceId)) {
+                List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
+                if (jigTypeArguments.isEmpty()) {
+                    logger.warn("Spring Data Repository {} の型引数が解決できないため、この継承はスキップします。宣言元: {}",
+                            interfaceId.fqn(),
+                            header.fqn());
+                    continue;
+                }
+                return Optional.of(new SpringDataRepositoryInfo(jigTypeArguments.getFirst().typeId()));
+                // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
+            }
+
+            // インタフェースを対象に再帰する。
+            ClassDeclaration interfaceDeclaration = declarationMap.get(interfaceId);
+            if (interfaceDeclaration == null) {
+                // JSLのインタフェースを継承している場合などもごく普通にここにくるのでログなども出さない。
+                // 内部共通ライブラリのインタフェースがSpringDataのRepositoryを継承している場合などにJIGの読み取り対象としていなければここにきてしまう。
+                continue;
+            }
+            Optional<SpringDataRepositoryInfo> repositoryInfo = findSpringDataRepositoryEntity(interfaceDeclaration, declarationMap, visited);
+            // エンティティの解決に成功していれば進めてしまう
+            if (repositoryInfo.isPresent()) return repositoryInfo;
+        }
+
+        // 継承先にSpringDataを含まない
+        return Optional.empty();
+    }
+
+    /**
+     * SpringDataのRepositoryに対する永続化操作群を作成する
+     */
+    private PersistenceOperations resolvePersistenceOperations(ClassDeclaration declaration,
+                                                               SpringDataRepositoryInfo springDataRepositoryInfo,
+                                                               Map<TypeId, ClassDeclaration> declarationMap) {
         TypeId typeId = declaration.jigTypeHeader().id();
-        List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> {
-                    String methodName = jigMethodDeclaration.name();
-                    PersistenceOperationId statementId = PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
+        // クラス単位で決まるのでメソッドごとに解決するのを避けるために先に取得しておく
+        PersistenceTargets persistenceTargets = resolvePersistenceTargets(springDataRepositoryInfo, declarationMap);
 
-                    return resolveQueryFromAnnotation(jigMethodDeclaration).flatMap(annotationQueryString -> {
-                        // @Queryがあればそのクエリから推測する
-                        Optional<Query> optQuery = Query.fromSafety(annotationQueryString);
-                        if (optQuery.isEmpty()) {
-                            logger.warn("{} の@Queryがうまく処理できませんでした。出力対象から除外されます。value=[{}]",
-                                    jigMethodDeclaration.fqn(), annotationQueryString);
-                        }
-                        return optQuery.map(query -> {
-                            Optional<SqlType> optSqlType = SqlType.inferSqlTypeFromQuery(query);
-                            if (optSqlType.isEmpty()) {
-                                logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
-                                        jigMethodDeclaration.fqn(), annotationQueryString);
-                            }
-                            return optSqlType.map(sqlType -> PersistenceOperation.from(statementId, query, sqlType));
-                        });
-                    }).orElseGet(() -> {
-                        // クエリなしは @Table で記述されているもの
-                        return inferSqlType(methodName)
-                                .map(sqlType -> PersistenceOperation.from(statementId, sqlType, resolvedPersistenceTargets));
-                    });
-                })
+        List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
+                .map(jigMethodDeclaration -> resolvePersistenceOperation(jigMethodDeclaration, typeId, persistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
         return new PersistenceOperations(typeId, persistenceOperations);
+    }
+
+    private Optional<PersistenceOperation> resolvePersistenceOperation(JigMethodDeclaration jigMethodDeclaration,
+                                                                       TypeId typeId,
+                                                                       PersistenceTargets persistenceTargets) {
+        String methodName = jigMethodDeclaration.name();
+        PersistenceOperationId statementId = PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
+
+        return resolveQueryFromAnnotation(jigMethodDeclaration)
+                .flatMap(annotationQueryString -> {
+                    // @Queryがあればそのクエリから推測する
+                    Optional<Query> optQuery = Query.fromSafety(annotationQueryString);
+                    if (optQuery.isEmpty()) {
+                        logger.warn("{} の@Queryがうまく処理できませんでした。出力対象から除外されます。value=[{}]",
+                                jigMethodDeclaration.fqn(), annotationQueryString);
+                    }
+                    return optQuery.map(query -> {
+                        Optional<SqlType> optSqlType = SqlType.inferSqlTypeFromQuery(query);
+                        if (optSqlType.isEmpty()) {
+                            logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
+                                    jigMethodDeclaration.fqn(), annotationQueryString);
+                        }
+                        return optSqlType.map(sqlType -> PersistenceOperation.from(statementId, query, sqlType));
+                    });
+                }).orElseGet(() -> {
+                    // @Queryがないものはメソッド名でエンティティに対する操作が決まる
+                    return inferSqlType(methodName)
+                            .map(sqlType -> PersistenceOperation.from(statementId, sqlType, persistenceTargets));
+                });
     }
 
     /**
@@ -97,35 +143,15 @@ public class SpringDataJdbcStatementsReader {
         return header.javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE;
     }
 
-    private Optional<SpringDataRepositoryInfo> resolveSpringDataRepositoryInfo(JigTypeHeader header, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        if (!visited.add(header.id())) return Optional.empty();
-
-        for (JigTypeReference interfaceType : header.interfaceTypeList()) {
-            TypeId interfaceId = interfaceType.id();
-            if (isSpringDataRepository(interfaceId)) {
-                List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
-                if (jigTypeArguments.isEmpty()) {
-                    logger.warn("Spring Data Repository {} の型引数が解決できないため、この継承はスキップします。宣言元: {}",
-                            interfaceId.fqn(),
-                            header.fqn());
-                    continue;
-                }
-                return Optional.of(new SpringDataRepositoryInfo(jigTypeArguments.getFirst().typeId()));
-                // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
-            }
-
-            // インタフェースの親インタフェースもたどる。declarationMapになければロードしたクラスにないので諦める。
-            ClassDeclaration declaration = declarationMap.get(interfaceId);
-            if (declaration != null) {
-                Optional<SpringDataRepositoryInfo> repositoryInfo = resolveSpringDataRepositoryInfo(declaration.jigTypeHeader(), declarationMap, visited);
-                if (repositoryInfo.isPresent()) return repositoryInfo;
-            }
-        }
-        return Optional.empty();
-    }
-
-    private static PersistenceTargets resolveTablesFromEntityTableAnnotation(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap) {
-        return new PersistenceTargets(resolveTablesFromEntity(entityTypeId, declarationMap, new HashSet<>()).toList());
+    /**
+     * 永続化操作対象となるテーブルを取得する
+     *
+     * Tableアノテーションからテーブル名を取得する。
+     * シンプルなエンティティでは1件だが、MappedCollectionによる複数テーブルの場合に複数件となる。
+     */
+    private static PersistenceTargets resolvePersistenceTargets(SpringDataRepositoryInfo springDataRepositoryInfo,
+                                                                Map<TypeId, ClassDeclaration> declarationMap) {
+        return new PersistenceTargets(resolveTablesFromEntity(springDataRepositoryInfo.entityTypeId(), declarationMap, new HashSet<>()).toList());
     }
 
     private static Stream<PersistenceTarget> resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {

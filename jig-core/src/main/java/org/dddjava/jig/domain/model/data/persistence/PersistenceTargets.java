@@ -11,6 +11,10 @@ import static java.util.stream.Collectors.joining;
  */
 public record PersistenceTargets(Collection<PersistenceTarget> persistenceTargets) {
 
+    public PersistenceTargets {
+        if (persistenceTargets.isEmpty()) throw new IllegalArgumentException("永続化対象は1件以上である必要があります");
+    }
+
     public PersistenceTargets(PersistenceTarget persistenceTarget) {
         this(Collections.singletonList(persistenceTarget));
     }

@@ -12,7 +12,8 @@ import static java.util.stream.Collectors.joining;
 public record PersistenceTargets(Collection<PersistenceTarget> persistenceTargets) {
 
     public PersistenceTargets {
-        if (persistenceTargets.isEmpty()) throw new IllegalArgumentException("永続化対象は1件以上である必要があります");
+        // if (persistenceTargets.isEmpty()) throw new IllegalArgumentException("永続化対象は1件以上である必要があります");
+        // ...にしたいのだけど、出力時にnothing()を使用しているので今のところできない。永続化周りの出力が片付いたらできるようになるはず。
     }
 
     public PersistenceTargets(PersistenceTarget persistenceTarget) {

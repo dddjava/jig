@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
@@ -16,12 +16,12 @@ import java.util.List;
  */
 public record DatasourceAngles(List<DatasourceAngle> list) {
 
-    public static DatasourceAngles from(OutputImplementations outputImplementations, SqlStatements sqlStatements, CallerMethodsFactory callerMethodsFactory) {
+    public static DatasourceAngles from(OutputImplementations outputImplementations, PersistenceOperationsRepository persistenceOperationsRepository, CallerMethodsFactory callerMethodsFactory) {
         return new DatasourceAngles(outputImplementations.stream()
                 .map(outputImplementation -> {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortOperaionAsJigMethod().jigMethodId());
 
-                    var crudTables = sqlStatements.filterRelationOn(sqlStatement -> {
+                    var crudTables = persistenceOperationsRepository.filterRelationOn(sqlStatement -> {
                         PersistenceOperationId persistenceOperationId = sqlStatement.persistenceOperationId();
                         return outputPortOperationUseSQL(outputImplementation, persistenceOperationId) || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
                     }).crudTables();

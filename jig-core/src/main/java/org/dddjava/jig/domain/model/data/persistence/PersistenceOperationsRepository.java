@@ -6,16 +6,16 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * SQL一覧
+ * 永続化操作リポジトリ
  */
-public record SqlStatements(Collection<PersistenceOperations> values) {
+public record PersistenceOperationsRepository(Collection<PersistenceOperations> values) {
 
-    public static SqlStatements empty() {
-        return new SqlStatements(Collections.emptyList());
+    public static PersistenceOperationsRepository empty() {
+        return new PersistenceOperationsRepository(Collections.emptyList());
     }
 
-    public static SqlStatements from(Collection<PersistenceOperations> statements) {
-        return new SqlStatements(statements);
+    public static PersistenceOperationsRepository from(Collection<PersistenceOperations> statements) {
+        return new PersistenceOperationsRepository(statements);
     }
 
     private PersistenceTargets tables(SqlType sqlType) {
@@ -37,7 +37,7 @@ public record SqlStatements(Collection<PersistenceOperations> values) {
     /**
      * 引数のメソッドに関連するステートメントに絞り込む
      */
-    public SqlStatements filterRelationOn(Predicate<PersistenceOperation> sqlStatementPredicate) {
+    public PersistenceOperationsRepository filterRelationOn(Predicate<PersistenceOperation> sqlStatementPredicate) {
         Collection<PersistenceOperations> filteredOperations = values.stream()
                 .map(ops -> new PersistenceOperations(
                         ops.typeId(),
@@ -47,7 +47,7 @@ public record SqlStatements(Collection<PersistenceOperations> values) {
                 ))
                 .filter(ops -> !ops.persistenceOperations().isEmpty())
                 .toList();
-        return new SqlStatements(filteredOperations);
+        return new PersistenceOperationsRepository(filteredOperations);
     }
 
     public boolean isEmpty() {

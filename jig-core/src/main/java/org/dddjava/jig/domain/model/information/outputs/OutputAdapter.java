@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  */
 public record OutputAdapter(JigType jigType) {
 
-    public static OutputAdapter from(JigType jigType, SqlStatements sqlStatements) {
+    public static OutputAdapter from(JigType jigType, PersistenceOperationsRepository persistenceOperationsRepository) {
         // TODO OutputAdapterExecutionをこのタイミングで作成し、レコードコンポーネントに持たせる。
         //   OutputAdapterExecutionには使用しているPersistenceAccessorを持たせる。
         return new OutputAdapter(jigType);

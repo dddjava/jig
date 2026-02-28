@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.sources.mybatis;
 
-import org.dddjava.jig.domain.model.data.persistence.SqlStatements;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 
-public record MyBatisReadResult(SqlStatements sqlStatements, SqlReadStatus sqlReadStatus) {
+public record MyBatisReadResult(PersistenceOperationsRepository persistenceOperationsRepository, SqlReadStatus sqlReadStatus) {
 
     public MyBatisReadResult(SqlReadStatus sqlReadStatus) {
-        this(SqlStatements.empty(), sqlReadStatus);
+        this(PersistenceOperationsRepository.empty(), sqlReadStatus);
     }
 
     public SqlReadStatus status() {
-        if (sqlReadStatus == SqlReadStatus.成功 && sqlStatements.isEmpty()) {
+        if (sqlReadStatus == SqlReadStatus.成功 && persistenceOperationsRepository.isEmpty()) {
             return SqlReadStatus.SQLなし;
         }
         return sqlReadStatus;

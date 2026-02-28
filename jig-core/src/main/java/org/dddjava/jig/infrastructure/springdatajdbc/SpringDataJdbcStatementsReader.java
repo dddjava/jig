@@ -29,7 +29,7 @@ public class SpringDataJdbcStatementsReader {
      * 1) interface である
      * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
-    public SqlStatements readFrom(Collection<ClassDeclaration> classDeclarations) {
+    public PersistenceOperationsRepository readFrom(Collection<ClassDeclaration> classDeclarations) {
         Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
                 .collect(toMap(
                         declaration -> declaration.jigTypeHeader().id(),
@@ -43,7 +43,7 @@ public class SpringDataJdbcStatementsReader {
                         .map(springDataRepositoryInfo -> resolvePersistenceOperations(declaration, springDataRepositoryInfo, declarationMap)))
                 .toList();
 
-        return SqlStatements.from(statements);
+        return PersistenceOperationsRepository.from(statements);
     }
 
     private Optional<SpringDataRepositoryInfo> findSpringDataRepositoryEntity(ClassDeclaration classDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {

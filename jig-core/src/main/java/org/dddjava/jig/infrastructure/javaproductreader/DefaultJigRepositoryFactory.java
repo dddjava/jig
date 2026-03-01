@@ -6,6 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperations;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -155,7 +156,9 @@ public class DefaultJigRepositoryFactory {
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
         var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(classDeclarations);
 
-        PersistenceOperationsRepository mergedStatements = mergeStatements(myBatisReadResult.persistenceOperationsRepository(), springDataJdbcStatements);
+        var persistenceOperationsRepository = myBatisReadResult.persistenceOperationsRepository();
+        var values = persistenceOperationsRepository.values();
+        PersistenceOperationsRepository mergedStatements = mergeStatements(values, springDataJdbcStatements);
 
         SqlReadStatus sqlReadStatus = myBatisReadResult.status();
         if (sqlReadStatus == SqlReadStatus.SQLなし && mergedStatements.isEmpty()) {
@@ -166,10 +169,10 @@ public class DefaultJigRepositoryFactory {
         return mergedStatements;
     }
 
-    private PersistenceOperationsRepository mergeStatements(PersistenceOperationsRepository myBatisStatements, PersistenceOperationsRepository springDataJdbcStatements) {
+    private PersistenceOperationsRepository mergeStatements(Collection<PersistenceOperations> myBatisStatements, Collection<PersistenceOperations> springDataJdbcStatements) {
         return new PersistenceOperationsRepository(Stream.concat(
-                        myBatisStatements.values().stream(),
-                        springDataJdbcStatements.values().stream())
+                        myBatisStatements.stream(),
+                        springDataJdbcStatements.stream())
                 .distinct()
                 .toList());
     }

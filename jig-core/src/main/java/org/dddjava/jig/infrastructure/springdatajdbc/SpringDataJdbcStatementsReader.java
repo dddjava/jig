@@ -23,27 +23,25 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
     /**
-     * ASMで読み取ったクラス情報から、Spring Data JDBCのRepositoryメソッドをSQLステートメントとして抽出する。
+     * ASMで読み取ったクラス情報から、Spring Data JDBCのRepositoryを抽出して永続化操作対象群を構築する
      *
      * 対象は次の条件をすべて満たす型:
      * 1) interface である
      * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
-    public PersistenceOperationsRepository readFrom(Collection<ClassDeclaration> classDeclarations) {
+    public Collection<PersistenceOperations> readFrom(Collection<ClassDeclaration> classDeclarations) {
         Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
                 .collect(toMap(
                         declaration -> declaration.jigTypeHeader().id(),
                         Function.identity(),
                         (left, right) -> right));
 
-        Collection<PersistenceOperations> statements = classDeclarations.stream()
+        return classDeclarations.stream()
                 .filter(this::isInterface)
                 .flatMap(declaration -> findSpringDataRepositoryEntity(declaration, declarationMap, new HashSet<>())
                         .stream()
                         .map(springDataRepositoryInfo -> resolvePersistenceOperations(declaration, springDataRepositoryInfo, declarationMap)))
                 .toList();
-
-        return PersistenceOperationsRepository.from(statements);
     }
 
     private Optional<SpringDataRepositoryInfo> findSpringDataRepositoryEntity(ClassDeclaration classDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {

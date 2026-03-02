@@ -35,13 +35,10 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
     /**
      * OutputAdapterExecutionがDBアクセスしているかを判定する
      *
-     * 使用しているメソッドがSQLステートメントかで判断する
-     * TODO プライベートメソッドとか辿らないといけないような・・・
+     * OutputAdapterExecutionに紐づく永続化操作で判断する
      */
     private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
-        return outputImplementation.usingMethods()
-                // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-                .containsAny(methodCall -> persistenceOperationId.matches(methodCall.methodOwner(), methodCall.methodName()));
+        return outputImplementation.outputAdapterExecution().uses(persistenceOperationId);
     }
 
     /**

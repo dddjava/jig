@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
+import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
@@ -13,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import stub.infrastructure.datasource.CanonicalMapper;
 import stub.infrastructure.datasource.ComplexMapper;
 import stub.infrastructure.datasource.SampleMapper;
+import stub.infrastructure.datasource.trace.TraceOutputPort;
 import testing.JigTest;
 
 import java.util.stream.Stream;
@@ -29,6 +31,20 @@ class MyBatisStatementReaderTest {
 
         PersistenceOperation myBatisStatement = myBatisStatements.findById(persistenceOperationIdOf(SampleMapper.class, "binding")).orElseThrow();
         assertEquals("[fuga]", myBatisStatement.persistenceTargets().asText());
+    }
+
+    @Test
+    void DatasourceAnglesで他クラス経由のMyBatis呼び出しを解決できる(JigService jigService, JigRepository jigRepository) {
+        var datasourceAngles = jigService.datasourceAngles(jigRepository).list().stream()
+                .filter(angle -> angle.declaringType().fqn().equals(TraceOutputPort.class.getCanonicalName()))
+                .toList();
+        var angle = datasourceAngles.stream()
+                .filter(found -> found.interfaceMethod().name().equals("save"))
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals(1, datasourceAngles.size());
+        assertEquals("[trace_table]", angle.selectTables());
     }
 
     @Test

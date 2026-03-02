@@ -18,7 +18,7 @@ public record OutputAdapters(Collection<OutputAdapter> values) {
     public static OutputAdapters from(JigTypes jigTypes, PersistenceOperationsRepository persistenceOperationsRepository) {
         return jigTypes.orderedStream()
                 .filter(jigType -> jigType.typeCategory() == TypeCategory.OutputAdapter)
-                .map(jigType -> OutputAdapter.from(jigType, persistenceOperationsRepository))
+                .map(jigType -> OutputAdapter.from(jigType, jigTypes, persistenceOperationsRepository))
                 .collect(collectingAndThen(toUnmodifiableList(), OutputAdapters::new));
     }
 

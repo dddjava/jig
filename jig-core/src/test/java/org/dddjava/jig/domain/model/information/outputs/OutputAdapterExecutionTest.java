@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
+import stub.infrastructure.datasource.springdata.SpringDataJdbcCrudDelegatingOutputAdapter;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcNameOutputAdapter;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository;
 import stub.infrastructure.datasource.trace.TraceHelper;
@@ -56,6 +57,31 @@ class OutputAdapterExecutionTest {
 
         var targetOutputAdapter = outputAdapters.stream()
                 .filter(outputAdapter -> outputAdapter.jigType().id().equals(TypeId.valueOf(SpringDataJdbcNameOutputAdapter.class.getCanonicalName())))
+                .findAny()
+                .orElseThrow();
+        var execution = targetOutputAdapter.outputAdapterExecutions().stream()
+                .filter(outputAdapterExecution -> outputAdapterExecution.jigMethod().name().equals("save"))
+                .findAny()
+                .orElseThrow();
+
+        PersistenceOperation persistenceOperation = execution.persistenceOperations().stream()
+                .filter(found -> found.persistenceOperationId().equals(
+                        PersistenceOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
+                .findAny()
+                .orElseThrow();
+
+        assertEquals(SqlType.INSERT, persistenceOperation.sqlType());
+        assertEquals("[spring_data_table_name]", persistenceOperation.persistenceTargets().asText());
+    }
+
+    @Test
+    void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceOperationを解決できる(JigService jigService, JigRepository jigRepository) {
+        var jigTypes = jigService.jigTypes(jigRepository);
+        var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+
+        var targetOutputAdapter = outputAdapters.stream()
+                .filter(outputAdapter -> outputAdapter.jigType().id().equals(TypeId.valueOf(SpringDataJdbcCrudDelegatingOutputAdapter.class.getCanonicalName())))
                 .findAny()
                 .orElseThrow();
         var execution = targetOutputAdapter.outputAdapterExecutions().stream()

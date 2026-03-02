@@ -35,6 +35,7 @@ class OutputsSummaryAdapterTest {
         assertTrue(actual.contains("\"outputAdapter\""));
         assertTrue(actual.contains("\"outputAdapterExecution\""));
         assertTrue(actual.contains("\"persistenceOperations\""));
+        assertTrue(actual.contains("stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository.save"));
     }
 
     private TemplateEngine templateEngine() {

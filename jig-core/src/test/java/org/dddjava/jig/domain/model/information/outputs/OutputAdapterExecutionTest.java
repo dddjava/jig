@@ -19,8 +19,8 @@ class OutputAdapterExecutionTest {
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var outputAdapters = OutputAdapters.from(jigTypes);
         var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var traceOutputAdapter = outputAdapters.stream()
                 .filter(outputAdapter -> outputAdapter.jigType().id().equals(TypeId.valueOf(TraceOutputAdapter.class.getCanonicalName())))
@@ -35,7 +35,7 @@ class OutputAdapterExecutionTest {
                 .anyMatch(method -> method.declaringType().equals(TypeId.valueOf(TraceHelper.class.getCanonicalName()))
                         && method.name().equals("save")));
 
-        var resolvedPersistenceOperationIds = execution.resolvePersistenceOperations(sqlStatements).stream()
+        var resolvedPersistenceOperationIds = execution.persistenceOperations().stream()
                 .map(persistenceOperation -> persistenceOperation.persistenceOperationId())
                 .toList();
         assertEquals(1, resolvedPersistenceOperationIds.size());

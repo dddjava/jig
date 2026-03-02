@@ -24,7 +24,7 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                     var crudTables = persistenceOperationsRepository.filterRelationOn(sqlStatement -> {
                         PersistenceOperationId persistenceOperationId = sqlStatement.persistenceOperationId();
                         return outputPortOperationUseSQL(outputImplementation, persistenceOperationId)
-                                || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId, persistenceOperationsRepository);
+                                || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
                     }).crudTables();
 
                     return new DatasourceAngle(outputImplementation, crudTables, callerMethods);
@@ -38,10 +38,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      *
      * OutputAdapterExecutionに紐づく永続化操作で判断する
      */
-    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation,
-                                                        PersistenceOperationId persistenceOperationId,
-                                                        PersistenceOperationsRepository persistenceOperationsRepository) {
-        return outputImplementation.outputAdapterExecution().uses(persistenceOperationId, persistenceOperationsRepository);
+    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
+        return outputImplementation.outputAdapterExecution().uses(persistenceOperationId);
     }
 
     /**

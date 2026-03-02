@@ -16,19 +16,27 @@ import java.util.Set;
 /**
  * 出力アダプタの実装
  */
-public record OutputAdapterExecution(JigMethod jigMethod, Collection<JigMethod> tracingJigMethods) {
+public record OutputAdapterExecution(
+        JigMethod jigMethod,
+        Collection<JigMethod> tracingJigMethods,
+        Collection<PersistenceOperation> persistenceOperations
+) {
 
-    public static OutputAdapterExecution from(JigMethod jigMethod, JigTypes jigTypes) {
+    public static OutputAdapterExecution from(JigMethod jigMethod,
+                                              JigTypes jigTypes,
+                                              PersistenceOperationsRepository persistenceOperationsRepository) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
-        return new OutputAdapterExecution(jigMethod, tracingJigMethods);
+        var persistenceOperations = resolvePersistenceOperations(tracingJigMethods, persistenceOperationsRepository);
+        return new OutputAdapterExecution(jigMethod, tracingJigMethods, persistenceOperations);
     }
 
-    public boolean uses(PersistenceOperationId persistenceOperationId, PersistenceOperationsRepository persistenceOperationsRepository) {
-        return resolvePersistenceOperations(persistenceOperationsRepository).stream()
+    public boolean uses(PersistenceOperationId persistenceOperationId) {
+        return persistenceOperations.stream()
                 .anyMatch(persistenceOperation -> persistenceOperation.persistenceOperationId().equals(persistenceOperationId));
     }
 
-    public Collection<PersistenceOperation> resolvePersistenceOperations(PersistenceOperationsRepository persistenceOperationsRepository) {
+    private static Collection<PersistenceOperation> resolvePersistenceOperations(Collection<JigMethod> tracingJigMethods,
+                                                                                 PersistenceOperationsRepository persistenceOperationsRepository) {
         return tracingJigMethods.stream()
                 .flatMap(tracingJigMethod -> tracingJigMethod.usingMethods().invokedMethodStream()
                         .map(OutputAdapterExecution::toPersistenceOperationId)

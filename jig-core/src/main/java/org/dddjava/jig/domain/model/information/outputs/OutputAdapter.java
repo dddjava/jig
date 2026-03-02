@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -12,9 +13,9 @@ import java.util.stream.Stream;
  */
 public record OutputAdapter(JigType jigType, Collection<OutputAdapterExecution> outputAdapterExecutions) {
 
-    public static OutputAdapter from(JigType jigType, JigTypes jigTypes) {
+    public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceOperationsRepository persistenceOperationsRepository) {
         var outputAdapterExecutions = jigType.instanceJigMethodStream()
-                .map(jigMethod -> OutputAdapterExecution.from(jigMethod, jigTypes))
+                .map(jigMethod -> OutputAdapterExecution.from(jigMethod, jigTypes, persistenceOperationsRepository))
                 .toList();
         return new OutputAdapter(jigType, outputAdapterExecutions);
     }

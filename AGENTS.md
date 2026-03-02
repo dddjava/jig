@@ -35,7 +35,7 @@ If a task appears to require any of the above, **stop and ask for instructions**
 
 For any code change:
 
-1. Create a working branch from `main`.
+1. Verify that tests pass before making changes.
 2. Make the required changes.
 3. Run tests according to the Testing Policy before committing.
 4. Commit the changes.

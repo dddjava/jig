@@ -5,9 +5,12 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperations;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsOrigin;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceTargets;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.dddjava.jig.infrastructure.springdatajdbc.SpringDataJdbcStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +68,11 @@ public record OutputAdapterExecution(
         Optional<PersistenceOperation> persistenceOperation = persistenceOperations.persistenceOperations().stream()
                 .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
                 .findAny();
+        if (persistenceOperation.isPresent()) return persistenceOperation;
+
+        Optional<PersistenceOperation> generated = generateSpringDataJdbcPersistenceOperation(methodCall, persistenceOperations);
+        if (generated.isPresent()) return generated;
+
         if (persistenceOperation.isEmpty()) {
             logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
                     tracingJigMethod.fqn(),
@@ -73,6 +81,26 @@ public record OutputAdapterExecution(
                     persistenceOperations.origin());
         }
         return persistenceOperation;
+    }
+
+    private static Optional<PersistenceOperation> generateSpringDataJdbcPersistenceOperation(MethodCall methodCall,
+                                                                                              PersistenceOperations persistenceOperations) {
+        if (persistenceOperations.origin() != PersistenceOperationsOrigin.SPRING_DATA_JDBC) {
+            return Optional.empty();
+        }
+        PersistenceOperationId persistenceOperationId = toPersistenceOperationId(methodCall);
+        return SpringDataJdbcStatementsReader.inferSqlType(methodCall.methodName())
+                .map(sqlType -> PersistenceOperation.from(
+                        persistenceOperationId,
+                        sqlType,
+                        mergedPersistenceTargets(persistenceOperations)));
+    }
+
+    private static PersistenceTargets mergedPersistenceTargets(PersistenceOperations persistenceOperations) {
+        return persistenceOperations.persistenceOperations().stream()
+                .map(PersistenceOperation::persistenceTargets)
+                .reduce(PersistenceTargets::merge)
+                .orElse(PersistenceTargets.nothing());
     }
 
     private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> tracingMethodIds) {

@@ -231,7 +231,7 @@ public class SpringDataJdbcStatementsReader {
      *
      * @see <a href="https://docs.spring.io/spring-data/relational/reference/data-commons/repositories/query-methods-details.html">Defining Query Methods</a>
      */
-    private Optional<SqlType> inferSqlType(String methodName) {
+    public static Optional<SqlType> inferSqlType(String methodName) {
         String normalizedMethodName = methodName.toLowerCase(Locale.ROOT);
 
         if (normalizedMethodName.startsWith("find")

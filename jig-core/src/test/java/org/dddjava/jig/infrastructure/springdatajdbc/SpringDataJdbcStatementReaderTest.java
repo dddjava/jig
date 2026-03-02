@@ -1,7 +1,9 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,7 @@ class SpringDataJdbcStatementReaderTest {
     ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
         var namespace = SpringDataJdbcOrderRepository.class.getCanonicalName();
-        var statement = statements.findById(PersistenceOperationId.from(namespace + "." + methodName)).orElseThrow();
+        var statement = persistenceOperationOf(statements, PersistenceOperationId.from(namespace + "." + methodName));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
         assertEquals(expectedSqlType, statement.sqlType());
@@ -41,7 +43,7 @@ class SpringDataJdbcStatementReaderTest {
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
         var namespace = SpringDataJdbcNameRepository.class.getCanonicalName();
-        var statement = statements.findById(PersistenceOperationId.from(namespace + "." + "findByHoge")).orElseThrow();
+        var statement = persistenceOperationOf(statements, PersistenceOperationId.from(namespace + "." + "findByHoge"));
 
         assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
         assertEquals(SqlType.SELECT, statement.sqlType());
@@ -84,7 +86,7 @@ class SpringDataJdbcStatementReaderTest {
     ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
         var namespace = SpringDataJdbcMixedOrderRepository.class.getCanonicalName();
-        var statement = statements.findById(PersistenceOperationId.from(namespace + "." + methodName));
+        var statement = persistenceOperationOptionalOf(statements, PersistenceOperationId.from(namespace + "." + methodName));
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceTargets().asText());
@@ -100,7 +102,7 @@ class SpringDataJdbcStatementReaderTest {
     ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
         var namespace = SpringDataJdbcOrderWithItemsRepository.class.getCanonicalName();
-        var statement = statements.findById(PersistenceOperationId.from(namespace + "." + methodName));
+        var statement = persistenceOperationOptionalOf(statements, PersistenceOperationId.from(namespace + "." + methodName));
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_order_items, spring_data_jdbc_orders_with_items]", statement.get().persistenceTargets().asText());
@@ -123,5 +125,19 @@ class SpringDataJdbcStatementReaderTest {
                 Arguments.of("findById", SqlType.SELECT),
                 Arguments.of("deleteById", SqlType.DELETE)
         );
+    }
+
+    private static PersistenceOperation persistenceOperationOf(PersistenceOperationsRepository repository,
+                                                               PersistenceOperationId persistenceOperationId) {
+        return persistenceOperationOptionalOf(repository, persistenceOperationId).orElseThrow();
+    }
+
+    private static java.util.Optional<PersistenceOperation> persistenceOperationOptionalOf(PersistenceOperationsRepository repository,
+                                                                                           PersistenceOperationId persistenceOperationId) {
+        return repository.findByTypeId(persistenceOperationId.typeId())
+                .stream()
+                .flatMap(ops -> ops.persistenceOperations().stream())
+                .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
+                .findFirst();
     }
 }

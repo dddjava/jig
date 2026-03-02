@@ -29,13 +29,6 @@ public record PersistenceOperationsRepository(Collection<PersistenceOperations> 
                 .orElse(PersistenceTargets.nothing());
     }
 
-    public Optional<PersistenceOperation> findById(PersistenceOperationId persistenceOperationId) {
-        return values.stream()
-                .flatMap(ops -> ops.persistenceOperations().stream())
-                .filter(sqlStatement -> sqlStatement.persistenceOperationId().equals(persistenceOperationId))
-                .findFirst();
-    }
-
     public Optional<PersistenceOperations> findByTypeId(TypeId typeId) {
         return values.stream()
                 .filter(ops -> ops.typeId().equals(typeId))

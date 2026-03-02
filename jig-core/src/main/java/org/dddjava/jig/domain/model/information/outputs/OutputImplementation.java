@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.members.UsingMethods;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
@@ -11,10 +10,6 @@ import org.dddjava.jig.domain.model.information.types.JigType;
  */
 public record OutputImplementation(OutputPortOperation outputPortOperation,
                                    OutputAdapterExecution outputAdapterExecution, OutputPort outputPort) {
-
-    public UsingMethods usingMethods() {
-        return concreteMethod().usingMethods();
-    }
 
     public JigMethod outputPortOperaionAsJigMethod() {
         return outputPortOperation.jigMethod();

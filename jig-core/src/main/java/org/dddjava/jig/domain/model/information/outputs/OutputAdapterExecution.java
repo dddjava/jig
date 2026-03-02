@@ -64,7 +64,7 @@ public record OutputAdapterExecution(
         PersistenceOperationId persistenceOperationId = toPersistenceOperationId(methodCall);
         Optional<PersistenceOperation> persistenceOperation = persistenceOperations.persistenceOperations().stream()
                 .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
-                .findFirst();
+                .findAny();
         if (persistenceOperation.isEmpty()) {
             logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
                     tracingJigMethod.fqn(),

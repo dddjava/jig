@@ -32,7 +32,7 @@ public record PersistenceOperationsRepository(Collection<PersistenceOperations> 
     public Optional<PersistenceOperations> findByTypeId(TypeId typeId) {
         return values.stream()
                 .filter(ops -> ops.typeId().equals(typeId))
-                .findFirst();
+                .findAny();
     }
 
     /**

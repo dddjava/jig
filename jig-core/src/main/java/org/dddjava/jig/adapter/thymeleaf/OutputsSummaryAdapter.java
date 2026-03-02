@@ -36,8 +36,7 @@ public class OutputsSummaryAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
 
-        var sqlStatements = repository.jigDataProvider().fetchSqlStatements();
-        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+        var outputAdapters = OutputAdapters.from(jigTypes);
 
         var result = outputAdapters.stream()
                 // output adapterが実装しているoutput portのoperationを

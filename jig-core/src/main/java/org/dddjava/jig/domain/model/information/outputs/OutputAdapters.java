@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 
@@ -15,10 +14,10 @@ import static java.util.stream.Collectors.toUnmodifiableList;
  */
 public record OutputAdapters(Collection<OutputAdapter> values) {
 
-    public static OutputAdapters from(JigTypes jigTypes, PersistenceOperationsRepository persistenceOperationsRepository) {
+    public static OutputAdapters from(JigTypes jigTypes) {
         return jigTypes.orderedStream()
                 .filter(jigType -> jigType.typeCategory() == TypeCategory.OutputAdapter)
-                .map(jigType -> OutputAdapter.from(jigType, jigTypes, persistenceOperationsRepository))
+                .map(jigType -> OutputAdapter.from(jigType, jigTypes))
                 .collect(collectingAndThen(toUnmodifiableList(), OutputAdapters::new));
     }
 

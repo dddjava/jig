@@ -40,6 +40,7 @@ public record PersistenceOperationsRepository(Collection<PersistenceOperations> 
     public PersistenceOperationsRepository filterRelationOn(Predicate<PersistenceOperation> sqlStatementPredicate) {
         Collection<PersistenceOperations> filteredOperations = values.stream()
                 .map(ops -> new PersistenceOperations(
+                        ops.origin(),
                         ops.typeId(),
                         ops.persistenceOperations().stream()
                                 .filter(sqlStatementPredicate)

@@ -7,9 +7,11 @@ import java.util.Collection;
 /**
  * 型単位の永続化操作群
  *
+ * @param origin                永続化操作群の由来
  * @param persistenceOperations この型に定義されている永続化操作。0件もありえる。
  */
 public record PersistenceOperations(
+        PersistenceOperationsOrigin origin,
         TypeId typeId,
         Collection<PersistenceOperation> persistenceOperations
 ) {

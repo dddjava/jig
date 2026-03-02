@@ -21,8 +21,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                 .map(outputImplementation -> {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortOperaionAsJigMethod().jigMethodId());
 
-                    var crudTables = persistenceOperationsRepository.filterRelationOn(sqlStatement -> {
-                        PersistenceOperationId persistenceOperationId = sqlStatement.persistenceOperationId();
+                    var crudTables = persistenceOperationsRepository.filterRelationOn(persistenceOperation -> {
+                        PersistenceOperationId persistenceOperationId = persistenceOperation.persistenceOperationId();
                         return outputPortOperationUseSQL(outputImplementation, persistenceOperationId)
                                 || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
                     }).crudTables();

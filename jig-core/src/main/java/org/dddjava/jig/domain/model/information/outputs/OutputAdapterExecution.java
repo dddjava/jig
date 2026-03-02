@@ -4,9 +4,12 @@ import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperations;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -21,6 +24,7 @@ public record OutputAdapterExecution(
         Collection<JigMethod> tracingJigMethods,
         Collection<PersistenceOperation> persistenceOperations
 ) {
+    private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
     public static OutputAdapterExecution from(JigMethod jigMethod,
                                               JigTypes jigTypes,
@@ -39,10 +43,36 @@ public record OutputAdapterExecution(
                                                                                  PersistenceOperationsRepository persistenceOperationsRepository) {
         return tracingJigMethods.stream()
                 .flatMap(tracingJigMethod -> tracingJigMethod.usingMethods().invokedMethodStream()
-                        .map(OutputAdapterExecution::toPersistenceOperationId)
-                        .map(persistenceOperationsRepository::findById)
+                        .map(methodCall -> findPersistenceOperation(methodCall, tracingJigMethod, persistenceOperationsRepository))
                         .flatMap(Optional::stream))
                 .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    private static Optional<PersistenceOperation> findPersistenceOperation(MethodCall methodCall,
+                                                                           JigMethod tracingJigMethod,
+                                                                           PersistenceOperationsRepository persistenceOperationsRepository) {
+        return persistenceOperationsRepository.findByTypeId(methodCall.methodOwner())
+                .flatMap(persistenceOperations -> findPersistenceOperation(
+                        methodCall,
+                        tracingJigMethod,
+                        persistenceOperations));
+    }
+
+    private static Optional<PersistenceOperation> findPersistenceOperation(MethodCall methodCall,
+                                                                           JigMethod tracingJigMethod,
+                                                                           PersistenceOperations persistenceOperations) {
+        PersistenceOperationId persistenceOperationId = toPersistenceOperationId(methodCall);
+        Optional<PersistenceOperation> persistenceOperation = persistenceOperations.persistenceOperations().stream()
+                .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
+                .findFirst();
+        if (persistenceOperation.isEmpty()) {
+            logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
+                    tracingJigMethod.fqn(),
+                    methodCall.jigMethodId().value(),
+                    methodCall.methodOwner().fqn(),
+                    persistenceOperations.origin());
+        }
+        return persistenceOperation;
     }
 
     private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> tracingMethodIds) {

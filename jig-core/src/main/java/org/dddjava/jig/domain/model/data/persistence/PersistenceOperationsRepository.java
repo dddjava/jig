@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
+import org.dddjava.jig.domain.model.data.types.TypeId;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -31,6 +33,12 @@ public record PersistenceOperationsRepository(Collection<PersistenceOperations> 
         return values.stream()
                 .flatMap(ops -> ops.persistenceOperations().stream())
                 .filter(sqlStatement -> sqlStatement.persistenceOperationId().equals(persistenceOperationId))
+                .findFirst();
+    }
+
+    public Optional<PersistenceOperations> findByTypeId(TypeId typeId) {
+        return values.stream()
+                .filter(ops -> ops.typeId().equals(typeId))
                 .findFirst();
     }
 

@@ -34,7 +34,7 @@ function groupLinksByOutputPort(links) {
 
 function formatPersistenceOperations(persistenceOperations) {
     if (!Array.isArray(persistenceOperations) || persistenceOperations.length === 0) {
-        return "なし";
+        return ["なし"];
     }
     return persistenceOperations
         .map(operation => {
@@ -42,55 +42,90 @@ function formatPersistenceOperations(persistenceOperations) {
             const sqlType = operation.sqlType ?? "";
             const targets = Array.isArray(operation.targets) ? operation.targets.join(", ") : "";
             return `${sqlType} ${id} [${targets}]`.trim();
-        })
-        .join("\n");
+        });
+}
+
+function createField(label, value) {
+    const field = document.createElement("div");
+    field.className = "outputs-item-field";
+
+    const labelElement = document.createElement("dt");
+    labelElement.textContent = label;
+    const valueElement = document.createElement("dd");
+    valueElement.textContent = value;
+
+    field.appendChild(labelElement);
+    field.appendChild(valueElement);
+    return field;
 }
 
 function renderOutputsTable(grouped) {
-    const tbody = document.querySelector("#outputs-list tbody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    if (grouped.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-        cell.textContent = "データなし";
-        cell.setAttribute("colspan", "5");
-        row.appendChild(cell);
-        tbody.appendChild(row);
-        return;
-    }
+    const container = document.getElementById("outputs-list");
+    if (!container) return;
+    container.innerHTML = "";
 
     grouped.forEach(group => {
-        group.links.forEach((link, index) => {
-            const row = document.createElement("tr");
+        const groupCard = document.createElement("section");
+        groupCard.className = "outputs-port-card";
 
-            if (index === 0) {
-                const outputPortCell = document.createElement("td");
-                outputPortCell.textContent = group.outputPort.label ?? group.outputPort.fqn ?? "";
-                outputPortCell.setAttribute("rowspan", String(group.links.length));
-                row.appendChild(outputPortCell);
-            }
+        const title = document.createElement("h3");
+        title.textContent = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
+        groupCard.appendChild(title);
 
-            const operationCell = document.createElement("td");
-            operationCell.textContent = link.outputPortOperation?.signature ?? link.outputPortOperation?.name ?? "";
-            row.appendChild(operationCell);
+        const portFqn = document.createElement("p");
+        portFqn.className = "fully-qualified-name";
+        portFqn.textContent = group.outputPort.fqn ?? "";
+        groupCard.appendChild(portFqn);
 
-            const outputAdapterCell = document.createElement("td");
-            outputAdapterCell.textContent = link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? "";
-            row.appendChild(outputAdapterCell);
+        const count = document.createElement("p");
+        count.className = "weak";
+        count.textContent = `${group.links.length} operations`;
+        groupCard.appendChild(count);
 
-            const outputAdapterExecutionCell = document.createElement("td");
-            outputAdapterExecutionCell.textContent = link.outputAdapterExecution?.signature ?? link.outputAdapterExecution?.name ?? "";
-            row.appendChild(outputAdapterExecutionCell);
+        const list = document.createElement("div");
+        list.className = "outputs-item-list";
 
-            const persistenceOperationCell = document.createElement("td");
-            persistenceOperationCell.textContent = formatPersistenceOperations(link.persistenceOperations);
-            row.appendChild(persistenceOperationCell);
+        group.links.forEach(link => {
+            const item = document.createElement("article");
+            item.className = "outputs-item";
 
-            tbody.appendChild(row);
+            const operation = document.createElement("h4");
+            operation.textContent = link.outputPortOperation?.signature ?? link.outputPortOperation?.name ?? "";
+            item.appendChild(operation);
+
+            const meta = document.createElement("dl");
+            meta.className = "outputs-item-meta";
+            meta.appendChild(createField("OutputAdapter", link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? ""));
+            meta.appendChild(createField("Execution", link.outputAdapterExecution?.signature ?? link.outputAdapterExecution?.name ?? ""));
+            item.appendChild(meta);
+
+            const persistenceTitle = document.createElement("p");
+            persistenceTitle.className = "outputs-persistence-title";
+            persistenceTitle.textContent = "PersistenceOperation";
+            item.appendChild(persistenceTitle);
+
+            const persistenceList = document.createElement("ul");
+            persistenceList.className = "outputs-persistence-list";
+            formatPersistenceOperations(link.persistenceOperations).forEach(text => {
+                const line = document.createElement("li");
+                line.textContent = text;
+                persistenceList.appendChild(line);
+            });
+            item.appendChild(persistenceList);
+
+            list.appendChild(item);
         });
+
+        groupCard.appendChild(list);
+        container.appendChild(groupCard);
     });
+
+    if (grouped.length === 0) {
+        const noData = document.createElement("p");
+        noData.className = "weak";
+        noData.textContent = "データなし";
+        container.appendChild(noData);
+    }
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {

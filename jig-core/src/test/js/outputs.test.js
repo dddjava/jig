@@ -33,7 +33,7 @@ class Element {
 class DocumentStub {
     constructor() {
         this.elementsById = new Map();
-        this.outputsTableBody = null;
+        this.outputsList = null;
     }
 
     createElement(tagName) {
@@ -45,15 +45,15 @@ class DocumentStub {
     }
 
     querySelector(selector) {
-        if (selector === "#outputs-list tbody") {
-            return this.outputsTableBody;
-        }
         return null;
     }
 }
 
 function setupDocument() {
     const doc = new DocumentStub();
+    const outputsList = new Element("section");
+    doc.outputsList = outputsList;
+    doc.elementsById.set("outputs-list", outputsList);
     global.document = doc;
     return doc;
 }
@@ -90,16 +90,14 @@ test.describe("outputs.js", () => {
             {sqlType: "UPDATE", id: "com.example.Mapper.update", targets: ["orders", "order_items"]},
         ]);
 
-        assert.equal(
-            formatted,
-            "SELECT com.example.Mapper.find [orders]\nUPDATE com.example.Mapper.update [orders, order_items]"
-        );
+        assert.deepEqual(formatted, [
+            "SELECT com.example.Mapper.find [orders]",
+            "UPDATE com.example.Mapper.update [orders, order_items]",
+        ]);
     });
 
-    test("renderOutputsTable: 出力ポートごとのrowspan付きで描画する", () => {
+    test("renderOutputsTable: 出力ポートごとのカードを描画する", () => {
         const doc = setupDocument();
-        const tbody = new Element("tbody");
-        doc.outputsTableBody = tbody;
 
         outputs.renderOutputsTable([
             {
@@ -121,10 +119,18 @@ test.describe("outputs.js", () => {
             },
         ]);
 
-        assert.equal(tbody.children.length, 2);
-        assert.equal(tbody.children[0].children[0].textContent, "A Port");
-        assert.equal(tbody.children[0].children[0].attributes.rowspan, "2");
-        assert.equal(tbody.children[0].children[4].textContent, "SELECT a.save [orders]");
-        assert.equal(tbody.children[1].children[3].textContent, "なし");
+        const outputsList = doc.outputsList;
+        assert.equal(outputsList.children.length, 1);
+        const portCard = outputsList.children[0];
+        assert.equal(portCard.children[0].textContent, "A Port");
+        assert.equal(portCard.children[2].textContent, "2 operations");
+
+        const itemList = portCard.children[3];
+        assert.equal(itemList.children.length, 2);
+        const firstItem = itemList.children[0];
+        assert.equal(firstItem.children[0].textContent, "save(java.lang.String)");
+        assert.equal(firstItem.children[3].children[0].textContent, "SELECT a.save [orders]");
+        const secondItem = itemList.children[1];
+        assert.equal(secondItem.children[3].children[0].textContent, "なし");
     });
 });

@@ -23,11 +23,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemAlreadyExistsException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -155,24 +163,64 @@ public class JigDocumentGenerator {
         try {
             Path assetsPath = this.outputDirectory.resolve("assets");
             Files.createDirectories(assetsPath);
-            copyAsset("style.css", assetsPath);
-            copyAsset("jig.js", assetsPath);
-            copyAsset("favicon.ico", assetsPath);
-            // ページごとのスクリプトを追加する
-            //   増えるごとにここに追加しなきゃいけないのはいかがなものか
-            copyAsset("package.js", assetsPath);
-            copyAsset("glossary.js", assetsPath);
-            copyAsset("insight.js", assetsPath);
-            copyAsset("list-output.js", assetsPath);
+            for (String assetRelativePath : listAssetRelativePaths()) {
+                copyAsset(assetRelativePath, assetsPath);
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private List<String> listAssetRelativePaths() throws IOException {
+        URL resource = this.getClass().getClassLoader().getResource("templates/assets");
+        if (resource == null) {
+            throw new IOException("templates/assets が見つかりませんでした。");
+        }
+        try {
+            URI uri = resource.toURI();
+            if ("jar".equalsIgnoreCase(uri.getScheme())) {
+                return listAssetRelativePathsFromJar(uri);
+            }
+            return listAssetRelativePathsFromDirectory(Paths.get(uri));
+        } catch (URISyntaxException e) {
+            throw new IOException("templates/assets のURI解決に失敗しました。", e);
+        }
+    }
+
+    private List<String> listAssetRelativePathsFromJar(URI jarUri) throws IOException {
+        try (FileSystem fileSystem = openJarFileSystem(jarUri)) {
+            return listAssetRelativePathsFromDirectory(fileSystem.getPath("/templates/assets"));
+        }
+    }
+
+    private FileSystem openJarFileSystem(URI jarUri) throws IOException {
+        try {
+            return FileSystems.newFileSystem(jarUri, Map.of());
+        } catch (FileSystemAlreadyExistsException ignored) {
+            return FileSystems.getFileSystem(jarUri);
+        }
+    }
+
+    private List<String> listAssetRelativePathsFromDirectory(Path assetsRoot) throws IOException {
+        try (var paths = Files.walk(assetsRoot)) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(assetsRoot::relativize)
+                    .map(path -> path.toString().replace('\\', '/'))
+                    .sorted()
+                    .toList();
         }
     }
 
     private void copyAsset(String fileName, Path distDirectory) throws IOException {
         ClassLoader classLoader = this.getClass().getClassLoader();
         try (InputStream is = classLoader.getResourceAsStream("templates/assets/" + fileName)) {
-            Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            if (is == null) {
+                throw new IOException("assets が見つかりませんでした: " + fileName);
+            }
+            Path outputPath = distDirectory.resolve(fileName);
+            Files.createDirectories(outputPath.getParent());
+            Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

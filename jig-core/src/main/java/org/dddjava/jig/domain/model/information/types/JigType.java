@@ -69,7 +69,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
                 .flatMap(annotation -> annotation.elements().stream())
                 .filter(element -> element.matchName(elementNames))
                 .map(element -> element.valueAsString())
-                .findFirst();
+                .findAny();
     }
 
     public TypeKind typeKind() {

@@ -132,7 +132,7 @@ public class SpringDataJdbcStatementsReader {
     private static Optional<String> resolveQueryFromAnnotation(JigMethodDeclaration methodDeclaration) {
         return methodDeclaration.header().declarationAnnotationStream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_QUERY_ANNOTATION))
-                .findFirst()
+                .findAny()
                 .flatMap(annotation -> annotation.elementTextOf("value"));
     }
 
@@ -170,7 +170,7 @@ public class SpringDataJdbcStatementsReader {
     private static Stream<PersistenceTarget> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId) {
         String tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
-                .findFirst()
+                .findAny()
                 .flatMap(annotation -> annotation.elementTextOf("value")
                         .or(() -> annotation.elementTextOf("name"))
                 )

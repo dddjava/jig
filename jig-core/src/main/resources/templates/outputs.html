@@ -12,6 +12,20 @@
     <aside class="notice">
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
+
+    <h2>出力ポート操作一覧</h2>
+    <table id="outputs-list" class="zebra sortable">
+        <thead>
+        <tr>
+            <th>OutputPort</th>
+            <th>Operation</th>
+            <th>OutputAdapter</th>
+            <th>Execution</th>
+            <th>PersistenceOperation</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 </main>
 
 <script id="outputs-data" type="application/json" th:utext="${outputsJson}">
@@ -19,5 +33,6 @@
 </script>
 
 <th:block th:replace="~{fragment-base::scripts}"></th:block>
+<script src="./assets/outputs.js"></script>
 </body>
 </html>

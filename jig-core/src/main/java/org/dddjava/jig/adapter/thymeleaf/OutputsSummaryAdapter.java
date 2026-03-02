@@ -6,7 +6,11 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapter;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapterExecution;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
+import org.dddjava.jig.domain.model.information.outputs.OutputPort;
+import org.dddjava.jig.domain.model.information.outputs.OutputPortOperation;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -14,6 +18,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 外部利用概要
@@ -29,9 +34,6 @@ public class OutputsSummaryAdapter {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    public record OutputSummaryItem(String port, String portOperation, String adapter, String adapterExecution) {
-    }
-
     @HandleDocument(JigDocument.OutputsSummary)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
@@ -39,23 +41,28 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().fetchSqlStatements();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var result = outputAdapters.stream()
+        String outputsJson = outputAdapters.stream()
                 // output adapterが実装しているoutput portのoperationを
                 .flatMap(outputAdapter -> outputAdapter.implementsPortStream(jigTypes)
                         .flatMap(outputPort -> outputPort.operationStream()
                                 // 実装しているexecitonが
                                 .flatMap(outputPortOperation -> outputAdapter.findExecution(outputPortOperation).stream()
-                                        .map(outputAdapterExecution -> new OutputSummaryItem(
-                                                outputPort.jigType().label(),
-                                                outputPortOperation.jigMethod().name(),
-                                                outputAdapter.jigType().label(),
-                                                outputAdapterExecution.jigMethod().name())))))
-                .toList();
+                                        .map(outputAdapterExecution -> formatLinkJson(
+                                                outputAdapter,
+                                                outputPort,
+                                                outputPortOperation,
+                                                outputAdapterExecution)))))
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String json = """
+                {"links":%s}
+                """.formatted(outputsJson);
+
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
-                "outputs", result
+                "outputsJson", json
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
@@ -64,5 +71,55 @@ public class OutputsSummaryAdapter {
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
         return jigDocumentWriter.outputFilePaths();
+    }
+
+    private String formatLinkJson(OutputAdapter outputAdapter,
+                                  OutputPort outputPort,
+                                  OutputPortOperation outputPortOperation,
+                                  OutputAdapterExecution outputAdapterExecution) {
+        String persistenceOperationsJson = outputAdapterExecution.persistenceOperations().stream()
+                .map(persistenceOperation -> """
+                        {"id":"%s","sqlType":"%s","targets":%s}
+                        """.formatted(
+                        escape(persistenceOperation.persistenceOperationId().value()),
+                        persistenceOperation.sqlType().name(),
+                        toJsonStringList(persistenceOperation.persistenceTargets().persistenceTargets().stream()
+                                .map(persistenceTarget -> persistenceTarget.name())
+                                .toList())))
+                .collect(Collectors.joining(",", "[", "]"));
+
+        return """
+                {"outputPort":{"fqn":"%s","label":"%s"},
+                "outputPortOperation":{"fqn":"%s","name":"%s","signature":"%s"},
+                "outputAdapter":{"fqn":"%s","label":"%s"},
+                "outputAdapterExecution":{"fqn":"%s","name":"%s","signature":"%s"},
+                "persistenceOperations":%s}
+                """.formatted(
+                escape(outputPort.jigType().fqn()),
+                escape(outputPort.jigType().label()),
+                escape(outputPortOperation.jigMethod().fqn()),
+                escape(outputPortOperation.jigMethod().name()),
+                escape(outputPortOperation.jigMethod().simpleMethodSignatureText()),
+                escape(outputAdapter.jigType().fqn()),
+                escape(outputAdapter.jigType().label()),
+                escape(outputAdapterExecution.jigMethod().fqn()),
+                escape(outputAdapterExecution.jigMethod().name()),
+                escape(outputAdapterExecution.jigMethod().simpleMethodSignatureText()),
+                persistenceOperationsJson);
+    }
+
+    private String toJsonStringList(List<String> values) {
+        return values.stream()
+                .map(this::escape)
+                .map(value -> "\"" + value + "\"")
+                .collect(Collectors.joining(",", "[", "]"));
+    }
+
+    private String escape(String string) {
+        return string
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
     }
 }

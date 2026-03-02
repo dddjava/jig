@@ -12,37 +12,11 @@
     <aside class="notice">
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
-
-    <dl>
-        <dt>OutputPort</dt>
-        <dd>Repositoryインタフェース。</dd>
-        <dt>Operation</dt>
-        <dd>Repositoryインタフェースのメソッド。ポートの操作。</dd>
-        <dt>OutputAdapter</dt>
-        <dd>Repository実装クラス。@Repositoryがつけられるもの。</dd>
-        <dt>Execution</dt>
-        <dd>実装メソッド。</dd>
-    </dl>
-
-    <table id="outputs-list" class="zebra sortable">
-        <thead>
-        <tr>
-            <th>OutputPort</th>
-            <th>Operation</th>
-            <th>OutputAdapter</th>
-            <th>Execution</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item : ${outputs}">
-            <td th:text="${item.port()}"></td>
-            <td th:text="${item.portOperation()}"></td>
-            <td th:text="${item.adapter()}"></td>
-            <td th:text="${item.adapterExecution()}"></td>
-        </tr>
-        </tbody>
-    </table>
 </main>
+
+<script id="outputs-data" type="application/json" th:utext="${outputsJson}">
+    {"links":[]}
+</script>
 
 <th:block th:replace="~{fragment-base::scripts}"></th:block>
 </body>

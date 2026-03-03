@@ -735,8 +735,41 @@ table td.number {
 }
 
 /* 外部利用概要 */
+.outputs .outputs-container {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+.outputs .outputs-sidebar {
+    width: 250px;
+    position: sticky;
+    top: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 10px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+.outputs .outputs-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.outputs .outputs-sidebar li {
+    margin-bottom: 8px;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+.outputs .outputs-sidebar a {
+    text-decoration: none;
+    color: #1b3a66;
+}
+.outputs .outputs-sidebar a:hover {
+    text-decoration: underline;
+}
 .outputs .outputs-list {
-    width: min(1100px, 100%);
+    flex: 1;
     display: grid;
     gap: 16px;
 }

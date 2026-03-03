@@ -453,16 +453,34 @@ function lazyRender(container, renderFn) {
 
 function renderOutputsTable(grouped, mode = 'standard') {
     const container = document.getElementById("outputs-list");
+    const sidebar = document.getElementById("outputs-sidebar");
     if (!container) return;
     container.innerHTML = "";
+    if (sidebar) sidebar.innerHTML = "";
+
+    const sidebarList = document.createElement("ul");
 
     grouped.forEach(group => {
+        const portFqnValue = group.outputPort.fqn ?? "";
+        const portId = "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-');
+
         const groupCard = document.createElement("section");
         groupCard.className = "outputs-port-card";
+        groupCard.id = portId;
 
+        const portLabel = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
         const title = document.createElement("h3");
-        title.textContent = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
+        title.textContent = portLabel;
         groupCard.appendChild(title);
+
+        if (sidebar) {
+            const sidebarItem = document.createElement("li");
+            const sidebarLink = document.createElement("a");
+            sidebarLink.href = "#" + portId;
+            sidebarLink.textContent = portLabel;
+            sidebarItem.appendChild(sidebarLink);
+            sidebarList.appendChild(sidebarItem);
+        }
 
         const portFqn = document.createElement("p");
         portFqn.className = "fully-qualified-name";
@@ -529,6 +547,10 @@ function renderOutputsTable(grouped, mode = 'standard') {
         groupCard.appendChild(list);
         container.appendChild(groupCard);
     });
+
+    if (sidebar && grouped.length > 0) {
+        sidebar.appendChild(sidebarList);
+    }
 
     if (grouped.length === 0) {
         const noData = document.createElement("p");

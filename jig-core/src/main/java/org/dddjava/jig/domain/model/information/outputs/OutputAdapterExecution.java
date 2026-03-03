@@ -147,15 +147,7 @@ public record OutputAdapterExecution(
                 .map(sqlType -> PersistenceOperation.from(
                         persistenceOperationId,
                         sqlType,
-                        mergedPersistenceTargets(persistenceOperations)));
-    }
-
-    // FIXME: 対象の解決に必要なのはこんな「他のOperationで操作しているTargetを集めたもの」ではない。
-    private static PersistenceTargets mergedPersistenceTargets(PersistenceOperations persistenceOperations) {
-        return persistenceOperations.persistenceOperations().stream()
-                .map(PersistenceOperation::persistenceTargets)
-                .reduce(PersistenceTargets::merge)
-                .orElse(PersistenceTargets.nothing());
+                        persistenceOperations.persistenceTargets()));
     }
 
     private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> tracingMethodIds) {

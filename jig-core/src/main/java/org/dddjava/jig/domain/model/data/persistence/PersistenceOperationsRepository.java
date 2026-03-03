@@ -43,6 +43,7 @@ public record PersistenceOperationsRepository(Collection<PersistenceOperations> 
                 .map(ops -> new PersistenceOperations(
                         ops.origin(),
                         ops.typeId(),
+                        ops.persistenceTargets(),
                         ops.persistenceOperations().stream()
                                 .filter(sqlStatementPredicate)
                                 .toList()

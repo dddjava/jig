@@ -94,7 +94,7 @@ public class SpringDataJdbcStatementsReader {
                 .flatMap(Optional::stream)
                 .toList();
 
-        return new PersistenceOperations(PersistenceOperationsOrigin.SPRING_DATA_JDBC, typeId, persistenceOperations);
+        return PersistenceOperations.forSpringDataJdbc(typeId, persistenceTargets, persistenceOperations);
     }
 
     private Optional<PersistenceOperation> resolvePersistenceOperation(JigMethodDeclaration jigMethodDeclaration,

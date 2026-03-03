@@ -142,7 +142,7 @@ public class MyBatisStatementsReader {
                 .collect(Collectors.groupingBy(persistenceOperation -> persistenceOperation.persistenceOperationId().typeId()))
                 .entrySet()
                 .stream()
-                .map(entry -> new PersistenceOperations(PersistenceOperationsOrigin.MYBATIS, entry.getKey(), entry.getValue()))
+                .map(entry -> PersistenceOperations.forMyBatis(entry.getKey(), entry.getValue()))
                 .toList();
 
         return new MyBatisReadResult(PersistenceOperationsRepository.from(persistenceOperations), sqlReadStatus);

@@ -851,6 +851,40 @@ table td.number {
 .outputs .outputs-display-mode label:last-child {
     margin-bottom: 0;
 }
+.outputs .outputs-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #dee2e6;
+}
+.outputs .tab-button {
+    padding: 10px 20px;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: -2px;
+}
+.outputs .tab-button:hover {
+    background-color: #e9ecef;
+}
+.outputs .tab-button.is-active {
+    background-color: #fff;
+    border-color: #dee2e6;
+    border-bottom: 2px solid #fff;
+    color: #1b3a66;
+}
+.outputs .outputs-tab-panel {
+    display: none;
+}
+.outputs .outputs-tab-panel.is-active {
+    display: block;
+}
 .outputs .crud-table {
     border-collapse: collapse;
     width: auto;

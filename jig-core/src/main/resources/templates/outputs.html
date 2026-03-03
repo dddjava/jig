@@ -16,25 +16,32 @@
     <h2>永続化操作対象CRUD表</h2>
     <section id="outputs-crud" class="outputs-crud" aria-label="永続化操作対象CRUD表"></section>
 
-    <h2>永続化操作一覧</h2>
-    <div class="outputs-container">
-        <nav id="persistence-sidebar" class="outputs-sidebar" aria-label="永続化操作一覧ナビゲーション">
-            <div id="persistence-sidebar-list"></div>
-        </nav>
-        <section id="persistence-list" class="outputs-list" aria-label="永続化操作一覧"></section>
+    <div class="outputs-tabs">
+        <button class="tab-button is-active" data-tab="outputs">出力ポート一覧</button>
+        <button class="tab-button" data-tab="persistence">永続化操作一覧</button>
     </div>
 
-    <h2>出力ポート一覧</h2>
-    <div class="outputs-container">
-        <nav id="outputs-sidebar" class="outputs-sidebar" aria-label="出力ポート一覧ナビゲーション">
-            <div class="outputs-display-mode">
-                <label><input type="radio" name="display-mode" value="simple"> 簡略表示</label>
-                <label><input type="radio" name="display-mode" value="standard" checked> 標準表示</label>
-                <label><input type="radio" name="display-mode" value="detailed"> 詳細表示</label>
-            </div>
-            <div id="outputs-sidebar-list"></div>
-        </nav>
-        <section id="outputs-list" class="outputs-list" aria-label="出力ポート一覧"></section>
+    <div id="outputs-tab-panel" class="outputs-tab-panel is-active">
+        <div class="outputs-container">
+            <nav id="outputs-sidebar" class="outputs-sidebar" aria-label="出力ポート一覧ナビゲーション">
+                <div class="outputs-display-mode">
+                    <label><input type="radio" name="display-mode" value="simple"> 簡略表示</label>
+                    <label><input type="radio" name="display-mode" value="standard" checked> 標準表示</label>
+                    <label><input type="radio" name="display-mode" value="detailed"> 詳細表示</label>
+                </div>
+                <div id="outputs-sidebar-list"></div>
+            </nav>
+            <section id="outputs-list" class="outputs-list" aria-label="出力ポート一覧"></section>
+        </div>
+    </div>
+
+    <div id="persistence-tab-panel" class="outputs-tab-panel">
+        <div class="outputs-container">
+            <nav id="persistence-sidebar" class="outputs-sidebar" aria-label="永続化操作一覧ナビゲーション">
+                <div id="persistence-sidebar-list"></div>
+            </nav>
+            <section id="persistence-list" class="outputs-list" aria-label="永続化操作一覧"></section>
+        </div>
     </div>
 </main>
 

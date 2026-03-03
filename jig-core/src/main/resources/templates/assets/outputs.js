@@ -790,6 +790,17 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
             input.addEventListener('change', render);
         });
 
+        document.querySelectorAll('.outputs-tabs .tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+                document.querySelectorAll('.outputs-tabs .tab-button').forEach(btn => btn.classList.remove('is-active'));
+                document.querySelectorAll('.outputs-tab-panel').forEach(panel => panel.classList.remove('is-active'));
+                
+                button.classList.add('is-active');
+                document.getElementById(`${tabName}-tab-panel`).classList.add('is-active');
+            });
+        });
+
         render();
     });
 }

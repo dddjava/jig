@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 型単位の永続化操作群
@@ -25,5 +26,11 @@ public record PersistenceOperations(
 
     public static PersistenceOperations forSpringDataJdbc(TypeId typeId, PersistenceTargets persistenceTargets, List<PersistenceOperation> persistenceOperations) {
         return new PersistenceOperations(PersistenceOperationsOrigin.SPRING_DATA_JDBC, typeId, persistenceTargets, persistenceOperations);
+    }
+
+    public Optional<PersistenceOperation> findPersistenceOperationById(PersistenceOperationId persistenceOperationId) {
+        return persistenceOperations.stream()
+                .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
+                .findAny();
     }
 }

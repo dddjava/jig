@@ -115,9 +115,7 @@ public record OutputAdapterExecution(
                                                                            JigMethod tracingJigMethod,
                                                                            PersistenceOperations persistenceOperations) {
         PersistenceOperationId persistenceOperationId = toPersistenceOperationId(methodCall);
-        return persistenceOperations.persistenceOperations().stream()
-                .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
-                .findAny()
+        return persistenceOperations.findPersistenceOperationById(persistenceOperationId)
                 .or(() -> generateCalledPersistenceOperation(methodCall, persistenceOperations))
                 .or(() -> {
                     logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",

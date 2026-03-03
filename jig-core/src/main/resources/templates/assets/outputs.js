@@ -415,12 +415,6 @@ function renderOutputsTable(grouped) {
             operation.textContent = link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "";
             item.appendChild(operation);
 
-            const meta = document.createElement("dl");
-            meta.className = "outputs-item-meta";
-            meta.appendChild(createField("OutputAdapter", link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? ""));
-            meta.appendChild(createField("Execution", link.outputAdapterExecution?.name ?? link.outputAdapterExecution?.signature ?? ""));
-            item.appendChild(meta);
-
             const persistenceTitle = document.createElement("p");
             persistenceTitle.className = "outputs-persistence-title";
             persistenceTitle.textContent = "PersistenceOperation";

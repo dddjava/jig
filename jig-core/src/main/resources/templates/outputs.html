@@ -13,18 +13,19 @@
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
 
-    <div class="outputs-display-mode">
-        <label><input type="radio" name="display-mode" value="simple"> 簡略表示</label>
-        <label><input type="radio" name="display-mode" value="standard" checked> 標準表示</label>
-        <label><input type="radio" name="display-mode" value="detailed"> 詳細表示</label>
-    </div>
-
     <h2>永続化操作対象CRUD表</h2>
     <section id="outputs-crud" class="outputs-crud" aria-label="永続化操作対象CRUD表"></section>
 
     <h2>出力ポート一覧</h2>
     <div class="outputs-container">
-        <nav id="outputs-sidebar" class="outputs-sidebar" aria-label="出力ポート一覧ナビゲーション"></nav>
+        <nav id="outputs-sidebar" class="outputs-sidebar" aria-label="出力ポート一覧ナビゲーション">
+            <div class="outputs-display-mode">
+                <label><input type="radio" name="display-mode" value="simple"> 簡略表示</label>
+                <label><input type="radio" name="display-mode" value="standard" checked> 標準表示</label>
+                <label><input type="radio" name="display-mode" value="detailed"> 詳細表示</label>
+            </div>
+            <div id="outputs-sidebar-list"></div>
+        </nav>
         <section id="outputs-list" class="outputs-list" aria-label="出力ポート一覧"></section>
     </div>
 </main>

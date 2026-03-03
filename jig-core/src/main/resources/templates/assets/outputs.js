@@ -453,7 +453,7 @@ function lazyRender(container, renderFn) {
 
 function renderOutputsTable(grouped, mode = 'standard') {
     const container = document.getElementById("outputs-list");
-    const sidebar = document.getElementById("outputs-sidebar");
+    const sidebar = document.getElementById("outputs-sidebar-list");
     if (!container) return;
     container.innerHTML = "";
     if (sidebar) sidebar.innerHTML = "";

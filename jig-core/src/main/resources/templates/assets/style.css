@@ -837,14 +837,19 @@ table td.number {
     margin-bottom: 20px;
 }
 .outputs .outputs-display-mode {
-    margin-bottom: 20px;
-    padding: 10px;
+    margin-bottom: 15px;
+    padding: 8px;
     background-color: #f3f6ff;
     border-radius: 6px;
+    font-size: 0.9em;
 }
 .outputs .outputs-display-mode label {
-    margin-right: 15px;
+    display: block;
+    margin-bottom: 5px;
     cursor: pointer;
+}
+.outputs .outputs-display-mode label:last-child {
+    margin-bottom: 0;
 }
 .outputs .crud-table {
     border-collapse: collapse;

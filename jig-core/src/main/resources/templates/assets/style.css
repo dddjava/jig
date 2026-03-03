@@ -764,6 +764,19 @@ table td.number {
 .outputs .outputs-sidebar a {
     text-decoration: none;
     color: #1b3a66;
+    word-break: break-all;
+}
+.outputs .outputs-sidebar .sidebar-link {
+    display: block;
+    margin-bottom: 4px;
+}
+.outputs .sidebar-title {
+    margin: 10px 0 6px 0;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 4px;
 }
 .outputs .outputs-sidebar a:hover {
     text-decoration: underline;
@@ -899,6 +912,13 @@ table td.number {
     border: 1px solid #d4d9e5;
     padding: 8px;
     text-align: left;
+}
+.outputs .crud-table th {
+    white-space: normal;
+    word-break: break-all;
+    min-width: 120px;
+}
+.outputs .crud-table td {
     white-space: nowrap;
 }
 .outputs .crud-table th {

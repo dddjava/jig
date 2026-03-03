@@ -25,7 +25,14 @@ function groupLinksByOutputPort(links) {
         }
         map.get(key).links.push(link);
     });
-    return Array.from(map.values()).sort((a, b) => {
+    return Array.from(map.values()).map(group => {
+        group.links.sort((a, b) => {
+            const left = a.outputPortOperation?.name ?? a.outputPortOperation?.signature ?? "";
+            const right = b.outputPortOperation?.name ?? b.outputPortOperation?.signature ?? "";
+            return left.localeCompare(right, "ja");
+        });
+        return group;
+    }).sort((a, b) => {
         const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
         const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
         return left.localeCompare(right, "ja");

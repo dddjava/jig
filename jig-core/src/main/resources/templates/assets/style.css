@@ -799,3 +799,67 @@ table td.number {
 .outputs .mermaid-diagram {
     margin-top: 10px;
 }
+.outputs .outputs-crud {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+.outputs .crud-table {
+    border-collapse: collapse;
+    width: auto;
+    min-width: 100%;
+}
+.outputs .crud-table th, .outputs .crud-table td {
+    border: 1px solid #d4d9e5;
+    padding: 8px;
+    text-align: left;
+}
+.outputs .crud-table th {
+    background-color: #f3f6ff;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.outputs .crud-table th:first-child,
+.outputs .crud-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: #fff;
+    border-right: 2px solid #d4d9e5;
+    min-width: 200px;
+}
+.outputs .crud-table th:first-child {
+    z-index: 3;
+    background-color: #f3f6ff;
+}
+.outputs .port-group-row td:first-child {
+    background-color: #f3f6ff;
+}
+.outputs .crud-cell {
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+.outputs .port-group-row {
+    background-color: #f3f6ff !important;
+    font-weight: bold;
+}
+.outputs .port-group-cell::before {
+    content: '▶';
+    display: inline-block;
+    margin-right: 8px;
+    transition: transform 0.2s;
+    font-size: 0.8em;
+}
+.outputs .port-group-row.is-expanded .port-group-cell::before {
+    transform: rotate(90deg);
+}
+.outputs .operation-cell {
+    padding-left: 32px !important;
+    font-size: 0.9em;
+    color: #555;
+}
+.outputs .port-crud-cell {
+    color: #1b3a66;
+}

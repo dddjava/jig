@@ -341,6 +341,23 @@ function initMermaid() {
     }
 }
 
+function lazyRender(container, renderFn) {
+    if (typeof IntersectionObserver === "undefined") {
+        renderFn();
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                renderFn();
+                observer.unobserve(container);
+            }
+        });
+    }, { rootMargin: "200px" });
+    observer.observe(container);
+}
+
 function renderOutputsTable(grouped) {
     const container = document.getElementById("outputs-list");
     if (!container) return;
@@ -367,7 +384,7 @@ function renderOutputsTable(grouped) {
         const portMermaidContainer = document.createElement("div");
         portMermaidContainer.className = "mermaid-diagram port-diagram";
         groupCard.appendChild(portMermaidContainer);
-        renderPortMermaid(group, portMermaidContainer);
+        lazyRender(portMermaidContainer, () => renderPortMermaid(group, portMermaidContainer));
 
         const list = document.createElement("div");
         list.className = "outputs-item-list";
@@ -403,7 +420,7 @@ function renderOutputsTable(grouped) {
             const mermaidContainer = document.createElement("div");
             mermaidContainer.className = "mermaid-diagram";
             item.appendChild(mermaidContainer);
-            renderMermaid(link, mermaidContainer);
+            lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer));
 
             list.appendChild(item);
         });

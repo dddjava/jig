@@ -881,7 +881,7 @@ table td.number {
     border-bottom: none;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
-    background-color: #f8f9fa;
+    background-color: #e9ecef;
     cursor: pointer;
     font-size: 1em;
     font-weight: bold;
@@ -889,7 +889,7 @@ table td.number {
     margin-bottom: -2px;
 }
 .outputs .tab-button:hover {
-    background-color: #e9ecef;
+    background-color: #dee2e6;
 }
 .outputs .tab-button.is-active {
     background-color: #fff;

@@ -451,6 +451,218 @@ function lazyRender(container, renderFn) {
     observer.observe(container);
 }
 
+function groupLinksByPersistenceTarget(links) {
+    const map = new Map();
+    links.forEach(link => {
+        link.persistenceOperations?.forEach(op => {
+            op.targets?.forEach(target => {
+                if (!map.has(target)) {
+                    map.set(target, {
+                        target: target,
+                        links: [],
+                    });
+                }
+                const group = map.get(target);
+                if (!group.links.includes(link)) {
+                    group.links.push(link);
+                }
+            });
+        });
+    });
+    return Array.from(map.values()).map(group => {
+        group.links.sort((a, b) => {
+            const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
+            const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
+            return left.localeCompare(right, "ja");
+        });
+        return group;
+    }).sort((a, b) => {
+        return a.target.localeCompare(b.target, "ja");
+    });
+}
+
+function renderPersistenceMermaid(group, container) {
+    if (typeof mermaid === "undefined") return;
+
+    const target = group.target;
+    let mermaidCode = `graph RL\n`;
+    mermaidCode += `  Target[("(${target})")]\n`;
+
+    const opNodes = new Map();
+    const adapterNodes = new Map();
+    const portNodes = new Map();
+    const edgeSet = new Set();
+
+    group.links.forEach((link, linkIndex) => {
+        // Find persistence operations that touch this target
+        const relevantOps = link.persistenceOperations.filter(op => op.targets.includes(target));
+
+        relevantOps.forEach(op => {
+            const opNodeId = `POp_${op.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            if (!opNodes.has(op.id)) {
+                opNodes.set(op.id, {
+                    id: opNodeId,
+                    label: op.id.split('.').pop(),
+                    sqlType: op.sqlType
+                });
+            }
+
+            const edgeKey1 = `${opNodeId}--${op.sqlType}-->Target`;
+            if (!edgeSet.has(edgeKey1)) {
+                mermaidCode += `  ${opNodeId} -- "${op.sqlType}" --> Target\n`;
+                edgeSet.add(edgeKey1);
+            }
+
+            const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
+            const adapterLabel = link.outputAdapter?.label || adapterFqn;
+            const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
+            const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
+            const executionId = `Execution_${executionFqn.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+            if (!adapterNodes.has(adapterFqn)) {
+                adapterNodes.set(adapterFqn, {
+                    label: adapterLabel,
+                    executions: new Map()
+                });
+            }
+            const adapter = adapterNodes.get(adapterFqn);
+            if (!adapter.executions.has(executionFqn)) {
+                adapter.executions.set(executionFqn, {
+                    id: executionId,
+                    name: executionName
+                });
+            }
+
+            const edgeKey2 = `${executionId}-->${opNodeId}`;
+            if (!edgeSet.has(edgeKey2)) {
+                mermaidCode += `  ${executionId} --> ${opNodeId}\n`;
+                edgeSet.add(edgeKey2);
+            }
+
+            const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
+            const portLabel = link.outputPort?.label || portFqn;
+            const portId = `Port_${portFqn.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
+            const portOpFqn = link.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
+            const portOpId = `PortOp_${portOpFqn.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+            if (!portNodes.has(portFqn)) {
+                portNodes.set(portFqn, {
+                    id: portId,
+                    label: portLabel,
+                    operations: new Map()
+                });
+            }
+            const port = portNodes.get(portFqn);
+            if (!port.operations.has(portOpFqn)) {
+                port.operations.set(portOpFqn, {
+                    id: portOpId,
+                    name: portOpName
+                });
+            }
+
+            const edgeKey3 = `${portOpId}-->${executionId}`;
+            if (!edgeSet.has(edgeKey3)) {
+                mermaidCode += `  ${portOpId} --> ${executionId}\n`;
+                edgeSet.add(edgeKey3);
+            }
+        });
+    });
+
+    adapterNodes.forEach((adapter) => {
+        mermaidCode += `  subgraph "${adapter.label}"\n`;
+        adapter.executions.forEach((execution) => {
+            mermaidCode += `    ${execution.id}["${execution.name}"]\n`;
+        });
+        mermaidCode += `  end\n`;
+    });
+
+    portNodes.forEach((port) => {
+        mermaidCode += `  subgraph "${port.label}"\n`;
+        port.operations.forEach((op) => {
+            mermaidCode += `    ${op.id}["${op.name}"]\n`;
+        });
+        mermaidCode += `  end\n`;
+    });
+
+    const id = "mermaid-persistence-" + Math.random().toString(36).substr(2, 9);
+    mermaid.render(id, mermaidCode).then(({svg}) => {
+        container.innerHTML = svg;
+    });
+}
+
+function renderPersistenceTable(grouped) {
+    const container = document.getElementById("persistence-list");
+    const sidebar = document.getElementById("persistence-sidebar-list");
+    if (!container) return;
+    container.innerHTML = "";
+    if (sidebar) sidebar.innerHTML = "";
+
+    const sidebarList = document.createElement("ul");
+
+    grouped.forEach(group => {
+        const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
+
+        const groupCard = document.createElement("section");
+        groupCard.className = "outputs-port-card";
+        groupCard.id = targetId;
+
+        const title = document.createElement("h3");
+        title.textContent = group.target;
+        groupCard.appendChild(title);
+
+        if (sidebar) {
+            const sidebarItem = document.createElement("li");
+            const sidebarLink = document.createElement("a");
+            sidebarLink.href = "#" + targetId;
+            sidebarLink.textContent = group.target;
+            sidebarItem.appendChild(sidebarLink);
+            sidebarList.appendChild(sidebarItem);
+        }
+
+        const persistenceMermaidContainer = document.createElement("div");
+        persistenceMermaidContainer.className = "mermaid-diagram port-diagram";
+        groupCard.appendChild(persistenceMermaidContainer);
+        lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer));
+
+        const list = document.createElement("div");
+        list.className = "outputs-item-list";
+
+        group.links.forEach(link => {
+            const item = document.createElement("article");
+            item.className = "outputs-item";
+
+            const portLabel = link.outputPort.label ?? link.outputPort.fqn ?? "(unknown)";
+            const portOpName = link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "";
+
+            const operationTitle = document.createElement("h4");
+            operationTitle.textContent = `${portLabel} / ${portOpName}`;
+            item.appendChild(operationTitle);
+
+            const portFqn = document.createElement("p");
+            portFqn.className = "fully-qualified-name";
+            portFqn.textContent = link.outputPort.fqn ?? "";
+            item.appendChild(portFqn);
+
+            list.appendChild(item);
+        });
+
+        groupCard.appendChild(list);
+        container.appendChild(groupCard);
+    });
+
+    if (sidebar && grouped.length > 0) {
+        sidebar.appendChild(sidebarList);
+    }
+
+    if (grouped.length === 0) {
+        const noData = document.createElement("p");
+        noData.className = "weak";
+        noData.textContent = "データなし";
+        container.appendChild(noData);
+    }
+}
+
 function renderOutputsTable(grouped, mode = 'standard') {
     const container = document.getElementById("outputs-list");
     const sidebar = document.getElementById("outputs-sidebar-list");
@@ -566,9 +778,11 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         const data = getOutputsData();
         renderCrudTable(data.links);
         const grouped = groupLinksByOutputPort(data.links);
+        const persistenceGrouped = groupLinksByPersistenceTarget(data.links);
 
         const render = () => {
             const mode = document.querySelector('input[name="display-mode"]:checked')?.value || 'standard';
+            renderPersistenceTable(persistenceGrouped);
             renderOutputsTable(grouped, mode);
         };
 
@@ -584,7 +798,9 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         getOutputsData,
         groupLinksByOutputPort,
+        groupLinksByPersistenceTarget,
         formatPersistenceOperations,
         renderOutputsTable,
+        renderPersistenceTable,
     };
 }

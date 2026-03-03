@@ -913,16 +913,19 @@ table td.number {
     position: sticky;
     left: 0;
     z-index: 1;
-    background-color: #e6ecff;
+    background-color: #fff; /* 通常のセルは白背景 */
     border-right: 2px solid #d4d9e5;
     min-width: 200px;
 }
 .outputs .crud-table th:first-child {
     z-index: 3;
-    background-color: #e6ecff;
+    background-color: #e6ecff; /* 左上角はヘッダー色 */
 }
 .outputs .port-group-row td:first-child {
-    background-color: #e6ecff;
+    background-color: #f3f6ff; /* ポート行の1列目 */
+}
+.outputs .operation-row td:first-child {
+    background-color: #fff; /* 操作行の1列目 */
 }
 .outputs .crud-cell {
     text-align: center;

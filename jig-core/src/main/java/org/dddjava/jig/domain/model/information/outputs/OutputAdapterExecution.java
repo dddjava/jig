@@ -150,6 +150,7 @@ public record OutputAdapterExecution(
                         mergedPersistenceTargets(persistenceOperations)));
     }
 
+    // FIXME: 対象の解決に必要なのはこんな「他のOperationで操作しているTargetを集めたもの」ではない。
     private static PersistenceTargets mergedPersistenceTargets(PersistenceOperations persistenceOperations) {
         return persistenceOperations.persistenceOperations().stream()
                 .map(PersistenceOperation::persistenceTargets)

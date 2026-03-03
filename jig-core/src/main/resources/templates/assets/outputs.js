@@ -509,6 +509,7 @@ function renderPersistenceMermaid(group, container) {
     let mermaidCode = `graph RL\n`;
     mermaidCode += `  Target[("(${target})")]\n`;
 
+    const groupNodes = new Map();
     const opNodes = new Map();
     const adapterNodes = new Map();
     const portNodes = new Map();
@@ -524,7 +525,9 @@ function renderPersistenceMermaid(group, container) {
                 opNodes.set(op.id, {
                     id: opNodeId,
                     label: op.id.split('.').pop(),
-                    sqlType: op.sqlType
+                    sqlType: op.sqlType,
+                    group: op.group,
+                    groupLabel: op.groupLabel
                 });
             }
 
@@ -588,6 +591,27 @@ function renderPersistenceMermaid(group, container) {
                 edgeSet.add(edgeKey3);
             }
         });
+    });
+
+    // Group persistence operations by their group (class)
+    const persistenceGroups = new Map();
+    opNodes.forEach((op) => {
+        const groupId = op.group || 'default';
+        if (!persistenceGroups.has(groupId)) {
+            persistenceGroups.set(groupId, {
+                label: op.groupLabel || 'Persistence Operations',
+                ops: []
+            });
+        }
+        persistenceGroups.get(groupId).ops.push(op);
+    });
+
+    persistenceGroups.forEach((pg) => {
+        mermaidCode += `  subgraph "${pg.label}"\n`;
+        pg.ops.forEach((op) => {
+            mermaidCode += `    ${op.id}["${op.label}"]\n`;
+        });
+        mermaidCode += `  end\n`;
     });
 
     adapterNodes.forEach((adapter) => {

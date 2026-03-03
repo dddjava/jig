@@ -13,12 +13,10 @@
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
 
-    <h2>永続化操作対象CRUD表</h2>
-    <section id="outputs-crud" class="outputs-crud" aria-label="永続化操作対象CRUD表"></section>
-
     <div class="outputs-tabs">
         <button class="tab-button is-active" data-tab="outputs">出力ポート一覧</button>
         <button class="tab-button" data-tab="persistence">永続化操作一覧</button>
+        <button class="tab-button" data-tab="crud">CRUD表</button>
     </div>
 
     <div id="outputs-tab-panel" class="outputs-tab-panel is-active">
@@ -41,6 +39,15 @@
                 <div id="persistence-sidebar-list"></div>
             </nav>
             <section id="persistence-list" class="outputs-list" aria-label="永続化操作一覧"></section>
+        </div>
+    </div>
+
+    <div id="crud-tab-panel" class="outputs-tab-panel">
+        <div class="outputs-container">
+            <nav id="crud-sidebar" class="outputs-sidebar" aria-label="CRUD表ナビゲーション">
+                <div id="crud-sidebar-list"></div>
+            </nav>
+            <section id="outputs-crud" class="outputs-crud" aria-label="永続化操作対象CRUD表"></section>
         </div>
     </div>
 </main>

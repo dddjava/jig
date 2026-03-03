@@ -834,7 +834,7 @@ table td.number {
 }
 .outputs .outputs-crud {
     overflow-x: auto;
-    margin-bottom: 20px;
+    width: 100%;
 }
 .outputs .outputs-display-mode {
     margin-bottom: 15px;
@@ -905,7 +905,7 @@ table td.number {
     background-color: #e6ecff;
     color: #1b3a66;
     position: sticky;
-    top: 0;
+    top: 50px; /* タブの高さを考慮 */
     z-index: 2;
 }
 .outputs .crud-table th:first-child,

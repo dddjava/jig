@@ -285,7 +285,12 @@ function renderPortMermaid(group, container, mode = 'standard') {
 
 function renderCrudTable(links) {
     const container = document.getElementById("outputs-crud");
+    const sidebar = document.getElementById("crud-sidebar");
+    const sidebarList = document.getElementById("crud-sidebar-list");
     if (!container) return;
+
+    container.innerHTML = "";
+    if (sidebarList) sidebarList.innerHTML = "";
 
     const targetsSet = new Set();
     links.forEach(link => {
@@ -300,6 +305,21 @@ function renderCrudTable(links) {
         return;
     }
 
+    if (sidebarList) {
+        const title = document.createElement("p");
+        title.className = "sidebar-title";
+        title.textContent = "永続化操作対象";
+        sidebarList.appendChild(title);
+        
+        allTargets.forEach(target => {
+            const link = document.createElement("a");
+            link.href = `#crud-target-${target}`;
+            link.textContent = target;
+            link.className = "sidebar-link";
+            sidebarList.appendChild(link);
+        });
+    }
+
     const table = document.createElement("table");
     table.className = "zebra crud-table";
     const thead = document.createElement("thead");
@@ -311,6 +331,7 @@ function renderCrudTable(links) {
 
     allTargets.forEach(target => {
         const th = document.createElement("th");
+        th.id = `crud-target-${target}`;
         th.textContent = target;
         headerRow.appendChild(th);
     });
@@ -776,7 +797,6 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
     window.addEventListener("DOMContentLoaded", () => {
         initMermaid();
         const data = getOutputsData();
-        renderCrudTable(data.links);
         const grouped = groupLinksByOutputPort(data.links);
         const persistenceGrouped = groupLinksByPersistenceTarget(data.links);
 
@@ -784,6 +804,7 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
             const mode = document.querySelector('input[name="display-mode"]:checked')?.value || 'standard';
             renderPersistenceTable(persistenceGrouped);
             renderOutputsTable(grouped, mode);
+            renderCrudTable(data.links);
         };
 
         document.querySelectorAll('input[name="display-mode"]').forEach(input => {

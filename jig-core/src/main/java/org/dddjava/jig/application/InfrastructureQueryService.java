@@ -21,7 +21,7 @@ public class InfrastructureQueryService {
     public OutputImplementations outputImplementations(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
 
-        var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
         var outputImplementations = OutputImplementations.from(jigTypes, outputAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
@@ -31,6 +31,6 @@ public class InfrastructureQueryService {
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
         var outputImplementations = outputImplementations(jigRepository);
-        return DatasourceAngles.from(outputImplementations, jigRepository.jigDataProvider().fetchSqlStatements(), MethodRelations.from(jigTypes));
+        return DatasourceAngles.from(outputImplementations, jigRepository.jigDataProvider().persistenceOperationsRepository(), MethodRelations.from(jigTypes));
     }
 }

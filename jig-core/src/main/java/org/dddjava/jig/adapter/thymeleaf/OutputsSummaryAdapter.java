@@ -6,11 +6,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.outputs.OutputAdapter;
-import org.dddjava.jig.domain.model.information.outputs.OutputAdapterExecution;
-import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
-import org.dddjava.jig.domain.model.information.outputs.OutputPort;
-import org.dddjava.jig.domain.model.information.outputs.OutputPortOperation;
+import org.dddjava.jig.domain.model.information.outputs.*;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -38,7 +34,7 @@ public class OutputsSummaryAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
 
-        var sqlStatements = repository.jigDataProvider().fetchSqlStatements();
+        var sqlStatements = repository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         String outputsJson = outputAdapters.stream()

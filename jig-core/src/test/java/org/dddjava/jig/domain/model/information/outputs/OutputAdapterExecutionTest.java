@@ -24,7 +24,7 @@ class OutputAdapterExecutionTest {
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var traceOutputAdapter = outputAdapters.stream()
@@ -52,7 +52,7 @@ class OutputAdapterExecutionTest {
     @Test
     void SpringDataJdbcの継承メソッド呼び出しでPersistenceOperationを動的に解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var targetOutputAdapter = outputAdapters.stream()
@@ -77,7 +77,7 @@ class OutputAdapterExecutionTest {
     @Test
     void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceOperationを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var targetOutputAdapter = outputAdapters.stream()

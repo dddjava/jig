@@ -9,7 +9,7 @@ record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
                               PersistenceOperationsRepository persistenceOperationsRepository) implements JigDataProvider {
 
     @Override
-    public PersistenceOperationsRepository fetchSqlStatements() {
+    public PersistenceOperationsRepository persistenceOperationsRepository() {
         return persistenceOperationsRepository;
     }
 

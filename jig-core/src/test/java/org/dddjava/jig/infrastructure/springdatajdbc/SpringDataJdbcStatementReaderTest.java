@@ -32,7 +32,7 @@ class SpringDataJdbcStatementReaderTest {
             SqlType expectedSqlType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var statement = persistenceOperationOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderRepository.class));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
@@ -41,7 +41,7 @@ class SpringDataJdbcStatementReaderTest {
 
     @Test
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
-        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var statement = persistenceOperationOf(statements, getPersistenceOperationId("findByHoge", SpringDataJdbcNameRepository.class));
 
         assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
@@ -83,7 +83,7 @@ class SpringDataJdbcStatementReaderTest {
             SqlType expectedSqlType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcMixedOrderRepository.class));
 
         assertTrue(statement.isPresent());
@@ -98,7 +98,7 @@ class SpringDataJdbcStatementReaderTest {
             SqlType expectedSqlType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().fetchSqlStatements();
+        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
 
         assertTrue(statement.isPresent());

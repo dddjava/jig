@@ -10,7 +10,7 @@ public interface JigDataProvider {
     static JigDataProvider none() {
         return new JigDataProvider() {
             @Override
-            public PersistenceOperationsRepository fetchSqlStatements() {
+            public PersistenceOperationsRepository persistenceOperationsRepository() {
                 return PersistenceOperationsRepository.empty();
             }
 
@@ -21,7 +21,7 @@ public interface JigDataProvider {
         };
     }
 
-    PersistenceOperationsRepository fetchSqlStatements();
+    PersistenceOperationsRepository persistenceOperationsRepository();
 
     EnumModels fetchEnumModels();
 }

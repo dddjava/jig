@@ -27,7 +27,7 @@ class MyBatisStatementReaderTest {
 
     @Test
     void bindを使ってても解析できる(JigRepository jigRepository) {
-        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
 
         PersistenceOperation myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(SampleMapper.class, "binding"));
         assertEquals("[fuga]", myBatisStatement.persistenceTargets().asText());
@@ -49,7 +49,7 @@ class MyBatisStatementReaderTest {
 
     @Test
     void OGNLを使ったSELECTが解析できない(JigRepository jigRepository) {
-        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
 
         PersistenceOperation myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(ComplexMapper.class, "select_ognl"));
         assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
@@ -63,7 +63,7 @@ class MyBatisStatementReaderTest {
 
     @Test
     void OGNLを使ったSELECTが解析できない2(JigRepository jigRepository) {
-        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
 
         PersistenceOperation myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(ComplexMapper.class, "select_ognl_where"));
 
@@ -76,7 +76,7 @@ class MyBatisStatementReaderTest {
     @ParameterizedTest
     @MethodSource
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigRepository jigRepository) {
-        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().fetchSqlStatements();
+        PersistenceOperationsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
 
         PersistenceOperation myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(CanonicalMapper.class, methodName));
         assertEquals("[" + tableName + "]", myBatisStatement.persistenceTargets().asText());

@@ -812,9 +812,11 @@ table td.number {
     border: 1px solid #d4d9e5;
     padding: 8px;
     text-align: left;
+    white-space: nowrap;
 }
 .outputs .crud-table th {
-    background-color: #f3f6ff;
+    background-color: #e6ecff;
+    color: #1b3a66;
     position: sticky;
     top: 0;
     z-index: 2;
@@ -824,16 +826,16 @@ table td.number {
     position: sticky;
     left: 0;
     z-index: 1;
-    background-color: #fff;
+    background-color: #e6ecff;
     border-right: 2px solid #d4d9e5;
     min-width: 200px;
 }
 .outputs .crud-table th:first-child {
     z-index: 3;
-    background-color: #f3f6ff;
+    background-color: #e6ecff;
 }
 .outputs .port-group-row td:first-child {
-    background-color: #f3f6ff;
+    background-color: #e6ecff;
 }
 .outputs .crud-cell {
     text-align: center;

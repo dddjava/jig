@@ -796,3 +796,6 @@ table td.number {
     margin: 0;
     padding-left: 18px;
 }
+.outputs .mermaid-diagram {
+    margin-top: 10px;
+}

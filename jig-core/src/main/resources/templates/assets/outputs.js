@@ -59,6 +59,48 @@ function createField(label, value) {
     return field;
 }
 
+function renderMermaid(link, container) {
+    if (typeof mermaid === "undefined") return;
+
+    const portFqn = link.outputPort?.fqn || "Port";
+    const portLabel = link.outputPort?.label || portFqn;
+    const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || "Operation";
+
+    const adapterFqn = link.outputAdapter?.fqn || "Adapter";
+    const adapterLabel = link.outputAdapter?.label || adapterFqn;
+    const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || "Execution";
+
+    let mermaidCode = `graph LR
+  subgraph "${portLabel}"
+    PortOp["${portOpName}"]
+  end
+  subgraph "${adapterLabel}"
+    Execution["${executionName}"]
+  end
+  PortOp --> Execution
+`;
+
+    link.persistenceOperations?.forEach((op, index) => {
+        const sqlType = op.sqlType || "";
+        const opId = `Op${index}`;
+        op.targets?.forEach((target, tIndex) => {
+            const targetId = `Target${index}_${tIndex}`;
+            mermaidCode += `  Execution -- "${sqlType}" --> ${targetId}[(${target})]\n`;
+        });
+    });
+
+    const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
+    mermaid.render(id, mermaidCode).then(({svg}) => {
+        container.innerHTML = svg;
+    });
+}
+
+function initMermaid() {
+    if (typeof mermaid !== "undefined") {
+        mermaid.initialize({ startOnLoad: false });
+    }
+}
+
 function renderOutputsTable(grouped) {
     const container = document.getElementById("outputs-list");
     if (!container) return;
@@ -90,13 +132,13 @@ function renderOutputsTable(grouped) {
             item.className = "outputs-item";
 
             const operation = document.createElement("h4");
-            operation.textContent = link.outputPortOperation?.signature ?? link.outputPortOperation?.name ?? "";
+            operation.textContent = link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "";
             item.appendChild(operation);
 
             const meta = document.createElement("dl");
             meta.className = "outputs-item-meta";
             meta.appendChild(createField("OutputAdapter", link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? ""));
-            meta.appendChild(createField("Execution", link.outputAdapterExecution?.signature ?? link.outputAdapterExecution?.name ?? ""));
+            meta.appendChild(createField("Execution", link.outputAdapterExecution?.name ?? link.outputAdapterExecution?.signature ?? ""));
             item.appendChild(meta);
 
             const persistenceTitle = document.createElement("p");
@@ -112,6 +154,11 @@ function renderOutputsTable(grouped) {
                 persistenceList.appendChild(line);
             });
             item.appendChild(persistenceList);
+
+            const mermaidContainer = document.createElement("div");
+            mermaidContainer.className = "mermaid-diagram";
+            item.appendChild(mermaidContainer);
+            renderMermaid(link, mermaidContainer);
 
             list.appendChild(item);
         });
@@ -130,6 +177,7 @@ function renderOutputsTable(grouped) {
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {
     window.addEventListener("DOMContentLoaded", () => {
+        initMermaid();
         const data = getOutputsData();
         const grouped = groupLinksByOutputPort(data.links);
         renderOutputsTable(grouped);

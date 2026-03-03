@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.data.persistence.SqlType;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,8 +33,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
-        var namespace = SpringDataJdbcOrderRepository.class.getCanonicalName();
-        var statement = persistenceOperationOf(statements, PersistenceOperationId.from(namespace + "." + methodName));
+        var statement = persistenceOperationOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderRepository.class));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
         assertEquals(expectedSqlType, statement.sqlType());
@@ -42,8 +42,7 @@ class SpringDataJdbcStatementReaderTest {
     @Test
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
-        var namespace = SpringDataJdbcNameRepository.class.getCanonicalName();
-        var statement = persistenceOperationOf(statements, PersistenceOperationId.from(namespace + "." + "findByHoge"));
+        var statement = persistenceOperationOf(statements, getPersistenceOperationId("findByHoge", SpringDataJdbcNameRepository.class));
 
         assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
         assertEquals(SqlType.SELECT, statement.sqlType());
@@ -85,8 +84,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
-        var namespace = SpringDataJdbcMixedOrderRepository.class.getCanonicalName();
-        var statement = persistenceOperationOptionalOf(statements, PersistenceOperationId.from(namespace + "." + methodName));
+        var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcMixedOrderRepository.class));
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceTargets().asText());
@@ -101,8 +99,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().fetchSqlStatements();
-        var namespace = SpringDataJdbcOrderWithItemsRepository.class.getCanonicalName();
-        var statement = persistenceOperationOptionalOf(statements, PersistenceOperationId.from(namespace + "." + methodName));
+        var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_order_items, spring_data_jdbc_orders_with_items]", statement.get().persistenceTargets().asText());
@@ -139,5 +136,10 @@ class SpringDataJdbcStatementReaderTest {
                 .flatMap(ops -> ops.persistenceOperations().stream())
                 .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
                 .findFirst();
+    }
+
+    private static PersistenceOperationId getPersistenceOperationId(String methodName, Class<?> clazz) {
+        var typeId = TypeId.valueOf(clazz.getCanonicalName());
+        return PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
     }
 }

@@ -13,15 +13,6 @@ import java.util.Objects;
  */
 public record PersistenceOperationId(String value, TypeId typeId, String id) {
 
-    public static PersistenceOperationId from(String value) {
-        var lastDotIndex = value.lastIndexOf('.');
-        if (lastDotIndex != -1) {
-            return new PersistenceOperationId(value, TypeId.valueOf(value.substring(0, lastDotIndex)), value.substring(lastDotIndex + 1));
-        } else {
-            return new PersistenceOperationId(value, TypeId.valueOf("JigEmptyNamespace"), value);
-        }
-    }
-
     public static PersistenceOperationId fromTypeIdAndName(TypeId typeId, String methodName) {
         return new PersistenceOperationId(typeId.fqn() + "." + methodName, typeId, methodName);
     }

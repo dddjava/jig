@@ -394,6 +394,18 @@ function renderOutputsTable(grouped) {
         portFqn.textContent = group.outputPort.fqn ?? "";
         groupCard.appendChild(portFqn);
 
+        const adapterLabels = Array.from(new Set(group.links.map(link => {
+            const label = link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? "";
+            const fqn = link.outputAdapter?.fqn ?? "";
+            return label + (label !== fqn ? ` (${fqn})` : "");
+        })));
+        if (adapterLabels.length > 0) {
+            const adapterInfo = document.createElement("p");
+            adapterInfo.className = "weak";
+            adapterInfo.textContent = "Implementation: " + adapterLabels.join(", ");
+            groupCard.appendChild(adapterInfo);
+        }
+
         const count = document.createElement("p");
         count.className = "weak";
         count.textContent = `${group.links.length} operations`;

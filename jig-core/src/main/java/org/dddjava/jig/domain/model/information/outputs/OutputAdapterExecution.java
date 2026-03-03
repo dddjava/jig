@@ -2,12 +2,7 @@ package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperations;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsOrigin;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceTargets;
+import org.dddjava.jig.domain.model.data.persistence.*;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -15,11 +10,7 @@ import org.dddjava.jig.infrastructure.springdatajdbc.SpringDataJdbcStatementsRea
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -124,29 +115,33 @@ public record OutputAdapterExecution(
                                                                            JigMethod tracingJigMethod,
                                                                            PersistenceOperations persistenceOperations) {
         PersistenceOperationId persistenceOperationId = toPersistenceOperationId(methodCall);
-        Optional<PersistenceOperation> persistenceOperation = persistenceOperations.persistenceOperations().stream()
+        return persistenceOperations.persistenceOperations().stream()
                 .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
-                .findAny();
-        if (persistenceOperation.isPresent()) return persistenceOperation;
-
-        Optional<PersistenceOperation> generated = generateSpringDataJdbcPersistenceOperation(methodCall, persistenceOperations);
-        if (generated.isPresent()) return generated;
-
-        if (persistenceOperation.isEmpty()) {
-            logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
-                    tracingJigMethod.fqn(),
-                    methodCall.jigMethodId().value(),
-                    methodCall.methodOwner().fqn(),
-                    persistenceOperations.origin());
-        }
-        return persistenceOperation;
+                .findAny()
+                .or(() -> generateCalledPersistenceOperation(methodCall, persistenceOperations))
+                .or(() -> {
+                    logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
+                            tracingJigMethod.fqn(),
+                            methodCall.jigMethodId().value(),
+                            methodCall.methodOwner().fqn(),
+                            persistenceOperations.origin());
+                    return Optional.empty();
+                });
     }
 
-    private static Optional<PersistenceOperation> generateSpringDataJdbcPersistenceOperation(MethodCall methodCall,
-                                                                                              PersistenceOperations persistenceOperations) {
+    /**
+     * 呼び出しているメソッドから組み上げる
+     *
+     * MethodCallが存在する以上はコンパイルが通っているので、解決済みの永続化操作がなくても継承しているIFなどで定義されている可能性が高い。
+     * 主なユースケースはSpringDataJDBCのCrudRepositoryなどに定義されたメソッドを呼び出し元から「存在するもの」として構築すること。
+     */
+    private static Optional<PersistenceOperation> generateCalledPersistenceOperation(MethodCall methodCall,
+                                                                                     PersistenceOperations persistenceOperations) {
         if (persistenceOperations.origin() != PersistenceOperationsOrigin.SPRING_DATA_JDBC) {
             return Optional.empty();
         }
+
+        // SpringDataJDBCのIFに定義されたメソッドの解決を試みる
         PersistenceOperationId persistenceOperationId = generatedPersistenceOperationId(methodCall, persistenceOperations);
         return SpringDataJdbcStatementsReader.inferSqlType(methodCall.methodName())
                 .map(sqlType -> PersistenceOperation.from(

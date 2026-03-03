@@ -79,13 +79,14 @@ public class OutputsSummaryAdapter {
                             String pOpId = pOp.persistenceOperationId().value();
                             pOpIds.add(pOpId);
                             persistenceOperations.putIfAbsent(pOpId, """
-                                    {"id":"%s","sqlType":"%s","targets":%s}
+                                    {"id":"%s","sqlType":"%s","targets":%s,"group":"%s"}
                                     """.formatted(
                                     escape(pOpId),
                                     pOp.sqlType().name(),
                                     toJsonStringList(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
-                                            .toList())));
+                                            .toList()),
+                                    escape(pOp.persistenceOperationId().typeId().fqn())));
                         });
 
                         links.add("""

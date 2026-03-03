@@ -9,7 +9,13 @@ function getOutputsData() {
     const persistenceOperationsMaster = data.persistenceOperations || {};
 
     const links = (data.links || []).map(link => {
-        const pOps = (link.persistenceOperations || []).map(id => persistenceOperationsMaster[id]);
+        const pOps = (link.persistenceOperations || []).map(id => {
+            const op = persistenceOperationsMaster[id];
+            return {
+                ...op,
+                groupLabel: op.group?.split('.').pop() || op.group
+            };
+        });
         return {
             outputPort: ports[link.port],
             outputPortOperation: operations[link.operation],
@@ -77,7 +83,7 @@ function createField(label, value) {
     return field;
 }
 
-function renderMermaid(link, container) {
+function renderMermaid(link, container, mode = 'standard') {
     if (typeof mermaid === "undefined") return;
 
     const portFqn = link.outputPort?.fqn || "Port";
@@ -92,16 +98,43 @@ function renderMermaid(link, container) {
   subgraph "${portLabel}"
     PortOp["${portOpName}"]
   end
-  subgraph "${adapterLabel}"
+`;
+
+    let lastNode = "PortOp";
+
+    if (mode !== 'simple') {
+        mermaidCode += `  subgraph "${adapterLabel}"
     Execution["${executionName}"]
   end
   PortOp --> Execution
 `;
+        lastNode = "Execution";
+    }
 
     const edgeSet = new Set();
     const targetNodes = new Map();
+    const groupNodes = new Map();
+
     link.persistenceOperations?.forEach((op) => {
         const sqlType = op.sqlType || "";
+        const groupId = op.group;
+        const groupLabel = op.groupLabel;
+
+        let currentLastNode = lastNode;
+
+        if (mode === 'detailed' && groupId) {
+            if (!groupNodes.has(groupId)) {
+                const groupNodeId = `Group_${groupNodes.size}`;
+                groupNodes.set(groupId, groupNodeId);
+                mermaidCode += `  subgraph "${groupLabel}"
+    ${groupNodeId}["${op.id.split('.').pop()}"]
+  end
+  ${lastNode} --> ${groupNodeId}
+`;
+            }
+            currentLastNode = groupNodes.get(groupId);
+        }
+
         op.targets?.forEach((target) => {
             if (!targetNodes.has(target)) {
                 const targetId = `Target_${targetNodes.size}`;
@@ -109,9 +142,9 @@ function renderMermaid(link, container) {
                 mermaidCode += `  ${targetId}[(${target})]\n`;
             }
             const targetId = targetNodes.get(target);
-            const edgeKey = `${sqlType}->${targetId}`;
+            const edgeKey = `${currentLastNode}--${sqlType}-->${targetId}`;
             if (!edgeSet.has(edgeKey)) {
-                mermaidCode += `  Execution -- "${sqlType}" --> ${targetId}\n`;
+                mermaidCode += `  ${currentLastNode} -- "${sqlType}" --> ${targetId}\n`;
                 edgeSet.add(edgeKey);
             }
         });
@@ -123,7 +156,7 @@ function renderMermaid(link, container) {
     });
 }
 
-function renderPortMermaid(group, container) {
+function renderPortMermaid(group, container, mode = 'standard') {
     if (typeof mermaid === "undefined") return;
 
     const portFqn = group.outputPort?.fqn || "Port";
@@ -139,6 +172,7 @@ function renderPortMermaid(group, container) {
 
     const adapterNodes = new Map();
     const executionNodes = new Map();
+    const groupNodes = new Map();
     const targetNodes = new Map();
     const edgeSet = new Set();
 
@@ -148,34 +182,67 @@ function renderPortMermaid(group, container) {
         const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
         const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
 
-        if (!adapterNodes.has(adapterFqn)) {
-            adapterNodes.set(adapterFqn, {
-                label: adapterLabel,
-                executions: new Map()
-            });
-        }
-        const adapter = adapterNodes.get(adapterFqn);
-        if (!adapter.executions.has(executionFqn)) {
-            const executionId = `Execution_${executionNodes.size}`;
-            adapter.executions.set(executionFqn, {
-                id: executionId,
-                name: executionName
-            });
-            executionNodes.set(executionFqn, executionId);
-        }
-        const executionId = executionNodes.get(executionFqn);
+        let lastNodeId = `PortOp_${linkIndex}`;
 
-        mermaidCode += `  PortOp_${linkIndex} --> ${executionId}\n`;
+        if (mode !== 'simple') {
+            if (!adapterNodes.has(adapterFqn)) {
+                adapterNodes.set(adapterFqn, {
+                    label: adapterLabel,
+                    executions: new Map()
+                });
+            }
+            const adapter = adapterNodes.get(adapterFqn);
+            if (!adapter.executions.has(executionFqn)) {
+                const executionId = `Execution_${executionNodes.size}`;
+                adapter.executions.set(executionFqn, {
+                    id: executionId,
+                    name: executionName
+                });
+                executionNodes.set(executionFqn, executionId);
+            }
+            const executionId = executionNodes.get(executionFqn);
+            mermaidCode += `  PortOp_${linkIndex} --> ${executionId}\n`;
+            lastNodeId = executionId;
+        }
 
         link.persistenceOperations?.forEach((op) => {
             const sqlType = op.sqlType || "";
+            const groupId = op.group;
+            const groupLabel = op.groupLabel;
+
+            let currentLastNodeId = lastNodeId;
+
+            if (mode === 'detailed' && groupId) {
+                const groupKey = `${groupId}`;
+                if (!groupNodes.has(groupKey)) {
+                    const groupNodeId = `Group_${groupNodes.size}`;
+                    groupNodes.set(groupKey, {
+                        id: groupNodeId,
+                        label: groupLabel,
+                        operations: new Map()
+                    });
+                }
+                const g = groupNodes.get(groupKey);
+                if (!g.operations.has(op.id)) {
+                    const opNodeId = `POp_${op.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                    g.operations.set(op.id, opNodeId);
+                }
+                const opNodeId = g.operations.get(op.id);
+                const edgeKey = `${lastNodeId}-->${opNodeId}`;
+                if (!edgeSet.has(edgeKey)) {
+                    mermaidCode += `  ${lastNodeId} --> ${opNodeId}\n`;
+                    edgeSet.add(edgeKey);
+                }
+                currentLastNodeId = opNodeId;
+            }
+
             op.targets?.forEach((target) => {
                 if (!targetNodes.has(target)) {
                     const targetId = `Target_${targetNodes.size}`;
                     targetNodes.set(target, targetId);
                 }
                 const targetId = targetNodes.get(target);
-                const edgeKey = `${executionId}--${sqlType}-->${targetId}`;
+                const edgeKey = `${currentLastNodeId}--${sqlType}-->${targetId}`;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
                 }
@@ -187,6 +254,14 @@ function renderPortMermaid(group, container) {
         mermaidCode += `  subgraph "${adapter.label}"\n`;
         adapter.executions.forEach((execution) => {
             mermaidCode += `    ${execution.id}["${execution.name}"]\n`;
+        });
+        mermaidCode += `  end\n`;
+    });
+
+    groupNodes.forEach((g) => {
+        mermaidCode += `  subgraph "${g.label}"\n`;
+        g.operations.forEach((nodeId, opId) => {
+            mermaidCode += `    ${nodeId}["${opId.split('.').pop()}"]\n`;
         });
         mermaidCode += `  end\n`;
     });
@@ -376,7 +451,7 @@ function lazyRender(container, renderFn) {
     observer.observe(container);
 }
 
-function renderOutputsTable(grouped) {
+function renderOutputsTable(grouped, mode = 'standard') {
     const container = document.getElementById("outputs-list");
     if (!container) return;
     container.innerHTML = "";
@@ -394,16 +469,18 @@ function renderOutputsTable(grouped) {
         portFqn.textContent = group.outputPort.fqn ?? "";
         groupCard.appendChild(portFqn);
 
-        const adapterLabels = Array.from(new Set(group.links.map(link => {
-            const label = link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? "";
-            const fqn = link.outputAdapter?.fqn ?? "";
-            return label + (label !== fqn ? ` (${fqn})` : "");
-        })));
-        if (adapterLabels.length > 0) {
-            const adapterInfo = document.createElement("p");
-            adapterInfo.className = "weak";
-            adapterInfo.textContent = "Implementation: " + adapterLabels.join(", ");
-            groupCard.appendChild(adapterInfo);
+        if (mode !== 'simple') {
+            const adapterLabels = Array.from(new Set(group.links.map(link => {
+                const label = link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? "";
+                const fqn = link.outputAdapter?.fqn ?? "";
+                return label + (label !== fqn ? ` (${fqn})` : "");
+            })));
+            if (adapterLabels.length > 0) {
+                const adapterInfo = document.createElement("p");
+                adapterInfo.className = "weak";
+                adapterInfo.textContent = "Implementation: " + adapterLabels.join(", ");
+                groupCard.appendChild(adapterInfo);
+            }
         }
 
         const count = document.createElement("p");
@@ -414,7 +491,7 @@ function renderOutputsTable(grouped) {
         const portMermaidContainer = document.createElement("div");
         portMermaidContainer.className = "mermaid-diagram port-diagram";
         groupCard.appendChild(portMermaidContainer);
-        lazyRender(portMermaidContainer, () => renderPortMermaid(group, portMermaidContainer));
+        lazyRender(portMermaidContainer, () => renderPortMermaid(group, portMermaidContainer, mode));
 
         const list = document.createElement("div");
         list.className = "outputs-item-list";
@@ -444,7 +521,7 @@ function renderOutputsTable(grouped) {
             const mermaidContainer = document.createElement("div");
             mermaidContainer.className = "mermaid-diagram";
             item.appendChild(mermaidContainer);
-            lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer));
+            lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer, mode));
 
             list.appendChild(item);
         });
@@ -467,7 +544,17 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         const data = getOutputsData();
         renderCrudTable(data.links);
         const grouped = groupLinksByOutputPort(data.links);
-        renderOutputsTable(grouped);
+
+        const render = () => {
+            const mode = document.querySelector('input[name="display-mode"]:checked')?.value || 'standard';
+            renderOutputsTable(grouped, mode);
+        };
+
+        document.querySelectorAll('input[name="display-mode"]').forEach(input => {
+            input.addEventListener('change', render);
+        });
+
+        render();
     });
 }
 

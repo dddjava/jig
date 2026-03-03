@@ -522,9 +522,14 @@ function renderOutputsTable(grouped, mode = 'standard') {
             operation.textContent = link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "";
             item.appendChild(operation);
 
+            const mermaidContainer = document.createElement("div");
+            mermaidContainer.className = "mermaid-diagram";
+            item.appendChild(mermaidContainer);
+            lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer, mode));
+
             const persistenceTitle = document.createElement("p");
             persistenceTitle.className = "outputs-persistence-title";
-            persistenceTitle.textContent = "PersistenceOperation";
+            persistenceTitle.textContent = "永続化操作詳細";
             item.appendChild(persistenceTitle);
 
             const persistenceList = document.createElement("ul");
@@ -535,11 +540,6 @@ function renderOutputsTable(grouped, mode = 'standard') {
                 persistenceList.appendChild(line);
             });
             item.appendChild(persistenceList);
-
-            const mermaidContainer = document.createElement("div");
-            mermaidContainer.className = "mermaid-diagram";
-            item.appendChild(mermaidContainer);
-            lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer, mode));
 
             list.appendChild(item);
         });

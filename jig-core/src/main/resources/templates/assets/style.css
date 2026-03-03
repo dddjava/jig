@@ -743,12 +743,12 @@ table td.number {
 .outputs .outputs-sidebar {
     width: 250px;
     position: sticky;
-    top: 10px;
+    top: 60px;
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 6px;
     padding: 10px;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100vh - 90px);
     overflow-y: auto;
 }
 .outputs .outputs-sidebar ul {
@@ -856,6 +856,11 @@ table td.number {
     gap: 10px;
     margin-bottom: 20px;
     border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 10;
+    padding-top: 10px;
 }
 .outputs .tab-button {
     padding: 10px 20px;

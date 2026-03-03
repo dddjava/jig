@@ -507,7 +507,7 @@ function renderPersistenceMermaid(group, container) {
 
     const target = group.target;
     let mermaidCode = `graph RL\n`;
-    mermaidCode += `  Target[("(${target})")]\n`;
+    mermaidCode += `  Target[("${target}")]\n`;
 
     const groupNodes = new Map();
     const opNodes = new Map();

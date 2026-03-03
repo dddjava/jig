@@ -3,17 +3,16 @@ package org.dddjava.jig.adapter.thymeleaf;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceTarget;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.outputs.*;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,22 +36,88 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        String outputsJson = outputAdapters.stream()
-                // output adapterが実装しているoutput portのoperationを
-                .flatMap(outputAdapter -> outputAdapter.implementsPortStream(jigTypes)
-                        .flatMap(outputPort -> outputPort.operationStream()
-                                // 実装しているexecitonが
-                                .flatMap(outputPortOperation -> outputAdapter.findExecution(outputPortOperation).stream()
-                                        .map(outputAdapterExecution -> formatLinkJson(
-                                                outputAdapter,
-                                                outputPort,
-                                                outputPortOperation,
-                                                outputAdapterExecution)))))
-                .collect(Collectors.joining(",", "[", "]"));
+        Map<String, String> ports = new LinkedHashMap<>();
+        Map<String, String> operations = new LinkedHashMap<>();
+        Map<String, String> adapters = new LinkedHashMap<>();
+        Map<String, String> executions = new LinkedHashMap<>();
+        Map<String, String> persistenceOperations = new LinkedHashMap<>();
+
+        List<String> links = new ArrayList<>();
+
+        outputAdapters.stream().forEach(outputAdapter -> {
+            String adapterFqn = outputAdapter.jigType().fqn();
+            adapters.putIfAbsent(adapterFqn, """
+                    {"fqn":"%s","label":"%s"}
+                    """.formatted(escape(adapterFqn), escape(outputAdapter.jigType().label())));
+
+            outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
+                String portFqn = outputPort.jigType().fqn();
+                ports.putIfAbsent(portFqn, """
+                        {"fqn":"%s","label":"%s"}
+                        """.formatted(escape(portFqn), escape(outputPort.jigType().label())));
+
+                outputPort.operationStream().forEach(outputPortOperation -> {
+                    String opFqn = outputPortOperation.jigMethod().fqn();
+                    operations.putIfAbsent(opFqn, """
+                            {"fqn":"%s","name":"%s","signature":"%s"}
+                            """.formatted(
+                            escape(opFqn),
+                            escape(outputPortOperation.jigMethod().name()),
+                            escape(outputPortOperation.jigMethod().simpleMethodSignatureText())));
+
+                    outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
+                        String execFqn = outputAdapterExecution.jigMethod().fqn();
+                        executions.putIfAbsent(execFqn, """
+                                {"fqn":"%s","name":"%s","signature":"%s"}
+                                """.formatted(
+                                escape(execFqn),
+                                escape(outputAdapterExecution.jigMethod().name()),
+                                escape(outputAdapterExecution.jigMethod().simpleMethodSignatureText())));
+
+                        List<String> pOpIds = new ArrayList<>();
+                        outputAdapterExecution.persistenceOperations().forEach(pOp -> {
+                            String pOpId = pOp.persistenceOperationId().value();
+                            pOpIds.add(pOpId);
+                            persistenceOperations.putIfAbsent(pOpId, """
+                                    {"id":"%s","sqlType":"%s","targets":%s}
+                                    """.formatted(
+                                    escape(pOpId),
+                                    pOp.sqlType().name(),
+                                    toJsonStringList(pOp.persistenceTargets().persistenceTargets().stream()
+                                            .map(PersistenceTarget::name)
+                                            .toList())));
+                        });
+
+                        links.add("""
+                                {"port":"%s","operation":"%s","adapter":"%s","execution":"%s","persistenceOperations":%s}
+                                """.formatted(
+                                escape(portFqn),
+                                escape(opFqn),
+                                escape(adapterFqn),
+                                escape(execFqn),
+                                toJsonStringList(pOpIds)));
+                    });
+                });
+            });
+        });
 
         String json = """
-                {"links":%s}
-                """.formatted(outputsJson);
+                {
+                  "ports": %s,
+                  "operations": %s,
+                  "adapters": %s,
+                  "executions": %s,
+                  "persistenceOperations": %s,
+                  "links": [%s]
+                }
+                """.formatted(
+                mapToJson(ports),
+                mapToJson(operations),
+                mapToJson(adapters),
+                mapToJson(executions),
+                mapToJson(persistenceOperations),
+                String.join(",", links)
+        );
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
@@ -69,39 +134,10 @@ public class OutputsSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String formatLinkJson(OutputAdapter outputAdapter,
-                                  OutputPort outputPort,
-                                  OutputPortOperation outputPortOperation,
-                                  OutputAdapterExecution outputAdapterExecution) {
-        String persistenceOperationsJson = outputAdapterExecution.persistenceOperations().stream()
-                .map(persistenceOperation -> """
-                        {"id":"%s","sqlType":"%s","targets":%s}
-                        """.formatted(
-                        escape(persistenceOperation.persistenceOperationId().value()),
-                        persistenceOperation.sqlType().name(),
-                        toJsonStringList(persistenceOperation.persistenceTargets().persistenceTargets().stream()
-                                .map(persistenceTarget -> persistenceTarget.name())
-                                .toList())))
-                .collect(Collectors.joining(",", "[", "]"));
-
-        return """
-                {"outputPort":{"fqn":"%s","label":"%s"},
-                "outputPortOperation":{"fqn":"%s","name":"%s","signature":"%s"},
-                "outputAdapter":{"fqn":"%s","label":"%s"},
-                "outputAdapterExecution":{"fqn":"%s","name":"%s","signature":"%s"},
-                "persistenceOperations":%s}
-                """.formatted(
-                escape(outputPort.jigType().fqn()),
-                escape(outputPort.jigType().label()),
-                escape(outputPortOperation.jigMethod().fqn()),
-                escape(outputPortOperation.jigMethod().name()),
-                escape(outputPortOperation.jigMethod().simpleMethodSignatureText()),
-                escape(outputAdapter.jigType().fqn()),
-                escape(outputAdapter.jigType().label()),
-                escape(outputAdapterExecution.jigMethod().fqn()),
-                escape(outputAdapterExecution.jigMethod().name()),
-                escape(outputAdapterExecution.jigMethod().simpleMethodSignatureText()),
-                persistenceOperationsJson);
+    private String mapToJson(Map<String, String> map) {
+        return map.entrySet().stream()
+                .map(e -> "\"%s\":%s".formatted(escape(e.getKey()), e.getValue()))
+                .collect(Collectors.joining(",", "{", "}"));
     }
 
     private String toJsonStringList(List<String> values) {

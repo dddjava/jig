@@ -1,15 +1,26 @@
 function getOutputsData() {
     const jsonText = document.getElementById("outputs-data")?.textContent || "{}";
-    /** @type {{links?: Array<{
-     * outputPort?: {fqn?: string, label?: string},
-     * outputPortOperation?: {fqn?: string, name?: string, signature?: string},
-     * outputAdapter?: {fqn?: string, label?: string},
-     * outputAdapterExecution?: {fqn?: string, name?: string, signature?: string},
-     * persistenceOperations?: Array<{id?: string, sqlType?: string, targets?: string[]}>
-     * }>} } */
     const data = JSON.parse(jsonText);
+
+    const ports = data.ports || {};
+    const operations = data.operations || {};
+    const adapters = data.adapters || {};
+    const executions = data.executions || {};
+    const persistenceOperationsMaster = data.persistenceOperations || {};
+
+    const links = (data.links || []).map(link => {
+        const pOps = (link.persistenceOperations || []).map(id => persistenceOperationsMaster[id]);
+        return {
+            outputPort: ports[link.port],
+            outputPortOperation: operations[link.operation],
+            outputAdapter: adapters[link.adapter],
+            outputAdapterExecution: executions[link.execution],
+            persistenceOperations: pOps
+        };
+    });
+
     return {
-        links: Array.isArray(data.links) ? data.links : [],
+        links: links,
     };
 }
 

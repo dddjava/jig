@@ -30,11 +30,11 @@ class OutputsSummaryAdapterTest {
 
         assertTrue(actual.contains("id=\"outputs-data\""));
         assertTrue(actual.contains("\"links\":"));
-        assertTrue(actual.contains("\"outputPort\""));
-        assertTrue(actual.contains("\"outputPortOperation\""));
-        assertTrue(actual.contains("\"outputAdapter\""));
-        assertTrue(actual.contains("\"outputAdapterExecution\""));
-        assertTrue(actual.contains("\"persistenceOperations\""));
+        assertTrue(actual.contains("\"ports\":"));
+        assertTrue(actual.contains("\"operations\":"));
+        assertTrue(actual.contains("\"adapters\":"));
+        assertTrue(actual.contains("\"executions\":"));
+        assertTrue(actual.contains("\"persistenceOperations\":"));
         assertTrue(actual.contains("stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository.save"));
     }
 

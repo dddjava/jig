@@ -646,29 +646,6 @@ function renderPersistenceTable(grouped) {
         groupCard.appendChild(persistenceMermaidContainer);
         lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer));
 
-        const list = document.createElement("div");
-        list.className = "outputs-item-list";
-
-        group.links.forEach(link => {
-            const item = document.createElement("article");
-            item.className = "outputs-item";
-
-            const portLabel = link.outputPort.label ?? link.outputPort.fqn ?? "(unknown)";
-            const portOpName = link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "";
-
-            const operationTitle = document.createElement("h4");
-            operationTitle.textContent = `${portLabel} / ${portOpName}`;
-            item.appendChild(operationTitle);
-
-            const portFqn = document.createElement("p");
-            portFqn.className = "fully-qualified-name";
-            portFqn.textContent = link.outputPort.fqn ?? "";
-            item.appendChild(portFqn);
-
-            list.appendChild(item);
-        });
-
-        groupCard.appendChild(list);
         container.appendChild(groupCard);
     });
 

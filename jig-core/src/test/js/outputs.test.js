@@ -259,6 +259,29 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('PortOp -- "INSERT" --> Target_0'));
         });
 
+        test("generateMermaidCode: detailedモードで永続化操作のグループ（クラス）を表示する", () => {
+            const link = {
+                outputPort: { label: "P1" },
+                outputPortOperation: { name: "op1" },
+                outputAdapter: { label: "A1" },
+                outputAdapterExecution: { name: "ex1" },
+                persistenceOperations: [
+                    { 
+                        id: "com.example.repo.save", 
+                        sqlType: "INSERT", 
+                        targets: ["table1"],
+                        group: "com.example.repo",
+                        groupLabel: "repo"
+                    }
+                ]
+            };
+            const code = outputs.generateMermaidCode(link, "detailed");
+            assert.ok(code.includes('subgraph "repo"'));
+            assert.ok(code.includes('Group_0["save"]'));
+            assert.ok(code.includes('Execution --> Group_0'));
+            assert.ok(code.includes('Group_0 -- "INSERT" --> Target_0'));
+        });
+
         test("generatePortMermaidCode: ポート単位の図に複数の操作が含まれる", () => {
             const group = {
                 outputPort: { label: "PortA" },
@@ -271,6 +294,32 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('subgraph "PortA"'));
             assert.ok(code.includes('PortOp_0["op1"]'));
             assert.ok(code.includes('PortOp_1["op2"]'));
+        });
+
+        test("generatePortMermaidCode: detailedモードで永続化操作のグループを表示する", () => {
+            const group = {
+                outputPort: { label: "PortA" },
+                links: [
+                    {
+                        outputPortOperation: { name: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", name: "ex1" },
+                        persistenceOperations: [
+                            { 
+                                id: "com.example.repo.save", 
+                                sqlType: "INSERT", 
+                                targets: ["table1"],
+                                group: "com.example.repo",
+                                groupLabel: "repo"
+                            }
+                        ]
+                    }
+                ]
+            };
+            const code = outputs.generatePortMermaidCode(group, "detailed");
+            assert.ok(code.includes('subgraph "repo"'));
+            assert.ok(code.includes('POp_com_example_repo_save["save"]'));
+            assert.ok(code.includes('Execution_0 --> POp_com_example_repo_save'));
         });
 
         test("generatePersistenceMermaidCode: ターゲット中心の図が生成される", () => {

@@ -838,12 +838,13 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
     });
 }
 
-if (typeof module !== "undefined" && module.exports) {
+    if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         getOutputsData,
         groupLinksByOutputPort,
         groupLinksByPersistenceTarget,
         formatPersistenceOperations,
+        createField,
         renderOutputsTable,
         renderPersistenceTable,
         renderCrudTable,

@@ -330,4 +330,73 @@ test.describe("outputs.js", () => {
         assert.equal(portCard.children[2].textContent, "1 operations");
         assert.ok(!portCard.children.some(child => child.textContent.includes("Implementation:")));
     });
+
+    test("generateMermaidCode: standardモードで正しい接続関係を生成する", () => {
+        const link = {
+            outputPort: { label: "P1" },
+            outputPortOperation: { name: "op1" },
+            outputAdapter: { label: "A1" },
+            outputAdapterExecution: { name: "ex1" },
+            persistenceOperations: [
+                { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
+            ]
+        };
+        const code = outputs.generateMermaidCode(link, "standard");
+        assert.ok(code.includes('subgraph "P1"'));
+        assert.ok(code.includes('PortOp["op1"]'));
+        assert.ok(code.includes('subgraph "A1"'));
+        assert.ok(code.includes('Execution["ex1"]'));
+        assert.ok(code.includes('PortOp --> Execution'));
+        assert.ok(code.includes('Execution -- "INSERT" --> Target_0'));
+        assert.ok(code.includes('Target_0[(table1)]'));
+    });
+
+    test("generateMermaidCode: simpleモードでAdapterを省略する", () => {
+        const link = {
+            outputPort: { label: "P1" },
+            outputPortOperation: { name: "op1" },
+            persistenceOperations: [
+                { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
+            ]
+        };
+        const code = outputs.generateMermaidCode(link, "simple");
+        assert.ok(code.includes('PortOp["op1"]'));
+        assert.ok(!code.includes('subgraph "Adapter"'));
+        assert.ok(code.includes('PortOp -- "INSERT" --> Target_0'));
+    });
+
+    test("generatePortMermaidCode: ポート単位の図に複数の操作が含まれる", () => {
+        const group = {
+            outputPort: { label: "PortA" },
+            links: [
+                { outputPortOperation: { name: "op1" } },
+                { outputPortOperation: { name: "op2" } }
+            ]
+        };
+        const code = outputs.generatePortMermaidCode(group, "simple");
+        assert.ok(code.includes('subgraph "PortA"'));
+        assert.ok(code.includes('PortOp_0["op1"]'));
+        assert.ok(code.includes('PortOp_1["op2"]'));
+    });
+
+    test("generatePersistenceMermaidCode: ターゲット中心の図が生成される", () => {
+        const group = {
+            target: "table1",
+            links: [
+                {
+                    outputPort: { label: "P1" },
+                    outputPortOperation: { name: "op1" },
+                    outputAdapter: { fqn: "adapter1", label: "A1" },
+                    outputAdapterExecution: { fqn: "exec1", name: "ex1" },
+                    persistenceOperations: [
+                        { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
+                    ]
+                }
+            ]
+        };
+        const code = outputs.generatePersistenceMermaidCode(group);
+        assert.ok(code.includes('Target[("table1")]'));
+        assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target'));
+        assert.ok(code.includes('Execution_exec1 --> POp_repo_save'));
+    });
 });

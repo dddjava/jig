@@ -83,9 +83,7 @@ function createField(label, value) {
     return field;
 }
 
-function renderMermaid(link, container, mode = 'standard') {
-    if (typeof mermaid === "undefined") return;
-
+function generateMermaidCode(link, mode = 'standard') {
     const portFqn = link.outputPort?.fqn || "Port";
     const portLabel = link.outputPort?.label || portFqn;
     const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || "Operation";
@@ -150,15 +148,20 @@ function renderMermaid(link, container, mode = 'standard') {
         });
     });
 
+    return mermaidCode;
+}
+
+function renderMermaid(link, container, mode = 'standard') {
+    if (typeof mermaid === "undefined") return;
+
+    const mermaidCode = generateMermaidCode(link, mode);
     const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
     });
 }
 
-function renderPortMermaid(group, container, mode = 'standard') {
-    if (typeof mermaid === "undefined") return;
-
+function generatePortMermaidCode(group, mode = 'standard') {
     const portFqn = group.outputPort?.fqn || "Port";
     const portLabel = group.outputPort?.label || portFqn;
 
@@ -277,6 +280,13 @@ function renderPortMermaid(group, container, mode = 'standard') {
         }
     });
 
+    return mermaidCode;
+}
+
+function renderPortMermaid(group, container, mode = 'standard') {
+    if (typeof mermaid === "undefined") return;
+
+    const mermaidCode = generatePortMermaidCode(group, mode);
     const id = "mermaid-port-" + Math.random().toString(36).substr(2, 9);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
@@ -501,9 +511,7 @@ function groupLinksByPersistenceTarget(links) {
     });
 }
 
-function renderPersistenceMermaid(group, container) {
-    if (typeof mermaid === "undefined") return;
-
+function generatePersistenceMermaidCode(group) {
     const target = group.target;
     let mermaidCode = `graph RL\n`;
     mermaidCode += `  Target[("${target}")]\n`;
@@ -629,6 +637,13 @@ function renderPersistenceMermaid(group, container) {
         mermaidCode += `  end\n`;
     });
 
+    return mermaidCode;
+}
+
+function renderPersistenceMermaid(group, container) {
+    if (typeof mermaid === "undefined") return;
+
+    const mermaidCode = generatePersistenceMermaidCode(group);
     const id = "mermaid-persistence-" + Math.random().toString(36).substr(2, 9);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
@@ -836,5 +851,8 @@ if (typeof module !== "undefined" && module.exports) {
         renderPersistenceTable,
         renderCrudTable,
         toCrudChar,
+        generateMermaidCode,
+        generatePortMermaidCode,
+        generatePersistenceMermaidCode,
     };
 }

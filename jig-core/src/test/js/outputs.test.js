@@ -633,6 +633,7 @@ test.describe("outputs.js", () => {
             delete require.cache[require.resolve("../../main/resources/templates/assets/outputs.js")];
             const doc = setupDocument();
             const reloadedOutputs = require("../../main/resources/templates/assets/outputs.js");
+            const app = reloadedOutputs.OutputsApp;
 
             // ラジオボタンの準備
             const radio = doc.createElement("input");
@@ -659,6 +660,12 @@ test.describe("outputs.js", () => {
                 return originalQuerySelectorAll.call(doc, selector);
             };
 
+            const originalQuerySelector = doc.querySelector;
+            doc.querySelector = (selector) => {
+                if (selector === 'input[name="display-mode"]:checked') return radio;
+                return originalQuerySelector.call(doc, selector);
+            };
+
             // DOMContentLoaded 前に mermaid がある状態にする
             global.mermaid = {
                 initialize: () => {},
@@ -669,17 +676,23 @@ test.describe("outputs.js", () => {
             const listeners = doc.eventListeners.get("DOMContentLoaded") || [];
             listeners.forEach(l => l());
 
+            // App が初期化されていることを確認
+            assert.ok(app.state.data);
+            assert.equal(app.state.mode, "simple");
+
             // タブクリックのリスナーが登録されているはず
             assert.ok(tabButton.eventListeners.has("click"));
 
             // タブクリック
             tabButton.click();
+            assert.equal(app.state.activeTab, "crud");
             assert.ok(tabButton.classList.contains("is-active"));
             assert.ok(tabPanel.classList.contains("is-active"));
 
             // 表示モード変更
-            radio.checked = false;
-            radio.eventListeners.get("change")?.forEach(l => l());
+            radio.value = "detailed";
+            radio.eventListeners.get("change")?.forEach(l => l({ target: radio }));
+            assert.equal(app.state.mode, "detailed");
         });
 
         test("lazyRender: IntersectionObserver がない場合のフォールバック", () => {

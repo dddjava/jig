@@ -472,12 +472,6 @@ function renderCrudTable(links) {
     container.appendChild(table);
 }
 
-function initMermaid() {
-    if (typeof mermaid !== "undefined") {
-        mermaid.initialize({ startOnLoad: false });
-    }
-}
-
 function lazyRender(container, renderFn) {
     if (typeof IntersectionObserver === "undefined") {
         renderFn();
@@ -710,41 +704,84 @@ function renderOutputsTable(grouped, mode = 'standard') {
     }
 }
 
-if (typeof window !== "undefined" && typeof document !== "undefined") {
-    window.addEventListener("DOMContentLoaded", () => {
-        initMermaid();
+const OutputsApp = {
+    state: {
+        mode: 'standard',
+        activeTab: 'outputs',
+        data: null,
+        grouped: null,
+        persistenceGrouped: null
+    },
+
+    init() {
         const data = getOutputsData();
-        const grouped = groupLinksByOutputPort(data.links);
-        const persistenceGrouped = groupLinksByPersistenceTarget(data.links);
+        if (Object.keys(data).length === 0) return;
 
-        const render = () => {
-            const mode = document.querySelector('input[name="display-mode"]:checked')?.value || 'standard';
-            renderPersistenceTable(persistenceGrouped);
-            renderOutputsTable(grouped, mode);
-            renderCrudTable(data.links);
-        };
+        this.state.data = data;
+        this.state.grouped = groupLinksByOutputPort(data.links);
+        this.state.persistenceGrouped = groupLinksByPersistenceTarget(data.links);
 
+        const mode = document.querySelector('input[name="display-mode"]:checked')?.value;
+        if (mode) {
+            this.state.mode = mode;
+        }
+
+        if (typeof mermaid !== "undefined") {
+            mermaid.initialize({ startOnLoad: false });
+        }
+
+        this.bindEvents();
+        this.render();
+    },
+
+    setState(newState) {
+        this.state = { ...this.state, ...newState };
+        this.render();
+    },
+
+    bindEvents() {
         document.querySelectorAll('input[name="display-mode"]').forEach(input => {
-            input.addEventListener('change', render);
+            input.addEventListener('change', (e) => {
+                this.setState({ mode: e.target.value });
+            });
         });
 
         document.querySelectorAll('.outputs-tabs .tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 const tabName = button.getAttribute('data-tab');
-                document.querySelectorAll('.outputs-tabs .tab-button').forEach(btn => btn.classList.remove('is-active'));
-                document.querySelectorAll('.outputs-tab-panel').forEach(panel => panel.classList.remove('is-active'));
-                
-                button.classList.add('is-active');
-                document.getElementById(`${tabName}-tab-panel`).classList.add('is-active');
+                this.setState({ activeTab: tabName });
             });
         });
+    },
 
-        render();
+    render() {
+        const { mode, activeTab, data, grouped, persistenceGrouped } = this.state;
+        if (!data) return;
+
+        // タブの表示切り替え
+        document.querySelectorAll('.outputs-tabs .tab-button').forEach(btn => {
+            btn.classList.toggle('is-active', btn.getAttribute('data-tab') === activeTab);
+        });
+        document.querySelectorAll('.outputs-tab-panel').forEach(panel => {
+            panel.classList.toggle('is-active', panel.id === `${activeTab}-tab-panel`);
+        });
+
+        // 各パネルの描画
+        renderPersistenceTable(persistenceGrouped);
+        renderOutputsTable(grouped, mode);
+        renderCrudTable(data.links);
+    }
+};
+
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+    window.addEventListener("DOMContentLoaded", () => {
+        OutputsApp.init();
     });
 }
 
     if (typeof module !== "undefined" && module.exports) {
     module.exports = {
+        OutputsApp,
         getOutputsData,
         groupLinksByOutputPort,
         groupLinksByPersistenceTarget,

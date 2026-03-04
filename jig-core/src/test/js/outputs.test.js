@@ -10,6 +10,16 @@ class Element {
         this._textContent = "";
         this.innerHTML = "";
         this.attributes = {};
+        this.style = {};
+        this.classList = {
+            set: new Set(),
+            add: (c) => this.classList.set.add(c),
+            delete: (c) => this.classList.set.delete(c),
+            has: (c) => this.classList.set.has(c),
+            toggle: (c, f) => this.toggle(c, f),
+            contains: (c) => this.classList.set.has(c)
+        };
+        this.eventListeners = new Map();
     }
 
     get textContent() {
@@ -20,6 +30,14 @@ class Element {
         this._textContent = String(value ?? "");
     }
 
+    get className() {
+        return Array.from(this.classList.set).join(" ");
+    }
+
+    set className(value) {
+        this.classList.set = new Set(value.split(" ").filter(c => c));
+    }
+
     appendChild(child) {
         this.children.push(child);
         return child;
@@ -27,6 +45,36 @@ class Element {
 
     setAttribute(name, value) {
         this.attributes[name] = value;
+    }
+
+    getAttribute(name) {
+        return this.attributes[name] || null;
+    }
+
+    addEventListener(type, listener) {
+        if (!this.eventListeners.has(type)) {
+            this.eventListeners.set(type, []);
+        }
+        this.eventListeners.get(type).push(listener);
+    }
+
+    click() {
+        const listeners = this.eventListeners.get("click") || [];
+        listeners.forEach(l => l({ type: "click", target: this }));
+    }
+
+    toggle(className, force) {
+        if (force === true) {
+            this.classList.set.add(className);
+        } else if (force === false) {
+            this.classList.set.delete(className);
+        } else {
+            if (this.classList.set.has(className)) {
+                this.classList.set.delete(className);
+            } else {
+                this.classList.set.add(className);
+            }
+        }
     }
 }
 
@@ -51,9 +99,20 @@ class DocumentStub {
 
 function setupDocument() {
     const doc = new DocumentStub();
+    
     const outputsList = new Element("section");
     doc.outputsList = outputsList;
     doc.elementsById.set("outputs-list", outputsList);
+
+    doc.elementsById.set("outputs-crud", new Element("div"));
+    doc.elementsById.set("crud-sidebar", new Element("div"));
+    doc.elementsById.set("crud-sidebar-list", new Element("div"));
+
+    doc.elementsById.set("persistence-list", new Element("div"));
+    doc.elementsById.set("persistence-sidebar-list", new Element("div"));
+
+    doc.elementsById.set("outputs-sidebar-list", new Element("div"));
+
     global.document = doc;
     return doc;
 }
@@ -170,5 +229,105 @@ test.describe("outputs.js", () => {
         assert.equal(firstItem.children[3].children[0].textContent, "SELECT a.save [orders]");
         const secondItem = itemList.children[1];
         assert.equal(secondItem.children[3].children[0].textContent, "なし");
+    });
+
+    test("renderCrudTable: CRUDテーブルが正しく描画され、トグル動作が機能する", () => {
+        const doc = setupDocument();
+        const container = doc.getElementById("outputs-crud");
+        const links = [
+            {
+                outputPort: { label: "Port A" },
+                outputPortOperation: { name: "opA" },
+                persistenceOperations: [{ sqlType: "SELECT", targets: ["table1"] }]
+            }
+        ];
+
+        outputs.renderCrudTable(links);
+
+        // テーブル構造の確認
+        const table = container.children[0];
+        assert.equal(table.tagName, "table");
+        
+        const thead = table.children[0];
+        const headerRow = thead.children[0];
+        assert.equal(headerRow.children[1].textContent, "table1");
+
+        const tbody = table.children[1];
+        assert.equal(tbody.children.length, 2); // ポート行 + 操作行
+
+        const portRow = tbody.children[0];
+        // 360行目付近: portCell.textContent = label
+        // 367行目付近: portCell.appendChild(countSpan)
+        // Elementの実装では appendChild しても _textContent は変わらない。
+        // _textContent は「直下のテキスト」ではなく「全てのテキスト」を期待してしまっている？
+        // 現状の Element 実装では textContent は _textContent を返すだけ。
+        assert.equal(portRow.children[0].textContent, "Port A");
+        assert.equal(portRow.children[0].children[0].textContent, "(1)");
+        assert.equal(portRow.children[1].textContent, "R");
+
+        const opRow = tbody.children[1];
+        assert.equal(opRow.children[0].textContent, "opA");
+        assert.equal(opRow.style.display, "none");
+
+        // トグル動作の確認
+        portRow.click();
+        assert.equal(opRow.style.display, "table-row");
+
+        portRow.click();
+        assert.equal(opRow.style.display, "none");
+    });
+
+    test("renderCrudTable: 永続化操作がない場合の表示", () => {
+        const doc = setupDocument();
+        const container = doc.getElementById("outputs-crud");
+        
+        outputs.renderCrudTable([]);
+        assert.equal(container.textContent, "永続化操作なし");
+    });
+
+    test("renderPersistenceTable: 永続化ターゲットごとのカードが描画される", () => {
+        const doc = setupDocument();
+        const container = doc.getElementById("persistence-list");
+        const sidebar = doc.getElementById("persistence-sidebar-list");
+        
+        const grouped = [
+            {
+                target: "table1",
+                links: []
+            }
+        ];
+
+        outputs.renderPersistenceTable(grouped);
+
+        assert.equal(container.children.length, 1);
+        const card = container.children[0];
+        assert.equal(card.tagName, "section");
+        assert.equal(card.id, "persistence-table1");
+        assert.equal(card.children[0].textContent, "table1");
+
+        // サイドバーの確認
+        assert.notEqual(sidebar.children.length, 0);
+        const sidebarList = sidebar.children[0];
+        const sidebarItem = sidebarList.children[0];
+        const sidebarLink = sidebarItem.children[0];
+        assert.equal(sidebarLink.getAttribute("href"), "#persistence-table1");
+        assert.equal(sidebarLink.textContent, "table1");
+    });
+
+    test("renderOutputsTable: mode='simple' の場合は Adapter 情報が表示されない", () => {
+        const doc = setupDocument();
+        const grouped = [
+            {
+                outputPort: { fqn: "port1" },
+                links: [{ outputAdapter: { label: "adapter1" } }]
+            }
+        ];
+
+        outputs.renderOutputsTable(grouped, "simple");
+
+        const portCard = doc.outputsList.children[0];
+        // simple モードでは adapterInfo (p) が追加されないため、children[2] は count (p) になる
+        assert.equal(portCard.children[2].textContent, "1 operations");
+        assert.ok(!portCard.children.some(child => child.textContent.includes("Implementation:")));
     });
 });

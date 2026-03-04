@@ -314,20 +314,20 @@ function renderCrudTable(links) {
         return;
     }
 
-    if (sidebarList) {
-        const title = document.createElement("p");
-        title.className = "sidebar-title";
-        title.textContent = "永続化操作対象";
-        sidebarList.appendChild(title);
-        
-        allTargets.forEach(target => {
-            const link = document.createElement("a");
-            link.href = `#crud-target-${target}`;
-            link.textContent = target;
-            link.className = "sidebar-link";
-            sidebarList.appendChild(link);
-        });
-    }
+        if (sidebarList) {
+            const title = document.createElement("p");
+            title.className = "sidebar-title";
+            title.textContent = "永続化操作対象";
+            sidebarList.appendChild(title);
+            
+            allTargets.forEach(target => {
+                const link = document.createElement("a");
+                link.setAttribute("href", `#crud-target-${target}`);
+                link.textContent = target;
+                link.className = "sidebar-link";
+                sidebarList.appendChild(link);
+            });
+        }
 
     const table = document.createElement("table");
     table.className = "zebra crud-table";
@@ -658,7 +658,7 @@ function renderPersistenceTable(grouped) {
         if (sidebar) {
             const sidebarItem = document.createElement("li");
             const sidebarLink = document.createElement("a");
-            sidebarLink.href = "#" + targetId;
+            sidebarLink.setAttribute("href", "#" + targetId);
             sidebarLink.textContent = group.target;
             sidebarItem.appendChild(sidebarLink);
             sidebarList.appendChild(sidebarItem);
@@ -709,7 +709,7 @@ function renderOutputsTable(grouped, mode = 'standard') {
         if (sidebar) {
             const sidebarItem = document.createElement("li");
             const sidebarLink = document.createElement("a");
-            sidebarLink.href = "#" + portId;
+            sidebarLink.setAttribute("href", "#" + portId);
             sidebarLink.textContent = portLabel;
             sidebarItem.appendChild(sidebarLink);
             sidebarList.appendChild(sidebarItem);
@@ -834,6 +834,7 @@ if (typeof module !== "undefined" && module.exports) {
         formatPersistenceOperations,
         renderOutputsTable,
         renderPersistenceTable,
+        renderCrudTable,
         toCrudChar,
     };
 }

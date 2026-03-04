@@ -83,33 +83,83 @@ function createField(label, value) {
     return field;
 }
 
+function MermaidBuilder() {
+    this.nodes = [];
+    this.edges = [];
+    this.subgraphs = [];
+    this.edgeSet = new Set();
+}
+
+MermaidBuilder.prototype.sanitize = function(id) {
+    return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
+};
+
+MermaidBuilder.prototype.addNode = function(id, label, shape = '["$LABEL"]') {
+    const nodeLine = `${id}${shape.replace('$LABEL', label)}`;
+    if (!this.nodes.includes(nodeLine)) {
+        this.nodes.push(nodeLine);
+    }
+    return id;
+};
+
+MermaidBuilder.prototype.addEdge = function(from, to, label = "") {
+    const edgeKey = `${from}--${label}-->${to}`;
+    if (!this.edgeSet.has(edgeKey)) {
+        this.edgeSet.add(edgeKey);
+        const edgeLine = label ? `  ${from} -- "${label}" --> ${to}` : `  ${from} --> ${to}`;
+        this.edges.push(edgeLine);
+    }
+};
+
+MermaidBuilder.prototype.startSubgraph = function(label) {
+    const subgraph = { label, lines: [] };
+    this.subgraphs.push(subgraph);
+    return subgraph;
+};
+
+MermaidBuilder.prototype.addNodeToSubgraph = function(subgraph, id, label, shape = '["$LABEL"]') {
+    const nodeLine = `    ${id}${shape.replace('$LABEL', label)}`;
+    subgraph.lines.push(nodeLine);
+    return id;
+};
+
+MermaidBuilder.prototype.build = function() {
+    let code = "graph LR\n";
+    this.subgraphs.forEach(sg => {
+        code += `  subgraph "${sg.label}"\n`;
+        sg.lines.forEach(line => {
+            code += `    ${line.trim()}\n`;
+        });
+        code += `  end\n`;
+    });
+    this.nodes.forEach(node => {
+        code += `  ${node.trim()}\n`;
+    });
+    this.edges.forEach(edge => {
+        code += `${edge}\n`;
+    });
+    return code;
+};
+
 function generateMermaidCode(link, mode = 'standard') {
-    const portFqn = link.outputPort?.fqn || "Port";
-    const portLabel = link.outputPort?.label || portFqn;
+    const builder = new MermaidBuilder();
+
+    const portLabel = link.outputPort?.label || link.outputPort?.fqn || "Port";
     const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || "Operation";
-
-    const adapterFqn = link.outputAdapter?.fqn || "Adapter";
-    const adapterLabel = link.outputAdapter?.label || adapterFqn;
-    const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || "Execution";
-
-    let mermaidCode = `graph LR
-  subgraph "${portLabel}"
-    PortOp["${portOpName}"]
-  end
-`;
+    const portSubgraph = builder.startSubgraph(portLabel);
+    builder.addNodeToSubgraph(portSubgraph, "PortOp", portOpName);
 
     let lastNode = "PortOp";
 
     if (mode !== 'simple') {
-        mermaidCode += `  subgraph "${adapterLabel}"
-    Execution["${executionName}"]
-  end
-  PortOp --> Execution
-`;
+        const adapterLabel = link.outputAdapter?.label || link.outputAdapter?.fqn || "Adapter";
+        const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || "Execution";
+        const adapterSubgraph = builder.startSubgraph(adapterLabel);
+        builder.addNodeToSubgraph(adapterSubgraph, "Execution", executionName);
+        builder.addEdge("PortOp", "Execution");
         lastNode = "Execution";
     }
 
-    const edgeSet = new Set();
     const targetNodes = new Map();
     const groupNodes = new Map();
 
@@ -124,11 +174,9 @@ function generateMermaidCode(link, mode = 'standard') {
             if (!groupNodes.has(groupId)) {
                 const groupNodeId = `Group_${groupNodes.size}`;
                 groupNodes.set(groupId, groupNodeId);
-                mermaidCode += `  subgraph "${groupLabel}"
-    ${groupNodeId}["${op.id.split('.').pop()}"]
-  end
-  ${lastNode} --> ${groupNodeId}
-`;
+                const groupSubgraph = builder.startSubgraph(groupLabel);
+                builder.addNodeToSubgraph(groupSubgraph, groupNodeId, op.id.split('.').pop());
+                builder.addEdge(lastNode, groupNodeId);
             }
             currentLastNode = groupNodes.get(groupId);
         }
@@ -137,18 +185,14 @@ function generateMermaidCode(link, mode = 'standard') {
             if (!targetNodes.has(target)) {
                 const targetId = `Target_${targetNodes.size}`;
                 targetNodes.set(target, targetId);
-                mermaidCode += `  ${targetId}[(${target})]\n`;
+                builder.addNode(targetId, target, '[($LABEL)]');
             }
             const targetId = targetNodes.get(target);
-            const edgeKey = `${currentLastNode}--${sqlType}-->${targetId}`;
-            if (!edgeSet.has(edgeKey)) {
-                mermaidCode += `  ${currentLastNode} -- "${sqlType}" --> ${targetId}\n`;
-                edgeSet.add(edgeKey);
-            }
+            builder.addEdge(currentLastNode, targetId, sqlType);
         });
     });
 
-    return mermaidCode;
+    return builder.build();
 }
 
 function renderMermaid(link, container, mode = 'standard') {
@@ -162,22 +206,19 @@ function renderMermaid(link, container, mode = 'standard') {
 }
 
 function generatePortMermaidCode(group, mode = 'standard') {
-    const portFqn = group.outputPort?.fqn || "Port";
-    const portLabel = group.outputPort?.label || portFqn;
+    const builder = new MermaidBuilder();
+    const portLabel = group.outputPort?.label || group.outputPort?.fqn || "Port";
 
-    let mermaidCode = `graph LR\n`;
-    mermaidCode += `  subgraph "${portLabel}"\n`;
+    const portSubgraph = builder.startSubgraph(portLabel);
     group.links.forEach((link, index) => {
         const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || `Operation_${index}`;
-        mermaidCode += `    PortOp_${index}["${portOpName}"]\n`;
+        builder.addNodeToSubgraph(portSubgraph, `PortOp_${index}`, portOpName);
     });
-    mermaidCode += `  end\n`;
 
-    const adapterNodes = new Map();
+    const adapterSubgraphs = new Map();
     const executionNodes = new Map();
-    const groupNodes = new Map();
+    const groupSubgraphs = new Map();
     const targetNodes = new Map();
-    const edgeSet = new Set();
 
     group.links.forEach((link, linkIndex) => {
         const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
@@ -188,23 +229,16 @@ function generatePortMermaidCode(group, mode = 'standard') {
         let lastNodeId = `PortOp_${linkIndex}`;
 
         if (mode !== 'simple') {
-            if (!adapterNodes.has(adapterFqn)) {
-                adapterNodes.set(adapterFqn, {
-                    label: adapterLabel,
-                    executions: new Map()
-                });
+            if (!adapterSubgraphs.has(adapterFqn)) {
+                adapterSubgraphs.set(adapterFqn, builder.startSubgraph(adapterLabel));
             }
-            const adapter = adapterNodes.get(adapterFqn);
-            if (!adapter.executions.has(executionFqn)) {
-                const executionId = `Execution_${executionNodes.size}`;
-                adapter.executions.set(executionFqn, {
-                    id: executionId,
-                    name: executionName
-                });
+            if (!executionNodes.has(executionFqn)) {
+                const executionId = `Exec_${builder.sanitize(executionFqn)}`;
                 executionNodes.set(executionFqn, executionId);
+                builder.addNodeToSubgraph(adapterSubgraphs.get(adapterFqn), executionId, executionName);
             }
             const executionId = executionNodes.get(executionFqn);
-            mermaidCode += `  PortOp_${linkIndex} --> ${executionId}\n`;
+            builder.addEdge(lastNodeId, executionId);
             lastNodeId = executionId;
         }
 
@@ -216,26 +250,12 @@ function generatePortMermaidCode(group, mode = 'standard') {
             let currentLastNodeId = lastNodeId;
 
             if (mode === 'detailed' && groupId) {
-                const groupKey = `${groupId}`;
-                if (!groupNodes.has(groupKey)) {
-                    const groupNodeId = `Group_${groupNodes.size}`;
-                    groupNodes.set(groupKey, {
-                        id: groupNodeId,
-                        label: groupLabel,
-                        operations: new Map()
-                    });
+                if (!groupSubgraphs.has(groupId)) {
+                    groupSubgraphs.set(groupId, builder.startSubgraph(groupLabel));
                 }
-                const g = groupNodes.get(groupKey);
-                if (!g.operations.has(op.id)) {
-                    const opNodeId = `POp_${op.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
-                    g.operations.set(op.id, opNodeId);
-                }
-                const opNodeId = g.operations.get(op.id);
-                const edgeKey = `${lastNodeId}-->${opNodeId}`;
-                if (!edgeSet.has(edgeKey)) {
-                    mermaidCode += `  ${lastNodeId} --> ${opNodeId}\n`;
-                    edgeSet.add(edgeKey);
-                }
+                const opNodeId = `POp_${builder.sanitize(op.id)}`;
+                builder.addNodeToSubgraph(groupSubgraphs.get(groupId), opNodeId, op.id.split('.').pop());
+                builder.addEdge(lastNodeId, opNodeId);
                 currentLastNodeId = opNodeId;
             }
 
@@ -243,44 +263,15 @@ function generatePortMermaidCode(group, mode = 'standard') {
                 if (!targetNodes.has(target)) {
                     const targetId = `Target_${targetNodes.size}`;
                     targetNodes.set(target, targetId);
+                    builder.addNode(targetId, target, '[($LABEL)]');
                 }
                 const targetId = targetNodes.get(target);
-                const edgeKey = `${currentLastNodeId}--${sqlType}-->${targetId}`;
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                }
+                builder.addEdge(currentLastNodeId, targetId, sqlType);
             });
         });
     });
 
-    adapterNodes.forEach((adapter) => {
-        mermaidCode += `  subgraph "${adapter.label}"\n`;
-        adapter.executions.forEach((execution) => {
-            mermaidCode += `    ${execution.id}["${execution.name}"]\n`;
-        });
-        mermaidCode += `  end\n`;
-    });
-
-    groupNodes.forEach((g) => {
-        mermaidCode += `  subgraph "${g.label}"\n`;
-        g.operations.forEach((nodeId, opId) => {
-            mermaidCode += `    ${nodeId}["${opId.split('.').pop()}"]\n`;
-        });
-        mermaidCode += `  end\n`;
-    });
-
-    targetNodes.forEach((targetId, target) => {
-        mermaidCode += `  ${targetId}[(${target})]\n`;
-    });
-
-    edgeSet.forEach((edgeKey) => {
-        const match = edgeKey.match(/(.+)--(.+)-->(.+)/);
-        if (match) {
-            mermaidCode += `  ${match[1]} -- "${match[2]}" --> ${match[3]}\n`;
-        }
-    });
-
-    return mermaidCode;
+    return builder.build();
 }
 
 function renderPortMermaid(group, container, mode = 'standard') {
@@ -510,131 +501,58 @@ function groupLinksByPersistenceTarget(links) {
 }
 
 function generatePersistenceMermaidCode(group) {
+    const builder = new MermaidBuilder();
     const target = group.target;
-    let mermaidCode = `graph RL\n`;
-    mermaidCode += `  Target[("${target}")]\n`;
+    builder.addNode("Target", target, "[($LABEL)]");
 
     const opNodes = new Map();
-    const adapterNodes = new Map();
-    const portNodes = new Map();
-    const edgeSet = new Set();
+    const adapterSubgraphs = new Map();
+    const portSubgraphs = new Map();
+    const persistenceGroupSubgraphs = new Map();
 
     group.links.forEach((link, linkIndex) => {
-        // Find persistence operations that touch this target
         const relevantOps = link.persistenceOperations.filter(op => op.targets.includes(target));
 
         relevantOps.forEach(op => {
-            const opNodeId = `POp_${op.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const opNodeId = `POp_${builder.sanitize(op.id)}`;
             if (!opNodes.has(op.id)) {
-                opNodes.set(op.id, {
-                    id: opNodeId,
-                    label: op.id.split('.').pop(),
-                    sqlType: op.sqlType,
-                    group: op.group,
-                    groupLabel: op.groupLabel
-                });
+                const groupId = op.group || 'default';
+                const groupLabel = op.groupLabel || 'Persistence Operations';
+                if (!persistenceGroupSubgraphs.has(groupId)) {
+                    persistenceGroupSubgraphs.set(groupId, builder.startSubgraph(groupLabel));
+                }
+                builder.addNodeToSubgraph(persistenceGroupSubgraphs.get(groupId), opNodeId, op.id.split('.').pop());
+                opNodes.set(op.id, opNodeId);
             }
-
-            const edgeKey1 = `${opNodeId}--${op.sqlType}-->Target`;
-            if (!edgeSet.has(edgeKey1)) {
-                mermaidCode += `  ${opNodeId} -- "${op.sqlType}" --> Target\n`;
-                edgeSet.add(edgeKey1);
-            }
+            builder.addEdge(opNodeId, "Target", op.sqlType);
 
             const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
             const adapterLabel = link.outputAdapter?.label || adapterFqn;
             const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
             const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
-            const executionId = `Execution_${executionFqn.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const executionId = `Execution_${builder.sanitize(executionFqn)}`;
 
-            if (!adapterNodes.has(adapterFqn)) {
-                adapterNodes.set(adapterFqn, {
-                    label: adapterLabel,
-                    executions: new Map()
-                });
+            if (!adapterSubgraphs.has(adapterFqn)) {
+                adapterSubgraphs.set(adapterFqn, builder.startSubgraph(adapterLabel));
             }
-            const adapter = adapterNodes.get(adapterFqn);
-            if (!adapter.executions.has(executionFqn)) {
-                adapter.executions.set(executionFqn, {
-                    id: executionId,
-                    name: executionName
-                });
-            }
-
-            const edgeKey2 = `${executionId}-->${opNodeId}`;
-            if (!edgeSet.has(edgeKey2)) {
-                mermaidCode += `  ${executionId} --> ${opNodeId}\n`;
-                edgeSet.add(edgeKey2);
-            }
+            builder.addNodeToSubgraph(adapterSubgraphs.get(adapterFqn), executionId, executionName);
+            builder.addEdge(executionId, opNodeId);
 
             const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
             const portLabel = link.outputPort?.label || portFqn;
-            const portId = `Port_${portFqn.replace(/[^a-zA-Z0-9]/g, '_')}`;
             const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
             const portOpFqn = link.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
-            const portOpId = `PortOp_${portOpFqn.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
 
-            if (!portNodes.has(portFqn)) {
-                portNodes.set(portFqn, {
-                    id: portId,
-                    label: portLabel,
-                    operations: new Map()
-                });
+            if (!portSubgraphs.has(portFqn)) {
+                portSubgraphs.set(portFqn, builder.startSubgraph(portLabel));
             }
-            const port = portNodes.get(portFqn);
-            if (!port.operations.has(portOpFqn)) {
-                port.operations.set(portOpFqn, {
-                    id: portOpId,
-                    name: portOpName
-                });
-            }
-
-            const edgeKey3 = `${portOpId}-->${executionId}`;
-            if (!edgeSet.has(edgeKey3)) {
-                mermaidCode += `  ${portOpId} --> ${executionId}\n`;
-                edgeSet.add(edgeKey3);
-            }
+            builder.addNodeToSubgraph(portSubgraphs.get(portFqn), portOpId, portOpName);
+            builder.addEdge(portOpId, executionId);
         });
     });
 
-    // Group persistence operations by their group (class)
-    const persistenceGroups = new Map();
-    opNodes.forEach((op) => {
-        const groupId = op.group || 'default';
-        if (!persistenceGroups.has(groupId)) {
-            persistenceGroups.set(groupId, {
-                label: op.groupLabel || 'Persistence Operations',
-                ops: []
-            });
-        }
-        persistenceGroups.get(groupId).ops.push(op);
-    });
-
-    persistenceGroups.forEach((pg) => {
-        mermaidCode += `  subgraph "${pg.label}"\n`;
-        pg.ops.forEach((op) => {
-            mermaidCode += `    ${op.id}["${op.label}"]\n`;
-        });
-        mermaidCode += `  end\n`;
-    });
-
-    adapterNodes.forEach((adapter) => {
-        mermaidCode += `  subgraph "${adapter.label}"\n`;
-        adapter.executions.forEach((execution) => {
-            mermaidCode += `    ${execution.id}["${execution.name}"]\n`;
-        });
-        mermaidCode += `  end\n`;
-    });
-
-    portNodes.forEach((port) => {
-        mermaidCode += `  subgraph "${port.label}"\n`;
-        port.operations.forEach((op) => {
-            mermaidCode += `    ${op.id}["${op.name}"]\n`;
-        });
-        mermaidCode += `  end\n`;
-    });
-
-    return mermaidCode;
+    return builder.build();
 }
 
 function renderPersistenceMermaid(group, container) {
@@ -852,5 +770,6 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         generateMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,
+        MermaidBuilder,
     };
 }

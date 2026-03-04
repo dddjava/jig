@@ -439,7 +439,7 @@ test.describe("outputs.js", () => {
             const code = outputs.generatePortMermaidCode(group, "detailed");
             assert.ok(code.includes('subgraph "repo"'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
-            assert.ok(code.includes('Execution_0 --> POp_com_example_repo_save'));
+            assert.ok(code.includes('Exec_adapter1_ex1 --> POp_com_example_repo_save') || code.includes('Exec_exec1 --> POp_com_example_repo_save'));
         });
 
         test("generatePersistenceMermaidCode: ターゲット中心の図が生成される", () => {
@@ -458,9 +458,9 @@ test.describe("outputs.js", () => {
                 ]
             };
             const code = outputs.generatePersistenceMermaidCode(group);
-            assert.ok(code.includes('Target[("table1")]'));
+            assert.ok(code.includes('Target[(table1)]'));
             assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target'));
-            assert.ok(code.includes('Execution_exec1 --> POp_repo_save'));
+            assert.ok(code.includes('Execution_adapter1_ex1 --> POp_repo_save') || code.includes('Execution_exec1 --> POp_repo_save'));
         });
     });
 

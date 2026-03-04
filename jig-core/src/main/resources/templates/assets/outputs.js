@@ -253,7 +253,7 @@ function generatePortMermaidCode(group, mode = 'standard') {
         });
     });
 
-    adapterNodes.forEach((adapter, adapterFqn) => {
+    adapterNodes.forEach((adapter) => {
         mermaidCode += `  subgraph "${adapter.label}"\n`;
         adapter.executions.forEach((execution) => {
             mermaidCode += `    ${execution.id}["${execution.name}"]\n`;
@@ -304,7 +304,6 @@ function toCrudChar(sqlType) {
 
 function renderCrudTable(links) {
     const container = document.getElementById("outputs-crud");
-    const sidebar = document.getElementById("crud-sidebar");
     const sidebarList = document.getElementById("crud-sidebar-list");
     if (!container) return;
 
@@ -414,8 +413,7 @@ function renderCrudTable(links) {
 
             const opCell = document.createElement("td");
             opCell.className = "operation-cell";
-            const opName = link.outputPortOperation?.name || link.outputPortOperation?.signature || "";
-            opCell.textContent = opName;
+            opCell.textContent = link.outputPortOperation?.name || link.outputPortOperation?.signature || "";
             row.appendChild(opCell);
 
             const targetCrudMap = new Map();
@@ -516,7 +514,6 @@ function generatePersistenceMermaidCode(group) {
     let mermaidCode = `graph RL\n`;
     mermaidCode += `  Target[("${target}")]\n`;
 
-    const groupNodes = new Map();
     const opNodes = new Map();
     const adapterNodes = new Map();
     const portNodes = new Map();

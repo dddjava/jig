@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.information.outputs;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.*;
+import org.dddjava.jig.domain.model.data.persistence.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.infrastructure.springdatajdbc.SpringDataJdbcStatementsReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +141,7 @@ public record OutputAdapterExecution(
 
         // SpringDataJDBCのIFに定義されたメソッドの解決を試みる
         PersistenceOperationId persistenceOperationId = generatedPersistenceOperationId(methodCall, persistenceOperations);
-        return SpringDataJdbcStatementsReader.inferSqlType(methodCall.methodName())
+        return SpringDataUtil.inferSqlType(methodCall.methodName())
                 .map(sqlType -> PersistenceOperation.from(
                         persistenceOperationId,
                         sqlType,

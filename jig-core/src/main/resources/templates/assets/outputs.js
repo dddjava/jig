@@ -283,6 +283,15 @@ function renderPortMermaid(group, container, mode = 'standard') {
     });
 }
 
+function toCrudChar(sqlType) {
+    const type = (sqlType || "").toUpperCase();
+    if (type === "SELECT") return "R";
+    if (type === "INSERT") return "C";
+    if (type === "UPDATE") return "U";
+    if (type === "DELETE") return "D";
+    return "";
+}
+
 function renderCrudTable(links) {
     const container = document.getElementById("outputs-crud");
     const sidebar = document.getElementById("crud-sidebar");
@@ -363,12 +372,7 @@ function renderCrudTable(links) {
         const portTargetCrudMap = new Map();
         group.links.forEach(link => {
             link.persistenceOperations?.forEach(op => {
-                const sqlType = (op.sqlType || "").toUpperCase();
-                let crud = "";
-                if (sqlType === "SELECT") crud = "R";
-                else if (sqlType === "INSERT") crud = "C";
-                else if (sqlType === "UPDATE") crud = "U";
-                else if (sqlType === "DELETE") crud = "D";
+                const crud = toCrudChar(op.sqlType);
 
                 if (crud) {
                     op.targets?.forEach(target => {
@@ -406,12 +410,7 @@ function renderCrudTable(links) {
 
             const targetCrudMap = new Map();
             link.persistenceOperations?.forEach(op => {
-                const sqlType = (op.sqlType || "").toUpperCase();
-                let crud = "";
-                if (sqlType === "SELECT") crud = "R";
-                else if (sqlType === "INSERT") crud = "C";
-                else if (sqlType === "UPDATE") crud = "U";
-                else if (sqlType === "DELETE") crud = "D";
+                const crud = toCrudChar(op.sqlType);
 
                 if (crud) {
                     op.targets?.forEach(target => {
@@ -835,5 +834,6 @@ if (typeof module !== "undefined" && module.exports) {
         formatPersistenceOperations,
         renderOutputsTable,
         renderPersistenceTable,
+        toCrudChar,
     };
 }

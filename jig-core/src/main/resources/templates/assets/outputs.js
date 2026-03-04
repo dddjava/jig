@@ -70,17 +70,55 @@ function formatPersistenceOperations(persistenceOperations) {
 }
 
 function createField(label, value) {
-    const field = document.createElement("div");
-    field.className = "outputs-item-field";
+    return createElement("div", {
+        className: "outputs-item-field",
+        children: [
+            createElement("dt", { textContent: label }),
+            createElement("dd", { textContent: value })
+        ]
+    });
+}
 
-    const labelElement = document.createElement("dt");
-    labelElement.textContent = label;
-    const valueElement = document.createElement("dd");
-    valueElement.textContent = value;
+function createElement(tag, options = {}) {
+    const element = document.createElement(tag);
+    if (options.className) element.className = options.className;
+    if (options.id) element.id = options.id;
+    if (options.textContent) element.textContent = options.textContent;
+    if (options.attributes) {
+        for (const [key, value] of Object.entries(options.attributes)) {
+            element.setAttribute(key, value);
+        }
+    }
+    if (options.style) {
+        for (const [key, value] of Object.entries(options.style)) {
+            element.style[key] = value;
+        }
+    }
+    if (options.children) {
+        options.children.forEach(child => {
+            if (child) element.appendChild(child);
+        });
+    }
+    return element;
+}
 
-    field.appendChild(labelElement);
-    field.appendChild(valueElement);
-    return field;
+function renderNoData(container) {
+    container.appendChild(createElement("p", {
+        className: "weak",
+        textContent: "データなし"
+    }));
+}
+
+function addSidebarItem(sidebarList, id, label) {
+    if (!sidebarList) return;
+    sidebarList.appendChild(createElement("li", {
+        children: [
+            createElement("a", {
+                attributes: { href: "#" + id },
+                textContent: label
+            })
+        ]
+    }));
 }
 
 function MermaidBuilder() {
@@ -314,123 +352,111 @@ function renderCrudTable(links) {
         return;
     }
 
-        if (sidebarList) {
-            const title = document.createElement("p");
-            title.className = "sidebar-title";
-            title.textContent = "永続化操作対象";
-            sidebarList.appendChild(title);
-            
-            allTargets.forEach(target => {
-                const link = document.createElement("a");
-                link.setAttribute("href", `#crud-target-${target}`);
-                link.textContent = target;
-                link.className = "sidebar-link";
-                sidebarList.appendChild(link);
-            });
-        }
+    if (sidebarList) {
+        sidebarList.appendChild(createElement("p", {
+            className: "sidebar-title",
+            textContent: "永続化操作対象"
+        }));
 
-    const table = document.createElement("table");
-    table.className = "zebra crud-table";
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
+        allTargets.forEach(target => {
+            sidebarList.appendChild(createElement("a", {
+                attributes: { href: `#crud-target-${target}` },
+                textContent: target,
+                className: "sidebar-link"
+            }));
+        });
+    }
 
-    const opHeader = document.createElement("th");
-    opHeader.textContent = "出力ポート / 操作";
-    headerRow.appendChild(opHeader);
-
-    allTargets.forEach(target => {
-        const th = document.createElement("th");
-        th.id = `crud-target-${target}`;
-        th.textContent = target;
-        headerRow.appendChild(th);
+    const headerRow = createElement("tr", {
+        children: [
+            createElement("th", { textContent: "出力ポート / 操作" }),
+            ...allTargets.map(target => createElement("th", {
+                id: `crud-target-${target}`,
+                textContent: target
+            }))
+        ]
     });
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
 
-    const tbody = document.createElement("tbody");
+    const table = createElement("table", {
+        className: "zebra crud-table",
+        children: [
+            createElement("thead", { children: [headerRow] })
+        ]
+    });
+
+    const tbody = createElement("tbody");
+    table.appendChild(tbody);
     const grouped = groupLinksByOutputPort(links);
 
     grouped.forEach(group => {
         const portId = "port-" + Math.random().toString(36).substr(2, 9);
-        const portRow = document.createElement("tr");
-        portRow.className = "port-group-row";
-        portRow.style.cursor = "pointer";
-
-        const portCell = document.createElement("td");
-        portCell.textContent = group.outputPort.label || group.outputPort.fqn || "(unknown)";
-        portCell.className = "port-group-cell";
-        // 子要素の数（操作数）を表示
-        const countSpan = document.createElement("span");
-        countSpan.className = "weak";
-        countSpan.style.marginLeft = "8px";
-        countSpan.textContent = `(${group.links.length})`;
-        portCell.appendChild(countSpan);
-
-        portRow.appendChild(portCell);
-
-        // ポート単位のCRUDを集計
-        const portTargetCrudMap = new Map();
-        group.links.forEach(link => {
-            link.persistenceOperations?.forEach(op => {
-                const crud = toCrudChar(op.sqlType);
-
-                if (crud) {
-                    op.targets?.forEach(target => {
-                        const current = portTargetCrudMap.get(target) || new Set();
-                        current.add(crud);
-                        portTargetCrudMap.set(target, current);
+        const portRow = createElement("tr", {
+            className: "port-group-row",
+            style: { cursor: "pointer" },
+            children: [
+                createElement("td", {
+                    className: "port-group-cell",
+                    children: [
+                        document.createTextNode(group.outputPort.label || group.outputPort.fqn || "(unknown)"),
+                        createElement("span", {
+                            className: "weak",
+                            style: { marginLeft: "8px" },
+                            textContent: `(${group.links.length})`
+                        })
+                    ]
+                }),
+                ...allTargets.map(target => {
+                    const cell = createElement("td", { className: "crud-cell port-crud-cell" });
+                    const portTargetCrudMap = new Map();
+                    group.links.forEach(link => {
+                        link.persistenceOperations?.forEach(op => {
+                            const crud = toCrudChar(op.sqlType);
+                            if (crud && op.targets?.includes(target)) {
+                                const current = portTargetCrudMap.get(target) || new Set();
+                                current.add(crud);
+                                portTargetCrudMap.set(target, current);
+                            }
+                        });
                     });
-                }
-            });
+                    const cruds = portTargetCrudMap.get(target);
+                    if (cruds) {
+                        cell.textContent = Array.from(cruds).sort().join("");
+                    }
+                    return cell;
+                })
+            ]
         });
 
-        allTargets.forEach(target => {
-            const td = document.createElement("td");
-            td.className = "crud-cell port-crud-cell";
-            const cruds = portTargetCrudMap.get(target);
-            if (cruds) {
-                td.textContent = Array.from(cruds).sort().join("");
-            }
-            portRow.appendChild(td);
-        });
         tbody.appendChild(portRow);
 
         // 操作行の作成
-        const opRows = [];
-        group.links.forEach(link => {
-            const row = document.createElement("tr");
-            row.className = `operation-row ${portId}`;
-            row.style.display = "none"; // デフォルト非表示
-
-            const opCell = document.createElement("td");
-            opCell.className = "operation-cell";
-            opCell.textContent = link.outputPortOperation?.name || link.outputPortOperation?.signature || "";
-            row.appendChild(opCell);
-
-            const targetCrudMap = new Map();
-            link.persistenceOperations?.forEach(op => {
-                const crud = toCrudChar(op.sqlType);
-
-                if (crud) {
-                    op.targets?.forEach(target => {
-                        const current = targetCrudMap.get(target) || new Set();
-                        current.add(crud);
-                        targetCrudMap.set(target, current);
-                    });
-                }
-            });
-
-            allTargets.forEach(target => {
-                const td = document.createElement("td");
-                td.className = "crud-cell";
-                const cruds = targetCrudMap.get(target);
-                if (cruds) {
-                    td.textContent = Array.from(cruds).sort().join("");
-                }
-                row.appendChild(td);
+        const opRows = group.links.map(link => {
+            const row = createElement("tr", {
+                className: `operation-row ${portId}`,
+                style: { display: "none" },
+                children: [
+                    createElement("td", {
+                        className: "operation-cell",
+                        textContent: link.outputPortOperation?.name || link.outputPortOperation?.signature || ""
+                    }),
+                    ...allTargets.map(target => {
+                        const cell = createElement("td", { className: "crud-cell" });
+                        const targetCrudMap = new Set();
+                        link.persistenceOperations?.forEach(op => {
+                            const crud = toCrudChar(op.sqlType);
+                            if (crud && op.targets?.includes(target)) {
+                                targetCrudMap.add(crud);
+                            }
+                        });
+                        if (targetCrudMap.size > 0) {
+                            cell.textContent = Array.from(targetCrudMap).sort().join("");
+                        }
+                        return cell;
+                    })
+                ]
             });
             tbody.appendChild(row);
-            opRows.push(row);
+            return row;
         });
 
         // トグル動作の設定
@@ -443,7 +469,6 @@ function renderCrudTable(links) {
         });
     });
 
-    table.appendChild(tbody);
     container.appendChild(table);
 }
 
@@ -572,45 +597,31 @@ function renderPersistenceTable(grouped) {
     container.innerHTML = "";
     if (sidebar) sidebar.innerHTML = "";
 
-    const sidebarList = document.createElement("ul");
+    const sidebarList = sidebar ? createElement("ul") : null;
 
     grouped.forEach(group => {
         const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
+        addSidebarItem(sidebarList, targetId, group.target);
 
-        const groupCard = document.createElement("section");
-        groupCard.className = "outputs-port-card";
-        groupCard.id = targetId;
-
-        const title = document.createElement("h3");
-        title.textContent = group.target;
-        groupCard.appendChild(title);
-
-        if (sidebar) {
-            const sidebarItem = document.createElement("li");
-            const sidebarLink = document.createElement("a");
-            sidebarLink.setAttribute("href", "#" + targetId);
-            sidebarLink.textContent = group.target;
-            sidebarItem.appendChild(sidebarLink);
-            sidebarList.appendChild(sidebarItem);
-        }
-
-        const persistenceMermaidContainer = document.createElement("div");
-        persistenceMermaidContainer.className = "mermaid-diagram port-diagram";
-        groupCard.appendChild(persistenceMermaidContainer);
+        const persistenceMermaidContainer = createElement("div", { className: "mermaid-diagram port-diagram" });
         lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer));
 
-        container.appendChild(groupCard);
+        container.appendChild(createElement("section", {
+            className: "outputs-port-card",
+            id: targetId,
+            children: [
+                createElement("h3", { textContent: group.target }),
+                persistenceMermaidContainer
+            ]
+        }));
     });
 
-    if (sidebar && grouped.length > 0) {
+    if (sidebarList && grouped.length > 0) {
         sidebar.appendChild(sidebarList);
     }
 
     if (grouped.length === 0) {
-        const noData = document.createElement("p");
-        noData.className = "weak";
-        noData.textContent = "データなし";
-        container.appendChild(noData);
+        renderNoData(container);
     }
 }
 
@@ -621,34 +632,21 @@ function renderOutputsTable(grouped, mode = 'standard') {
     container.innerHTML = "";
     if (sidebar) sidebar.innerHTML = "";
 
-    const sidebarList = document.createElement("ul");
+    const sidebarList = sidebar ? createElement("ul") : null;
 
     grouped.forEach(group => {
         const portFqnValue = group.outputPort.fqn ?? "";
         const portId = "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-');
-
-        const groupCard = document.createElement("section");
-        groupCard.className = "outputs-port-card";
-        groupCard.id = portId;
-
         const portLabel = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
-        const title = document.createElement("h3");
-        title.textContent = portLabel;
-        groupCard.appendChild(title);
+        addSidebarItem(sidebarList, portId, portLabel);
 
-        if (sidebar) {
-            const sidebarItem = document.createElement("li");
-            const sidebarLink = document.createElement("a");
-            sidebarLink.setAttribute("href", "#" + portId);
-            sidebarLink.textContent = portLabel;
-            sidebarItem.appendChild(sidebarLink);
-            sidebarList.appendChild(sidebarItem);
-        }
-
-        const portFqn = document.createElement("p");
-        portFqn.className = "fully-qualified-name";
-        portFqn.textContent = group.outputPort.fqn ?? "";
-        groupCard.appendChild(portFqn);
+        const cardChildren = [
+            createElement("h3", { textContent: portLabel }),
+            createElement("p", {
+                className: "fully-qualified-name",
+                textContent: portFqnValue
+            })
+        ];
 
         if (mode !== 'simple') {
             const adapterLabels = Array.from(new Set(group.links.map(link => {
@@ -657,69 +655,58 @@ function renderOutputsTable(grouped, mode = 'standard') {
                 return label + (label !== fqn ? ` (${fqn})` : "");
             })));
             if (adapterLabels.length > 0) {
-                const adapterInfo = document.createElement("p");
-                adapterInfo.className = "weak";
-                adapterInfo.textContent = "Implementation: " + adapterLabels.join(", ");
-                groupCard.appendChild(adapterInfo);
+                cardChildren.push(createElement("p", {
+                    className: "weak",
+                    textContent: "Implementation: " + adapterLabels.join(", ")
+                }));
             }
         }
 
-        const count = document.createElement("p");
-        count.className = "weak";
-        count.textContent = `${group.links.length} operations`;
-        groupCard.appendChild(count);
+        cardChildren.push(createElement("p", {
+            className: "weak",
+            textContent: `${group.links.length} operations`
+        }));
 
-        const portMermaidContainer = document.createElement("div");
-        portMermaidContainer.className = "mermaid-diagram port-diagram";
-        groupCard.appendChild(portMermaidContainer);
+        const portMermaidContainer = createElement("div", { className: "mermaid-diagram port-diagram" });
         lazyRender(portMermaidContainer, () => renderPortMermaid(group, portMermaidContainer, mode));
+        cardChildren.push(portMermaidContainer);
 
-        const list = document.createElement("div");
-        list.className = "outputs-item-list";
-
+        const itemList = createElement("div", { className: "outputs-item-list" });
         group.links.forEach(link => {
-            const item = document.createElement("article");
-            item.className = "outputs-item";
-
-            const operation = document.createElement("h4");
-            operation.textContent = link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "";
-            item.appendChild(operation);
-
-            const mermaidContainer = document.createElement("div");
-            mermaidContainer.className = "mermaid-diagram";
-            item.appendChild(mermaidContainer);
+            const mermaidContainer = createElement("div", { className: "mermaid-diagram" });
             lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer, mode));
 
-            const persistenceTitle = document.createElement("p");
-            persistenceTitle.className = "outputs-persistence-title";
-            persistenceTitle.textContent = "永続化操作詳細";
-            item.appendChild(persistenceTitle);
-
-            const persistenceList = document.createElement("ul");
-            persistenceList.className = "outputs-persistence-list";
-            formatPersistenceOperations(link.persistenceOperations).forEach(text => {
-                const line = document.createElement("li");
-                line.textContent = text;
-                persistenceList.appendChild(line);
-            });
-            item.appendChild(persistenceList);
-
-            list.appendChild(item);
+            itemList.appendChild(createElement("article", {
+                className: "outputs-item",
+                children: [
+                    createElement("h4", { textContent: link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "" }),
+                    mermaidContainer,
+                    createElement("p", {
+                        className: "outputs-persistence-title",
+                        textContent: "永続化操作詳細"
+                    }),
+                    createElement("ul", {
+                        className: "outputs-persistence-list",
+                        children: formatPersistenceOperations(link.persistenceOperations).map(text => createElement("li", { textContent: text }))
+                    })
+                ]
+            }));
         });
+        cardChildren.push(itemList);
 
-        groupCard.appendChild(list);
-        container.appendChild(groupCard);
+        container.appendChild(createElement("section", {
+            className: "outputs-port-card",
+            id: portId,
+            children: cardChildren
+        }));
     });
 
-    if (sidebar && grouped.length > 0) {
+    if (sidebarList && grouped.length > 0) {
         sidebar.appendChild(sidebarList);
     }
 
     if (grouped.length === 0) {
-        const noData = document.createElement("p");
-        noData.className = "weak";
-        noData.textContent = "データなし";
-        container.appendChild(noData);
+        renderNoData(container);
     }
 }
 
@@ -767,6 +754,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         renderPersistenceTable,
         renderCrudTable,
         toCrudChar,
+        createElement,
+        renderNoData,
         generateMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,

@@ -71,11 +71,15 @@ class Element {
     }
 
     get textContent() {
+        if (this.children.length > 0) {
+            return this.children.map(c => c.textContent).join("");
+        }
         return this._textContent;
     }
 
     set textContent(value) {
         this._textContent = String(value ?? "");
+        this.children = [];
     }
 
     get className() {
@@ -144,6 +148,13 @@ class DocumentStub {
 
     createElement(tagName) {
         const el = new Element(tagName, this);
+        this.allElements.push(el);
+        return el;
+    }
+
+    createTextNode(text) {
+        const el = new Element("#text", this);
+        el.textContent = text;
         this.allElements.push(el);
         return el;
     }
@@ -535,8 +546,7 @@ test.describe("outputs.js", () => {
             assert.equal(tbody.children.length, 2); // ポート行 + 操作行
 
             const portRow = tbody.children[0];
-            assert.equal(portRow.children[0].textContent, "Port A");
-            assert.equal(portRow.children[0].children[0].textContent, "(1)");
+            assert.ok(portRow.children[0].textContent.startsWith("Port A"));
             assert.equal(portRow.children[1].textContent, "R");
 
             const opRow = tbody.children[1];

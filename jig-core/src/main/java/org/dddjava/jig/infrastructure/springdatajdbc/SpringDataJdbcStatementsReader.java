@@ -39,13 +39,25 @@ public class SpringDataJdbcStatementsReader {
 
         return classDeclarations.stream()
                 .filter(this::isInterface)
-                .flatMap(declaration -> findSpringDataRepositoryEntity(declaration, declarationMap, new HashSet<>())
+                .flatMap(declaration -> resolveEntityTypeFromRepository(declaration, declarationMap)
                         .stream()
-                        .map(springDataRepositoryInfo -> resolvePersistenceOperations(declaration, springDataRepositoryInfo, declarationMap)))
+                        .map(operationTargetEntityTypeId -> resolvePersistenceOperations(declaration, operationTargetEntityTypeId, declarationMap)))
                 .toList();
     }
 
-    private Optional<SpringDataRepositoryInfo> findSpringDataRepositoryEntity(ClassDeclaration classDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    /**
+     * SpringDataのエンティティを解決する
+     *
+     * 対象の型がSpringDataRepositoryを継承したインタフェースであればEntityの型を返す。
+     *
+     * @param declaration    対象の型
+     * @param declarationMap インタフェースの型を解決するための辞書
+     */
+    private Optional<OperationTargetEntityTypeId> resolveEntityTypeFromRepository(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
+        return resolveSpringDataRepositoryEntity(declaration, declarationMap, new HashSet<>());
+    }
+
+    private Optional<OperationTargetEntityTypeId> resolveSpringDataRepositoryEntity(ClassDeclaration classDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
         var header = classDeclaration.jigTypeHeader();
         // 再帰しているので一応チェック。普通に作れば型継承の循環はコンパイルエラーになるため、このチェックに出番はない。
         if (!visited.add(header.id())) return Optional.empty();
@@ -60,7 +72,7 @@ public class SpringDataJdbcStatementsReader {
                             header.fqn());
                     continue;
                 }
-                return Optional.of(new SpringDataRepositoryInfo(jigTypeArguments.getFirst().typeId()));
+                return Optional.of(new OperationTargetEntityTypeId(jigTypeArguments.getFirst().typeId()));
                 // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
             }
 
@@ -71,7 +83,7 @@ public class SpringDataJdbcStatementsReader {
                 // 内部共通ライブラリのインタフェースがSpringDataのRepositoryを継承している場合などにJIGの読み取り対象としていなければここにきてしまう。
                 continue;
             }
-            Optional<SpringDataRepositoryInfo> repositoryInfo = findSpringDataRepositoryEntity(interfaceDeclaration, declarationMap, visited);
+            Optional<OperationTargetEntityTypeId> repositoryInfo = resolveSpringDataRepositoryEntity(interfaceDeclaration, declarationMap, visited);
             // エンティティの解決に成功していれば進めてしまう
             if (repositoryInfo.isPresent()) return repositoryInfo;
         }
@@ -84,11 +96,11 @@ public class SpringDataJdbcStatementsReader {
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
     private PersistenceOperations resolvePersistenceOperations(ClassDeclaration declaration,
-                                                               SpringDataRepositoryInfo springDataRepositoryInfo,
+                                                               OperationTargetEntityTypeId operationTargetEntityTypeId,
                                                                Map<TypeId, ClassDeclaration> declarationMap) {
         TypeId typeId = declaration.jigTypeHeader().id();
         // クラス単位で決まるのでメソッドごとに解決するのを避けるために先に取得しておく
-        PersistenceTargets persistenceTargets = resolvePersistenceTargets(springDataRepositoryInfo, declarationMap);
+        PersistenceTargets persistenceTargets = resolvePersistenceTargets(operationTargetEntityTypeId, declarationMap);
 
         List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
                 .map(jigMethodDeclaration -> resolvePersistenceOperation(jigMethodDeclaration, typeId, persistenceTargets))
@@ -148,9 +160,9 @@ public class SpringDataJdbcStatementsReader {
      * Tableアノテーションからテーブル名を取得する。
      * シンプルなエンティティでは1件だが、MappedCollectionによる複数テーブルの場合に複数件となる。
      */
-    private static PersistenceTargets resolvePersistenceTargets(SpringDataRepositoryInfo springDataRepositoryInfo,
+    private static PersistenceTargets resolvePersistenceTargets(OperationTargetEntityTypeId operationTargetEntityTypeId,
                                                                 Map<TypeId, ClassDeclaration> declarationMap) {
-        return new PersistenceTargets(resolveTablesFromEntity(springDataRepositoryInfo.entityTypeId(), declarationMap, new HashSet<>()).toList());
+        return new PersistenceTargets(resolveTablesFromEntity(operationTargetEntityTypeId.entityTypeId(), declarationMap, new HashSet<>()).toList());
     }
 
     private static Stream<PersistenceTarget> resolveTablesFromEntity(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
@@ -224,7 +236,7 @@ public class SpringDataJdbcStatementsReader {
         return interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX);
     }
 
-    private record SpringDataRepositoryInfo(TypeId entityTypeId) {
+    private record OperationTargetEntityTypeId(TypeId entityTypeId) {
     }
 
     private static String toSnakeCase(String text) {

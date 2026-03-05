@@ -29,8 +29,9 @@ commands:
     steps:
       - pre-build
       - run: |
-          ./gradlew --stop
-          ./gradlew --no-daemon build
+          cat /sys/fs/cgroup/pids.max
+          cat /sys/fs/cgroup/pids.current
+          ./gradlew build
       - post-build
 
 jobs:
@@ -45,8 +46,6 @@ jobs:
       - run:
           name: build and publish
           command: |
-            cat /sys/fs/cgroup/pids.max
-            cat /sys/fs/cgroup/pids.current
             export ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
             export ORG_GRADLE_PROJECT_version=${CIRCLE_TAG}
             ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository

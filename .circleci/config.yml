@@ -6,7 +6,6 @@ executors:
       - image: cimg/openjdk:21.0.9
     working_directory: ~/repo
     environment:
-      _JAVA_OPTIONS: -Xmx512m
       GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=UTF-8'
       TERM: dumb
 commands:

@@ -45,9 +45,11 @@ jobs:
       - run:
           name: build and publish
           command: |
+            cat /sys/fs/cgroup/pids.max
+            cat /sys/fs/cgroup/pids.current
             export ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
             export ORG_GRADLE_PROJECT_version=${CIRCLE_TAG}
-            ./gradlew --no-daemon build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
+            ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
       - post-build
       - store_artifacts:
           path: jig-cli/build/libs

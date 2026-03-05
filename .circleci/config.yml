@@ -7,12 +7,11 @@ executors:
     working_directory: ~/repo
     environment:
       TERM: dumb
-      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.workers.max=1
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
 commands:
   pre-build:
     steps:
       - checkout
-      - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
       - restore_cache:
           key: gradle-{{ checksum "build.gradle" }}
   post-build:
@@ -29,8 +28,6 @@ commands:
     steps:
       - pre-build
       - run: |
-          cat /sys/fs/cgroup/pids.max
-          cat /sys/fs/cgroup/pids.current
           ./gradlew build
       - post-build
 

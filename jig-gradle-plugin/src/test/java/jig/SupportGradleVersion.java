@@ -7,13 +7,9 @@ import org.gradle.util.GradleVersion;
  */
 public enum SupportGradleVersion {
     /**
-     * JIGが使用しているGradleのバージョン　
+     * JIGが使用しているGradleのバージョン（最新）
      */
     CURRENT(GradleVersion.current().getVersion()),
-    /**
-     * 最新
-     */
-    LATEST("9.2.1"),
     /**
      * 一つ前のメジャーバージョンの最終
      */

@@ -24,12 +24,14 @@ public record PersistenceTargets(Collection<PersistenceTarget> persistenceTarget
         return new PersistenceTargets(Collections.emptyList());
     }
 
+    // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。
     public PersistenceTargets merge(PersistenceTargets other) {
         ArrayList<PersistenceTarget> list = new ArrayList<>(this.persistenceTargets);
         list.addAll(other.persistenceTargets);
         return new PersistenceTargets(list);
     }
 
+    // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。
     public String asText() {
         // 文字列としてユニーク。ソートされてるのは自然なのでメソッド名に含めない。
         return persistenceTargets.stream()

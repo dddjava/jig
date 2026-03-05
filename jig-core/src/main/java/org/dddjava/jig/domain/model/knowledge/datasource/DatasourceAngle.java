@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
-import org.dddjava.jig.domain.model.data.persistence.CrudTables;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceTarget;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceTargets;
+import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -10,6 +8,8 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -18,13 +18,13 @@ import java.util.stream.Stream;
 public class DatasourceAngle {
 
     private final OutputImplementation outputImplementation;
-    private final CrudTables crudTables;
+    private final Map<SqlType, List<String>> tablesMap;
     private final CallerMethods callerMethods;
 
-    public DatasourceAngle(OutputImplementation outputImplementation, CrudTables crudTables, CallerMethods callerMethods) {
+    public DatasourceAngle(OutputImplementation outputImplementation, Map<SqlType, List<String>> tablesMap, CallerMethods callerMethods) {
         this.outputImplementation = outputImplementation;
+        this.tablesMap = tablesMap;
         this.callerMethods = callerMethods;
-        this.crudTables = crudTables;
     }
 
     public TypeId declaringType() {
@@ -52,35 +52,35 @@ public class DatasourceAngle {
     }
 
     public String insertTables() {
-        return crudTables.create().asText();
+        return joining(insertTableNames());
     }
 
     public List<String> insertTableNames() {
-        return tableNames(crudTables.create());
+        return tableNames(SqlType.INSERT);
     }
 
     public String selectTables() {
-        return crudTables.read().asText();
+        return joining(selectTableNames());
     }
 
     public List<String> selectTableNames() {
-        return tableNames(crudTables.read());
+        return tableNames(SqlType.SELECT);
     }
 
     public String updateTables() {
-        return crudTables.update().asText();
+        return joining(updateTableNames());
     }
 
     public List<String> updateTableNames() {
-        return tableNames(crudTables.update());
+        return tableNames(SqlType.UPDATE);
     }
 
     public String deleteTables() {
-        return crudTables.delete().asText();
+        return joining(deleteTableNames());
     }
 
     public List<String> deleteTableNames() {
-        return tableNames(crudTables.delete());
+        return tableNames(SqlType.DELETE);
     }
 
     public JigMethod concreteMethod() {
@@ -103,11 +103,11 @@ public class DatasourceAngle {
         return outputImplementation.interfaceJigType().label();
     }
 
-    private List<String> tableNames(PersistenceTargets persistenceTargets) {
-        return persistenceTargets.persistenceTargets().stream()
-                .map(PersistenceTarget::name)
-                .distinct()
-                .sorted()
-                .toList();
+    private List<String> tableNames(SqlType sqlType) {
+        return tablesMap.getOrDefault(sqlType, List.of());
+    }
+
+    private String joining(List<String> strings) {
+        return strings.stream().collect(Collectors.joining(", ", "[", "]"));
     }
 }

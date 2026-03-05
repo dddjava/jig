@@ -1,7 +1,9 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
@@ -10,6 +12,10 @@ import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFa
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * データソースの切り口一覧
@@ -21,13 +27,25 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                 .map(outputImplementation -> {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortOperaionAsJigMethod().jigMethodId());
 
-                    var crudTables = persistenceOperationsRepository.filterRelationOn(persistenceOperation -> {
-                        PersistenceOperationId persistenceOperationId = persistenceOperation.persistenceOperationId();
-                        return outputPortOperationUseSQL(outputImplementation, persistenceOperationId)
-                                || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
-                    }).crudTables();
+                    // 内部で呼び出している永続化操作を操作の種類ごとに収集する
+                    Map<SqlType, List<String>> map = persistenceOperationsRepository.values().stream()
+                            .flatMap(ops -> ops.persistenceOperations().stream())
+                            .filter(persistenceOperation -> {
+                                PersistenceOperationId persistenceOperationId = persistenceOperation.persistenceOperationId();
+                                return outputPortOperationUseSQL(outputImplementation, persistenceOperationId)
+                                        || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
+                            })
+                            .collect(groupingBy(PersistenceOperation::sqlType,
+                                    Collectors.collectingAndThen(Collectors.toList(),
+                                            // テーブル名の重複を排除してソートしたリストにする
+                                            l -> l.stream()
+                                                    .flatMap(persistenceOperation -> persistenceOperation.persistenceTargets().persistenceTargets().stream())
+                                                    .map(persistenceTarget -> persistenceTarget.name())
+                                                    .distinct()
+                                                    .sorted()
+                                                    .toList())));
 
-                    return new DatasourceAngle(outputImplementation, crudTables, callerMethods);
+                    return new DatasourceAngle(outputImplementation, map, callerMethods);
                 })
                 .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodId().value()))
                 .toList());

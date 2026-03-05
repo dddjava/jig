@@ -6,7 +6,6 @@ executors:
       - image: cimg/openjdk:21.0.9
     working_directory: ~/repo
     environment:
-      GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dfile.encoding=UTF-8'
       TERM: dumb
 commands:
   pre-build:
@@ -28,7 +27,9 @@ commands:
   build:
     steps:
       - pre-build
-      - run: ./gradlew build
+      - run: |
+          ./gradlew --stop
+          ./gradlew --no-daemon build
       - post-build
 
 jobs:
@@ -45,7 +46,7 @@ jobs:
           command: |
             export ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
             export ORG_GRADLE_PROJECT_version=${CIRCLE_TAG}
-            ./gradlew build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
+            ./gradlew --no-daemon build :jig-core:publishToSonatype :jig-gradle-plugin:publishPlugins closeAndReleaseSonatypeStagingRepository
       - post-build
       - store_artifacts:
           path: jig-cli/build/libs

@@ -61,6 +61,7 @@ public class SpringDataJdbcStatementsReader {
         // 再帰しているので一応チェック。普通に作れば型継承の循環はコンパイルエラーになるため、このチェックに出番はない。
         if (!visited.add(header.id())) return Optional.empty();
 
+        // 継承しているインタフェースを確認
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
             if (isSpringDataRepository(interfaceId)) {

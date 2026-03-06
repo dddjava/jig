@@ -18,16 +18,26 @@ public class JigTypes {
     private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
 
     private final List<JigType> list;
-    private final Map<TypeId, JigType> map;
+
+    private final Map<TypeId, JigType> jigTypeMap;
+    private final Map<JigMethodId, JigMethod> jigMethodMap;
 
     public JigTypes(Collection<JigType> jigTypes) {
         this.list = jigTypes.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
-        this.map = jigTypes.stream().collect(toMap(
+        this.jigTypeMap = jigTypes.stream().collect(toMap(
                 jigType -> jigType.id(),
                 Function.identity(),
                 (left, right) -> {
                     logger.warn("{} が重複しています。完全修飾名が同じクラスを一度にロードしていることが原因です。依存関係にない複数モジュール群でJIGを実行している場合、JIGの実行対象を減らすか、異なるクラスであれば該当クラスのパッケージ名もしくはクラス名を変更してください。依存関係にあるモジュール群で発生している場合は実行時に意図しないクラスが使用される可能性がある実装が懸念されます。JIGは片方を採用して処理は続行しますが、クラスの実装が異なる場合は意図せぬ出力になります。",
                             left.id().fqn());
+                    return left;
+                }));
+        this.jigMethodMap = jigTypes.stream().flatMap(JigType::allJigMethodStream).collect(toMap(
+                jigMethod -> jigMethod.jigMethodId(),
+                Function.identity(),
+                (left, right) -> {
+                    logger.warn("{} が重複しています。完全修飾名が同じメソッドを一度にロードしていることが原因です。依存関係にない複数モジュール群でJIGを実行している場合、JIGの実行対象を減らすか、異なるメソッドであれば該当メソッドのパッケージ名もしくはメソッド名を変更してください。依存関係にあるモジュール群で発生している場合は実行時に意図しないメソッドが使用される可能性がある実装が懸念されます。JIGは片方を採用して処理は続行しますが、メソッドの実装が異なる場合は意図せぬ出力になります。",
+                            left.jigMethodId().value());
                     return left;
                 }));
     }
@@ -53,16 +63,11 @@ public class JigTypes {
     }
 
     public Optional<JigMethod> resolveJigMethod(JigMethodId jigMethodId) {
-        // 全くラスの全メソッドを舐めるので効率化が必要かもしれないが、一旦これで
-        return list.stream()
-                .flatMap(jigType -> jigType.allJigMethodStream())
-                .filter(jigMethod -> jigMethod.jigMethodId().equals(jigMethodId))
-                // 複数件Hitすることはないが、実装上はありえるのでany
-                .findAny();
+        return Optional.ofNullable(jigMethodMap.get(jigMethodId));
     }
 
     public Optional<JigType> resolveJigType(TypeId typeId) {
-        return Optional.ofNullable(map.get(typeId));
+        return Optional.ofNullable(jigTypeMap.get(typeId));
     }
 
     public boolean isService(JigMethodId jigMethodId) {
@@ -95,10 +100,10 @@ public class JigTypes {
     }
 
     public TypeIds typeIds() {
-        return new TypeIds(map.keySet());
+        return new TypeIds(jigTypeMap.keySet());
     }
 
     public boolean contains(TypeId typeId) {
-        return map.containsKey(typeId);
+        return jigTypeMap.containsKey(typeId);
     }
 }

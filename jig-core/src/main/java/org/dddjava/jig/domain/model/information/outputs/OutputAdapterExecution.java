@@ -145,7 +145,7 @@ public record OutputAdapterExecution(
                 .map(sqlType -> PersistenceOperation.from(
                         persistenceOperationId,
                         sqlType,
-                        persistenceOperations.persistenceTargets()));
+                        persistenceOperations.defaultPersistenceTargets()));
     }
 
     private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> tracingMethodIds) {

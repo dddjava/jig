@@ -41,7 +41,11 @@ public class SpringDataJdbcStatementsReader {
                 .filter(this::isInterface)
                 .flatMap(declaration -> resolveEntityTypeFromRepository(declaration, declarationMap)
                         .stream()
-                        .map(operationTargetEntityTypeId -> resolvePersistenceOperations(declaration, operationTargetEntityTypeId, declarationMap)))
+                        .map(operationTargetEntityTypeId -> {
+                            // EntityはRepository単位で決まるのでメソッドごとに解決するのを避けるために先に取得しておく
+                            var persistenceTargets = resolvePersistenceTargets(operationTargetEntityTypeId, declarationMap);
+                            return resolvePersistenceOperations(declaration, persistenceTargets);
+                        }))
                 .toList();
     }
 
@@ -95,19 +99,15 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceOperations resolvePersistenceOperations(ClassDeclaration declaration,
-                                                               OperationTargetEntityTypeId operationTargetEntityTypeId,
-                                                               Map<TypeId, ClassDeclaration> declarationMap) {
+    private PersistenceOperations resolvePersistenceOperations(ClassDeclaration declaration, PersistenceTargets defaultPersistenceTargets) {
         TypeId typeId = declaration.jigTypeHeader().id();
-        // クラス単位で決まるのでメソッドごとに解決するのを避けるために先に取得しておく
-        PersistenceTargets persistenceTargets = resolvePersistenceTargets(operationTargetEntityTypeId, declarationMap);
 
         List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> resolvePersistenceOperation(jigMethodDeclaration, typeId, persistenceTargets))
+                .map(jigMethodDeclaration -> resolvePersistenceOperation(jigMethodDeclaration, typeId, defaultPersistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
-        return PersistenceOperations.forSpringDataJdbc(typeId, persistenceTargets, persistenceOperations);
+        return PersistenceOperations.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceOperations);
     }
 
     private Optional<PersistenceOperation> resolvePersistenceOperation(JigMethodDeclaration jigMethodDeclaration,

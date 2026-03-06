@@ -3,8 +3,7 @@ package jig;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.jupiter.api.condition.EnabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @see <a href="https://docs.gradle.org/8.13/userguide/test_kit.html">Testing Build Logic with TestKit</a>
  */
+// https://circleci.com/docs/reference/variables/
+@DisabledIfEnvironmentVariable(named = "CIRCLECI", matches = "true", disabledReason = "CIRCLECI環境ではメモリ上限によりエラー終了となってしまう。ローカルおよびGitHub Actionsで確認。")
 public class JigPluginFunctionalTest {
 
     @TempDir

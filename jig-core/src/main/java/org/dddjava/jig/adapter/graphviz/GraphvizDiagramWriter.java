@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.List;
 
+@Deprecated(since = "2026.3.1")
 public class GraphvizDiagramWriter {
 
     JigDiagramOption diagramOption;

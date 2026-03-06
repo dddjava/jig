@@ -12,6 +12,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * 関連
  */
+@Deprecated(since = "2026.3.1")
 public class RelationText {
 
     List<String> list;

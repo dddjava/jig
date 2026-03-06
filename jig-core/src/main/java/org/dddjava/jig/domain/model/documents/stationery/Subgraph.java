@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import java.util.StringJoiner;
 import java.util.stream.Stream;
 
+@Deprecated(since = "2026.3.1")
 public class Subgraph {
     StringJoiner stringJoiner;
 

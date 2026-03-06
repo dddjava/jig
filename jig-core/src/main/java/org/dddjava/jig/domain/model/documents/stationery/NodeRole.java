@@ -8,6 +8,7 @@ import java.util.function.Function;
  * 色と文字サイズで表現する。
  * 何にどのタイプを使用するかは各ダイアグラムで決める。
  */
+@Deprecated(since = "2026.3.1")
 public enum NodeRole {
     主役(node -> node.fillColor("lightgoldenrod")),
     準主役(node -> node.fillColor("lemonchiffon")),

@@ -34,6 +34,7 @@ public class HandleResultImpl implements HandleResult {
         this.failureMessage = e.getMessage();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isOutputDiagram() {
         // TODO JigDocumentによって固定になっているが、実際の出力結果によって制御する

@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * ノードの最終的な編集者
  */
+@Deprecated(since = "2026.3.1")
 public class NodeEditor {
     static final NodeEditor INSTANCE = new NodeEditor();
     static final Predicate<String> 英数のみ = Pattern.compile("^0-9a-zA-Z$").asMatchPredicate();

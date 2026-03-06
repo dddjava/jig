@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * 区分図
  */
+@Deprecated(since = "2026.3.1")
 public class CategoryDiagram implements DiagramSourceWriter {
 
     private final JigTypes jigTypes;

@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 /**
  * DiagramSourcesを出力できる
  */
+@Deprecated(since = "2026.3.1")
 public interface DiagramSourceWriter {
 
     default DiagramSources sources(JigDocumentContext jigDocumentContext) {

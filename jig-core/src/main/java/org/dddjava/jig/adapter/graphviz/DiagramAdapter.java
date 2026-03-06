@@ -16,6 +16,7 @@ import java.util.List;
  *
  * {@link HandleDocument} で指定されたドキュメントを出力する際に各メソッドが実行される。
  */
+@Deprecated(since = "2026.3.1")
 @HandleDocument
 public class DiagramAdapter {
 

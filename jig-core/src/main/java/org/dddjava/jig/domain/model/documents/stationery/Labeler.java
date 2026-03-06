@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated(since = "2026.3.1")
 public class Labeler {
     JigDocumentContext jigDocumentContext;
     private Optional<String> commonPrefix = Optional.empty();

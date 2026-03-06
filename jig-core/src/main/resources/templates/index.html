@@ -35,6 +35,9 @@
     </section>
     <section th:if="${BusinessRuleList != null or ApplicationList != null}">
         <h2>一覧: Excel</h2>
+        <aside class="notice">
+            <p>2026.4.1 のリリースで廃止予定です。<a style="text-decoration: underline" href="https://github.com/dddjava/jig/wiki/2026.4.1-%E7%94%BB%E5%83%8F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8A%E3%82%88%E3%81%B3Exce%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%BB%83%E6%AD%A2">詳細はこちら</a>。</p>
+        </aside>
         <ul>
             <li th:if="${BusinessRuleList}"><a href="#" th:href="${BusinessRuleList}">ビジネスルール一覧</a></li>
             <li th:if="${ApplicationList}"><a href="#" th:href="${ApplicationList}">機能一覧</a></li>
@@ -43,6 +46,9 @@
 
     <section class="diagram" th:if="${not #lists.isEmpty(diagrams)}">
         <h2>図: <span th:text="${diagramFormat}">SVG</span></h2>
+        <aside class="notice">
+            <p>2026.4.1 のリリースで廃止予定です。<a style="text-decoration: underline" href="https://github.com/dddjava/jig/wiki/2026.4.1-%E7%94%BB%E5%83%8F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8A%E3%82%88%E3%81%B3Exce%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%BB%83%E6%AD%A2">詳細はこちら</a>。</p>
+        </aside>
         <div th:each="diagram : ${diagrams}">
             <h3 th:text="${diagram.label()}">XXX</h3>
             <a href="#" th:href="${image}" th:each="image : ${diagram.imageFileNames()}">

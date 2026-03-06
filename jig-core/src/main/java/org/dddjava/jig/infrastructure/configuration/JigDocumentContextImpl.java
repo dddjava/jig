@@ -41,6 +41,7 @@ public class JigDocumentContextImpl implements JigDocumentContext {
         return properties.jigDocuments;
     }
 
+    @Deprecated(since = "2026.3.1")
     @Override
     public JigDiagramOption diagramOption() {
         return new JigDiagramOption(

@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * サービスメソッド呼び出し図
  */
+@Deprecated(since = "2026.3.1")
 public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
     private final ServiceAngles serviceAngles;

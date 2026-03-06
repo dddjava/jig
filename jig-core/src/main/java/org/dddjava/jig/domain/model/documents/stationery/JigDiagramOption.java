@@ -11,6 +11,7 @@ import java.time.Duration;
  * @param graphvizTimeout      dotコマンドのタイムアウト
  * @param transitiveReduction  推移簡約をするかどうか
  */
+@Deprecated(since = "2026.3.1")
 public record JigDiagramOption(
         JigDiagramFormat graphvizOutputFormat,
         Duration graphvizTimeout,

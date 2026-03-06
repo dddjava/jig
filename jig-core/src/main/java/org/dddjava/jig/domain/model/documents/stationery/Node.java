@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 /**
  * ノードの表現
  */
+@Deprecated(since = "2026.3.1")
 public class Node {
 
     public static final String DEFAULT = "node [shape=box,style=filled,fillcolor=lightgoldenrod];";

@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * 区分使用図
  */
+@Deprecated(since = "2026.3.1")
 public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     private final ServiceMethods serviceMethods;

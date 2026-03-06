@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.logging.Logger;
 
+@Deprecated(since = "2026.3.1")
 public class DotCommandRunner {
     private static final Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
 

@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.joining;
  *
  * 浅い階層は仕様記述、深い階層は実装に使用します。
  */
+@Deprecated(since = "2026.3.1")
 public class PackageRelationDiagram implements DiagramSourceWriter {
 
     /**

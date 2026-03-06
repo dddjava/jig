@@ -27,18 +27,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemAlreadyExistsException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class JigDocumentGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
@@ -124,6 +119,7 @@ public class JigDocumentGenerator {
             try {
                 long startTime = System.currentTimeMillis();
 
+                @SuppressWarnings("deprecation")
                 var outputFilePaths = switch (jigDocument) {
                     case Glossary -> new TableView(jigDocument, thymeleafTemplateEngine)
                             .write(outputDirectory, jigService.glossary(jigRepository));

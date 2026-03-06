@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 /**
  * JigTypeの関連図
  */
+@Deprecated(since = "2026.3.1")
 public class ClassRelationDiagram implements DiagramSourceWriter {
 
     private final CoreTypesAndRelations coreTypesAndRelations;

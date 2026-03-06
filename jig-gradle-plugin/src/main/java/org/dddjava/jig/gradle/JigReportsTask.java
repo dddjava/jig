@@ -8,11 +8,13 @@ import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
+@DisableCachingByDefault(because = "JigReportsTask depends on JigExecutor and cannot define output")
 public class JigReportsTask extends DefaultTask {
 
     @TaskAction

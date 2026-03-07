@@ -6,7 +6,6 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperations;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -29,7 +28,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class DefaultJigRepositoryFactory {
 
@@ -114,6 +112,10 @@ public class DefaultJigRepositoryFactory {
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceOperationsRepository);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
+
+                var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(classDeclarations);
+                persistenceOperationsRepository.register(springDataJdbcStatements);
+
                 return new JigRepository() {
                     @Override
                     public JigTypes fetchJigTypes() {
@@ -154,26 +156,15 @@ public class DefaultJigRepositoryFactory {
         List<Path> classPaths = sources.sourceBasePaths().classSourceBasePaths();
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
-        var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(classDeclarations);
 
         var persistenceOperationsRepository = myBatisReadResult.persistenceOperationsRepository();
-        var values = persistenceOperationsRepository.values();
-        PersistenceOperationsRepository mergedStatements = mergeStatements(values, springDataJdbcStatements);
 
         SqlReadStatus sqlReadStatus = myBatisReadResult.status();
-        if (sqlReadStatus == SqlReadStatus.SQLなし && mergedStatements.isEmpty()) {
+        if (sqlReadStatus == SqlReadStatus.SQLなし && persistenceOperationsRepository.isEmpty()) {
             jigEventRepository.recordEvent(sqlReadStatus.toReadStatus());
         } else if (sqlReadStatus != SqlReadStatus.成功 && sqlReadStatus != SqlReadStatus.SQLなし) {
             jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
         }
-        return mergedStatements;
-    }
-
-    private PersistenceOperationsRepository mergeStatements(Collection<PersistenceOperations> myBatisStatements, Collection<PersistenceOperations> springDataJdbcStatements) {
-        return new PersistenceOperationsRepository(Stream.concat(
-                        myBatisStatements.stream(),
-                        springDataJdbcStatements.stream())
-                .distinct()
-                .toList());
+        return persistenceOperationsRepository;
     }
 }

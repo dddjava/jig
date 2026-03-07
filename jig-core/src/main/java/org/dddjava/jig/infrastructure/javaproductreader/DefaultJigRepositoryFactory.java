@@ -7,6 +7,7 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.springdata.SpringDataJdbcStatementsReader;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -22,7 +23,6 @@ import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
-import org.dddjava.jig.infrastructure.springdatajdbc.SpringDataJdbcStatementsReader;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -36,7 +36,6 @@ public class DefaultJigRepositoryFactory {
     private final AsmClassSourceReader asmClassSourceReader;
     private final JavaparserReader javaparserReader;
     private final MyBatisStatementsReader myBatisStatementsReader;
-    private final SpringDataJdbcStatementsReader springDataJdbcStatementsReader;
 
     private final JigEventRepository jigEventRepository;
     private final GlossaryRepository glossaryRepository;
@@ -46,7 +45,6 @@ public class DefaultJigRepositoryFactory {
         this.asmClassSourceReader = asmClassSourceReader;
         this.javaparserReader = javaparserReader;
         this.myBatisStatementsReader = myBatisStatementsReader;
-        this.springDataJdbcStatementsReader = springDataJdbcStatementsReader;
         this.glossaryRepository = glossaryRepository;
         this.jigEventRepository = jigEventRepository;
     }
@@ -113,7 +111,7 @@ public class DefaultJigRepositoryFactory {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceOperationsRepository);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
 
-                var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(jigTypes);
+                var springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
                 persistenceOperationsRepository.register(springDataJdbcStatements);
 
                 return new JigRepository() {

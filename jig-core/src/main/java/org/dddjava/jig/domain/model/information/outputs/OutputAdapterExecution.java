@@ -22,7 +22,6 @@ public record OutputAdapterExecution(
         Collection<PersistenceOperation> persistenceOperations
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
-    private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
 
     public static OutputAdapterExecution from(JigMethod jigMethod,
                                               JigTypes jigTypes,
@@ -63,7 +62,7 @@ public record OutputAdapterExecution(
                                                                                            JigMethod tracingJigMethod,
                                                                                            JigTypes jigTypes,
                                                                                            PersistenceOperationsRepository persistenceOperationsRepository) {
-        if (!isSpringDataRepositoryType(methodCall.methodOwner())) {
+        if (!SpringDataUtil.isSpringDataRepositoryType(methodCall.methodOwner())) {
             return Optional.empty();
         }
         List<PersistenceOperations> knownTypeCandidates = springDataCandidatesFromKnownTypes(tracingJigMethod, jigTypes, persistenceOperationsRepository);
@@ -114,9 +113,9 @@ public record OutputAdapterExecution(
     private static Optional<PersistenceOperation> findPersistenceOperation(MethodCall methodCall,
                                                                            JigMethod tracingJigMethod,
                                                                            PersistenceOperations persistenceOperations) {
-        PersistenceOperationId persistenceOperationId = toPersistenceOperationId(methodCall);
+        PersistenceOperationId persistenceOperationId = SpringDataUtil.toPersistenceOperationId(methodCall);
         return persistenceOperations.findPersistenceOperationById(persistenceOperationId)
-                .or(() -> generateCalledPersistenceOperation(methodCall, persistenceOperations))
+                .or(() -> SpringDataUtil.generateCalledPersistenceOperation(methodCall, persistenceOperations))
                 .or(() -> {
                     logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
                             tracingJigMethod.fqn(),
@@ -125,27 +124,6 @@ public record OutputAdapterExecution(
                             persistenceOperations.origin());
                     return Optional.empty();
                 });
-    }
-
-    /**
-     * 呼び出しているメソッドから組み上げる
-     *
-     * MethodCallが存在する以上はコンパイルが通っているので、解決済みの永続化操作がなくても継承しているIFなどで定義されている可能性が高い。
-     * 主なユースケースはSpringDataJDBCのCrudRepositoryなどに定義されたメソッドを呼び出し元から「存在するもの」として構築すること。
-     */
-    private static Optional<PersistenceOperation> generateCalledPersistenceOperation(MethodCall methodCall,
-                                                                                     PersistenceOperations persistenceOperations) {
-        if (persistenceOperations.origin() != PersistenceOperationsOrigin.SPRING_DATA_JDBC) {
-            return Optional.empty();
-        }
-
-        // SpringDataJDBCのIFに定義されたメソッドの解決を試みる
-        PersistenceOperationId persistenceOperationId = generatedPersistenceOperationId(methodCall, persistenceOperations);
-        return SpringDataUtil.inferSqlType(methodCall.methodName())
-                .map(sqlType -> PersistenceOperation.from(
-                        persistenceOperationId,
-                        sqlType,
-                        persistenceOperations.defaultPersistenceTargets()));
     }
 
     private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> tracingMethodIds) {
@@ -164,19 +142,4 @@ public record OutputAdapterExecution(
         }
     }
 
-    private static PersistenceOperationId toPersistenceOperationId(MethodCall methodCall) {
-        return PersistenceOperationId.fromTypeIdAndName(methodCall.methodOwner(), methodCall.methodName());
-    }
-
-    private static PersistenceOperationId generatedPersistenceOperationId(MethodCall methodCall,
-                                                                          PersistenceOperations persistenceOperations) {
-        if (isSpringDataRepositoryType(methodCall.methodOwner())) {
-            return PersistenceOperationId.fromTypeIdAndName(persistenceOperations.typeId(), methodCall.methodName());
-        }
-        return toPersistenceOperationId(methodCall);
-    }
-
-    private static boolean isSpringDataRepositoryType(TypeId typeId) {
-        return typeId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX);
-    }
 }

@@ -3,9 +3,9 @@ package org.dddjava.jig.domain.model.information.outputs;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.*;
-import org.dddjava.jig.domain.model.data.persistence.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.outputs.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +59,9 @@ public record OutputAdapterExecution(
     }
 
     private static Optional<PersistenceOperations> resolveSpringDataPersistenceOperations(MethodCall methodCall,
-                                                                                           JigMethod tracingJigMethod,
-                                                                                           JigTypes jigTypes,
-                                                                                           PersistenceOperationsRepository persistenceOperationsRepository) {
+                                                                                          JigMethod tracingJigMethod,
+                                                                                          JigTypes jigTypes,
+                                                                                          PersistenceOperationsRepository persistenceOperationsRepository) {
         if (!SpringDataUtil.isSpringDataRepositoryType(methodCall.methodOwner())) {
             return Optional.empty();
         }
@@ -74,8 +74,8 @@ public record OutputAdapterExecution(
     }
 
     private static List<PersistenceOperations> springDataCandidatesFromKnownTypes(JigMethod tracingJigMethod,
-                                                                                   JigTypes jigTypes,
-                                                                                   PersistenceOperationsRepository persistenceOperationsRepository) {
+                                                                                  JigTypes jigTypes,
+                                                                                  PersistenceOperationsRepository persistenceOperationsRepository) {
         Set<TypeId> candidateTypeIds = Stream.concat(
                         tracingJigMethod.usingTypes().values().stream(),
                         jigTypes.resolveJigType(tracingJigMethod.declaringType()).stream()

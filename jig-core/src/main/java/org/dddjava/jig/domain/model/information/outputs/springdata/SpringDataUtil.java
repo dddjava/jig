@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.persistence.springdata;
+package org.dddjava.jig.domain.model.information.outputs.springdata;
 
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.persistence.*;

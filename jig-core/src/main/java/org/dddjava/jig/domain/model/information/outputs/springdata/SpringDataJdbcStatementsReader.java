@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.persistence.springdata;
+package org.dddjava.jig.domain.model.information.outputs.springdata;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.persistence.*;

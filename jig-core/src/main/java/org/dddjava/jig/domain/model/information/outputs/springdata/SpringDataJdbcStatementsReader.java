@@ -21,7 +21,7 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
     /**
-     * ASMで読み取ったクラス情報から、Spring Data JDBCのRepositoryを抽出して永続化操作対象群を構築する
+     * Spring Data JDBCのRepositoryを抽出して永続化操作対象群を構築する
      *
      * 対象は次の条件をすべて満たす型:
      * 1) interface である

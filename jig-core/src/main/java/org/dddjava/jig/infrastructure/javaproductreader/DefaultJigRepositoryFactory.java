@@ -113,7 +113,7 @@ public class DefaultJigRepositoryFactory {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceOperationsRepository);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
 
-                var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(classDeclarations);
+                var springDataJdbcStatements = springDataJdbcStatementsReader.readFrom(jigTypes);
                 persistenceOperationsRepository.register(springDataJdbcStatements);
 
                 return new JigRepository() {

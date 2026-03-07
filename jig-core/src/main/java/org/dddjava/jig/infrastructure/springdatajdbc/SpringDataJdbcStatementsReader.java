@@ -4,16 +4,15 @@ import org.dddjava.jig.domain.model.data.members.fields.JigFieldHeader;
 import org.dddjava.jig.domain.model.data.persistence.*;
 import org.dddjava.jig.domain.model.data.persistence.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.data.types.*;
+import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
-import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
+import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toMap;
 
 public class SpringDataJdbcStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
@@ -30,17 +29,12 @@ public class SpringDataJdbcStatementsReader {
      * 1) interface である
      * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
-    public Collection<PersistenceOperations> readFrom(Collection<ClassDeclaration> classDeclarations) {
-        Map<TypeId, ClassDeclaration> declarationMap = classDeclarations.stream()
-                .collect(toMap(
-                        declaration -> declaration.jigTypeHeader().id(),
-                        Function.identity(),
-                        (left, right) -> right));
+    public Collection<PersistenceOperations> readFrom(JigTypes jigTypes) {
 
-        return classDeclarations.stream()
+        return jigTypes.stream()
                 .filter(this::isInterface)
-                .flatMap(declaration -> resolvePersistenceTargets(declaration, declarationMap).stream()
-                        .map(persistenceTargets -> resolvePersistenceOperations(declaration, persistenceTargets)))
+                .flatMap(jigType -> resolvePersistenceTargets(jigType, jigTypes).stream()
+                        .map(persistenceTargets -> resolvePersistenceOperations(jigType, persistenceTargets)))
                 .toList();
     }
 
@@ -49,15 +43,15 @@ public class SpringDataJdbcStatementsReader {
      *
      * 対象の型がSpringDataRepositoryを継承したインタフェースであればEntityの型を返す。
      *
-     * @param declaration    対象の型
-     * @param declarationMap インタフェースの型を解決するための辞書
+     * @param jigType  対象の型
+     * @param jigTypes インタフェースの型を解決するための辞書
      */
-    private Optional<PersistenceTargets> resolvePersistenceTargets(ClassDeclaration declaration, Map<TypeId, ClassDeclaration> declarationMap) {
-        return resolvePersistenceTargets(declaration, declarationMap, new HashSet<>());
+    private Optional<PersistenceTargets> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes) {
+        return resolvePersistenceTargets(jigType, jigTypes, new HashSet<>());
     }
 
-    private Optional<PersistenceTargets> resolvePersistenceTargets(ClassDeclaration classDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        var header = classDeclaration.jigTypeHeader();
+    private Optional<PersistenceTargets> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes, Set<TypeId> visited) {
+        var header = jigType.jigTypeHeader();
         // 再帰しているので一応チェック。普通に作れば型継承の循環はコンパイルエラーになるため、このチェックに出番はない。
         if (!visited.add(header.id())) return Optional.empty();
 
@@ -73,20 +67,20 @@ public class SpringDataJdbcStatementsReader {
                     continue;
                 }
                 var entityTypeId = jigTypeArguments.getFirst().typeId();
-                return Optional.of(extractPersistenceTargets(declarationMap, entityTypeId));
-                // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合は1つ目だけ扱うでいいはず　
+                return Optional.of(extractPersistenceTargets(jigTypes, entityTypeId));
+                // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合も1つ目だけ扱う。複数実装していてもエンティティ型が違うのは想定しない。
             }
 
             // インタフェースを対象に再帰する。
-            ClassDeclaration interfaceDeclaration = declarationMap.get(interfaceId);
-            if (interfaceDeclaration == null) {
-                // JSLのインタフェースを継承している場合などもごく普通にここにくるのでログなども出さない。
-                // 内部共通ライブラリのインタフェースがSpringDataのRepositoryを継承している場合などにJIGの読み取り対象としていなければここにきてしまう。
-                continue;
+            Optional<PersistenceTargets> persistenceTargets = jigTypes.resolveJigType(interfaceId)
+                    .flatMap(interfaceJigType -> resolvePersistenceTargets(interfaceJigType, jigTypes, visited));
+            if (persistenceTargets.isPresent()) {
+                // 継承したインタフェースからPersistenceTargetsの解決に成功した
+                return persistenceTargets;
             }
-            Optional<PersistenceTargets> repositoryInfo = resolvePersistenceTargets(interfaceDeclaration, declarationMap, visited);
-            // エンティティの解決に成功していれば進めてしまう
-            if (repositoryInfo.isPresent()) return repositoryInfo;
+
+            // インタフェースがJigTypesにない場合や継承階層を辿ってもemptyな場合
+            // 複数インタフェースを実装している場合に次を処理する
         }
 
         // 継承先にSpringDataを含まない
@@ -96,11 +90,11 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceOperations resolvePersistenceOperations(ClassDeclaration declaration, PersistenceTargets defaultPersistenceTargets) {
-        TypeId typeId = declaration.jigTypeHeader().id();
+    private PersistenceOperations resolvePersistenceOperations(JigType jigType, PersistenceTargets defaultPersistenceTargets) {
+        TypeId typeId = jigType.jigTypeHeader().id();
 
-        List<PersistenceOperation> persistenceOperations = declaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> resolvePersistenceOperation(jigMethodDeclaration, typeId, defaultPersistenceTargets))
+        List<PersistenceOperation> persistenceOperations = jigType.instanceJigMethods().stream()
+                .map(jigMethod -> resolvePersistenceOperation(jigMethod.jigMethodDeclaration(), typeId, defaultPersistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
@@ -146,8 +140,8 @@ public class SpringDataJdbcStatementsReader {
                 .flatMap(annotation -> annotation.elementTextOf("value"));
     }
 
-    private boolean isInterface(ClassDeclaration declaration) {
-        JigTypeHeader header = declaration.jigTypeHeader();
+    private boolean isInterface(JigType jigType) {
+        JigTypeHeader header = jigType.jigTypeHeader();
         return header.javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE;
     }
 
@@ -157,28 +151,27 @@ public class SpringDataJdbcStatementsReader {
      * Tableアノテーションから永続化操作対象（テーブル名）を取得する。
      * シンプルなエンティティでは1件だが、MappedCollectionによる複数テーブルの場合に複数件となる。
      */
-    private static PersistenceTargets extractPersistenceTargets(Map<TypeId, ClassDeclaration> declarationMap, TypeId entityTypeId) {
-        return new PersistenceTargets(extractPersistenceTargets(entityTypeId, declarationMap, new HashSet<>()).toList());
+    private static PersistenceTargets extractPersistenceTargets(JigTypes jigTypes, TypeId entityTypeId) {
+        return new PersistenceTargets(extractPersistenceTargets(entityTypeId, jigTypes, new HashSet<>()).toList());
     }
 
-    private static Stream<PersistenceTarget> extractPersistenceTargets(TypeId entityTypeId, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
+    private static Stream<PersistenceTarget> extractPersistenceTargets(TypeId entityTypeId, JigTypes jigTypes, Set<TypeId> visited) {
         // 循環参照になっている場合（自分を参照する結合とかだとありえる？）
         if (!visited.add(entityTypeId)) return Stream.empty();
 
-        ClassDeclaration entityDeclaration = declarationMap.get(entityTypeId);
-        if (entityDeclaration == null) {
-            // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
-            String tableName = toSnakeCase(entityTypeId.asSimpleText());
-            logger.warn("Entity {} のクラス情報が読み取り対象に含まれていません。テーブル名を仮に {} として続行します。", entityTypeId, tableName);
-            return Stream.of(new PersistenceTarget(tableName));
-        }
-
-        return Stream.concat(resolveOwnTable(entityDeclaration, entityTypeId),
-                resolveMappedCollectionTables(entityDeclaration, declarationMap, visited));
+        return jigTypes.resolveJigType(entityTypeId)
+                .map(entityType -> Stream.concat(resolveOwnTable(entityType, entityTypeId),
+                        resolveMappedCollectionTables(entityType, jigTypes, visited)))
+                .orElseGet(() -> {
+                    // entityが読み取ったクラス定義にないので、型名をテーブル名としておく
+                    String tableName = toSnakeCase(entityTypeId.asSimpleText());
+                    logger.warn("Entity {} のクラス情報が読み取り対象に含まれていません。テーブル名を仮に {} として続行します。", entityTypeId, tableName);
+                    return Stream.of(new PersistenceTarget(tableName));
+                });
     }
 
-    private static Stream<PersistenceTarget> resolveOwnTable(ClassDeclaration entityDeclaration, TypeId entityTypeId) {
-        String tableName = entityDeclaration.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
+    private static Stream<PersistenceTarget> resolveOwnTable(JigType jigType, TypeId entityTypeId) {
+        String tableName = jigType.jigTypeHeader().jigTypeAttributes().declarationAnnotationInstances().stream()
                 .filter(annotation -> annotation.id().fqn().equals(SPRING_DATA_TABLE))
                 .findAny()
                 .flatMap(annotation -> annotation.elementTextOf("value")
@@ -197,11 +190,13 @@ public class SpringDataJdbcStatementsReader {
         return Stream.of(new PersistenceTarget(tableName));
     }
 
-    private static Stream<PersistenceTarget> resolveMappedCollectionTables(ClassDeclaration entityDeclaration, Map<TypeId, ClassDeclaration> declarationMap, Set<TypeId> visited) {
-        return entityDeclaration.jigFieldHeaders().stream()
+    private static Stream<PersistenceTarget> resolveMappedCollectionTables(JigType jigType, JigTypes jigTypes, Set<TypeId> visited) {
+        // TODO フィールドだけでよかったっけ？
+        return jigType.jigTypeMembers().instanceFields().stream()
+                .map(JigField::jigFieldHeader)
                 .flatMap(jigFieldHeader -> resolveMappedCollectionEntityTypeId(jigFieldHeader).stream())
                 // 再帰的に拾ってくる
-                .flatMap(mappedTypeId -> extractPersistenceTargets(mappedTypeId, declarationMap, visited));
+                .flatMap(mappedTypeId -> extractPersistenceTargets(mappedTypeId, jigTypes, visited));
     }
 
     /**

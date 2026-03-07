@@ -21,20 +21,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @JigTest
 class OutputAdapterExecutionTest {
 
+    private static OutputAdapter findOutputAdapter(OutputAdapters outputAdapters, Class<?> type) {
+        return outputAdapters.stream()
+                .filter(oa -> oa.jigType().id().equals(TypeId.valueOf(type.getCanonicalName())))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private static OutputAdapterExecution findExecution(OutputAdapter outputAdapter, String methodName) {
+        return outputAdapter.outputAdapterExecutions().stream()
+                .filter(e -> e.jigMethod().name().equals(methodName))
+                .findFirst()
+                .orElseThrow();
+    }
+
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
         var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var traceOutputAdapter = outputAdapters.stream()
-                .filter(outputAdapter -> outputAdapter.jigType().id().equals(TypeId.valueOf(TraceOutputAdapter.class.getCanonicalName())))
-                .findFirst()
-                .orElseThrow();
-        var execution = traceOutputAdapter.outputAdapterExecutions().stream()
-                .filter(outputAdapterExecution -> outputAdapterExecution.jigMethod().name().equals("save"))
-                .findFirst()
-                .orElseThrow();
+        var traceOutputAdapter = findOutputAdapter(outputAdapters, TraceOutputAdapter.class);
+        var execution = findExecution(traceOutputAdapter, "save");
 
         assertTrue(execution.tracingJigMethods().stream()
                 .anyMatch(method -> method.declaringType().equals(TypeId.valueOf(TraceHelper.class.getCanonicalName()))
@@ -55,14 +63,8 @@ class OutputAdapterExecutionTest {
         var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var targetOutputAdapter = outputAdapters.stream()
-                .filter(outputAdapter -> outputAdapter.jigType().id().equals(TypeId.valueOf(SpringDataJdbcNameOutputAdapter.class.getCanonicalName())))
-                .findAny()
-                .orElseThrow();
-        var execution = targetOutputAdapter.outputAdapterExecutions().stream()
-                .filter(outputAdapterExecution -> outputAdapterExecution.jigMethod().name().equals("save"))
-                .findAny()
-                .orElseThrow();
+        var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcNameOutputAdapter.class);
+        var execution = findExecution(targetOutputAdapter, "save");
 
         PersistenceOperation persistenceOperation = execution.persistenceOperations().stream()
                 .filter(found -> found.persistenceOperationId().equals(
@@ -80,14 +82,8 @@ class OutputAdapterExecutionTest {
         var sqlStatements = jigRepository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var targetOutputAdapter = outputAdapters.stream()
-                .filter(outputAdapter -> outputAdapter.jigType().id().equals(TypeId.valueOf(SpringDataJdbcCrudDelegatingOutputAdapter.class.getCanonicalName())))
-                .findAny()
-                .orElseThrow();
-        var execution = targetOutputAdapter.outputAdapterExecutions().stream()
-                .filter(outputAdapterExecution -> outputAdapterExecution.jigMethod().name().equals("save"))
-                .findAny()
-                .orElseThrow();
+        var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcCrudDelegatingOutputAdapter.class);
+        var execution = findExecution(targetOutputAdapter, "save");
 
         PersistenceOperation persistenceOperation = execution.persistenceOperations().stream()
                 .filter(found -> found.persistenceOperationId().equals(

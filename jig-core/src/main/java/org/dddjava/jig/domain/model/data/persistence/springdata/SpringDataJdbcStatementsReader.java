@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 public class SpringDataJdbcStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
 
-    private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
     private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
@@ -57,7 +56,7 @@ public class SpringDataJdbcStatementsReader {
         // 継承しているインタフェースを確認
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
-            if (isSpringDataRepository(interfaceId)) {
+            if (SpringDataUtil.isSpringDataRepositoryType(interfaceId)) {
                 List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
                 if (jigTypeArguments.isEmpty()) {
                     logger.warn("Spring Data Repository {} の型引数が解決できないため、この継承はスキップします。宣言元: {}",
@@ -220,11 +219,6 @@ public class SpringDataJdbcStatementsReader {
 
         // Collection<T> / Map<K, V> のどちらでも末尾を集約対象エンティティとして扱う
         return Optional.of(typeArguments.getLast().typeId());
-    }
-
-    private static boolean isSpringDataRepository(TypeId interfaceId) {
-        // CrudRepository / PagingAndSortingRepository / Repository などを包含するプレフィックス判定
-        return interfaceId.fqn().startsWith(SPRING_DATA_REPOSITORY_PREFIX);
     }
 
     private static String toSnakeCase(String text) {

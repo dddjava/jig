@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 public class JigTypes {
@@ -20,7 +21,7 @@ public class JigTypes {
     private final List<JigType> list;
 
     private final Map<TypeId, JigType> jigTypeMap;
-    private final Map<JigMethodId, JigMethod> jigMethodMap;
+    private final Map<JigMethodId, List<JigMethod>> jigMethodMap;
 
     public JigTypes(Collection<JigType> jigTypes) {
         this.list = jigTypes.stream().sorted(Comparator.comparing(jigType -> jigType.id())).toList();
@@ -32,14 +33,10 @@ public class JigTypes {
                             left.id().fqn());
                     return left;
                 }));
-        this.jigMethodMap = jigTypes.stream().flatMap(JigType::allJigMethodStream).collect(toMap(
-                jigMethod -> jigMethod.jigMethodId(),
-                Function.identity(),
-                (left, right) -> {
-                    logger.warn("{} が重複しています。完全修飾名が同じメソッドを一度にロードしていることが原因です。依存関係にない複数モジュール群でJIGを実行している場合、JIGの実行対象を減らすか、異なるメソッドであれば該当メソッドのパッケージ名もしくはメソッド名を変更してください。依存関係にあるモジュール群で発生している場合は実行時に意図しないメソッドが使用される可能性がある実装が懸念されます。JIGは片方を採用して処理は続行しますが、メソッドの実装が異なる場合は意図せぬ出力になります。",
-                            left.jigMethodId().value());
-                    return left;
-                }));
+        this.jigMethodMap = jigTypes.stream()
+                .flatMap(JigType::allJigMethodStream)
+                // FIXME ブリッジメソッドなどでIDが同じメソッドが存在する場合があるのでgroupingByを使用。
+                .collect(groupingBy(JigMethod::jigMethodId));
     }
 
     public List<JigType> listCollectionType() {
@@ -63,7 +60,9 @@ public class JigTypes {
     }
 
     public Optional<JigMethod> resolveJigMethod(JigMethodId jigMethodId) {
-        return Optional.ofNullable(jigMethodMap.get(jigMethodId));
+        var jigMethods = jigMethodMap.get(jigMethodId);
+        if (jigMethods == null) return Optional.empty();
+        return jigMethods.stream().findAny();
     }
 
     public Optional<JigType> resolveJigType(TypeId typeId) {

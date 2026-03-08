@@ -40,7 +40,7 @@ public class DefaultJigRepositoryFactory {
     private final JigEventRepository jigEventRepository;
     private final GlossaryRepository glossaryRepository;
 
-    public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, SpringDataJdbcStatementsReader springDataJdbcStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
+    public DefaultJigRepositoryFactory(ClassOrJavaSourceCollector sourceCollector, AsmClassSourceReader asmClassSourceReader, JavaparserReader javaparserReader, MyBatisStatementsReader myBatisStatementsReader, JigEventRepository jigEventRepository, GlossaryRepository glossaryRepository) {
         this.sourceCollector = sourceCollector;
         this.asmClassSourceReader = asmClassSourceReader;
         this.javaparserReader = javaparserReader;
@@ -55,7 +55,6 @@ public class DefaultJigRepositoryFactory {
                 new AsmClassSourceReader(),
                 new JavaparserReader(),
                 new MyBatisStatementsReader(),
-                new SpringDataJdbcStatementsReader(),
                 configuration.jigEventRepository(), configuration.glossaryRepository()
         );
     }

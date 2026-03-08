@@ -71,8 +71,8 @@ public class InsightAdapter {
         return """
                 {"fqn": "%s", "label": "%s", "numberOfTypes": %d, "numberOfMethods": %d, "numberOfUsingTypes": %d, "cyclomaticComplexity": %d, "size": %d}
                 """.formatted(
-                escape(insight.fqn()),
-                escape(insight.label()),
+                JsonSupport.escape(insight.fqn()),
+                JsonSupport.escape(insight.label()),
                 insight.numberOfTypes(),
                 insight.numberOfMethods(),
                 insight.numberOfUsingTypes(),
@@ -84,35 +84,28 @@ public class InsightAdapter {
         return """
                 {"fqn": "%s", "label": "%s", "numberOfMethods": %d, "numberOfUsingTypes": %d, "cyclomaticComplexity": %d, "size": %d, "packageFqn": "%s"}
                 """.formatted(
-                escape(insight.fqn()),
-                escape(insight.label()),
+                JsonSupport.escape(insight.fqn()),
+                JsonSupport.escape(insight.label()),
                 insight.numberOfMethods(),
                 insight.numberOfUsingTypes(),
                 insight.cyclomaticComplexity(),
                 insight.size(),
-                escape(insight.packageFqn()));
+                JsonSupport.escape(insight.packageFqn()));
     }
 
     private String formatMethodJson(MethodInsight insight) {
         return """
                 {"fqn": "%s", "label": "%s", "cyclomaticComplexity": %d, "numberOfUsingTypes": %d, "numberOfUsingMethods": %d, "numberOfUsingFields": %d, "size": %d, "packageFqn": "%s", "typeFqn": "%s"}
                 """.formatted(
-                escape(insight.fqn()),
-                escape(insight.label()),
+                JsonSupport.escape(insight.fqn()),
+                JsonSupport.escape(insight.label()),
                 insight.cyclomaticComplexity(),
                 insight.numberOfUsingTypes(),
                 insight.numberOfUsingMethods(),
                 insight.numberOfUsingFields(),
                 insight.size(),
-                escape(insight.packageFqn()),
-                escape(insight.typeFqn()));
+                JsonSupport.escape(insight.packageFqn()),
+                JsonSupport.escape(insight.typeFqn()));
     }
 
-    private String escape(String string) {
-        return string
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\r", "\\r")
-                .replace("\n", "\\n");
-    }
 }

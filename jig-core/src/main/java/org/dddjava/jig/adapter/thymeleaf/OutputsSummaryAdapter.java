@@ -13,7 +13,6 @@ import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 外部利用概要
@@ -46,57 +45,57 @@ public class OutputsSummaryAdapter {
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
-            adapters.putIfAbsent(adapterFqn, """
+                    adapters.putIfAbsent(adapterFqn, """
                     {"fqn":"%s","label":"%s"}
-                    """.formatted(escape(adapterFqn), escape(outputAdapter.jigType().label())));
+                    """.formatted(JsonSupport.escape(adapterFqn), JsonSupport.escape(outputAdapter.jigType().label())));
 
             outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
                 ports.putIfAbsent(portFqn, """
                         {"fqn":"%s","label":"%s"}
-                        """.formatted(escape(portFqn), escape(outputPort.jigType().label())));
+                        """.formatted(JsonSupport.escape(portFqn), JsonSupport.escape(outputPort.jigType().label())));
 
                 outputPort.operationStream().forEach(outputPortOperation -> {
                     String opFqn = outputPortOperation.jigMethod().fqn();
                     operations.putIfAbsent(opFqn, """
                             {"fqn":"%s","name":"%s","signature":"%s"}
                             """.formatted(
-                            escape(opFqn),
-                            escape(outputPortOperation.jigMethod().name()),
-                            escape(outputPortOperation.jigMethod().simpleMethodSignatureText())));
+                            JsonSupport.escape(opFqn),
+                            JsonSupport.escape(outputPortOperation.jigMethod().name()),
+                            JsonSupport.escape(outputPortOperation.jigMethod().simpleMethodSignatureText())));
 
                     outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
                         String execFqn = outputAdapterExecution.jigMethod().fqn();
                         executions.putIfAbsent(execFqn, """
                                 {"fqn":"%s","name":"%s","signature":"%s"}
                                 """.formatted(
-                                escape(execFqn),
-                                escape(outputAdapterExecution.jigMethod().name()),
-                                escape(outputAdapterExecution.jigMethod().simpleMethodSignatureText())));
+                                JsonSupport.escape(execFqn),
+                                JsonSupport.escape(outputAdapterExecution.jigMethod().name()),
+                                JsonSupport.escape(outputAdapterExecution.jigMethod().simpleMethodSignatureText())));
 
                         List<String> pOpIds = new ArrayList<>();
                         outputAdapterExecution.persistenceOperations().forEach(pOp -> {
                             String pOpId = pOp.persistenceOperationId().value();
                             pOpIds.add(pOpId);
-                            persistenceOperations.putIfAbsent(pOpId, """
+                                    persistenceOperations.putIfAbsent(pOpId, """
                                     {"id":"%s","sqlType":"%s","targets":%s,"group":"%s"}
                                     """.formatted(
-                                    escape(pOpId),
+                                    JsonSupport.escape(pOpId),
                                     pOp.sqlType().name(),
-                                    toJsonStringList(pOp.persistenceTargets().persistenceTargets().stream()
+                                    JsonSupport.toJsonStringList(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
                                             .toList()),
-                                    escape(pOp.persistenceOperationId().typeId().fqn())));
+                                    JsonSupport.escape(pOp.persistenceOperationId().typeId().fqn())));
                         });
 
                         links.add("""
                                 {"port":"%s","operation":"%s","adapter":"%s","execution":"%s","persistenceOperations":%s}
                                 """.formatted(
-                                escape(portFqn),
-                                escape(opFqn),
-                                escape(adapterFqn),
-                                escape(execFqn),
-                                toJsonStringList(pOpIds)));
+                                JsonSupport.escape(portFqn),
+                                JsonSupport.escape(opFqn),
+                                JsonSupport.escape(adapterFqn),
+                                JsonSupport.escape(execFqn),
+                                JsonSupport.toJsonStringList(pOpIds)));
                     });
                 });
             });
@@ -112,11 +111,11 @@ public class OutputsSummaryAdapter {
                   "links": [%s]
                 }
                 """.formatted(
-                mapToJson(ports),
-                mapToJson(operations),
-                mapToJson(adapters),
-                mapToJson(executions),
-                mapToJson(persistenceOperations),
+                JsonSupport.mapToJson(ports),
+                JsonSupport.mapToJson(operations),
+                JsonSupport.mapToJson(adapters),
+                JsonSupport.mapToJson(executions),
+                JsonSupport.mapToJson(persistenceOperations),
                 String.join(",", links)
         );
 
@@ -135,24 +134,4 @@ public class OutputsSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String mapToJson(Map<String, String> map) {
-        return map.entrySet().stream()
-                .map(e -> "\"%s\":%s".formatted(escape(e.getKey()), e.getValue()))
-                .collect(Collectors.joining(",", "{", "}"));
-    }
-
-    private String toJsonStringList(List<String> values) {
-        return values.stream()
-                .map(this::escape)
-                .map(value -> "\"" + value + "\"")
-                .collect(Collectors.joining(",", "[", "]"));
-    }
-
-    private String escape(String string) {
-        return string
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\r", "\\r")
-                .replace("\n", "\\n");
-    }
 }

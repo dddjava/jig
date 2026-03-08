@@ -36,9 +36,9 @@ public class PackageSummaryView {
                 .map(packageInfo -> """
                         {"fqn": "%s", "name": "%s", "description": "%s", "classCount": %d}
                         """.formatted(
-                        escape(packageInfo.fqn()),
-                        escape(packageInfo.label()),
-                        escape(packageInfo.term().description()),
+                        JsonSupport.escape(packageInfo.fqn()),
+                        JsonSupport.escape(packageInfo.label()),
+                        JsonSupport.escape(packageInfo.term().description()),
                         packageInfo.numberOfClasses()))
                 .collect(Collectors.joining(",", "[", "]"));
 
@@ -67,23 +67,19 @@ public class PackageSummaryView {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String escape(String string) {
-        return string.replace("\n", "\\n");
-    }
-
     private String formatRelationJson(PackageRelation relation) {
         return """
                 {"from": "%s", "to": "%s"}
                 """.formatted(
-                escape(relation.from().asText()),
-                escape(relation.to().asText()));
+                JsonSupport.escape(relation.from().asText()),
+                JsonSupport.escape(relation.to().asText()));
     }
 
     private String formatTypeRelationJson(TypeRelationship relation) {
         return """
                 {"from": "%s", "to": "%s"}
                 """.formatted(
-                escape(relation.from().fqn()),
-                escape(relation.to().fqn()));
+                JsonSupport.escape(relation.from().fqn()),
+                JsonSupport.escape(relation.to().fqn()));
     }
 }

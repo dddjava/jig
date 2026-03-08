@@ -29,11 +29,11 @@ public class TableView {
                 .map(term -> """
                         {"title": "%s", "simpleText": "%s", "fqn": "%s", "kind": "%s", "description": "%s"}
                         """.formatted(
-                        escape(term.title()),
-                        escape(term.simpleText()),
-                        escape(term.id().asText()),
-                        escape(term.termKind().name()),
-                        escape(term.description())))
+                        JsonSupport.escape(term.title()),
+                        JsonSupport.escape(term.simpleText()),
+                        JsonSupport.escape(term.id().asText()),
+                        JsonSupport.escape(term.termKind().name()),
+                        JsonSupport.escape(term.description())))
                 .collect(Collectors.joining(",", "[", "]"));
 
         String glossaryJson = """
@@ -51,14 +51,6 @@ public class TableView {
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
         return jigDocumentWriter.outputFilePaths();
-    }
-
-    private String escape(String string) {
-        return string
-                .replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\r", "\\r")
-                .replace("\n", "\\n");
     }
 
 }

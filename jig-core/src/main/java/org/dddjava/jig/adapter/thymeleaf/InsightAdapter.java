@@ -68,44 +68,38 @@ public class InsightAdapter {
     }
 
     private String formatPackageJson(PackageInsight insight) {
-        return """
-                {"fqn": "%s", "label": "%s", "numberOfTypes": %d, "numberOfMethods": %d, "numberOfUsingTypes": %d, "cyclomaticComplexity": %d, "size": %d}
-                """.formatted(
-                JsonSupport.escape(insight.fqn()),
-                JsonSupport.escape(insight.label()),
-                insight.numberOfTypes(),
-                insight.numberOfMethods(),
-                insight.numberOfUsingTypes(),
-                insight.cyclomaticComplexity(),
-                insight.size());
+        return Json.object("fqn", insight.fqn())
+                .and("label", insight.label())
+                .and("numberOfTypes", insight.numberOfTypes())
+                .and("numberOfMethods", insight.numberOfMethods())
+                .and("numberOfUsingTypes", insight.numberOfUsingTypes())
+                .and("cyclomaticComplexity", insight.cyclomaticComplexity())
+                .and("size", insight.size())
+                .build();
     }
 
     private String formatTypeJson(TypeInsight insight) {
-        return """
-                {"fqn": "%s", "label": "%s", "numberOfMethods": %d, "numberOfUsingTypes": %d, "cyclomaticComplexity": %d, "size": %d, "packageFqn": "%s"}
-                """.formatted(
-                JsonSupport.escape(insight.fqn()),
-                JsonSupport.escape(insight.label()),
-                insight.numberOfMethods(),
-                insight.numberOfUsingTypes(),
-                insight.cyclomaticComplexity(),
-                insight.size(),
-                JsonSupport.escape(insight.packageFqn()));
+        return Json.object("fqn", insight.fqn())
+                .and("label", insight.label())
+                .and("numberOfMethods", insight.numberOfMethods())
+                .and("numberOfUsingTypes", insight.numberOfUsingTypes())
+                .and("cyclomaticComplexity", insight.cyclomaticComplexity())
+                .and("size", insight.size())
+                .and("packageFqn", insight.packageFqn())
+                .build();
     }
 
     private String formatMethodJson(MethodInsight insight) {
-        return """
-                {"fqn": "%s", "label": "%s", "cyclomaticComplexity": %d, "numberOfUsingTypes": %d, "numberOfUsingMethods": %d, "numberOfUsingFields": %d, "size": %d, "packageFqn": "%s", "typeFqn": "%s"}
-                """.formatted(
-                JsonSupport.escape(insight.fqn()),
-                JsonSupport.escape(insight.label()),
-                insight.cyclomaticComplexity(),
-                insight.numberOfUsingTypes(),
-                insight.numberOfUsingMethods(),
-                insight.numberOfUsingFields(),
-                insight.size(),
-                JsonSupport.escape(insight.packageFqn()),
-                JsonSupport.escape(insight.typeFqn()));
+        return Json.object("fqn", insight.fqn())
+                .and("label", insight.label())
+                .and("cyclomaticComplexity", insight.cyclomaticComplexity())
+                .and("numberOfUsingTypes", insight.numberOfUsingTypes())
+                .and("numberOfUsingMethods", insight.numberOfUsingMethods())
+                .and("numberOfUsingFields", insight.numberOfUsingFields())
+                .and("size", insight.size())
+                .and("packageFqn", insight.packageFqn())
+                .and("typeFqn", insight.typeFqn())
+                .build();
     }
 
 }

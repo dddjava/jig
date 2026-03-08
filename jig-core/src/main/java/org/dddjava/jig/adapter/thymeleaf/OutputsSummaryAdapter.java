@@ -45,57 +45,49 @@ public class OutputsSummaryAdapter {
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
-                    adapters.putIfAbsent(adapterFqn, """
-                    {"fqn":"%s","label":"%s"}
-                    """.formatted(JsonSupport.escape(adapterFqn), JsonSupport.escape(outputAdapter.jigType().label())));
+                    adapters.putIfAbsent(adapterFqn, Json.object("fqn", adapterFqn)
+                            .and("label", outputAdapter.jigType().label())
+                            .build());
 
             outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
-                ports.putIfAbsent(portFqn, """
-                        {"fqn":"%s","label":"%s"}
-                        """.formatted(JsonSupport.escape(portFqn), JsonSupport.escape(outputPort.jigType().label())));
+                ports.putIfAbsent(portFqn, Json.object("fqn", portFqn)
+                        .and("label", outputPort.jigType().label())
+                        .build());
 
                 outputPort.operationStream().forEach(outputPortOperation -> {
                     String opFqn = outputPortOperation.jigMethod().fqn();
-                    operations.putIfAbsent(opFqn, """
-                            {"fqn":"%s","name":"%s","signature":"%s"}
-                            """.formatted(
-                            JsonSupport.escape(opFqn),
-                            JsonSupport.escape(outputPortOperation.jigMethod().name()),
-                            JsonSupport.escape(outputPortOperation.jigMethod().simpleMethodSignatureText())));
+                    operations.putIfAbsent(opFqn, Json.object("fqn", opFqn)
+                            .and("name", outputPortOperation.jigMethod().name())
+                            .and("signature", outputPortOperation.jigMethod().simpleMethodSignatureText())
+                            .build());
 
                     outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
                         String execFqn = outputAdapterExecution.jigMethod().fqn();
-                        executions.putIfAbsent(execFqn, """
-                                {"fqn":"%s","name":"%s","signature":"%s"}
-                                """.formatted(
-                                JsonSupport.escape(execFqn),
-                                JsonSupport.escape(outputAdapterExecution.jigMethod().name()),
-                                JsonSupport.escape(outputAdapterExecution.jigMethod().simpleMethodSignatureText())));
+                        executions.putIfAbsent(execFqn, Json.object("fqn", execFqn)
+                                .and("name", outputAdapterExecution.jigMethod().name())
+                                .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText())
+                                .build());
 
                         List<String> pOpIds = new ArrayList<>();
                         outputAdapterExecution.persistenceOperations().forEach(pOp -> {
                             String pOpId = pOp.persistenceOperationId().value();
                             pOpIds.add(pOpId);
-                                    persistenceOperations.putIfAbsent(pOpId, """
-                                    {"id":"%s","sqlType":"%s","targets":%s,"group":"%s"}
-                                    """.formatted(
-                                    JsonSupport.escape(pOpId),
-                                    pOp.sqlType().name(),
-                                    JsonSupport.toJsonStringList(pOp.persistenceTargets().persistenceTargets().stream()
+                            persistenceOperations.putIfAbsent(pOpId, Json.object("id", pOpId)
+                                    .and("sqlType", pOp.sqlType().name())
+                                    .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
-                                            .toList()),
-                                    JsonSupport.escape(pOp.persistenceOperationId().typeId().fqn())));
+                                            .toList()))
+                                    .and("group", pOp.persistenceOperationId().typeId().fqn())
+                                    .build());
                         });
 
-                        links.add("""
-                                {"port":"%s","operation":"%s","adapter":"%s","execution":"%s","persistenceOperations":%s}
-                                """.formatted(
-                                JsonSupport.escape(portFqn),
-                                JsonSupport.escape(opFqn),
-                                JsonSupport.escape(adapterFqn),
-                                JsonSupport.escape(execFqn),
-                                JsonSupport.toJsonStringList(pOpIds)));
+                        links.add(Json.object("port", portFqn)
+                                .and("operation", opFqn)
+                                .and("adapter", adapterFqn)
+                                .and("execution", execFqn)
+                                .and("persistenceOperations", Json.array(pOpIds))
+                                .build());
                     });
                 });
             });

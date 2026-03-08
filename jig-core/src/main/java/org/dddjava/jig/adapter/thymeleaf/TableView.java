@@ -26,14 +26,12 @@ public class TableView {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         String termsJson = glossary.list().stream()
-                .map(term -> """
-                        {"title": "%s", "simpleText": "%s", "fqn": "%s", "kind": "%s", "description": "%s"}
-                        """.formatted(
-                        JsonSupport.escape(term.title()),
-                        JsonSupport.escape(term.simpleText()),
-                        JsonSupport.escape(term.id().asText()),
-                        JsonSupport.escape(term.termKind().name()),
-                        JsonSupport.escape(term.description())))
+                .map(term -> Json.object("title", term.title())
+                        .and("simpleText", term.simpleText())
+                        .and("fqn", term.id().asText())
+                        .and("kind", term.termKind().name())
+                        .and("description", term.description())
+                        .build())
                 .collect(Collectors.joining(",", "[", "]"));
 
         String glossaryJson = """

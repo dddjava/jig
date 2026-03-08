@@ -1,0 +1,56 @@
+package org.dddjava.jig.adapter.thymeleaf;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class JsonTest {
+
+    @Test
+    void object_単一プロパティ() {
+        assertEquals("{\"a\":\"b\"}", Json.object("a", "b").build());
+    }
+
+    @Test
+    void object_複数プロパティ() {
+        assertEquals("{\"a\":\"1\",\"b\":\"2\"}", Json.object("a", "1").and("b", "2").build());
+    }
+
+    @Test
+    void object_数値はエスケープされない() {
+        assertEquals("{\"n\":123}", Json.object("n", 123).build());
+    }
+
+    @Test
+    void object_真偽値はエスケープされない() {
+        assertEquals("{\"f\":true}", Json.object("f", true).build());
+    }
+
+    @Test
+    void object_文字列は自動エスケープされる() {
+        assertEquals("{\"s\":\"a\\\"b\"}", Json.object("s", "a\"b").build());
+    }
+
+    @Test
+    void object_arrayは生JSONとして挿入される() {
+        assertEquals("{\"arr\":[\"a\",\"b\"]}", Json.object("arr", Json.array(List.of("a", "b"))).build());
+    }
+
+    @Test
+    void object_rawは生JSONとして挿入される() {
+        assertEquals("{\"raw\":[1,2,3]}", Json.object("raw", Json.raw("[1,2,3]")).build());
+    }
+
+    @Test
+    void object_Listは配列として挿入される() {
+        assertEquals("{\"list\":[\"x\",\"y\"]}", Json.object("list", List.of("x", "y")).build());
+    }
+
+    @Test
+    void array_文字列リストをJSON配列としてobjectに渡せる() {
+        String actual = Json.object("items", Json.array(List.of("a", "b"))).build();
+        assertEquals("{\"items\":[\"a\",\"b\"]}", actual);
+    }
+}

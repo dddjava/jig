@@ -33,13 +33,11 @@ public class PackageSummaryView {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         String packagesJson = jigPackages.listPackage().stream()
-                .map(packageInfo -> """
-                        {"fqn": "%s", "name": "%s", "description": "%s", "classCount": %d}
-                        """.formatted(
-                        JsonSupport.escape(packageInfo.fqn()),
-                        JsonSupport.escape(packageInfo.label()),
-                        JsonSupport.escape(packageInfo.term().description()),
-                        packageInfo.numberOfClasses()))
+                .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
+                        .and("name", packageInfo.label())
+                        .and("description", packageInfo.term().description())
+                        .and("classCount", packageInfo.numberOfClasses())
+                        .build())
                 .collect(Collectors.joining(",", "[", "]"));
 
         String packageRelationsJson = packageRelations.listUnique().stream()
@@ -68,18 +66,14 @@ public class PackageSummaryView {
     }
 
     private String formatRelationJson(PackageRelation relation) {
-        return """
-                {"from": "%s", "to": "%s"}
-                """.formatted(
-                JsonSupport.escape(relation.from().asText()),
-                JsonSupport.escape(relation.to().asText()));
+        return Json.object("from", relation.from().asText())
+                .and("to", relation.to().asText())
+                .build();
     }
 
     private String formatTypeRelationJson(TypeRelationship relation) {
-        return """
-                {"from": "%s", "to": "%s"}
-                """.formatted(
-                JsonSupport.escape(relation.from().fqn()),
-                JsonSupport.escape(relation.to().fqn()));
+        return Json.object("from", relation.from().fqn())
+                .and("to", relation.to().fqn())
+                .build();
     }
 }

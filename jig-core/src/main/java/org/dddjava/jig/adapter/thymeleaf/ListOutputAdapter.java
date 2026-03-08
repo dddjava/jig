@@ -127,111 +127,96 @@ public class ListOutputAdapter {
                 .map(TypeId::asSimpleText)
                 .sorted()
                 .toList();
-        String usingFieldTypesText = JsonSupport.toJsonStringList(usingFieldTypes);
-        return """
-                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "usingFieldTypes": %s, "cyclomaticComplexity": %d, "path": "%s"}
-                """.formatted(
-                JsonSupport.escape(entrypoint.packageId().asText()),
-                JsonSupport.escape(entrypoint.typeId().asSimpleText()),
-                JsonSupport.escape(entrypoint.jigMethod().simpleMethodSignatureText()),
-                JsonSupport.escape(entrypoint.jigMethod().returnType().simpleName()),
-                JsonSupport.escape(entrypoint.jigType().label()),
-                usingFieldTypesText,
-                entrypoint.jigMethod().instructions().cyclomaticComplexity(),
-                JsonSupport.escape(entrypoint.fullPathText()));
+        return Json.object("packageName", entrypoint.packageId().asText())
+                .and("typeName", entrypoint.typeId().asSimpleText())
+                .and("methodSignature", entrypoint.jigMethod().simpleMethodSignatureText())
+                .and("returnType", entrypoint.jigMethod().returnType().simpleName())
+                .and("typeLabel", entrypoint.jigType().label())
+                .and("usingFieldTypes", Json.array(usingFieldTypes))
+                .and("cyclomaticComplexity", entrypoint.jigMethod().instructions().cyclomaticComplexity())
+                .and("path", entrypoint.fullPathText())
+                .build();
     }
 
     private String formatServiceJson(Usecase usecase) {
-        String usingFieldTypesText = JsonSupport.toJsonStringList(usecase.usingFields().jigFieldIds().stream()
+        List<String> usingFieldTypes = usecase.usingFields().jigFieldIds().stream()
                 .map(JigFieldId::declaringTypeId)
                 .map(TypeId::asSimpleText)
                 .sorted()
-                .toList());
-        String parameterTypeLabels = JsonSupport.toJsonStringList(usecase.serviceMethod().method().parameterTypeStream()
+                .toList();
+        List<String> parameterTypeLabels = usecase.serviceMethod().method().parameterTypeStream()
                 .map(JigTypeReference::id)
                 .map(jigDocumentContext::typeTerm)
                 .map(term -> term.title())
-                .toList());
-        String usingServiceMethods = JsonSupport.toJsonStringList(usecase.usingServiceMethods().stream()
+                .toList();
+        List<String> usingServiceMethods = usecase.usingServiceMethods().stream()
                 .map(methodCall -> methodCall.asSignatureAndReturnTypeSimpleText())
-                .toList());
-        String usingRepositoryMethods = JsonSupport.toJsonStringList(usecase.usingRepositoryMethods().list().stream()
+                .toList();
+        List<String> usingRepositoryMethods = usecase.usingRepositoryMethods().list().stream()
                 .map(jigMethod -> jigMethod.simpleMethodSignatureText())
-                .toList());
-        return """
-                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "eventHandler": %s, "typeLabel": "%s", "methodLabel": "%s", "returnTypeLabel": "%s", "parameterTypeLabels": %s, "usingFieldTypes": %s, "cyclomaticComplexity": %d, "usingServiceMethods": %s, "usingRepositoryMethods": %s, "useNull": %s, "useStream": %s}
-                """.formatted(
-                JsonSupport.escape(usecase.serviceMethod().declaringType().packageId().asText()),
-                JsonSupport.escape(usecase.serviceMethod().declaringType().asSimpleText()),
-                JsonSupport.escape(usecase.serviceMethod().method().simpleMethodSignatureText()),
-                JsonSupport.escape(usecase.serviceMethod().method().returnType().simpleName()),
-                usecase.usingFromController(),
-                JsonSupport.escape(jigDocumentContext.typeTerm(usecase.serviceMethod().declaringType()).title()),
-                JsonSupport.escape(usecase.serviceMethod().method().aliasTextOrBlank()),
-                JsonSupport.escape(jigDocumentContext.typeTerm(usecase.serviceMethod().method().returnType().id()).title()),
-                parameterTypeLabels,
-                usingFieldTypesText,
-                usecase.serviceMethod().method().instructions().cyclomaticComplexity(),
-                usingServiceMethods,
-                usingRepositoryMethods,
-                usecase.useNull(),
-                usecase.useStream());
+                .toList();
+        return Json.object("packageName", usecase.serviceMethod().declaringType().packageId().asText())
+                .and("typeName", usecase.serviceMethod().declaringType().asSimpleText())
+                .and("methodSignature", usecase.serviceMethod().method().simpleMethodSignatureText())
+                .and("returnType", usecase.serviceMethod().method().returnType().simpleName())
+                .and("eventHandler", usecase.usingFromController())
+                .and("typeLabel", jigDocumentContext.typeTerm(usecase.serviceMethod().declaringType()).title())
+                .and("methodLabel", usecase.serviceMethod().method().aliasTextOrBlank())
+                .and("returnTypeLabel", jigDocumentContext.typeTerm(usecase.serviceMethod().method().returnType().id()).title())
+                .and("parameterTypeLabels", Json.array(parameterTypeLabels))
+                .and("usingFieldTypes", Json.array(usingFieldTypes))
+                .and("cyclomaticComplexity", usecase.serviceMethod().method().instructions().cyclomaticComplexity())
+                .and("usingServiceMethods", Json.array(usingServiceMethods))
+                .and("usingRepositoryMethods", Json.array(usingRepositoryMethods))
+                .and("useNull", usecase.useNull())
+                .and("useStream", usecase.useStream())
+                .build();
     }
 
     private String formatRepositoryJson(DatasourceAngle datasourceAngle) {
-        String parameterTypeLabels = JsonSupport.toJsonStringList(datasourceAngle.methodParameterTypeStream()
+        List<String> parameterTypeLabels = datasourceAngle.methodParameterTypeStream()
                 .map(JigTypeReference::id)
                 .map(jigDocumentContext::typeTerm)
                 .map(term -> term.title())
-                .toList());
-        String insertTables = JsonSupport.toJsonStringList(datasourceAngle.insertTableNames());
-        String selectTables = JsonSupport.toJsonStringList(datasourceAngle.selectTableNames());
-        String updateTables = JsonSupport.toJsonStringList(datasourceAngle.updateTableNames());
-        String deleteTables = JsonSupport.toJsonStringList(datasourceAngle.deleteTableNames());
-        return """
-                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "returnTypeLabel": "%s", "parameterTypeLabels": %s, "cyclomaticComplexity": %d, "insertTables": %s, "selectTables": %s, "updateTables": %s, "deleteTables": %s, "callerTypeCount": %d, "callerMethodCount": %d}
-                """.formatted(
-                JsonSupport.escape(datasourceAngle.packageText()),
-                JsonSupport.escape(datasourceAngle.typeSimpleName()),
-                JsonSupport.escape(datasourceAngle.simpleMethodSignatureText()),
-                JsonSupport.escape(datasourceAngle.methodReturnType().simpleNameWithGenerics()),
-                JsonSupport.escape(datasourceAngle.typeLabel()),
-                JsonSupport.escape(jigDocumentContext.typeTerm(datasourceAngle.methodReturnType().id()).title()),
-                parameterTypeLabels,
-                datasourceAngle.cyclomaticComplexity(),
-                insertTables,
-                selectTables,
-                updateTables,
-                deleteTables,
-                datasourceAngle.callerMethods().typeCount(),
-                datasourceAngle.callerMethods().size());
+                .toList();
+        return Json.object("packageName", datasourceAngle.packageText())
+                .and("typeName", datasourceAngle.typeSimpleName())
+                .and("methodSignature", datasourceAngle.simpleMethodSignatureText())
+                .and("returnType", datasourceAngle.methodReturnType().simpleNameWithGenerics())
+                .and("typeLabel", datasourceAngle.typeLabel())
+                .and("returnTypeLabel", jigDocumentContext.typeTerm(datasourceAngle.methodReturnType().id()).title())
+                .and("parameterTypeLabels", Json.array(parameterTypeLabels))
+                .and("cyclomaticComplexity", datasourceAngle.cyclomaticComplexity())
+                .and("insertTables", Json.array(datasourceAngle.insertTableNames()))
+                .and("selectTables", Json.array(datasourceAngle.selectTableNames()))
+                .and("updateTables", Json.array(datasourceAngle.updateTableNames()))
+                .and("deleteTables", Json.array(datasourceAngle.deleteTableNames()))
+                .and("callerTypeCount", datasourceAngle.callerMethods().typeCount())
+                .and("callerMethodCount", datasourceAngle.callerMethods().size())
+                .build();
     }
 
     private String formatBusinessPackageJson(JigPackage jigPackage) {
-        return """
-                {"packageName": "%s", "packageLabel": "%s", "classCount": %d}
-                """.formatted(
-                JsonSupport.escape(jigPackage.packageId().asText()),
-                JsonSupport.escape(jigPackage.term().title()),
-                jigPackage.jigTypes().size());
+        return Json.object("packageName", jigPackage.packageId().asText())
+                .and("packageLabel", jigPackage.term().title())
+                .and("classCount", jigPackage.jigTypes().size())
+                .build();
     }
 
     private String formatBusinessAllJson(JigType jigType, CoreTypesAndRelations coreTypesAndRelations, TypeRelationships allClassRelations) {
         boolean samePackageOnly = allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).packageIds().values()
                 .equals(Set.of(jigType.packageId()));
-        return """
-                {"packageName": "%s", "typeName": "%s", "typeLabel": "%s", "businessRuleKind": "%s", "incomingBusinessRuleCount": %d, "outgoingBusinessRuleCount": %d, "incomingClassCount": %d, "nonPublic": %s, "samePackageOnly": %s, "incomingClassList": "%s"}
-                """.formatted(
-                JsonSupport.escape(jigType.packageId().asText()),
-                JsonSupport.escape(jigType.id().asSimpleText()),
-                JsonSupport.escape(jigType.label()),
-                JsonSupport.escape(jigType.toValueKind().toString()),
-                coreTypesAndRelations.internalTypeRelationships().filterTo(jigType.id()).size(),
-                coreTypesAndRelations.internalTypeRelationships().filterFrom(jigType.id()).size(),
-                allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).list().size(),
-                jigType.visibility() != JigTypeVisibility.PUBLIC,
-                samePackageOnly,
-                JsonSupport.escape(allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText()));
+        return Json.object("packageName", jigType.packageId().asText())
+                .and("typeName", jigType.id().asSimpleText())
+                .and("typeLabel", jigType.label())
+                .and("businessRuleKind", jigType.toValueKind().toString())
+                .and("incomingBusinessRuleCount", coreTypesAndRelations.internalTypeRelationships().filterTo(jigType.id()).size())
+                .and("outgoingBusinessRuleCount", coreTypesAndRelations.internalTypeRelationships().filterFrom(jigType.id()).size())
+                .and("incomingClassCount", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).list().size())
+                .and("nonPublic", jigType.visibility() != JigTypeVisibility.PUBLIC)
+                .and("samePackageOnly", samePackageOnly)
+                .and("incomingClassList", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText())
+                .build();
     }
 
     private String formatBusinessEnumJson(JigType jigType, TypeRelationships allClassRelations) {
@@ -241,19 +226,17 @@ public class ListOutputAdapter {
         String fields = jigType.jigTypeMembers().instanceFields().stream()
                 .map(jigField -> jigField.jigFieldHeader().simpleText())
                 .collect(STREAM_COLLECTOR);
-        return """
-                {"packageName": "%s", "typeName": "%s", "typeLabel": "%s", "constants": "%s", "fields": "%s", "usageCount": %d, "usagePlaces": "%s", "hasParameters": %s, "hasBehavior": %s, "isPolymorphic": %s}
-                """.formatted(
-                JsonSupport.escape(jigType.packageId().asText()),
-                JsonSupport.escape(jigType.id().asSimpleText()),
-                JsonSupport.escape(jigType.label()),
-                JsonSupport.escape(constants),
-                JsonSupport.escape(fields),
-                allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).list().size(),
-                JsonSupport.escape(allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText()),
-                jigType.hasInstanceField(),
-                jigType.hasInstanceMethod(),
-                jigType.typeKind() == TypeKind.抽象列挙型);
+        return Json.object("packageName", jigType.packageId().asText())
+                .and("typeName", jigType.id().asSimpleText())
+                .and("typeLabel", jigType.label())
+                .and("constants", constants)
+                .and("fields", fields)
+                .and("usageCount", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).list().size())
+                .and("usagePlaces", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText())
+                .and("hasParameters", jigType.hasInstanceField())
+                .and("hasBehavior", jigType.hasInstanceMethod())
+                .and("isPolymorphic", jigType.typeKind() == TypeKind.抽象列挙型)
+                .build();
     }
 
     private String formatBusinessCollectionJson(JigType jigType, TypeRelationships allClassRelations) {
@@ -263,50 +246,44 @@ public class ListOutputAdapter {
         String fieldTypes = fieldTypeList.size() == 1
                 ? fieldTypeList.get(0)
                 : fieldTypeList.stream().collect(STREAM_COLLECTOR);
-        return """
-                {"packageName": "%s", "typeName": "%s", "typeLabel": "%s", "fieldTypes": "%s", "usageCount": %d, "usagePlaces": "%s", "methodCount": %d, "methods": "%s"}
-                """.formatted(
-                JsonSupport.escape(jigType.packageId().asText()),
-                JsonSupport.escape(jigType.id().asSimpleText()),
-                JsonSupport.escape(jigType.label()),
-                JsonSupport.escape(fieldTypes),
-                allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).size(),
-                JsonSupport.escape(allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText()),
-                jigType.instanceJigMethods().list().size(),
-                JsonSupport.escape(jigType.instanceJigMethods().stream()
+        return Json.object("packageName", jigType.packageId().asText())
+                .and("typeName", jigType.id().asSimpleText())
+                .and("typeLabel", jigType.label())
+                .and("fieldTypes", fieldTypes)
+                .and("usageCount", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).size())
+                .and("usagePlaces", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText())
+                .and("methodCount", jigType.instanceJigMethods().list().size())
+                .and("methods", jigType.instanceJigMethods().stream()
                         .map(JigMethod::simpleMethodDeclarationText)
                         .sorted()
-                        .collect(STREAM_COLLECTOR)));
+                        .collect(STREAM_COLLECTOR))
+                .build();
     }
 
     private String formatBusinessValidationJson(Validation validation) {
-        return """
-                {"packageName": "%s", "typeName": "%s", "typeLabel": "%s", "memberName": "%s", "memberType": "%s", "annotationType": "%s", "annotationDescription": "%s"}
-                """.formatted(
-                JsonSupport.escape(validation.typeId().packageId().asText()),
-                JsonSupport.escape(validation.typeId().asSimpleText()),
-                JsonSupport.escape(jigDocumentContext.typeTerm(validation.typeId()).title()),
-                JsonSupport.escape(validation.memberName()),
-                JsonSupport.escape(validation.memberType().asSimpleText()),
-                JsonSupport.escape(validation.annotationType().asSimpleText()),
-                JsonSupport.escape(validation.annotationDescription()));
+        return Json.object("packageName", validation.typeId().packageId().asText())
+                .and("typeName", validation.typeId().asSimpleText())
+                .and("typeLabel", jigDocumentContext.typeTerm(validation.typeId()).title())
+                .and("memberName", validation.memberName())
+                .and("memberType", validation.memberType().asSimpleText())
+                .and("annotationType", validation.annotationType().asSimpleText())
+                .and("annotationDescription", validation.annotationDescription())
+                .build();
     }
 
     private String formatBusinessMethodSmellJson(MethodSmell methodSmell) {
-        return """
-                {"packageName": "%s", "typeName": "%s", "methodSignature": "%s", "returnType": "%s", "typeLabel": "%s", "notUseMember": %s, "primitiveInterface": %s, "referenceNull": %s, "nullDecision": %s, "returnsBoolean": %s, "returnsVoid": %s}
-                """.formatted(
-                JsonSupport.escape(methodSmell.method().declaringType().packageId().asText()),
-                JsonSupport.escape(methodSmell.method().declaringType().asSimpleText()),
-                JsonSupport.escape(methodSmell.method().simpleMethodSignatureText()),
-                JsonSupport.escape(methodSmell.methodReturnType().asSimpleText()),
-                JsonSupport.escape(methodSmell.declaringJigType().label()),
-                methodSmell.notUseMember(),
-                methodSmell.primitiveInterface(),
-                methodSmell.referenceNull(),
-                methodSmell.nullDecision(),
-                methodSmell.returnsBoolean(),
-                methodSmell.returnsVoid());
+        return Json.object("packageName", methodSmell.method().declaringType().packageId().asText())
+                .and("typeName", methodSmell.method().declaringType().asSimpleText())
+                .and("methodSignature", methodSmell.method().simpleMethodSignatureText())
+                .and("returnType", methodSmell.methodReturnType().asSimpleText())
+                .and("typeLabel", methodSmell.declaringJigType().label())
+                .and("notUseMember", methodSmell.notUseMember())
+                .and("primitiveInterface", methodSmell.primitiveInterface())
+                .and("referenceNull", methodSmell.referenceNull())
+                .and("nullDecision", methodSmell.nullDecision())
+                .and("returnsBoolean", methodSmell.returnsBoolean())
+                .and("returnsVoid", methodSmell.returnsVoid())
+                .build();
     }
 
 }

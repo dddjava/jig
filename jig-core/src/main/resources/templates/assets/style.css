@@ -374,6 +374,8 @@ label {
 }
 
 .glossary .term-sidebar {
+    --in-page-sidebar-link-color: #555;
+    --in-page-sidebar-link-white-space: nowrap;
     height: fit-content;
     position: sticky;
     top: 16px;
@@ -386,17 +388,6 @@ label {
     overflow-x: hidden; /* 横スクロールは不要な場合が多いのでhiddenに */
     overflow-y: auto; /* 縦スクロールは残す */
     max-height: calc(100vh - 120px); /* サイドバーの高さに合わせて調整 */
-}
-
-.glossary .term-sidebar .in-page-sidebar__link {
-    color: #555; /* 文字色を調整 */
-    white-space: nowrap;
-}
-
-.glossary .term-sidebar .in-page-sidebar__link:hover,
-.glossary .term-sidebar .in-page-sidebar__link:focus-visible {
-    background-color: #e8f0fb;
-    color: #10253f;
 }
 
 .glossary .term-list {
@@ -762,17 +753,18 @@ table td.number {
     display: block;
     padding: 6px 8px;
     border-radius: 6px;
-    color: #1b3a66;
+    color: var(--in-page-sidebar-link-color, #1b3a66);
     text-decoration: none;
     font-size: 0.9em;
     line-height: 1.4;
     word-break: break-word;
+    white-space: var(--in-page-sidebar-link-white-space, normal);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 .in-page-sidebar__link:hover,
 .in-page-sidebar__link:focus-visible {
-    background-color: #e8f0fb;
-    color: #10253f;
+    background-color: var(--in-page-sidebar-link-hover-background, #e8f0fb);
+    color: var(--in-page-sidebar-link-hover-color, #10253f);
     text-decoration: none;
 }
 

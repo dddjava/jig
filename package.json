@@ -3,10 +3,7 @@
   "private": true,
   "scripts": {
     "test": "node --test jig-core/src/test/js/*.test.js",
-    "test:coverage": "c8 --reporter=html npm run test",
+    "test:coverage": "node --test --experimental-test-coverage jig-core/src/test/js/*.test.js",
     "test:full": "npm run test && ./gradlew clean test"
-  },
-  "devDependencies": {
-    "c8": "^10.1.3"
   }
 }

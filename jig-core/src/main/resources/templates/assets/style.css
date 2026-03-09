@@ -382,12 +382,6 @@ label {
     overflow: auto;
 }
 
-.glossary .term-sidebar .in-page-sidebar__links {
-    overflow-x: auto;
-    overflow-y: auto; /* 縦スクロールは残す */
-    max-height: calc(100vh - 120px); /* サイドバーの高さに合わせて調整 */
-}
-
 .glossary .term-list {
     width: 100%;
     margin-top: 0;

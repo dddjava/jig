@@ -524,6 +524,7 @@ test.describe("outputs.js", () => {
         test("renderCrudTable: CRUDテーブルが正しく描画され、トグル動作が機能する", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
+            const sidebar = doc.getElementById("crud-sidebar-list");
             const links = [
                 {
                     outputPort: { label: "Port A" },
@@ -552,6 +553,11 @@ test.describe("outputs.js", () => {
             const opRow = tbody.children[1];
             assert.equal(opRow.children[0].textContent, "opA");
             assert.equal(opRow.style.display, "none");
+
+            const sidebarSection = sidebar.children[0];
+            assert.equal(sidebarSection.className, "in-page-sidebar__section");
+            assert.equal(sidebarSection.children[0].textContent, "永続化操作対象");
+            assert.equal(sidebarSection.children[1].children[0].children[0].getAttribute("href"), "#crud-target-table1");
 
             // トグル動作の確認
             portRow.click();
@@ -591,7 +597,9 @@ test.describe("outputs.js", () => {
 
             // サイドバーの確認
             assert.notEqual(sidebar.children.length, 0);
-            const sidebarList = sidebar.children[0];
+            const sidebarSection = sidebar.children[0];
+            assert.equal(sidebarSection.children[0].textContent, "永続化操作対象");
+            const sidebarList = sidebarSection.children[1];
             const sidebarItem = sidebarList.children[0];
             const sidebarLink = sidebarItem.children[0];
             assert.equal(sidebarLink.getAttribute("href"), "#persistence-table1");
@@ -610,9 +618,12 @@ test.describe("outputs.js", () => {
             outputs.renderOutputsTable(grouped, "simple");
 
             const portCard = doc.outputsList.children[0];
+            const sidebarSection = doc.getElementById("outputs-sidebar-list").children[0];
             // simple モードでは adapterInfo (p) が追加されないため、children[2] は count (p) になる
             assert.equal(portCard.children[2].textContent, "1 operations");
             assert.ok(!portCard.children.some(child => child.textContent.includes("Implementation:")));
+            assert.equal(sidebarSection.children[0].textContent, "出力ポート");
+            assert.equal(sidebarSection.children[1].children[0].children[0].textContent, "port1");
         });
 
         test("renderOutputsTable / renderPersistenceTable: データが空の場合の表示", () => {

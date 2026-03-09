@@ -109,16 +109,39 @@ function renderNoData(container) {
     }));
 }
 
-function addSidebarItem(sidebarList, id, label) {
-    if (!sidebarList) return;
-    sidebarList.appendChild(createElement("li", {
+function createSidebarSection(title, items) {
+    if (!items || items.length === 0) return null;
+
+    return createElement("section", {
+        className: "in-page-sidebar__section",
         children: [
-            createElement("a", {
-                attributes: { href: "#" + id },
-                textContent: label
+            createElement("p", {
+                className: "in-page-sidebar__title",
+                textContent: title
+            }),
+            createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: items.map(({ id, label }) => createElement("li", {
+                    className: "in-page-sidebar__item",
+                    children: [
+                        createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: { href: "#" + id },
+                            textContent: label
+                        })
+                    ]
+                }))
             })
         ]
-    }));
+    });
+}
+
+function renderSidebarSection(container, title, items) {
+    if (!container) return;
+    const section = createSidebarSection(title, items);
+    if (section) {
+        container.appendChild(section);
+    }
 }
 
 function MermaidBuilder() {
@@ -333,11 +356,11 @@ function toCrudChar(sqlType) {
 
 function renderCrudTable(links) {
     const container = document.getElementById("outputs-crud");
-    const sidebarList = document.getElementById("crud-sidebar-list");
+    const sidebar = document.getElementById("crud-sidebar-list");
     if (!container) return;
 
     container.innerHTML = "";
-    if (sidebarList) sidebarList.innerHTML = "";
+    if (sidebar) sidebar.innerHTML = "";
 
     const targetsSet = new Set();
     links.forEach(link => {
@@ -352,20 +375,10 @@ function renderCrudTable(links) {
         return;
     }
 
-    if (sidebarList) {
-        sidebarList.appendChild(createElement("p", {
-            className: "sidebar-title",
-            textContent: "永続化操作対象"
-        }));
-
-        allTargets.forEach(target => {
-            sidebarList.appendChild(createElement("a", {
-                attributes: { href: `#crud-target-${target}` },
-                textContent: target,
-                className: "sidebar-link"
-            }));
-        });
-    }
+    renderSidebarSection(sidebar, "永続化操作対象", allTargets.map(target => ({
+        id: `crud-target-${target}`,
+        label: target
+    })));
 
     const headerRow = createElement("tr", {
         children: [
@@ -591,11 +604,8 @@ function renderPersistenceTable(grouped) {
     container.innerHTML = "";
     if (sidebar) sidebar.innerHTML = "";
 
-    const sidebarList = sidebar ? createElement("ul") : null;
-
     grouped.forEach(group => {
         const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
-        addSidebarItem(sidebarList, targetId, group.target);
 
         const persistenceMermaidContainer = createElement("div", { className: "mermaid-diagram port-diagram" });
         lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer));
@@ -610,9 +620,10 @@ function renderPersistenceTable(grouped) {
         }));
     });
 
-    if (sidebarList && grouped.length > 0) {
-        sidebar.appendChild(sidebarList);
-    }
+    renderSidebarSection(sidebar, "永続化操作対象", grouped.map(group => ({
+        id: "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-'),
+        label: group.target
+    })));
 
     if (grouped.length === 0) {
         renderNoData(container);
@@ -626,13 +637,10 @@ function renderOutputsTable(grouped, mode = 'standard') {
     container.innerHTML = "";
     if (sidebar) sidebar.innerHTML = "";
 
-    const sidebarList = sidebar ? createElement("ul") : null;
-
     grouped.forEach(group => {
         const portFqnValue = group.outputPort.fqn ?? "";
         const portId = "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-');
         const portLabel = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
-        addSidebarItem(sidebarList, portId, portLabel);
 
         const cardChildren = [
             createElement("h3", { textContent: portLabel }),
@@ -695,9 +703,13 @@ function renderOutputsTable(grouped, mode = 'standard') {
         }));
     });
 
-    if (sidebarList && grouped.length > 0) {
-        sidebar.appendChild(sidebarList);
-    }
+    renderSidebarSection(sidebar, "出力ポート", grouped.map(group => {
+        const portFqnValue = group.outputPort.fqn ?? "";
+        return {
+            id: "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-'),
+            label: group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)"
+        };
+    }));
 
     if (grouped.length === 0) {
         renderNoData(container);
@@ -792,6 +804,8 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         renderCrudTable,
         toCrudChar,
         createElement,
+        createSidebarSection,
+        renderSidebarSection,
         renderNoData,
         generateMermaidCode,
         generatePortMermaidCode,

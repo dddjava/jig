@@ -751,18 +751,18 @@ table td.number {
     display: block;
     padding: 6px 8px;
     border-radius: 6px;
-    color: var(--in-page-sidebar-link-color, #1b3a66);
+    color: #1b3a66;
     text-decoration: none;
     font-size: 0.9em;
     line-height: 1.4;
     word-break: break-word;
-    white-space: var(--in-page-sidebar-link-white-space, nowrap);
+    white-space: nowrap;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 .in-page-sidebar__link:hover,
 .in-page-sidebar__link:focus-visible {
-    background-color: var(--in-page-sidebar-link-hover-background, #e8f0fb);
-    color: var(--in-page-sidebar-link-hover-color, #10253f);
+    background-color: #e8f0fb;
+    color: #10253f;
     text-decoration: none;
 }
 

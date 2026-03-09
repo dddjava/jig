@@ -383,7 +383,7 @@ label {
 }
 
 .glossary .term-sidebar .in-page-sidebar__links {
-    overflow-x: hidden; /* 横スクロールは不要な場合が多いのでhiddenに */
+    overflow-x: auto;
     overflow-y: auto; /* 縦スクロールは残す */
     max-height: calc(100vh - 120px); /* サイドバーの高さに合わせて調整 */
 }
@@ -718,7 +718,7 @@ table td.number {
     border-radius: 10px;
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
     padding: 12px;
-    overflow-y: auto;
+    overflow: auto;
 }
 .in-page-sidebar__list {
     display: grid;

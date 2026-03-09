@@ -12,7 +12,7 @@
 </header>
 
 <div class="sideNavMain">
-    <nav class="tree" th:fragment="tree-navigation(node)" th:remove="all-but-first">
+    <nav class="tree in-page-sidebar in-page-sidebar--tree" th:fragment="tree-navigation(node)" th:remove="all-but-first" aria-label="パッケージツリー">
         <details th:fragment="tree-composite(node)" open>
             <summary class="package">
                 <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>/

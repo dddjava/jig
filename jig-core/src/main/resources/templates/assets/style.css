@@ -93,33 +93,76 @@ main table thead {
 .sideNavMain {
     display: flex;
     flex-wrap: nowrap;
-}
-.sideNavMain > nav, .sideNavMain > main {
-    height: calc(100vh - 3em);
-    overflow: auto;
+    gap: 20px;
+    align-items: flex-start;
 }
 .sideNavMain > nav {
-    resize: horizontal;
-    background-color: #EEE;
-    font-size: 0.8em;
-    border-right: solid 1px #AAA;
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: calc(100vh - 32px);
 }
 .sideNavMain > main {
     flex-grow: 1;
+    min-width: 0;
+    height: calc(100vh - 3em);
+    overflow: auto;
     /* 実際100pxになるわけではないけどこれを指定しておくとnav.treeのサイズ変更が期待通り動く */
     width: 100px;
 }
 
 /* ナビのツリー  */
+.sideNavMain > nav.tree {
+    font-size: 0.85em;
+}
 .sideNavMain > nav.tree a, .sideNavMain > nav.tree summary {
-    word-break: keep-all;
     white-space: nowrap;
 }
-.sideNavMain > nav.tree details > div, .sideNavMain > nav.tree details > details {
-    margin-left: 0.5em;
+.sideNavMain > nav.tree summary,
+.sideNavMain > nav.tree details > div > a {
+    display: block;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #1b3a66;
+    text-decoration: none;
+}
+.sideNavMain > nav.tree summary {
+    cursor: pointer;
+}
+.sideNavMain > nav.tree summary:hover,
+.sideNavMain > nav.tree summary:focus-visible,
+.sideNavMain > nav.tree details > div > a:hover,
+.sideNavMain > nav.tree details > div > a:focus-visible {
+    background-color: #e8f0fb;
+    color: #10253f;
+    text-decoration: none;
+}
+.sideNavMain > nav.tree summary > a,
+.sideNavMain > nav.tree details > div > a {
+    color: inherit;
+    text-decoration: none;
+}
+.sideNavMain > nav.tree details > div,
+.sideNavMain > nav.tree details > details {
+    margin-left: 12px;
 }
 .sideNavMain > nav.tree details {
-    margin-bottom: 0.5em;
+    margin-bottom: 4px;
+}
+
+@media (max-width: 900px) {
+    .sideNavMain {
+        flex-direction: column;
+    }
+    .sideNavMain > nav {
+        position: static;
+        width: 100%;
+        max-height: none;
+    }
+    .sideNavMain > main {
+        width: 100%;
+        height: auto;
+    }
 }
 
 section.package > h2, section.type > h2, section.type {

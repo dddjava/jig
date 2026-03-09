@@ -359,7 +359,7 @@ label {
 
 .glossary .glossary-content {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(180px, 260px) 1fr;
     gap: 16px;
     width: 95%; /* 幅を少し広げる */
     max-width: 1400px; /* 最大幅を広げる */
@@ -440,11 +440,7 @@ label {
 
     .glossary .term-sidebar {
         position: static;
-        width: auto;
-        min-width: 0;
-        max-width: none;
         max-height: none;
-        resize: none;
     }
 }
 
@@ -716,11 +712,7 @@ table td.number {
     border-radius: 10px;
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
     padding: 12px;
-    width: 260px;
-    min-width: 180px;
-    max-width: 480px;
     overflow: auto;
-    resize: horizontal;
 }
 .in-page-sidebar__list {
     display: grid;
@@ -775,6 +767,8 @@ table td.number {
     align-items: flex-start;
 }
 .outputs .outputs-sidebar {
+    max-width: 260px;
+    min-width: 260px;
     position: sticky;
     top: 60px;
     max-height: calc(100vh - 90px);
@@ -910,7 +904,6 @@ table td.number {
         min-width: 0;
         width: 100%;
         max-height: none;
-        resize: none;
     }
 }
 .outputs .crud-table {

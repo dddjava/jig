@@ -395,9 +395,8 @@ label {
 
 .glossary .term-sidebar .in-page-sidebar__link:hover,
 .glossary .term-sidebar .in-page-sidebar__link:focus-visible {
-    color: #007bff; /* ホバー時の色 */
-    background-color: #f8f8f8; /* ホバー時の背景色 */
-    padding-left: 12px; /* ホバー時のパディング */
+    background-color: #e8f0fb;
+    color: #10253f;
 }
 
 .glossary .term-list {

@@ -12,8 +12,11 @@
 <header class="top" th:replace="~{fragment-base::header(title=${title})}">たいとる</header>
 <main>
     <div class="glossary-content">
-        <aside class="term-sidebar" aria-label="用語一覧">
-            <nav id="term-sidebar-list" class="term-sidebar__list"></nav>
+        <aside class="term-sidebar in-page-sidebar" aria-label="用語一覧">
+            <section class="in-page-sidebar__section">
+                <p class="in-page-sidebar__title">用語一覧</p>
+                <nav id="term-sidebar-list" class="in-page-sidebar__links" aria-label="用語一覧リンク"></nav>
+            </section>
         </aside>
         <div class="glossary-main-content">
             <details class="controls" open>

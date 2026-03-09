@@ -448,6 +448,23 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('描画', () => {
+        test('用語サイドバーを共通スタイルで描画する', () => {
+            const doc = setupDocument();
+            const sidebar = new Element('nav');
+            sidebar.innerHTML = 'existing';
+            doc.elementsById.set('term-sidebar-list', sidebar);
+
+            glossary.renderTermSidebar([
+                {title: 'Account', fqn: 'app.Account'},
+                {title: 'Order', fqn: 'app.Order'},
+            ]);
+
+            assert.equal(sidebar.innerHTML, '');
+            assert.equal(sidebar.children.length, 1);
+            assert.equal(sidebar.children[0].children[0].className, 'in-page-sidebar__link');
+            assert.equal(sidebar.children[0].children[0].href, '#app.Account');
+        });
+
         test('用語一覧をDOMに描画する', () => {
             const doc = setupDocument();
             const list = new Element('div');

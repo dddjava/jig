@@ -63,7 +63,7 @@ function renderTermSidebar(terms) {
     const fragment = document.createDocumentFragment();
     terms.forEach((term, index) => {
         const link = document.createElement("a");
-        link.className = "term-sidebar__item";
+        link.className = "in-page-sidebar__link";
         link.href = `#${buildTermAnchorId(term, index)}`;
         link.textContent = term.title || "";
         fragment.appendChild(link);

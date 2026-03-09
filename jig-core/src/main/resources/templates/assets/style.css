@@ -374,7 +374,6 @@ label {
 }
 
 .glossary .term-sidebar {
-    --in-page-sidebar-link-color: #555;
     --in-page-sidebar-link-white-space: nowrap;
     height: fit-content;
     position: sticky;

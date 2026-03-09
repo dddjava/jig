@@ -374,7 +374,6 @@ label {
 }
 
 .glossary .term-sidebar {
-    --in-page-sidebar-link-white-space: nowrap;
     height: fit-content;
     position: sticky;
     top: 16px;
@@ -757,7 +756,7 @@ table td.number {
     font-size: 0.9em;
     line-height: 1.4;
     word-break: break-word;
-    white-space: var(--in-page-sidebar-link-white-space, normal);
+    white-space: var(--in-page-sidebar-link-white-space, nowrap);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 .in-page-sidebar__link:hover,

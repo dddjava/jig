@@ -134,7 +134,7 @@ public class JigDocumentGenerator {
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                          ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList, ListOutput,
-                         OutputsSummary, Insight, Sequence -> compositeAdapter.invoke(jigDocument, jigRepository);
+                         OutputsSummary, Insight -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
                 long takenTime = System.currentTimeMillis() - startTime;

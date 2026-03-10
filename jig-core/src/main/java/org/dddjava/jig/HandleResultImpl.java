@@ -52,7 +52,6 @@ public class HandleResultImpl implements HandleResult {
                  EntrypointSummary,
                  OutputsSummary,
                  Insight,
-                 Sequence,
                  Glossary,
                  PackageSummary,
                  ListOutput -> false;

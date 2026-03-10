@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.thymeleaf.dialect;
 
-import org.dddjava.jig.adapter.mermaid.SequenceMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
 import org.dddjava.jig.adapter.thymeleaf.SummaryModel;
@@ -180,9 +179,5 @@ class JigExpressionObject {
         }
         // どれにも合致しない場合は最後
         return letters.getLast();
-    }
-
-    public String sequenceFor(JigMethod jigMethod) {
-        return SequenceMermaidDiagram.textFor(jigMethod);
     }
 }

@@ -138,10 +138,6 @@ public enum JigDocument {
             "insight"
     ),
 
-    Sequence(JigDocumentLabel.of("シーケンス", "sequence"),
-            "sequence"
-    ),
-
     /**
      * 用語集
      */

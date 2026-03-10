@@ -45,12 +45,6 @@ public class SummaryAdapter {
         return write(jigDocument, SummaryModel.withMermaidDiagram(jigTypes, packages, usecaseMermaidDiagram));
     }
 
-    @HandleDocument(JigDocument.Sequence)
-    public List<Path> sequence(JigRepository jigRepository, JigDocument jigDocument) {
-        var jigTypes = jigService.serviceTypes(jigRepository);
-        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)));
-    }
-
     @HandleDocument(JigDocument.EntrypointSummary)
     public List<Path> entrypointSummary(JigRepository jigRepository, JigDocument jigDocument) {
         var contextJigTypes = jigService.jigTypes(jigRepository);

@@ -26,6 +26,8 @@ class Element {
         this._textContent = "";
         this.attributes = new Map();
         this.classList = new ClassList();
+        this.parentNode = null;
+        this.style = {};
     }
 
     get textContent() {
@@ -57,6 +59,7 @@ class Element {
     }
 
     appendChild(child) {
+        child.parentNode = this;
         this.children.push(child);
         return child;
     }
@@ -124,6 +127,15 @@ function setupDocument(jsonText) {
     return { doc, sidebarList, main, dataScript };
 }
 
+function findFirst(root, predicate) {
+    const items = collectElements(root, predicate);
+    return items[0] || null;
+}
+
+function findListItemForHref(root, href) {
+    return findFirst(root, el => el.tagName === "li" && collectElements(el, n => n.tagName === "a" && n.getAttribute("href") === href).length > 0);
+}
+
 test.describe("domain-static.js", () => {
     test("DomainStaticApp.init renders sidebar and main", () => {
         const json = JSON.stringify({
@@ -167,6 +179,11 @@ test.describe("domain-static.js", () => {
         const hrefs = new Set(sidebarLinks.map(a => a.getAttribute("href")));
         assert.ok(hrefs.has("#com"));
         assert.ok(hrefs.has("#com.example.service.UserService"));
+
+        const exampleLi = findListItemForHref(sidebar, "#com.example");
+        assert.ok(exampleLi);
+        const serviceLinkInExample = findFirst(exampleLi, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.service");
+        assert.ok(serviceLinkInExample);
 
         const cards = collectElements(main, el => el.tagName === "article");
         assert.equal(cards.length, 6);

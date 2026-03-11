@@ -21,6 +21,11 @@ function createElement(tag, options = {}) {
             element.setAttribute(key, value);
         }
     }
+    if (options.style) {
+        for (const [key, value] of Object.entries(options.style)) {
+            element.style[key] = value;
+        }
+    }
     if (options.children) {
         options.children.forEach(child => {
             if (child) element.appendChild(child);
@@ -62,33 +67,118 @@ function createSidebarSection(title, items) {
     });
 }
 
+function buildPackageIndex(packages) {
+    const byId = new Map();
+    packages.forEach(p => {
+        if (!p || !p.id) return;
+        byId.set(p.id, p);
+    });
+
+    const childrenByParent = new Map();
+    packages.forEach(p => {
+        if (!p || !p.id) return;
+        const parentId = p.parent ?? null;
+        if (!childrenByParent.has(parentId)) childrenByParent.set(parentId, []);
+        childrenByParent.get(parentId).push(p);
+    });
+
+    for (const [parentId, children] of childrenByParent.entries()) {
+        children.sort((a, b) => (a.fqn ?? a.id ?? "").localeCompare((b.fqn ?? b.id ?? ""), "ja"));
+        childrenByParent.set(parentId, children);
+    }
+
+    return { byId, childrenByParent };
+}
+
+function groupClassesByPackage(classes) {
+    const map = new Map();
+    classes.forEach(c => {
+        if (!c || !c.id) return;
+        const pkgId = c.package ?? null;
+        if (!map.has(pkgId)) map.set(pkgId, []);
+        map.get(pkgId).push(c);
+    });
+    for (const [pkgId, items] of map.entries()) {
+        items.sort((a, b) => (a.fqn ?? a.id ?? "").localeCompare((b.fqn ?? b.id ?? ""), "ja"));
+        map.set(pkgId, items);
+    }
+    return map;
+}
+
+function renderPackageTreeItem(pkg, index, classesByPackage, depth) {
+    const label = pkg.label ?? pkg.fqn ?? pkg.id ?? "";
+    const pkgId = pkg.id ?? "";
+    const children = index.childrenByParent.get(pkgId) || [];
+    const classItems = classesByPackage.get(pkgId) || [];
+
+    const nestedChildren = [];
+    if (children.length > 0) {
+        nestedChildren.push(...children.map(child => renderPackageTreeItem(child, index, classesByPackage, depth + 1)));
+    }
+    if (classItems.length > 0) {
+        nestedChildren.push(...classItems.map(c => createElement("li", {
+            className: "in-page-sidebar__item",
+            children: [
+                createElement("a", {
+                    className: "in-page-sidebar__link",
+                    attributes: { href: "#" + (c.id ?? "") },
+                    textContent: c.label ?? c.fqn ?? c.id ?? ""
+                })
+            ]
+        })));
+    }
+
+    const link = createElement("a", {
+        className: "in-page-sidebar__link",
+        attributes: { href: "#" + pkgId },
+        textContent: label
+    });
+
+    if (nestedChildren.length === 0) {
+        return createElement("li", { className: "in-page-sidebar__item", children: [link] });
+    }
+
+    return createElement("li", {
+        className: "in-page-sidebar__item",
+        children: [
+            link,
+            createElement("ul", {
+                className: "in-page-sidebar__links",
+                style: { paddingLeft: `${Math.min(24, 12 + depth * 6)}px` },
+                children: nestedChildren
+            })
+        ]
+    });
+}
+
+function renderPackageTreeSection(packages, classes) {
+    if (!Array.isArray(packages) || packages.length === 0) return null;
+
+    const index = buildPackageIndex(packages);
+    const classesByPackage = groupClassesByPackage(Array.isArray(classes) ? classes : []);
+    const roots = index.childrenByParent.get(null) || [];
+    if (roots.length === 0) return null;
+
+    return createElement("section", {
+        className: "in-page-sidebar__section",
+        children: [
+            createElement("p", { className: "in-page-sidebar__title", textContent: "パッケージ" }),
+            createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: roots.map(root => renderPackageTreeItem(root, index, classesByPackage, 0))
+            })
+        ]
+    });
+}
+
 function renderSidebar(container, data) {
     if (!container) return;
     container.textContent = "";
 
-    const packages = (data.packages || [])
-        .map(p => ({
-            id: p.id ?? "",
-            label: p.fqn ?? p.label ?? p.id ?? "",
-        }))
-        .filter(x => x.id && x.label)
-        .sort((a, b) => a.label.localeCompare(b.label, "ja"));
+    const packageTreeSection = renderPackageTreeSection(data.packages || [], data.classes || []);
+    if (packageTreeSection) container.appendChild(packageTreeSection);
 
-    const classes = (data.classes || [])
-        .map(c => ({
-            id: c.id ?? "",
-            label: c.label ?? c.fqn ?? c.id ?? "",
-        }))
-        .filter(x => x.id && x.label)
-        .sort((a, b) => a.label.localeCompare(b.label, "ja"));
-
-    const packageSection = createSidebarSection("パッケージ", packages);
-    const classSection = createSidebarSection("クラス", classes);
-
-    if (packageSection) container.appendChild(packageSection);
-    if (classSection) container.appendChild(classSection);
-
-    if (!packageSection && !classSection) {
+    if (!packageTreeSection) {
         renderNoData(container);
     }
 }
@@ -243,6 +333,6 @@ if (typeof module !== "undefined" && module.exports) {
         renderMain,
         createElement,
         createSidebarSection,
+        renderPackageTreeSection,
     };
 }
-

@@ -7,60 +7,31 @@
     <link rel="icon" href="./assets/favicon.ico">
     <title><!-- JIG:TITLE -->domain</title>
 </head>
-<body class="domain">
+<body class="outputs domain-static">
 <header class="top">
     <a href="./index.html">[INDEX]</a>
     <b><!-- JIG:HEADER_TITLE -->ドメイン</b>
 </header>
 
-<div class="sideNavMain">
-    <nav class="tree in-page-sidebar in-page-sidebar--tree" aria-label="パッケージツリー">
-        <!-- JIG:SIDEBAR_BEGIN -->
-        <details open>
-            <summary class="package">
-                <a href="#com.example">com.example</a>/
-            </summary>
-            <details open>
-                <summary class="package">
-                    <a href="#com.example.order">order</a>/
-                </summary>
-                <div><a href="#com.example.order.Order">Order</a></div>
-                <div><a href="#com.example.order.OrderNumber">OrderNumber</a></div>
-            </details>
-            <details>
-                <summary class="package">
-                    <a href="#com.example.customer">customer</a>/
-                </summary>
-                <div><a href="#com.example.customer.Customer">Customer</a></div>
-            </details>
-        </details>
-        <!-- JIG:SIDEBAR_END -->
-    </nav>
+<main>
+    <h1><!-- JIG:H1 -->ドメイン</h1>
 
-    <main>
-        <!-- JIG:MAIN_BEGIN -->
-        <section class="package">
-            <h2><a id="com.example" href="#com.example">com.example</a></h2>
-            <small class="fully-qualified-name">com.example</small>
-            <section class="markdown">
-                <p>パッケージの説明（MarkdownをHTMLに変換して埋め込み想定）</p>
-            </section>
+    <div class="outputs-container">
+        <nav id="domain-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="ドメイン ナビゲーション">
+            <!-- JIG:SIDEBAR_BEGIN -->
+            <div id="domain-sidebar-list" class="in-page-sidebar__list"></div>
+            <!-- JIG:SIDEBAR_END -->
+        </nav>
+        <section id="domain-main" class="outputs-list" aria-label="ドメイン本文">
+            <!-- JIG:MAIN_BEGIN -->
+            <!-- JIG:MAIN_END -->
         </section>
+    </div>
+</main>
 
-        <section class="type">
-            <h2><a id="com.example.order.Order" href="#com.example.order.Order">Order</a></h2>
-            <div class="fully-qualified-name">com.example.order.Order</div>
-            <section class="markdown">
-                <p>型の説明（MarkdownをHTMLに変換して埋め込み想定）</p>
-            </section>
-            <pre class="mermaid">
-classDiagram
-  class Order
-            </pre>
-        </section>
-        <!-- JIG:MAIN_END -->
-    </main>
-</div>
+<script id="domain-data" type="application/json">
+    <!-- JIG:DOMAIN_JSON -->{"links":[]}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>

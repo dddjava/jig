@@ -1,14 +1,5 @@
 function getDomainData() {
-    const jsonText = document.getElementById("domain-data")?.textContent || "{}";
-    try {
-        const data = JSON.parse(jsonText);
-        return {
-            packages: Array.isArray(data.packages) ? data.packages : [],
-            classes: Array.isArray(data.classes) ? data.classes : [],
-        };
-    } catch (e) {
-        return { packages: [], classes: [] };
-    }
+    return globalThis.domainData;
 }
 
 function createElement(tag, options = {}) {

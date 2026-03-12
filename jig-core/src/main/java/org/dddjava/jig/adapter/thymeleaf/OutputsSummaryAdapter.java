@@ -35,11 +35,11 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        Map<String, String> ports = new HashMap<>();
-        Map<String, String> operations = new HashMap<>();
-        Map<String, String> adapters = new HashMap<>();
-        Map<String, String> executions = new HashMap<>();
-        Map<String, String> persistenceOperations = new HashMap<>();
+        var ports = Json.objectIndex();
+        var operations = Json.objectIndex();
+        var adapters = Json.objectIndex();
+        var executions = Json.objectIndex();
+        var persistenceOperations = Json.objectIndex();
 
         List<String> links = new ArrayList<>();
 
@@ -93,11 +93,11 @@ public class OutputsSummaryAdapter {
             });
         });
 
-        String json = Json.object("ports", Json.object(ports))
-                .and("operations", Json.object(operations))
-                .and("adapters", Json.object(adapters))
-                .and("executions", Json.object(executions))
-                .and("persistenceOperations", Json.object(persistenceOperations))
+        String json = Json.object("ports", ports.asObject())
+                .and("operations", operations.asObject())
+                .and("adapters", adapters.asObject())
+                .and("executions", executions.asObject())
+                .and("persistenceOperations", persistenceOperations.asObject())
                 .and("links", Json.arrayRaw(links))
                 .build();
 

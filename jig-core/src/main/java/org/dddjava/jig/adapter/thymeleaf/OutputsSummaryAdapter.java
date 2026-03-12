@@ -35,36 +35,36 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var ports = Json.uniqueObject();
-        var operations = Json.uniqueObject();
-        var adapters = Json.uniqueObject();
-        var executions = Json.uniqueObject();
-        var persistenceOperations = Json.uniqueObject();
+        Map<String, String> ports = new HashMap<>();
+        Map<String, String> operations = new HashMap<>();
+        Map<String, String> adapters = new HashMap<>();
+        Map<String, String> executions = new HashMap<>();
+        Map<String, String> persistenceOperations = new HashMap<>();
 
         List<String> links = new ArrayList<>();
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
-            adapters.putIfAbsent(adapterFqn, () -> Json.object("fqn", adapterFqn)
+            adapters.put(adapterFqn, Json.object("fqn", adapterFqn)
                     .and("label", outputAdapter.jigType().label())
                     .build());
 
             outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
-                ports.putIfAbsent(portFqn, () -> Json.object("fqn", portFqn)
+                ports.put(portFqn, Json.object("fqn", portFqn)
                         .and("label", outputPort.jigType().label())
                         .build());
 
                 outputPort.operationStream().forEach(outputPortOperation -> {
                     String opFqn = outputPortOperation.jigMethod().fqn();
-                    operations.putIfAbsent(opFqn, () -> Json.object("fqn", opFqn)
+                    operations.put(opFqn, Json.object("fqn", opFqn)
                             .and("name", outputPortOperation.jigMethod().name())
                             .and("signature", outputPortOperation.jigMethod().simpleMethodSignatureText())
                             .build());
 
                     outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
                         String execFqn = outputAdapterExecution.jigMethod().fqn();
-                        executions.putIfAbsent(execFqn, () -> Json.object("fqn", execFqn)
+                        executions.put(execFqn, Json.object("fqn", execFqn)
                                 .and("name", outputAdapterExecution.jigMethod().name())
                                 .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText())
                                 .build());
@@ -73,7 +73,7 @@ public class OutputsSummaryAdapter {
                         outputAdapterExecution.persistenceOperations().forEach(pOp -> {
                             String pOpId = pOp.persistenceOperationId().value();
                             pOpIds.add(pOpId);
-                            persistenceOperations.putIfAbsent(pOpId, () -> Json.object("id", pOpId)
+                            persistenceOperations.put(pOpId, Json.object("id", pOpId)
                                     .and("sqlType", pOp.sqlType().name())
                                     .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
@@ -93,11 +93,11 @@ public class OutputsSummaryAdapter {
             });
         });
 
-        String json = Json.object("ports", ports.asObject())
-                .and("operations", operations.asObject())
-                .and("adapters", adapters.asObject())
-                .and("executions", executions.asObject())
-                .and("persistenceOperations", persistenceOperations.asObject())
+        String json = Json.object("ports", Json.object(ports))
+                .and("operations", Json.object(operations))
+                .and("adapters", Json.object(adapters))
+                .and("executions", Json.object(executions))
+                .and("persistenceOperations", Json.object(persistenceOperations))
                 .and("links", Json.arrayRaw(links))
                 .build();
 

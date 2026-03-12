@@ -6,11 +6,11 @@ function getOutputsData() {
     const operations = data.operations || {};
     const adapters = data.adapters || {};
     const executions = data.executions || {};
-    const persistenceOperationsMaster = data.persistenceOperations || {};
+    const persistenceAccessorsMaster = data.persistenceAccessors || {};
 
     const links = (data.links || []).map(link => {
-        const pOps = (link.persistenceOperations || []).map(id => {
-            const op = persistenceOperationsMaster[id];
+        const pOps = (link.persistenceAccessors || []).map(id => {
+            const op = persistenceAccessorsMaster[id];
             return {
                 ...op,
                 groupLabel: op.group?.split('.').pop() || op.group
@@ -21,7 +21,7 @@ function getOutputsData() {
             outputPortOperation: operations[link.operation],
             outputAdapter: adapters[link.adapter],
             outputAdapterExecution: executions[link.execution],
-            persistenceOperations: pOps
+            persistenceAccessors: pOps
         };
     });
 
@@ -56,11 +56,11 @@ function groupLinksByOutputPort(links) {
     });
 }
 
-function formatPersistenceOperations(persistenceOperations) {
-    if (!Array.isArray(persistenceOperations) || persistenceOperations.length === 0) {
+function formatpersistenceAccessors(persistenceAccessors) {
+    if (!Array.isArray(persistenceAccessors) || persistenceAccessors.length === 0) {
         return ["なし"];
     }
-    return persistenceOperations
+    return persistenceAccessors
         .map(operation => {
             const id = operation.id ?? "";
             const sqlType = operation.sqlType ?? "";
@@ -224,7 +224,7 @@ function generateMermaidCode(link, mode = 'standard') {
     const targetNodes = new Map();
     const groupNodes = new Map();
 
-    link.persistenceOperations?.forEach((op) => {
+    link.persistenceAccessors?.forEach((op) => {
         const sqlType = op.sqlType || "";
         const groupId = op.group;
         const groupLabel = op.groupLabel;
@@ -303,7 +303,7 @@ function generatePortMermaidCode(group, mode = 'standard') {
             lastNodeId = executionId;
         }
 
-        link.persistenceOperations?.forEach((op) => {
+        link.persistenceAccessors?.forEach((op) => {
             const sqlType = op.sqlType || "";
             const groupId = op.group;
             const groupLabel = op.groupLabel;
@@ -364,7 +364,7 @@ function renderCrudTable(links) {
 
     const targetsSet = new Set();
     links.forEach(link => {
-        link.persistenceOperations?.forEach(op => {
+        link.persistenceAccessors?.forEach(op => {
             op.targets?.forEach(target => targetsSet.add(target));
         });
     });
@@ -422,7 +422,7 @@ function renderCrudTable(links) {
                     const cell = createElement("td", { className: "crud-cell port-crud-cell" });
                     const portTargetCrudMap = new Map();
                     group.links.forEach(link => {
-                        link.persistenceOperations?.forEach(op => {
+                        link.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
                             if (crud && op.targets?.includes(target)) {
                                 const current = portTargetCrudMap.get(target) || new Set();
@@ -455,7 +455,7 @@ function renderCrudTable(links) {
                     ...allTargets.map(target => {
                         const cell = createElement("td", { className: "crud-cell" });
                         const targetCrudMap = new Set();
-                        link.persistenceOperations?.forEach(op => {
+                        link.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
                             if (crud && op.targets?.includes(target)) {
                                 targetCrudMap.add(crud);
@@ -505,7 +505,7 @@ function lazyRender(container, renderFn) {
 function groupLinksByPersistenceTarget(links) {
     const map = new Map();
     links.forEach(link => {
-        link.persistenceOperations?.forEach(op => {
+        link.persistenceAccessors?.forEach(op => {
             op.targets?.forEach(target => {
                 if (!map.has(target)) {
                     map.set(target, {
@@ -543,7 +543,7 @@ function generatePersistenceMermaidCode(group) {
     const persistenceGroupSubgraphs = new Map();
 
     group.links.forEach((link, linkIndex) => {
-        const relevantOps = link.persistenceOperations.filter(op => op.targets.includes(target));
+        const relevantOps = link.persistenceAccessors.filter(op => op.targets.includes(target));
 
         relevantOps.forEach(op => {
             const opNodeId = `POp_${builder.sanitize(op.id)}`;
@@ -689,7 +689,7 @@ function renderOutputsTable(grouped, mode = 'standard') {
                     }),
                     createElement("ul", {
                         className: "outputs-persistence-list",
-                        children: formatPersistenceOperations(link.persistenceOperations).map(text => createElement("li", { textContent: text }))
+                        children: formatpersistenceAccessors(link.persistenceAccessors).map(text => createElement("li", { textContent: text }))
                     })
                 ]
             }));
@@ -797,7 +797,7 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         getOutputsData,
         groupLinksByOutputPort,
         groupLinksByPersistenceTarget,
-        formatPersistenceOperations,
+        formatpersistenceAccessors,
         createField,
         renderOutputsTable,
         renderPersistenceTable,

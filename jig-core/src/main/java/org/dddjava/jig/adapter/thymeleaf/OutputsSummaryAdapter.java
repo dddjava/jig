@@ -84,7 +84,7 @@ public class OutputsSummaryAdapter {
                                 .and("operation", opFqn)
                                 .and("adapter", adapterFqn)
                                 .and("execution", execFqn)
-                                .and("persistenceOperations", Json.array(pOpIds)));
+                                .and("persistenceAccessors", Json.array(pOpIds)));
                     });
                 });
             });
@@ -94,7 +94,7 @@ public class OutputsSummaryAdapter {
                 .and("operations", operations)
                 .and("adapters", adapters)
                 .and("executions", executions)
-                .and("persistenceOperations", persistenceAccessors)
+                .and("persistenceAccessors", persistenceAccessors)
                 .and("links", Json.arrayObjects(links))
                 .build();
 

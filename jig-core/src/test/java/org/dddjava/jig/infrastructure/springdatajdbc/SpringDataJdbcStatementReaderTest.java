@@ -33,7 +33,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
-        var statement = persistenceOperationOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderRepository.class));
+        var statement = persistenceAccessorOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderRepository.class));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
         assertEquals(expectedSqlType, statement.sqlType());
@@ -42,7 +42,7 @@ class SpringDataJdbcStatementReaderTest {
     @Test
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
         var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
-        var statement = persistenceOperationOf(statements, getPersistenceOperationId("findByHoge", SpringDataJdbcNameRepository.class));
+        var statement = persistenceAccessorOf(statements, getPersistenceAccessorId("findByHoge", SpringDataJdbcNameRepository.class));
 
         assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
         assertEquals(SqlType.SELECT, statement.sqlType());
@@ -84,7 +84,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
-        var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcMixedOrderRepository.class));
+        var statement = persistenceAccessorOptionalOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcMixedOrderRepository.class));
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceTargets().asText());
@@ -99,7 +99,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
-        var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
+        var statement = persistenceAccessorOptionalOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
 
         assertTrue(statement.isPresent());
         assertEquals("[spring_data_jdbc_order_items, spring_data_jdbc_orders_with_items]", statement.get().persistenceTargets().asText());
@@ -124,13 +124,13 @@ class SpringDataJdbcStatementReaderTest {
         );
     }
 
-    private static PersistenceAccessor persistenceOperationOf(PersistenceAccessorsRepository repository,
-                                                              PersistenceAccessorId persistenceAccessorId) {
-        return persistenceOperationOptionalOf(repository, persistenceAccessorId).orElseThrow();
+    private static PersistenceAccessor persistenceAccessorOf(PersistenceAccessorsRepository repository,
+                                                             PersistenceAccessorId persistenceAccessorId) {
+        return persistenceAccessorOptionalOf(repository, persistenceAccessorId).orElseThrow();
     }
 
-    private static java.util.Optional<PersistenceAccessor> persistenceOperationOptionalOf(PersistenceAccessorsRepository repository,
-                                                                                          PersistenceAccessorId persistenceAccessorId) {
+    private static java.util.Optional<PersistenceAccessor> persistenceAccessorOptionalOf(PersistenceAccessorsRepository repository,
+                                                                                         PersistenceAccessorId persistenceAccessorId) {
         return repository.findByTypeId(persistenceAccessorId.typeId())
                 .stream()
                 .flatMap(ops -> ops.persistenceAccessors().stream())
@@ -138,7 +138,7 @@ class SpringDataJdbcStatementReaderTest {
                 .findFirst();
     }
 
-    private static PersistenceAccessorId getPersistenceOperationId(String methodName, Class<?> clazz) {
+    private static PersistenceAccessorId getPersistenceAccessorId(String methodName, Class<?> clazz) {
         var typeId = TypeId.valueOf(clazz.getCanonicalName());
         return PersistenceAccessorId.fromTypeIdAndName(typeId, methodName);
     }

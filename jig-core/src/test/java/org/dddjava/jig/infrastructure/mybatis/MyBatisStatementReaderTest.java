@@ -29,7 +29,7 @@ class MyBatisStatementReaderTest {
     void bindを使ってても解析できる(JigRepository jigRepository) {
         PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(SampleMapper.class, "binding"));
+        PersistenceAccessor myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(SampleMapper.class, "binding"));
         assertEquals("[fuga]", myBatisStatement.persistenceTargets().asText());
     }
 
@@ -51,13 +51,13 @@ class MyBatisStatementReaderTest {
     void OGNLを使ったSELECTが解析できない(JigRepository jigRepository) {
         PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(ComplexMapper.class, "select_ognl"));
+        PersistenceAccessor myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl"));
         assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
         // OGNLを使ったSQLは現時点では空になりunsupportedになる
         assertFalse(myBatisStatement.query().supported());
     }
 
-    private static PersistenceAccessorId persistenceOperationIdOf(Class<?> clz, String name) {
+    private static PersistenceAccessorId persistenceAccessorIdOf(Class<?> clz, String name) {
         return PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf(clz.getCanonicalName()), name);
     }
 
@@ -65,7 +65,7 @@ class MyBatisStatementReaderTest {
     void OGNLを使ったSELECTが解析できない2(JigRepository jigRepository) {
         PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(ComplexMapper.class, "select_ognl_where"));
+        PersistenceAccessor myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl_where"));
 
         assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
         // OGNLを使ったSQLは現時点では空になる
@@ -78,13 +78,13 @@ class MyBatisStatementReaderTest {
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigRepository jigRepository) {
         PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceOperationOf(myBatisStatements, persistenceOperationIdOf(CanonicalMapper.class, methodName));
-        assertEquals("[" + tableName + "]", myBatisStatement.persistenceTargets().asText());
-        assertEquals(sqlType, myBatisStatement.sqlType());
+        PersistenceAccessor persistenceAccessor = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(CanonicalMapper.class, methodName));
+        assertEquals("[" + tableName + "]", persistenceAccessor.persistenceTargets().asText());
+        assertEquals(sqlType, persistenceAccessor.sqlType());
     }
 
-    private static PersistenceAccessor persistenceOperationOf(PersistenceAccessorsRepository repository,
-                                                              PersistenceAccessorId persistenceAccessorId) {
+    private static PersistenceAccessor persistenceAccessorOf(PersistenceAccessorsRepository repository,
+                                                             PersistenceAccessorId persistenceAccessorId) {
         return repository.findByTypeId(persistenceAccessorId.typeId())
                 .stream()
                 .flatMap(ops -> ops.persistenceAccessors().stream())

@@ -42,7 +42,7 @@ public class OutputsSummaryAdapter {
         var operations = Json.object();
         var adapters = Json.object();
         var executions = Json.object();
-        var persistenceOperations = Json.object();
+        var persistenceAccessors = Json.object();
 
         List<JsonObjectBuilder> links = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public class OutputsSummaryAdapter {
                         outputAdapterExecution.persistenceAccessors().forEach(pOp -> {
                             String pOpId = pOp.persistenceAccessorId().value();
                             pOpIds.add(pOpId);
-                            persistenceOperations.and(pOpId, Json.object("id", pOpId)
+                            persistenceAccessors.and(pOpId, Json.object("id", pOpId)
                                     .and("sqlType", pOp.sqlType().name())
                                     .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
@@ -94,7 +94,7 @@ public class OutputsSummaryAdapter {
                 .and("operations", operations)
                 .and("adapters", adapters)
                 .and("executions", executions)
-                .and("persistenceOperations", persistenceOperations)
+                .and("persistenceOperations", persistenceAccessors)
                 .and("links", Json.arrayObjects(links))
                 .build();
 

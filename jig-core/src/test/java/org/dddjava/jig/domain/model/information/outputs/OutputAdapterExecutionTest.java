@@ -48,17 +48,17 @@ class OutputAdapterExecutionTest {
                 .anyMatch(method -> method.declaringType().equals(TypeId.valueOf(TraceHelper.class.getCanonicalName()))
                         && method.name().equals("save")));
 
-        var resolvedPersistenceOperationIds = execution.persistenceAccessors().stream()
-                .map(persistenceOperation -> persistenceOperation.persistenceAccessorId())
+        var persistenceAccessorIdList = execution.persistenceAccessors().stream()
+                .map(persistenceAccessor -> persistenceAccessor.persistenceAccessorId())
                 .toList();
-        assertEquals(1, resolvedPersistenceOperationIds.size());
+        assertEquals(1, persistenceAccessorIdList.size());
         assertEquals(
                 PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf(TraceMapper.class.getCanonicalName()), "binding"),
-                resolvedPersistenceOperationIds.getFirst());
+                persistenceAccessorIdList.getFirst());
     }
 
     @Test
-    void SpringDataJdbcの継承メソッド呼び出しでPersistenceOperationを動的に解決できる(JigService jigService, JigRepository jigRepository) {
+    void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを動的に解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
         var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
@@ -77,7 +77,7 @@ class OutputAdapterExecutionTest {
     }
 
     @Test
-    void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceOperationを解決できる(JigService jigService, JigRepository jigRepository) {
+    void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
         var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);

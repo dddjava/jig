@@ -30,8 +30,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                     // 内部で呼び出している永続化操作を操作の種類ごとに収集する
                     Map<SqlType, List<String>> map = persistenceAccessorsRepository.values().stream()
                             .flatMap(ops -> ops.persistenceAccessors().stream())
-                            .filter(persistenceOperation -> {
-                                PersistenceAccessorId persistenceAccessorId = persistenceOperation.persistenceAccessorId();
+                            .filter(persistenceAccessor -> {
+                                PersistenceAccessorId persistenceAccessorId = persistenceAccessor.persistenceAccessorId();
                                 return outputPortOperationUseSQL(outputImplementation, persistenceAccessorId)
                                         || outputAdapterExecutionUseSQL(outputImplementation, persistenceAccessorId);
                             })
@@ -39,7 +39,7 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                                     Collectors.collectingAndThen(Collectors.toList(),
                                             // テーブル名の重複を排除してソートしたリストにする
                                             l -> l.stream()
-                                                    .flatMap(persistenceOperation -> persistenceOperation.persistenceTargets().persistenceTargets().stream())
+                                                    .flatMap(persistenceAccessor -> persistenceAccessor.persistenceTargets().persistenceTargets().stream())
                                                     .map(persistenceTarget -> persistenceTarget.name())
                                                     .distinct()
                                                     .sorted()

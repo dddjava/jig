@@ -154,14 +154,14 @@ public class DefaultJigRepositoryFactory {
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        var persistenceOperationsRepository = myBatisReadResult.persistenceAccessorsRepository();
+        var persistenceAccessorsRepository = myBatisReadResult.persistenceAccessorsRepository();
 
         SqlReadStatus sqlReadStatus = myBatisReadResult.status();
-        if (sqlReadStatus == SqlReadStatus.SQLなし && persistenceOperationsRepository.isEmpty()) {
+        if (sqlReadStatus == SqlReadStatus.SQLなし && persistenceAccessorsRepository.isEmpty()) {
             jigEventRepository.recordEvent(sqlReadStatus.toReadStatus());
         } else if (sqlReadStatus != SqlReadStatus.成功 && sqlReadStatus != SqlReadStatus.SQLなし) {
             jigEventRepository.recordEvent(myBatisReadResult.status().toReadStatus());
         }
-        return persistenceOperationsRepository;
+        return persistenceAccessorsRepository;
     }
 }

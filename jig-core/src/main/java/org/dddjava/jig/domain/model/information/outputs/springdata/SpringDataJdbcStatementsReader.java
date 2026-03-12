@@ -32,7 +32,7 @@ public class SpringDataJdbcStatementsReader {
         return jigTypes.stream()
                 .filter(this::isInterface)
                 .flatMap(jigType -> resolvePersistenceTargets(jigType, jigTypes).stream()
-                        .map(persistenceTargets -> resolvePersistenceOperations(jigType, persistenceTargets)))
+                        .map(persistenceTargets -> resolvePersistenceAccessors(jigType, persistenceTargets)))
                 .toList();
     }
 
@@ -88,20 +88,20 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceAccessors resolvePersistenceOperations(JigType jigType, PersistenceTargets defaultPersistenceTargets) {
+    private PersistenceAccessors resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets) {
         TypeId typeId = jigType.jigTypeHeader().id();
 
         List<PersistenceAccessor> persistenceAccessors = jigType.instanceJigMethods().stream()
-                .map(jigMethod -> resolvePersistenceOperation(jigMethod.jigMethodDeclaration(), typeId, defaultPersistenceTargets))
+                .map(jigMethod -> resolvePersistenceAccessor(jigMethod.jigMethodDeclaration(), typeId, defaultPersistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
         return PersistenceAccessors.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessors);
     }
 
-    private Optional<PersistenceAccessor> resolvePersistenceOperation(JigMethodDeclaration jigMethodDeclaration,
-                                                                      TypeId typeId,
-                                                                      PersistenceTargets persistenceTargets) {
+    private Optional<PersistenceAccessor> resolvePersistenceAccessor(JigMethodDeclaration jigMethodDeclaration,
+                                                                     TypeId typeId,
+                                                                     PersistenceTargets persistenceTargets) {
         String methodName = jigMethodDeclaration.name();
         PersistenceAccessorId statementId = PersistenceAccessorId.fromTypeIdAndName(typeId, methodName);
 

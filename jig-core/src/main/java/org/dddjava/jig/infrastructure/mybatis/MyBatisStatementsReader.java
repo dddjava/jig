@@ -51,7 +51,8 @@ public class MyBatisStatementsReader {
                 .toList();
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
-        if (classNames.isEmpty()) return new MyBatisReadResult(PersistenceAccessorsRepository.empty(), SqlReadStatus.成功);
+        if (classNames.isEmpty())
+            return new MyBatisReadResult(PersistenceAccessorsRepository.empty(), SqlReadStatus.成功);
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -138,14 +139,13 @@ public class MyBatisStatementsReader {
 
         logger.debug("取得したSQL: {}件", list.size());
 
-        List<PersistenceAccessors> persistenceOperations = list.stream()
-                .collect(Collectors.groupingBy(persistenceOperation -> persistenceOperation.persistenceAccessorId().typeId()))
+        PersistenceAccessorsRepository repository = PersistenceAccessorsRepository.from(list.stream()
+                .collect(Collectors.groupingBy(persistenceAccessor -> persistenceAccessor.persistenceAccessorId().typeId()))
                 .entrySet()
                 .stream()
                 .map(entry -> PersistenceAccessors.forMyBatis(entry.getKey(), entry.getValue()))
-                .toList();
-
-        return new MyBatisReadResult(PersistenceAccessorsRepository.from(persistenceOperations), sqlReadStatus);
+                .toList());
+        return new MyBatisReadResult(repository, sqlReadStatus);
     }
 
     /**

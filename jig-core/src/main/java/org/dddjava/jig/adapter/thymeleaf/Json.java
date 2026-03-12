@@ -1,7 +1,9 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * 簡易JSON組み立てAPI。
@@ -21,6 +23,17 @@ public final class Json {
      */
     public static JsonObjectBuilder object(String key, Object value) {
         return new JsonObjectBuilder().and(key, value);
+    }
+
+    /**
+     * キーで重複排除しつつ（最初の要素を採用）、順序を保持したJSONオブジェクト集約を行うビルダー。
+     * <p>
+     * 値は「すでに組み立て済みのJSON断片」として扱う。
+     *
+     * @return ビルダー
+     */
+    public static UniqueObjectBuilder uniqueObject() {
+        return new UniqueObjectBuilder();
     }
 
     /**
@@ -63,5 +76,36 @@ public final class Json {
      */
     public static Object raw(String json) {
         return new JsonRaw(json);
+    }
+
+    /**
+     * キーで重複排除しつつ順序を保持する、JSON断片Mapのビルダー。
+     */
+    public static final class UniqueObjectBuilder {
+        private final Map<String, String> map = new LinkedHashMap<>();
+
+        UniqueObjectBuilder() {
+        }
+
+        /**
+         * キーが未登録のときだけJSON断片を追加する。
+         *
+         * @param key          キー
+         * @param jsonSupplier JSON断片を返すサプライヤー
+         * @return this
+         */
+        public UniqueObjectBuilder putIfAbsent(String key, Supplier<String> jsonSupplier) {
+            map.computeIfAbsent(key, k -> jsonSupplier.get());
+            return this;
+        }
+
+        /**
+         * {@link JsonObjectBuilder#and} に渡せる「生JSONオブジェクト」として返す。
+         *
+         * @return JSONオブジェクトとして挿入するための値
+         */
+        public Object asObject() {
+            return Json.object(map);
+        }
     }
 }

@@ -37,6 +37,14 @@ class OutputsSummaryAdapterTest {
         assertTrue(actual.contains("\"persistenceOperations\":"));
         assertTrue(actual.contains("\"group\":"));
         assertTrue(actual.contains("stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository.save"));
+
+        assertTrue(actual.contains("タブ共通の設定"));
+        assertTrue(actual.contains("name=\"display-mode\""));
+        assertTrue(!actual.contains("in-page-sidebar__section outputs-display-mode"));
+
+        int commonSettingsIndex = actual.indexOf("タブ共通の設定");
+        int sidebarIndex = actual.indexOf("id=\"outputs-sidebar\"");
+        assertTrue(commonSettingsIndex != -1 && sidebarIndex != -1 && commonSettingsIndex < sidebarIndex);
     }
 
     private TemplateEngine templateEngine() {

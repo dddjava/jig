@@ -12,6 +12,16 @@
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
 
+    <section class="outputs-common-settings" aria-label="タブ共通の設定">
+        <p class="outputs-common-settings__title">タブ共通の設定</p>
+        <div class="outputs-display-mode" role="group" aria-labelledby="outputs-display-mode-title">
+            <p id="outputs-display-mode-title" class="outputs-display-mode__title">表示モード</p>
+            <label><input type="radio" name="display-mode" value="simple"> 簡略表示</label>
+            <label><input type="radio" name="display-mode" value="standard" checked> 標準表示</label>
+            <label><input type="radio" name="display-mode" value="detailed"> 詳細表示</label>
+        </div>
+    </section>
+
     <div class="outputs-tabs">
         <button class="tab-button is-active" data-tab="outputs">出力ポート一覧</button>
         <button class="tab-button" data-tab="persistence">永続化操作一覧</button>
@@ -21,12 +31,6 @@
     <div id="outputs-tab-panel" class="outputs-tab-panel is-active">
         <div class="outputs-container">
             <nav id="outputs-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="出力ポート一覧ナビゲーション">
-                <section class="in-page-sidebar__section outputs-display-mode" aria-labelledby="outputs-display-mode-title">
-                    <p id="outputs-display-mode-title" class="in-page-sidebar__title">表示モード</p>
-                    <label><input type="radio" name="display-mode" value="simple"> 簡略表示</label>
-                    <label><input type="radio" name="display-mode" value="standard" checked> 標準表示</label>
-                    <label><input type="radio" name="display-mode" value="detailed"> 詳細表示</label>
-                </section>
                 <div id="outputs-sidebar-list" class="in-page-sidebar__list"></div>
             </nav>
             <section id="outputs-list" class="outputs-list" aria-label="出力ポート一覧"></section>

@@ -45,9 +45,9 @@ public class OutputsSummaryAdapter {
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
-                    adapters.putIfAbsent(adapterFqn, Json.object("fqn", adapterFqn)
-                            .and("label", outputAdapter.jigType().label())
-                            .build());
+            adapters.putIfAbsent(adapterFqn, Json.object("fqn", adapterFqn)
+                    .and("label", outputAdapter.jigType().label())
+                    .build());
 
             outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();

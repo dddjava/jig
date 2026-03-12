@@ -1,5 +1,19 @@
 function getDomainData() {
-    return globalThis.domainData;
+    if (globalThis.domainData) return globalThis.domainData;
+
+    const script = typeof document !== "undefined" ? document.getElementById("domain-data") : null;
+    if (!script) return { packages: [], classes: [] };
+
+    const jsonText = script.textContent ?? "";
+    try {
+        const parsed = JSON.parse(jsonText);
+        return {
+            packages: Array.isArray(parsed?.packages) ? parsed.packages : [],
+            classes: Array.isArray(parsed?.classes) ? parsed.classes : [],
+        };
+    } catch (e) {
+        return { packages: [], classes: [] };
+    }
 }
 
 function createElement(tag, options = {}) {

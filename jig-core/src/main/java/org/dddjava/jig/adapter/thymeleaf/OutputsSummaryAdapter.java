@@ -41,33 +41,29 @@ public class OutputsSummaryAdapter {
         var executions = Json.objectIndex();
         var persistenceOperations = Json.objectIndex();
 
-        List<String> links = new ArrayList<>();
+        List<JsonObjectBuilder> links = new ArrayList<>();
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
             adapters.put(adapterFqn, Json.object("fqn", adapterFqn)
-                    .and("label", outputAdapter.jigType().label())
-                    .build());
+                    .and("label", outputAdapter.jigType().label()));
 
             outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
                 ports.put(portFqn, Json.object("fqn", portFqn)
-                        .and("label", outputPort.jigType().label())
-                        .build());
+                        .and("label", outputPort.jigType().label()));
 
                 outputPort.operationStream().forEach(outputPortOperation -> {
                     String opFqn = outputPortOperation.jigMethod().fqn();
                     operations.put(opFqn, Json.object("fqn", opFqn)
                             .and("name", outputPortOperation.jigMethod().name())
-                            .and("signature", outputPortOperation.jigMethod().simpleMethodSignatureText())
-                            .build());
+                            .and("signature", outputPortOperation.jigMethod().simpleMethodSignatureText()));
 
                     outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
                         String execFqn = outputAdapterExecution.jigMethod().fqn();
                         executions.put(execFqn, Json.object("fqn", execFqn)
                                 .and("name", outputAdapterExecution.jigMethod().name())
-                                .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText())
-                                .build());
+                                .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText()));
 
                         List<String> pOpIds = new ArrayList<>();
                         outputAdapterExecution.persistenceOperations().forEach(pOp -> {
@@ -78,16 +74,14 @@ public class OutputsSummaryAdapter {
                                     .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
                                             .toList()))
-                                    .and("group", pOp.persistenceOperationId().typeId().fqn())
-                                    .build());
+                                    .and("group", pOp.persistenceOperationId().typeId().fqn()));
                         });
 
                         links.add(Json.object("port", portFqn)
                                 .and("operation", opFqn)
                                 .and("adapter", adapterFqn)
                                 .and("execution", execFqn)
-                                .and("persistenceOperations", Json.array(pOpIds))
-                                .build());
+                                .and("persistenceOperations", Json.array(pOpIds)));
                     });
                 });
             });
@@ -98,7 +92,7 @@ public class OutputsSummaryAdapter {
                 .and("adapters", adapters.asObject())
                 .and("executions", executions.asObject())
                 .and("persistenceOperations", persistenceOperations.asObject())
-                .and("links", Json.arrayRaw(links))
+                .and("links", Json.arrayObjects(links))
                 .build();
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());

@@ -3,6 +3,7 @@ package org.dddjava.jig.adapter.thymeleaf;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 簡易JSON組み立てAPI。
@@ -66,6 +67,20 @@ public final class Json {
     }
 
     /**
+     * JSONオブジェクトビルダーのリストをJSON配列としてそのまま挿入する。
+     * {@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
+     *
+     * @param builders JSONオブジェクトビルダー
+     * @return JSON配列として挿入するための値（例: [{"a":1},{"b":2}]）
+     */
+    public static Object arrayObjects(List<JsonObjectBuilder> builders) {
+        String json = builders.stream()
+                .map(JsonObjectBuilder::build)
+                .collect(Collectors.joining(",", "[", "]"));
+        return new JsonRaw(json);
+    }
+
+    /**
      * 生JSONをそのまま挿入する。{@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
      *
      * @param json すでに組み立て済みのJSON断片（例: [1,2,3] や {"nested":"value"}）
@@ -90,6 +105,14 @@ public final class Json {
          */
         public ObjectIndex put(String key, String jsonFragment) {
             map.put(key, jsonFragment);
+            return this;
+        }
+
+        /**
+         * JSONオブジェクトビルダーを登録する。キーが重複した場合は後勝ちで上書きする。
+         */
+        public ObjectIndex put(String key, JsonObjectBuilder builder) {
+            map.put(key, builder.build());
             return this;
         }
 

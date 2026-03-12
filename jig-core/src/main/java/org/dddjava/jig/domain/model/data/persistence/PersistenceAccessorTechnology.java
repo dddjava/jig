@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
 /**
- * 永続化操作群の由来
+ * 永続化アクセサの実装技術
  */
-public enum PersistenceOperationsOrigin {
+public enum PersistenceAccessorTechnology {
     MYBATIS,
     SPRING_DATA_JDBC
 }

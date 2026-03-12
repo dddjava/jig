@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
 import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -22,20 +22,20 @@ import static java.util.stream.Collectors.groupingBy;
  */
 public record DatasourceAngles(List<DatasourceAngle> list) {
 
-    public static DatasourceAngles from(OutputImplementations outputImplementations, PersistenceOperationsRepository persistenceOperationsRepository, CallerMethodsFactory callerMethodsFactory) {
+    public static DatasourceAngles from(OutputImplementations outputImplementations, PersistenceAccessorsRepository persistenceAccessorsRepository, CallerMethodsFactory callerMethodsFactory) {
         return new DatasourceAngles(outputImplementations.stream()
                 .map(outputImplementation -> {
                     CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(outputImplementation.outputPortOperaionAsJigMethod().jigMethodId());
 
                     // 内部で呼び出している永続化操作を操作の種類ごとに収集する
-                    Map<SqlType, List<String>> map = persistenceOperationsRepository.values().stream()
-                            .flatMap(ops -> ops.persistenceOperations().stream())
+                    Map<SqlType, List<String>> map = persistenceAccessorsRepository.values().stream()
+                            .flatMap(ops -> ops.persistenceAccessors().stream())
                             .filter(persistenceOperation -> {
-                                PersistenceOperationId persistenceOperationId = persistenceOperation.persistenceOperationId();
-                                return outputPortOperationUseSQL(outputImplementation, persistenceOperationId)
-                                        || outputAdapterExecutionUseSQL(outputImplementation, persistenceOperationId);
+                                PersistenceAccessorId persistenceAccessorId = persistenceOperation.persistenceAccessorId();
+                                return outputPortOperationUseSQL(outputImplementation, persistenceAccessorId)
+                                        || outputAdapterExecutionUseSQL(outputImplementation, persistenceAccessorId);
                             })
-                            .collect(groupingBy(PersistenceOperation::sqlType,
+                            .collect(groupingBy(PersistenceAccessor::sqlType,
                                     Collectors.collectingAndThen(Collectors.toList(),
                                             // テーブル名の重複を排除してソートしたリストにする
                                             l -> l.stream()
@@ -56,8 +56,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      *
      * OutputAdapterExecutionに紐づく永続化操作で判断する
      */
-    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
-        return outputImplementation.outputAdapterExecution().uses(persistenceOperationId);
+    private static boolean outputAdapterExecutionUseSQL(OutputImplementation outputImplementation, PersistenceAccessorId persistenceAccessorId) {
+        return outputImplementation.outputAdapterExecution().uses(persistenceAccessorId);
     }
 
     /**
@@ -65,9 +65,9 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
      *
      * SpringDataJDBCを直接Serviceで使用している場合などにRepositoryインタフェースとSQLステートメントが一致する。
      */
-    private static boolean outputPortOperationUseSQL(OutputImplementation outputImplementation, PersistenceOperationId persistenceOperationId) {
+    private static boolean outputPortOperationUseSQL(OutputImplementation outputImplementation, PersistenceAccessorId persistenceAccessorId) {
         var operationMethodId = outputImplementation.outputPortOperaionAsJigMethod().jigMethodId();
         // namespaceはメソッドの型のFQNに該当し、idはメソッド名に該当するので、それを比較する。
-        return persistenceOperationId.matches(TypeId.valueOf(operationMethodId.namespace()), operationMethodId.name());
+        return persistenceAccessorId.matches(TypeId.valueOf(operationMethodId.namespace()), operationMethodId.name());
     }
 }

@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PersistenceOperationTest {
+class PersistenceAccessorTest {
 
     @Test
     void Queryがunsupportedでも解決済みテーブルがあればそれを返す() {
-        PersistenceOperation statement = new PersistenceOperation(
-                PersistenceOperationId.fromTypeIdAndName(TypeId.valueOf("example.ExampleRepository"), "findById"),
+        PersistenceAccessor statement = new PersistenceAccessor(
+                PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf("example.ExampleRepository"), "findById"),
                 Query.unsupported(),
                 SqlType.SELECT,
                 new PersistenceTargets(new PersistenceTarget("example_table")));

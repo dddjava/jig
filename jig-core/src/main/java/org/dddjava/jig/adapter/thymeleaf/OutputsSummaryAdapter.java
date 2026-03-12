@@ -12,7 +12,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * 外部利用概要
@@ -32,7 +35,7 @@ public class OutputsSummaryAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
 
-        var sqlStatements = repository.jigDataProvider().persistenceOperationsRepository();
+        var sqlStatements = repository.jigDataProvider().persistenceAccessorsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var ports = Json.object();
@@ -66,15 +69,15 @@ public class OutputsSummaryAdapter {
                                 .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText()));
 
                         List<String> pOpIds = new ArrayList<>();
-                        outputAdapterExecution.persistenceOperations().forEach(pOp -> {
-                            String pOpId = pOp.persistenceOperationId().value();
+                        outputAdapterExecution.persistenceAccessors().forEach(pOp -> {
+                            String pOpId = pOp.persistenceAccessorId().value();
                             pOpIds.add(pOpId);
                             persistenceOperations.and(pOpId, Json.object("id", pOpId)
                                     .and("sqlType", pOp.sqlType().name())
                                     .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
                                             .toList()))
-                                    .and("group", pOp.persistenceOperationId().typeId().fqn()));
+                                    .and("group", pOp.persistenceAccessorId().typeId().fqn()));
                         });
 
                         links.add(Json.object("port", portFqn)

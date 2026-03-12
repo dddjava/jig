@@ -19,63 +19,63 @@ import java.util.stream.Stream;
 public record OutputAdapterExecution(
         JigMethod jigMethod,
         Collection<JigMethod> tracingJigMethods,
-        Collection<PersistenceOperation> persistenceOperations
+        Collection<PersistenceAccessor> persistenceAccessors
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
     public static OutputAdapterExecution from(JigMethod jigMethod,
                                               JigTypes jigTypes,
-                                              PersistenceOperationsRepository persistenceOperationsRepository) {
+                                              PersistenceAccessorsRepository persistenceAccessorsRepository) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
-        var persistenceOperations = resolvePersistenceOperations(tracingJigMethods, jigTypes, persistenceOperationsRepository);
+        var persistenceOperations = resolvePersistenceOperations(tracingJigMethods, jigTypes, persistenceAccessorsRepository);
         return new OutputAdapterExecution(jigMethod, tracingJigMethods, persistenceOperations);
     }
 
-    public boolean uses(PersistenceOperationId persistenceOperationId) {
-        return persistenceOperations.stream()
-                .anyMatch(persistenceOperation -> persistenceOperation.persistenceOperationId().equals(persistenceOperationId));
+    public boolean uses(PersistenceAccessorId persistenceAccessorId) {
+        return persistenceAccessors.stream()
+                .anyMatch(persistenceOperation -> persistenceOperation.persistenceAccessorId().equals(persistenceAccessorId));
     }
 
-    private static Collection<PersistenceOperation> resolvePersistenceOperations(Collection<JigMethod> tracingJigMethods,
-                                                                                 JigTypes jigTypes,
-                                                                                 PersistenceOperationsRepository persistenceOperationsRepository) {
+    private static Collection<PersistenceAccessor> resolvePersistenceOperations(Collection<JigMethod> tracingJigMethods,
+                                                                                JigTypes jigTypes,
+                                                                                PersistenceAccessorsRepository persistenceAccessorsRepository) {
         return tracingJigMethods.stream()
                 .flatMap(tracingJigMethod -> tracingJigMethod.usingMethods().invokedMethodStream()
-                        .map(methodCall -> findPersistenceOperation(methodCall, tracingJigMethod, jigTypes, persistenceOperationsRepository))
+                        .map(methodCall -> findPersistenceOperation(methodCall, tracingJigMethod, jigTypes, persistenceAccessorsRepository))
                         .flatMap(Optional::stream))
                 .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private static Optional<PersistenceOperation> findPersistenceOperation(MethodCall methodCall,
-                                                                           JigMethod tracingJigMethod,
-                                                                           JigTypes jigTypes,
-                                                                           PersistenceOperationsRepository persistenceOperationsRepository) {
-        return persistenceOperationsRepository.findByTypeId(methodCall.methodOwner())
-                .or(() -> resolveSpringDataPersistenceOperations(methodCall, tracingJigMethod, jigTypes, persistenceOperationsRepository))
+    private static Optional<PersistenceAccessor> findPersistenceOperation(MethodCall methodCall,
+                                                                          JigMethod tracingJigMethod,
+                                                                          JigTypes jigTypes,
+                                                                          PersistenceAccessorsRepository persistenceAccessorsRepository) {
+        return persistenceAccessorsRepository.findByTypeId(methodCall.methodOwner())
+                .or(() -> resolveSpringDataPersistenceOperations(methodCall, tracingJigMethod, jigTypes, persistenceAccessorsRepository))
                 .flatMap(persistenceOperations -> findPersistenceOperation(
                         methodCall,
                         tracingJigMethod,
                         persistenceOperations));
     }
 
-    private static Optional<PersistenceOperations> resolveSpringDataPersistenceOperations(MethodCall methodCall,
-                                                                                          JigMethod tracingJigMethod,
-                                                                                          JigTypes jigTypes,
-                                                                                          PersistenceOperationsRepository persistenceOperationsRepository) {
+    private static Optional<PersistenceAccessors> resolveSpringDataPersistenceOperations(MethodCall methodCall,
+                                                                                         JigMethod tracingJigMethod,
+                                                                                         JigTypes jigTypes,
+                                                                                         PersistenceAccessorsRepository persistenceAccessorsRepository) {
         if (!SpringDataUtil.isSpringDataRepositoryType(methodCall.methodOwner())) {
             return Optional.empty();
         }
-        List<PersistenceOperations> knownTypeCandidates = springDataCandidatesFromKnownTypes(tracingJigMethod, jigTypes, persistenceOperationsRepository);
-        Optional<PersistenceOperations> selected = selectSpringDataCandidate(knownTypeCandidates, methodCall);
+        List<PersistenceAccessors> knownTypeCandidates = springDataCandidatesFromKnownTypes(tracingJigMethod, jigTypes, persistenceAccessorsRepository);
+        Optional<PersistenceAccessors> selected = selectSpringDataCandidate(knownTypeCandidates, methodCall);
         if (selected.isPresent()) {
             return selected;
         }
-        return selectSpringDataCandidate(springDataCandidates(persistenceOperationsRepository), methodCall);
+        return selectSpringDataCandidate(springDataCandidates(persistenceAccessorsRepository), methodCall);
     }
 
-    private static List<PersistenceOperations> springDataCandidatesFromKnownTypes(JigMethod tracingJigMethod,
-                                                                                  JigTypes jigTypes,
-                                                                                  PersistenceOperationsRepository persistenceOperationsRepository) {
+    private static List<PersistenceAccessors> springDataCandidatesFromKnownTypes(JigMethod tracingJigMethod,
+                                                                                 JigTypes jigTypes,
+                                                                                 PersistenceAccessorsRepository persistenceAccessorsRepository) {
         Set<TypeId> candidateTypeIds = Stream.concat(
                         tracingJigMethod.usingTypes().values().stream(),
                         jigTypes.resolveJigType(tracingJigMethod.declaringType()).stream()
@@ -83,26 +83,26 @@ public record OutputAdapterExecution(
                                 .map(jigField -> jigField.typeId()))
                 .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
 
-        return persistenceOperationsRepository.values().stream()
-                .filter(ops -> ops.origin() == PersistenceOperationsOrigin.SPRING_DATA_JDBC)
+        return persistenceAccessorsRepository.values().stream()
+                .filter(ops -> ops.technology() == PersistenceAccessorTechnology.SPRING_DATA_JDBC)
                 .filter(ops -> candidateTypeIds.contains(ops.typeId()))
                 .toList();
     }
 
-    private static List<PersistenceOperations> springDataCandidates(PersistenceOperationsRepository persistenceOperationsRepository) {
-        return persistenceOperationsRepository.values().stream()
-                .filter(ops -> ops.origin() == PersistenceOperationsOrigin.SPRING_DATA_JDBC)
+    private static List<PersistenceAccessors> springDataCandidates(PersistenceAccessorsRepository persistenceAccessorsRepository) {
+        return persistenceAccessorsRepository.values().stream()
+                .filter(ops -> ops.technology() == PersistenceAccessorTechnology.SPRING_DATA_JDBC)
                 .toList();
     }
 
-    private static Optional<PersistenceOperations> selectSpringDataCandidate(List<PersistenceOperations> candidates,
-                                                                             MethodCall methodCall) {
+    private static Optional<PersistenceAccessors> selectSpringDataCandidate(List<PersistenceAccessors> candidates,
+                                                                            MethodCall methodCall) {
         if (candidates.isEmpty()) return Optional.empty();
         if (candidates.size() == 1) return Optional.of(candidates.getFirst());
 
-        List<PersistenceOperations> nameMatched = candidates.stream()
-                .filter(persistenceOperations -> persistenceOperations.persistenceOperations().stream()
-                        .anyMatch(operation -> operation.persistenceOperationId().id().equals(methodCall.methodName())))
+        List<PersistenceAccessors> nameMatched = candidates.stream()
+                .filter(persistenceOperations -> persistenceOperations.persistenceAccessors().stream()
+                        .anyMatch(operation -> operation.persistenceAccessorId().id().equals(methodCall.methodName())))
                 .toList();
         if (nameMatched.size() == 1) {
             return Optional.of(nameMatched.getFirst());
@@ -110,18 +110,18 @@ public record OutputAdapterExecution(
         return Optional.empty();
     }
 
-    private static Optional<PersistenceOperation> findPersistenceOperation(MethodCall methodCall,
-                                                                           JigMethod tracingJigMethod,
-                                                                           PersistenceOperations persistenceOperations) {
-        PersistenceOperationId persistenceOperationId = SpringDataUtil.toPersistenceOperationId(methodCall);
-        return persistenceOperations.findPersistenceOperationById(persistenceOperationId)
-                .or(() -> SpringDataUtil.generateCalledPersistenceOperation(methodCall, persistenceOperations))
+    private static Optional<PersistenceAccessor> findPersistenceOperation(MethodCall methodCall,
+                                                                          JigMethod tracingJigMethod,
+                                                                          PersistenceAccessors persistenceAccessors) {
+        PersistenceAccessorId persistenceAccessorId = SpringDataUtil.toPersistenceOperationId(methodCall);
+        return persistenceAccessors.findPersistenceAccessorById(persistenceAccessorId)
+                .or(() -> SpringDataUtil.generateCalledPersistenceOperation(methodCall, persistenceAccessors))
                 .or(() -> {
                     logger.warn("PersistenceOperationsは見つかりましたが、PersistenceOperationが見つかりませんでした。caller={} callee={} owner={} origin={}",
                             tracingJigMethod.fqn(),
                             methodCall.jigMethodId().value(),
                             methodCall.methodOwner().fqn(),
-                            persistenceOperations.origin());
+                            persistenceAccessors.technology());
                     return Optional.empty();
                 });
     }

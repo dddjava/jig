@@ -11,17 +11,17 @@ import java.util.Optional;
  *
  * @param values 永続化操作群を保持する可変コレクション
  */
-public record PersistenceOperationsRepository(Collection<PersistenceOperations> values) {
+public record PersistenceAccessorsRepository(Collection<PersistenceAccessors> values) {
 
-    public static PersistenceOperationsRepository empty() {
-        return new PersistenceOperationsRepository(new ArrayList<>());
+    public static PersistenceAccessorsRepository empty() {
+        return new PersistenceAccessorsRepository(new ArrayList<>());
     }
 
-    public static PersistenceOperationsRepository from(Collection<PersistenceOperations> statements) {
-        return new PersistenceOperationsRepository(new ArrayList<>(statements));
+    public static PersistenceAccessorsRepository from(Collection<PersistenceAccessors> statements) {
+        return new PersistenceAccessorsRepository(new ArrayList<>(statements));
     }
 
-    public Optional<PersistenceOperations> findByTypeId(TypeId typeId) {
+    public Optional<PersistenceAccessors> findByTypeId(TypeId typeId) {
         return values.stream()
                 .filter(ops -> ops.typeId().equals(typeId))
                 .findAny();
@@ -31,7 +31,7 @@ public record PersistenceOperationsRepository(Collection<PersistenceOperations> 
         return values.isEmpty();
     }
 
-    public void register(Collection<PersistenceOperations> springDataJdbcStatements) {
+    public void register(Collection<PersistenceAccessors> springDataJdbcStatements) {
         // ここで追加するためにvaluesは可変コレクションである必要がある
         values.addAll(springDataJdbcStatements);
     }

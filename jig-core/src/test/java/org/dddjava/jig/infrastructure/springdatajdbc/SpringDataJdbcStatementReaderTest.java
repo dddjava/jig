@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.springdatajdbc;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperation;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
 import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -32,7 +32,7 @@ class SpringDataJdbcStatementReaderTest {
             SqlType expectedSqlType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
+        var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
         var statement = persistenceOperationOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderRepository.class));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
@@ -41,7 +41,7 @@ class SpringDataJdbcStatementReaderTest {
 
     @Test
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
-        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
+        var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
         var statement = persistenceOperationOf(statements, getPersistenceOperationId("findByHoge", SpringDataJdbcNameRepository.class));
 
         assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
@@ -83,7 +83,7 @@ class SpringDataJdbcStatementReaderTest {
             SqlType expectedSqlType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
+        var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
         var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcMixedOrderRepository.class));
 
         assertTrue(statement.isPresent());
@@ -98,7 +98,7 @@ class SpringDataJdbcStatementReaderTest {
             SqlType expectedSqlType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().persistenceOperationsRepository();
+        var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
         var statement = persistenceOperationOptionalOf(statements, getPersistenceOperationId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
 
         assertTrue(statement.isPresent());
@@ -124,22 +124,22 @@ class SpringDataJdbcStatementReaderTest {
         );
     }
 
-    private static PersistenceOperation persistenceOperationOf(PersistenceOperationsRepository repository,
-                                                               PersistenceOperationId persistenceOperationId) {
-        return persistenceOperationOptionalOf(repository, persistenceOperationId).orElseThrow();
+    private static PersistenceAccessor persistenceOperationOf(PersistenceAccessorsRepository repository,
+                                                              PersistenceAccessorId persistenceAccessorId) {
+        return persistenceOperationOptionalOf(repository, persistenceAccessorId).orElseThrow();
     }
 
-    private static java.util.Optional<PersistenceOperation> persistenceOperationOptionalOf(PersistenceOperationsRepository repository,
-                                                                                           PersistenceOperationId persistenceOperationId) {
-        return repository.findByTypeId(persistenceOperationId.typeId())
+    private static java.util.Optional<PersistenceAccessor> persistenceOperationOptionalOf(PersistenceAccessorsRepository repository,
+                                                                                          PersistenceAccessorId persistenceAccessorId) {
+        return repository.findByTypeId(persistenceAccessorId.typeId())
                 .stream()
-                .flatMap(ops -> ops.persistenceOperations().stream())
-                .filter(operation -> operation.persistenceOperationId().equals(persistenceOperationId))
+                .flatMap(ops -> ops.persistenceAccessors().stream())
+                .filter(operation -> operation.persistenceAccessorId().equals(persistenceAccessorId))
                 .findFirst();
     }
 
-    private static PersistenceOperationId getPersistenceOperationId(String methodName, Class<?> clazz) {
+    private static PersistenceAccessorId getPersistenceOperationId(String methodName, Class<?> clazz) {
         var typeId = TypeId.valueOf(clazz.getCanonicalName());
-        return PersistenceOperationId.fromTypeIdAndName(typeId, methodName);
+        return PersistenceAccessorId.fromTypeIdAndName(typeId, methodName);
     }
 }

@@ -51,7 +51,7 @@ public class MyBatisStatementsReader {
                 .toList();
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
-        if (classNames.isEmpty()) return new MyBatisReadResult(PersistenceOperationsRepository.empty(), SqlReadStatus.成功);
+        if (classNames.isEmpty()) return new MyBatisReadResult(PersistenceAccessorsRepository.empty(), SqlReadStatus.成功);
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -100,14 +100,14 @@ public class MyBatisStatementsReader {
             }
         }
 
-        List<PersistenceOperation> list = new ArrayList<>();
+        List<PersistenceAccessor> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
         logger.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                PersistenceOperationId persistenceOperationId = resolveStatementId(mappedStatement);
+                PersistenceAccessorId persistenceAccessorId = resolveStatementId(mappedStatement);
 
                 Query query;
                 try {
@@ -131,21 +131,21 @@ public class MyBatisStatementsReader {
                         yield SqlType.SELECT;
                     }
                 };
-                PersistenceOperation myBatisStatement = PersistenceOperation.from(persistenceOperationId, query, sqlType);
+                PersistenceAccessor myBatisStatement = PersistenceAccessor.from(persistenceAccessorId, query, sqlType);
                 list.add(myBatisStatement);
             }
         }
 
         logger.debug("取得したSQL: {}件", list.size());
 
-        List<PersistenceOperations> persistenceOperations = list.stream()
-                .collect(Collectors.groupingBy(persistenceOperation -> persistenceOperation.persistenceOperationId().typeId()))
+        List<PersistenceAccessors> persistenceOperations = list.stream()
+                .collect(Collectors.groupingBy(persistenceOperation -> persistenceOperation.persistenceAccessorId().typeId()))
                 .entrySet()
                 .stream()
-                .map(entry -> PersistenceOperations.forMyBatis(entry.getKey(), entry.getValue()))
+                .map(entry -> PersistenceAccessors.forMyBatis(entry.getKey(), entry.getValue()))
                 .toList();
 
-        return new MyBatisReadResult(PersistenceOperationsRepository.from(persistenceOperations), sqlReadStatus);
+        return new MyBatisReadResult(PersistenceAccessorsRepository.from(persistenceOperations), sqlReadStatus);
     }
 
     /**
@@ -171,16 +171,16 @@ public class MyBatisStatementsReader {
      * }
      * </pre>
      */
-    private static PersistenceOperationId resolveStatementId(MappedStatement mappedStatement) {
+    private static PersistenceAccessorId resolveStatementId(MappedStatement mappedStatement) {
         var mappedStatementId = mappedStatement.getId();
 
         var namespaceIdSeparateIndex = mappedStatementId.lastIndexOf('.');
         if (namespaceIdSeparateIndex != -1) {
-            return PersistenceOperationId.fromTypeIdAndName(
+            return PersistenceAccessorId.fromTypeIdAndName(
                     TypeId.valueOf(mappedStatementId.substring(0, namespaceIdSeparateIndex)),
                     mappedStatementId.substring(namespaceIdSeparateIndex + 1));
         } else {
-            return PersistenceOperationId.fromTypeIdAndName(
+            return PersistenceAccessorId.fromTypeIdAndName(
                     // ダミー値を入れておく
                     TypeId.valueOf("jig.mybatis.unnamed"),
                     mappedStatementId);

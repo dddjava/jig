@@ -55,29 +55,29 @@ public class SpringDataUtil {
      * MethodCallが存在する以上はコンパイルが通っているので、解決済みの永続化操作がなくても継承しているIFなどで定義されている可能性が高い。
      * 主なユースケースはSpringDataJDBCのCrudRepositoryなどに定義されたメソッドを呼び出し元から「存在するもの」として構築すること。
      */
-    public static Optional<PersistenceOperation> generateCalledPersistenceOperation(MethodCall methodCall,
-                                                                                    PersistenceOperations persistenceOperations) {
-        if (persistenceOperations.origin() != PersistenceOperationsOrigin.SPRING_DATA_JDBC) {
+    public static Optional<PersistenceAccessor> generateCalledPersistenceOperation(MethodCall methodCall,
+                                                                                   PersistenceAccessors persistenceAccessors) {
+        if (persistenceAccessors.technology() != PersistenceAccessorTechnology.SPRING_DATA_JDBC) {
             return Optional.empty();
         }
 
         // SpringDataJDBCのIFに定義されたメソッドの解決を試みる
-        PersistenceOperationId persistenceOperationId = generatedPersistenceOperationId(methodCall, persistenceOperations);
+        PersistenceAccessorId persistenceAccessorId = generatedPersistenceOperationId(methodCall, persistenceAccessors);
         return inferSqlType(methodCall.methodName())
-                .map(sqlType -> PersistenceOperation.from(
-                        persistenceOperationId,
+                .map(sqlType -> PersistenceAccessor.from(
+                        persistenceAccessorId,
                         sqlType,
-                        persistenceOperations.defaultPersistenceTargets()));
+                        persistenceAccessors.defaultPersistenceTargets()));
     }
 
-    public static PersistenceOperationId toPersistenceOperationId(MethodCall methodCall) {
-        return PersistenceOperationId.fromTypeIdAndName(methodCall.methodOwner(), methodCall.methodName());
+    public static PersistenceAccessorId toPersistenceOperationId(MethodCall methodCall) {
+        return PersistenceAccessorId.fromTypeIdAndName(methodCall.methodOwner(), methodCall.methodName());
     }
 
-    private static PersistenceOperationId generatedPersistenceOperationId(MethodCall methodCall,
-                                                                          PersistenceOperations persistenceOperations) {
+    private static PersistenceAccessorId generatedPersistenceOperationId(MethodCall methodCall,
+                                                                         PersistenceAccessors persistenceAccessors) {
         if (isSpringDataRepositoryType(methodCall.methodOwner())) {
-            return PersistenceOperationId.fromTypeIdAndName(persistenceOperations.typeId(), methodCall.methodName());
+            return PersistenceAccessorId.fromTypeIdAndName(persistenceAccessors.typeId(), methodCall.methodName());
         }
         return toPersistenceOperationId(methodCall);
     }

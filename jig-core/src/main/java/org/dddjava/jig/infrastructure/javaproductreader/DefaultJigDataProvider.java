@@ -2,15 +2,15 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 
 record DefaultJigDataProvider(JavaSourceModel javaSourceModel,
-                              PersistenceOperationsRepository persistenceOperationsRepository) implements JigDataProvider {
+                              PersistenceAccessorsRepository persistenceAccessorsRepository) implements JigDataProvider {
 
     @Override
-    public PersistenceOperationsRepository persistenceOperationsRepository() {
-        return persistenceOperationsRepository;
+    public PersistenceAccessorsRepository persistenceAccessorsRepository() {
+        return persistenceAccessorsRepository;
     }
 
     @Override

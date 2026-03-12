@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.data;
 
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ public interface JigDataProvider {
     static JigDataProvider none() {
         return new JigDataProvider() {
             @Override
-            public PersistenceOperationsRepository persistenceOperationsRepository() {
-                return PersistenceOperationsRepository.empty();
+            public PersistenceAccessorsRepository persistenceAccessorsRepository() {
+                return PersistenceAccessorsRepository.empty();
             }
 
             @Override
@@ -21,7 +21,7 @@ public interface JigDataProvider {
         };
     }
 
-    PersistenceOperationsRepository persistenceOperationsRepository();
+    PersistenceAccessorsRepository persistenceAccessorsRepository();
 
     EnumModels fetchEnumModels();
 }

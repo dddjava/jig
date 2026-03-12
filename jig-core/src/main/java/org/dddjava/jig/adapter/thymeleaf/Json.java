@@ -1,6 +1,7 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 簡易JSON組み立てAPI。
@@ -23,6 +24,17 @@ public final class Json {
     }
 
     /**
+     * 値がJSON断片（エスケープ不要）になっているMapを、JSONオブジェクトとしてそのまま挿入する。
+     * {@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
+     *
+     * @param map キーとJSON断片のマップ
+     * @return JSONオブジェクトとして挿入するための値（例: {"key1":value1,"key2":value2}）
+     */
+    public static Object object(Map<String, String> map) {
+        return new JsonRaw(JsonSupport.mapToJson(map));
+    }
+
+    /**
      * 文字列リストをJSON配列に変換する。{@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
      *
      * @param values 文字列のリスト
@@ -30,6 +42,17 @@ public final class Json {
      */
     public static Object array(List<String> values) {
         return new JsonRaw(JsonSupport.toJsonStringList(values));
+    }
+
+    /**
+     * JSON断片のリストをJSON配列としてそのまま挿入する。要素はすでにJSONとして組み立て済みであること。
+     * {@link JsonObjectBuilder#and} に渡すとエスケープされずそのまま挿入される。
+     *
+     * @param jsonFragments すでに組み立て済みのJSON断片（例: {"a":1} や 123）
+     * @return JSON配列として挿入するための値（例: [{"a":1},123]）
+     */
+    public static Object arrayRaw(List<String> jsonFragments) {
+        return new JsonRaw("[" + String.join(",", jsonFragments) + "]");
     }
 
     /**

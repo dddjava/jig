@@ -93,23 +93,13 @@ public class OutputsSummaryAdapter {
             });
         });
 
-        String json = """
-                {
-                  "ports": %s,
-                  "operations": %s,
-                  "adapters": %s,
-                  "executions": %s,
-                  "persistenceOperations": %s,
-                  "links": [%s]
-                }
-                """.formatted(
-                JsonSupport.mapToJson(ports),
-                JsonSupport.mapToJson(operations),
-                JsonSupport.mapToJson(adapters),
-                JsonSupport.mapToJson(executions),
-                JsonSupport.mapToJson(persistenceOperations),
-                String.join(",", links)
-        );
+        String json = Json.object("ports", Json.object(ports))
+                .and("operations", Json.object(operations))
+                .and("adapters", Json.object(adapters))
+                .and("executions", Json.object(executions))
+                .and("persistenceOperations", Json.object(persistenceOperations))
+                .and("links", Json.arrayRaw(links))
+                .build();
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 

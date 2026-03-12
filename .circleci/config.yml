@@ -4,6 +4,7 @@ executors:
   circleci-openjdk-21-executor:
     docker:
       - image: cimg/openjdk:21.0.9
+    resource_class: large
     working_directory: ~/repo
     environment:
       TERM: dumb

@@ -35,33 +35,33 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().persistenceOperationsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var ports = Json.objectIndex();
-        var operations = Json.objectIndex();
-        var adapters = Json.objectIndex();
-        var executions = Json.objectIndex();
-        var persistenceOperations = Json.objectIndex();
+        var ports = Json.object();
+        var operations = Json.object();
+        var adapters = Json.object();
+        var executions = Json.object();
+        var persistenceOperations = Json.object();
 
         List<JsonObjectBuilder> links = new ArrayList<>();
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
-            adapters.put(adapterFqn, Json.object("fqn", adapterFqn)
+            adapters.and(adapterFqn, Json.object("fqn", adapterFqn)
                     .and("label", outputAdapter.jigType().label()));
 
             outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
-                ports.put(portFqn, Json.object("fqn", portFqn)
+                ports.and(portFqn, Json.object("fqn", portFqn)
                         .and("label", outputPort.jigType().label()));
 
                 outputPort.operationStream().forEach(outputPortOperation -> {
                     String opFqn = outputPortOperation.jigMethod().fqn();
-                    operations.put(opFqn, Json.object("fqn", opFqn)
+                    operations.and(opFqn, Json.object("fqn", opFqn)
                             .and("name", outputPortOperation.jigMethod().name())
                             .and("signature", outputPortOperation.jigMethod().simpleMethodSignatureText()));
 
                     outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
                         String execFqn = outputAdapterExecution.jigMethod().fqn();
-                        executions.put(execFqn, Json.object("fqn", execFqn)
+                        executions.and(execFqn, Json.object("fqn", execFqn)
                                 .and("name", outputAdapterExecution.jigMethod().name())
                                 .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText()));
 
@@ -69,7 +69,7 @@ public class OutputsSummaryAdapter {
                         outputAdapterExecution.persistenceOperations().forEach(pOp -> {
                             String pOpId = pOp.persistenceOperationId().value();
                             pOpIds.add(pOpId);
-                            persistenceOperations.put(pOpId, Json.object("id", pOpId)
+                            persistenceOperations.and(pOpId, Json.object("id", pOpId)
                                     .and("sqlType", pOp.sqlType().name())
                                     .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
                                             .map(PersistenceTarget::name)
@@ -87,11 +87,11 @@ public class OutputsSummaryAdapter {
             });
         });
 
-        String json = Json.object("ports", ports.asObject())
-                .and("operations", operations.asObject())
-                .and("adapters", adapters.asObject())
-                .and("executions", executions.asObject())
-                .and("persistenceOperations", persistenceOperations.asObject())
+        String json = Json.object("ports", ports)
+                .and("operations", operations)
+                .and("adapters", adapters)
+                .and("executions", executions)
+                .and("persistenceOperations", persistenceOperations)
                 .and("links", Json.arrayObjects(links))
                 .build();
 

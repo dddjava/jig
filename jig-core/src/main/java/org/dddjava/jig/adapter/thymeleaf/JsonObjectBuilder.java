@@ -1,7 +1,8 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * JSONオブジェクトを組み立てるビルダー。
@@ -9,20 +10,22 @@ import java.util.List;
  */
 public final class JsonObjectBuilder {
 
-    private final List<String> pairs = new ArrayList<>();
+    // JSONオブジェクトのキーは重複させず、後勝ちで上書きする（呼び出し側がindex的に使えるようにする）
+    private final Map<String, String> pairs = new LinkedHashMap<>();
 
     JsonObjectBuilder() {
     }
 
     /**
      * プロパティを追加する。文字列は自動エスケープされる。
+     * キーが重複した場合は後勝ちで上書きする。
      *
      * @param key   プロパティ名
      * @param value プロパティ値（String, Number, Boolean, JsonRaw, List&lt;String&gt; など）
      * @return this
      */
     public JsonObjectBuilder and(String key, Object value) {
-        pairs.add("\"" + JsonSupport.escape(key) + "\":" + formatValue(value));
+        pairs.put(JsonSupport.escape(key), formatValue(value));
         return this;
     }
 
@@ -32,7 +35,11 @@ public final class JsonObjectBuilder {
      * @return {"key":"value",...} 形式の文字列
      */
     public String build() {
-        return "{" + String.join(",", pairs) + "}";
+        return pairs.entrySet().stream()
+                .map(e -> "\"" + e.getKey() + "\":" + e.getValue())
+                .reduce((a, b) -> a + "," + b)
+                .map(content -> "{" + content + "}")
+                .orElse("{}");
     }
 
     private String formatValue(Object value) {
@@ -41,6 +48,9 @@ public final class JsonObjectBuilder {
         }
         if (value instanceof JsonRaw) {
             return ((JsonRaw) value).get();
+        }
+        if (value instanceof JsonObjectBuilder builder) {
+            return builder.build();
         }
         if (value instanceof String) {
             return "\"" + JsonSupport.escape((String) value) + "\"";

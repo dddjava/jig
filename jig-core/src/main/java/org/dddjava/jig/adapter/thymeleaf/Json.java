@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +14,15 @@ public final class Json {
     }
 
     /**
+     * 空のJSONオブジェクトの組み立てを開始する。
+     *
+     * @return ビルダー
+     */
+    public static JsonObjectBuilder object() {
+        return new JsonObjectBuilder();
+    }
+
+    /**
      * JSONオブジェクトの組み立てを開始する。
      *
      * @param key   最初のプロパティ名
@@ -23,15 +31,6 @@ public final class Json {
      */
     public static JsonObjectBuilder object(String key, Object value) {
         return new JsonObjectBuilder().and(key, value);
-    }
-
-    /**
-     * キー付きのJSON断片を蓄積し、JSONオブジェクトとして埋め込むためのビルダーを作る。
-     * <p>
-     * 値は「すでに組み立て済みのJSON断片」として扱う。
-     */
-    public static ObjectIndex objectIndex() {
-        return new ObjectIndex();
     }
 
     /**
@@ -88,39 +87,5 @@ public final class Json {
      */
     public static Object raw(String json) {
         return new JsonRaw(json);
-    }
-
-    /**
-     * JSON断片をキーで管理するオブジェクトインデックス。
-     * Mapの利用を呼び出し側から隠し、最終的に {@link #asObject()} で埋め込み可能な値を返す。
-     */
-    public static final class ObjectIndex {
-        private final Map<String, String> map = new LinkedHashMap<>();
-
-        ObjectIndex() {
-        }
-
-        /**
-         * JSON断片を登録する。キーが重複した場合は後勝ちで上書きする。
-         */
-        public ObjectIndex put(String key, String jsonFragment) {
-            map.put(key, jsonFragment);
-            return this;
-        }
-
-        /**
-         * JSONオブジェクトビルダーを登録する。キーが重複した場合は後勝ちで上書きする。
-         */
-        public ObjectIndex put(String key, JsonObjectBuilder builder) {
-            map.put(key, builder.build());
-            return this;
-        }
-
-        /**
-         * {@link JsonObjectBuilder#and} に渡せる「生JSONオブジェクト」として返す。
-         */
-        public Object asObject() {
-            return Json.object(map);
-        }
     }
 }

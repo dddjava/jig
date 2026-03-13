@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
-import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -40,7 +39,7 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().persistenceAccessorsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
-        var json = buildJson(outputAdapters, jigTypes);
+        var json = buildJson(outputAdapters);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
@@ -66,7 +65,7 @@ public class OutputsSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private static String buildJson(OutputAdapters outputAdapters, JigTypes jigTypes) {
+    private static String buildJson(OutputAdapters outputAdapters) {
         var ports = Json.object();
         var operations = Json.object();
         var adapters = Json.object();

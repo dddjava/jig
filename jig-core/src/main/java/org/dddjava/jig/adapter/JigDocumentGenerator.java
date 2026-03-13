@@ -84,6 +84,12 @@ public class JigDocumentGenerator {
     }
 
     private void prepareOutputDirectory() {
+        createOutputDirectory(outputDirectory);
+        createOutputDirectory(outputDirectory.resolve("assets"));
+        createOutputDirectory(outputDirectory.resolve("data"));
+    }
+
+    private void createOutputDirectory(Path outputDirectory) {
         File file = outputDirectory.toFile();
         if (file.exists()) {
             if (file.isDirectory() && file.canWrite()) {

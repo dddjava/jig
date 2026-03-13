@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,10 +107,20 @@ public class OutputsSummaryAdapter {
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
+        String fileName = jigDocumentWriter.jigDocument().fileName();
 
         jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+                writer -> templateEngine.process(fileName, context, writer));
+
+        // JSONの書き出し
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                        writer.write("globalThis.outputPortData = " + json);
+                    }
+                },
+                "data/" + fileName + "-data.js"
+        );
         return jigDocumentWriter.outputFilePaths();
     }
 

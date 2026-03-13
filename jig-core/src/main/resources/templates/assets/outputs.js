@@ -56,7 +56,7 @@ function groupLinksByOutputPort(links) {
     });
 }
 
-function formatpersistenceAccessors(persistenceAccessors) {
+function formatPersistenceAccessors(persistenceAccessors) {
     if (!Array.isArray(persistenceAccessors) || persistenceAccessors.length === 0) {
         return ["なし"];
     }
@@ -689,7 +689,7 @@ function renderOutputsTable(grouped, mode = 'standard') {
                     }),
                     createElement("ul", {
                         className: "outputs-persistence-list",
-                        children: formatpersistenceAccessors(link.persistenceAccessors).map(text => createElement("li", { textContent: text }))
+                        children: formatPersistenceAccessors(link.persistenceAccessors).map(text => createElement("li", { textContent: text }))
                     })
                 ]
             }));
@@ -797,7 +797,7 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
         getOutputsData,
         groupLinksByOutputPort,
         groupLinksByPersistenceTarget,
-        formatpersistenceAccessors,
+        formatPersistenceAccessors,
         createField,
         renderOutputsTable,
         renderPersistenceTable,

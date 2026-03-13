@@ -9,22 +9,25 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * 出力アダプタとなるクラス
+ * 出力アダプタ
  */
-public record OutputAdapter(JigType jigType, Collection<OutputAdapterExecution> outputAdapterExecutions) {
+public record OutputAdapter(JigType jigType, Collection<OutputPort> outputPorts, Collection<OutputAdapterExecution> outputAdapterExecutions) {
 
     public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceAccessorsRepository persistenceAccessorsRepository) {
+        var outputPorts = jigType.jigTypeHeader().interfaceTypeList()
+                .stream()
+                .flatMap(jigTypeReference -> jigTypes.resolveJigType(jigTypeReference.id()).stream())
+                .map(OutputPort::new)
+                .toList();
+
         var outputAdapterExecutions = jigType.instanceJigMethodStream()
                 .map(jigMethod -> OutputAdapterExecution.from(jigMethod, jigTypes, persistenceAccessorsRepository))
                 .toList();
-        return new OutputAdapter(jigType, outputAdapterExecutions);
+        return new OutputAdapter(jigType, outputPorts, outputAdapterExecutions);
     }
 
-    public Stream<OutputPort> implementsPortStream(JigTypes contextJigTypes) {
-        return jigType().jigTypeHeader().interfaceTypeList()
-                .stream()
-                .flatMap(jigTypeReference -> contextJigTypes.resolveJigType(jigTypeReference.id()).stream())
-                .map(OutputPort::new);
+    public Stream<OutputPort> implementsPortStream() {
+        return outputPorts.stream();
     }
 
     /**

@@ -53,7 +53,7 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
         if (outputAdapter.jigType().jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
             return Stream.of(new OutputPort(outputAdapter.jigType()));
         }
-        return outputAdapter.implementsPortStream(jigTypes);
+        return outputAdapter.implementsPortStream();
     }
 
     public Stream<OutputImplementation> stream() {

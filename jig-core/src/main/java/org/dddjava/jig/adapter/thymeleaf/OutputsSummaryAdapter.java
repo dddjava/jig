@@ -80,7 +80,7 @@ public class OutputsSummaryAdapter {
             adapters.and(adapterFqn, Json.object("fqn", adapterFqn)
                     .and("label", outputAdapter.jigType().label()));
 
-            outputAdapter.implementsPortStream(jigTypes).forEach(outputPort -> {
+            outputAdapter.implementsPortStream().forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
                 ports.and(portFqn, Json.object("fqn", portFqn)
                         .and("label", outputPort.jigType().label()));

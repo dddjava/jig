@@ -36,8 +36,8 @@ public class OutputsSummaryAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
 
-        var sqlStatements = repository.jigDataProvider().persistenceAccessorsRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+        var persistenceAccessorsRepository = repository.jigDataProvider().persistenceAccessorsRepository();
+        var outputAdapters = OutputAdapters.from(jigTypes, persistenceAccessorsRepository);
 
         var json = buildJson(outputAdapters);
 

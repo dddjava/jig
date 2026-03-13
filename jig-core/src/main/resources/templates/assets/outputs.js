@@ -1,6 +1,8 @@
 function getOutputsData() {
-    const jsonText = document.getElementById("outputs-data")?.textContent || "{}";
-    const data = JSON.parse(jsonText);
+    if (!globalThis.outputPortData) {
+        return {links: []};
+    }
+    const data = globalThis.outputPortData;
 
     const ports = data.ports || {};
     const operations = data.operations || {};
@@ -73,8 +75,8 @@ function createField(label, value) {
     return createElement("div", {
         className: "outputs-item-field",
         children: [
-            createElement("dt", { textContent: label }),
-            createElement("dd", { textContent: value })
+            createElement("dt", {textContent: label}),
+            createElement("dd", {textContent: value})
         ]
     });
 }
@@ -121,12 +123,12 @@ function createSidebarSection(title, items) {
             }),
             createElement("ul", {
                 className: "in-page-sidebar__links",
-                children: items.map(({ id, label }) => createElement("li", {
+                children: items.map(({id, label}) => createElement("li", {
                     className: "in-page-sidebar__item",
                     children: [
                         createElement("a", {
                             className: "in-page-sidebar__link",
-                            attributes: { href: "#" + id },
+                            attributes: {href: "#" + id},
                             textContent: label
                         })
                     ]
@@ -151,11 +153,11 @@ function MermaidBuilder() {
     this.edgeSet = new Set();
 }
 
-MermaidBuilder.prototype.sanitize = function(id) {
+MermaidBuilder.prototype.sanitize = function (id) {
     return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
 };
 
-MermaidBuilder.prototype.addNode = function(id, label, shape = '["$LABEL"]') {
+MermaidBuilder.prototype.addNode = function (id, label, shape = '["$LABEL"]') {
     const nodeLine = `${id}${shape.replace('$LABEL', label)}`;
     if (!this.nodes.includes(nodeLine)) {
         this.nodes.push(nodeLine);
@@ -163,7 +165,7 @@ MermaidBuilder.prototype.addNode = function(id, label, shape = '["$LABEL"]') {
     return id;
 };
 
-MermaidBuilder.prototype.addEdge = function(from, to, label = "") {
+MermaidBuilder.prototype.addEdge = function (from, to, label = "") {
     const edgeKey = `${from}--${label}-->${to}`;
     if (!this.edgeSet.has(edgeKey)) {
         this.edgeSet.add(edgeKey);
@@ -172,19 +174,19 @@ MermaidBuilder.prototype.addEdge = function(from, to, label = "") {
     }
 };
 
-MermaidBuilder.prototype.startSubgraph = function(label) {
-    const subgraph = { label, lines: [] };
+MermaidBuilder.prototype.startSubgraph = function (label) {
+    const subgraph = {label, lines: []};
     this.subgraphs.push(subgraph);
     return subgraph;
 };
 
-MermaidBuilder.prototype.addNodeToSubgraph = function(subgraph, id, label, shape = '["$LABEL"]') {
+MermaidBuilder.prototype.addNodeToSubgraph = function (subgraph, id, label, shape = '["$LABEL"]') {
     const nodeLine = `    ${id}${shape.replace('$LABEL', label)}`;
     subgraph.lines.push(nodeLine);
     return id;
 };
 
-MermaidBuilder.prototype.build = function() {
+MermaidBuilder.prototype.build = function () {
     let code = "graph LR\n";
     this.subgraphs.forEach(sg => {
         code += `  subgraph "${sg.label}"\n`;
@@ -382,7 +384,7 @@ function renderCrudTable(links) {
 
     const headerRow = createElement("tr", {
         children: [
-            createElement("th", { textContent: "出力ポート / 操作" }),
+            createElement("th", {textContent: "出力ポート / 操作"}),
             ...allTargets.map(target => createElement("th", {
                 id: `crud-target-${target}`,
                 textContent: target
@@ -393,7 +395,7 @@ function renderCrudTable(links) {
     const table = createElement("table", {
         className: "zebra crud-table",
         children: [
-            createElement("thead", { children: [headerRow] })
+            createElement("thead", {children: [headerRow]})
         ]
     });
 
@@ -405,7 +407,7 @@ function renderCrudTable(links) {
         const portId = "port-" + Math.random().toString(36).substr(2, 9);
         const portRow = createElement("tr", {
             className: "port-group-row",
-            style: { cursor: "pointer" },
+            style: {cursor: "pointer"},
             children: [
                 createElement("td", {
                     className: "port-group-cell",
@@ -413,13 +415,13 @@ function renderCrudTable(links) {
                         document.createTextNode(group.outputPort.label || group.outputPort.fqn || "(unknown)"),
                         createElement("span", {
                             className: "weak",
-                            style: { marginLeft: "8px" },
+                            style: {marginLeft: "8px"},
                             textContent: `(${group.links.length})`
                         })
                     ]
                 }),
                 ...allTargets.map(target => {
-                    const cell = createElement("td", { className: "crud-cell port-crud-cell" });
+                    const cell = createElement("td", {className: "crud-cell port-crud-cell"});
                     const portTargetCrudMap = new Map();
                     group.links.forEach(link => {
                         link.persistenceAccessors?.forEach(op => {
@@ -446,14 +448,14 @@ function renderCrudTable(links) {
         const opRows = group.links.map(link => {
             const row = createElement("tr", {
                 className: `operation-row ${portId}`,
-                style: { display: "none" },
+                style: {display: "none"},
                 children: [
                     createElement("td", {
                         className: "operation-cell",
                         textContent: link.outputPortOperation?.name || link.outputPortOperation?.signature || ""
                     }),
                     ...allTargets.map(target => {
-                        const cell = createElement("td", { className: "crud-cell" });
+                        const cell = createElement("td", {className: "crud-cell"});
                         const targetCrudMap = new Set();
                         link.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
@@ -498,7 +500,7 @@ function lazyRender(container, renderFn) {
                 observer.unobserve(container);
             }
         });
-    }, { rootMargin: "200px" });
+    }, {rootMargin: "200px"});
     observer.observe(container);
 }
 
@@ -607,14 +609,14 @@ function renderPersistenceTable(grouped) {
     grouped.forEach(group => {
         const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
 
-        const persistenceMermaidContainer = createElement("div", { className: "mermaid-diagram port-diagram" });
+        const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
         lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outputs-port-card",
             id: targetId,
             children: [
-                createElement("h3", { textContent: group.target }),
+                createElement("h3", {textContent: group.target}),
                 persistenceMermaidContainer
             ]
         }));
@@ -643,7 +645,7 @@ function renderOutputsTable(grouped, mode = 'standard') {
         const portLabel = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
 
         const cardChildren = [
-            createElement("h3", { textContent: portLabel }),
+            createElement("h3", {textContent: portLabel}),
             createElement("p", {
                 className: "fully-qualified-name",
                 textContent: portFqnValue
@@ -669,19 +671,19 @@ function renderOutputsTable(grouped, mode = 'standard') {
             textContent: `${group.links.length} operations`
         }));
 
-        const portMermaidContainer = createElement("div", { className: "mermaid-diagram port-diagram" });
+        const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
         lazyRender(portMermaidContainer, () => renderPortMermaid(group, portMermaidContainer, mode));
         cardChildren.push(portMermaidContainer);
 
-        const itemList = createElement("div", { className: "outputs-item-list" });
+        const itemList = createElement("div", {className: "outputs-item-list"});
         group.links.forEach(link => {
-            const mermaidContainer = createElement("div", { className: "mermaid-diagram" });
+            const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
             lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer, mode));
 
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",
                 children: [
-                    createElement("h4", { textContent: link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? "" }),
+                    createElement("h4", {textContent: link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? ""}),
                     mermaidContainer,
                     createElement("p", {
                         className: "outputs-persistence-title",
@@ -689,7 +691,7 @@ function renderOutputsTable(grouped, mode = 'standard') {
                     }),
                     createElement("ul", {
                         className: "outputs-persistence-list",
-                        children: formatPersistenceAccessors(link.persistenceAccessors).map(text => createElement("li", { textContent: text }))
+                        children: formatPersistenceAccessors(link.persistenceAccessors).map(text => createElement("li", {textContent: text}))
                     })
                 ]
             }));
@@ -739,7 +741,7 @@ const OutputsApp = {
         }
 
         if (typeof mermaid !== "undefined") {
-            mermaid.initialize({ startOnLoad: false });
+            mermaid.initialize({startOnLoad: false});
         }
 
         this.bindEvents();
@@ -747,27 +749,27 @@ const OutputsApp = {
     },
 
     setState(newState) {
-        this.state = { ...this.state, ...newState };
+        this.state = {...this.state, ...newState};
         this.render();
     },
 
     bindEvents() {
         document.querySelectorAll('input[name="display-mode"]').forEach(input => {
             input.addEventListener('change', (e) => {
-                this.setState({ mode: e.target.value });
+                this.setState({mode: e.target.value});
             });
         });
 
         document.querySelectorAll('.outputs-tabs .tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 const tabName = button.getAttribute('data-tab');
-                this.setState({ activeTab: tabName });
+                this.setState({activeTab: tabName});
             });
         });
     },
 
     render() {
-        const { mode, activeTab, data, grouped, persistenceGrouped } = this.state;
+        const {mode, activeTab, data, grouped, persistenceGrouped} = this.state;
         if (!data) return;
 
         // タブの表示切り替え
@@ -791,7 +793,7 @@ if (typeof window !== "undefined" && typeof document !== "undefined") {
     });
 }
 
-    if (typeof module !== "undefined" && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         OutputsApp,
         getOutputsData,

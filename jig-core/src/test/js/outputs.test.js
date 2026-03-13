@@ -165,9 +165,9 @@ class DocumentStub {
 
     querySelector(selector) {
         if (selector === 'input[name="display-mode"]:checked') {
-            return this.allElements.find(el => 
-                el.tagName === "input" && 
-                el.getAttribute("name") === "display-mode" && 
+            return this.allElements.find(el =>
+                el.tagName === "input" &&
+                el.getAttribute("name") === "display-mode" &&
                 el.checked
             ) || null;
         }
@@ -176,18 +176,18 @@ class DocumentStub {
 
     querySelectorAll(selector) {
         if (selector === 'input[name="display-mode"]') {
-            return this.allElements.filter(el => 
-                el.tagName === "input" && 
+            return this.allElements.filter(el =>
+                el.tagName === "input" &&
                 el.getAttribute("name") === "display-mode"
             );
         }
         if (selector === '.outputs-tabs .tab-button') {
-            return this.allElements.filter(el => 
+            return this.allElements.filter(el =>
                 el.classList.contains("tab-button")
             );
         }
         if (selector === '.outputs-tab-panel') {
-            return this.allElements.filter(el => 
+            return this.allElements.filter(el =>
                 el.classList.contains("outputs-tab-panel")
             );
         }
@@ -196,7 +196,7 @@ class DocumentStub {
             return checked ? [checked] : [];
         }
         // 完全一致での検索（デバッグ・簡易対応用）
-        return this.allElements.filter(el => 
+        return this.allElements.filter(el =>
             el.tagName === selector || el.classList.contains(selector.replace('.', ''))
         );
     }
@@ -216,7 +216,7 @@ class DocumentStub {
 
 function setupDocument() {
     const doc = new DocumentStub();
-    
+
     const outputsList = doc.createElement("section");
     doc.outputsList = outputsList;
     doc.elementsById.set("outputs-list", outputsList);
@@ -318,10 +318,7 @@ test.describe("outputs.js", () => {
         });
 
         test("getOutputsData: JSONからデータを正しくパースし、リンクを組み立てる", () => {
-            const doc = setupDocument();
-            const dataEl = doc.createElement("script");
-            dataEl.id = "outputs-data";
-            dataEl.textContent = JSON.stringify({
+            globalThis.outputPortData = {
                 ports: { p1: { fqn: "port1", label: "P1" } },
                 operations: { op1: { name: "save" } },
                 adapters: { a1: { fqn: "adapter1" } },
@@ -330,7 +327,7 @@ test.describe("outputs.js", () => {
                     po1: { id: "po1", sqlType: "INSERT", targets: ["table1"], group: "com.example.Repo" }
                 },
                 links: [{ port: "p1", operation: "op1", adapter: "a1", execution: "ex1", persistenceAccessors: ["po1"] }]
-            });
+            };
 
             const data = outputs.getOutputsData();
             assert.equal(data.links.length, 1);
@@ -340,7 +337,7 @@ test.describe("outputs.js", () => {
         });
 
         test("getOutputsData: データがない場合のフォールバック", () => {
-            setupDocument();
+            delete globalThis.outputPortData;
             // outputs-data が存在しない場合
             const data = outputs.getOutputsData();
             assert.deepEqual(data.links, []);
@@ -397,9 +394,9 @@ test.describe("outputs.js", () => {
                 outputAdapter: { label: "A1" },
                 outputAdapterExecution: { name: "ex1" },
                 persistenceAccessors: [
-                    { 
-                        id: "com.example.repo.save", 
-                        sqlType: "INSERT", 
+                    {
+                        id: "com.example.repo.save",
+                        sqlType: "INSERT",
                         targets: ["table1"],
                         group: "com.example.repo",
                         groupLabel: "repo"
@@ -436,9 +433,9 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", name: "ex1" },
                         persistenceAccessors: [
-                            { 
-                                id: "com.example.repo.save", 
-                                sqlType: "INSERT", 
+                            {
+                                id: "com.example.repo.save",
+                                sqlType: "INSERT",
                                 targets: ["table1"],
                                 group: "com.example.repo",
                                 groupLabel: "repo"
@@ -538,7 +535,7 @@ test.describe("outputs.js", () => {
             // テーブル構造の確認
             const table = container.children[0];
             assert.equal(table.tagName, "table");
-            
+
             const thead = table.children[0];
             const headerRow = thead.children[0];
             assert.equal(headerRow.children[1].textContent, "table1");
@@ -570,7 +567,7 @@ test.describe("outputs.js", () => {
         test("renderCrudTable: 永続化操作がない場合の表示", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
-            
+
             outputs.renderCrudTable([]);
             assert.equal(container.textContent, "永続化操作なし");
         });
@@ -579,7 +576,7 @@ test.describe("outputs.js", () => {
             const doc = setupDocument();
             const container = doc.getElementById("persistence-list");
             const sidebar = doc.getElementById("persistence-sidebar-list");
-            
+
             const grouped = [
                 {
                     target: "table1",
@@ -628,7 +625,7 @@ test.describe("outputs.js", () => {
 
         test("renderOutputsTable / renderPersistenceTable: データが空の場合の表示", () => {
             const doc = global.document;
-            
+
             outputs.renderOutputsTable([]);
             // container (outputs-list) の中に p.weak 且つ "データなし" が含まれる
             const container = doc.getElementById("outputs-list");

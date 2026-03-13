@@ -56,11 +56,8 @@
     </div>
 </main>
 
-<script id="outputs-data" type="application/json" th:utext="${outputsJson}">
-    {"links":[]}
-</script>
-
 <th:block th:replace="~{fragment-base::scripts}"></th:block>
+<script src="./data/outputs-data.js"></script>
 <script src="./assets/outputs.js"></script>
 </body>
 </html>

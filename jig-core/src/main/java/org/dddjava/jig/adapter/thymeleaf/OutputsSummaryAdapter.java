@@ -102,8 +102,7 @@ public class OutputsSummaryAdapter {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label(),
-                "outputsJson", json
+                "title", jigDocumentWriter.jigDocument().label()
         );
 
         Context context = new Context(Locale.ROOT, contextMap);

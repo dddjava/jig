@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -39,6 +40,33 @@ public class OutputsSummaryAdapter {
         var sqlStatements = repository.jigDataProvider().persistenceAccessorsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
+        var json = buildJson(outputAdapters, jigTypes);
+
+        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
+
+        Map<String, Object> contextMap = Map.of(
+                "title", jigDocumentWriter.jigDocument().label()
+        );
+
+        Context context = new Context(Locale.ROOT, contextMap);
+        String fileName = jigDocumentWriter.jigDocument().fileName();
+
+        jigDocumentWriter.writeTextAs(".html",
+                writer -> templateEngine.process(fileName, context, writer));
+
+        // JSONの書き出し
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                        writer.write("globalThis.outputPortData = " + json);
+                    }
+                },
+                "data/" + fileName + "-data.js"
+        );
+        return jigDocumentWriter.outputFilePaths();
+    }
+
+    private static String buildJson(OutputAdapters outputAdapters, JigTypes jigTypes) {
         var ports = Json.object();
         var operations = Json.object();
         var adapters = Json.object();
@@ -91,36 +119,13 @@ public class OutputsSummaryAdapter {
             });
         });
 
-        String json = Json.object("ports", ports)
+        return Json.object("ports", ports)
                 .and("operations", operations)
                 .and("adapters", adapters)
                 .and("executions", executions)
                 .and("persistenceAccessors", persistenceAccessors)
                 .and("links", Json.arrayObjects(links))
                 .build();
-
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-
-        Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label()
-        );
-
-        Context context = new Context(Locale.ROOT, contextMap);
-        String fileName = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(fileName, context, writer));
-
-        // JSONの書き出し
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-                        writer.write("globalThis.outputPortData = " + json);
-                    }
-                },
-                "data/" + fileName + "-data.js"
-        );
-        return jigDocumentWriter.outputFilePaths();
     }
 
 }

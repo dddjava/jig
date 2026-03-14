@@ -29,7 +29,7 @@ class OutputAdapterExecutionTest {
     }
 
     private static OutputAdapterExecution findExecution(OutputAdapter outputAdapter, String methodName) {
-        return outputAdapter.outputAdapterExecutions().stream()
+        return outputAdapter.executions().stream()
                 .filter(e -> e.jigMethod().name().equals(methodName))
                 .findFirst()
                 .orElseThrow();

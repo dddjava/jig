@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * 出力アダプタ
  */
-public record OutputAdapter(JigType jigType, Collection<OutputPort> outputPorts, Collection<OutputAdapterExecution> outputAdapterExecutions) {
+public record OutputAdapter(JigType jigType, Collection<OutputPort> implementPorts, Collection<OutputAdapterExecution> executions) {
 
     public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceAccessorsRepository persistenceAccessorsRepository) {
         var outputPorts = jigType.jigTypeHeader().interfaceTypeList()
@@ -27,7 +27,7 @@ public record OutputAdapter(JigType jigType, Collection<OutputPort> outputPorts,
     }
 
     public Stream<OutputPort> implementsPortStream() {
-        return outputPorts.stream();
+        return implementPorts.stream();
     }
 
     /**
@@ -36,7 +36,7 @@ public record OutputAdapter(JigType jigType, Collection<OutputPort> outputPorts,
      * ポートはアダプタに依存しないので起点がポートだと探すことになるが、これが必要な理由はいまいちわからない。
      */
     public Optional<OutputAdapterExecution> findExecution(OutputPortOperation outputPortOperation) {
-        return outputAdapterExecutions.stream()
+        return executions.stream()
                 .filter(outputAdapterExecution -> outputPortOperation.matches(outputAdapterExecution.jigMethod()))
                 .findAny();
     }

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  */
 public record OutputAdapterExecution(
         JigMethod jigMethod,
-        Collection<OutputPortOperation> outputPortOperations,
+        Collection<OutputPortOperation> implementOperations,
         Collection<JigMethod> tracingJigMethods,
         Collection<PersistenceAccessor> persistenceAccessors
 ) {

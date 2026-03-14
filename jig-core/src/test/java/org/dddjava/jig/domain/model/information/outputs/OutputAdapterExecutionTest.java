@@ -45,7 +45,7 @@ class OutputAdapterExecutionTest {
         var execution = findExecution(traceOutputAdapter, "save");
 
         assertEquals("TraceOutputPort.save(String)",
-                execution.outputPortOperations().iterator().next().jigMethodId().simpleText(),
+                execution.implementOperations().iterator().next().jigMethodId().simpleText(),
                 "実装しているPortOperationを保持できている");
 
         assertTrue(execution.tracingJigMethods().stream()

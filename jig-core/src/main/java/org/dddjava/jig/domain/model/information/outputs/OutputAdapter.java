@@ -62,7 +62,7 @@ public record OutputAdapter(
     public Optional<OutputAdapterExecution> findExecution(OutputPortOperation outputPortOperation) {
         return executions.stream()
                 .filter(outputAdapterExecution -> outputAdapterExecution
-                        .outputPortOperations()
+                        .implementOperations()
                         .stream().anyMatch(ops -> ops.equals(outputPortOperation)))
                 .findAny();
     }

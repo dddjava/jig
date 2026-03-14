@@ -10,8 +10,15 @@ import java.util.stream.Stream;
 
 /**
  * 出力アダプタ
+ *
+ * @param implementPorts どのポートに対するアダプタなのかを示す
+ * @param executions     このアダプタに実装されている操作
  */
-public record OutputAdapter(JigType jigType, Collection<OutputPort> implementPorts, Collection<OutputAdapterExecution> executions) {
+public record OutputAdapter(
+        JigType jigType,
+        Collection<OutputPort> implementPorts,
+        Collection<OutputAdapterExecution> executions
+) {
 
     public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceAccessorsRepository persistenceAccessorsRepository) {
         var outputPorts = jigType.jigTypeHeader().interfaceTypeList()

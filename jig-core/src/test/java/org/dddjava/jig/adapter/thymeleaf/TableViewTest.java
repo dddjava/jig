@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
+import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;

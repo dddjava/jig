@@ -1,4 +1,4 @@
-import org.dddjava.jig.adapter.thymeleaf.OutputsSummaryAdapter;
+import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;

@@ -5,6 +5,8 @@ import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
+import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
+import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.adapter.poi.ListAdapter;
 import org.dddjava.jig.adapter.thymeleaf.*;
 import org.dddjava.jig.adapter.thymeleaf.dialect.JigDialect;

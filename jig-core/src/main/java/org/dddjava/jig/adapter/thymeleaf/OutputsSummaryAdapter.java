@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
@@ -21,12 +19,10 @@ import java.util.*;
  */
 public class OutputsSummaryAdapter {
     private final JigService jigService;
-    private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
 
-    public OutputsSummaryAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public OutputsSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
-        this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
     }
 
@@ -41,15 +37,16 @@ public class OutputsSummaryAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label()
-        );
-
-        Context context = new Context(Locale.ROOT, contextMap);
         String fileName = jigDocumentWriter.jigDocument().fileName();
 
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(fileName, context, writer));
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (var resource = OutputsSummaryAdapter.class.getResourceAsStream("/templates/" + fileName + ".html")) {
+                        Objects.requireNonNull(resource).transferTo(outputStream);
+                    }
+                },
+                fileName + ".html"
+        );
 
         // JSONの書き出し
         jigDocumentWriter.write(

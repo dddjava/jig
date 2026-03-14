@@ -1,12 +1,13 @@
-package org.dddjava.jig.domain.model.information.outputs;
+package org.dddjava.jig.domain.model.information.outputs.pair;
 
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapterExecution;
+import org.dddjava.jig.domain.model.information.outputs.OutputPort;
+import org.dddjava.jig.domain.model.information.outputs.OutputPortOperation;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 /**
  * 出力ポート／アダプタの実装
- *
- * TODO: 一覧出力で使用するための橋渡し。不要にしたい。
  */
 public record OutputImplementation(OutputPortOperation outputPortOperation,
                                    OutputAdapterExecution outputAdapterExecution, OutputPort outputPort) {

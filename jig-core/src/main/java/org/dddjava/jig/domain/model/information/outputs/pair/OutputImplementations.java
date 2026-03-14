@@ -1,6 +1,9 @@
-package org.dddjava.jig.domain.model.information.outputs;
+package org.dddjava.jig.domain.model.information.outputs.pair;
 
 import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapter;
+import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
+import org.dddjava.jig.domain.model.information.outputs.OutputPort;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
@@ -14,8 +17,6 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * 出力ポート／アダプタの実装群
- *
- * TODO: 一覧出力で使用するための橋渡し。不要にしたい。
  */
 public record OutputImplementations(Collection<OutputImplementation> values) {
 
@@ -23,9 +24,9 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
         return values.isEmpty();
     }
 
-    public OutputPortOperations repositoryMethods() {
+    public OutputImplementationPortMethods repositoryMethods() {
         return values.stream().map(OutputImplementation::outputPortOperation)
-                .collect(collectingAndThen(toList(), OutputPortOperations::new));
+                .collect(collectingAndThen(toList(), OutputImplementationPortMethods::new));
     }
 
     // FIXME これのテストがない

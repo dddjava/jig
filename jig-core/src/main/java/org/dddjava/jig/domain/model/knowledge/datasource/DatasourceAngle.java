@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
+import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementation;
 
 import java.util.List;
 import java.util.Map;

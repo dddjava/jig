@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsReposit
 import org.dddjava.jig.domain.model.data.persistence.SqlType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
-import org.dddjava.jig.domain.model.information.outputs.OutputImplementation;
-import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
+import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementation;
+import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 
 import java.util.Comparator;

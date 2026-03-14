@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.usecases;
 
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
-import org.dddjava.jig.domain.model.information.outputs.OutputImplementations;
+import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
 import java.util.Collection;

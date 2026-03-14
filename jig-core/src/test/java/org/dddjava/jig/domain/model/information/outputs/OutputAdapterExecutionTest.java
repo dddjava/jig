@@ -44,6 +44,9 @@ class OutputAdapterExecutionTest {
         var traceOutputAdapter = findOutputAdapter(outputAdapters, TraceOutputAdapter.class);
         var execution = findExecution(traceOutputAdapter, "save");
 
+        // 追加: OutputPortOperationが正しく保持されていることを確認
+        assertEquals("save", execution.outputPortOperation().jigMethodId().name());
+
         assertTrue(execution.tracingJigMethods().stream()
                 .anyMatch(method -> method.declaringType().equals(TypeId.valueOf(TraceHelper.class.getCanonicalName()))
                         && method.name().equals("save")));

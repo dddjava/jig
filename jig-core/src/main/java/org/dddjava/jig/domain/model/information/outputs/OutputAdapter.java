@@ -27,8 +27,11 @@ public record OutputAdapter(
                 .map(OutputPort::new)
                 .toList();
 
-        var outputAdapterExecutions = jigType.instanceJigMethodStream()
-                .map(jigMethod -> OutputAdapterExecution.from(jigMethod, jigTypes, persistenceAccessorsRepository))
+        var outputAdapterExecutions = outputPorts.stream()
+                .flatMap(outputPort -> outputPort.operationStream()
+                        .flatMap(operation -> jigType.instanceJigMethodStream()
+                                .filter(operation::matches)
+                                .map(jigMethod -> OutputAdapterExecution.from(operation, jigMethod, jigTypes, persistenceAccessorsRepository))))
                 .toList();
         return new OutputAdapter(jigType, outputPorts, outputAdapterExecutions);
     }
@@ -39,12 +42,10 @@ public record OutputAdapter(
 
     /**
      * 操作に対する実行を取り出す
-     *
-     * ポートはアダプタに依存しないので起点がポートだと探すことになるが、これが必要な理由はいまいちわからない。
      */
     public Optional<OutputAdapterExecution> findExecution(OutputPortOperation outputPortOperation) {
         return executions.stream()
-                .filter(outputAdapterExecution -> outputPortOperation.matches(outputAdapterExecution.jigMethod()))
+                .filter(outputAdapterExecution -> outputAdapterExecution.outputPortOperation().equals(outputPortOperation))
                 .findAny();
     }
 }

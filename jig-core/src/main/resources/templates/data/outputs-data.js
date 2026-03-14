@@ -3,47 +3,54 @@
 // テストなどにも使用してはいけない。
 // TODO このファイルをJava側のテストで書き出したい
 globalThis.outputPortData = {
-    ports: {
-        "com.example.application.HogePort": {
+    "outputPorts": [
+        {
             "fqn": "com.example.application.HogePort",
-            "label": "ポート"
+            "label": "ポート",
+            "operations": [
+                {
+                    "fqn": "com.example.application.HogePort#register()",
+                    "name": "登録",
+                    "signature": "register()"
+                }
+            ]
         }
-    },
-    operations: {
-        "com.example.application.HogePort#register()": {
-            "name": "登録",
-            "signature": "com.example.application.HogePort#register()"
-        }
-    },
-    adapters: {
-        "com.example.infrastructure.HogeAdapter": {
+    ],
+    "outputAdapters": [
+        {
             "fqn": "com.example.infrastructure.HogeAdapter",
-            "label": "アダプター"
+            "label": "アダプター",
+            "executions": [
+                {
+                    "fqn": "com.example.infrastructure.HogeAdapter#insert()",
+                    "name": "インサート",
+                    "signature": "insert()"
+                }
+            ]
         }
-    },
-    executions: {
-        "com.example.infrastructure.HogeAdapter#insert()": {
-            "name": "インサート",
-            "signature": "com.example.infrastructure.HogeAdapter#insert()"
-        }
-    },
-    persistenceAccessors: {
-        "com.example.infrastructure.HogePersistenceAccessor.insert": {
+    ],
+    "persistenceAccessors": [
+        {
             "id": "com.example.infrastructure.HogePersistenceAccessor.insert",
             "sqlType": "INSERT",
-            "targets": ["HOGE_TABLE"],
-            "group": "com.example.infrastructure.HogePersistenceAccessor"
+            "group": "com.example.infrastructure.HogePersistenceAccessor",
+            "groupLabel": "HogePersistenceAccessor",
+            "targets": ["HOGE_TABLE"]
         }
-    },
-    links: [
-        {
-            "port": "com.example.application.HogePort",
-            "operation": "com.example.application.HogePort#register()",
-            "adapter": "com.example.infrastructure.HogeAdapter",
-            "execution": "com.example.infrastructure.HogeAdapter#insert()",
-            "persistenceAccessors": [
-                "com.example.infrastructure.HogePersistenceAccessor.insert"
-            ]
-        },
-    ]
+    ],
+    "targets": ["HOGE_TABLE"],
+    "links": {
+        "operationToExecution": [
+            {
+                "operation": "com.example.application.HogePort#register()",
+                "execution": "com.example.infrastructure.HogeAdapter#insert()"
+            }
+        ],
+        "executionToAccessor": [
+            {
+                "execution": "com.example.infrastructure.HogeAdapter#insert()",
+                "accessor": "com.example.infrastructure.HogePersistenceAccessor.insert"
+            }
+        ]
+    }
 }

@@ -67,7 +67,7 @@ public class OutputsSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private static String buildJson(OutputAdapters outputAdapters) {
+    static String buildJson(OutputAdapters outputAdapters) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var accessorTypesMap = new LinkedHashMap<String, String>();              // typeFqn → typeLabel

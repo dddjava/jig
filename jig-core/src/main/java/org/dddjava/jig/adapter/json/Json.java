@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.thymeleaf;
+package org.dddjava.jig.adapter.json;
 
 import java.util.List;
 import java.util.Map;

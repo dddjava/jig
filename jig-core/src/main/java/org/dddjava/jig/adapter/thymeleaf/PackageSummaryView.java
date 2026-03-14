@@ -1,6 +1,7 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.JigDocumentWriter;
+import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;

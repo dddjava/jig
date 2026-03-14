@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.thymeleaf;
+package org.dddjava.jig.adapter.json;
 
 /**
  * エスケープせずそのまま挿入する生JSONを表すマーカー。

@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
+import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;

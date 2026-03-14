@@ -257,24 +257,32 @@ function setupDocument() {
 test.describe("outputs.js", () => {
     test.describe("データ加工・ユーティリティ", () => {
         test("groupLinksByOutputPort: 出力ポート単位でグルーピングし、表示名でソートする", () => {
-            const links = [
-                {
-                    outputPort: {fqn: "com.example.BPort", label: "い"},
-                    outputPortOperation: {name: "delete"},
-                },
-                {
-                    outputPort: {fqn: "com.example.APort", label: "あ"},
-                    outputPortOperation: {name: "save"},
-                },
-            ];
+            const data = {
+                outputPorts: [
+                    {fqn: "com.example.BPort", label: "い", operations: [{fqn: "opB", name: "delete"}]},
+                    {fqn: "com.example.APort", label: "あ", operations: [{fqn: "opA", name: "save"}]},
+                ],
+                outputAdapters: [
+                    {fqn: "adapterA", label: "A", executions: [{fqn: "execA", name: "save"}]},
+                    {fqn: "adapterB", label: "B", executions: [{fqn: "execB", name: "delete"}]},
+                ],
+                persistenceAccessors: [],
+                links: {
+                    operationToExecution: [
+                        {operation: "opA", execution: "execA"},
+                        {operation: "opB", execution: "execB"}
+                    ],
+                    executionToAccessor: []
+                }
+            };
 
-            const grouped = outputs.groupLinksByOutputPort(links);
+            const grouped = outputs.groupLinksByOutputPort(data);
             assert.equal(grouped[0].outputPort.label, "あ");
             assert.equal(grouped[1].outputPort.label, "い");
         });
 
-        test("groupLinksByOutputPort: 境界条件（空のリスト）", () => {
-            const grouped = outputs.groupLinksByOutputPort([]);
+        test("groupLinksByOutputPort: 境界条件（データなし）", () => {
+            const grouped = outputs.groupLinksByOutputPort({outputPorts: [], outputAdapters: [], persistenceAccessors: [], links: {}});
             assert.equal(grouped.length, 0);
         });
 
@@ -317,30 +325,28 @@ test.describe("outputs.js", () => {
             ]);
         });
 
-        test("getOutputsData: JSONからデータを正しくパースし、リンクを組み立てる", () => {
+        test("getOutputsData: データをそのまま返す", () => {
             globalThis.outputPortData = {
-                ports: { p1: { fqn: "port1", label: "P1" } },
-                operations: { op1: { name: "save" } },
-                adapters: { a1: { fqn: "adapter1" } },
-                executions: { ex1: { name: "exec" } },
-                persistenceAccessors: {
-                    po1: { id: "po1", sqlType: "INSERT", targets: ["table1"], group: "com.example.Repo" }
-                },
-                links: [{ port: "p1", operation: "op1", adapter: "a1", execution: "ex1", persistenceAccessors: ["po1"] }]
+                outputPorts: [{ fqn: "port1", label: "P1", operations: [{ fqn: "op1", name: "save" }] }],
+                outputAdapters: [{ fqn: "adapter1", label: "A1", executions: [{ fqn: "ex1", name: "exec" }] }],
+                persistenceAccessors: [{ id: "com.example.Repo.po1", sqlType: "INSERT", group: "com.example.Repo", groupLabel: "Repo", targets: ["table1"] }],
+                targets: ["table1"],
+                links: {
+                    operationToExecution: [{ operation: "op1", execution: "ex1" }],
+                    executionToAccessor: [{ execution: "ex1", accessor: "com.example.Repo.po1" }]
+                }
             };
 
             const data = outputs.getOutputsData();
-            assert.equal(data.links.length, 1);
-            const link = data.links[0];
-            assert.equal(link.outputPort.label, "P1");
-            assert.equal(link.persistenceAccessors[0].groupLabel, "Repo");
+            assert.equal(data.outputPorts[0].label, "P1");
+            assert.equal(data.persistenceAccessors[0].groupLabel, "Repo");
         });
 
         test("getOutputsData: データがない場合のフォールバック", () => {
             delete globalThis.outputPortData;
-            // outputs-data が存在しない場合
             const data = outputs.getOutputsData();
-            assert.deepEqual(data.links, []);
+            assert.deepEqual(data.outputPorts, []);
+            assert.deepEqual(data.targets, []);
         });
 
         test("createField: ラベルと値を持つ要素を生成する", () => {
@@ -522,15 +528,17 @@ test.describe("outputs.js", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
             const sidebar = doc.getElementById("crud-sidebar-list");
-            const links = [
+            const grouped = [
                 {
                     outputPort: { label: "Port A" },
-                    outputPortOperation: { name: "opA" },
-                    persistenceAccessors: [{ sqlType: "SELECT", targets: ["table1"] }]
+                    links: [{
+                        outputPortOperation: { name: "opA" },
+                        persistenceAccessors: [{ sqlType: "SELECT", targets: ["table1"] }]
+                    }]
                 }
             ];
 
-            outputs.renderCrudTable(links);
+            outputs.renderCrudTable(grouped);
 
             // テーブル構造の確認
             const table = container.children[0];
@@ -568,7 +576,7 @@ test.describe("outputs.js", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
 
-            outputs.renderCrudTable([]);
+            outputs.renderCrudTable([{outputPort: {label: "P"}, links: []}]);
             assert.equal(container.textContent, "永続化操作なし");
         });
 

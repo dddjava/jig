@@ -1,57 +1,60 @@
 function getOutputsData() {
-    if (!globalThis.outputPortData) {
-        return {links: []};
-    }
-    const data = globalThis.outputPortData;
-
-    const ports = data.ports || {};
-    const operations = data.operations || {};
-    const adapters = data.adapters || {};
-    const executions = data.executions || {};
-    const persistenceAccessorsMaster = data.persistenceAccessors || {};
-
-    const links = (data.links || []).map(link => {
-        const pOps = (link.persistenceAccessors || []).map(id => {
-            const op = persistenceAccessorsMaster[id];
-            return {
-                ...op,
-                groupLabel: op.group?.split('.').pop() || op.group
-            };
-        });
-        return {
-            outputPort: ports[link.port],
-            outputPortOperation: operations[link.operation],
-            outputAdapter: adapters[link.adapter],
-            outputAdapterExecution: executions[link.execution],
-            persistenceAccessors: pOps
-        };
-    });
-
-    return {
-        links: links,
+    return globalThis.outputPortData || {
+        outputPorts: [],
+        outputAdapters: [],
+        persistenceAccessors: [],
+        targets: [],
+        links: {operationToExecution: [], executionToAccessor: []}
     };
 }
 
-function groupLinksByOutputPort(links) {
-    const map = new Map();
-    links.forEach(link => {
-        const key = link.outputPort?.fqn ?? "";
-        if (!map.has(key)) {
-            map.set(key, {
-                outputPort: link.outputPort ?? {},
-                links: [],
-            });
-        }
-        map.get(key).links.push(link);
+function groupLinksByOutputPort(data) {
+    const executionByFqn = new Map();
+    (data.outputAdapters || []).forEach(adapter => {
+        (adapter.executions || []).forEach(exec => {
+            executionByFqn.set(exec.fqn, {exec, adapter});
+        });
     });
-    return Array.from(map.values()).map(group => {
-        group.links.sort((a, b) => {
+
+    const accessorById = new Map();
+    (data.persistenceAccessors || []).forEach(acc => {
+        accessorById.set(acc.id, acc);
+    });
+
+    const executionByOperation = new Map();
+    (data.links?.operationToExecution || []).forEach(link => {
+        executionByOperation.set(link.operation, link.execution);
+    });
+
+    const accessorsByExecution = new Map();
+    (data.links?.executionToAccessor || []).forEach(link => {
+        if (!accessorsByExecution.has(link.execution)) {
+            accessorsByExecution.set(link.execution, []);
+        }
+        accessorsByExecution.get(link.execution).push(link.accessor);
+    });
+
+    return (data.outputPorts || []).map(port => {
+        const links = (port.operations || []).flatMap(op => {
+            const execFqn = executionByOperation.get(op.fqn);
+            if (!execFqn) return [];
+            const execEntry = executionByFqn.get(execFqn);
+            const accessorIds = accessorsByExecution.get(execFqn) || [];
+            const persistenceAccessors = accessorIds.map(id => accessorById.get(id)).filter(Boolean);
+            return [{
+                outputPortOperation: op,
+                outputAdapter: execEntry?.adapter ?? null,
+                outputAdapterExecution: execEntry?.exec ?? null,
+                persistenceAccessors
+            }];
+        }).sort((a, b) => {
             const left = a.outputPortOperation?.name ?? a.outputPortOperation?.signature ?? "";
             const right = b.outputPortOperation?.name ?? b.outputPortOperation?.signature ?? "";
             return left.localeCompare(right, "ja");
         });
-        return group;
-    }).sort((a, b) => {
+        return {outputPort: port, links};
+    }).filter(group => group.links.length > 0)
+      .sort((a, b) => {
         const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
         const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
         return left.localeCompare(right, "ja");
@@ -356,7 +359,7 @@ function toCrudChar(sqlType) {
     return "";
 }
 
-function renderCrudTable(links) {
+function renderCrudTable(grouped) {
     const container = document.getElementById("outputs-crud");
     const sidebar = document.getElementById("crud-sidebar-list");
     if (!container) return;
@@ -365,9 +368,11 @@ function renderCrudTable(links) {
     if (sidebar) sidebar.innerHTML = "";
 
     const targetsSet = new Set();
-    links.forEach(link => {
-        link.persistenceAccessors?.forEach(op => {
-            op.targets?.forEach(target => targetsSet.add(target));
+    grouped.forEach(group => {
+        group.links.forEach(link => {
+            link.persistenceAccessors?.forEach(op => {
+                op.targets?.forEach(target => targetsSet.add(target));
+            });
         });
     });
     const allTargets = Array.from(targetsSet).sort();
@@ -401,7 +406,6 @@ function renderCrudTable(links) {
 
     const tbody = createElement("tbody");
     table.appendChild(tbody);
-    const grouped = groupLinksByOutputPort(links);
 
     grouped.forEach(group => {
         const portId = "port-" + Math.random().toString(36).substr(2, 9);
@@ -729,11 +733,14 @@ const OutputsApp = {
 
     init() {
         const data = getOutputsData();
-        if (Object.keys(data).length === 0) return;
-
         this.state.data = data;
-        this.state.grouped = groupLinksByOutputPort(data.links);
-        this.state.persistenceGrouped = groupLinksByPersistenceTarget(data.links);
+
+        const grouped = groupLinksByOutputPort(data);
+        this.state.grouped = grouped;
+
+        const allLinks = grouped.flatMap(group =>
+            group.links.map(link => ({...link, outputPort: group.outputPort})));
+        this.state.persistenceGrouped = groupLinksByPersistenceTarget(allLinks);
 
         const mode = document.querySelector('input[name="display-mode"]:checked')?.value;
         if (mode) {
@@ -783,7 +790,7 @@ const OutputsApp = {
         // 各パネルの描画
         renderPersistenceTable(persistenceGrouped);
         renderOutputsTable(grouped, mode);
-        renderCrudTable(data.links);
+        renderCrudTable(grouped);
     }
 };
 

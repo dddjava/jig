@@ -14,6 +14,8 @@ import org.thymeleaf.context.Context;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -66,64 +68,76 @@ public class OutputsSummaryAdapter {
     }
 
     private static String buildJson(OutputAdapters outputAdapters) {
-        var ports = Json.object();
-        var operations = Json.object();
-        var adapters = Json.object();
-        var executions = Json.object();
-        var persistenceAccessors = Json.object();
+        var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
+        var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
+        var accessorsMap = new LinkedHashMap<String, JsonObjectBuilder>();
+        var targetsSet = new LinkedHashSet<String>();
 
-        List<JsonObjectBuilder> links = new ArrayList<>();
+        List<JsonObjectBuilder> operationToExecution = new ArrayList<>();
+        List<JsonObjectBuilder> executionToAccessor = new ArrayList<>();
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
-            adapters.and(adapterFqn, Json.object("fqn", adapterFqn)
-                    .and("label", outputAdapter.jigType().label()));
+            List<JsonObjectBuilder> execList = new ArrayList<>();
 
             outputAdapter.implementsPortStream().forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
-                ports.and(portFqn, Json.object("fqn", portFqn)
-                        .and("label", outputPort.jigType().label()));
+                List<JsonObjectBuilder> opList = new ArrayList<>();
 
-                outputPort.operationStream().forEach(outputPortOperation -> {
-                    String opFqn = outputPortOperation.jigMethod().fqn();
-                    operations.and(opFqn, Json.object("fqn", opFqn)
-                            .and("name", outputPortOperation.jigMethod().name())
-                            .and("signature", outputPortOperation.jigMethod().simpleMethodSignatureText()));
+                outputPort.operationStream().forEach(op -> {
+                    String opFqn = op.jigMethod().fqn();
+                    opList.add(Json.object("fqn", opFqn)
+                            .and("name", op.jigMethod().name())
+                            .and("signature", op.jigMethod().simpleMethodSignatureText()));
 
-                    outputAdapter.findExecution(outputPortOperation).ifPresent(outputAdapterExecution -> {
-                        String execFqn = outputAdapterExecution.jigMethod().fqn();
-                        executions.and(execFqn, Json.object("fqn", execFqn)
-                                .and("name", outputAdapterExecution.jigMethod().name())
-                                .and("signature", outputAdapterExecution.jigMethod().simpleMethodSignatureText()));
+                    outputAdapter.findExecution(op).ifPresent(exec -> {
+                        String execFqn = exec.jigMethod().fqn();
+                        execList.add(Json.object("fqn", execFqn)
+                                .and("name", exec.jigMethod().name())
+                                .and("signature", exec.jigMethod().simpleMethodSignatureText()));
 
-                        List<String> pOpIds = new ArrayList<>();
-                        outputAdapterExecution.persistenceAccessors().forEach(pOp -> {
-                            String pOpId = pOp.persistenceAccessorId().value();
-                            pOpIds.add(pOpId);
-                            persistenceAccessors.and(pOpId, Json.object("id", pOpId)
+                        operationToExecution.add(Json.object("operation", opFqn)
+                                .and("execution", execFqn));
+
+                        exec.persistenceAccessors().forEach(pOp -> {
+                            String accessorId = pOp.persistenceAccessorId().value();
+                            String groupFqn = pOp.persistenceAccessorId().typeId().fqn();
+                            String groupLabel = groupFqn.contains(".")
+                                    ? groupFqn.substring(groupFqn.lastIndexOf('.') + 1) : groupFqn;
+                            List<String> targets = pOp.persistenceTargets().persistenceTargets().stream()
+                                    .map(PersistenceTarget::name).toList();
+
+                            targetsSet.addAll(targets);
+                            accessorsMap.putIfAbsent(accessorId, Json.object("id", accessorId)
                                     .and("sqlType", pOp.sqlType().name())
-                                    .and("targets", Json.array(pOp.persistenceTargets().persistenceTargets().stream()
-                                            .map(PersistenceTarget::name)
-                                            .toList()))
-                                    .and("group", pOp.persistenceAccessorId().typeId().fqn()));
-                        });
+                                    .and("group", groupFqn)
+                                    .and("groupLabel", groupLabel)
+                                    .and("targets", Json.array(targets)));
 
-                        links.add(Json.object("port", portFqn)
-                                .and("operation", opFqn)
-                                .and("adapter", adapterFqn)
-                                .and("execution", execFqn)
-                                .and("persistenceAccessors", Json.array(pOpIds)));
+                            executionToAccessor.add(Json.object("execution", execFqn)
+                                    .and("accessor", accessorId));
+                        });
                     });
                 });
+
+                portsMap.putIfAbsent(portFqn, Json.object("fqn", portFqn)
+                        .and("label", outputPort.jigType().label())
+                        .and("operations", Json.arrayObjects(opList)));
             });
+
+            adaptersMap.putIfAbsent(adapterFqn, Json.object("fqn", adapterFqn)
+                    .and("label", outputAdapter.jigType().label())
+                    .and("executions", Json.arrayObjects(execList)));
         });
 
-        return Json.object("ports", ports)
-                .and("operations", operations)
-                .and("adapters", adapters)
-                .and("executions", executions)
-                .and("persistenceAccessors", persistenceAccessors)
-                .and("links", Json.arrayObjects(links))
+        var links = Json.object("operationToExecution", Json.arrayObjects(operationToExecution))
+                .and("executionToAccessor", Json.arrayObjects(executionToAccessor));
+
+        return Json.object("outputPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
+                .and("outputAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
+                .and("persistenceAccessors", Json.arrayObjects(new ArrayList<>(accessorsMap.values())))
+                .and("targets", Json.array(new ArrayList<>(targetsSet)))
+                .and("links", links)
                 .build();
     }
 

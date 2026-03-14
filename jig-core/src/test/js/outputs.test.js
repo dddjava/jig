@@ -459,7 +459,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Exec_adapter1_ex1 --> POp_com_example_repo_save') || code.includes('Exec_exec1 --> POp_com_example_repo_save'));
         });
 
-        test("generatePersistenceMermaidCode: ターゲット中心の図が生成される", () => {
+        test("generatePersistenceMermaidCode: visibility全表示のとき、ターゲット中心の図が生成される", () => {
             const group = {
                 target: "table1",
                 links: [
@@ -469,15 +469,64 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", name: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
+                            { id: "repo.save", sqlType: "INSERT", targets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo" }
                         ]
                     }
                 ]
             };
-            const code = outputs.generatePersistenceMermaidCode(group);
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
+            const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(code.includes('Target[(table1)]'));
             assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target'));
-            assert.ok(code.includes('Execution_adapter1_ex1 --> POp_repo_save') || code.includes('Execution_exec1 --> POp_repo_save'));
+            assert.ok(code.includes('Execution_adapter1_exec1 --> POp_repo_save') || code.includes('Execution_exec1 --> POp_repo_save'));
+        });
+
+        test("generatePersistenceMermaidCode: adapter非表示のとき、PortOp → POp が直接接続される", () => {
+            const group = {
+                target: "table1",
+                links: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        persistenceAccessors: [
+                            { id: "repo.save", sqlType: "INSERT", targets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo" }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: true, accessorMethod: true, target: true};
+            const code = outputs.generatePersistenceMermaidCode(group, visibility);
+            assert.ok(!code.includes('Execution'));
+            assert.ok(code.includes('PortOp_p1_op1'));
+            assert.ok(code.includes('POp_repo_save'));
+            assert.ok(code.includes('PortOp_p1_op1 --> POp_repo_save'));
+        });
+
+        test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
+            const group = {
+                target: "table1",
+                links: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        persistenceAccessors: [
+                            { id: "repo.save", sqlType: "INSERT", targets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo" }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
+            const code = outputs.generatePersistenceMermaidCode(group, visibility);
+            assert.ok(!code.includes('POp_'));
+            assert.ok(code.includes('Execution_exec1'));
+            assert.ok(code.includes('Execution_exec1 -- "INSERT" --> Target'));
         });
     });
 
@@ -595,7 +644,8 @@ test.describe("outputs.js", () => {
                 }
             ];
 
-            outputs.renderPersistenceTable(grouped);
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
+            outputs.renderPersistenceTable(grouped, visibility);
 
             assert.equal(container.children.length, 1);
             const card = container.children[0];
@@ -643,7 +693,7 @@ test.describe("outputs.js", () => {
             const container = doc.getElementById("outputs-list");
             assert.equal(container.children[0].textContent, "データなし");
 
-            outputs.renderPersistenceTable([]);
+            outputs.renderPersistenceTable([], {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true});
             const pContainer = doc.getElementById("persistence-list");
             assert.equal(pContainer.children[0].textContent, "データなし");
         });

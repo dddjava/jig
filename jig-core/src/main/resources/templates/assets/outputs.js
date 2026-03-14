@@ -595,72 +595,129 @@ function groupLinksByPersistenceTarget(links) {
     });
 }
 
-function generatePersistenceMermaidCode(group) {
+function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
     const target = group.target;
-    builder.addNode("Target", target, "[($LABEL)]");
 
-    const opNodes = new Map();
-    const adapterSubgraphs = new Map();
     const portSubgraphs = new Map();
+    const portNodes = new Map();
+    const adapterSubgraphs = new Map();
+    const adapterNodes = new Map();
     const persistenceGroupSubgraphs = new Map();
+    const accessorNodes = new Map();
+    const opNodes = new Map();
+    const executionNodes = new Map();
 
     group.links.forEach((link, linkIndex) => {
         const relevantOps = link.persistenceAccessors.filter(op => op.targets.includes(target));
 
+        const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
+        const portLabel = link.outputPort?.label || portFqn;
+        const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
+        const portOpFqn = link.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
+        const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
+
+        const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
+        const adapterLabel = link.outputAdapter?.label || adapterFqn;
+        const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
+        const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
+        const executionId = `Execution_${builder.sanitize(executionFqn)}`;
+
         relevantOps.forEach(op => {
             const opNodeId = `POp_${builder.sanitize(op.id)}`;
-            if (!opNodes.has(op.id)) {
-                const groupId = op.group || 'default';
-                const groupLabel = op.groupLabel || 'Persistence Operations';
-                if (!persistenceGroupSubgraphs.has(groupId)) {
-                    persistenceGroupSubgraphs.set(groupId, builder.startSubgraph(groupLabel));
+            const groupId = op.group || 'default';
+            const groupLabel = op.groupLabel || 'Persistence Operations';
+            const accessorNodeId = `Accessor_${builder.sanitize(groupId)}`;
+
+            const chain = [];
+
+            if (visibility.port) {
+                if (visibility.operation) {
+                    if (!portSubgraphs.has(portFqn)) {
+                        portSubgraphs.set(portFqn, builder.startSubgraph(portLabel));
+                    }
+                    if (!portNodes.has(portOpFqn)) {
+                        builder.addNodeToSubgraph(portSubgraphs.get(portFqn), portOpId, portOpName);
+                        portNodes.set(portOpFqn, portOpId);
+                    }
+                    chain.push(portOpId);
+                } else {
+                    const portNodeId = `Port_${builder.sanitize(portFqn)}`;
+                    if (!portNodes.has(portFqn)) {
+                        builder.addNode(portNodeId, portLabel);
+                        portNodes.set(portFqn, portNodeId);
+                    }
+                    chain.push(portNodes.get(portFqn));
                 }
-                builder.addNodeToSubgraph(persistenceGroupSubgraphs.get(groupId), opNodeId, op.id.split('.').pop());
-                opNodes.set(op.id, opNodeId);
             }
-            builder.addEdge(opNodeId, "Target", op.sqlType);
 
-            const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
-            const adapterLabel = link.outputAdapter?.label || adapterFqn;
-            const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
-            const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
-            const executionId = `Execution_${builder.sanitize(executionFqn)}`;
-
-            if (!adapterSubgraphs.has(adapterFqn)) {
-                adapterSubgraphs.set(adapterFqn, builder.startSubgraph(adapterLabel));
+            if (visibility.adapter) {
+                if (visibility.execution) {
+                    if (!adapterSubgraphs.has(adapterFqn)) {
+                        adapterSubgraphs.set(adapterFqn, builder.startSubgraph(adapterLabel));
+                    }
+                    if (!executionNodes.has(executionFqn)) {
+                        builder.addNodeToSubgraph(adapterSubgraphs.get(adapterFqn), executionId, executionName);
+                        executionNodes.set(executionFqn, executionId);
+                    }
+                    chain.push(executionId);
+                } else {
+                    const adapterNodeId = `Adapter_${builder.sanitize(adapterFqn)}`;
+                    if (!adapterNodes.has(adapterFqn)) {
+                        builder.addNode(adapterNodeId, adapterLabel);
+                        adapterNodes.set(adapterFqn, adapterNodeId);
+                    }
+                    chain.push(adapterNodes.get(adapterFqn));
+                }
             }
-            builder.addNodeToSubgraph(adapterSubgraphs.get(adapterFqn), executionId, executionName);
-            builder.addEdge(executionId, opNodeId);
 
-            const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
-            const portLabel = link.outputPort?.label || portFqn;
-            const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
-            const portOpFqn = link.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
-            const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
-
-            if (!portSubgraphs.has(portFqn)) {
-                portSubgraphs.set(portFqn, builder.startSubgraph(portLabel));
+            if (visibility.accessor) {
+                if (visibility.accessorMethod) {
+                    if (!persistenceGroupSubgraphs.has(groupId)) {
+                        persistenceGroupSubgraphs.set(groupId, builder.startSubgraph(groupLabel));
+                    }
+                    if (!opNodes.has(op.id)) {
+                        builder.addNodeToSubgraph(persistenceGroupSubgraphs.get(groupId), opNodeId, op.id.split('.').pop());
+                        opNodes.set(op.id, opNodeId);
+                    }
+                    chain.push(opNodeId);
+                } else {
+                    if (!accessorNodes.has(groupId)) {
+                        builder.addNode(accessorNodeId, groupLabel);
+                        accessorNodes.set(groupId, accessorNodeId);
+                    }
+                    chain.push(accessorNodes.get(groupId));
+                }
             }
-            builder.addNodeToSubgraph(portSubgraphs.get(portFqn), portOpId, portOpName);
-            builder.addEdge(portOpId, executionId);
+
+            for (let i = 0; i < chain.length - 1; i++) {
+                builder.addEdge(chain[i], chain[i + 1]);
+            }
+
+            if (visibility.target) {
+                builder.addNode("Target", target, "[($LABEL)]");
+                const lastNode = chain[chain.length - 1];
+                if (lastNode) {
+                    builder.addEdge(lastNode, "Target", op.sqlType);
+                }
+            }
         });
     });
 
     return builder.build();
 }
 
-function renderPersistenceMermaid(group, container) {
+function renderPersistenceMermaid(group, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
 
-    const mermaidCode = generatePersistenceMermaidCode(group);
+    const mermaidCode = generatePersistenceMermaidCode(group, visibility);
     const id = "mermaid-persistence-" + Math.random().toString(36).substr(2, 9);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
     });
 }
 
-function renderPersistenceTable(grouped) {
+function renderPersistenceTable(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("persistence-list");
     const sidebar = document.getElementById("persistence-sidebar-list");
     if (!container) return;
@@ -671,7 +728,7 @@ function renderPersistenceTable(grouped) {
         const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer));
+        lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer, visibility));
 
         container.appendChild(createElement("section", {
             className: "outputs-port-card",
@@ -874,7 +931,7 @@ const OutputsApp = {
         });
 
         // 各パネルの描画
-        renderPersistenceTable(persistenceGrouped);
+        renderPersistenceTable(persistenceGrouped, visibility);
         renderOutputsTable(grouped, visibility);
         renderCrudTable(grouped);
     }

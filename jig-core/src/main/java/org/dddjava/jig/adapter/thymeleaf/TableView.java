@@ -7,6 +7,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -51,7 +52,7 @@ public class TableView {
 
         jigDocumentWriter.write(
                 outputStream -> {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
                         writer.write("globalThis.glossaryData = " + glossaryJson);
                     }
                 },

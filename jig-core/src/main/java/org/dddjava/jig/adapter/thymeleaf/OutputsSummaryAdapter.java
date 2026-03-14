@@ -12,6 +12,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -53,7 +54,7 @@ public class OutputsSummaryAdapter {
         // JSONの書き出し
         jigDocumentWriter.write(
                 outputStream -> {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
                         writer.write("globalThis.outputPortData = " + json);
                     }
                 },

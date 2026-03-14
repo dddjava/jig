@@ -19,13 +19,24 @@ function sortTerms(terms, sortKey) {
 }
 
 function getGlossaryData() {
-    const jsonText = document.getElementById("glossary-data")?.textContent || "{}";
-    /** @type {{terms?: Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}>} | Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}>} */
-    const glossaryData = JSON.parse(jsonText);
-    if (Array.isArray(glossaryData)) {
-        return glossaryData;
+    /** @type {{terms?: Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}>} | Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}> | null | undefined} */
+    const glossaryData = globalThis.glossaryData;
+    if (glossaryData) {
+        if (Array.isArray(glossaryData)) return glossaryData;
+        return glossaryData.terms ?? [];
     }
-    return glossaryData.terms ?? [];
+
+    const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
+    if (!script) return [];
+
+    const jsonText = script.textContent || "{}";
+    try {
+        const parsed = JSON.parse(jsonText);
+        if (Array.isArray(parsed)) return parsed;
+        return parsed?.terms ?? [];
+    } catch (e) {
+        return [];
+    }
 }
 
 function buildTermAnchorId(term, index) {

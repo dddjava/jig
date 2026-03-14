@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -36,18 +37,26 @@ public class TableView {
 
         String glossaryJson = """
                 {"terms": %s}
-                """.formatted(termsJson);
+                """.formatted(termsJson).trim();
 
         Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label(),
-                "glossaryJson", glossaryJson
+                "title", jigDocumentWriter.jigDocument().label()
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
+        String fileName = jigDocumentWriter.jigDocument().fileName();
 
         jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+                writer -> templateEngine.process(fileName, context, writer));
+
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                        writer.write("globalThis.glossaryData = " + glossaryJson);
+                    }
+                },
+                "data/" + fileName + "-data.js"
+        );
         return jigDocumentWriter.outputFilePaths();
     }
 

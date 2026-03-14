@@ -435,15 +435,14 @@ test.describe('glossary.js', () => {
 
     test.describe('データ読み込み', () => {
         test('glossary-dataから用語一覧を取得する', () => {
-            const doc = setupDocument();
-            const dataElement = new Element('script');
-            dataElement.textContent = JSON.stringify({terms: [{title: 'Account'}]});
-            doc.elementsById.set('glossary-data', dataElement);
+            setupDocument();
+            globalThis.glossaryData = {terms: [{title: 'Account'}]};
 
             const terms = glossary.getGlossaryData();
 
             assert.equal(terms.length, 1);
             assert.equal(terms[0].title, 'Account');
+            delete globalThis.glossaryData;
         });
     });
 

@@ -31,11 +31,15 @@ globalThis.outputPortData = {
     ],
     "persistenceAccessors": [
         {
-            "id": "com.example.infrastructure.HogePersistenceAccessor.insert",
-            "sqlType": "INSERT",
-            "group": "com.example.infrastructure.HogePersistenceAccessor",
-            "groupLabel": "HogePersistenceAccessor",
-            "targets": ["HOGE_TABLE"]
+            "fqn": "com.example.infrastructure.HogePersistenceAccessor",
+            "label": "HogePersistenceAccessor",
+            "methods": [
+                {
+                    "id": "com.example.infrastructure.HogePersistenceAccessor.insert",
+                    "sqlType": "INSERT",
+                    "targets": ["HOGE_TABLE"]
+                }
+            ]
         }
     ],
     "targets": ["HOGE_TABLE"],

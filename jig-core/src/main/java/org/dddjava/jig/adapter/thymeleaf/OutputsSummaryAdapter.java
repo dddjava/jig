@@ -70,7 +70,9 @@ public class OutputsSummaryAdapter {
     private static String buildJson(OutputAdapters outputAdapters) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
-        var accessorsMap = new LinkedHashMap<String, JsonObjectBuilder>();
+        var accessorTypesMap = new LinkedHashMap<String, String>();              // typeFqn → typeLabel
+        var accessorMethodsMap = new LinkedHashMap<String, List<JsonObjectBuilder>>(); // typeFqn → methods
+        var accessorMethodIds = new LinkedHashSet<String>();                     // method ID重複排除
         var targetsSet = new LinkedHashSet<String>();
 
         List<JsonObjectBuilder> operationToExecution = new ArrayList<>();
@@ -100,22 +102,24 @@ public class OutputsSummaryAdapter {
                                 .and("execution", execFqn));
 
                         exec.persistenceAccessors().forEach(pOp -> {
-                            String accessorId = pOp.persistenceAccessorId().value();
-                            String groupFqn = pOp.persistenceAccessorId().typeId().fqn();
-                            String groupLabel = groupFqn.contains(".")
-                                    ? groupFqn.substring(groupFqn.lastIndexOf('.') + 1) : groupFqn;
+                            String methodId = pOp.persistenceAccessorId().value();
+                            String typeFqn = pOp.persistenceAccessorId().typeId().fqn();
+                            String typeLabel = typeFqn.contains(".")
+                                    ? typeFqn.substring(typeFqn.lastIndexOf('.') + 1) : typeFqn;
                             List<String> targets = pOp.persistenceTargets().persistenceTargets().stream()
                                     .map(PersistenceTarget::name).toList();
 
                             targetsSet.addAll(targets);
-                            accessorsMap.putIfAbsent(accessorId, Json.object("id", accessorId)
-                                    .and("sqlType", pOp.sqlType().name())
-                                    .and("group", groupFqn)
-                                    .and("groupLabel", groupLabel)
-                                    .and("targets", Json.array(targets)));
+                            accessorTypesMap.putIfAbsent(typeFqn, typeLabel);
+                            if (accessorMethodIds.add(methodId)) {
+                                accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
+                                        .add(Json.object("id", methodId)
+                                                .and("sqlType", pOp.sqlType().name())
+                                                .and("targets", Json.array(targets)));
+                            }
 
                             executionToAccessor.add(Json.object("execution", execFqn)
-                                    .and("accessor", accessorId));
+                                    .and("accessor", methodId));
                         });
                     });
                 });
@@ -133,9 +137,17 @@ public class OutputsSummaryAdapter {
         var links = Json.object("operationToExecution", Json.arrayObjects(operationToExecution))
                 .and("executionToAccessor", Json.arrayObjects(executionToAccessor));
 
+        List<JsonObjectBuilder> accessorsList = new ArrayList<>();
+        accessorTypesMap.forEach((typeFqn, typeLabel) -> {
+            List<JsonObjectBuilder> methods = accessorMethodsMap.getOrDefault(typeFqn, List.of());
+            accessorsList.add(Json.object("fqn", typeFqn)
+                    .and("label", typeLabel)
+                    .and("methods", Json.arrayObjects(methods)));
+        });
+
         return Json.object("outputPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
                 .and("outputAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
-                .and("persistenceAccessors", Json.arrayObjects(new ArrayList<>(accessorsMap.values())))
+                .and("persistenceAccessors", Json.arrayObjects(accessorsList))
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();

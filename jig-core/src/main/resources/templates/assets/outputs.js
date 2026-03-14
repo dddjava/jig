@@ -16,9 +16,11 @@ function groupLinksByOutputPort(data) {
         });
     });
 
-    const accessorById = new Map();
-    (data.persistenceAccessors || []).forEach(acc => {
-        accessorById.set(acc.id, acc);
+    const methodById = new Map();
+    (data.persistenceAccessors || []).forEach(accessor => {
+        (accessor.methods || []).forEach(method => {
+            methodById.set(method.id, {...method, group: accessor.fqn, groupLabel: accessor.label});
+        });
     });
 
     const executionByOperation = new Map();
@@ -40,7 +42,7 @@ function groupLinksByOutputPort(data) {
             if (!execFqn) return [];
             const execEntry = executionByFqn.get(execFqn);
             const accessorIds = accessorsByExecution.get(execFqn) || [];
-            const persistenceAccessors = accessorIds.map(id => accessorById.get(id)).filter(Boolean);
+            const persistenceAccessors = accessorIds.map(id => methodById.get(id)).filter(Boolean);
             return [{
                 outputPortOperation: op,
                 outputAdapter: execEntry?.adapter ?? null,

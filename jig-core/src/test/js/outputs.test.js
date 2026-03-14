@@ -329,7 +329,7 @@ test.describe("outputs.js", () => {
             globalThis.outputPortData = {
                 outputPorts: [{ fqn: "port1", label: "P1", operations: [{ fqn: "op1", label: "save" }] }],
                 outputAdapters: [{ fqn: "adapter1", label: "A1", executions: [{ fqn: "ex1", label: "exec" }] }],
-                persistenceAccessors: [{ id: "com.example.Repo.po1", sqlType: "INSERT", group: "com.example.Repo", groupLabel: "Repo", targets: ["table1"] }],
+                persistenceAccessors: [{ fqn: "com.example.Repo", label: "Repo", methods: [{ id: "com.example.Repo.po1", sqlType: "INSERT", targets: ["table1"] }] }],
                 targets: ["table1"],
                 links: {
                     operationToExecution: [{ operation: "op1", execution: "ex1" }],
@@ -339,7 +339,7 @@ test.describe("outputs.js", () => {
 
             const data = outputs.getOutputsData();
             assert.equal(data.outputPorts[0].label, "P1");
-            assert.equal(data.persistenceAccessors[0].groupLabel, "Repo");
+            assert.equal(data.persistenceAccessors[0].label, "Repo");
         });
 
         test("getOutputsData: データがない場合のフォールバック", () => {

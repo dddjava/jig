@@ -40,7 +40,7 @@ class SampleDataWriterTest {
         Path sampleFile = Path.of("src/main/resources/templates/data/outputs-data.js");
         Files.writeString(sampleFile,
             "// 表示確認用のサンプルデータ\n" +
-            "// このファイルはOutputsSummaryAdapterTestによって自動生成されます。手動で変更しないでください。\n" +
+            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
             "globalThis.outputPortData = " + json + "\n");
     }
 }

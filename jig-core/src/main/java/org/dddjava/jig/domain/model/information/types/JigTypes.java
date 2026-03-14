@@ -72,14 +72,14 @@ public class JigTypes {
     public boolean isService(JigMethodId jigMethodId) {
         return resolveJigMethod(jigMethodId)
                 .flatMap(jigMethod -> resolveJigType(jigMethod.declaringType()))
-                .filter(jigType -> jigType.typeCategory() == TypeCategory.InputPort)
+                .filter(JigType::isService)
                 .isPresent();
     }
 
     public boolean isApplicationComponent(TypeId typeId) {
         return resolveJigType(typeId)
-                .stream()
-                .anyMatch(jigType -> jigType.typeCategory().isApplicationComponent());
+                .filter(JigType::isApplicationComponent)
+                .isPresent();
     }
 
     public boolean empty() {

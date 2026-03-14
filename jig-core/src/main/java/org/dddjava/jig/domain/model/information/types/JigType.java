@@ -121,4 +121,12 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     public boolean isCompilerGenerated() {
         return jigTypeHeader.isCompilerGenerated();
     }
+
+    public boolean isService() {
+        return typeCategory() == TypeCategory.InputPort;
+    }
+
+    public boolean isApplicationComponent() {
+        return typeCategory().isApplicationComponent();
+    }
 }

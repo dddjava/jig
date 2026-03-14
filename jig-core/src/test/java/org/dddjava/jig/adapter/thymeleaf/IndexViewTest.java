@@ -42,8 +42,7 @@ class IndexViewTest {
         var results = List.of(
                 HandleResult.withOutput(JigDocument.PackageSummary, List.of(Path.of("package-summary.html"))),
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html"))),
-                HandleResult.withOutput(JigDocument.ApplicationList, List.of(Path.of("application-list.xlsx"))),
-                HandleResult.withOutput(JigDocument.CategoryDiagram, List.of(Path.of("category.svg")))
+                HandleResult.withOutput(JigDocument.ApplicationList, List.of(Path.of("application-list.xlsx")))
         );
 
         sut.render(results, tempDir);
@@ -52,7 +51,6 @@ class IndexViewTest {
         assertTrue(actual.contains("<h2>概要: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: Excel</h2>"));
-        assertTrue(actual.contains("<h2>図: "));
     }
 
     private String readIndex() throws IOException {

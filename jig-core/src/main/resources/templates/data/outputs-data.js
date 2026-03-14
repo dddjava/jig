@@ -42,7 +42,7 @@ globalThis.outputPortData = {
             ]
         }
     ],
-    "targets": ["HOGE_TABLE"],
+    "targets": ["HOGE_TABLE", "FUGA_TABLE"],
     "links": {
         "operationToExecution": [
             {

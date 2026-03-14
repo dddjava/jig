@@ -164,21 +164,23 @@ class DocumentStub {
     }
 
     querySelector(selector) {
-        if (selector === 'input[name="display-mode"]:checked') {
+        // input[name="show-xxx"] 形式のセレクタに対応
+        const nameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
+        if (nameMatch) {
+            const name = nameMatch[1];
             return this.allElements.find(el =>
                 el.tagName === "input" &&
-                el.getAttribute("name") === "display-mode" &&
-                el.checked
+                el.getAttribute("name") === name
             ) || null;
         }
         return null;
     }
 
     querySelectorAll(selector) {
-        if (selector === 'input[name="display-mode"]') {
+        if (selector === 'input[name^="show-"]') {
             return this.allElements.filter(el =>
                 el.tagName === "input" &&
-                el.getAttribute("name") === "display-mode"
+                (el.getAttribute("name") || "").startsWith("show-")
             );
         }
         if (selector === '.outputs-tabs .tab-button') {
@@ -190,10 +192,6 @@ class DocumentStub {
             return this.allElements.filter(el =>
                 el.classList.contains("outputs-tab-panel")
             );
-        }
-        if (selector === 'input[name="display-mode"]:checked') {
-            const checked = this.querySelector(selector);
-            return checked ? [checked] : [];
         }
         // 完全一致での検索（デバッグ・簡易対応用）
         return this.allElements.filter(el =>
@@ -359,7 +357,7 @@ test.describe("outputs.js", () => {
     });
 
     test.describe("Mermaidコード生成", () => {
-        test("generateMermaidCode: standardモードで正しい接続関係を生成する", () => {
+        test("generateMermaidCode: standard相当のvisibilityで正しい接続関係を生成する", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label:"op1" },
@@ -369,7 +367,8 @@ test.describe("outputs.js", () => {
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
             };
-            const code = outputs.generateMermaidCode(link, "standard");
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
+            const code = outputs.generateMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "P1"'));
             assert.ok(code.includes('PortOp["op1"]'));
             assert.ok(code.includes('subgraph "A1"'));
@@ -379,7 +378,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Target_0[(table1)]'));
         });
 
-        test("generateMermaidCode: simpleモードでAdapterを省略する", () => {
+        test("generateMermaidCode: adapterを非表示にするとPortOpからTargetへ直接接続される", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label:"op1" },
@@ -387,13 +386,14 @@ test.describe("outputs.js", () => {
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
             };
-            const code = outputs.generateMermaidCode(link, "simple");
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true};
+            const code = outputs.generateMermaidCode(link, visibility);
             assert.ok(code.includes('PortOp["op1"]'));
             assert.ok(!code.includes('subgraph "Adapter"'));
             assert.ok(code.includes('PortOp -- "INSERT" --> Target_0'));
         });
 
-        test("generateMermaidCode: detailedモードで永続化操作のグループ（クラス）を表示する", () => {
+        test("generateMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label:"op1" },
@@ -409,11 +409,12 @@ test.describe("outputs.js", () => {
                     }
                 ]
             };
-            const code = outputs.generateMermaidCode(link, "detailed");
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
+            const code = outputs.generateMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "repo"'));
-            assert.ok(code.includes('Group_0["save"]'));
-            assert.ok(code.includes('Execution --> Group_0'));
-            assert.ok(code.includes('Group_0 -- "INSERT" --> Target_0'));
+            assert.ok(code.includes('Method_com_example_repo_save["save"]'));
+            assert.ok(code.includes('Execution --> Method_com_example_repo_save'));
+            assert.ok(code.includes('Method_com_example_repo_save -- "INSERT" --> Target_0'));
         });
 
         test("generatePortMermaidCode: ポート単位の図に複数の操作が含まれる", () => {
@@ -424,13 +425,14 @@ test.describe("outputs.js", () => {
                     { outputPortOperation: { label:"op2" } }
                 ]
             };
-            const code = outputs.generatePortMermaidCode(group, "simple");
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
+            const code = outputs.generatePortMermaidCode(group, visibility);
             assert.ok(code.includes('subgraph "PortA"'));
             assert.ok(code.includes('PortOp_0["op1"]'));
             assert.ok(code.includes('PortOp_1["op2"]'));
         });
 
-        test("generatePortMermaidCode: detailedモードで永続化操作のグループを表示する", () => {
+        test("generatePortMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
             const group = {
                 outputPort: { label: "PortA" },
                 links: [
@@ -450,7 +452,8 @@ test.describe("outputs.js", () => {
                     }
                 ]
             };
-            const code = outputs.generatePortMermaidCode(group, "detailed");
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
+            const code = outputs.generatePortMermaidCode(group, visibility);
             assert.ok(code.includes('subgraph "repo"'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
             assert.ok(code.includes('Exec_adapter1_ex1 --> POp_com_example_repo_save') || code.includes('Exec_exec1 --> POp_com_example_repo_save'));
@@ -611,7 +614,7 @@ test.describe("outputs.js", () => {
             assert.equal(sidebarLink.textContent, "table1");
         });
 
-        test("renderOutputsTable: mode='simple' の場合は Adapter 情報が表示されない", () => {
+        test("renderOutputsTable: adapter非表示の場合はAdapter情報が表示されない", () => {
             const doc = setupDocument();
             const grouped = [
                 {
@@ -620,11 +623,12 @@ test.describe("outputs.js", () => {
                 }
             ];
 
-            outputs.renderOutputsTable(grouped, "simple");
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true};
+            outputs.renderOutputsTable(grouped, visibility);
 
             const portCard = doc.outputsList.children[0];
             const sidebarSection = doc.getElementById("outputs-sidebar-list").children[0];
-            // simple モードでは adapterInfo (p) が追加されないため、children[2] は count (p) になる
+            // adapter非表示ではadapterInfo (p) が追加されないため、children[2] は count (p) になる
             assert.equal(portCard.children[2].textContent, "1 operations");
             assert.ok(!portCard.children.some(child => child.textContent.includes("Implementation:")));
             assert.equal(sidebarSection.children[0].textContent, "出力ポート");
@@ -651,12 +655,15 @@ test.describe("outputs.js", () => {
             const reloadedOutputs = require("../../main/resources/templates/assets/outputs.js");
             const app = reloadedOutputs.OutputsApp;
 
-            // ラジオボタンの準備
-            const radio = doc.createElement("input");
-            radio.setAttribute("name", "display-mode");
-            radio.setAttribute("type", "radio");
-            radio.value = "simple";
-            radio.checked = true;
+            // チェックボックスの準備
+            const checkboxNames = ["show-port", "show-operation", "show-adapter", "show-execution", "show-accessor", "show-accessor-method", "show-target"];
+            const checkboxes = checkboxNames.map(name => {
+                const cb = doc.createElement("input");
+                cb.setAttribute("name", name);
+                cb.setAttribute("type", "checkbox");
+                cb.checked = ["show-port", "show-operation", "show-adapter", "show-execution", "show-target"].includes(name);
+                return cb;
+            });
 
             // タブの準備
             const tabButton = doc.createElement("button");
@@ -672,13 +679,16 @@ test.describe("outputs.js", () => {
             doc.querySelectorAll = (selector) => {
                 if (selector === '.outputs-tabs .tab-button') return [tabButton];
                 if (selector === '.outputs-tab-panel') return [tabPanel];
-                if (selector === 'input[name="display-mode"]') return [radio];
+                if (selector === 'input[name^="show-"]') return checkboxes;
                 return originalQuerySelectorAll.call(doc, selector);
             };
 
             const originalQuerySelector = doc.querySelector;
             doc.querySelector = (selector) => {
-                if (selector === 'input[name="display-mode"]:checked') return radio;
+                const nameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
+                if (nameMatch) {
+                    return checkboxes.find(cb => cb.getAttribute("name") === nameMatch[1]) || null;
+                }
                 return originalQuerySelector.call(doc, selector);
             };
 
@@ -694,7 +704,9 @@ test.describe("outputs.js", () => {
 
             // App が初期化されていることを確認
             assert.ok(app.state.data);
-            assert.equal(app.state.mode, "simple");
+            assert.ok(app.state.visibility);
+            assert.equal(app.state.visibility.port, true);
+            assert.equal(app.state.visibility.accessor, false);
 
             // タブクリックのリスナーが登録されているはず
             assert.ok(tabButton.eventListeners.has("click"));
@@ -705,10 +717,11 @@ test.describe("outputs.js", () => {
             assert.ok(tabButton.classList.contains("is-active"));
             assert.ok(tabPanel.classList.contains("is-active"));
 
-            // 表示モード変更
-            radio.value = "detailed";
-            radio.eventListeners.get("change")?.forEach(l => l({ target: radio }));
-            assert.equal(app.state.mode, "detailed");
+            // チェックボックス変更でvisibilityが更新される
+            const accessorCheckbox = checkboxes.find(cb => cb.getAttribute("name") === "show-accessor");
+            accessorCheckbox.checked = true;
+            accessorCheckbox.eventListeners.get("change")?.forEach(l => l());
+            assert.equal(app.state.visibility.accessor, true);
         });
 
         test("lazyRender: IntersectionObserver がない場合のフォールバック", () => {

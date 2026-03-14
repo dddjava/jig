@@ -13,12 +13,7 @@ import org.thymeleaf.context.Context;
 
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 外部利用概要
@@ -67,7 +62,7 @@ public class OutputsSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    static String buildJson(OutputAdapters outputAdapters) {
+    public static String buildJson(OutputAdapters outputAdapters) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var accessorTypesMap = new LinkedHashMap<String, String>();              // typeFqn → typeLabel

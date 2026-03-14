@@ -1,5 +1,4 @@
-package org.dddjava.jig.adapter.thymeleaf;
-
+import org.dddjava.jig.adapter.thymeleaf.OutputsSummaryAdapter;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
@@ -17,16 +16,16 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 @JigTest
-class OutputsSummaryAdapterTest {
+class SampleDataWriterTest {
 
     @Test
     void サンプルデータを書き出す(Configuration configuration, JigService jigService) throws IOException {
         // sampleパッケージのみスキャン
         var sampleBasePaths = new SourceBasePaths(
             new SourceBasePath(Collections.singletonList(
-                Paths.get(TestSupport.defaultPackageClassURI()).resolve("stub/infrastructure/datasource/sample"))),
+                Paths.get(TestSupport.defaultPackageClassURI()).resolve("sample"))),
             new SourceBasePath(Collections.singletonList(
-                TestSupport.getTestSourceRootPath().resolve("stub/infrastructure/datasource/sample")))
+                TestSupport.getTestSourceRootPath().resolve("sample")))
         );
 
         var factory = DefaultJigRepositoryFactory.init(configuration);

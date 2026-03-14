@@ -164,6 +164,16 @@ class DocumentStub {
     }
 
     querySelector(selector) {
+        // input[name="xxx"]:checked 形式のセレクタに対応
+        const nameCheckedMatch = selector.match(/^input\[name="([^"]+)"\]:checked$/);
+        if (nameCheckedMatch) {
+            const name = nameCheckedMatch[1];
+            return this.allElements.find(el =>
+                el.tagName === "input" &&
+                el.getAttribute("name") === name &&
+                el.checked
+            ) || null;
+        }
         // input[name="show-xxx"] 形式のセレクタに対応
         const nameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
         if (nameMatch) {
@@ -181,6 +191,12 @@ class DocumentStub {
             return this.allElements.filter(el =>
                 el.tagName === "input" &&
                 (el.getAttribute("name") || "").startsWith("show-")
+            );
+        }
+        if (selector === 'input[name="diagram-direction"]') {
+            return this.allElements.filter(el =>
+                el.tagName === "input" &&
+                el.getAttribute("name") === "diagram-direction"
             );
         }
         if (selector === '.outputs-tabs .tab-button') {
@@ -227,6 +243,18 @@ function setupDocument() {
     doc.elementsById.set("persistence-sidebar-list", doc.createElement("div"));
 
     doc.elementsById.set("outputs-sidebar-list", doc.createElement("div"));
+
+    // diagram-direction ラジオボタンのモック
+    const lrRadio = doc.createElement("input");
+    lrRadio.setAttribute("name", "diagram-direction");
+    lrRadio.setAttribute("type", "radio");
+    lrRadio.setAttribute("value", "LR");
+    lrRadio.checked = true;
+    const tbRadio = doc.createElement("input");
+    tbRadio.setAttribute("name", "diagram-direction");
+    tbRadio.setAttribute("type", "radio");
+    tbRadio.setAttribute("value", "TB");
+    tbRadio.checked = false;
 
     global.document = doc;
     global.window = doc;
@@ -415,6 +443,17 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Method_com_example_repo_save["save"]'));
             assert.ok(code.includes('Execution --> Method_com_example_repo_save'));
             assert.ok(code.includes('Method_com_example_repo_save -- "INSERT" --> Target_0'));
+        });
+
+        test("generateMermaidCode: direction=TBのとき、graph TBで始まるコードを生成する", () => {
+            const link = {
+                outputPort: { label: "P1" },
+                outputPortOperation: { label: "op1" },
+                persistenceAccessors: []
+            };
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'TB'};
+            const code = outputs.generateMermaidCode(link, visibility);
+            assert.ok(code.startsWith('graph TB\n'));
         });
 
         test("generatePortMermaidCode: ポート単位の図に複数の操作が含まれる", () => {
@@ -730,14 +769,34 @@ test.describe("outputs.js", () => {
                 if (selector === '.outputs-tabs .tab-button') return [tabButton];
                 if (selector === '.outputs-tab-panel') return [tabPanel];
                 if (selector === 'input[name^="show-"]') return checkboxes;
+                if (selector === 'input[name="diagram-direction"]') return [lrRadio, tbRadio];
                 return originalQuerySelectorAll.call(doc, selector);
             };
 
+            // diagram-direction ラジオボタンの準備
+            const lrRadio = doc.createElement("input");
+            lrRadio.setAttribute("name", "diagram-direction");
+            lrRadio.setAttribute("type", "radio");
+            lrRadio.setAttribute("value", "LR");
+            lrRadio.checked = true;
+            const tbRadio = doc.createElement("input");
+            tbRadio.setAttribute("name", "diagram-direction");
+            tbRadio.setAttribute("type", "radio");
+            tbRadio.setAttribute("value", "TB");
+            tbRadio.checked = false;
+
             const originalQuerySelector = doc.querySelector;
             doc.querySelector = (selector) => {
+                const nameCheckedMatch = selector.match(/^input\[name="([^"]+)"\]:checked$/);
+                if (nameCheckedMatch) {
+                    const name = nameCheckedMatch[1];
+                    return [...checkboxes, lrRadio, tbRadio].find(cb =>
+                        cb.getAttribute("name") === name && cb.checked
+                    ) || null;
+                }
                 const nameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
                 if (nameMatch) {
-                    return checkboxes.find(cb => cb.getAttribute("name") === nameMatch[1]) || null;
+                    return [...checkboxes, lrRadio, tbRadio].find(cb => cb.getAttribute("name") === nameMatch[1]) || null;
                 }
                 return originalQuerySelector.call(doc, selector);
             };

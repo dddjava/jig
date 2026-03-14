@@ -191,8 +191,8 @@ MermaidBuilder.prototype.addNodeToSubgraph = function (subgraph, id, label, shap
     return id;
 };
 
-MermaidBuilder.prototype.build = function () {
-    let code = "graph LR\n";
+MermaidBuilder.prototype.build = function (direction = 'LR') {
+    let code = `graph ${direction}\n`;
     this.subgraphs.forEach(sg => {
         code += `  subgraph "${sg.label}"\n`;
         sg.lines.forEach(line => {
@@ -209,7 +209,7 @@ MermaidBuilder.prototype.build = function () {
     return code;
 };
 
-const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
+const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR'};
 
 function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
@@ -284,7 +284,7 @@ function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
         }
     });
 
-    return builder.build();
+    return builder.build(visibility.direction);
 }
 
 function renderMermaid(link, container, visibility = DEFAULT_VISIBILITY) {
@@ -394,7 +394,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         });
     });
 
-    return builder.build();
+    return builder.build(visibility.direction);
 }
 
 function renderPortMermaid(group, container, visibility = DEFAULT_VISIBILITY) {
@@ -704,7 +704,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
         });
     });
 
-    return builder.build();
+    return builder.build(visibility.direction);
 }
 
 function renderPersistenceMermaid(group, container, visibility = DEFAULT_VISIBILITY) {
@@ -844,6 +844,8 @@ function readVisibility() {
     const port = checked("show-port");
     const adapter = checked("show-adapter");
     const accessor = checked("show-accessor");
+    const directionEl = document.querySelector('input[name="diagram-direction"]:checked');
+    const direction = directionEl ? directionEl.value : 'LR';
     return {
         port,
         operation: port && checked("show-operation"),
@@ -852,6 +854,7 @@ function readVisibility() {
         accessor,
         accessorMethod: accessor && checked("show-accessor-method"),
         target: checked("show-target"),
+        direction,
     };
 }
 
@@ -906,6 +909,12 @@ const OutputsApp = {
                         childEl.disabled = !input.checked;
                     }
                 });
+                this.setState({visibility: readVisibility()});
+            });
+        });
+
+        document.querySelectorAll('input[name="diagram-direction"]').forEach(input => {
+            input.addEventListener('change', () => {
                 this.setState({visibility: readVisibility()});
             });
         });

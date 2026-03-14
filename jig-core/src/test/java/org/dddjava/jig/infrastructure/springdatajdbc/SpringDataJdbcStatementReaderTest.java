@@ -11,10 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcMixedOrderRepository;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcNameRepository;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderRepository;
-import stub.infrastructure.datasource.springdata.SpringDataJdbcOrderWithItemsRepository;
+import stub.infrastructure.datasource.springdata.*;
 import testing.JigTest;
 
 import java.util.stream.Stream;
@@ -33,7 +30,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var statements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
-        var statement = persistenceAccessorOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderRepository.class));
+        var statement = persistenceAccessorOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderAccessor.class));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
         assertEquals(expectedSqlType, statement.sqlType());
@@ -58,7 +55,7 @@ class SpringDataJdbcStatementReaderTest {
             JigRepository jigRepository
     ) {
         var datasourceAngles = jigService.datasourceAngles(jigRepository).list().stream()
-                .filter(angle -> angle.declaringType().fqn().equals(SpringDataJdbcOrderRepository.class.getCanonicalName()))
+                .filter(angle -> angle.declaringType().fqn().equals(SpringDataJdbcOrderPort.class.getCanonicalName()))
                 .toList();
         var angle = datasourceAngles.stream()
                 .filter(found -> found.interfaceMethod().name().equals(methodName))

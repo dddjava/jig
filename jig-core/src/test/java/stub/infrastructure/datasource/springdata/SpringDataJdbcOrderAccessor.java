@@ -2,10 +2,8 @@ package stub.infrastructure.datasource.springdata;
 
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface SpringDataJdbcOrderRepository extends CrudRepository<SpringDataJdbcOrder, Long> {
+public interface SpringDataJdbcOrderAccessor extends CrudRepository<SpringDataJdbcOrder, Long> {
 
     @Override
     SpringDataJdbcOrder save(SpringDataJdbcOrder entity);

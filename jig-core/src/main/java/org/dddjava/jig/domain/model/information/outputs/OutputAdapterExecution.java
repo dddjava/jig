@@ -17,20 +17,20 @@ import java.util.stream.Stream;
  * 出力アダプタの実装
  */
 public record OutputAdapterExecution(
-        OutputPortOperation outputPortOperation,
         JigMethod jigMethod,
+        OutputPortOperation outputPortOperation,
         Collection<JigMethod> tracingJigMethods,
         Collection<PersistenceAccessor> persistenceAccessors
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
-    public static OutputAdapterExecution from(OutputPortOperation outputPortOperation,
-                                              JigMethod jigMethod,
+    public static OutputAdapterExecution from(JigMethod jigMethod,
+                                              OutputPortOperation outputPortOperation,
                                               JigTypes jigTypes,
                                               PersistenceAccessorsRepository persistenceAccessorsRepository) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
         var persistenceAccessors = resolvePersistenceAccessors(tracingJigMethods, jigTypes, persistenceAccessorsRepository);
-        return new OutputAdapterExecution(outputPortOperation, jigMethod, tracingJigMethods, persistenceAccessors);
+        return new OutputAdapterExecution(jigMethod, outputPortOperation, tracingJigMethods, persistenceAccessors);
     }
 
     public boolean uses(PersistenceAccessorId persistenceAccessorId) {

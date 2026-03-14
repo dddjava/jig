@@ -31,7 +31,7 @@ public record OutputAdapter(
                 .flatMap(outputPort -> outputPort.operationStream()
                         .flatMap(operation -> jigType.instanceJigMethodStream()
                                 .filter(operation::matches)
-                                .map(jigMethod -> OutputAdapterExecution.from(operation, jigMethod, jigTypes, persistenceAccessorsRepository))))
+                                .map(jigMethod -> OutputAdapterExecution.from(jigMethod, operation, jigTypes, persistenceAccessorsRepository))))
                 .toList();
         return new OutputAdapter(jigType, outputPorts, outputAdapterExecutions);
     }

@@ -131,7 +131,7 @@ public class JigDocumentGenerator {
                 var outputFilePaths = switch (jigDocument) {
                     case Glossary -> new TableView(jigDocument)
                             .write(outputDirectory, jigService.glossary(jigRepository));
-                    case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
+                    case PackageSummary -> new PackageSummaryView(jigDocument)
                             .write(
                                     outputDirectory,
                                     jigService.packages(jigRepository),

@@ -180,18 +180,7 @@ function buildPackageRows(doc, fqns) {
 }
 
 function setPackageData(data, context) {
-    const mockDataContent = JSON.stringify(data);
-    const doc = global.document;
-    if (doc && doc.elementsById) {
-        const dataElement = new Element('script', doc);
-        dataElement.textContent = mockDataContent;
-        doc.elementsById.set('package-data', dataElement);
-    } else {
-        const mockDataElement = { textContent: mockDataContent };
-        test.mock.method(pkg.dom, 'getPackageDataScript', test.mock.fn(() => mockDataElement));
-        test.mock.method(pkg.dom, 'getNodeTextContent', test.mock.fn((el) => el.textContent));
-    }
-
+    globalThis.packageData = data;
     context.packageSummaryCache = null; // Reset cache
 }
 
@@ -292,16 +281,16 @@ test.describe('package.js', () => {
     test.describe('データ取得/整形', () => {
         test.describe('ロジック', () => {
             test('parsePackageSummaryData: 配列/オブジェクトに対応する', () => {
-                const arrayData = pkg.parsePackageSummaryData(JSON.stringify([
+                const arrayData = pkg.parsePackageSummaryData([
                     {fqn: 'app.a', name: 'A', classCount: 1, description: ''},
-                ]));
+                ]);
                 assert.equal(arrayData.packages.length, 1);
                 assert.equal(arrayData.relations.length, 0);
 
-                const objectData = pkg.parsePackageSummaryData(JSON.stringify({
+                const objectData = pkg.parsePackageSummaryData({
                     packages: [{fqn: 'app.b', name: 'B', classCount: 2, description: ''}],
                     relations: [{from: 'app.b', to: 'app.c'}],
-                }));
+                });
                 assert.equal(objectData.packages.length, 1);
                 assert.equal(objectData.relations.length, 1);
             });

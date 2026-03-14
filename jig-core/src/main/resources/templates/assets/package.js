@@ -84,18 +84,16 @@ const dom = {
 // データ取得/整形
 function getPackageSummaryData(context) {
     if (context.packageSummaryCache) return context.packageSummaryCache;
-    const jsonText = dom.getNodeTextContent(dom.getPackageDataScript());
-    context.packageSummaryCache = parsePackageSummaryData(jsonText);
+    context.packageSummaryCache = parsePackageSummaryData(globalThis.packageData);
     return context.packageSummaryCache;
 }
 
-function parsePackageSummaryData(jsonText) {
-    /** @type {{packages?: Array<{fqn: string, name: string, classCount: number, description: string}>, relations?: Array<{from: string, to: string}>, causeRelationEvidence?: Array<{from: string, to: string}>} | Array<{fqn: string, name: string, classCount: number, description: string}>} */
-    const packageData = JSON.parse(jsonText);
+function parsePackageSummaryData(packageData) {
+    // packageData はオブジェクト（JSON文字列ではない）
     return {
-        packages: Array.isArray(packageData) ? packageData : (packageData.packages ?? []),
-        relations: Array.isArray(packageData) ? [] : (packageData.relations ?? []),
-        causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData.causeRelationEvidence ?? []),
+        packages: Array.isArray(packageData) ? packageData : (packageData?.packages ?? []),
+        relations: Array.isArray(packageData) ? [] : (packageData?.relations ?? []),
+        causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData?.causeRelationEvidence ?? []),
     };
 }
 

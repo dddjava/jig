@@ -8,13 +8,12 @@ import org.dddjava.jig.domain.model.information.relation.packages.PackageRelatio
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -23,11 +22,9 @@ import java.util.stream.Collectors;
 public class PackageSummaryView {
 
     private final JigDocument jigDocument;
-    private final TemplateEngine templateEngine;
 
-    public PackageSummaryView(JigDocument jigDocument, TemplateEngine templateEngine) {
+    public PackageSummaryView(JigDocument jigDocument) {
         this.jigDocument = jigDocument;
-        this.templateEngine = templateEngine;
     }
 
     public List<Path> write(Path outputDirectory, JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
@@ -53,16 +50,23 @@ public class PackageSummaryView {
                 {"packages": %s, "relations": %s, "causeRelationEvidence": %s}
                 """.formatted(packagesJson, packageRelationsJson, typeRelationsJson);
 
-        Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label(),
-                "packagesJson", packageSummaryJson
+        String fileName = jigDocumentWriter.jigDocument().fileName();
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (var resource = PackageSummaryView.class.getResourceAsStream("/templates/" + fileName + ".html")) {
+                        Objects.requireNonNull(resource).transferTo(outputStream);
+                    }
+                },
+                fileName + ".html"
         );
-
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                        writer.write("globalThis.packageData = " + packageSummaryJson);
+                    }
+                },
+                "data/" + fileName + "-data.js"
+        );
         return jigDocumentWriter.outputFilePaths();
     }
 

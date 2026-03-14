@@ -3,25 +3,20 @@ package org.dddjava.jig.adapter.thymeleaf;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TableView {
 
     private final JigDocument jigDocument;
-    private final TemplateEngine templateEngine;
 
-    public TableView(JigDocument jigDocument, TemplateEngine templateEngine) {
+    public TableView(JigDocument jigDocument) {
         this.jigDocument = jigDocument;
-        this.templateEngine = templateEngine;
     }
 
     public List<Path> write(Path outputDirectory, Glossary glossary) {
@@ -40,15 +35,16 @@ public class TableView {
                 {"terms": %s}
                 """.formatted(termsJson).trim();
 
-        Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label()
-        );
-
-        Context context = new Context(Locale.ROOT, contextMap);
         String fileName = jigDocumentWriter.jigDocument().fileName();
 
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(fileName, context, writer));
+        jigDocumentWriter.write(
+                outputStream -> {
+                    try (var resource = TableView.class.getResourceAsStream("/templates/" + fileName + ".html")) {
+                        Objects.requireNonNull(resource).transferTo(outputStream);
+                    }
+                },
+                fileName + ".html"
+        );
 
         jigDocumentWriter.write(
                 outputStream -> {

@@ -127,7 +127,7 @@ public class JigDocumentGenerator {
 
                 @SuppressWarnings("deprecation")
                 var outputFilePaths = switch (jigDocument) {
-                    case Glossary -> new TableView(jigDocument, thymeleafTemplateEngine)
+                    case Glossary -> new TableView(jigDocument)
                             .write(outputDirectory, jigService.glossary(jigRepository));
                     case PackageSummary -> new PackageSummaryView(jigDocument, thymeleafTemplateEngine)
                             .write(

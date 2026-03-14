@@ -7,9 +7,6 @@ import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +25,7 @@ class TableViewTest {
     @Test
     void 用語集JSONはHTMLではなくglossaryDataとしてJSに書き出す() throws IOException {
         Files.createDirectories(tempDir.resolve("data"));
-        var sut = new TableView(JigDocument.Glossary, templateEngine());
+        var sut = new TableView(JigDocument.Glossary);
 
         var glossary = new Glossary(List.of(
                 new Term(new TermId("app.Account"), "Account", "desc", TermKind.クラス)
@@ -47,17 +44,6 @@ class TableViewTest {
         assertTrue(js.contains("globalThis.glossaryData = "));
         assertTrue(js.contains("\"terms\""));
         assertTrue(js.contains("Account"));
-    }
-
-    private TemplateEngine templateEngine() {
-        TemplateEngine templateEngine = new TemplateEngine();
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setSuffix(".html");
-        templateResolver.setPrefix("templates/");
-        templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        templateEngine.setTemplateResolver(templateResolver);
-        return templateEngine;
     }
 }
 

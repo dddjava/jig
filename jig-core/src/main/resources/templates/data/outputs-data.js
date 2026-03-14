@@ -10,7 +10,7 @@ globalThis.outputPortData = {
             "operations": [
                 {
                     "fqn": "com.example.application.HogePort#register()",
-                    "name": "登録",
+                    "label": "登録",
                     "signature": "register()"
                 }
             ]
@@ -23,7 +23,7 @@ globalThis.outputPortData = {
             "executions": [
                 {
                     "fqn": "com.example.infrastructure.HogeAdapter#insert()",
-                    "name": "インサート",
+                    "label": "インサート",
                     "signature": "insert()"
                 }
             ]

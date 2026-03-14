@@ -259,12 +259,12 @@ test.describe("outputs.js", () => {
         test("groupLinksByOutputPort: 出力ポート単位でグルーピングし、表示名でソートする", () => {
             const data = {
                 outputPorts: [
-                    {fqn: "com.example.BPort", label: "い", operations: [{fqn: "opB", name: "delete"}]},
-                    {fqn: "com.example.APort", label: "あ", operations: [{fqn: "opA", name: "save"}]},
+                    {fqn: "com.example.BPort", label: "い", operations: [{fqn: "opB", label: "delete"}]},
+                    {fqn: "com.example.APort", label: "あ", operations: [{fqn: "opA", label: "save"}]},
                 ],
                 outputAdapters: [
-                    {fqn: "adapterA", label: "A", executions: [{fqn: "execA", name: "save"}]},
-                    {fqn: "adapterB", label: "B", executions: [{fqn: "execB", name: "delete"}]},
+                    {fqn: "adapterA", label: "A", executions: [{fqn: "execA", label: "save"}]},
+                    {fqn: "adapterB", label: "B", executions: [{fqn: "execB", label: "delete"}]},
                 ],
                 persistenceAccessors: [],
                 links: {
@@ -327,8 +327,8 @@ test.describe("outputs.js", () => {
 
         test("getOutputsData: データをそのまま返す", () => {
             globalThis.outputPortData = {
-                outputPorts: [{ fqn: "port1", label: "P1", operations: [{ fqn: "op1", name: "save" }] }],
-                outputAdapters: [{ fqn: "adapter1", label: "A1", executions: [{ fqn: "ex1", name: "exec" }] }],
+                outputPorts: [{ fqn: "port1", label: "P1", operations: [{ fqn: "op1", label: "save" }] }],
+                outputAdapters: [{ fqn: "adapter1", label: "A1", executions: [{ fqn: "ex1", label: "exec" }] }],
                 persistenceAccessors: [{ id: "com.example.Repo.po1", sqlType: "INSERT", group: "com.example.Repo", groupLabel: "Repo", targets: ["table1"] }],
                 targets: ["table1"],
                 links: {
@@ -362,9 +362,9 @@ test.describe("outputs.js", () => {
         test("generateMermaidCode: standardモードで正しい接続関係を生成する", () => {
             const link = {
                 outputPort: { label: "P1" },
-                outputPortOperation: { name: "op1" },
+                outputPortOperation: { label:"op1" },
                 outputAdapter: { label: "A1" },
-                outputAdapterExecution: { name: "ex1" },
+                outputAdapterExecution: { label:"ex1" },
                 persistenceAccessors: [
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
@@ -382,7 +382,7 @@ test.describe("outputs.js", () => {
         test("generateMermaidCode: simpleモードでAdapterを省略する", () => {
             const link = {
                 outputPort: { label: "P1" },
-                outputPortOperation: { name: "op1" },
+                outputPortOperation: { label:"op1" },
                 persistenceAccessors: [
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
@@ -396,9 +396,9 @@ test.describe("outputs.js", () => {
         test("generateMermaidCode: detailedモードで永続化操作のグループ（クラス）を表示する", () => {
             const link = {
                 outputPort: { label: "P1" },
-                outputPortOperation: { name: "op1" },
+                outputPortOperation: { label:"op1" },
                 outputAdapter: { label: "A1" },
-                outputAdapterExecution: { name: "ex1" },
+                outputAdapterExecution: { label:"ex1" },
                 persistenceAccessors: [
                     {
                         id: "com.example.repo.save",
@@ -420,8 +420,8 @@ test.describe("outputs.js", () => {
             const group = {
                 outputPort: { label: "PortA" },
                 links: [
-                    { outputPortOperation: { name: "op1" } },
-                    { outputPortOperation: { name: "op2" } }
+                    { outputPortOperation: { label:"op1" } },
+                    { outputPortOperation: { label:"op2" } }
                 ]
             };
             const code = outputs.generatePortMermaidCode(group, "simple");
@@ -435,7 +435,7 @@ test.describe("outputs.js", () => {
                 outputPort: { label: "PortA" },
                 links: [
                     {
-                        outputPortOperation: { name: "op1" },
+                        outputPortOperation: { label:"op1" },
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", name: "ex1" },
                         persistenceAccessors: [
@@ -462,7 +462,7 @@ test.describe("outputs.js", () => {
                 links: [
                     {
                         outputPort: { label: "P1" },
-                        outputPortOperation: { name: "op1" },
+                        outputPortOperation: { label:"op1" },
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", name: "ex1" },
                         persistenceAccessors: [
@@ -532,7 +532,7 @@ test.describe("outputs.js", () => {
                 {
                     outputPort: { label: "Port A" },
                     links: [{
-                        outputPortOperation: { name: "opA" },
+                        outputPortOperation: { label:"opA" },
                         persistenceAccessors: [{ sqlType: "SELECT", targets: ["table1"] }]
                     }]
                 }
@@ -719,7 +719,7 @@ test.describe("outputs.js", () => {
                 outputs.renderOutputsTable([
                     {
                         outputPort: { fqn: "p1" },
-                        links: [{ outputPortOperation: { name: "op1" } }]
+                        links: [{ outputPortOperation: { label:"op1" } }]
                     }
                 ]);
                 // IntersectionObserver がないので即時実行されるはず

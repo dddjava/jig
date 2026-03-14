@@ -48,8 +48,8 @@ function groupLinksByOutputPort(data) {
                 persistenceAccessors
             }];
         }).sort((a, b) => {
-            const left = a.outputPortOperation?.name ?? a.outputPortOperation?.signature ?? "";
-            const right = b.outputPortOperation?.name ?? b.outputPortOperation?.signature ?? "";
+            const left = a.outputPortOperation?.label ?? a.outputPortOperation?.signature ?? "";
+            const right = b.outputPortOperation?.label ?? b.outputPortOperation?.signature ?? "";
             return left.localeCompare(right, "ja");
         });
         return {outputPort: port, links};
@@ -211,7 +211,7 @@ function generateMermaidCode(link, mode = 'standard') {
     const builder = new MermaidBuilder();
 
     const portLabel = link.outputPort?.label || link.outputPort?.fqn || "Port";
-    const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || "Operation";
+    const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || "Operation";
     const portSubgraph = builder.startSubgraph(portLabel);
     builder.addNodeToSubgraph(portSubgraph, "PortOp", portOpName);
 
@@ -219,7 +219,7 @@ function generateMermaidCode(link, mode = 'standard') {
 
     if (mode !== 'simple') {
         const adapterLabel = link.outputAdapter?.label || link.outputAdapter?.fqn || "Adapter";
-        const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || "Execution";
+        const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || "Execution";
         const adapterSubgraph = builder.startSubgraph(adapterLabel);
         builder.addNodeToSubgraph(adapterSubgraph, "Execution", executionName);
         builder.addEdge("PortOp", "Execution");
@@ -277,7 +277,7 @@ function generatePortMermaidCode(group, mode = 'standard') {
 
     const portSubgraph = builder.startSubgraph(portLabel);
     group.links.forEach((link, index) => {
-        const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || `Operation_${index}`;
+        const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || `Operation_${index}`;
         builder.addNodeToSubgraph(portSubgraph, `PortOp_${index}`, portOpName);
     });
 
@@ -289,7 +289,7 @@ function generatePortMermaidCode(group, mode = 'standard') {
     group.links.forEach((link, linkIndex) => {
         const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
         const adapterLabel = link.outputAdapter?.label || adapterFqn;
-        const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
+        const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
         const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
 
         let lastNodeId = `PortOp_${linkIndex}`;
@@ -456,7 +456,7 @@ function renderCrudTable(grouped) {
                 children: [
                     createElement("td", {
                         className: "operation-cell",
-                        textContent: link.outputPortOperation?.name || link.outputPortOperation?.signature || ""
+                        textContent: link.outputPortOperation?.label || link.outputPortOperation?.signature || ""
                     }),
                     ...allTargets.map(target => {
                         const cell = createElement("td", {className: "crud-cell"});
@@ -566,7 +566,7 @@ function generatePersistenceMermaidCode(group) {
 
             const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
             const adapterLabel = link.outputAdapter?.label || adapterFqn;
-            const executionName = link.outputAdapterExecution?.name || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
+            const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
             const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
             const executionId = `Execution_${builder.sanitize(executionFqn)}`;
 
@@ -578,7 +578,7 @@ function generatePersistenceMermaidCode(group) {
 
             const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
             const portLabel = link.outputPort?.label || portFqn;
-            const portOpName = link.outputPortOperation?.name || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
+            const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
             const portOpFqn = link.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
             const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
 
@@ -687,7 +687,7 @@ function renderOutputsTable(grouped, mode = 'standard') {
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",
                 children: [
-                    createElement("h4", {textContent: link.outputPortOperation?.name ?? link.outputPortOperation?.signature ?? ""}),
+                    createElement("h4", {textContent: link.outputPortOperation?.label ?? link.outputPortOperation?.signature ?? ""}),
                     mermaidContainer,
                     createElement("p", {
                         className: "outputs-persistence-title",

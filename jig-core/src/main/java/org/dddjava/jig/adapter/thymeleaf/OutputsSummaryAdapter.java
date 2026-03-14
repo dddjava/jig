@@ -87,13 +87,13 @@ public class OutputsSummaryAdapter {
                 outputPort.operationStream().forEach(op -> {
                     String opFqn = op.jigMethod().fqn();
                     opList.add(Json.object("fqn", opFqn)
-                            .and("name", op.jigMethod().name())
+                            .and("label", op.jigMethod().name())
                             .and("signature", op.jigMethod().simpleMethodSignatureText()));
 
                     outputAdapter.findExecution(op).ifPresent(exec -> {
                         String execFqn = exec.jigMethod().fqn();
                         execList.add(Json.object("fqn", execFqn)
-                                .and("name", exec.jigMethod().name())
+                                .and("label", exec.jigMethod().name())
                                 .and("signature", exec.jigMethod().simpleMethodSignatureText()));
 
                         operationToExecution.add(Json.object("operation", opFqn)

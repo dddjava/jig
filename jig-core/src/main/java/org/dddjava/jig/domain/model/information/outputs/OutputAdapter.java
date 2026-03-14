@@ -21,18 +21,34 @@ public record OutputAdapter(
 ) {
 
     public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceAccessorsRepository persistenceAccessorsRepository) {
+        // アダプタ視点では実装しているインタフェースがJigTypesに含まれるのであれば区別なくポートとして扱う
+        // 通常は1件を想定するが、2件以上あっても問題ない。
+        // 0件はポート＝アダプタの実装だと考えられるが、ひとまず考慮しない。
         var outputPorts = jigType.jigTypeHeader().interfaceTypeList()
                 .stream()
                 .flatMap(jigTypeReference -> jigTypes.resolveJigType(jigTypeReference.id()).stream())
                 .map(OutputPort::new)
                 .toList();
 
-        var outputAdapterExecutions = outputPorts.stream()
-                .flatMap(outputPort -> outputPort.operationStream()
-                        .flatMap(operation -> jigType.instanceJigMethodStream()
-                                .filter(operation::matches)
-                                .map(jigMethod -> OutputAdapterExecution.from(jigMethod, operation, jigTypes, persistenceAccessorsRepository))))
+        // メソッドがPortOperationの実装であればAdapterExecutionとなる
+        var outputAdapterExecutions = jigType.instanceJigMethodStream()
+                // インタフェースの実装なのでpublicのみ（プライベートメソッドが多いクラスで無駄に検索しないように）
+                .filter(jigMethod -> jigMethod.isPublic())
+                .flatMap(jigMethod -> {
+                    // 実装しているPortOperationを収集する
+                    // 通常はないが、複数のインタフェースを同時に実装している場合もあるのでCollectionとする
+                    Collection<OutputPortOperation> outputPortOperations = outputPorts.stream()
+                            .flatMap(outputPort -> outputPort.operationStream())
+                            .filter(outputPortOperation -> outputPortOperation.matches(jigMethod))
+                            .toList();
+                    // なければAdapterExecutionではない
+                    if (outputPortOperations.isEmpty()) {
+                        return Stream.empty();
+                    }
+                    return Stream.of(OutputAdapterExecution.from(jigMethod, outputPortOperations, jigTypes, persistenceAccessorsRepository));
+                })
                 .toList();
+
         return new OutputAdapter(jigType, outputPorts, outputAdapterExecutions);
     }
 
@@ -45,7 +61,9 @@ public record OutputAdapter(
      */
     public Optional<OutputAdapterExecution> findExecution(OutputPortOperation outputPortOperation) {
         return executions.stream()
-                .filter(outputAdapterExecution -> outputAdapterExecution.outputPortOperation().equals(outputPortOperation))
+                .filter(outputAdapterExecution -> outputAdapterExecution
+                        .outputPortOperations()
+                        .stream().anyMatch(ops -> ops.equals(outputPortOperation)))
                 .findAny();
     }
 }

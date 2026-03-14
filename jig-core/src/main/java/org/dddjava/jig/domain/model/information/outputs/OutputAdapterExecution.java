@@ -18,19 +18,19 @@ import java.util.stream.Stream;
  */
 public record OutputAdapterExecution(
         JigMethod jigMethod,
-        OutputPortOperation outputPortOperation,
+        Collection<OutputPortOperation> outputPortOperations,
         Collection<JigMethod> tracingJigMethods,
         Collection<PersistenceAccessor> persistenceAccessors
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
     public static OutputAdapterExecution from(JigMethod jigMethod,
-                                              OutputPortOperation outputPortOperation,
+                                              Collection<OutputPortOperation> outputPortOperations,
                                               JigTypes jigTypes,
                                               PersistenceAccessorsRepository persistenceAccessorsRepository) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
         var persistenceAccessors = resolvePersistenceAccessors(tracingJigMethods, jigTypes, persistenceAccessorsRepository);
-        return new OutputAdapterExecution(jigMethod, outputPortOperation, tracingJigMethods, persistenceAccessors);
+        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessors);
     }
 
     public boolean uses(PersistenceAccessorId persistenceAccessorId) {

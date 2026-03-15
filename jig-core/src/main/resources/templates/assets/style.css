@@ -357,38 +357,43 @@ label {
 }
 
 .glossary .term-list-header {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
     margin-bottom: 16px;
     padding: 8px;
     border-bottom: 2px solid #3498db;
-    background-color: #fcfcfc;
-    border-radius: 8px;
-    gap: 16px;
 }
 .glossary .term-list-header h2 {
     margin: 0;
     font-size: 1.5em;
     color: #2c3e50;
-    flex-grow: 1;
 }
-.glossary .term-list-header .sorting-controls {
+.glossary .display-option {
+    padding: 12px;
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+.glossary .display-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.glossary .sorting-controls {
     display: flex;
     align-items: center;
     gap: 8px;
 }
-.glossary .term-list-header .sorting-controls label {
+.glossary .sorting-controls label {
     font-weight: bold;
     font-size: 0.9em;
     white-space: nowrap;
 }
-.glossary .term-list-header .sorting-controls select {
+.glossary .sorting-controls select {
     padding: 6px 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-.glossary .term-list-header #export-csv {
+.glossary #export-csv {
     padding: 8px 16px;
     border: 1px solid #2980b9;
     border-radius: 4px;
@@ -398,7 +403,7 @@ label {
     font-weight: bold;
     white-space: nowrap;
 }
-.glossary .term-list-header #export-csv:hover {
+.glossary #export-csv:hover {
     background-color: #2980b9;
 }
 

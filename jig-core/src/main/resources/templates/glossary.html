@@ -20,7 +20,7 @@
         </aside>
         <div class="glossary-main-content">
             <details class="controls" open>
-                <summary>⚙️ 絞り込み</summary>
+                <summary>⚙️ 表示設定</summary>
                 <div class="filter-controls">
                     <div class="search-option">
                         <div class="keyword-search">
@@ -59,27 +59,31 @@
                             説明のない用語を表示する
                         </label>
                     </div>
+                    <div class="display-option">
+                        <div class="display-controls-row">
+                            <div class="sorting-controls">
+                                <label for="sort-order">並び順</label>
+                                <select id="sort-order">
+                                    <option value="name" selected>名前</option>
+                                    <option value="fqn">完全修飾名</option>
+                                    <option value="simple">単純名</option>
+                                </select>
+                            </div>
+                            <div class="sorting-controls">
+                                <label for="display-mode-select">表示</label>
+                                <select id="display-mode-select">
+                                    <option value="full" selected>詳細表示</option>
+                                    <option value="summary">概要表示</option>
+                                </select>
+                            </div>
+                            <button id="export-csv" type="button">CSV出力</button>
+                        </div>
+                    </div>
                 </div>
             </details>
 
             <div class="term-list-header">
                 <h2>用語一覧</h2>
-                <div class="sorting-controls">
-                    <label for="sort-order">並び順</label>
-                    <select id="sort-order">
-                        <option value="name" selected>名前</option>
-                        <option value="fqn">完全修飾名</option>
-                        <option value="simple">単純名</option>
-                    </select>
-                </div>
-                <div class="sorting-controls">
-                    <label for="display-mode-select">表示</label>
-                    <select id="display-mode-select">
-                        <option value="full" selected>詳細表示</option>
-                        <option value="summary">概要表示</option>
-                    </select>
-                </div>
-                <button id="export-csv" type="button">CSV出力</button>
             </div>
 
             <section class="term-list" id="term-list"></section>

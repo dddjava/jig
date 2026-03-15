@@ -23,18 +23,7 @@ public class TableView {
     public List<Path> write(Path outputDirectory, Glossary glossary) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
-        String termsJson = glossary.list().stream()
-                .map(term -> Json.object("title", term.title())
-                        .and("simpleText", term.simpleText())
-                        .and("fqn", term.id().asText())
-                        .and("kind", term.termKind().name())
-                        .and("description", term.description())
-                        .build())
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String glossaryJson = """
-                {"terms": %s}
-                """.formatted(termsJson).trim();
+        String glossaryJson = buildJson(glossary);
 
         String fileName = jigDocumentWriter.jigDocument().fileName();
 
@@ -56,6 +45,21 @@ public class TableView {
                 "data/" + fileName + "-data.js"
         );
         return jigDocumentWriter.outputFilePaths();
+    }
+
+    public static String buildJson(Glossary glossary) {
+        String termsJson = glossary.list().stream()
+                .map(term -> Json.object("title", term.title())
+                        .and("simpleText", term.simpleText())
+                        .and("fqn", term.id().asText())
+                        .and("kind", term.termKind().name())
+                        .and("description", term.description())
+                        .build())
+                .collect(Collectors.joining(",", "[", "]"));
+
+        return """
+                {"terms": %s}
+                """.formatted(termsJson).trim();
     }
 
 }

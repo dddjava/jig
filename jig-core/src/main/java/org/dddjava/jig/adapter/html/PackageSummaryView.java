@@ -30,25 +30,7 @@ public class PackageSummaryView {
     public List<Path> write(Path outputDirectory, JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
-        String packagesJson = jigPackages.listPackage().stream()
-                .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
-                        .and("name", packageInfo.label())
-                        .and("description", packageInfo.term().description())
-                        .and("classCount", packageInfo.numberOfClasses())
-                        .build())
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String packageRelationsJson = packageRelations.listUnique().stream()
-                .map(this::formatRelationJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String typeRelationsJson = typeRelationships.list().stream()
-                .map(this::formatTypeRelationJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String packageSummaryJson = """
-                {"packages": %s, "relations": %s, "causeRelationEvidence": %s}
-                """.formatted(packagesJson, packageRelationsJson, typeRelationsJson);
+        String packageSummaryJson = buildJson(jigPackages, packageRelations, typeRelationships);
 
         String fileName = jigDocumentWriter.jigDocument().fileName();
         jigDocumentWriter.write(
@@ -70,13 +52,35 @@ public class PackageSummaryView {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String formatRelationJson(PackageRelation relation) {
+    public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
+        String packagesJson = jigPackages.listPackage().stream()
+                .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
+                        .and("name", packageInfo.label())
+                        .and("description", packageInfo.term().description())
+                        .and("classCount", packageInfo.numberOfClasses())
+                        .build())
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String packageRelationsJson = packageRelations.listUnique().stream()
+                .map(PackageSummaryView::formatRelationJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String typeRelationsJson = typeRelationships.list().stream()
+                .map(PackageSummaryView::formatTypeRelationJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        return """
+                {"packages": %s, "relations": %s, "causeRelationEvidence": %s}
+                """.formatted(packagesJson, packageRelationsJson, typeRelationsJson);
+    }
+
+    private static String formatRelationJson(PackageRelation relation) {
         return Json.object("from", relation.from().asText())
                 .and("to", relation.to().asText())
                 .build();
     }
 
-    private String formatTypeRelationJson(TypeRelationship relation) {
+    private static String formatTypeRelationJson(TypeRelationship relation) {
         return Json.object("from", relation.from().fqn())
                 .and("to", relation.to().fqn())
                 .build();

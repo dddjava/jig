@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.thymeleaf;
+package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
@@ -30,11 +30,11 @@ import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.usecases.Usecase;
 import org.dddjava.jig.domain.model.knowledge.validations.Validation;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -47,12 +47,10 @@ public class ListOutputAdapter {
     private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = Collectors.joining(", ", "[", "]");
 
     private final JigService jigService;
-    private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
 
-    public ListOutputAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public ListOutputAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
-        this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
     }
 
@@ -109,16 +107,8 @@ public class ListOutputAdapter {
                 """.formatted(packageJson, allJson, enumJson, collectionJson, validationJson, methodSmellJson, controllerJson, serviceJson, repositoryJson);
 
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-        Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label(),
-                "listJson", listJson
-        );
 
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+        jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("listData", listJson);
         return jigDocumentWriter.outputFilePaths();
     }

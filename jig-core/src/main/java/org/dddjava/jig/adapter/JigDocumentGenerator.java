@@ -74,6 +74,8 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new InsightAdapter(jigService, templateEngine, jigDocumentContext));
         compositeAdapter.register(new OutputsSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new ListOutputAdapter(jigService, templateEngine, jigDocumentContext));
+        compositeAdapter.register(new TableView(jigService, jigDocumentContext));
+        compositeAdapter.register(new PackageSummaryView(jigService, jigDocumentContext));
     }
 
     public JigResult generate(JigRepository jigRepository) {
@@ -128,22 +130,12 @@ public class JigDocumentGenerator {
             try {
                 long startTime = System.currentTimeMillis();
 
-                @SuppressWarnings("deprecation")
                 var outputFilePaths = switch (jigDocument) {
-                    case Glossary -> new TableView(jigDocument)
-                            .write(outputDirectory, jigService.glossary(jigRepository));
-                    case PackageSummary -> new PackageSummaryView(jigDocument)
-                            .write(
-                                    outputDirectory,
-                                    jigService.packages(jigRepository),
-                                    jigService.packageRelations(jigRepository),
-                                    jigService.typeRelationships(jigRepository)
-                            );
                     case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary,
                          PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                          ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList, ListOutput,
-                         OutputsSummary, Insight -> compositeAdapter.invoke(jigDocument, jigRepository);
+                         OutputsSummary, Insight, Glossary, PackageSummary -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
                 long takenTime = System.currentTimeMillis() - startTime;

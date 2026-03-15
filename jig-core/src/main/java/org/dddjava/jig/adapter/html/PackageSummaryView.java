@@ -1,19 +1,20 @@
 package org.dddjava.jig.adapter.html;
 
+import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
+import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -21,34 +22,25 @@ import java.util.stream.Collectors;
  */
 public class PackageSummaryView {
 
-    private final JigDocument jigDocument;
+    private final JigService jigService;
+    private final JigDocumentContext jigDocumentContext;
 
-    public PackageSummaryView(JigDocument jigDocument) {
-        this.jigDocument = jigDocument;
+    public PackageSummaryView(JigService jigService, JigDocumentContext jigDocumentContext) {
+        this.jigService = jigService;
+        this.jigDocumentContext = jigDocumentContext;
     }
 
-    public List<Path> write(Path outputDirectory, JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+    @HandleDocument(JigDocument.PackageSummary)
+    public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
+        var jigPackages = jigService.packages(jigRepository);
+        var packageRelations = jigService.packageRelations(jigRepository);
+        var typeRelationships = jigService.typeRelationships(jigRepository);
 
-        String packageSummaryJson = buildJson(jigPackages, packageRelations, typeRelationships);
+        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        String fileName = jigDocumentWriter.jigDocument().fileName();
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (var resource = PackageSummaryView.class.getResourceAsStream("/templates/" + fileName + ".html")) {
-                        Objects.requireNonNull(resource).transferTo(outputStream);
-                    }
-                },
-                fileName + ".html"
-        );
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-                        writer.write("globalThis.packageData = " + packageSummaryJson);
-                    }
-                },
-                "data/" + fileName + "-data.js"
-        );
+        jigDocumentWriter.writeHtmlTemplate();
+        jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations, typeRelationships));
+
         return jigDocumentWriter.outputFilePaths();
     }
 

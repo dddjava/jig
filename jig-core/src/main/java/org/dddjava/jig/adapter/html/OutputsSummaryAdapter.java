@@ -11,10 +11,11 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * 外部利用概要
@@ -39,26 +40,9 @@ public class OutputsSummaryAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        String fileName = jigDocumentWriter.jigDocument().fileName();
+        jigDocumentWriter.writeHtmlTemplate();
+        jigDocumentWriter.writeJsData("outputPortData", json);
 
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (var resource = OutputsSummaryAdapter.class.getResourceAsStream("/templates/" + fileName + ".html")) {
-                        Objects.requireNonNull(resource).transferTo(outputStream);
-                    }
-                },
-                fileName + ".html"
-        );
-
-        // JSONの書き出し
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-                        writer.write("globalThis.outputPortData = " + json);
-                    }
-                },
-                "data/" + fileName + "-data.js"
-        );
         return jigDocumentWriter.outputFilePaths();
     }
 

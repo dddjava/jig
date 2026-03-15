@@ -1,49 +1,36 @@
 package org.dddjava.jig.adapter.html;
 
+import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
+import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.JigRepository;
 
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class TableView {
 
-    private final JigDocument jigDocument;
+    private final JigService jigService;
+    private final JigDocumentContext jigDocumentContext;
 
-    public TableView(JigDocument jigDocument) {
-        this.jigDocument = jigDocument;
+    public TableView(JigService jigService, JigDocumentContext jigDocumentContext) {
+        this.jigService = jigService;
+        this.jigDocumentContext = jigDocumentContext;
     }
 
-    public List<Path> write(Path outputDirectory, Glossary glossary) {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+    @HandleDocument(JigDocument.Glossary)
+    public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
+        var glossary = jigService.glossary(jigRepository);
+        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        String glossaryJson = buildJson(glossary);
+        jigDocumentWriter.writeHtmlTemplate();
+        jigDocumentWriter.writeJsData("glossaryData", buildJson(glossary));
 
-        String fileName = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (var resource = TableView.class.getResourceAsStream("/templates/" + fileName + ".html")) {
-                        Objects.requireNonNull(resource).transferTo(outputStream);
-                    }
-                },
-                fileName + ".html"
-        );
-
-        jigDocumentWriter.write(
-                outputStream -> {
-                    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-                        writer.write("globalThis.glossaryData = " + glossaryJson);
-                    }
-                },
-                "data/" + fileName + "-data.js"
-        );
         return jigDocumentWriter.outputFilePaths();
     }
 

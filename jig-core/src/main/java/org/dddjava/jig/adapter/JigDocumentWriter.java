@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -68,6 +69,30 @@ public class JigDocumentWriter {
 
     public interface OutputStreamWriter {
         void writeTo(OutputStream outputStream) throws IOException;
+    }
+
+    public void writeHtmlTemplate() {
+        String fileName = jigDocument.fileName();
+        write(
+                outputStream -> {
+                    try (var resource = JigDocumentWriter.class.getResourceAsStream("/templates/" + fileName + ".html")) {
+                        Objects.requireNonNull(resource).transferTo(outputStream);
+                    }
+                },
+                fileName + ".html"
+        );
+    }
+
+    public void writeJsData(String variableName, String json) {
+        String fileName = jigDocument.fileName();
+        write(
+                outputStream -> {
+                    try (var writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                        writer.write("globalThis." + variableName + " = " + json);
+                    }
+                },
+                "data/" + fileName + "-data.js"
+        );
     }
 
     public JigDocument jigDocument() {

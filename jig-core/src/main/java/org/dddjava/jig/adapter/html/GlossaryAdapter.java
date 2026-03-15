@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GlossaryAdapter {
 
@@ -35,18 +34,14 @@ public class GlossaryAdapter {
     }
 
     public static String buildJson(Glossary glossary) {
-        String termsJson = glossary.list().stream()
-                .map(term -> Json.object("title", term.title())
-                        .and("simpleText", term.simpleText())
-                        .and("fqn", term.id().asText())
-                        .and("kind", term.termKind().name())
-                        .and("description", term.description())
-                        .build())
-                .collect(Collectors.joining(",", "[", "]"));
-
-        return """
-                {"terms": %s}
-                """.formatted(termsJson).trim();
+        return Json.object("terms", Json.arrayObjects(
+                glossary.list().stream()
+                        .map(term -> Json.object("title", term.title())
+                                .and("simpleText", term.simpleText())
+                                .and("fqn", term.id().asText())
+                                .and("kind", term.termKind().name())
+                                .and("description", term.description()))
+                        .toList())).build();
     }
 
 }

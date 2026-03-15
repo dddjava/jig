@@ -1,14 +1,8 @@
 function parseInsightData() {
-    const dataElement = document.getElementById("insight-data");
-    if (!dataElement) {
-        return null;
+    if (typeof insightData !== "undefined") {
+        return insightData;
     }
-    try {
-        return JSON.parse(dataElement.textContent);
-    } catch (error) {
-        console.error("Failed to parse insight JSON.", error);
-        return null;
-    }
+    return null;
 }
 
 function setInsightCount(elementId, count) {

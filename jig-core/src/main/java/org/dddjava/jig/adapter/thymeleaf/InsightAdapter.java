@@ -56,8 +56,7 @@ public class InsightAdapter {
                 """.formatted(packagesJson, typesJson, methodsJson);
 
         Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label(),
-                "insightJson", insightJson
+                "title", jigDocumentWriter.jigDocument().label()
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
@@ -65,6 +64,8 @@ public class InsightAdapter {
 
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
+        jigDocumentWriter.writeJsData("insightData", insightJson);
+
         return jigDocumentWriter.outputFilePaths();
     }
 

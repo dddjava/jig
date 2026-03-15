@@ -61,76 +61,20 @@ test.describe('insight.js', () => {
 
     test.describe('JSON読み込み', () => {
 
-        test('データ要素がない場合はnull', () => {
-
+        test('データがない場合はnull', () => {
             setupDocument();
-
-
+            global.insightData = undefined;
 
             assert.equal(insight.parseInsightData(), null);
-
         });
 
-
-
-        test('insight-dataからJSONを取得する', () => {
-
-            const doc = setupDocument();
-
-            const dataElement = new Element('script');
-
-            dataElement.textContent = JSON.stringify({packages: [{fqn: 'app'}]});
-
-            doc.elementsById.set('insight-data', dataElement);
-
-
+        test('insightDataから取得する', () => {
+            setupDocument();
+            global.insightData = {packages: [{fqn: 'app'}]};
 
             const result = insight.parseInsightData();
 
-
-
             assert.equal(result.packages[0].fqn, 'app');
-
-        });
-
-
-
-        test('不正なJSONの場合はnullを返す', () => {
-
-            const doc = setupDocument();
-
-            const dataElement = new Element('script');
-
-            dataElement.textContent = '{bad json';
-
-            doc.elementsById.set('insight-data', dataElement);
-
-
-
-            let logged = false;
-
-            const originalError = console.error;
-
-            console.error = () => {
-
-                logged = true;
-
-            };
-
-
-
-            try {
-
-                assert.equal(insight.parseInsightData(), null);
-
-                assert.equal(logged, true);
-
-            } finally {
-
-                console.error = originalError;
-
-            }
-
         });
 
     });

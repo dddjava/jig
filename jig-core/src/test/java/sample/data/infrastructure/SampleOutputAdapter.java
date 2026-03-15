@@ -1,6 +1,7 @@
-package sample.data;
+package sample.data.infrastructure;
 
 import org.springframework.stereotype.Repository;
+import sample.data.application.SampleOutputPort;
 
 /**
  * サンプルアダプタ

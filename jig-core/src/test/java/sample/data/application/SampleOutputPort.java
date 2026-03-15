@@ -1,4 +1,6 @@
-package sample.data;
+package sample.data.application;
+
+import sample.data.infrastructure.SampleEntity;
 
 /**
  * サンプルポート

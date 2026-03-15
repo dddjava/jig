@@ -122,8 +122,7 @@ public class JigDocumentGenerator {
                 .toList();
     }
 
-    // テストのために可視性を緩めている
-    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
+    private HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
         return Objects.requireNonNull(Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
             try {
                 long startTime = System.currentTimeMillis();

@@ -191,6 +191,25 @@ test.describe("domain-static.js", () => {
         const ids = new Set(cards.map(c => c.id));
         assert.ok(ids.has("com.example.service.UserService"));
         assert.ok(ids.has("com.example.repository"));
+
+        const comArticle = doc.getElementById("com");
+        assert.ok(comArticle);
+        assert.equal(collectElements(comArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example").length, 1);
+
+        const exampleArticle = doc.getElementById("com.example");
+        assert.ok(exampleArticle);
+        assert.equal(collectElements(exampleArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.service").length, 1);
+        assert.equal(collectElements(exampleArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.repository").length, 1);
+        assert.equal(collectElements(exampleArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.service.UserService").length, 0);
+
+        const serviceArticle = doc.getElementById("com.example.service");
+        assert.ok(serviceArticle);
+        assert.equal(collectElements(serviceArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.service.UserService").length, 1);
+        assert.equal(collectElements(serviceArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.repository.UserRepository").length, 0);
+
+        const repositoryArticle = doc.getElementById("com.example.repository");
+        assert.ok(repositoryArticle);
+        assert.equal(collectElements(repositoryArticle, el => el.tagName === "a" && el.getAttribute("href") === "#com.example.repository.UserRepository").length, 1);
     });
 
     test("getDomainData returns empty arrays on invalid JSON", () => {

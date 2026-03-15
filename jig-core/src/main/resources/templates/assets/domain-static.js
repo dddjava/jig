@@ -213,6 +213,58 @@ function renderPackageCard(pkg) {
     return createElement("article", { id: pkg.id ?? "", className: "outputs-port-card", children });
 }
 
+function renderChildLinksSection(title, items) {
+    if (!Array.isArray(items) || items.length === 0) return null;
+
+    return createElement("div", {
+        className: "outputs-item-list",
+        children: [
+            createElement("p", { className: "outputs-persistence-title", textContent: title }),
+            createElement("ul", {
+                className: "outputs-persistence-list",
+                children: items.map(item => {
+                    const id = item?.id ?? "";
+                    const label = item?.label ?? item?.fqn ?? item?.id ?? "";
+                    return createElement("li", {
+                        children: [
+                            createElement("a", {
+                                attributes: { href: "#" + id },
+                                textContent: label
+                            })
+                        ]
+                    });
+                })
+            })
+        ]
+    });
+}
+
+function renderPackageCardWithChildren(pkg, index, classesByPackage) {
+    const label = pkg.label ?? pkg.fqn ?? pkg.id ?? "";
+    const fqn = pkg.fqn ?? pkg.id ?? "";
+    const description = pkg.description ?? "";
+    const pkgId = pkg.id ?? "";
+
+    const children = [
+        createElement("h3", { textContent: label }),
+        createElement("p", { className: "fully-qualified-name", textContent: fqn }),
+    ];
+    if (description) {
+        children.push(createElement("p", { className: "weak", textContent: description }));
+    }
+
+    const childPackages = index?.childrenByParent?.get(pkgId) || [];
+    const childClasses = classesByPackage?.get(pkgId) || [];
+
+    const childPackagesSection = renderChildLinksSection("直下のパッケージ", childPackages);
+    if (childPackagesSection) children.push(childPackagesSection);
+
+    const childClassesSection = renderChildLinksSection("直下のクラス", childClasses);
+    if (childClassesSection) children.push(childClassesSection);
+
+    return createElement("article", { id: pkgId, className: "outputs-port-card", children });
+}
+
 function renderClassMemberSection(title, members, renderMember) {
     if (!Array.isArray(members) || members.length === 0) return null;
     return createElement("div", {
@@ -302,10 +354,13 @@ function renderMain(container, data) {
         return;
     }
 
+    const index = buildPackageIndex(packages);
+    const classesByPackage = groupClassesByPackage(classes);
+
     packages
         .slice()
         .sort((a, b) => (a.fqn ?? a.id ?? "").localeCompare((b.fqn ?? b.id ?? ""), "ja"))
-        .forEach(pkg => container.appendChild(renderPackageCard(pkg)));
+        .forEach(pkg => container.appendChild(renderPackageCardWithChildren(pkg, index, classesByPackage)));
 
     classes
         .slice()

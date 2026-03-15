@@ -56,6 +56,16 @@ public class ListOutputAdapter {
 
     @HandleDocument(JigDocument.ListOutput)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
+
+        String listJson = buildJson(repository, jigService, jigDocumentContext);
+
+        jigDocumentWriter.writeHtmlTemplate();
+        jigDocumentWriter.writeJsData("listData", listJson);
+        return jigDocumentWriter.outputFilePaths();
+    }
+
+    public static String buildJson(JigRepository repository, JigService jigService, JigDocumentContext jigDocumentContext) {
         InputAdapters inputAdapters = jigService.inputAdapters(repository);
         ServiceAngles serviceAngles = jigService.serviceAngles(repository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(repository);
@@ -75,16 +85,16 @@ public class ListOutputAdapter {
                 .sorted(Comparator.comparing(JigPackage::packageId))
                 .toList();
         String controllerJson = inputAdapters.listEntrypoint().stream()
-                .map(this::formatControllerJson)
+                .map(ListOutputAdapter::formatControllerJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String serviceJson = serviceAngles.list().stream()
-                .map(this::formatServiceJson)
+                .map(usecase -> formatServiceJson(usecase, jigDocumentContext))
                 .collect(Collectors.joining(",", "[", "]"));
         String repositoryJson = datasourceAngles.list().stream()
-                .map(this::formatRepositoryJson)
+                .map(datasourceAngle -> formatRepositoryJson(datasourceAngle, jigDocumentContext))
                 .collect(Collectors.joining(",", "[", "]"));
         String packageJson = jigTypePackages.stream()
-                .map(this::formatBusinessPackageJson)
+                .map(ListOutputAdapter::formatBusinessPackageJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String allJson = coreDomainJigTypes.list().stream()
                 .map(jigType -> formatBusinessAllJson(jigType, coreTypesAndRelations, allClassRelations))
@@ -96,24 +106,18 @@ public class ListOutputAdapter {
                 .map(jigType -> formatBusinessCollectionJson(jigType, allClassRelations))
                 .collect(Collectors.joining(",", "[", "]"));
         String validationJson = Validations.from(jigTypes).list().stream()
-                .map(this::formatBusinessValidationJson)
+                .map(validation -> formatBusinessValidationJson(validation, jigDocumentContext))
                 .collect(Collectors.joining(",", "[", "]"));
         String methodSmellJson = methodSmells.list().stream()
-                .map(this::formatBusinessMethodSmellJson)
+                .map(ListOutputAdapter::formatBusinessMethodSmellJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
-        String listJson = """
+        return """
                 {"businessRules": {"packages": %s, "all": %s, "enums": %s, "collections": %s, "validations": %s, "methodSmells": %s}, "applications": {"controllers": %s, "services": %s, "repositories": %s}}
                 """.formatted(packageJson, allJson, enumJson, collectionJson, validationJson, methodSmellJson, controllerJson, serviceJson, repositoryJson);
-
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-
-        jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("listData", listJson);
-        return jigDocumentWriter.outputFilePaths();
     }
 
-    private String formatControllerJson(Entrypoint entrypoint) {
+    private static String formatControllerJson(Entrypoint entrypoint) {
         List<String> usingFieldTypes = entrypoint.jigMethod().usingFields().jigFieldIds().stream()
                 .map(JigFieldId::declaringTypeId)
                 .map(TypeId::asSimpleText)
@@ -130,7 +134,7 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatServiceJson(Usecase usecase) {
+    private static String formatServiceJson(Usecase usecase, JigDocumentContext jigDocumentContext) {
         List<String> usingFieldTypes = usecase.usingFields().jigFieldIds().stream()
                 .map(JigFieldId::declaringTypeId)
                 .map(TypeId::asSimpleText)
@@ -165,7 +169,7 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatRepositoryJson(DatasourceAngle datasourceAngle) {
+    private static String formatRepositoryJson(DatasourceAngle datasourceAngle, JigDocumentContext jigDocumentContext) {
         List<String> parameterTypeLabels = datasourceAngle.methodParameterTypeStream()
                 .map(JigTypeReference::id)
                 .map(jigDocumentContext::typeTerm)
@@ -188,14 +192,14 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatBusinessPackageJson(JigPackage jigPackage) {
+    private static String formatBusinessPackageJson(JigPackage jigPackage) {
         return Json.object("packageName", jigPackage.packageId().asText())
                 .and("packageLabel", jigPackage.term().title())
                 .and("classCount", jigPackage.jigTypes().size())
                 .build();
     }
 
-    private String formatBusinessAllJson(JigType jigType, CoreTypesAndRelations coreTypesAndRelations, TypeRelationships allClassRelations) {
+    private static String formatBusinessAllJson(JigType jigType, CoreTypesAndRelations coreTypesAndRelations, TypeRelationships allClassRelations) {
         boolean samePackageOnly = allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).packageIds().values()
                 .equals(Set.of(jigType.packageId()));
         return Json.object("packageName", jigType.packageId().asText())
@@ -211,7 +215,7 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatBusinessEnumJson(JigType jigType, TypeRelationships allClassRelations) {
+    private static String formatBusinessEnumJson(JigType jigType, TypeRelationships allClassRelations) {
         String constants = jigType.jigTypeMembers().enumConstantStream()
                 .map(jigField -> jigField.jigFieldHeader().name())
                 .collect(STREAM_COLLECTOR);
@@ -231,7 +235,7 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatBusinessCollectionJson(JigType jigType, TypeRelationships allClassRelations) {
+    private static String formatBusinessCollectionJson(JigType jigType, TypeRelationships allClassRelations) {
         List<String> fieldTypeList = jigType.jigTypeMembers().instanceFields().stream()
                 .map(jigField -> jigField.jigTypeReference().simpleNameWithGenerics())
                 .toList();
@@ -252,7 +256,7 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatBusinessValidationJson(Validation validation) {
+    private static String formatBusinessValidationJson(Validation validation, JigDocumentContext jigDocumentContext) {
         return Json.object("packageName", validation.typeId().packageId().asText())
                 .and("typeName", validation.typeId().asSimpleText())
                 .and("typeLabel", jigDocumentContext.typeTerm(validation.typeId()).title())
@@ -263,7 +267,7 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private String formatBusinessMethodSmellJson(MethodSmell methodSmell) {
+    private static String formatBusinessMethodSmellJson(MethodSmell methodSmell) {
         return Json.object("packageName", methodSmell.method().declaringType().packageId().asText())
                 .and("typeName", methodSmell.method().declaringType().asSimpleText())
                 .and("methodSignature", methodSmell.method().simpleMethodSignatureText())

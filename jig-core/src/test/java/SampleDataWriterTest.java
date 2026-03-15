@@ -1,4 +1,6 @@
 import org.dddjava.jig.adapter.html.GlossaryAdapter;
+import org.dddjava.jig.adapter.html.InsightAdapter;
+import org.dddjava.jig.adapter.html.ListOutputAdapter;
 import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
 import org.dddjava.jig.adapter.html.PackageSummaryAdapter;
 import org.dddjava.jig.application.JigService;
@@ -69,6 +71,27 @@ class SampleDataWriterTest {
                 "// 表示確認用のサンプルデータ\n" +
                 "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
                 "globalThis.packageData = " + json + "\n");
+        }
+
+        // insight-data.js
+        {
+            var insights = jigService.insights(repository);
+            var json = InsightAdapter.buildJson(insights);
+            Path sampleFile = Path.of("src/main/resources/templates/data/insight-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.insightData = " + json + "\n");
+        }
+
+        // list-output-data.js
+        {
+            var json = ListOutputAdapter.buildJson(repository, jigService, configuration.jigDocumentContext());
+            Path sampleFile = Path.of("src/main/resources/templates/data/list-output-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.listData = " + json + "\n");
         }
     }
 }

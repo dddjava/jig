@@ -33,21 +33,7 @@ public class InsightAdapter {
         Insights result = jigService.insights(repository);
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        String packagesJson = result.packageInsightList().stream()
-                .map(this::formatPackageJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String typesJson = result.typeInsightList().stream()
-                .map(this::formatTypeJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String methodsJson = result.methodInsightList().stream()
-                .map(this::formatMethodJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String insightJson = """
-                {"packages": %s, "types": %s, "methods": %s}
-                """.formatted(packagesJson, typesJson, methodsJson);
+        String insightJson = buildJson(result);
 
         jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("insightData", insightJson);
@@ -55,7 +41,25 @@ public class InsightAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String formatPackageJson(PackageInsight insight) {
+    public static String buildJson(Insights result) {
+        String packagesJson = result.packageInsightList().stream()
+                .map(InsightAdapter::formatPackageJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String typesJson = result.typeInsightList().stream()
+                .map(InsightAdapter::formatTypeJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        String methodsJson = result.methodInsightList().stream()
+                .map(InsightAdapter::formatMethodJson)
+                .collect(Collectors.joining(",", "[", "]"));
+
+        return """
+                {"packages": %s, "types": %s, "methods": %s}
+                """.formatted(packagesJson, typesJson, methodsJson);
+    }
+
+    private static String formatPackageJson(PackageInsight insight) {
         return Json.object("fqn", insight.fqn())
                 .and("label", insight.label())
                 .and("numberOfTypes", insight.numberOfTypes())
@@ -66,7 +70,7 @@ public class InsightAdapter {
                 .build();
     }
 
-    private String formatTypeJson(TypeInsight insight) {
+    private static String formatTypeJson(TypeInsight insight) {
         return Json.object("fqn", insight.fqn())
                 .and("label", insight.label())
                 .and("numberOfMethods", insight.numberOfMethods())
@@ -77,7 +81,7 @@ public class InsightAdapter {
                 .build();
     }
 
-    private String formatMethodJson(MethodInsight insight) {
+    private static String formatMethodJson(MethodInsight insight) {
         return Json.object("fqn", insight.fqn())
                 .and("label", insight.label())
                 .and("cyclomaticComplexity", insight.cyclomaticComplexity())

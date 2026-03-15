@@ -46,12 +46,10 @@ public class JigDocumentGenerator {
     private final Path outputDirectory;
 
     private final TemplateEngine thymeleafTemplateEngine;
-    private final JigService jigService;
 
     private final CompositeAdapter compositeAdapter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
-        this.jigService = jigService;
         this.diagramOption = jigDocumentContext.diagramOption();
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();

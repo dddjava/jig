@@ -50,7 +50,6 @@ Do not modify code without creating a branch and commit.
 - Limit all changes to this repository.
 - Do not edit generated files or directories such as:
   - `build/`
-  - `coverage/`
   - `node_modules/`
   - `dist/`
 

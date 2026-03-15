@@ -1,5 +1,6 @@
 package sample.data.infrastructure.order;
 
+import org.springframework.stereotype.Repository;
 import sample.data.application.order.OrderRepository;
 import sample.data.domain.order.Order;
 import sample.data.domain.order.OrderId;
@@ -7,6 +8,7 @@ import sample.data.domain.order.OrderId;
 /**
  * 受注データソース
  */
+@Repository
 public class OrderDataSource implements OrderRepository {
     OrderEntityAccessor orderEntityAccessor;
 

@@ -1,5 +1,6 @@
 package sample.data.infrastructure.product;
 
+import org.springframework.stereotype.Repository;
 import sample.data.application.order.ProductRepository;
 import sample.data.domain.product.Product;
 import sample.data.domain.product.ProductId;
@@ -7,6 +8,7 @@ import sample.data.domain.product.ProductId;
 /**
  * 商品データソース
  */
+@Repository
 public class ProductDataSource implements ProductRepository {
     ProductEntityAccessor productEntityAccessor;
 

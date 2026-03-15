@@ -1,6 +1,6 @@
-package sample.data.infrastructure;
+package sample.data.infrastructure.order;
 
-import sample.data.application.OrderRepository;
+import sample.data.application.order.OrderRepository;
 import sample.data.domain.order.Order;
 import sample.data.domain.order.OrderId;
 

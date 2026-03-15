@@ -1,6 +1,6 @@
-package sample.data.infrastructure;
+package sample.data.infrastructure.product;
 
-import sample.data.application.ProductRepository;
+import sample.data.application.order.ProductRepository;
 import sample.data.domain.product.Product;
 import sample.data.domain.product.ProductId;
 

@@ -1,6 +1,4 @@
-package sample.data.infrastructure;
-
-import sample.data.domain.order.OrderId;
+package sample.data.infrastructure.order;
 
 /**
  * 受注エンティティ（DB用）

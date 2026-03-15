@@ -1,4 +1,4 @@
-package sample.data.infrastructure;
+package sample.data.infrastructure.product;
 
 /**
  * 商品エンティティ（DB用）

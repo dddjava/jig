@@ -1,4 +1,4 @@
-package sample.data.application;
+package sample.data.application.order;
 
 import sample.data.domain.order.Order;
 import sample.data.domain.order.OrderId;

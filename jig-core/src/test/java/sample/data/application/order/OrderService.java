@@ -1,7 +1,10 @@
-package sample.data.application;
+package sample.data.application.order;
 
 import sample.data.domain.customer.Customer;
-import sample.data.domain.order.*;
+import sample.data.domain.order.Order;
+import sample.data.domain.order.OrderId;
+import sample.data.domain.order.OrderItem;
+import sample.data.domain.order.Quantity;
 import sample.data.domain.product.Product;
 import sample.data.domain.product.ProductId;
 

@@ -1,4 +1,4 @@
-package sample.data.infrastructure;
+package sample.data.infrastructure.order;
 
 import org.springframework.data.repository.CrudRepository;
 

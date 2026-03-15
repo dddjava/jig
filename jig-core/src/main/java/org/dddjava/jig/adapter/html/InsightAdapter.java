@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.thymeleaf;
+package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
@@ -11,13 +11,9 @@ import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 import org.dddjava.jig.domain.model.knowledge.insight.PackageInsight;
 import org.dddjava.jig.domain.model.knowledge.insight.TypeInsight;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -25,12 +21,10 @@ import java.util.stream.Collectors;
 public class InsightAdapter {
 
     private final JigService jigService;
-    private final TemplateEngine templateEngine;
     private final JigDocumentContext jigDocumentContext;
 
-    public InsightAdapter(JigService jigService, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public InsightAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
-        this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
     }
 
@@ -55,15 +49,7 @@ public class InsightAdapter {
                 {"packages": %s, "types": %s, "methods": %s}
                 """.formatted(packagesJson, typesJson, methodsJson);
 
-        Map<String, Object> contextMap = Map.of(
-                "title", jigDocumentWriter.jigDocument().label()
-        );
-
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+        jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("insightData", insightJson);
 
         return jigDocumentWriter.outputFilePaths();

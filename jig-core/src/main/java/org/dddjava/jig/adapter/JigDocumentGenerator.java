@@ -6,6 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
 import org.dddjava.jig.adapter.html.GlossaryAdapter;
+import org.dddjava.jig.adapter.html.InsightAdapter;
 import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
 import org.dddjava.jig.adapter.html.PackageSummaryAdapter;
 import org.dddjava.jig.adapter.poi.ListAdapter;
@@ -69,7 +70,7 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext)));
         compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
         compositeAdapter.register(new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext)));
-        compositeAdapter.register(new InsightAdapter(jigService, templateEngine, jigDocumentContext));
+        compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new OutputsSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new ListOutputAdapter(jigService, templateEngine, jigDocumentContext));
         compositeAdapter.register(new GlossaryAdapter(jigService, jigDocumentContext));

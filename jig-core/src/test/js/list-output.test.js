@@ -341,18 +341,16 @@ test.describe('list-output.js', () => {
 
         test.describe('データ読み込み', () => {
             test.describe('getListData', () => {
-                test('list-dataから一覧を取得する', () => {
-                    const doc = setupDocument();
-                    const dataElement = new Element('script');
-                    dataElement.textContent = JSON.stringify({
+                test('listDataから一覧を取得する', () => {
+                    setupDocument();
+                    global.listData = {
                         applications: {
                             controllers: [{typeName: 'ExampleController'}],
                         },
                         businessRules: {
                             packages: [{packageName: 'com.example'}],
                         },
-                    });
-                    doc.elementsById.set('list-data', dataElement);
+                    };
     
                     const data = listOutput.getListData();
     
@@ -361,11 +359,9 @@ test.describe('list-output.js', () => {
                     assert.equal(data.businessRules.packages.length, 1);
                 });
     
-                test('list-dataが配列の場合はcontrollerとして扱う', () => {
-                    const doc = setupDocument();
-                    const dataElement = new Element('script');
-                    dataElement.textContent = JSON.stringify([{typeName: 'ArrayController'}]);
-                    doc.elementsById.set('list-data', dataElement);
+                test('listDataが配列の場合はcontrollerとして扱う', () => {
+                    setupDocument();
+                    global.listData = [{typeName: 'ArrayController'}];
     
                     const data = listOutput.getListData();
     
@@ -374,11 +370,9 @@ test.describe('list-output.js', () => {
                     assert.equal(data.businessRules.all.length, 0);
                 });
     
-                test('list-dataが空の場合は空の各種一覧を返す', () => {
-                    const doc = setupDocument();
-                    const dataElement = new Element('script');
-                    dataElement.textContent = JSON.stringify({});
-                    doc.elementsById.set('list-data', dataElement);
+                test('listDataが空の場合は空の各種一覧を返す', () => {
+                    setupDocument();
+                    global.listData = {};
     
                     const data = listOutput.getListData();
     

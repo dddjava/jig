@@ -1,21 +1,5 @@
 function getListData() {
-    const jsonText = document.getElementById("list-data")?.textContent || "{}";
-    /** @type {{
-     * businessRules?: {
-     * packages?: Array<{packageName: string, packageLabel: string, classCount: number}>,
-     * all?: Array<{packageName: string, typeName: string, typeLabel: string, businessRuleKind: string, incomingBusinessRuleCount: number, outgoingBusinessRuleCount: number, incomingClassCount: number, nonPublic: boolean, samePackageOnly: boolean, incomingClassList: string}>,
-     * enums?: Array<{packageName: string, typeName: string, typeLabel: string, constants: string, fields: string, usageCount: number, usagePlaces: string, hasParameters: boolean, hasBehavior: boolean, isPolymorphic: boolean}>,
-     * collections?: Array<{packageName: string, typeName: string, typeLabel: string, fieldTypes: string, usageCount: number, usagePlaces: string, methodCount: number, methods: string}>,
-     * validations?: Array<{packageName: string, typeName: string, typeLabel: string, memberName: string, memberType: string, annotationType: string, annotationDescription: string}>,
-     * methodSmells?: Array<{packageName: string, typeName: string, methodSignature: string, returnType: string, typeLabel: string, notUseMember: boolean, primitiveInterface: boolean, referenceNull: boolean, nullDecision: boolean, returnsBoolean: boolean, returnsVoid: boolean}>
-     * },
-     * applications?: {
-     * controllers?: Array<{packageName: string, typeName: string, methodSignature: string, returnType: string, typeLabel: string, usingFieldTypes: string[], cyclomaticComplexity: number, path: string}>,
-     * services?: Array<{packageName: string, typeName: string, methodSignature: string, returnType: string, eventHandler: boolean, typeLabel: string, methodLabel: string, returnTypeLabel: string, parameterTypeLabels: string[], usingFieldTypes: string[], cyclomaticComplexity: number, usingServiceMethods: string[], usingRepositoryMethods: string[], useNull: boolean, useStream: boolean}>,
-     * repositories?: Array<{packageName: string, typeName: string, methodSignature: string, returnType: string, typeLabel: string, returnTypeLabel: string, parameterTypeLabels: string[], cyclomaticComplexity: number, insertTables: string[], selectTables: string[], updateTables: string[], deleteTables: string[], callerTypeCount: number, callerMethodCount: number}>
-     * }
-     * } | Array<{packageName: string, typeName: string, methodSignature: string, returnType: string, typeLabel: string, usingFieldTypes: string[], cyclomaticComplexity: number, path: string}> */
-    const listData = JSON.parse(jsonText);
+    const listData = globalThis.listData || {};
     const emptyBusinessRules = {
         packages: [],
         all: [],

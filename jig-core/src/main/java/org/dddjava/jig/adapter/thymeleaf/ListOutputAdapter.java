@@ -119,6 +119,7 @@ public class ListOutputAdapter {
 
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
+        jigDocumentWriter.writeJsData("listData", listJson);
         return jigDocumentWriter.outputFilePaths();
     }
 

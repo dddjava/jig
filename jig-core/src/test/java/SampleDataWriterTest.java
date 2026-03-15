@@ -1,6 +1,6 @@
+import org.dddjava.jig.adapter.html.GlossaryAdapter;
 import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
-import org.dddjava.jig.adapter.html.PackageSummaryView;
-import org.dddjava.jig.adapter.html.TableView;
+import org.dddjava.jig.adapter.html.PackageSummaryAdapter;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
@@ -50,7 +50,7 @@ class SampleDataWriterTest {
         // glossary-data.js
         {
             var glossary = jigService.glossary(repository);
-            var json = TableView.buildJson(glossary);
+            var json = GlossaryAdapter.buildJson(glossary);
             Path sampleFile = Path.of("src/main/resources/templates/data/glossary-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -63,7 +63,7 @@ class SampleDataWriterTest {
             var jigPackages = jigService.packages(repository);
             var packageRelations = jigService.packageRelations(repository);
             var typeRelationships = jigService.typeRelationships(repository);
-            var json = PackageSummaryView.buildJson(jigPackages, packageRelations, typeRelationships);
+            var json = PackageSummaryAdapter.buildJson(jigPackages, packageRelations, typeRelationships);
             Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +

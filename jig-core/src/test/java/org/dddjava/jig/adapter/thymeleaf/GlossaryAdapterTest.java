@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.adapter.html.TableView;
+import org.dddjava.jig.adapter.html.GlossaryAdapter;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
@@ -12,7 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class TableViewTest {
+class GlossaryAdapterTest {
 
     @Test
     void 用語集JSONはHTMLではなくglossaryDataとしてJSに書き出す() {
@@ -20,7 +20,7 @@ class TableViewTest {
                 new Term(new TermId("app.Account"), "Account", "desc", TermKind.クラス)
         ));
 
-        String js = "globalThis.glossaryData = " + TableView.buildJson(glossary);
+        String js = "globalThis.glossaryData = " + GlossaryAdapter.buildJson(glossary);
 
         assertTrue(js.contains("globalThis.glossaryData = "));
         assertTrue(js.contains("\"terms\""));

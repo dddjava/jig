@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 /**
  * パッケージ概要
  */
-public class PackageSummaryView {
+public class PackageSummaryAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public PackageSummaryView(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public PackageSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
@@ -54,11 +54,11 @@ public class PackageSummaryView {
                 .collect(Collectors.joining(",", "[", "]"));
 
         String packageRelationsJson = packageRelations.listUnique().stream()
-                .map(PackageSummaryView::formatRelationJson)
+                .map(PackageSummaryAdapter::formatRelationJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
         String typeRelationsJson = typeRelationships.list().stream()
-                .map(PackageSummaryView::formatTypeRelationJson)
+                .map(PackageSummaryAdapter::formatTypeRelationJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
         return """

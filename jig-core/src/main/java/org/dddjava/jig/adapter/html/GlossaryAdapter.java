@@ -13,12 +13,12 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TableView {
+public class GlossaryAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public TableView(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public GlossaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }

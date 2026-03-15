@@ -5,9 +5,9 @@ import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
 import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
+import org.dddjava.jig.adapter.html.GlossaryAdapter;
 import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
-import org.dddjava.jig.adapter.html.PackageSummaryView;
-import org.dddjava.jig.adapter.html.TableView;
+import org.dddjava.jig.adapter.html.PackageSummaryAdapter;
 import org.dddjava.jig.adapter.poi.ListAdapter;
 import org.dddjava.jig.adapter.thymeleaf.*;
 import org.dddjava.jig.adapter.thymeleaf.dialect.JigDialect;
@@ -74,8 +74,8 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new InsightAdapter(jigService, templateEngine, jigDocumentContext));
         compositeAdapter.register(new OutputsSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new ListOutputAdapter(jigService, templateEngine, jigDocumentContext));
-        compositeAdapter.register(new TableView(jigService, jigDocumentContext));
-        compositeAdapter.register(new PackageSummaryView(jigService, jigDocumentContext));
+        compositeAdapter.register(new GlossaryAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new PackageSummaryAdapter(jigService, jigDocumentContext));
     }
 
     public JigResult generate(JigRepository jigRepository) {

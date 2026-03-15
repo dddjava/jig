@@ -7,15 +7,12 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * パッケージ概要
@@ -45,36 +42,20 @@ public class PackageSummaryAdapter {
     }
 
     public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
-        String packagesJson = jigPackages.listPackage().stream()
-                .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
-                        .and("name", packageInfo.label())
-                        .and("description", packageInfo.term().description())
-                        .and("classCount", packageInfo.numberOfClasses())
-                        .build())
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String packageRelationsJson = packageRelations.listUnique().stream()
-                .map(PackageSummaryAdapter::formatRelationJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        String typeRelationsJson = typeRelationships.list().stream()
-                .map(PackageSummaryAdapter::formatTypeRelationJson)
-                .collect(Collectors.joining(",", "[", "]"));
-
-        return """
-                {"packages": %s, "relations": %s, "causeRelationEvidence": %s}
-                """.formatted(packagesJson, packageRelationsJson, typeRelationsJson);
-    }
-
-    private static String formatRelationJson(PackageRelation relation) {
-        return Json.object("from", relation.from().asText())
-                .and("to", relation.to().asText())
-                .build();
-    }
-
-    private static String formatTypeRelationJson(TypeRelationship relation) {
-        return Json.object("from", relation.from().fqn())
-                .and("to", relation.to().fqn())
-                .build();
+        return Json.object("packages", Json.arrayObjects(jigPackages.listPackage().stream()
+                        .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
+                                .and("name", packageInfo.label())
+                                .and("description", packageInfo.term().description())
+                                .and("classCount", packageInfo.numberOfClasses()))
+                        .toList()))
+                .and("relations", Json.arrayObjects(packageRelations.listUnique().stream()
+                        .map(relation -> Json.object("from", relation.from().asText())
+                                .and("to", relation.to().asText()))
+                        .toList()))
+                .and("causeRelationEvidence", Json.arrayObjects(typeRelationships.list().stream()
+                        .map(relation -> Json.object("from", relation.from().fqn())
+                                .and("to", relation.to().fqn()))
+                        .toList())
+                ).build();
     }
 }

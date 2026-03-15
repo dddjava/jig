@@ -810,12 +810,13 @@ table td.number {
     display: flex;
     gap: 20px;
     align-items: flex-start;
+    padding-top: 16px;
 }
 .outputs .outputs-sidebar {
     max-width: 260px;
     min-width: 260px;
     position: sticky;
-    top: 60px;
+    top: calc(2em + 16px);
     max-height: calc(100vh - 90px);
 }
 .outputs .outputs-list {

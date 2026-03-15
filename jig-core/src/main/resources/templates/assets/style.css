@@ -356,16 +356,6 @@ label {
     border-radius: 4px;
 }
 
-.glossary .term-list-header {
-    margin-bottom: 16px;
-    padding: 8px;
-    border-bottom: 2px solid #3498db;
-}
-.glossary .term-list-header h2 {
-    margin: 0;
-    font-size: 1.5em;
-    color: #2c3e50;
-}
 .glossary .display-option {
     padding: 12px;
     border: 1px solid #eee;

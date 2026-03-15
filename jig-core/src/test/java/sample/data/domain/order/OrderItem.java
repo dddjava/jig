@@ -6,15 +6,7 @@ import sample.data.domain.product.Price;
 /**
  * 受注明細
  */
-public class OrderItem {
-    Product product;
-    Quantity quantity;
-
-    public OrderItem(Product product, Quantity quantity) {
-        this.product = product;
-        this.quantity = quantity;
-    }
-
+public record OrderItem(Product product, Quantity quantity) {
     public Price subtotal() {
         return product.price().multiply(quantity.value());
     }

@@ -103,6 +103,9 @@ main table thead {
     top: 16px;
     align-self: start;
     max-height: calc(100vh - 32px);
+    max-width: 20vw;
+    overflow: auto;
+    flex-shrink: 0;
 }
 .sideNavMain > main {
     flex-grow: 1;
@@ -159,6 +162,7 @@ main table thead {
     .sideNavMain > nav {
         position: static;
         width: 100%;
+        max-width: none;
         max-height: none;
     }
     .sideNavMain > main {

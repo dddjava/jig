@@ -1,4 +1,6 @@
 import org.dddjava.jig.adapter.html.OutputsSummaryAdapter;
+import org.dddjava.jig.adapter.html.PackageSummaryView;
+import org.dddjava.jig.adapter.html.TableView;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
@@ -35,12 +37,38 @@ class SampleDataWriterTest {
         var persistenceAccessorsRepository = repository.jigDataProvider().persistenceAccessorsRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, persistenceAccessorsRepository);
 
-        var json = OutputsSummaryAdapter.buildJson(outputAdapters);
+        // outputs-data.js
+        {
+            var json = OutputsSummaryAdapter.buildJson(outputAdapters);
+            Path sampleFile = Path.of("src/main/resources/templates/data/outputs-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.outputPortData = " + json + "\n");
+        }
 
-        Path sampleFile = Path.of("src/main/resources/templates/data/outputs-data.js");
-        Files.writeString(sampleFile,
-            "// 表示確認用のサンプルデータ\n" +
-            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-            "globalThis.outputPortData = " + json + "\n");
+        // glossary-data.js
+        {
+            var glossary = jigService.glossary(repository);
+            var json = TableView.buildJson(glossary);
+            Path sampleFile = Path.of("src/main/resources/templates/data/glossary-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.glossaryData = " + json + "\n");
+        }
+
+        // package-data.js
+        {
+            var jigPackages = jigService.packages(repository);
+            var packageRelations = jigService.packageRelations(repository);
+            var typeRelationships = jigService.typeRelationships(repository);
+            var json = PackageSummaryView.buildJson(jigPackages, packageRelations, typeRelationships);
+            Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.packageData = " + json + "\n");
+        }
     }
 }

@@ -118,11 +118,11 @@ public class JigDocumentGenerator {
     private List<HandleResult> generateDocuments(JigRepository jigRepository) {
         return jigDocuments
                 .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigRepository))
+                .map(jigDocument -> generateDocument(jigDocument, jigRepository))
                 .toList();
     }
 
-    private HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigRepository jigRepository) {
+    private HandleResult generateDocument(JigDocument jigDocument, JigRepository jigRepository) {
         return Objects.requireNonNull(Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
             try {
                 long startTime = System.currentTimeMillis();

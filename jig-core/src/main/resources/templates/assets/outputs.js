@@ -759,7 +759,10 @@ const OutputsApp = {
 
     setState(newState) {
         this.state = {...this.state, ...newState};
-        this.render();
+        this.renderTabs();
+        if ('visibility' in newState) {
+            this.renderPanels();
+        }
     },
 
     bindEvents() {
@@ -799,18 +802,23 @@ const OutputsApp = {
     },
 
     render() {
-        const {visibility, activeTab, data, grouped, persistenceGrouped} = this.state;
-        if (!data) return;
+        this.renderTabs();
+        this.renderPanels();
+    },
 
-        // タブの表示切り替え
+    renderTabs() {
+        const {activeTab} = this.state;
         document.querySelectorAll('.outputs-tabs .tab-button').forEach(btn => {
             btn.classList.toggle('is-active', btn.getAttribute('data-tab') === activeTab);
         });
         document.querySelectorAll('.outputs-tab-panel').forEach(panel => {
             panel.classList.toggle('is-active', panel.id === `${activeTab}-tab-panel`);
         });
+    },
 
-        // 各パネルの描画
+    renderPanels() {
+        const {visibility, data, grouped, persistenceGrouped} = this.state;
+        if (!data) return;
         renderPersistenceList(persistenceGrouped, visibility);
         renderOutputsList(grouped, visibility);
         renderCrudTable(grouped, visibility);

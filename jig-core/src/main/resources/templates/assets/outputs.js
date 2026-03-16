@@ -273,15 +273,7 @@ function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
         }
 
         if (visibility.target) {
-            op.targets?.forEach((target) => {
-                if (!targetNodes.has(target)) {
-                    const targetId = `Target_${targetNodes.size}`;
-                    targetNodes.set(target, targetId);
-                    builder.addNode(targetId, target, '[($LABEL)]');
-                }
-                const targetId = targetNodes.get(target);
-                if (currentLastNode) builder.addEdge(currentLastNode, targetId, sqlType);
-            });
+            addTargetEdges(builder, currentLastNode, op.targets, targetNodes, sqlType);
         }
     });
 
@@ -383,15 +375,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
             }
 
             if (visibility.target) {
-                op.targets?.forEach((target) => {
-                    if (!targetNodes.has(target)) {
-                        const targetId = `Target_${targetNodes.size}`;
-                        targetNodes.set(target, targetId);
-                        builder.addNode(targetId, target, '[($LABEL)]');
-                    }
-                    const targetId = targetNodes.get(target);
-                    if (currentLastNodeId) builder.addEdge(currentLastNodeId, targetId, sqlType);
-                });
+                addTargetEdges(builder, currentLastNodeId, op.targets, targetNodes, sqlType);
             }
         });
     });
@@ -426,6 +410,16 @@ function isCrudVisible(sqlType, visibility) {
         case 'DELETE': return visibility.crudDelete !== false;
         default: return true;
     }
+}
+
+function addTargetEdges(builder, sourceNodeId, targets, targetNodes, sqlType) {
+    targets?.forEach(target => {
+        if (!targetNodes.has(target)) {
+            targetNodes.set(target, `Target_${targetNodes.size}`);
+            builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
+        }
+        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
+    });
 }
 
 function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {

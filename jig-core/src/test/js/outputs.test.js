@@ -382,9 +382,9 @@ test.describe("outputs.js", () => {
         test("generateOperationMermaidCode: standard相当のvisibilityで正しい接続関係を生成する", () => {
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
-                outputPortOperation: { label:"op1" },
-                outputAdapter: { label: "A1" },
-                outputAdapterExecution: { label:"ex1" },
+                outputPortOperation: { fqn: "P1.op1", label:"op1" },
+                outputAdapter: { fqn: "com.example.A1", label: "A1" },
+                outputAdapterExecution: { fqn: "com.example.A1.ex1", label:"ex1" },
                 persistenceAccessors: [
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
@@ -394,16 +394,16 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('["P1"]'));
             assert.ok(code.includes('PortOp_P1_op1["op1"]'));
             assert.ok(code.includes('["A1"]'));
-            assert.ok(code.includes('Exec_Adapter_0_ex1["ex1"]'));
-            assert.ok(code.includes('PortOp_P1_op1 --> Exec_Adapter_0_ex1'));
-            assert.ok(code.includes('Exec_Adapter_0_ex1 -- "INSERT" --> Target_0'));
+            assert.ok(code.includes('Exec_com_example_A1_ex1["ex1"]'));
+            assert.ok(code.includes('PortOp_P1_op1 --> Exec_com_example_A1_ex1'));
+            assert.ok(code.includes('Exec_com_example_A1_ex1 -- "INSERT" --> Target_0'));
             assert.ok(code.includes('Target_0[(table1)]'));
         });
 
         test("generateOperationMermaidCode: adapterを非表示にするとPortOpからTargetへ直接接続される", () => {
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
-                outputPortOperation: { label:"op1" },
+                outputPortOperation: { fqn: "P1.op1", label:"op1" },
                 persistenceAccessors: [
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
@@ -418,9 +418,9 @@ test.describe("outputs.js", () => {
         test("generateOperationMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
-                outputPortOperation: { label:"op1" },
-                outputAdapter: { label: "A1" },
-                outputAdapterExecution: { label:"ex1" },
+                outputPortOperation: { fqn: "P1.op1", label:"op1" },
+                outputAdapter: { fqn: "com.example.A1", label: "A1" },
+                outputAdapterExecution: { fqn: "com.example.A1.ex1", label:"ex1" },
                 persistenceAccessors: [
                     {
                         id: "com.example.repo.save",
@@ -435,14 +435,14 @@ test.describe("outputs.js", () => {
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('["repo"]'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
-            assert.ok(code.includes('Exec_Adapter_0_ex1 --> POp_com_example_repo_save'));
+            assert.ok(code.includes('Exec_com_example_A1_ex1 --> POp_com_example_repo_save'));
             assert.ok(code.includes('POp_com_example_repo_save -- "INSERT" --> Target_0'));
         });
 
         test("generateOperationMermaidCode: direction=TBのとき、graph TBで始まるコードを生成する", () => {
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
-                outputPortOperation: { label: "op1" },
+                outputPortOperation: { fqn: "P1.op1", label: "op1" },
                 persistenceAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'TB'};
@@ -454,8 +454,8 @@ test.describe("outputs.js", () => {
             const group = {
                 outputPort: { fqn: "PortA", label: "PortA" },
                 operations: [
-                    { outputPortOperation: { label:"op1" } },
-                    { outputPortOperation: { label:"op2" } }
+                    { outputPortOperation: { fqn: "PortA.op1", label:"op1" } },
+                    { outputPortOperation: { fqn: "PortA.op2", label:"op2" } }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
@@ -470,9 +470,9 @@ test.describe("outputs.js", () => {
                 outputPort: { fqn: "PortA", label: "PortA" },
                 operations: [
                     {
-                        outputPortOperation: { label:"op1" },
+                        outputPortOperation: { fqn: "PortA.op1", label:"op1" },
                         outputAdapter: { fqn: "adapter1", label: "A1" },
-                        outputAdapterExecution: { fqn: "exec1", name: "ex1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
                             {
                                 id: "com.example.repo.save",
@@ -498,9 +498,9 @@ test.describe("outputs.js", () => {
                 operations: [
                     {
                         outputPort: { fqn: "P1", label: "P1" },
-                        outputPortOperation: { label:"op1" },
+                        outputPortOperation: { fqn: "P1.op1", label:"op1" },
                         outputAdapter: { fqn: "adapter1", label: "A1" },
-                        outputAdapterExecution: { fqn: "exec1", name: "ex1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
                             { id: "repo.save", sqlType: "INSERT", targets: ["table1"],
                               group: "com.example.repo", groupLabel: "Repo" }
@@ -542,7 +542,7 @@ test.describe("outputs.js", () => {
         test("generateOperationMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
-                outputPortOperation: { label: "op1" },
+                outputPortOperation: { fqn: "P1.op1", label: "op1" },
                 persistenceAccessors: [
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
@@ -556,7 +556,7 @@ test.describe("outputs.js", () => {
         test("generateOperationMermaidCode: outputPortのlabelをポートラベルとして使用する", () => {
             const operation = {
                 outputPort: { fqn: "com.example.MyPort", label: "MyPort" },
-                outputPortOperation: { label: "doSomething" },
+                outputPortOperation: { fqn: "com.example.MyPort.doSomething", label: "doSomething" },
                 persistenceAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
@@ -569,7 +569,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
                 outputPort: { fqn: "PortA", label: "PortA" },
                 operations: [
                     {
-                        outputPortOperation: { label: "op1" },
+                        outputPortOperation: { fqn: "PortA.op1", label: "op1" },
                         persistenceAccessors: [
                             { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                         ]
@@ -612,7 +612,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
                 outputPort: { fqn: "PortA", label: "PortA" },
                 operations: [
                     {
-                        outputPortOperation: { label: "op1" },
+                        outputPortOperation: { fqn: "PortA.op1", label: "op1" },
                         outputAdapter: { fqn: "adapterA", label: "A1" },
                         outputAdapterExecution: { fqn: "execA", label: "execA" },
                         persistenceAccessors: [
@@ -626,7 +626,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
                         ]
                     },
                     {
-                        outputPortOperation: { label: "op2" },
+                        outputPortOperation: { fqn: "PortA.op2", label: "op2" },
                         outputAdapter: { fqn: "adapterB", label: "B1" },
                         outputAdapterExecution: { fqn: "execB", label: "execB" },
                         persistenceAccessors: [
@@ -652,7 +652,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             // バグ再現: 同一リンク内で同じaccessorグループの複数メソッドがある場合
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
-                outputPortOperation: { label: "op1" },
+                outputPortOperation: { fqn: "P1.op1", label: "op1" },
                 outputAdapter: { label: "A1", fqn: "adapterA" },
                 outputAdapterExecution: { label: "execA", fqn: "execA" },
                 persistenceAccessors: [
@@ -715,15 +715,15 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
                     outputPort: {fqn: "com.example.APort", label: "A Port"},
                     operations: [
                         {
-                            outputPortOperation: {signature: "save(java.lang.String)"},
-                            outputAdapter: {label: "A Adapter"},
-                            outputAdapterExecution: {signature: "save(java.lang.String)"},
+                            outputPortOperation: {fqn: "com.example.APort.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
+                            outputAdapter: {fqn: "com.example.AAdapter", label: "A Adapter"},
+                            outputAdapterExecution: {fqn: "com.example.AAdapter.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
                             persistenceAccessors: [{sqlType: "SELECT", id: "a.save", targets: ["orders"]}],
                         },
                         {
-                            outputPortOperation: {signature: "find(java.lang.String)"},
-                            outputAdapter: {label: "A Adapter"},
-                            outputAdapterExecution: {signature: "find(java.lang.String)"},
+                            outputPortOperation: {fqn: "com.example.APort.find", label: "find(java.lang.String)", signature: "find(java.lang.String)"},
+                            outputAdapter: {fqn: "com.example.AAdapter", label: "A Adapter"},
+                            outputAdapterExecution: {fqn: "com.example.AAdapter.find", label: "find(java.lang.String)", signature: "find(java.lang.String)"},
                             persistenceAccessors: [],
                         },
                     ],
@@ -758,7 +758,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
                 {
                     outputPort: { fqn: "Port_A", label: "Port A" },
                     operations: [{
-                        outputPortOperation: { label:"opA" },
+                        outputPortOperation: { fqn: "Port_A.opA", label:"opA" },
                         persistenceAccessors: [{ sqlType: "SELECT", targets: ["table1"] }]
                     }]
                 }
@@ -799,7 +799,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const grouped = [{
                 outputPort: { fqn: "Port_A", label: "Port A" },
                 operations: [{
-                    outputPortOperation: { label: "opA" },
+                    outputPortOperation: { fqn: "Port_A.opA", label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "INSERT", targets: ["table1"] },
                         { sqlType: "SELECT", targets: ["table1"] }
@@ -822,7 +822,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const grouped = [{
                 outputPort: { fqn: "Port_A", label: "Port A" },
                 operations: [{
-                    outputPortOperation: { label: "opA" },
+                    outputPortOperation: { fqn: "Port_A.opA", label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "SELECT", targets: ["table1"] }
                     ]
@@ -844,7 +844,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const grouped = [{
                 outputPort: { fqn: "Port_A", label: "Port A" },
                 operations: [{
-                    outputPortOperation: { label: "opA" },
+                    outputPortOperation: { fqn: "Port_A.opA", label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "INSERT", targets: ["table1"] },
                         { sqlType: "SELECT", targets: ["table1"] },
@@ -869,7 +869,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const grouped = [{
                 outputPort: { fqn: "Port_A", label: "Port A" },
                 operations: [{
-                    outputPortOperation: { label: "opA" },
+                    outputPortOperation: { fqn: "Port_A.opA", label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "INSERT", targets: ["table1"] },
                         { sqlType: "SELECT", targets: ["table1"] }
@@ -938,7 +938,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const grouped = [
                 {
                     outputPort: { fqn: "port1", label: "port1" },
-                    operations: [{ outputAdapter: { label: "adapter1" } }]
+                    operations: [{ outputPortOperation: { fqn: "port1.op1", label: "op1" }, outputAdapter: { label: "adapter1" } }]
                 }
             ];
 

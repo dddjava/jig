@@ -55,8 +55,8 @@ function groupOperationsByOutputPort(data) {
                 persistenceAccessors
             }];
         }).sort((a, b) => {
-            const left = a.outputPortOperation?.label ?? a.outputPortOperation?.signature ?? "";
-            const right = b.outputPortOperation?.label ?? b.outputPortOperation?.signature ?? "";
+            const left = a.outputPortOperation.label;
+            const right = b.outputPortOperation.label;
             return left.localeCompare(right, "ja");
         });
         return {outputPort: port, operations};
@@ -252,13 +252,13 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const targetNodes = new Map();
 
     group.operations.forEach((operation, operationIndex) => {
-        const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `Operation_${operationIndex}`;
-        const portOpFqn = operation.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
+        const portOpName = operation.outputPortOperation.label;
+        const portOpFqn = operation.outputPortOperation.fqn;
 
-        const adapterFqn = operation.outputAdapter?.fqn || `Adapter_${operationIndex}`;
-        const adapterLabel = operation.outputAdapter?.label || adapterFqn;
-        const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || `Execution_${operationIndex}`;
-        const executionFqn = operation.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
+        const adapterFqn = operation.outputAdapter?.fqn;
+        const adapterLabel = operation.outputAdapter?.label;
+        const executionName = operation.outputAdapterExecution?.label;
+        const executionFqn = operation.outputAdapterExecution?.fqn;
 
         let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
 
@@ -418,7 +418,7 @@ function createOperationRow(operation, allTargets, portId, visibility) {
         children: [
             createElement("td", {
                 className: "operation-cell",
-                textContent: operation.outputPortOperation?.label || operation.outputPortOperation?.signature || ""
+                textContent: operation.outputPortOperation.label
             }),
             ...allTargets.map(target => {
                 const cell = createElement("td", {className: "crud-cell"});
@@ -558,13 +558,13 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
 
         const portFqn = operation.outputPort.fqn;
         const portLabel = operation.outputPort.label;
-        const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `PortOp_${operationIndex}`;
-        const portOpFqn = operation.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
+        const portOpName = operation.outputPortOperation.label;
+        const portOpFqn = operation.outputPortOperation.fqn;
 
-        const adapterFqn = operation.outputAdapter?.fqn || `Adapter_${operationIndex}`;
-        const adapterLabel = operation.outputAdapter?.label || adapterFqn;
-        const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || `Execution_${operationIndex}`;
-        const executionFqn = operation.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
+        const adapterFqn = operation.outputAdapter?.fqn;
+        const adapterLabel = operation.outputAdapter?.label;
+        const executionName = operation.outputAdapterExecution?.label;
+        const executionFqn = operation.outputAdapterExecution?.fqn;
 
         relevantOps.forEach(op => {
             let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -640,7 +640,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
 
         if (visibility.adapter) {
             const adapterLabels = Array.from(new Set(group.operations.map(operation => {
-                const label = operation.outputAdapter?.label ?? operation.outputAdapter?.fqn ?? "";
+                const label = operation.outputAdapter?.label ?? "";
                 const fqn = operation.outputAdapter?.fqn ?? "";
                 return label + (label !== fqn ? ` (${fqn})` : "");
             })));
@@ -670,7 +670,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",
                 children: [
-                    createElement("h4", {textContent: operation.outputPortOperation?.label ?? operation.outputPortOperation?.signature ?? ""}),
+                    createElement("h4", {textContent: operation.outputPortOperation.label}),
                     mermaidContainer,
                     createElement("p", {
                         className: "outputs-persistence-title",

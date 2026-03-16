@@ -1,3 +1,12 @@
+/**
+ * Java側（OutputsSummaryAdapter）が生成する出力ポートデータのスキーマ。
+ * outputPortOperation の fqn・label は必ず設定される（Java側保証）。
+ * outputAdapter・outputAdapterExecution は対応する実装が見つからない場合 null になる。
+ *
+ * @typedef {{fqn: string, label: string, signature: string}} OutputPortOperation
+ * @typedef {{fqn: string, label: string}} OutputAdapter
+ * @typedef {{fqn: string, label: string}} OutputAdapterExecution
+ */
 function getOutputsData() {
     return globalThis.outputPortData || {
         outputPorts: [],

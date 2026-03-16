@@ -242,8 +242,8 @@ function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY
 
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
-    const portFqn = group.outputPort?.fqn || group.outputPort?.label || "Port";
-    const portLabel = group.outputPort?.label || group.outputPort?.fqn || "Port";
+    const portFqn = group.outputPort.fqn || group.outputPort.label;
+    const portLabel = group.outputPort.label || group.outputPort.fqn;
 
     const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();

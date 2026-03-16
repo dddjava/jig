@@ -375,13 +375,7 @@ test.describe("outputs.js", () => {
             assert.deepEqual(data.targets, []);
         });
 
-        test("createField: ラベルと値を持つ要素を生成する", () => {
-            setupDocument();
-            const field = outputs.createField("Label", "Value");
-            assert.equal(field.className, "outputs-item-field");
-            assert.equal(field.children[0].textContent, "Label");
-            assert.equal(field.children[1].textContent, "Value");
-        });
+
     });
 
     test.describe("Mermaidコード生成", () => {

@@ -76,15 +76,6 @@ function formatPersistenceAccessors(persistenceAccessors) {
         });
 }
 
-function createField(label, value) {
-    return createElement("div", {
-        className: "outputs-item-field",
-        children: [
-            createElement("dt", {textContent: label}),
-            createElement("dd", {textContent: value})
-        ]
-    });
-}
 
 function createElement(tag, options = {}) {
     const element = document.createElement(tag);
@@ -839,7 +830,6 @@ if (typeof module !== "undefined" && module.exports) {
         groupOperationsByOutputPort,
         groupOperationsByPersistenceTarget,
         formatPersistenceAccessors,
-        createField,
         renderOutputsList,
         renderPersistenceList,
         renderCrudTable,

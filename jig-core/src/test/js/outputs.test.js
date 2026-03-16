@@ -660,7 +660,9 @@ test.describe("outputs.js", () => {
             // count (p) が children[3]
             assert.equal(portCard.children[3].textContent, "2 operations");
 
-            const itemList = portCard.children[5]; // portMermaidContainer が children[4]
+            const itemListDetails = portCard.children[5]; // portMermaidContainer が children[4]
+            // children[0]: summary, children[1]: div.outputs-item-list
+            const itemList = itemListDetails.children[1];
             assert.equal(itemList.children.length, 2);
             const firstItem = itemList.children[0];
             assert.equal(firstItem.children[0].textContent, "save(java.lang.String)");
@@ -703,11 +705,6 @@ test.describe("outputs.js", () => {
             const opRow = tbody.children[1];
             assert.equal(opRow.children[0].textContent, "opA");
             assert.equal(opRow.style.display, "none");
-
-            const sidebarSection = sidebar.children[0];
-            assert.equal(sidebarSection.className, "in-page-sidebar__section");
-            assert.equal(sidebarSection.children[0].textContent, "永続化操作対象");
-            assert.equal(sidebarSection.children[1].children[0].children[0].getAttribute("href"), "#crud-target-table1");
 
             // トグル動作の確認
             portRow.click();

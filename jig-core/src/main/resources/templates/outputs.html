@@ -15,33 +15,44 @@
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
 
-    <section class="outputs-common-settings" aria-label="タブ共通の設定">
-        <p class="outputs-common-settings__title">タブ共通の設定</p>
-        <div class="outputs-display-mode" role="group" aria-labelledby="outputs-display-mode-title">
-            <p id="outputs-display-mode-title" class="outputs-display-mode__title">表示対象</p>
-            <label><input type="checkbox" name="show-port" checked> ポート</label>
-            <label><input type="checkbox" name="show-operation" checked> 操作</label>
-            <label><input type="checkbox" name="show-adapter" checked> アダプター</label>
-            <label><input type="checkbox" name="show-execution" checked> 実行</label>
-            <label><input type="checkbox" name="show-accessor"> アクセッサ</label>
-            <label><input type="checkbox" name="show-accessor-method"> メソッド</label>
-            <label><input type="checkbox" name="show-target" checked> ターゲット</label>
-            <span aria-hidden="true" style="margin: 0 4px">｜</span>
-            <label><input type="radio" name="diagram-direction" value="LR" checked> 左→右</label>
-            <label><input type="radio" name="diagram-direction" value="TB"> 上→下</label>
-            <span aria-hidden="true" style="margin: 0 4px">｜</span>
-            <label><input type="checkbox" name="show-crud-c" checked> C</label>
-            <label><input type="checkbox" name="show-crud-r" checked> R</label>
-            <label><input type="checkbox" name="show-crud-u" checked> U</label>
-            <label><input type="checkbox" name="show-crud-d" checked> D</label>
-        </div>
-    </section>
+    <div class="outputs-sticky-header">
+        <details class="outputs-common-settings" open>
+            <summary class="outputs-common-settings__title">タブ共通の設定</summary>
+            <div class="outputs-display-mode" role="group" aria-labelledby="outputs-display-mode-title">
+                <p id="outputs-display-mode-title" class="outputs-display-mode__title">表示対象</p>
+                <div class="outputs-display-mode__groups">
+                    <div class="outputs-display-mode__group">
+                        <p class="outputs-display-mode__group-label">表示要素</p>
+                        <label><input type="checkbox" name="show-port" checked> ポート</label>
+                        <label><input type="checkbox" name="show-operation" checked> 操作</label>
+                        <label><input type="checkbox" name="show-adapter" checked> アダプター</label>
+                        <label><input type="checkbox" name="show-execution" checked> 実行</label>
+                        <label><input type="checkbox" name="show-accessor"> アクセッサ</label>
+                        <label><input type="checkbox" name="show-accessor-method"> メソッド</label>
+                        <label><input type="checkbox" name="show-target" checked> ターゲット</label>
+                    </div>
+                    <div class="outputs-display-mode__group">
+                        <p class="outputs-display-mode__group-label">方向</p>
+                        <label><input type="radio" name="diagram-direction" value="LR" checked> 左→右</label>
+                        <label><input type="radio" name="diagram-direction" value="TB"> 上→下</label>
+                    </div>
+                    <div class="outputs-display-mode__group">
+                        <p class="outputs-display-mode__group-label">CRUD</p>
+                        <label><input type="checkbox" name="show-crud-c" checked> C</label>
+                        <label><input type="checkbox" name="show-crud-r" checked> R</label>
+                        <label><input type="checkbox" name="show-crud-u" checked> U</label>
+                        <label><input type="checkbox" name="show-crud-d" checked> D</label>
+                    </div>
+                </div>
+            </div>
+        </details>
 
-    <nav class="outputs-tabs">
-        <button class="tab-button is-active" data-tab="outputs">出力ポート一覧</button>
-        <button class="tab-button" data-tab="persistence">永続化操作一覧</button>
-        <button class="tab-button" data-tab="crud">CRUD表</button>
-    </nav>
+        <nav class="outputs-tabs">
+            <button class="tab-button is-active" data-tab="outputs">出力ポート一覧</button>
+            <button class="tab-button" data-tab="persistence">永続化操作一覧</button>
+            <button class="tab-button" data-tab="crud">CRUD表</button>
+        </nav>
+    </div>
 
     <div id="outputs-tab-panel" class="outputs-tab-panel is-active">
         <div class="outputs-container">
@@ -62,12 +73,7 @@
     </div>
 
     <div id="crud-tab-panel" class="outputs-tab-panel">
-        <div class="outputs-container">
-            <nav id="crud-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="CRUD表ナビゲーション">
-                <div id="crud-sidebar-list" class="in-page-sidebar__list"></div>
-            </nav>
-            <section id="outputs-crud" class="outputs-crud" aria-label="永続化操作対象CRUD表"></section>
-        </div>
+        <section id="outputs-crud" class="outputs-crud" aria-label="永続化操作対象CRUD表"></section>
     </div>
 </main>
 

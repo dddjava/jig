@@ -889,6 +889,12 @@ table td.number {
     display: grid;
     gap: 10px;
 }
+.outputs .outputs-item-list-summary {
+    cursor: pointer;
+    padding: 6px 0;
+    color: #31455f;
+    font-weight: bold;
+}
 .outputs .outputs-item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;
@@ -931,15 +937,19 @@ table td.number {
     overflow-x: auto;
     width: 100%;
 }
+.outputs .outputs-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #fff;
+}
 .outputs .outputs-common-settings {
-    margin: 16px 0 20px 0;
+    margin: 16px 0 0 0;
     padding: 12px;
     border: 1px solid #d9e1ea;
     border-radius: 10px;
     background: linear-gradient(180deg, #fbfcff, #f4f7fb);
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
-    display: grid;
-    gap: 10px;
 }
 .outputs .outputs-common-settings__title {
     margin: 0;
@@ -947,12 +957,17 @@ table td.number {
     font-size: 0.85rem;
     font-weight: bold;
     letter-spacing: 0.04em;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
 }
 .outputs .outputs-display-mode {
     padding: 8px;
     background-color: #eef4ff;
     border-radius: 6px;
     font-size: 0.9em;
+    margin-top: 8px;
 }
 .outputs .outputs-display-mode__title {
     margin: 0 0 6px 0;
@@ -960,6 +975,22 @@ table td.number {
     font-size: 0.85rem;
     font-weight: bold;
     letter-spacing: 0.04em;
+}
+.outputs .outputs-display-mode__groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.outputs .outputs-display-mode__group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.outputs .outputs-display-mode__group-label {
+    margin: 0 0 2px 0;
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: bold;
 }
 .outputs .outputs-display-mode label {
     display: block;
@@ -974,10 +1005,6 @@ table td.number {
     gap: 10px;
     margin-bottom: 20px;
     border-bottom: 2px solid #dee2e6;
-    position: sticky;
-    top: 0;
-    background-color: #fff;
-    z-index: 10;
     padding-top: 10px;
 }
 .outputs .tab-button {

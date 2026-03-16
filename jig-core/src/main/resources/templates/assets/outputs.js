@@ -430,11 +430,9 @@ function isCrudVisible(sqlType, visibility) {
 
 function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("outputs-crud");
-    const sidebar = document.getElementById("crud-sidebar-list");
     if (!container) return;
 
     container.innerHTML = "";
-    if (sidebar) sidebar.innerHTML = "";
 
     const targetsSet = new Set();
     grouped.forEach(group => {
@@ -450,11 +448,6 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
         container.textContent = "永続化操作なし";
         return;
     }
-
-    renderSidebarSection(sidebar, "永続化操作対象", allTargets.map(target => ({
-        id: `crud-target-${target}`,
-        label: target
-    })));
 
     const headerRow = createElement("tr", {
         children: [
@@ -827,7 +820,14 @@ function renderOutputsTable(grouped, visibility = DEFAULT_VISIBILITY) {
                 ]
             }));
         });
-        cardChildren.push(itemList);
+        const itemListDetails = createElement("details", {});
+        const itemListSummary = createElement("summary", {
+            className: "outputs-item-list-summary",
+            textContent: `操作一覧 (${group.links.length}件)`
+        });
+        itemListDetails.appendChild(itemListSummary);
+        itemListDetails.appendChild(itemList);
+        cardChildren.push(itemListDetails);
 
         container.appendChild(createElement("section", {
             className: "outputs-port-card",

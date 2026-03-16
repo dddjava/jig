@@ -440,7 +440,7 @@ function createOperationRow(operation, allTargets, portId, visibility) {
 }
 
 function appendGroupToTable(tbody, group, allTargets, visibility) {
-    const portId = "port-" + Math.random().toString(36).substring(2, 11);
+    const portId = "port-" + (group.outputPort.fqn ?? "").replace(/[^a-zA-Z0-9]/g, '-');
     const portRow = createPortGroupRow(group, allTargets, visibility);
     tbody.appendChild(portRow);
 

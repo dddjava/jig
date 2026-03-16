@@ -94,7 +94,7 @@ function createElement(tag, options = {}) {
     }
     if (options.children) {
         options.children.forEach(child => {
-            if (child) element.appendChild(child);
+            if (child != null) element.appendChild(child);
         });
     }
     return element;

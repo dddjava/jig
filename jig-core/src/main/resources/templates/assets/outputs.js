@@ -9,6 +9,8 @@ function getOutputsData() {
 }
 
 function groupOperationsByOutputPort(data) {
+    // 結合に使うルックアップMapを事前構築
+    // execution.fqn → {exec, adapter}
     const executionByFqn = new Map();
     (data.outputAdapters || []).forEach(adapter => {
         (adapter.executions || []).forEach(exec => {
@@ -16,6 +18,7 @@ function groupOperationsByOutputPort(data) {
         });
     });
 
+    // method.id → method（所属accessor情報付き）
     const methodById = new Map();
     (data.persistenceAccessors || []).forEach(accessor => {
         (accessor.methods || []).forEach(method => {
@@ -23,11 +26,13 @@ function groupOperationsByOutputPort(data) {
         });
     });
 
+    // outputPortOperation.fqn → execution.fqn
     const executionByOperation = new Map();
     (data.links?.operationToExecution || []).forEach(link => {
         executionByOperation.set(link.operation, link.execution);
     });
 
+    // execution.fqn → [accessor.id]
     const accessorsByExecution = new Map();
     (data.links?.executionToAccessor || []).forEach(link => {
         if (!accessorsByExecution.has(link.execution)) {

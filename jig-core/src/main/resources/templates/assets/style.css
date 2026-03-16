@@ -978,13 +978,14 @@ table td.number {
 }
 .outputs .outputs-display-mode__groups {
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    flex-direction: column;
+    gap: 8px;
 }
 .outputs .outputs-display-mode__group {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
 }
 .outputs .outputs-display-mode__group-label {
     margin: 0 0 2px 0;
@@ -993,12 +994,7 @@ table td.number {
     font-weight: bold;
 }
 .outputs .outputs-display-mode label {
-    display: block;
-    margin-bottom: 5px;
     cursor: pointer;
-}
-.outputs .outputs-display-mode label:last-child {
-    margin-bottom: 0;
 }
 .outputs .outputs-tabs {
     display: flex;

@@ -29,6 +29,7 @@ public class SpringDataUtil {
                 || normalizedMethodName.startsWith("exists")) {
             return Optional.of(SqlType.SELECT);
         }
+        // TODO saveとsaveAllはINSERTとUPDATEの区別が静的にはできない。ここではINSERTに寄せておき、ドキュメントの注意書きか何かでフォローする。
         if (normalizedMethodName.startsWith("save")
                 || normalizedMethodName.startsWith("insert")
                 || normalizedMethodName.startsWith("create")

@@ -18,6 +18,34 @@
         <p>注意: このドキュメントはincubate（作成中）です。次のバージョンで大きく変更したり削除したりする可能性があります。</p>
     </aside>
 
+    <section id="metric-definitions">
+        <details>
+            <summary>メトリクスの説明</summary>
+            <div class="metric-description">
+                <h3>共通メトリクス</h3>
+                <ul>
+                    <li><strong>クラス数 / メソッド数</strong>: 対象に含まれるクラスやメソッドの総数です。規模の把握に使用します。</li>
+                    <li><strong>使用クラス数</strong>: その対象が依存しているクラスの数です（Java標準ライブラリを除く）。値が大きいほど、他の変更の影響を受けやすくなります。</li>
+                    <li><strong>循環的複雑度</strong>: コードの論理的な複雑さ（分岐やループの多さ）を表します。値が大きいほど、テストが困難になり、バグが混入しやすくなります。</li>
+                    <li><strong>規模</strong>: 命令（インストラクション）の総数です。コードの物理的な行数ではなく、実行される処理のステップ数を表します。</li>
+                </ul>
+
+                <h3>クラス固有メトリクス</h3>
+                <ul>
+                    <li><strong>使用クラス数(Ce)</strong>: Efferent Coupling。そのクラスが依存している外部クラスの数です。</li>
+                    <li><strong>被使用クラス数(Ca)</strong>: Afferent Coupling。そのクラスに依存している外部クラスの数です。</li>
+                    <li><strong>不安定性(I)</strong>: Instability。<code>Ce / (Ce + Ca)</code> で計算されます。0に近いほど「安定」（他から依存されており、自分は他に依存していない）、1に近いほど「不安定」（他から依存されておらず、自分は多くに依存している）であることを示します。</li>
+                    <li><strong>凝集度欠如(LCOM)</strong>: Lack of Cohesion of Methods。メソッドとフィールドの関係性から計算される、クラスの責務の集中度合いです。0に近いほど高凝集（一つの責務に集中している）、1に近いほど低凝集（複数の責務が混在している可能性がある）であることを示します。</li>
+                </ul>
+
+                <h3>メソッド固有メトリクス</h3>
+                <ul>
+                    <li><strong>使用メソッド数 / 使用フィールド数</strong>: そのメソッドが呼び出しているメソッドや参照しているフィールドの数です。</li>
+                </ul>
+            </div>
+        </details>
+    </section>
+
     <button id="cancel-zoom" class="hidden">ズーム解除</button>
 
     <h2>パッケージ (<span id="package-count">0</span>)</h2>

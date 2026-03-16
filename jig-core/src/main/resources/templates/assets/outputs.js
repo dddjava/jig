@@ -223,7 +223,7 @@ const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, executio
 function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
     const mermaidCode = generateCodeFn(data, visibility);
-    const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
+    const id = "mermaid-" + Math.random().toString(36).substring(2, 11);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
     });
@@ -393,7 +393,7 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
     table.appendChild(tbody);
 
     grouped.forEach(group => {
-        const portId = "port-" + Math.random().toString(36).substr(2, 9);
+        const portId = "port-" + Math.random().toString(36).substring(2, 11);
         const portRow = createElement("tr", {
             className: "port-group-row",
             style: {cursor: "pointer"},

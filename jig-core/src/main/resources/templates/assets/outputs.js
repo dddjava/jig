@@ -220,7 +220,7 @@ MermaidBuilder.prototype.build = function (direction = 'LR') {
 
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
-function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
+function generateLinkMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
@@ -270,10 +270,10 @@ function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     return builder.build(visibility.direction);
 }
 
-function renderMermaid(link, container, visibility = DEFAULT_VISIBILITY) {
+function renderLinkMermaid(link, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
 
-    const mermaidCode = generateMermaidCode(link, visibility);
+    const mermaidCode = generateLinkMermaidCode(link, visibility);
     const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
@@ -641,7 +641,7 @@ function renderPersistenceMermaid(group, container, visibility = DEFAULT_VISIBIL
     });
 }
 
-function renderPersistenceTable(grouped, visibility = DEFAULT_VISIBILITY) {
+function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("persistence-list");
     const sidebar = document.getElementById("persistence-sidebar-list");
     if (!container) return;
@@ -674,7 +674,7 @@ function renderPersistenceTable(grouped, visibility = DEFAULT_VISIBILITY) {
     }
 }
 
-function renderOutputsTable(grouped, visibility = DEFAULT_VISIBILITY) {
+function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("outputs-list");
     const sidebar = document.getElementById("outputs-sidebar-list");
     if (!container) return;
@@ -720,7 +720,7 @@ function renderOutputsTable(grouped, visibility = DEFAULT_VISIBILITY) {
         const itemList = createElement("div", {className: "outputs-item-list"});
         group.links.forEach(link => {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
-            lazyRender(mermaidContainer, () => renderMermaid(link, mermaidContainer, visibility));
+            lazyRender(mermaidContainer, () => renderLinkMermaid(link, mermaidContainer, visibility));
 
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",
@@ -875,8 +875,8 @@ const OutputsApp = {
         });
 
         // 各パネルの描画
-        renderPersistenceTable(persistenceGrouped, visibility);
-        renderOutputsTable(grouped, visibility);
+        renderPersistenceList(persistenceGrouped, visibility);
+        renderOutputsList(grouped, visibility);
         renderCrudTable(grouped, visibility);
     }
 };
@@ -895,15 +895,15 @@ if (typeof module !== "undefined" && module.exports) {
         groupLinksByPersistenceTarget,
         formatPersistenceAccessors,
         createField,
-        renderOutputsTable,
-        renderPersistenceTable,
+        renderOutputsList,
+        renderPersistenceList,
         renderCrudTable,
         toCrudChar,
         createElement,
         createSidebarSection,
         renderSidebarSection,
         renderNoData,
-        generateMermaidCode,
+        generateLinkMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,
         MermaidBuilder,

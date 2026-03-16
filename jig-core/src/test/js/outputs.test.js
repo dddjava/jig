@@ -282,7 +282,7 @@ function setupDocument() {
 
 test.describe("outputs.js", () => {
     test.describe("データ加工・ユーティリティ", () => {
-        test("groupLinksByOutputPort: 出力ポート単位でグルーピングし、表示名でソートする", () => {
+        test("groupOperationsByOutputPort: 出力ポート単位でグルーピングし、表示名でソートする", () => {
             const data = {
                 outputPorts: [
                     {fqn: "com.example.BPort", label: "い", operations: [{fqn: "opB", label: "delete"}]},
@@ -302,18 +302,18 @@ test.describe("outputs.js", () => {
                 }
             };
 
-            const grouped = outputs.groupLinksByOutputPort(data);
+            const grouped = outputs.groupOperationsByOutputPort(data);
             assert.equal(grouped[0].outputPort.label, "あ");
             assert.equal(grouped[1].outputPort.label, "い");
         });
 
-        test("groupLinksByOutputPort: 境界条件（データなし）", () => {
-            const grouped = outputs.groupLinksByOutputPort({outputPorts: [], outputAdapters: [], persistenceAccessors: [], links: {}});
+        test("groupOperationsByOutputPort: 境界条件（データなし）", () => {
+            const grouped = outputs.groupOperationsByOutputPort({outputPorts: [], outputAdapters: [], persistenceAccessors: [], links: {}});
             assert.equal(grouped.length, 0);
         });
 
-        test("groupLinksByPersistenceTarget: ターゲット単位でグルーピングし、ターゲット名でソートする", () => {
-            const links = [
+        test("groupOperationsByPersistenceTarget: ターゲット単位でグルーピングし、ターゲット名でソートする", () => {
+            const operations = [
                 {
                     persistenceAccessors: [{ targets: ["table_b"], id: "op1" }],
                     outputPort: { fqn: "port1", label: "P1" }
@@ -323,11 +323,11 @@ test.describe("outputs.js", () => {
                     outputPort: { fqn: "port2", label: "P2" }
                 }
             ];
-            const grouped = outputs.groupLinksByPersistenceTarget(links);
+            const grouped = outputs.groupOperationsByPersistenceTarget(operations);
             assert.equal(grouped.length, 2);
             assert.equal(grouped[0].target, "table_a");
             assert.equal(grouped[1].target, "table_b");
-            assert.equal(grouped[0].links[0].outputPort.label, "P2");
+            assert.equal(grouped[0].operations[0].outputPort.label, "P2");
         });
 
         test("toCrudChar: SQL型からCRUD文字への変換", () => {
@@ -385,7 +385,7 @@ test.describe("outputs.js", () => {
     });
 
     test.describe("Mermaidコード生成", () => {
-        test("generateLinkMermaidCode: standard相当のvisibilityで正しい接続関係を生成する", () => {
+        test("generateOperationMermaidCode: standard相当のvisibilityで正しい接続関係を生成する", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label:"op1" },
@@ -396,7 +396,7 @@ test.describe("outputs.js", () => {
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
-            const code = outputs.generateLinkMermaidCode(link, visibility);
+            const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "P1"'));
             assert.ok(code.includes('PortOp["op1"]'));
             assert.ok(code.includes('subgraph "A1"'));
@@ -406,7 +406,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Target_0[(table1)]'));
         });
 
-        test("generateLinkMermaidCode: adapterを非表示にするとPortOpからTargetへ直接接続される", () => {
+        test("generateOperationMermaidCode: adapterを非表示にするとPortOpからTargetへ直接接続される", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label:"op1" },
@@ -415,13 +415,13 @@ test.describe("outputs.js", () => {
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true};
-            const code = outputs.generateLinkMermaidCode(link, visibility);
+            const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('PortOp["op1"]'));
             assert.ok(!code.includes('subgraph "Adapter"'));
             assert.ok(code.includes('PortOp -- "INSERT" --> Target_0'));
         });
 
-        test("generateLinkMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
+        test("generateOperationMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label:"op1" },
@@ -438,28 +438,28 @@ test.describe("outputs.js", () => {
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
-            const code = outputs.generateLinkMermaidCode(link, visibility);
+            const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "repo"'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
             assert.ok(code.includes('Execution --> POp_com_example_repo_save'));
             assert.ok(code.includes('POp_com_example_repo_save -- "INSERT" --> Target_0'));
         });
 
-        test("generateLinkMermaidCode: direction=TBのとき、graph TBで始まるコードを生成する", () => {
+        test("generateOperationMermaidCode: direction=TBのとき、graph TBで始まるコードを生成する", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label: "op1" },
                 persistenceAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'TB'};
-            const code = outputs.generateLinkMermaidCode(link, visibility);
+            const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.startsWith('graph TB\n'));
         });
 
         test("generatePortMermaidCode: ポート単位の図に複数の操作が含まれる", () => {
             const group = {
                 outputPort: { label: "PortA" },
-                links: [
+                operations: [
                     { outputPortOperation: { label:"op1" } },
                     { outputPortOperation: { label:"op2" } }
                 ]
@@ -474,7 +474,7 @@ test.describe("outputs.js", () => {
         test("generatePortMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
             const group = {
                 outputPort: { label: "PortA" },
-                links: [
+                operations: [
                     {
                         outputPortOperation: { label:"op1" },
                         outputAdapter: { fqn: "adapter1", label: "A1" },
@@ -501,7 +501,7 @@ test.describe("outputs.js", () => {
         test("generatePersistenceMermaidCode: visibility全表示のとき、ターゲット中心の図が生成される", () => {
             const group = {
                 target: "table1",
-                links: [
+                operations: [
                     {
                         outputPort: { label: "P1" },
                         outputPortOperation: { label:"op1" },
@@ -524,7 +524,7 @@ test.describe("outputs.js", () => {
         test("generatePersistenceMermaidCode: adapter非表示のとき、PortOp → POp が直接接続される", () => {
             const group = {
                 target: "table1",
-                links: [
+                operations: [
                     {
                         outputPort: { fqn: "p1", label: "P1" },
                         outputPortOperation: { fqn: "p1.op1", label: "op1" },
@@ -545,7 +545,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('PortOp_p1_op1 --> POp_repo_save'));
         });
 
-        test("generateLinkMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
+        test("generateOperationMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const link = {
                 outputPort: { label: "P1" },
                 outputPortOperation: { label: "op1" },
@@ -554,7 +554,7 @@ test.describe("outputs.js", () => {
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
-            const code = outputs.generateLinkMermaidCode(link, visibility);
+            const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(!code.includes('"INSERT"'));
             assert.ok(!code.includes('Target_0'));
         });
@@ -562,7 +562,7 @@ test.describe("outputs.js", () => {
         test("generatePortMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const group = {
                 outputPort: { label: "PortA" },
-                links: [
+                operations: [
                     {
                         outputPortOperation: { label: "op1" },
                         persistenceAccessors: [
@@ -580,7 +580,7 @@ test.describe("outputs.js", () => {
         test("generatePersistenceMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const group = {
                 target: "table1",
-                links: [
+                operations: [
                     {
                         outputPort: { fqn: "p1", label: "P1" },
                         outputPortOperation: { fqn: "p1.op1", label: "op1" },
@@ -605,7 +605,7 @@ test.describe("outputs.js", () => {
             // adapter.b -> Accessor のエッジが欠落するケース
             const group = {
                 outputPort: { label: "PortA" },
-                links: [
+                operations: [
                     {
                         outputPortOperation: { label: "op1" },
                         outputAdapter: { fqn: "adapterA", label: "A1" },
@@ -643,7 +643,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Exec_execB --> Accessor_com_example_repo'), `execB -> Accessor のエッジが存在しない:\n${code}`);
         });
 
-        test("generateLinkMermaidCode: メソッド非表示のとき、複数の永続化操作が同一accessorグループに属する場合にエッジが生成される", () => {
+        test("generateOperationMermaidCode: メソッド非表示のとき、複数の永続化操作が同一accessorグループに属する場合にエッジが生成される", () => {
             // バグ再現: 同一リンク内で同じaccessorグループの複数メソッドがある場合
             const link = {
                 outputPort: { label: "P1" },
@@ -668,7 +668,7 @@ test.describe("outputs.js", () => {
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
-            const code = outputs.generateLinkMermaidCode(link, visibility);
+            const code = outputs.generateOperationMermaidCode(link, visibility);
             // ExecutionからAccessorへのエッジが存在すること
             assert.ok(code.includes('Execution --> Accessor_com_example_repo'), `Execution -> Accessor のエッジが存在しない:\n${code}`);
         });
@@ -676,7 +676,7 @@ test.describe("outputs.js", () => {
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 target: "table1",
-                links: [
+                operations: [
                     {
                         outputPort: { fqn: "p1", label: "P1" },
                         outputPortOperation: { fqn: "p1.op1", label: "op1" },
@@ -708,7 +708,7 @@ test.describe("outputs.js", () => {
             outputs.renderOutputsList([
                 {
                     outputPort: {fqn: "com.example.APort", label: "A Port"},
-                    links: [
+                    operations: [
                         {
                             outputPortOperation: {signature: "save(java.lang.String)"},
                             outputAdapter: {label: "A Adapter"},
@@ -752,7 +752,7 @@ test.describe("outputs.js", () => {
             const grouped = [
                 {
                     outputPort: { label: "Port A" },
-                    links: [{
+                    operations: [{
                         outputPortOperation: { label:"opA" },
                         persistenceAccessors: [{ sqlType: "SELECT", targets: ["table1"] }]
                     }]
@@ -793,7 +793,7 @@ test.describe("outputs.js", () => {
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
                 outputPort: { label: "Port A" },
-                links: [{
+                operations: [{
                     outputPortOperation: { label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "INSERT", targets: ["table1"] },
@@ -816,7 +816,7 @@ test.describe("outputs.js", () => {
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
                 outputPort: { label: "Port A" },
-                links: [{
+                operations: [{
                     outputPortOperation: { label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "SELECT", targets: ["table1"] }
@@ -838,7 +838,7 @@ test.describe("outputs.js", () => {
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
                 outputPort: { label: "Port A" },
-                links: [{
+                operations: [{
                     outputPortOperation: { label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "INSERT", targets: ["table1"] },
@@ -863,7 +863,7 @@ test.describe("outputs.js", () => {
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
                 outputPort: { label: "Port A" },
-                links: [{
+                operations: [{
                     outputPortOperation: { label: "opA" },
                     persistenceAccessors: [
                         { sqlType: "INSERT", targets: ["table1"] },
@@ -882,7 +882,7 @@ test.describe("outputs.js", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
 
-            outputs.renderCrudTable([{outputPort: {label: "P"}, links: []}]);
+            outputs.renderCrudTable([{outputPort: {label: "P"}, operations: []}]);
             assert.equal(container.textContent, "永続化操作なし");
         });
 
@@ -894,7 +894,7 @@ test.describe("outputs.js", () => {
             const grouped = [
                 {
                     target: "table1",
-                    links: []
+                    operations: []
                 }
             ];
 
@@ -923,7 +923,7 @@ test.describe("outputs.js", () => {
             const grouped = [
                 {
                     outputPort: { fqn: "port1" },
-                    links: [{ outputAdapter: { label: "adapter1" } }]
+                    operations: [{ outputAdapter: { label: "adapter1" } }]
                 }
             ];
 
@@ -1056,7 +1056,7 @@ test.describe("outputs.js", () => {
                 outputs.renderOutputsList([
                     {
                         outputPort: { fqn: "p1" },
-                        links: [{ outputPortOperation: { label:"op1" } }]
+                        operations: [{ outputPortOperation: { label:"op1" } }]
                     }
                 ]);
                 // IntersectionObserver がないので即時実行されるはず

@@ -8,7 +8,7 @@ function getOutputsData() {
     };
 }
 
-function groupLinksByOutputPort(data) {
+function groupOperationsByOutputPort(data) {
     const executionByFqn = new Map();
     (data.outputAdapters || []).forEach(adapter => {
         (adapter.executions || []).forEach(exec => {
@@ -37,7 +37,7 @@ function groupLinksByOutputPort(data) {
     });
 
     return (data.outputPorts || []).map(port => {
-        const links = (port.operations || []).flatMap(op => {
+        const operations = (port.operations || []).flatMap(op => {
             const execFqn = executionByOperation.get(op.fqn);
             if (!execFqn) return [];
             const execEntry = executionByFqn.get(execFqn);
@@ -54,8 +54,8 @@ function groupLinksByOutputPort(data) {
             const right = b.outputPortOperation?.label ?? b.outputPortOperation?.signature ?? "";
             return left.localeCompare(right, "ja");
         });
-        return {outputPort: port, links};
-    }).filter(group => group.links.length > 0)
+        return {outputPort: port, operations};
+    }).filter(group => group.operations.length > 0)
       .sort((a, b) => {
         const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
         const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
@@ -220,7 +220,7 @@ MermaidBuilder.prototype.build = function (direction = 'LR') {
 
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
-function generateLinkMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
+function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
@@ -229,8 +229,8 @@ function generateLinkMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     let lastNode = null;
 
     if (visibility.port) {
-        const portLabel = link.outputPort?.label || link.outputPort?.fqn || "Port";
-        const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || "Operation";
+        const portLabel = operation.outputPort?.label || operation.outputPort?.fqn || "Port";
+        const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || "Operation";
         if (visibility.operation) {
             const portSubgraph = builder.startSubgraph(portLabel);
             builder.addNodeToSubgraph(portSubgraph, "PortOp", portOpName);
@@ -242,8 +242,8 @@ function generateLinkMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     }
 
     if (visibility.adapter) {
-        const adapterLabel = link.outputAdapter?.label || link.outputAdapter?.fqn || "Adapter";
-        const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || "Execution";
+        const adapterLabel = operation.outputAdapter?.label || operation.outputAdapter?.fqn || "Adapter";
+        const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || "Execution";
         if (visibility.execution) {
             const adapterSubgraph = builder.startSubgraph(adapterLabel);
             builder.addNodeToSubgraph(adapterSubgraph, "Execution", executionName);
@@ -256,7 +256,7 @@ function generateLinkMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
         }
     }
 
-    link.persistenceAccessors?.forEach((op) => {
+    operation.persistenceAccessors?.forEach((op) => {
         if (!isCrudVisible(op.sqlType, visibility)) return;
         const sqlType = op.sqlType || "";
 
@@ -270,10 +270,10 @@ function generateLinkMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     return builder.build(visibility.direction);
 }
 
-function renderLinkMermaid(link, container, visibility = DEFAULT_VISIBILITY) {
+function renderOperationMermaid(operation, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
 
-    const mermaidCode = generateLinkMermaidCode(link, visibility);
+    const mermaidCode = generateOperationMermaidCode(operation, visibility);
     const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
@@ -287,8 +287,8 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     if (visibility.port) {
         if (visibility.operation) {
             const portSubgraph = builder.startSubgraph(portLabel);
-            group.links.forEach((link, index) => {
-                const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || `Operation_${index}`;
+            group.operations.forEach((operation, index) => {
+                const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `Operation_${index}`;
                 builder.addNodeToSubgraph(portSubgraph, `PortOp_${index}`, portOpName);
             });
         } else {
@@ -301,19 +301,19 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const accessorNodes = new Map();
     const targetNodes = new Map();
 
-    group.links.forEach((link, linkIndex) => {
-        const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
-        const adapterLabel = link.outputAdapter?.label || adapterFqn;
-        const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
-        const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
+    group.operations.forEach((operation, operationIndex) => {
+        const adapterFqn = operation.outputAdapter?.fqn || `Adapter_${operationIndex}`;
+        const adapterLabel = operation.outputAdapter?.label || adapterFqn;
+        const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || `Execution_${operationIndex}`;
+        const executionFqn = operation.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
 
         let lastNodeId = visibility.port
-            ? (visibility.operation ? `PortOp_${linkIndex}` : "Port")
+            ? (visibility.operation ? `PortOp_${operationIndex}` : "Port")
             : null;
 
         lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-        link.persistenceAccessors?.forEach((op) => {
+        operation.persistenceAccessors?.forEach((op) => {
             if (!isCrudVisible(op.sqlType, visibility)) return;
             const sqlType = op.sqlType || "";
 
@@ -413,8 +413,8 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
 
     const targetsSet = new Set();
     grouped.forEach(group => {
-        group.links.forEach(link => {
-            link.persistenceAccessors?.forEach(op => {
+        group.operations.forEach(operation => {
+            operation.persistenceAccessors?.forEach(op => {
                 op.targets?.forEach(target => targetsSet.add(target));
             });
         });
@@ -459,15 +459,15 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
                         createElement("span", {
                             className: "weak",
                             style: {marginLeft: "8px"},
-                            textContent: `(${group.links.length})`
+                            textContent: `(${group.operations.length})`
                         })
                     ]
                 }),
                 ...allTargets.map(target => {
                     const cell = createElement("td", {className: "crud-cell port-crud-cell"});
                     const portTargetCrudMap = new Map();
-                    group.links.forEach(link => {
-                        link.persistenceAccessors?.forEach(op => {
+                    group.operations.forEach(operation => {
+                        operation.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
                             if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
                                 const current = portTargetCrudMap.get(target) || new Set();
@@ -488,19 +488,19 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
         tbody.appendChild(portRow);
 
         // 操作行の作成
-        const opRows = group.links.map(link => {
+        const opRows = group.operations.map(operation => {
             const row = createElement("tr", {
                 className: `operation-row ${portId}`,
                 style: {display: "none"},
                 children: [
                     createElement("td", {
                         className: "operation-cell",
-                        textContent: link.outputPortOperation?.label || link.outputPortOperation?.signature || ""
+                        textContent: operation.outputPortOperation?.label || operation.outputPortOperation?.signature || ""
                     }),
                     ...allTargets.map(target => {
                         const cell = createElement("td", {className: "crud-cell"});
                         const targetCrudMap = new Set();
-                        link.persistenceAccessors?.forEach(op => {
+                        operation.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
                             if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
                                 targetCrudMap.add(crud);
@@ -547,26 +547,26 @@ function lazyRender(container, renderFn) {
     observer.observe(container);
 }
 
-function groupLinksByPersistenceTarget(links) {
+function groupOperationsByPersistenceTarget(operations) {
     const map = new Map();
-    links.forEach(link => {
-        link.persistenceAccessors?.forEach(op => {
+    operations.forEach(operation => {
+        operation.persistenceAccessors?.forEach(op => {
             op.targets?.forEach(target => {
                 if (!map.has(target)) {
                     map.set(target, {
                         target: target,
-                        links: [],
+                        operations: [],
                     });
                 }
                 const group = map.get(target);
-                if (!group.links.includes(link)) {
-                    group.links.push(link);
+                if (!group.operations.includes(operation)) {
+                    group.operations.push(operation);
                 }
             });
         });
     });
     return Array.from(map.values()).map(group => {
-        group.links.sort((a, b) => {
+        group.operations.sort((a, b) => {
             const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
             const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
             return left.localeCompare(right, "ja");
@@ -586,20 +586,20 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
 
-    group.links.forEach((link, linkIndex) => {
-        const relevantOps = link.persistenceAccessors.filter(op =>
+    group.operations.forEach((operation, operationIndex) => {
+        const relevantOps = operation.persistenceAccessors.filter(op =>
             op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
 
-        const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
-        const portLabel = link.outputPort?.label || portFqn;
-        const portOpName = link.outputPortOperation?.label || link.outputPortOperation?.signature || `PortOp_${linkIndex}`;
-        const portOpFqn = link.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
+        const portFqn = operation.outputPort?.fqn || `Port_${operationIndex}`;
+        const portLabel = operation.outputPort?.label || portFqn;
+        const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `PortOp_${operationIndex}`;
+        const portOpFqn = operation.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
         const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
 
-        const adapterFqn = link.outputAdapter?.fqn || `Adapter_${linkIndex}`;
-        const adapterLabel = link.outputAdapter?.label || adapterFqn;
-        const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
-        const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
+        const adapterFqn = operation.outputAdapter?.fqn || `Adapter_${operationIndex}`;
+        const adapterLabel = operation.outputAdapter?.label || adapterFqn;
+        const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || `Execution_${operationIndex}`;
+        const executionFqn = operation.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
 
         relevantOps.forEach(op => {
             let currentNode = null;
@@ -695,9 +695,9 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         ];
 
         if (visibility.adapter) {
-            const adapterLabels = Array.from(new Set(group.links.map(link => {
-                const label = link.outputAdapter?.label ?? link.outputAdapter?.fqn ?? "";
-                const fqn = link.outputAdapter?.fqn ?? "";
+            const adapterLabels = Array.from(new Set(group.operations.map(operation => {
+                const label = operation.outputAdapter?.label ?? operation.outputAdapter?.fqn ?? "";
+                const fqn = operation.outputAdapter?.fqn ?? "";
                 return label + (label !== fqn ? ` (${fqn})` : "");
             })));
             if (adapterLabels.length > 0) {
@@ -710,7 +710,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
 
         cardChildren.push(createElement("p", {
             className: "weak",
-            textContent: `${group.links.length} operations`
+            textContent: `${group.operations.length} operations`
         }));
 
         const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
@@ -718,14 +718,14 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         cardChildren.push(portMermaidContainer);
 
         const itemList = createElement("div", {className: "outputs-item-list"});
-        group.links.forEach(link => {
+        group.operations.forEach(operation => {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
-            lazyRender(mermaidContainer, () => renderLinkMermaid(link, mermaidContainer, visibility));
+            lazyRender(mermaidContainer, () => renderOperationMermaid(operation, mermaidContainer, visibility));
 
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",
                 children: [
-                    createElement("h4", {textContent: link.outputPortOperation?.label ?? link.outputPortOperation?.signature ?? ""}),
+                    createElement("h4", {textContent: operation.outputPortOperation?.label ?? operation.outputPortOperation?.signature ?? ""}),
                     mermaidContainer,
                     createElement("p", {
                         className: "outputs-persistence-title",
@@ -733,7 +733,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
                     }),
                     createElement("ul", {
                         className: "outputs-persistence-list",
-                        children: formatPersistenceAccessors(link.persistenceAccessors).map(text => createElement("li", {textContent: text}))
+                        children: formatPersistenceAccessors(operation.persistenceAccessors).map(text => createElement("li", {textContent: text}))
                     })
                 ]
             }));
@@ -741,7 +741,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         const itemListDetails = createElement("details", {});
         const itemListSummary = createElement("summary", {
             className: "outputs-item-list-summary",
-            textContent: `操作一覧 (${group.links.length}件)`
+            textContent: `操作一覧 (${group.operations.length}件)`
         });
         itemListDetails.appendChild(itemListSummary);
         itemListDetails.appendChild(itemList);
@@ -806,12 +806,12 @@ const OutputsApp = {
         const data = getOutputsData();
         this.state.data = data;
 
-        const grouped = groupLinksByOutputPort(data);
+        const grouped = groupOperationsByOutputPort(data);
         this.state.grouped = grouped;
 
-        const allLinks = grouped.flatMap(group =>
-            group.links.map(link => ({...link, outputPort: group.outputPort})));
-        this.state.persistenceGrouped = groupLinksByPersistenceTarget(allLinks);
+        const allOperations = grouped.flatMap(group =>
+            group.operations.map(operation => ({...operation, outputPort: group.outputPort})));
+        this.state.persistenceGrouped = groupOperationsByPersistenceTarget(allOperations);
 
         if (typeof mermaid !== "undefined") {
             mermaid.initialize({startOnLoad: false});
@@ -891,8 +891,8 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         OutputsApp,
         getOutputsData,
-        groupLinksByOutputPort,
-        groupLinksByPersistenceTarget,
+        groupOperationsByOutputPort,
+        groupOperationsByPersistenceTarget,
         formatPersistenceAccessors,
         createField,
         renderOutputsList,
@@ -903,7 +903,7 @@ if (typeof module !== "undefined" && module.exports) {
         createSidebarSection,
         renderSidebarSection,
         renderNoData,
-        generateLinkMermaidCode,
+        generateOperationMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,
         MermaidBuilder,

@@ -518,7 +518,7 @@ test.describe("outputs.js", () => {
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(code.includes('Target[(table1)]'));
             assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target'));
-            assert.ok(code.includes('Execution_adapter1_exec1 --> POp_repo_save') || code.includes('Execution_exec1 --> POp_repo_save'));
+            assert.ok(code.includes('Exec_adapter1_exec1 --> POp_repo_save') || code.includes('Exec_exec1 --> POp_repo_save'));
         });
 
         test("generatePersistenceMermaidCode: adapter非表示のとき、PortOp → POp が直接接続される", () => {
@@ -692,8 +692,8 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(!code.includes('POp_'));
-            assert.ok(code.includes('Execution_exec1'));
-            assert.ok(code.includes('Execution_exec1 -- "INSERT" --> Target'));
+            assert.ok(code.includes('Exec_exec1'));
+            assert.ok(code.includes('Exec_exec1 -- "INSERT" --> Target'));
         });
     });
 

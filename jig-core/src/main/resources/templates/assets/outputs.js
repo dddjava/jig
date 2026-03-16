@@ -185,6 +185,13 @@ MermaidBuilder.prototype.startSubgraph = function (label) {
     return subgraph;
 };
 
+MermaidBuilder.prototype.ensureSubgraph = function (map, key, label) {
+    if (!map.has(key)) {
+        map.set(key, this.startSubgraph(label));
+    }
+    return map.get(key);
+};
+
 MermaidBuilder.prototype.addNodeToSubgraph = function (subgraph, id, label, shape = '["$LABEL"]') {
     const nodeLine = `    ${id}${shape.replace('$LABEL', label)}`;
     if (!subgraph.lines.includes(nodeLine)) {
@@ -299,27 +306,12 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         const adapterLabel = link.outputAdapter?.label || adapterFqn;
         const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
         const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
-        const executionId = `Exec_${builder.sanitize(executionFqn)}`;
 
         let lastNodeId = visibility.port
             ? (visibility.operation ? `PortOp_${linkIndex}` : "Port")
             : null;
 
-        if (visibility.adapter) {
-            if (visibility.execution) {
-                if (!adapterSubgraphs.has(adapterFqn)) {
-                    adapterSubgraphs.set(adapterFqn, builder.startSubgraph(adapterLabel));
-                }
-                builder.addNodeToSubgraph(adapterSubgraphs.get(adapterFqn), executionId, executionName);
-                if (lastNodeId) builder.addEdge(lastNodeId, executionId);
-                lastNodeId = executionId;
-            } else {
-                const adapterNodeId = `Adapter_${builder.sanitize(adapterFqn)}`;
-                builder.addNode(adapterNodeId, adapterLabel);
-                if (lastNodeId) builder.addEdge(lastNodeId, adapterNodeId);
-                lastNodeId = adapterNodeId;
-            }
-        }
+        lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
         link.persistenceAccessors?.forEach((op) => {
             if (!isCrudVisible(op.sqlType, visibility)) return;
@@ -375,17 +367,31 @@ function addTargetEdges(builder, sourceNodeId, targets, targetNodes, sqlType) {
     });
 }
 
+function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs) {
+    if (!visibility.adapter) return sourceNodeId;
+
+    if (visibility.execution) {
+        const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
+        const executionId = `Exec_${builder.sanitize(executionFqn)}`;
+        builder.addNodeToSubgraph(sg, executionId, executionName);
+        if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
+        return executionId;
+    } else {
+        const adapterNodeId = `Adapter_${builder.sanitize(adapterFqn)}`;
+        builder.addNode(adapterNodeId, adapterLabel);
+        if (sourceNodeId) builder.addEdge(sourceNodeId, adapterNodeId);
+        return adapterNodeId;
+    }
+}
+
 function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraphs, accessorNodes) {
     const groupId = op.group;
     const groupLabel = op.groupLabel;
     if (!visibility.accessor || !groupId) return sourceNodeId;
 
     if (visibility.accessorMethod) {
-        if (!accessorSubgraphs.has(groupId)) {
-            accessorSubgraphs.set(groupId, builder.startSubgraph(groupLabel));
-        }
         const opNodeId = `POp_${builder.sanitize(op.id)}`;
-        builder.addNodeToSubgraph(accessorSubgraphs.get(groupId), opNodeId, op.id.split('.').pop());
+        builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop());
         if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
         return opNodeId;
     } else {
@@ -594,17 +600,16 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
         const adapterLabel = link.outputAdapter?.label || adapterFqn;
         const executionName = link.outputAdapterExecution?.label || link.outputAdapterExecution?.signature || `Execution_${linkIndex}`;
         const executionFqn = link.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
-        const executionId = `Execution_${builder.sanitize(executionFqn)}`;
 
         relevantOps.forEach(op => {
             let currentNode = null;
 
             if (visibility.port) {
                 if (visibility.operation) {
-                    if (!portSubgraphs.has(portFqn)) {
-                        portSubgraphs.set(portFqn, builder.startSubgraph(portLabel));
-                    }
-                    builder.addNodeToSubgraph(portSubgraphs.get(portFqn), portOpId, portOpName);
+                    builder.addNodeToSubgraph(
+                        builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
+                        portOpId, portOpName
+                    );
                     currentNode = portOpId;
                 } else {
                     builder.addNode(`Port_${builder.sanitize(portFqn)}`, portLabel);
@@ -612,21 +617,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
                 }
             }
 
-            if (visibility.adapter) {
-                if (visibility.execution) {
-                    if (!adapterSubgraphs.has(adapterFqn)) {
-                        adapterSubgraphs.set(adapterFqn, builder.startSubgraph(adapterLabel));
-                    }
-                    builder.addNodeToSubgraph(adapterSubgraphs.get(adapterFqn), executionId, executionName);
-                    if (currentNode) builder.addEdge(currentNode, executionId);
-                    currentNode = executionId;
-                } else {
-                    const adapterNodeId = `Adapter_${builder.sanitize(adapterFqn)}`;
-                    builder.addNode(adapterNodeId, adapterLabel);
-                    if (currentNode) builder.addEdge(currentNode, adapterNodeId);
-                    currentNode = adapterNodeId;
-                }
-            }
+            currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
             currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 

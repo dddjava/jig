@@ -440,9 +440,9 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
             const code = outputs.generateMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "repo"'));
-            assert.ok(code.includes('Method_com_example_repo_save["save"]'));
-            assert.ok(code.includes('Execution --> Method_com_example_repo_save'));
-            assert.ok(code.includes('Method_com_example_repo_save -- "INSERT" --> Target_0'));
+            assert.ok(code.includes('POp_com_example_repo_save["save"]'));
+            assert.ok(code.includes('Execution --> POp_com_example_repo_save'));
+            assert.ok(code.includes('POp_com_example_repo_save -- "INSERT" --> Target_0'));
         });
 
         test("generateMermaidCode: direction=TBのとき、graph TBで始まるコードを生成する", () => {

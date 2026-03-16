@@ -553,6 +553,27 @@ test.describe("outputs.js", () => {
             assert.ok(!code.includes('Target_0'));
         });
 
+        test("generateOperationMermaidCode: outputPortのlabelをポートラベルとして使用する", () => {
+            const operation = {
+                outputPort: { fqn: "com.example.MyPort", label: "MyPort" },
+                outputPortOperation: { label: "doSomething" },
+                persistenceAccessors: []
+            };
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
+            const code = outputs.generateOperationMermaidCode(operation, visibility);
+            assert.ok(code.includes('["MyPort"]'), `ポートラベル "MyPort" が含まれない:\n${code}`);
+        });
+
+        test("generateOperationMermaidCode: outputPortがないときポートラベルが \"Port\" にフォールバックする", () => {
+            const operation = {
+                outputPortOperation: { label: "doSomething" },
+                persistenceAccessors: []
+            };
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
+            const code = outputs.generateOperationMermaidCode(operation, visibility);
+            assert.ok(code.includes('["Port"]'), `フォールバック "Port" が含まれない:\n${code}`);
+        });
+
         test("generatePortMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const group = {
                 outputPort: { label: "PortA" },

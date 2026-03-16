@@ -664,7 +664,8 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         const itemList = createElement("div", {className: "outputs-item-list"});
         group.operations.forEach(operation => {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
-            lazyRender(mermaidContainer, () => renderMermaid(generateOperationMermaidCode, operation, mermaidContainer, visibility));
+            const operationWithPort = {...operation, outputPort: group.outputPort};
+            lazyRender(mermaidContainer, () => renderMermaid(generateOperationMermaidCode, operationWithPort, mermaidContainer, visibility));
 
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",

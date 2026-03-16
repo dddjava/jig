@@ -391,9 +391,9 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
-            assert.ok(code.includes('subgraph "P1"'));
+            assert.ok(code.includes('["P1"]'));
             assert.ok(code.includes('PortOp_P1_op1["op1"]'));
-            assert.ok(code.includes('subgraph "A1"'));
+            assert.ok(code.includes('["A1"]'));
             assert.ok(code.includes('Exec_Adapter_0_ex1["ex1"]'));
             assert.ok(code.includes('PortOp_P1_op1 --> Exec_Adapter_0_ex1'));
             assert.ok(code.includes('Exec_Adapter_0_ex1 -- "INSERT" --> Target_0'));
@@ -433,7 +433,7 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
-            assert.ok(code.includes('subgraph "repo"'));
+            assert.ok(code.includes('["repo"]'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
             assert.ok(code.includes('Exec_Adapter_0_ex1 --> POp_com_example_repo_save'));
             assert.ok(code.includes('POp_com_example_repo_save -- "INSERT" --> Target_0'));
@@ -460,7 +460,7 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
             const code = outputs.generatePortMermaidCode(group, visibility);
-            assert.ok(code.includes('subgraph "PortA"'));
+            assert.ok(code.includes('["PortA"]'));
             assert.ok(code.includes('PortOp_PortA_op1["op1"]'));
             assert.ok(code.includes('PortOp_PortA_op2["op2"]'));
         });
@@ -487,7 +487,7 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
             const code = outputs.generatePortMermaidCode(group, visibility);
-            assert.ok(code.includes('subgraph "repo"'));
+            assert.ok(code.includes('["repo"]'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
             assert.ok(code.includes('Exec_adapter1_ex1 --> POp_com_example_repo_save') || code.includes('Exec_exec1 --> POp_com_example_repo_save'));
         });
@@ -1159,6 +1159,34 @@ test.describe("outputs.js", () => {
             const visibility = {port: false, operation: false, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generatePortMermaidCode(group, visibility);
             assert.equal(code, null);
+        });
+    });
+
+    test.describe("MermaidBuilder: subgraph ID の一意性", () => {
+        test("同じラベルの subgraph が2つある場合、それぞれ異なるIDを持つ", () => {
+            const builder = new outputs.MermaidBuilder();
+            const sg1 = builder.startSubgraph("MyService");
+            const sg2 = builder.startSubgraph("MyService");
+            assert.notEqual(sg1.id, sg2.id);
+        });
+
+        test("同じラベルの subgraph が2つある場合、build() に subgraph が2つ含まれる", () => {
+            const builder = new outputs.MermaidBuilder();
+            const sg1 = builder.startSubgraph("MyService");
+            builder.addNodeToSubgraph(sg1, "n1", "Node1");
+            const sg2 = builder.startSubgraph("MyService");
+            builder.addNodeToSubgraph(sg2, "n2", "Node2");
+            const code = builder.build();
+            const matches = code.match(/subgraph /g);
+            assert.equal(matches?.length, 2);
+        });
+
+        test("build() の subgraph 行が id [\"label\"] 形式になっている", () => {
+            const builder = new outputs.MermaidBuilder();
+            const sg = builder.startSubgraph("My Service");
+            builder.addNodeToSubgraph(sg, "n1", "Node1");
+            const code = builder.build();
+            assert.match(code, /subgraph sg_My_Service_0 \["My Service"\]/);
         });
     });
 

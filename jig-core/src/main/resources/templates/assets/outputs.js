@@ -177,7 +177,8 @@ class MermaidBuilder {
     }
 
     startSubgraph(label) {
-        const subgraph = {label, lines: []};
+        const id = `sg_${this.sanitize(label)}_${this.subgraphs.length}`;
+        const subgraph = {id, label, lines: []};
         this.subgraphs.push(subgraph);
         return subgraph;
     }
@@ -200,7 +201,7 @@ class MermaidBuilder {
     build(direction = 'LR') {
         let code = `graph ${direction}\n`;
         this.subgraphs.forEach(sg => {
-            code += `  subgraph "${sg.label}"\n`;
+            code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
             sg.lines.forEach(line => {
                 code += `    ${line.trim()}\n`;
             });

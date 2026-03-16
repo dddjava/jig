@@ -398,10 +398,10 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "P1"'));
-            assert.ok(code.includes('PortOp_0["op1"]'));
+            assert.ok(code.includes('PortOp_P1_op1["op1"]'));
             assert.ok(code.includes('subgraph "A1"'));
             assert.ok(code.includes('Exec_Adapter_0_ex1["ex1"]'));
-            assert.ok(code.includes('PortOp_0 --> Exec_Adapter_0_ex1'));
+            assert.ok(code.includes('PortOp_P1_op1 --> Exec_Adapter_0_ex1'));
             assert.ok(code.includes('Exec_Adapter_0_ex1 -- "INSERT" --> Target_0'));
             assert.ok(code.includes('Target_0[(table1)]'));
         });
@@ -416,9 +416,9 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
-            assert.ok(code.includes('PortOp_0["op1"]'));
+            assert.ok(code.includes('PortOp_P1_op1["op1"]'));
             assert.ok(!code.includes('subgraph "Adapter"'));
-            assert.ok(code.includes('PortOp_0 -- "INSERT" --> Target_0'));
+            assert.ok(code.includes('PortOp_P1_op1 -- "INSERT" --> Target_0'));
         });
 
         test("generateOperationMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
@@ -467,8 +467,8 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
             const code = outputs.generatePortMermaidCode(group, visibility);
             assert.ok(code.includes('subgraph "PortA"'));
-            assert.ok(code.includes('PortOp_0["op1"]'));
-            assert.ok(code.includes('PortOp_1["op2"]'));
+            assert.ok(code.includes('PortOp_PortA_op1["op1"]'));
+            assert.ok(code.includes('PortOp_PortA_op2["op2"]'));
         });
 
         test("generatePortMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
@@ -516,8 +516,8 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
-            assert.ok(code.includes('Target[(table1)]'));
-            assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target'));
+            assert.ok(code.includes('Target_0[(table1)]'));
+            assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target_0'));
             assert.ok(code.includes('Exec_adapter1_exec1 --> POp_repo_save') || code.includes('Exec_exec1 --> POp_repo_save'));
         });
 
@@ -596,7 +596,7 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(!code.includes('"INSERT"'));
-            assert.ok(!code.includes('Target['));
+            assert.ok(!code.includes('Target_0['));
         });
 
         test("generatePortMermaidCode: メソッド非表示のとき、複数のexecutionから同一accessorへのエッジが全て生成される", () => {
@@ -693,7 +693,7 @@ test.describe("outputs.js", () => {
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(!code.includes('POp_'));
             assert.ok(code.includes('Exec_exec1'));
-            assert.ok(code.includes('Exec_exec1 -- "INSERT" --> Target'));
+            assert.ok(code.includes('Exec_exec1 -- "INSERT" --> Target_0'));
         });
     });
 

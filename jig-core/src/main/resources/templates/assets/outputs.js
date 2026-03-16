@@ -238,34 +238,25 @@ function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY
 
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
+    const portFqn = group.outputPort?.fqn || group.outputPort?.label || "Port";
     const portLabel = group.outputPort?.label || group.outputPort?.fqn || "Port";
 
-    if (visibility.port) {
-        if (visibility.operation) {
-            const portSubgraph = builder.startSubgraph(portLabel);
-            group.operations.forEach((operation, index) => {
-                const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `Operation_${index}`;
-                builder.addNodeToSubgraph(portSubgraph, `PortOp_${index}`, portOpName);
-            });
-        } else {
-            builder.addNode("Port", portLabel);
-        }
-    }
-
+    const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
     const targetNodes = new Map();
 
     group.operations.forEach((operation, operationIndex) => {
+        const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `Operation_${operationIndex}`;
+        const portOpFqn = operation.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
+
         const adapterFqn = operation.outputAdapter?.fqn || `Adapter_${operationIndex}`;
         const adapterLabel = operation.outputAdapter?.label || adapterFqn;
         const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || `Execution_${operationIndex}`;
         const executionFqn = operation.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
 
-        let lastNodeId = visibility.port
-            ? (visibility.operation ? `PortOp_${operationIndex}` : "Port")
-            : null;
+        let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
 
         lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
@@ -311,6 +302,22 @@ function addTargetEdges(builder, sourceNodeId, targets, targetNodes, sqlType) {
         }
         if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
     });
+}
+
+function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
+    if (!visibility.port) return null;
+    if (visibility.operation) {
+        const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
+        builder.addNodeToSubgraph(
+            builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
+            portOpId, portOpName
+        );
+        return portOpId;
+    } else {
+        const portNodeId = `Port_${builder.sanitize(portFqn)}`;
+        builder.addNode(portNodeId, portLabel);
+        return portNodeId;
+    }
 }
 
 function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs) {
@@ -531,6 +538,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
     const adapterSubgraphs = new Map();
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
+    const targetNodes = new Map();
 
     group.operations.forEach((operation, operationIndex) => {
         const relevantOps = operation.persistenceAccessors.filter(op =>
@@ -540,7 +548,6 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
         const portLabel = operation.outputPort?.label || portFqn;
         const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `PortOp_${operationIndex}`;
         const portOpFqn = operation.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
-        const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
 
         const adapterFqn = operation.outputAdapter?.fqn || `Adapter_${operationIndex}`;
         const adapterLabel = operation.outputAdapter?.label || adapterFqn;
@@ -548,28 +555,14 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
         const executionFqn = operation.outputAdapterExecution?.fqn || `${adapterFqn}.${executionName}`;
 
         relevantOps.forEach(op => {
-            let currentNode = null;
-
-            if (visibility.port) {
-                if (visibility.operation) {
-                    builder.addNodeToSubgraph(
-                        builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
-                        portOpId, portOpName
-                    );
-                    currentNode = portOpId;
-                } else {
-                    builder.addNode(`Port_${builder.sanitize(portFqn)}`, portLabel);
-                    currentNode = `Port_${builder.sanitize(portFqn)}`;
-                }
-            }
+            let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
 
             currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
             currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
             if (visibility.target) {
-                builder.addNode("Target", target, "[($LABEL)]");
-                if (currentNode) builder.addEdge(currentNode, "Target", op.sqlType);
+                addTargetEdges(builder, currentNode, [target], targetNodes, op.sqlType);
             }
         });
     });

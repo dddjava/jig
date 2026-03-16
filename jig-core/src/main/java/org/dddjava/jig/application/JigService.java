@@ -146,7 +146,8 @@ public class JigService {
                         .map(MethodInsight::new)
                         .toList(),
                 glossary(repository),
-                TypeRelationships.internalRelation(jigTypes)
+                TypeRelationships.internalRelation(jigTypes),
+                jigTypes
         );
     }
 }

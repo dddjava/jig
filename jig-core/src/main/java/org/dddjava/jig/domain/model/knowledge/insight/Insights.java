@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.insight;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -12,7 +13,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-public record Insights(Collection<MethodInsight> values, Glossary glossary, TypeRelationships typeRelationships) {
+public record Insights(Collection<MethodInsight> values, Glossary glossary, TypeRelationships typeRelationships, JigTypes jigTypes) {
     public List<PackageInsight> packageInsightList() {
         return typeInsightStream()
                 .collect(groupingBy(typeInsight -> typeInsight.typeId().packageId(), toList()))

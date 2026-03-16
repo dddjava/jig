@@ -217,6 +217,8 @@ test.describe('insight.js', () => {
 
                     instability: 1.0,
 
+                    lcom: 0,
+
                     cyclomaticComplexity: 2,
 
                     size: 5,

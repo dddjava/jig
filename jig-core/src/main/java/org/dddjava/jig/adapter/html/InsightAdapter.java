@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.insight.Insights;
 import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 import org.dddjava.jig.domain.model.knowledge.insight.PackageInsight;
@@ -48,8 +49,9 @@ public class InsightAdapter {
                 .collect(Collectors.joining(",", "[", "]"));
 
         TypeRelationships typeRelationships = result.typeRelationships();
+        var jigTypes = result.jigTypes();
         String typesJson = result.typeInsightList().stream()
-                .map(insight -> formatTypeJson(insight, typeRelationships))
+                .map(insight -> formatTypeJson(insight, typeRelationships, jigTypes))
                 .collect(Collectors.joining(",", "[", "]"));
 
         String methodsJson = result.methodInsightList().stream()
@@ -72,13 +74,14 @@ public class InsightAdapter {
                 .build();
     }
 
-    private static String formatTypeJson(TypeInsight insight, TypeRelationships typeRelationships) {
+    private static String formatTypeJson(TypeInsight insight, TypeRelationships typeRelationships, JigTypes jigTypes) {
         return Json.object("fqn", insight.fqn())
                 .and("label", insight.label())
                 .and("numberOfMethods", insight.numberOfMethods())
                 .and("numberOfUsingTypes", insight.numberOfUsingTypes())
                 .and("numberOfUsedByTypes", insight.numberOfUsedByTypes(typeRelationships))
                 .and("instability", Math.round(insight.instability(typeRelationships) * 100.0) / 100.0)
+                .and("lcom", Math.round(insight.lcom(jigTypes) * 100.0) / 100.0)
                 .and("cyclomaticComplexity", insight.cyclomaticComplexity())
                 .and("size", insight.size())
                 .and("packageFqn", insight.packageFqn())

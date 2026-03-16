@@ -62,8 +62,8 @@ function groupOperationsByOutputPort(data) {
         return {outputPort: port, operations};
     }).filter(group => group.operations.length > 0)
       .sort((a, b) => {
-        const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
-        const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
+        const left = a.outputPort.label;
+        const right = b.outputPort.label;
         return left.localeCompare(right, "ja");
     });
 }
@@ -242,8 +242,8 @@ function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY
 
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
-    const portFqn = group.outputPort.fqn || group.outputPort.label;
-    const portLabel = group.outputPort.label || group.outputPort.fqn;
+    const portFqn = group.outputPort.fqn;
+    const portLabel = group.outputPort.label;
 
     const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();
@@ -383,7 +383,7 @@ function createPortGroupRow(group, allTargets, visibility) {
             createElement("td", {
                 className: "port-group-cell",
                 children: [
-                    document.createTextNode(group.outputPort.label || group.outputPort.fqn || "(unknown)"),
+                    document.createTextNode(group.outputPort.label),
                     createElement("span", {
                         className: "weak",
                         style: {marginLeft: "8px"},
@@ -439,7 +439,7 @@ function createOperationRow(operation, allTargets, portId, visibility) {
 }
 
 function appendGroupToTable(tbody, group, allTargets, visibility) {
-    const portId = "port-" + (group.outputPort.fqn ?? "").replace(/[^a-zA-Z0-9]/g, '-');
+    const portId = "port-" + group.outputPort.fqn.replace(/[^a-zA-Z0-9]/g, '-');
     const portRow = createPortGroupRow(group, allTargets, visibility);
     tbody.appendChild(portRow);
 
@@ -532,8 +532,8 @@ function groupOperationsByPersistenceTarget(operations) {
     });
     return Array.from(map.values()).map(group => {
         group.operations.sort((a, b) => {
-            const left = a.outputPort.label ?? a.outputPort.fqn ?? "";
-            const right = b.outputPort.label ?? b.outputPort.fqn ?? "";
+            const left = a.outputPort.label;
+            const right = b.outputPort.label;
             return left.localeCompare(right, "ja");
         });
         return group;
@@ -556,8 +556,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
         const relevantOps = operation.persistenceAccessors.filter(op =>
             op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
 
-        const portFqn = operation.outputPort?.fqn || `Port_${operationIndex}`;
-        const portLabel = operation.outputPort?.label || portFqn;
+        const portFqn = operation.outputPort.fqn;
+        const portLabel = operation.outputPort.label;
         const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || `PortOp_${operationIndex}`;
         const portOpFqn = operation.outputPortOperation?.fqn || `${portFqn}.${portOpName}`;
 
@@ -626,9 +626,9 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
 
     grouped.forEach(group => {
         if (!generatePortMermaidCode(group, visibility)) return;
-        const portFqnValue = group.outputPort.fqn ?? "";
+        const portFqnValue = group.outputPort.fqn;
         const portId = "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-');
-        const portLabel = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";
+        const portLabel = group.outputPort.label;
 
         const cardChildren = [
             createElement("h3", {textContent: portLabel}),
@@ -700,10 +700,9 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
     });
 
     renderSidebarSection(sidebar, "出力ポート", grouped.map(group => {
-        const portFqnValue = group.outputPort.fqn ?? "";
         return {
-            id: "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-'),
-            label: group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)"
+            id: "port-" + group.outputPort.fqn.replace(/[^a-zA-Z0-9]/g, '-'),
+            label: group.outputPort.label
         };
     }));
 

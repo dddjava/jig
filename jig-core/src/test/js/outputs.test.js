@@ -594,9 +594,9 @@ test.describe("outputs.js", () => {
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
+            // INSERTのみで全CRUDがフィルタされるとbuildersが空になりnullを返す
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
-            assert.ok(!code.includes('"INSERT"'));
-            assert.ok(!code.includes('Target_0['));
+            assert.equal(code, null);
         });
 
         test("generatePortMermaidCode: メソッド非表示のとき、複数のexecutionから同一accessorへのエッジが全て生成される", () => {
@@ -894,7 +894,17 @@ test.describe("outputs.js", () => {
             const grouped = [
                 {
                     target: "table1",
-                    operations: []
+                    operations: [
+                        {
+                            outputPort: { fqn: "p1", label: "P1" },
+                            outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                            outputAdapter: { fqn: "adapter1", label: "A1" },
+                            outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                            persistenceAccessors: [
+                                { id: "repo.save", sqlType: "INSERT", targets: ["table1"], group: "com.example.repo", groupLabel: "Repo" }
+                            ]
+                        }
+                    ]
                 }
             ];
 
@@ -1066,6 +1076,117 @@ test.describe("outputs.js", () => {
             } finally {
                 global.IntersectionObserver = oldIO;
             }
+        });
+
+        test("renderOutputsList: port/adapter/accessor/target が全て false のとき、カードが描画されない", () => {
+            const doc = setupDocument();
+            const container = doc.getElementById("outputs-list");
+
+            const grouped = [
+                {
+                    outputPort: { fqn: "com.example.APort", label: "A Port" },
+                    operations: [
+                        {
+                            outputPortOperation: { label: "op1" },
+                            persistenceAccessors: []
+                        }
+                    ]
+                }
+            ];
+            const visibility = {port: false, operation: false, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            outputs.renderOutputsList(grouped, visibility);
+
+            assert.equal(container.children.length, 0);
+        });
+
+        test("renderPersistenceList: 全CRUD非表示でINSERTのみの操作があるとき、カードが描画されない", () => {
+            const doc = setupDocument();
+            const container = doc.getElementById("persistence-list");
+
+            const grouped = [
+                {
+                    target: "table1",
+                    operations: [
+                        {
+                            outputPort: { fqn: "p1", label: "P1" },
+                            outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                            outputAdapter: { fqn: "adapter1", label: "A1" },
+                            outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                            persistenceAccessors: [
+                                { id: "repo.insert", sqlType: "INSERT", targets: ["table1"], group: "com.example.repo", groupLabel: "Repo" }
+                            ]
+                        }
+                    ]
+                }
+            ];
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: false, crudUpdate: false, crudDelete: false};
+            outputs.renderPersistenceList(grouped, visibility);
+
+            assert.equal(container.children.length, 0);
+        });
+    });
+
+    test.describe("MermaidBuilder.isEmpty", () => {
+        test("空の builder は true を返す", () => {
+            const builder = new outputs.MermaidBuilder();
+            assert.equal(builder.isEmpty(), true);
+        });
+
+        test("ノード追加後は false を返す", () => {
+            const builder = new outputs.MermaidBuilder();
+            builder.addNode("n1", "Node1");
+            assert.equal(builder.isEmpty(), false);
+        });
+
+        test("サブグラフ追加後は false を返す", () => {
+            const builder = new outputs.MermaidBuilder();
+            builder.startSubgraph("SG");
+            assert.equal(builder.isEmpty(), false);
+        });
+
+        test("エッジ追加後は false を返す", () => {
+            const builder = new outputs.MermaidBuilder();
+            builder.addEdge("a", "b");
+            assert.equal(builder.isEmpty(), false);
+        });
+    });
+
+    test.describe("generatePortMermaidCode: null を返すケース", () => {
+        test("port/adapter/accessor/target が全て false のとき null を返す", () => {
+            const group = {
+                outputPort: { label: "PortA" },
+                operations: [
+                    {
+                        outputPortOperation: { label: "op1" },
+                        persistenceAccessors: []
+                    }
+                ]
+            };
+            const visibility = {port: false, operation: false, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePortMermaidCode(group, visibility);
+            assert.equal(code, null);
+        });
+    });
+
+    test.describe("generatePersistenceMermaidCode: null を返すケース", () => {
+        test("全CRUD非表示のとき null を返す", () => {
+            const group = {
+                target: "table1",
+                operations: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        persistenceAccessors: [
+                            { id: "repo.insert", sqlType: "INSERT", targets: ["table1"], group: "com.example.repo", groupLabel: "Repo" }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: false, crudUpdate: false, crudDelete: false};
+            const code = outputs.generatePersistenceMermaidCode(group, visibility);
+            assert.equal(code, null);
         });
     });
 });

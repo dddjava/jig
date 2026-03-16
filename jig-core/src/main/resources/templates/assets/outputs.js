@@ -218,11 +218,16 @@ MermaidBuilder.prototype.build = function (direction = 'LR') {
     return code;
 };
 
+MermaidBuilder.prototype.isEmpty = function () {
+    return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
+};
+
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
 function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
     const mermaidCode = generateCodeFn(data, visibility);
+    if (!mermaidCode) return;
     const id = "mermaid-" + Math.random().toString(36).substring(2, 11);
     mermaid.render(id, mermaidCode).then(({svg}) => {
         container.innerHTML = svg;
@@ -272,6 +277,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         });
     });
 
+    if (builder.isEmpty()) return null;
     return builder.build(visibility.direction);
 }
 
@@ -567,6 +573,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
         });
     });
 
+    if (builder.isEmpty()) return null;
     return builder.build(visibility.direction);
 }
 
@@ -578,6 +585,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
     if (sidebar) sidebar.innerHTML = "";
 
     grouped.forEach(group => {
+        if (!generatePersistenceMermaidCode(group, visibility)) return;
         const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
@@ -611,6 +619,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
     if (sidebar) sidebar.innerHTML = "";
 
     grouped.forEach(group => {
+        if (!generatePortMermaidCode(group, visibility)) return;
         const portFqnValue = group.outputPort.fqn ?? "";
         const portId = "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-');
         const portLabel = group.outputPort.label ?? group.outputPort.fqn ?? "(unknown)";

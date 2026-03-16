@@ -969,13 +969,6 @@ table td.number {
     font-size: 0.9em;
     margin-top: 8px;
 }
-.outputs .outputs-display-mode__title {
-    margin: 0 0 6px 0;
-    color: #31455f;
-    font-size: 0.85rem;
-    font-weight: bold;
-    letter-spacing: 0.04em;
-}
 .outputs .outputs-display-mode__groups {
     display: flex;
     flex-direction: column;

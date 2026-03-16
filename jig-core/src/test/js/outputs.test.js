@@ -398,11 +398,11 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "P1"'));
-            assert.ok(code.includes('PortOp["op1"]'));
+            assert.ok(code.includes('PortOp_0["op1"]'));
             assert.ok(code.includes('subgraph "A1"'));
-            assert.ok(code.includes('Execution["ex1"]'));
-            assert.ok(code.includes('PortOp --> Execution'));
-            assert.ok(code.includes('Execution -- "INSERT" --> Target_0'));
+            assert.ok(code.includes('Exec_Adapter_0_ex1["ex1"]'));
+            assert.ok(code.includes('PortOp_0 --> Exec_Adapter_0_ex1'));
+            assert.ok(code.includes('Exec_Adapter_0_ex1 -- "INSERT" --> Target_0'));
             assert.ok(code.includes('Target_0[(table1)]'));
         });
 
@@ -416,9 +416,9 @@ test.describe("outputs.js", () => {
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
-            assert.ok(code.includes('PortOp["op1"]'));
+            assert.ok(code.includes('PortOp_0["op1"]'));
             assert.ok(!code.includes('subgraph "Adapter"'));
-            assert.ok(code.includes('PortOp -- "INSERT" --> Target_0'));
+            assert.ok(code.includes('PortOp_0 -- "INSERT" --> Target_0'));
         });
 
         test("generateOperationMermaidCode: accessorMethodを表示するvisibilityで永続化操作のグループを表示する", () => {
@@ -441,7 +441,7 @@ test.describe("outputs.js", () => {
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('subgraph "repo"'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
-            assert.ok(code.includes('Execution --> POp_com_example_repo_save'));
+            assert.ok(code.includes('Exec_Adapter_0_ex1 --> POp_com_example_repo_save'));
             assert.ok(code.includes('POp_com_example_repo_save -- "INSERT" --> Target_0'));
         });
 
@@ -670,7 +670,7 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             // ExecutionからAccessorへのエッジが存在すること
-            assert.ok(code.includes('Execution --> Accessor_com_example_repo'), `Execution -> Accessor のエッジが存在しない:\n${code}`);
+            assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'), `Exec_execA -> Accessor のエッジが存在しない:\n${code}`);
         });
 
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {

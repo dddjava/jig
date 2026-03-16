@@ -221,53 +221,10 @@ MermaidBuilder.prototype.build = function (direction = 'LR') {
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
 function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY) {
-    const builder = new MermaidBuilder();
-    const accessorSubgraphs = new Map();
-    const accessorNodes = new Map();
-    const targetNodes = new Map();
-
-    let lastNode = null;
-
-    if (visibility.port) {
-        const portLabel = operation.outputPort?.label || operation.outputPort?.fqn || "Port";
-        const portOpName = operation.outputPortOperation?.label || operation.outputPortOperation?.signature || "Operation";
-        if (visibility.operation) {
-            const portSubgraph = builder.startSubgraph(portLabel);
-            builder.addNodeToSubgraph(portSubgraph, "PortOp", portOpName);
-            lastNode = "PortOp";
-        } else {
-            builder.addNode("Port", portLabel);
-            lastNode = "Port";
-        }
-    }
-
-    if (visibility.adapter) {
-        const adapterLabel = operation.outputAdapter?.label || operation.outputAdapter?.fqn || "Adapter";
-        const executionName = operation.outputAdapterExecution?.label || operation.outputAdapterExecution?.signature || "Execution";
-        if (visibility.execution) {
-            const adapterSubgraph = builder.startSubgraph(adapterLabel);
-            builder.addNodeToSubgraph(adapterSubgraph, "Execution", executionName);
-            if (lastNode) builder.addEdge(lastNode, "Execution");
-            lastNode = "Execution";
-        } else {
-            builder.addNode("Adapter", adapterLabel);
-            if (lastNode) builder.addEdge(lastNode, "Adapter");
-            lastNode = "Adapter";
-        }
-    }
-
-    operation.persistenceAccessors?.forEach((op) => {
-        if (!isCrudVisible(op.sqlType, visibility)) return;
-        const sqlType = op.sqlType || "";
-
-        const currentNode = addAccessorNode(builder, lastNode, op, visibility, accessorSubgraphs, accessorNodes);
-
-        if (visibility.target) {
-            addTargetEdges(builder, currentNode, op.targets, targetNodes, sqlType);
-        }
-    });
-
-    return builder.build(visibility.direction);
+    return generatePortMermaidCode(
+        {outputPort: operation.outputPort, operations: [operation]},
+        visibility
+    );
 }
 
 function renderOperationMermaid(operation, container, visibility = DEFAULT_VISIBILITY) {

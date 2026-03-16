@@ -545,6 +545,60 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('PortOp_p1_op1 --> POp_repo_save'));
         });
 
+        test("generateMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
+            const link = {
+                outputPort: { label: "P1" },
+                outputPortOperation: { label: "op1" },
+                persistenceAccessors: [
+                    { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generateMermaidCode(link, visibility);
+            assert.ok(!code.includes('"INSERT"'));
+            assert.ok(!code.includes('Target_0'));
+        });
+
+        test("generatePortMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
+            const group = {
+                outputPort: { label: "PortA" },
+                links: [
+                    {
+                        outputPortOperation: { label: "op1" },
+                        persistenceAccessors: [
+                            { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePortMermaidCode(group, visibility);
+            assert.ok(!code.includes('"INSERT"'));
+            assert.ok(!code.includes('Target_0'));
+        });
+
+        test("generatePersistenceMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
+            const group = {
+                target: "table1",
+                links: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        persistenceAccessors: [
+                            { id: "repo.save", sqlType: "INSERT", targets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo" }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePersistenceMermaidCode(group, visibility);
+            assert.ok(!code.includes('"INSERT"'));
+            assert.ok(!code.includes('Target['));
+        });
+
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 target: "table1",
@@ -661,6 +715,96 @@ test.describe("outputs.js", () => {
 
             portRow.click();
             assert.equal(opRow.style.display, "none");
+        });
+
+        test("renderCrudTable: C非表示のとき、INSERTが除外される", () => {
+            const doc = setupDocument();
+            const container = doc.getElementById("outputs-crud");
+            const grouped = [{
+                outputPort: { label: "Port A" },
+                links: [{
+                    outputPortOperation: { label: "opA" },
+                    persistenceAccessors: [
+                        { sqlType: "INSERT", targets: ["table1"] },
+                        { sqlType: "SELECT", targets: ["table1"] }
+                    ]
+                }]
+            }];
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
+            outputs.renderCrudTable(grouped, visibility);
+
+            const tbody = container.children[0].children[1];
+            const portRow = tbody.children[0];
+            assert.equal(portRow.children[1].textContent, "R");
+            const opRow = tbody.children[1];
+            assert.equal(opRow.children[1].textContent, "R");
+        });
+
+        test("renderCrudTable: R非表示のとき、SELECTが除外される", () => {
+            const doc = setupDocument();
+            const container = doc.getElementById("outputs-crud");
+            const grouped = [{
+                outputPort: { label: "Port A" },
+                links: [{
+                    outputPortOperation: { label: "opA" },
+                    persistenceAccessors: [
+                        { sqlType: "SELECT", targets: ["table1"] }
+                    ]
+                }]
+            }];
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: false, crudUpdate: true, crudDelete: true};
+            outputs.renderCrudTable(grouped, visibility);
+
+            const tbody = container.children[0].children[1];
+            const portRow = tbody.children[0];
+            assert.equal(portRow.children[1].textContent, "");
+            const opRow = tbody.children[1];
+            assert.equal(opRow.children[1].textContent, "");
+        });
+
+        test("renderCrudTable: 全CRUD非表示のとき、セルが空になる", () => {
+            const doc = setupDocument();
+            const container = doc.getElementById("outputs-crud");
+            const grouped = [{
+                outputPort: { label: "Port A" },
+                links: [{
+                    outputPortOperation: { label: "opA" },
+                    persistenceAccessors: [
+                        { sqlType: "INSERT", targets: ["table1"] },
+                        { sqlType: "SELECT", targets: ["table1"] },
+                        { sqlType: "UPDATE", targets: ["table1"] },
+                        { sqlType: "DELETE", targets: ["table1"] }
+                    ]
+                }]
+            }];
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: false, crudUpdate: false, crudDelete: false};
+            outputs.renderCrudTable(grouped, visibility);
+
+            const tbody = container.children[0].children[1];
+            const portRow = tbody.children[0];
+            assert.equal(portRow.children[1].textContent, "");
+            const opRow = tbody.children[1];
+            assert.equal(opRow.children[1].textContent, "");
+        });
+
+        test("renderCrudTable: 全CRUD表示（デフォルト）のとき、CとRが両方表示される", () => {
+            const doc = setupDocument();
+            const container = doc.getElementById("outputs-crud");
+            const grouped = [{
+                outputPort: { label: "Port A" },
+                links: [{
+                    outputPortOperation: { label: "opA" },
+                    persistenceAccessors: [
+                        { sqlType: "INSERT", targets: ["table1"] },
+                        { sqlType: "SELECT", targets: ["table1"] }
+                    ]
+                }]
+            }];
+            outputs.renderCrudTable(grouped);
+
+            const tbody = container.children[0].children[1];
+            const portRow = tbody.children[0];
+            assert.equal(portRow.children[1].textContent, "CR");
         });
 
         test("renderCrudTable: 永続化操作がない場合の表示", () => {

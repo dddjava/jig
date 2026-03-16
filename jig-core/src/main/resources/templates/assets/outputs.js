@@ -209,7 +209,7 @@ MermaidBuilder.prototype.build = function (direction = 'LR') {
     return code;
 };
 
-const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR'};
+const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
 function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
@@ -247,6 +247,7 @@ function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
     const targetNodes = new Map();
 
     link.persistenceAccessors?.forEach((op) => {
+        if (!isCrudVisible(op.sqlType, visibility)) return;
         const sqlType = op.sqlType || "";
         const groupId = op.group;
         const groupLabel = op.groupLabel;
@@ -354,6 +355,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         }
 
         link.persistenceAccessors?.forEach((op) => {
+            if (!isCrudVisible(op.sqlType, visibility)) return;
             const sqlType = op.sqlType || "";
             const groupId = op.group;
             const groupLabel = op.groupLabel;
@@ -416,7 +418,17 @@ function toCrudChar(sqlType) {
     return "";
 }
 
-function renderCrudTable(grouped) {
+function isCrudVisible(sqlType, visibility) {
+    switch ((sqlType || "").toUpperCase()) {
+        case 'INSERT': return visibility.crudCreate !== false;
+        case 'SELECT': return visibility.crudRead !== false;
+        case 'UPDATE': return visibility.crudUpdate !== false;
+        case 'DELETE': return visibility.crudDelete !== false;
+        default: return true;
+    }
+}
+
+function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("outputs-crud");
     const sidebar = document.getElementById("crud-sidebar-list");
     if (!container) return;
@@ -487,7 +499,7 @@ function renderCrudTable(grouped) {
                     group.links.forEach(link => {
                         link.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
-                            if (crud && op.targets?.includes(target)) {
+                            if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
                                 const current = portTargetCrudMap.get(target) || new Set();
                                 current.add(crud);
                                 portTargetCrudMap.set(target, current);
@@ -520,7 +532,7 @@ function renderCrudTable(grouped) {
                         const targetCrudMap = new Set();
                         link.persistenceAccessors?.forEach(op => {
                             const crud = toCrudChar(op.sqlType);
-                            if (crud && op.targets?.includes(target)) {
+                            if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
                                 targetCrudMap.add(crud);
                             }
                         });
@@ -609,7 +621,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
     const executionNodes = new Map();
 
     group.links.forEach((link, linkIndex) => {
-        const relevantOps = link.persistenceAccessors.filter(op => op.targets.includes(target));
+        const relevantOps = link.persistenceAccessors.filter(op =>
+            op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
 
         const portFqn = link.outputPort?.fqn || `Port_${linkIndex}`;
         const portLabel = link.outputPort?.label || portFqn;
@@ -855,6 +868,10 @@ function readVisibility() {
         accessorMethod: accessor && checked("show-accessor-method"),
         target: checked("show-target"),
         direction,
+        crudCreate: checked("show-crud-c"),
+        crudRead: checked("show-crud-r"),
+        crudUpdate: checked("show-crud-u"),
+        crudDelete: checked("show-crud-d"),
     };
 }
 
@@ -942,7 +959,7 @@ const OutputsApp = {
         // 各パネルの描画
         renderPersistenceTable(persistenceGrouped, visibility);
         renderOutputsTable(grouped, visibility);
-        renderCrudTable(grouped);
+        renderCrudTable(grouped, visibility);
     }
 };
 

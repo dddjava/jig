@@ -269,6 +269,10 @@ test.describe('insight.js', () => {
 
                     numberOfUsingFields: 0,
 
+                    numberOfUsingOwnFields: 0,
+
+                    numberOfUsingOwnMethods: 0,
+
                     size: 3,
 
                 },

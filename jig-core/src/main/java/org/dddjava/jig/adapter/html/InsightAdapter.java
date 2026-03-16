@@ -95,6 +95,8 @@ public class InsightAdapter {
                 .and("numberOfUsingTypes", insight.numberOfUsingTypes())
                 .and("numberOfUsingMethods", insight.numberOfUsingMethods())
                 .and("numberOfUsingFields", insight.numberOfUsingFields())
+                .and("numberOfUsingOwnFields", insight.numberOfUsingOwnFields())
+                .and("numberOfUsingOwnMethods", insight.numberOfUsingOwnMethods())
                 .and("size", insight.size())
                 .and("packageFqn", insight.packageFqn())
                 .and("typeFqn", insight.typeFqn())

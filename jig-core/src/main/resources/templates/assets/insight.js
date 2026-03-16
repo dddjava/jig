@@ -90,6 +90,8 @@ function renderMethodInsights(methods) {
         row.appendChild(createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
         row.appendChild(createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
         row.appendChild(createCell(methodInsight.numberOfUsingFields.toString(), "number"));
+        row.appendChild(createCell(methodInsight.numberOfUsingOwnFields.toString(), "number"));
+        row.appendChild(createCell(methodInsight.numberOfUsingOwnMethods.toString(), "number"));
         row.appendChild(createCell(methodInsight.size.toString(), "number"));
         tbody.appendChild(row);
     });

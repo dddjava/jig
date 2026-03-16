@@ -42,6 +42,22 @@ public record MethodInsight(JigMethod jigMethod) {
         return jigMethod.usingFields().jigFieldIds().size();
     }
 
+    public int numberOfUsingOwnFields() {
+        TypeId declaringType = typeId();
+        return Math.toIntExact(jigMethod.usingFields().jigFieldIds().stream()
+                .filter(fieldId -> fieldId.declaringTypeId().equals(declaringType))
+                .count());
+    }
+
+    public int numberOfUsingOwnMethods() {
+        TypeId declaringType = typeId();
+        return Math.toIntExact(jigMethod.usingMethods().invokedMethodStream()
+                .filter(methodCall -> !methodCall.isLambda())
+                .filter(methodCall -> methodCall.methodOwner().equals(declaringType))
+                .distinct()
+                .count());
+    }
+
     public int size() {
         // lambdaが展開できていない
         return jigMethod.instructions().instructions().size();

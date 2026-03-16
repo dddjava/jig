@@ -266,8 +266,8 @@ function generateMermaidCode(link, visibility = DEFAULT_VISIBILITY) {
             } else {
                 if (!builder.nodes.some(n => n.startsWith(accessorNodeId))) {
                     builder.addNode(accessorNodeId, groupLabel);
-                    if (currentLastNode) builder.addEdge(currentLastNode, accessorNodeId);
                 }
+                if (currentLastNode) builder.addEdge(currentLastNode, accessorNodeId);
                 currentLastNode = accessorNodeId;
             }
         }
@@ -376,8 +376,8 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
                     if (!accessorNodes.has(groupId)) {
                         accessorNodes.set(groupId, accessorNodeId);
                         builder.addNode(accessorNodeId, groupLabel);
-                        if (currentLastNodeId) builder.addEdge(currentLastNodeId, accessorNodeId);
                     }
+                    if (currentLastNodeId) builder.addEdge(currentLastNodeId, accessorNodeId);
                     currentLastNodeId = accessorNodeId;
                 }
             }

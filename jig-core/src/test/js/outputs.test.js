@@ -599,6 +599,80 @@ test.describe("outputs.js", () => {
             assert.ok(!code.includes('Target['));
         });
 
+        test("generatePortMermaidCode: メソッド非表示のとき、複数のexecutionから同一accessorへのエッジが全て生成される", () => {
+            // バグ再現: adapter.a -> accessor.a, adapter.b -> accessor.b のとき
+            // accessor.a と accessor.b が同じグループに属する場合、
+            // adapter.b -> Accessor のエッジが欠落するケース
+            const group = {
+                outputPort: { label: "PortA" },
+                links: [
+                    {
+                        outputPortOperation: { label: "op1" },
+                        outputAdapter: { fqn: "adapterA", label: "A1" },
+                        outputAdapterExecution: { fqn: "execA", label: "execA" },
+                        persistenceAccessors: [
+                            {
+                                id: "com.example.repo.methodA",
+                                sqlType: "INSERT",
+                                targets: ["table1"],
+                                group: "com.example.repo",
+                                groupLabel: "Repo"
+                            }
+                        ]
+                    },
+                    {
+                        outputPortOperation: { label: "op2" },
+                        outputAdapter: { fqn: "adapterB", label: "B1" },
+                        outputAdapterExecution: { fqn: "execB", label: "execB" },
+                        persistenceAccessors: [
+                            {
+                                id: "com.example.repo.methodB",
+                                sqlType: "SELECT",
+                                targets: ["table1"],
+                                group: "com.example.repo",
+                                groupLabel: "Repo"
+                            }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePortMermaidCode(group, visibility);
+            // execAとexecBの両方からAccessorへのエッジが存在すること
+            assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'), `execA -> Accessor のエッジが存在しない:\n${code}`);
+            assert.ok(code.includes('Exec_execB --> Accessor_com_example_repo'), `execB -> Accessor のエッジが存在しない:\n${code}`);
+        });
+
+        test("generateMermaidCode: メソッド非表示のとき、複数の永続化操作が同一accessorグループに属する場合にエッジが生成される", () => {
+            // バグ再現: 同一リンク内で同じaccessorグループの複数メソッドがある場合
+            const link = {
+                outputPort: { label: "P1" },
+                outputPortOperation: { label: "op1" },
+                outputAdapter: { label: "A1", fqn: "adapterA" },
+                outputAdapterExecution: { label: "execA", fqn: "execA" },
+                persistenceAccessors: [
+                    {
+                        id: "com.example.repo.methodA",
+                        sqlType: "INSERT",
+                        targets: ["table1"],
+                        group: "com.example.repo",
+                        groupLabel: "Repo"
+                    },
+                    {
+                        id: "com.example.repo.methodB",
+                        sqlType: "SELECT",
+                        targets: ["table2"],
+                        group: "com.example.repo",
+                        groupLabel: "Repo"
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generateMermaidCode(link, visibility);
+            // ExecutionからAccessorへのエッジが存在すること
+            assert.ok(code.includes('Execution --> Accessor_com_example_repo'), `Execution -> Accessor のエッジが存在しない:\n${code}`);
+        });
+
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 target: "table1",

@@ -220,21 +220,20 @@ MermaidBuilder.prototype.build = function (direction = 'LR') {
 
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
+function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
+    if (typeof mermaid === "undefined") return;
+    const mermaidCode = generateCodeFn(data, visibility);
+    const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
+    mermaid.render(id, mermaidCode).then(({svg}) => {
+        container.innerHTML = svg;
+    });
+}
+
 function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY) {
     return generatePortMermaidCode(
         {outputPort: operation.outputPort, operations: [operation]},
         visibility
     );
-}
-
-function renderOperationMermaid(operation, container, visibility = DEFAULT_VISIBILITY) {
-    if (typeof mermaid === "undefined") return;
-
-    const mermaidCode = generateOperationMermaidCode(operation, visibility);
-    const id = "mermaid-" + Math.random().toString(36).substr(2, 9);
-    mermaid.render(id, mermaidCode).then(({svg}) => {
-        container.innerHTML = svg;
-    });
 }
 
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
@@ -283,16 +282,6 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     });
 
     return builder.build(visibility.direction);
-}
-
-function renderPortMermaid(group, container, visibility = DEFAULT_VISIBILITY) {
-    if (typeof mermaid === "undefined") return;
-
-    const mermaidCode = generatePortMermaidCode(group, visibility);
-    const id = "mermaid-port-" + Math.random().toString(36).substr(2, 9);
-    mermaid.render(id, mermaidCode).then(({svg}) => {
-        container.innerHTML = svg;
-    });
 }
 
 function toCrudChar(sqlType) {
@@ -588,16 +577,6 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
     return builder.build(visibility.direction);
 }
 
-function renderPersistenceMermaid(group, container, visibility = DEFAULT_VISIBILITY) {
-    if (typeof mermaid === "undefined") return;
-
-    const mermaidCode = generatePersistenceMermaidCode(group, visibility);
-    const id = "mermaid-persistence-" + Math.random().toString(36).substr(2, 9);
-    mermaid.render(id, mermaidCode).then(({svg}) => {
-        container.innerHTML = svg;
-    });
-}
-
 function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("persistence-list");
     const sidebar = document.getElementById("persistence-sidebar-list");
@@ -609,7 +588,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(persistenceMermaidContainer, () => renderPersistenceMermaid(group, persistenceMermaidContainer, visibility));
+        lazyRender(persistenceMermaidContainer, () => renderMermaid(generatePersistenceMermaidCode, group, persistenceMermaidContainer, visibility));
 
         container.appendChild(createElement("section", {
             className: "outputs-port-card",
@@ -671,13 +650,13 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
 
         const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(portMermaidContainer, () => renderPortMermaid(group, portMermaidContainer, visibility));
+        lazyRender(portMermaidContainer, () => renderMermaid(generatePortMermaidCode, group, portMermaidContainer, visibility));
         cardChildren.push(portMermaidContainer);
 
         const itemList = createElement("div", {className: "outputs-item-list"});
         group.operations.forEach(operation => {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
-            lazyRender(mermaidContainer, () => renderOperationMermaid(operation, mermaidContainer, visibility));
+            lazyRender(mermaidContainer, () => renderMermaid(generateOperationMermaidCode, operation, mermaidContainer, visibility));
 
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",

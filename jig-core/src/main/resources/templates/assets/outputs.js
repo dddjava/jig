@@ -142,76 +142,78 @@ function renderSidebarSection(container, title, items) {
     }
 }
 
-function MermaidBuilder() {
-    this.nodes = [];
-    this.edges = [];
-    this.subgraphs = [];
-    this.edgeSet = new Set();
-}
-
-MermaidBuilder.prototype.sanitize = function (id) {
-    return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
-};
-
-MermaidBuilder.prototype.addNode = function (id, label, shape = '["$LABEL"]') {
-    const nodeLine = `${id}${shape.replace('$LABEL', label)}`;
-    if (!this.nodes.includes(nodeLine)) {
-        this.nodes.push(nodeLine);
+class MermaidBuilder {
+    constructor() {
+        this.nodes = [];
+        this.edges = [];
+        this.subgraphs = [];
+        this.edgeSet = new Set();
     }
-    return id;
-};
 
-MermaidBuilder.prototype.addEdge = function (from, to, label = "") {
-    const edgeKey = `${from}--${label}-->${to}`;
-    if (!this.edgeSet.has(edgeKey)) {
-        this.edgeSet.add(edgeKey);
-        const edgeLine = label ? `  ${from} -- "${label}" --> ${to}` : `  ${from} --> ${to}`;
-        this.edges.push(edgeLine);
+    sanitize(id) {
+        return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
     }
-};
 
-MermaidBuilder.prototype.startSubgraph = function (label) {
-    const subgraph = {label, lines: []};
-    this.subgraphs.push(subgraph);
-    return subgraph;
-};
-
-MermaidBuilder.prototype.ensureSubgraph = function (map, key, label) {
-    if (!map.has(key)) {
-        map.set(key, this.startSubgraph(label));
+    addNode(id, label, shape = '["$LABEL"]') {
+        const nodeLine = `${id}${shape.replace('$LABEL', label)}`;
+        if (!this.nodes.includes(nodeLine)) {
+            this.nodes.push(nodeLine);
+        }
+        return id;
     }
-    return map.get(key);
-};
 
-MermaidBuilder.prototype.addNodeToSubgraph = function (subgraph, id, label, shape = '["$LABEL"]') {
-    const nodeLine = `    ${id}${shape.replace('$LABEL', label)}`;
-    if (!subgraph.lines.includes(nodeLine)) {
-        subgraph.lines.push(nodeLine);
+    addEdge(from, to, label = "") {
+        const edgeKey = `${from}--${label}-->${to}`;
+        if (!this.edgeSet.has(edgeKey)) {
+            this.edgeSet.add(edgeKey);
+            const edgeLine = label ? `  ${from} -- "${label}" --> ${to}` : `  ${from} --> ${to}`;
+            this.edges.push(edgeLine);
+        }
     }
-    return id;
-};
 
-MermaidBuilder.prototype.build = function (direction = 'LR') {
-    let code = `graph ${direction}\n`;
-    this.subgraphs.forEach(sg => {
-        code += `  subgraph "${sg.label}"\n`;
-        sg.lines.forEach(line => {
-            code += `    ${line.trim()}\n`;
+    startSubgraph(label) {
+        const subgraph = {label, lines: []};
+        this.subgraphs.push(subgraph);
+        return subgraph;
+    }
+
+    ensureSubgraph(map, key, label) {
+        if (!map.has(key)) {
+            map.set(key, this.startSubgraph(label));
+        }
+        return map.get(key);
+    }
+
+    addNodeToSubgraph(subgraph, id, label, shape = '["$LABEL"]') {
+        const nodeLine = `    ${id}${shape.replace('$LABEL', label)}`;
+        if (!subgraph.lines.includes(nodeLine)) {
+            subgraph.lines.push(nodeLine);
+        }
+        return id;
+    }
+
+    build(direction = 'LR') {
+        let code = `graph ${direction}\n`;
+        this.subgraphs.forEach(sg => {
+            code += `  subgraph "${sg.label}"\n`;
+            sg.lines.forEach(line => {
+                code += `    ${line.trim()}\n`;
+            });
+            code += `  end\n`;
         });
-        code += `  end\n`;
-    });
-    this.nodes.forEach(node => {
-        code += `  ${node.trim()}\n`;
-    });
-    this.edges.forEach(edge => {
-        code += `${edge}\n`;
-    });
-    return code;
-};
+        this.nodes.forEach(node => {
+            code += `  ${node.trim()}\n`;
+        });
+        this.edges.forEach(edge => {
+            code += `${edge}\n`;
+        });
+        return code;
+    }
 
-MermaidBuilder.prototype.isEmpty = function () {
-    return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
-};
+    isEmpty() {
+        return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
+    }
+}
 
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 

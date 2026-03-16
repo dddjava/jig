@@ -139,12 +139,14 @@ public class JigService {
     }
 
     public Insights insights(JigRepository repository) {
+        var jigTypes = jigTypes(repository);
         return new Insights(
-                jigTypes(repository).orderedStream()
+                jigTypes.orderedStream()
                         .flatMap(JigType::allJigMethodStream)
                         .map(MethodInsight::new)
                         .toList(),
-                glossary(repository)
+                glossary(repository),
+                TypeRelationships.internalRelation(jigTypes)
         );
     }
 }

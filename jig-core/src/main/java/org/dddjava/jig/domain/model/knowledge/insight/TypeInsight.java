@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.knowledge.insight;
 
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
 import java.util.Collection;
 
@@ -38,6 +39,10 @@ public record TypeInsight(TypeId typeId, Term term, Collection<MethodInsight> me
         return methodInsights.stream()
                 .mapToInt(MethodInsight::size)
                 .sum();
+    }
+
+    public int numberOfUsedByTypes(TypeRelationships typeRelationships) {
+        return typeRelationships.collectTypeIdWhichRelationTo(typeId).size();
     }
 
     public String packageFqn() {

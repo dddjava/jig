@@ -364,12 +364,7 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     }
 }
 
-function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
-    const container = document.getElementById("outputs-crud");
-    if (!container) return;
-
-    container.innerHTML = "";
-
+function collectAllTargets(grouped) {
     const targetsSet = new Set();
     grouped.forEach(group => {
         group.operations.forEach(operation => {
@@ -378,7 +373,99 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
             });
         });
     });
-    const allTargets = Array.from(targetsSet).sort();
+    return Array.from(targetsSet).sort();
+}
+
+function createPortGroupRow(group, allTargets, visibility) {
+    return createElement("tr", {
+        className: "port-group-row",
+        style: {cursor: "pointer"},
+        children: [
+            createElement("td", {
+                className: "port-group-cell",
+                children: [
+                    document.createTextNode(group.outputPort.label || group.outputPort.fqn || "(unknown)"),
+                    createElement("span", {
+                        className: "weak",
+                        style: {marginLeft: "8px"},
+                        textContent: `(${group.operations.length})`
+                    })
+                ]
+            }),
+            ...allTargets.map(target => {
+                const cell = createElement("td", {className: "crud-cell port-crud-cell"});
+                const cruds = new Set();
+                group.operations.forEach(operation => {
+                    operation.persistenceAccessors?.forEach(op => {
+                        const crud = toCrudChar(op.sqlType);
+                        if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
+                            cruds.add(crud);
+                        }
+                    });
+                });
+                if (cruds.size > 0) {
+                    cell.textContent = Array.from(cruds).sort().join("");
+                }
+                return cell;
+            })
+        ]
+    });
+}
+
+function createOperationRow(operation, allTargets, portId, visibility) {
+    return createElement("tr", {
+        className: `operation-row ${portId}`,
+        style: {display: "none"},
+        children: [
+            createElement("td", {
+                className: "operation-cell",
+                textContent: operation.outputPortOperation?.label || operation.outputPortOperation?.signature || ""
+            }),
+            ...allTargets.map(target => {
+                const cell = createElement("td", {className: "crud-cell"});
+                const cruds = new Set();
+                operation.persistenceAccessors?.forEach(op => {
+                    const crud = toCrudChar(op.sqlType);
+                    if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
+                        cruds.add(crud);
+                    }
+                });
+                if (cruds.size > 0) {
+                    cell.textContent = Array.from(cruds).sort().join("");
+                }
+                return cell;
+            })
+        ]
+    });
+}
+
+function appendGroupToTable(tbody, group, allTargets, visibility) {
+    const portId = "port-" + Math.random().toString(36).substring(2, 11);
+    const portRow = createPortGroupRow(group, allTargets, visibility);
+    tbody.appendChild(portRow);
+
+    const opRows = group.operations.map(operation => {
+        const row = createOperationRow(operation, allTargets, portId, visibility);
+        tbody.appendChild(row);
+        return row;
+    });
+
+    portRow.addEventListener("click", () => {
+        const isHidden = opRows[0].style.display === "none";
+        opRows.forEach(row => {
+            row.style.display = isHidden ? "table-row" : "none";
+        });
+        portRow.classList.toggle("is-expanded", isHidden);
+    });
+}
+
+function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
+    const container = document.getElementById("outputs-crud");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    const allTargets = collectAllTargets(grouped);
 
     if (allTargets.length === 0) {
         container.textContent = "永続化操作なし";
@@ -395,95 +482,15 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
         ]
     });
 
+    const tbody = createElement("tbody");
+    grouped.forEach(group => appendGroupToTable(tbody, group, allTargets, visibility));
+
     const table = createElement("table", {
         className: "zebra crud-table",
         children: [
-            createElement("thead", {children: [headerRow]})
+            createElement("thead", {children: [headerRow]}),
+            tbody
         ]
-    });
-
-    const tbody = createElement("tbody");
-    table.appendChild(tbody);
-
-    grouped.forEach(group => {
-        const portId = "port-" + Math.random().toString(36).substring(2, 11);
-        const portRow = createElement("tr", {
-            className: "port-group-row",
-            style: {cursor: "pointer"},
-            children: [
-                createElement("td", {
-                    className: "port-group-cell",
-                    children: [
-                        document.createTextNode(group.outputPort.label || group.outputPort.fqn || "(unknown)"),
-                        createElement("span", {
-                            className: "weak",
-                            style: {marginLeft: "8px"},
-                            textContent: `(${group.operations.length})`
-                        })
-                    ]
-                }),
-                ...allTargets.map(target => {
-                    const cell = createElement("td", {className: "crud-cell port-crud-cell"});
-                    const portTargetCrudMap = new Map();
-                    group.operations.forEach(operation => {
-                        operation.persistenceAccessors?.forEach(op => {
-                            const crud = toCrudChar(op.sqlType);
-                            if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
-                                const current = portTargetCrudMap.get(target) || new Set();
-                                current.add(crud);
-                                portTargetCrudMap.set(target, current);
-                            }
-                        });
-                    });
-                    const cruds = portTargetCrudMap.get(target);
-                    if (cruds) {
-                        cell.textContent = Array.from(cruds).sort().join("");
-                    }
-                    return cell;
-                })
-            ]
-        });
-
-        tbody.appendChild(portRow);
-
-        // 操作行の作成
-        const opRows = group.operations.map(operation => {
-            const row = createElement("tr", {
-                className: `operation-row ${portId}`,
-                style: {display: "none"},
-                children: [
-                    createElement("td", {
-                        className: "operation-cell",
-                        textContent: operation.outputPortOperation?.label || operation.outputPortOperation?.signature || ""
-                    }),
-                    ...allTargets.map(target => {
-                        const cell = createElement("td", {className: "crud-cell"});
-                        const targetCrudMap = new Set();
-                        operation.persistenceAccessors?.forEach(op => {
-                            const crud = toCrudChar(op.sqlType);
-                            if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
-                                targetCrudMap.add(crud);
-                            }
-                        });
-                        if (targetCrudMap.size > 0) {
-                            cell.textContent = Array.from(targetCrudMap).sort().join("");
-                        }
-                        return cell;
-                    })
-                ]
-            });
-            tbody.appendChild(row);
-            return row;
-        });
-
-        // トグル動作の設定
-        portRow.addEventListener("click", () => {
-            const isHidden = opRows[0].style.display === "none";
-            opRows.forEach(row => {
-                row.style.display = isHidden ? "table-row" : "none";
-            });
-            portRow.classList.toggle("is-expanded", isHidden);
-        });
     });
 
     container.appendChild(table);

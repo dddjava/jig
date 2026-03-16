@@ -45,6 +45,14 @@ public record TypeInsight(TypeId typeId, Term term, Collection<MethodInsight> me
         return typeRelationships.collectTypeIdWhichRelationTo(typeId).size();
     }
 
+    public double instability(TypeRelationships typeRelationships) {
+        int ce = numberOfUsingTypes();
+        int ca = numberOfUsedByTypes(typeRelationships);
+        int total = ce + ca;
+        if (total == 0) return 0.0;
+        return (double) ce / total;
+    }
+
     public String packageFqn() {
         return typeId.packageId().asText();
     }

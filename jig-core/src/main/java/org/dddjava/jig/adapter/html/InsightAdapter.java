@@ -78,6 +78,7 @@ public class InsightAdapter {
                 .and("numberOfMethods", insight.numberOfMethods())
                 .and("numberOfUsingTypes", insight.numberOfUsingTypes())
                 .and("numberOfUsedByTypes", insight.numberOfUsedByTypes(typeRelationships))
+                .and("instability", Math.round(insight.instability(typeRelationships) * 100.0) / 100.0)
                 .and("cyclomaticComplexity", insight.cyclomaticComplexity())
                 .and("size", insight.size())
                 .and("packageFqn", insight.packageFqn())

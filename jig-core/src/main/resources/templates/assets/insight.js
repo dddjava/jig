@@ -65,6 +65,7 @@ function renderTypeInsights(types) {
         row.appendChild(createCell(typeInsight.numberOfMethods.toString(), "number"));
         row.appendChild(createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
         row.appendChild(createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
+        row.appendChild(createCell(typeInsight.instability.toFixed(2), "number"));
         row.appendChild(createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
         row.appendChild(createCell(typeInsight.size.toString(), "number"));
         tbody.appendChild(row);

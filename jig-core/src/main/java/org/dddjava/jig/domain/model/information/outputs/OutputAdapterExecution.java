@@ -29,7 +29,7 @@ public record OutputAdapterExecution(
                                               JigTypes jigTypes,
                                               PersistenceAccessorRepository persistenceAccessorRepository) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
-        Collection<PersistenceAccessorOperation> persistenceAccessors = resolvePersistenceAccessors(tracingJigMethods, jigTypes, persistenceAccessorRepository);
+        Collection<PersistenceAccessorOperation> persistenceAccessors = collectPersistenceAccessorOperation(tracingJigMethods, jigTypes, persistenceAccessorRepository);
         return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessors);
     }
 
@@ -38,36 +38,39 @@ public record OutputAdapterExecution(
                 .anyMatch(persistenceAccessor -> persistenceAccessor.persistenceAccessorOperationId().equals(persistenceAccessorOperationId));
     }
 
-    private static Collection<PersistenceAccessorOperation> resolvePersistenceAccessors(Collection<JigMethod> tracingJigMethods,
-                                                                                        JigTypes jigTypes,
-                                                                                        PersistenceAccessorRepository persistenceAccessorRepository) {
+    /**
+     * 呼び出している永続化アクセサ操作を収集する
+     */
+    private static Collection<PersistenceAccessorOperation> collectPersistenceAccessorOperation(Collection<JigMethod> tracingJigMethods,
+                                                                                                JigTypes jigTypes,
+                                                                                                PersistenceAccessorRepository persistenceAccessorRepository) {
         return tracingJigMethods.stream()
-                .flatMap(tracingJigMethod -> tracingJigMethod.usingMethods().invokedMethodStream()
-                        .map(methodCall -> findPersistenceAccessor(methodCall, tracingJigMethod, jigTypes, persistenceAccessorRepository))
+                .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream()
+                        .map(methodCall -> findPersistenceAccessor(methodCall, jigMethod, jigTypes, persistenceAccessorRepository))
                         .flatMap(Optional::stream))
                 .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
     }
 
     private static Optional<PersistenceAccessorOperation> findPersistenceAccessor(MethodCall methodCall,
-                                                                                  JigMethod tracingJigMethod,
+                                                                                  JigMethod jigMethod,
                                                                                   JigTypes jigTypes,
                                                                                   PersistenceAccessorRepository persistenceAccessorRepository) {
         return persistenceAccessorRepository.findByTypeId(methodCall.methodOwner())
-                .or(() -> resolveSpringDataPersistenceAccessors(methodCall, tracingJigMethod, jigTypes, persistenceAccessorRepository))
+                .or(() -> resolveSpringDataPersistenceAccessors(methodCall, jigMethod, jigTypes, persistenceAccessorRepository))
                 .flatMap(persistenceAccessors -> findPersistenceAccessor(
                         methodCall,
-                        tracingJigMethod,
+                        jigMethod,
                         persistenceAccessors));
     }
 
     private static Optional<PersistenceAccessor> resolveSpringDataPersistenceAccessors(MethodCall methodCall,
-                                                                                       JigMethod tracingJigMethod,
+                                                                                       JigMethod jigMethod,
                                                                                        JigTypes jigTypes,
                                                                                        PersistenceAccessorRepository persistenceAccessorRepository) {
         if (!SpringDataUtil.isSpringDataRepositoryType(methodCall.methodOwner())) {
             return Optional.empty();
         }
-        List<PersistenceAccessor> knownTypeCandidates = springDataCandidatesFromKnownTypes(tracingJigMethod, jigTypes, persistenceAccessorRepository);
+        List<PersistenceAccessor> knownTypeCandidates = springDataCandidatesFromKnownTypes(jigMethod, jigTypes, persistenceAccessorRepository);
         Optional<PersistenceAccessor> selected = selectSpringDataCandidate(knownTypeCandidates, methodCall);
         if (selected.isPresent()) {
             return selected;
@@ -75,12 +78,16 @@ public record OutputAdapterExecution(
         return selectSpringDataCandidate(springDataCandidates(persistenceAccessorRepository), methodCall);
     }
 
-    private static List<PersistenceAccessor> springDataCandidatesFromKnownTypes(JigMethod tracingJigMethod,
+    private static List<PersistenceAccessor> springDataCandidatesFromKnownTypes(JigMethod jigMethod,
                                                                                 JigTypes jigTypes,
                                                                                 PersistenceAccessorRepository persistenceAccessorRepository) {
+        // 関連している型をひっぱりだして永続化アクセサの候補とする
+        // FIXME: これだとメソッドが使用していないフィールドの型も入ってしまうが、あとでメソッドつきあわせするから問題ない・・・？
         Set<TypeId> candidateTypeIds = Stream.concat(
-                        tracingJigMethod.usingTypes().values().stream(),
-                        jigTypes.resolveJigType(tracingJigMethod.declaringType()).stream()
+                        // メソッドが使用している型すべて
+                        jigMethod.usingTypes().values().stream(),
+                        // メソッドが所属している型のインスタンスフィールドの型すべて
+                        jigTypes.resolveJigType(jigMethod.declaringType()).stream()
                                 .flatMap(jigType -> jigType.instanceJigFields().fields().stream())
                                 .map(jigField -> jigField.typeId()))
                 .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));

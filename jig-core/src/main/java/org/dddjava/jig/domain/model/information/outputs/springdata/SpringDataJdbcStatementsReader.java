@@ -17,13 +17,14 @@ public class SpringDataJdbcStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
 
     // 推測したカスタム基底リポジトリの蓄積（interfaceId → 宣言元TypeIdリスト）
-    private Map<TypeId, List<TypeId>> inferredBaseRepositories;
+    private final Map<TypeId, List<TypeId>> inferredBaseRepositories = new LinkedHashMap<>();
 
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
     private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
-    private record SpringDataPersistenceInfo(PersistenceTargets targets, Set<TypeId> superTypeIds) {}
+    private record SpringDataPersistenceInfo(PersistenceTargets targets, Set<TypeId> superTypeIds) {
+    }
 
     /**
      * Spring Data JDBCのRepositoryを抽出して永続化操作対象群を構築する
@@ -33,7 +34,8 @@ public class SpringDataJdbcStatementsReader {
      * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
     public Collection<PersistenceAccessor> readFrom(JigTypes jigTypes) {
-        inferredBaseRepositories = new LinkedHashMap<>();
+        // 複数回実行されることは想定していないが一応・・・
+        inferredBaseRepositories.clear();
 
         var result = jigTypes.stream()
                 .filter(this::isInterface)
@@ -43,10 +45,9 @@ public class SpringDataJdbcStatementsReader {
 
         inferredBaseRepositories.forEach((interfaceId, declaringTypes) ->
                 logger.warn("インターフェース {} がJIGの解析対象に含まれていないため、名前と型引数からSpring Data Repositoryと推測して処理します。" +
-                        "正確に解析するには解析対象パスに含めてください。宣言元: {}",
+                                "正確に解析するには解析対象パスに含めてください。宣言元: {}",
                         interfaceId.fqn(),
                         declaringTypes.stream().map(TypeId::fqn).collect(java.util.stream.Collectors.joining(", "))));
-
         return result;
     }
 

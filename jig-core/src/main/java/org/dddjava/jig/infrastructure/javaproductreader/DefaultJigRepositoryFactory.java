@@ -104,7 +104,7 @@ public class DefaultJigRepositoryFactory {
                             asmClassSourceReader.readClasses(sources.classFilePaths())));
 
             PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
-                    readSqlStatements(sources, classDeclarations)));
+                    createPersistenceAccessorRepository(sources, classDeclarations)));
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceAccessorRepository);
@@ -144,7 +144,12 @@ public class DefaultJigRepositoryFactory {
         }));
     }
 
-    private PersistenceAccessorRepository readSqlStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
+    /**
+     * 永続化アクセサリポジトリの初期構築
+     *
+     * MyBatis関連はClassLoaderを使用する関係上、ここで処理しておく。
+     */
+    private PersistenceAccessorRepository createPersistenceAccessorRepository(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)

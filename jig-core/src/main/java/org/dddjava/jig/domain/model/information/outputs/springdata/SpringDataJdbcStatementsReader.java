@@ -20,7 +20,7 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
-    private record SpringDataPersistenceInfo(PersistenceTargets targets, Set<TypeId> springDataBaseTypes) {}
+    private record SpringDataPersistenceInfo(PersistenceTargets targets, Set<TypeId> superTypeIds) {}
 
     /**
      * Spring Data JDBCのRepositoryを抽出して永続化操作対象群を構築する
@@ -34,7 +34,7 @@ public class SpringDataJdbcStatementsReader {
         return jigTypes.stream()
                 .filter(this::isInterface)
                 .flatMap(jigType -> resolvePersistenceTargets(jigType, jigTypes).stream()
-                        .map(info -> resolvePersistenceAccessors(jigType, info.targets(), info.springDataBaseTypes())))
+                        .map(info -> resolvePersistenceAccessors(jigType, info.targets(), info.superTypeIds())))
                 .toList();
     }
 
@@ -50,7 +50,7 @@ public class SpringDataJdbcStatementsReader {
         return resolvePersistenceTargets(jigType, jigTypes, new HashSet<>(), new HashSet<>());
     }
 
-    private Optional<SpringDataPersistenceInfo> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes, Set<TypeId> visited, Set<TypeId> springDataBaseTypes) {
+    private Optional<SpringDataPersistenceInfo> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes, Set<TypeId> visited, Set<TypeId> superTypeIds) {
         var header = jigType.jigTypeHeader();
         // 再帰しているので一応チェック。普通に作れば型継承の循環はコンパイルエラーになるため、このチェックに出番はない。
         if (!visited.add(header.id())) return Optional.empty();
@@ -59,7 +59,7 @@ public class SpringDataJdbcStatementsReader {
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
             if (SpringDataUtil.isSpringDataRepositoryType(interfaceId)) {
-                springDataBaseTypes.add(interfaceId);
+                superTypeIds.add(interfaceId);
                 List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
                 if (jigTypeArguments.isEmpty()) {
                     logger.warn("Spring Data Repository {} の型引数が解決できないため、この継承はスキップします。宣言元: {}",
@@ -68,13 +68,13 @@ public class SpringDataJdbcStatementsReader {
                     continue;
                 }
                 var entityTypeId = jigTypeArguments.getFirst().typeId();
-                return Optional.of(new SpringDataPersistenceInfo(extractPersistenceTargets(jigTypes, entityTypeId), springDataBaseTypes));
+                return Optional.of(new SpringDataPersistenceInfo(extractPersistenceTargets(jigTypes, entityTypeId), superTypeIds));
                 // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合も1つ目だけ扱う。複数実装していてもエンティティ型が違うのは想定しない。
             }
 
             // インタフェースを対象に再帰する。
             Optional<SpringDataPersistenceInfo> persistenceInfo = jigTypes.resolveJigType(interfaceId)
-                    .flatMap(interfaceJigType -> resolvePersistenceTargets(interfaceJigType, jigTypes, visited, springDataBaseTypes));
+                    .flatMap(interfaceJigType -> resolvePersistenceTargets(interfaceJigType, jigTypes, visited, superTypeIds));
             if (persistenceInfo.isPresent()) {
                 // 継承したインタフェースからPersistenceTargetsの解決に成功した
                 return persistenceInfo;
@@ -91,7 +91,7 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets, Set<TypeId> springDataBaseTypes) {
+    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets, Set<TypeId> superTypeIds) {
         TypeId typeId = jigType.jigTypeHeader().id();
 
         List<PersistenceAccessorOperation> declaredOperations = jigType.instanceJigMethods().stream()
@@ -116,7 +116,7 @@ public class SpringDataJdbcStatementsReader {
         List<PersistenceAccessorOperation> persistenceAccessorOperations = Stream.concat(
                 declaredOperations.stream(), inheritedOperations.stream()).toList();
 
-        return PersistenceAccessor.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessorOperations, springDataBaseTypes);
+        return PersistenceAccessor.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessorOperations, superTypeIds);
     }
 
     private Optional<PersistenceAccessorOperation> resolvePersistenceAccessor(JigMethodDeclaration jigMethodDeclaration,

@@ -30,13 +30,24 @@ public record PersistenceAccessorRepository(Collection<PersistenceAccessor> valu
                 .findAny();
         if (direct.isPresent()) return direct;
 
-        // Spring Data基底型を経由した解決
+        // typeIdに合致する型が登録されていない場合の探索。
+        // ...ただこれエッジケースだよねぇ。わざわざメソッド内で CrudRepository などにアップキャストして使うとかしないと不要ではないか。
+        // なくしてしまっていい気もするが、必要ならキャッシュも考えた方がいいかもしれない。
+
+        // 親クラスのメソッドとして呼び出されている場合
+        // interface HogeAccessor extends FugaAccessor {} のとき、呼び出し元が
+        // FugaAccessor accessor = ...; accessor.methodCall(); のようなことをすると、MethodCallは FugaAccessor 経由なのでtypeIdもそうなる。
+        // PersistenceAccessorとしてはHogeAccessorが登録されているので、HogeAccessorのsuperTypeと突き合わせてPersistenceAccessorを探す。
         List<PersistenceAccessor> candidates = values.stream()
-                .filter(ops -> ops.springDataBaseTypes().contains(typeId))
+                .filter(ops -> ops.superTypeIds().contains(typeId))
                 .toList();
+        // PersistenceAccessorとして登録されているのが1つだけならそれを返す
         if (candidates.size() == 1) return Optional.of(candidates.getFirst());
 
         // 複数候補がある場合は relatedTypes で絞り込む
+        // このケースになるのは FugaAccessor を継承しているAccessorが複数ある場合で、
+        // 正確に特定しようとするとMethodCallがどのインスタンスに対して行われたかから引くことになり、解決できない場合も生じる。
+        // ここではメソッドが使用している型（relatedTypes）から、一意に特定できないかのチャレンジをしている。
         if (!candidates.isEmpty() && !relatedTypes.isEmpty()) {
             List<PersistenceAccessor> filtered = candidates.stream()
                     .filter(ops -> relatedTypes.contains(ops.typeId()))

@@ -129,7 +129,8 @@ public record OutputAdapterExecution(
     }
 
     /**
-     * 起点のメソッドからメソッド呼び出しを辿って解決できる範囲のJigMethodを収集する
+     * 関連メソッド収集
+     * 起点のメソッドからメソッド呼び出しを辿って解決できる範囲のJigMethodを収集する。起点のメソッドも含む。
      */
     private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> stopper) {
         // stopperにあるものは収集済みなのでスキップ（空を返す）

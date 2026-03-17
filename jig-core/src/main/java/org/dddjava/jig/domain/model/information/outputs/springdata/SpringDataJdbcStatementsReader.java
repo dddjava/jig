@@ -211,7 +211,7 @@ public class SpringDataJdbcStatementsReader {
     }
 
     private static Stream<PersistenceTarget> resolveMappedCollectionTables(JigType jigType, JigTypes jigTypes, Set<TypeId> visited) {
-        // TODO フィールドだけでよかったっけ？
+        // MEMO: コンストラクタ引数などに付与されるケースもありえるが、フィールド探索で主要なケースはカバーできるためフィールドのみ対象とする。
         return jigType.jigTypeMembers().instanceFields().stream()
                 .map(JigField::jigFieldHeader)
                 .flatMap(jigFieldHeader -> resolveMappedCollectionEntityTypeId(jigFieldHeader).stream())

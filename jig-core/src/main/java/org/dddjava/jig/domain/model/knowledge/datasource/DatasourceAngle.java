@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.datasource;
 
-import org.dddjava.jig.domain.model.data.persistence.SqlType;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
@@ -18,10 +18,10 @@ import java.util.stream.Stream;
 public class DatasourceAngle {
 
     private final OutputImplementation outputImplementation;
-    private final Map<SqlType, List<String>> tablesMap;
+    private final Map<PersistenceOperationType, List<String>> tablesMap;
     private final CallerMethods callerMethods;
 
-    public DatasourceAngle(OutputImplementation outputImplementation, Map<SqlType, List<String>> tablesMap, CallerMethods callerMethods) {
+    public DatasourceAngle(OutputImplementation outputImplementation, Map<PersistenceOperationType, List<String>> tablesMap, CallerMethods callerMethods) {
         this.outputImplementation = outputImplementation;
         this.tablesMap = tablesMap;
         this.callerMethods = callerMethods;
@@ -56,7 +56,7 @@ public class DatasourceAngle {
     }
 
     public List<String> insertTableNames() {
-        return tableNames(SqlType.INSERT);
+        return tableNames(PersistenceOperationType.INSERT);
     }
 
     public String selectTables() {
@@ -64,7 +64,7 @@ public class DatasourceAngle {
     }
 
     public List<String> selectTableNames() {
-        return tableNames(SqlType.SELECT);
+        return tableNames(PersistenceOperationType.SELECT);
     }
 
     public String updateTables() {
@@ -72,7 +72,7 @@ public class DatasourceAngle {
     }
 
     public List<String> updateTableNames() {
-        return tableNames(SqlType.UPDATE);
+        return tableNames(PersistenceOperationType.UPDATE);
     }
 
     public String deleteTables() {
@@ -80,7 +80,7 @@ public class DatasourceAngle {
     }
 
     public List<String> deleteTableNames() {
-        return tableNames(SqlType.DELETE);
+        return tableNames(PersistenceOperationType.DELETE);
     }
 
     public JigMethod concreteMethod() {
@@ -103,8 +103,8 @@ public class DatasourceAngle {
         return outputImplementation.interfaceJigType().label();
     }
 
-    private List<String> tableNames(SqlType sqlType) {
-        return tablesMap.getOrDefault(sqlType, List.of());
+    private List<String> tableNames(PersistenceOperationType persistenceOperationType) {
+        return tablesMap.getOrDefault(persistenceOperationType, List.of());
     }
 
     private String joining(List<String> strings) {

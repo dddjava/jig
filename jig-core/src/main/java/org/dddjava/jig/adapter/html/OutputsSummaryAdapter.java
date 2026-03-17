@@ -33,7 +33,7 @@ public class OutputsSummaryAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
 
-        var persistenceAccessorsRepository = repository.jigDataProvider().persistenceAccessorsRepository();
+        var persistenceAccessorsRepository = repository.jigDataProvider().persistenceAccessorRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, persistenceAccessorsRepository);
 
         var json = buildJson(outputAdapters);
@@ -80,9 +80,9 @@ public class OutputsSummaryAdapter {
                         operationToExecution.add(Json.object("operation", opFqn)
                                 .and("execution", execFqn));
 
-                        exec.persistenceAccessors().forEach(pOp -> {
-                            String methodId = pOp.persistenceAccessorId().value();
-                            String typeFqn = pOp.persistenceAccessorId().typeId().fqn();
+                        exec.persistenceAccessorOperations().forEach(pOp -> {
+                            String methodId = pOp.persistenceAccessorOperationId().value();
+                            String typeFqn = pOp.persistenceAccessorOperationId().typeId().fqn();
                             String typeLabel = typeFqn.contains(".")
                                     ? typeFqn.substring(typeFqn.lastIndexOf('.') + 1) : typeFqn;
                             List<String> targets = pOp.persistenceTargets().persistenceTargets().stream()
@@ -93,7 +93,7 @@ public class OutputsSummaryAdapter {
                             if (accessorMethodIds.add(methodId)) {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
-                                                .and("sqlType", pOp.sqlType().name())
+                                                .and("sqlType", pOp.persistenceOperationType().name())
                                                 .and("targets", Json.array(targets)));
                             }
 

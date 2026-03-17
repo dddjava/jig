@@ -52,7 +52,7 @@ public class MyBatisStatementsReader {
 
         // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わないための早期リターン
         if (classNames.isEmpty())
-            return new MyBatisReadResult(PersistenceAccessorsRepository.empty(), SqlReadStatus.成功);
+            return new MyBatisReadResult(PersistenceAccessorRepository.empty(), SqlReadStatus.成功);
 
         URL[] classLocationUrls = classPaths.stream()
                 .flatMap(path -> {
@@ -101,14 +101,14 @@ public class MyBatisStatementsReader {
             }
         }
 
-        List<PersistenceAccessor> list = new ArrayList<>();
+        List<PersistenceAccessorOperation> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
         logger.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                PersistenceAccessorId persistenceAccessorId = resolveStatementId(mappedStatement);
+                PersistenceAccessorOperationId persistenceAccessorOperationId = resolveStatementId(mappedStatement);
 
                 Query query;
                 try {
@@ -122,28 +122,28 @@ public class MyBatisStatementsReader {
                 // MyBatis上でのSQLの種類
                 // https://mybatis.org/mybatis-3/ja/sqlmap-xml.html#sql_command_type
                 var sqlCommandType = mappedStatement.getSqlCommandType();
-                SqlType sqlType = switch (sqlCommandType) {
-                    case SELECT -> SqlType.SELECT;
-                    case INSERT -> SqlType.INSERT;
-                    case UPDATE -> SqlType.UPDATE;
-                    case DELETE -> SqlType.DELETE;
+                PersistenceOperationType persistenceOperationType = switch (sqlCommandType) {
+                    case SELECT -> PersistenceOperationType.SELECT;
+                    case INSERT -> PersistenceOperationType.INSERT;
+                    case UPDATE -> PersistenceOperationType.UPDATE;
+                    case DELETE -> PersistenceOperationType.DELETE;
                     case UNKNOWN, FLUSH -> {
                         logger.warn("JIGではSQL Command Type {} はJIGでは対応していません。SELECTとして続行します。", sqlCommandType);
-                        yield SqlType.SELECT;
+                        yield PersistenceOperationType.SELECT;
                     }
                 };
-                PersistenceAccessor myBatisStatement = PersistenceAccessor.from(persistenceAccessorId, query, sqlType);
+                PersistenceAccessorOperation myBatisStatement = PersistenceAccessorOperation.from(persistenceAccessorOperationId, query, persistenceOperationType);
                 list.add(myBatisStatement);
             }
         }
 
         logger.debug("取得したSQL: {}件", list.size());
 
-        PersistenceAccessorsRepository repository = PersistenceAccessorsRepository.from(list.stream()
-                .collect(Collectors.groupingBy(persistenceAccessor -> persistenceAccessor.persistenceAccessorId().typeId()))
+        PersistenceAccessorRepository repository = PersistenceAccessorRepository.from(list.stream()
+                .collect(Collectors.groupingBy(persistenceAccessor -> persistenceAccessor.persistenceAccessorOperationId().typeId()))
                 .entrySet()
                 .stream()
-                .map(entry -> PersistenceAccessors.forMyBatis(entry.getKey(), entry.getValue()))
+                .map(entry -> PersistenceAccessor.forMyBatis(entry.getKey(), entry.getValue()))
                 .toList());
         return new MyBatisReadResult(repository, sqlReadStatus);
     }
@@ -171,16 +171,16 @@ public class MyBatisStatementsReader {
      * }
      * </pre>
      */
-    private static PersistenceAccessorId resolveStatementId(MappedStatement mappedStatement) {
+    private static PersistenceAccessorOperationId resolveStatementId(MappedStatement mappedStatement) {
         var mappedStatementId = mappedStatement.getId();
 
         var namespaceIdSeparateIndex = mappedStatementId.lastIndexOf('.');
         if (namespaceIdSeparateIndex != -1) {
-            return PersistenceAccessorId.fromTypeIdAndName(
+            return PersistenceAccessorOperationId.fromTypeIdAndName(
                     TypeId.valueOf(mappedStatementId.substring(0, namespaceIdSeparateIndex)),
                     mappedStatementId.substring(namespaceIdSeparateIndex + 1));
         } else {
-            return PersistenceAccessorId.fromTypeIdAndName(
+            return PersistenceAccessorOperationId.fromTypeIdAndName(
                     // ダミー値を入れておく
                     TypeId.valueOf("jig.mybatis.unnamed"),
                     mappedStatementId);

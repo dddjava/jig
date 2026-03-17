@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorId;
-import org.dddjava.jig.domain.model.data.persistence.SqlType;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class OutputAdapterExecutionTest {
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var traceOutputAdapter = findOutputAdapter(outputAdapters, TraceOutputAdapter.class);
@@ -52,50 +52,50 @@ class OutputAdapterExecutionTest {
                 .anyMatch(method -> method.declaringType().equals(TypeId.valueOf(TraceHelper.class.getCanonicalName()))
                         && method.name().equals("save")));
 
-        var persistenceAccessorIdList = execution.persistenceAccessors().stream()
-                .map(persistenceAccessor -> persistenceAccessor.persistenceAccessorId())
+        var persistenceAccessorIdList = execution.persistenceAccessorOperations().stream()
+                .map(persistenceAccessor -> persistenceAccessor.persistenceAccessorOperationId())
                 .toList();
         assertEquals(1, persistenceAccessorIdList.size());
         assertEquals(
-                PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf(TraceMapper.class.getCanonicalName()), "binding"),
+                PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(TraceMapper.class.getCanonicalName()), "binding"),
                 persistenceAccessorIdList.getFirst());
     }
 
     @Test
     void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを動的に解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcNameOutputAdapter.class);
         var execution = findExecution(targetOutputAdapter, "save");
 
-        PersistenceAccessor persistenceAccessor = execution.persistenceAccessors().stream()
-                .filter(found -> found.persistenceAccessorId().equals(
-                        PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
+        PersistenceAccessorOperation persistenceAccessorOperation = execution.persistenceAccessorOperations().stream()
+                .filter(found -> found.persistenceAccessorOperationId().equals(
+                        PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
                 .findAny()
                 .orElseThrow();
 
-        assertEquals(SqlType.INSERT, persistenceAccessor.sqlType());
-        assertEquals("[spring_data_table_name]", persistenceAccessor.persistenceTargets().asText());
+        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.persistenceOperationType());
+        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceTargets().asText());
     }
 
     @Test
     void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
 
         var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcCrudDelegatingOutputAdapter.class);
         var execution = findExecution(targetOutputAdapter, "save");
 
-        PersistenceAccessor persistenceAccessor = execution.persistenceAccessors().stream()
-                .filter(found -> found.persistenceAccessorId().equals(
-                        PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
+        PersistenceAccessorOperation persistenceAccessorOperation = execution.persistenceAccessorOperations().stream()
+                .filter(found -> found.persistenceAccessorOperationId().equals(
+                        PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
                 .findAny()
                 .orElseThrow();
 
-        assertEquals(SqlType.INSERT, persistenceAccessor.sqlType());
-        assertEquals("[spring_data_table_name]", persistenceAccessor.persistenceTargets().asText());
+        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.persistenceOperationType());
+        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceTargets().asText());
     }
 }

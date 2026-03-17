@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -20,7 +20,7 @@ public record OutputAdapter(
         Collection<OutputAdapterExecution> executions
 ) {
 
-    public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceAccessorsRepository persistenceAccessorsRepository) {
+    public static OutputAdapter from(JigType jigType, JigTypes jigTypes, PersistenceAccessorRepository persistenceAccessorRepository) {
         // アダプタ視点では実装しているインタフェースがJigTypesに含まれるのであれば区別なくポートとして扱う
         // 通常は1件を想定するが、2件以上あっても問題ない。
         // 0件はポート＝アダプタの実装だと考えられるが、ひとまず考慮しない。
@@ -45,7 +45,7 @@ public record OutputAdapter(
                     if (outputPortOperations.isEmpty()) {
                         return Stream.empty();
                     }
-                    return Stream.of(OutputAdapterExecution.from(jigMethod, outputPortOperations, jigTypes, persistenceAccessorsRepository));
+                    return Stream.of(OutputAdapterExecution.from(jigMethod, outputPortOperations, jigTypes, persistenceAccessorRepository));
                 })
                 .toList();
 

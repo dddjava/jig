@@ -6,7 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -103,15 +103,15 @@ public class DefaultJigRepositoryFactory {
                     Metrics.timer(metricName, "phase", "class_file_parsing").record(() ->
                             asmClassSourceReader.readClasses(sources.classFilePaths())));
 
-            PersistenceAccessorsRepository persistenceAccessorsRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
+            PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
                     readSqlStatements(sources, classDeclarations)));
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
-                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceAccessorsRepository);
+                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceAccessorRepository);
                 JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
 
                 var springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
-                persistenceAccessorsRepository.register(springDataJdbcStatements);
+                persistenceAccessorRepository.register(springDataJdbcStatements);
 
                 return new JigRepository() {
                     @Override
@@ -144,7 +144,7 @@ public class DefaultJigRepositoryFactory {
         }));
     }
 
-    private PersistenceAccessorsRepository readSqlStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
+    private PersistenceAccessorRepository readSqlStatements(FilesystemSources sources, Collection<ClassDeclaration> classDeclarations) {
         // MyBatisの読み込み対象となるMapperインタフェース識別のためにJigTypeHeaderを抽出
         Collection<JigTypeHeader> jigTypeHeaders = classDeclarations.stream()
                 .map(ClassDeclaration::jigTypeHeader)
@@ -154,7 +154,7 @@ public class DefaultJigRepositoryFactory {
 
         var myBatisReadResult = myBatisStatementsReader.readFrom(jigTypeHeaders, classPaths);
 
-        var persistenceAccessorsRepository = myBatisReadResult.persistenceAccessorsRepository();
+        var persistenceAccessorsRepository = myBatisReadResult.persistenceAccessorRepository();
 
         SqlReadStatus sqlReadStatus = myBatisReadResult.status();
         if (sqlReadStatus == SqlReadStatus.SQLなし && persistenceAccessorsRepository.isEmpty()) {

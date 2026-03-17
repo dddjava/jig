@@ -27,7 +27,7 @@ public class SpringDataJdbcStatementsReader {
      * 1) interface である
      * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
-    public Collection<PersistenceAccessors> readFrom(JigTypes jigTypes) {
+    public Collection<PersistenceAccessor> readFrom(JigTypes jigTypes) {
 
         return jigTypes.stream()
                 .filter(this::isInterface)
@@ -88,22 +88,22 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceAccessors resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets) {
+    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets) {
         TypeId typeId = jigType.jigTypeHeader().id();
 
-        List<PersistenceAccessor> persistenceAccessors = jigType.instanceJigMethods().stream()
+        List<PersistenceAccessorOperation> persistenceAccessorOperations = jigType.instanceJigMethods().stream()
                 .map(jigMethod -> resolvePersistenceAccessor(jigMethod.jigMethodDeclaration(), typeId, defaultPersistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
-        return PersistenceAccessors.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessors);
+        return PersistenceAccessor.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessorOperations);
     }
 
-    private Optional<PersistenceAccessor> resolvePersistenceAccessor(JigMethodDeclaration jigMethodDeclaration,
-                                                                     TypeId typeId,
-                                                                     PersistenceTargets persistenceTargets) {
+    private Optional<PersistenceAccessorOperation> resolvePersistenceAccessor(JigMethodDeclaration jigMethodDeclaration,
+                                                                              TypeId typeId,
+                                                                              PersistenceTargets persistenceTargets) {
         String methodName = jigMethodDeclaration.name();
-        PersistenceAccessorId statementId = PersistenceAccessorId.fromTypeIdAndName(typeId, methodName);
+        PersistenceAccessorOperationId statementId = PersistenceAccessorOperationId.fromTypeIdAndName(typeId, methodName);
 
         return resolveQueryFromAnnotation(jigMethodDeclaration)
                 .flatMap(annotationQueryString -> {
@@ -114,17 +114,17 @@ public class SpringDataJdbcStatementsReader {
                                 jigMethodDeclaration.fqn(), annotationQueryString);
                     }
                     return optQuery.map(query -> {
-                        Optional<SqlType> optSqlType = SqlType.inferSqlTypeFromQuery(query);
+                        Optional<PersistenceOperationType> optSqlType = PersistenceOperationType.inferSqlTypeFromQuery(query);
                         if (optSqlType.isEmpty()) {
                             logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
                                     jigMethodDeclaration.fqn(), annotationQueryString);
                         }
-                        return optSqlType.map(sqlType -> PersistenceAccessor.from(statementId, query, sqlType));
+                        return optSqlType.map(sqlType -> PersistenceAccessorOperation.from(statementId, query, sqlType));
                     });
                 }).orElseGet(() -> {
                     // @Queryがないものはメソッド名でエンティティに対する操作が決まる
                     return SpringDataUtil.inferSqlType(methodName)
-                            .map(sqlType -> PersistenceAccessor.from(statementId, sqlType, persistenceTargets));
+                            .map(sqlType -> PersistenceAccessorOperation.from(statementId, sqlType, persistenceTargets));
                 });
     }
 

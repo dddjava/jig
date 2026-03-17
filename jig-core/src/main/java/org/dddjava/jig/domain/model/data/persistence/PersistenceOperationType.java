@@ -13,17 +13,17 @@ import java.util.stream.Stream;
 /**
  * SQLの種類
  */
-public enum SqlType {
+public enum PersistenceOperationType {
     INSERT("insert\\s+into\\s+([^\\s(]+).+"),
     SELECT("select.+\\sfrom\\s+([^\\s(]+)\\b.*",
             "select\\s+(nextval\\('.+'\\)).*"),
     UPDATE("update\\s+([^\\s(]+)\\s.+"),
     DELETE("delete\\s+from\\s+([^\\s(]+)\\b.*");
 
-    private static final Logger logger = LoggerFactory.getLogger(SqlType.class);
+    private static final Logger logger = LoggerFactory.getLogger(PersistenceOperationType.class);
     private final List<Pattern> patterns;
 
-    SqlType(String... patterns) {
+    PersistenceOperationType(String... patterns) {
         this.patterns = Stream.of(patterns)
                 .map(pattern -> Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS))
                 .toList();
@@ -35,7 +35,7 @@ public enum SqlType {
      * 現在は1テーブルのみ対応
      * 複問い合わせやWITHなどは未対応
      */
-    public PersistenceTargets extractTable(Query query, PersistenceAccessorId persistenceAccessorId) {
+    public PersistenceTargets extractTable(Query query, PersistenceAccessorOperationId persistenceAccessorOperationId) {
         if (query.supported()) {
             String sql = query.normalizedQuery();
             for (Pattern pattern : patterns) {
@@ -46,7 +46,7 @@ public enum SqlType {
             }
 
             logger.warn("{} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
-                    persistenceAccessorId.logText(), this, sql);
+                    persistenceAccessorOperationId.logText(), this, sql);
         }
 
         return new PersistenceTargets(unexpectedTable());
@@ -56,7 +56,7 @@ public enum SqlType {
         return new PersistenceTarget("（解析失敗）");
     }
 
-    public static Optional<SqlType> inferSqlTypeFromQuery(Query query) {
+    public static Optional<PersistenceOperationType> inferSqlTypeFromQuery(Query query) {
         String normalizedQuery = query.normalizedQuery().toLowerCase(Locale.ROOT);
         if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
         if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);

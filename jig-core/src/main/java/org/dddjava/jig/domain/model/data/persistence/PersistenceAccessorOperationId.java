@@ -11,10 +11,10 @@ import java.util.Objects;
  *
  * TODO idは全体の一意でなくtypeId内の一意なので誤解を招きそう
  */
-public record PersistenceAccessorId(String value, TypeId typeId, String id) {
+public record PersistenceAccessorOperationId(String value, TypeId typeId, String id) {
 
-    public static PersistenceAccessorId fromTypeIdAndName(TypeId typeId, String methodName) {
-        return new PersistenceAccessorId(typeId.fqn() + "." + methodName, typeId, methodName);
+    public static PersistenceAccessorOperationId fromTypeIdAndName(TypeId typeId, String methodName) {
+        return new PersistenceAccessorOperationId(typeId.fqn() + "." + methodName, typeId, methodName);
     }
 
     public boolean matches(TypeId typeId, String name) {
@@ -25,7 +25,7 @@ public record PersistenceAccessorId(String value, TypeId typeId, String id) {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersistenceAccessorId that = (PersistenceAccessorId) o;
+        PersistenceAccessorOperationId that = (PersistenceAccessorOperationId) o;
         return Objects.equals(value, that.value);
     }
 

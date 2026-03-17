@@ -1,19 +1,37 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
+import org.dddjava.jig.domain.model.data.types.TypeId;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 /**
  * 永続化アクセサ
  *
- * 操作内容（CRUD）や操作対象（テーブルなど）を持つ。
- * クエリはわかる場合のみ持つ。
+ * @param typeId                        永続化アクセサをグルーピングする型
+ * @param defaultPersistenceTargets     デフォルト永続化対象
+ * @param persistenceAccessorOperations この型に定義されている永続化アクセサ処理。0件もありえる。
+ * @param technology                    永続化アクセサの実装技術。複数の技術での実装は考慮しない。
  */
-public record PersistenceAccessor(PersistenceAccessorId persistenceAccessorId, Query query, SqlType sqlType, PersistenceTargets persistenceTargets) {
+public record PersistenceAccessor(
+        TypeId typeId,
+        PersistenceTargets defaultPersistenceTargets,
+        Collection<PersistenceAccessorOperation> persistenceAccessorOperations,
+        PersistenceAccessorTechnology technology
+) {
 
-    public static PersistenceAccessor from(PersistenceAccessorId persistenceAccessorId, Query query, SqlType sqlType) {
-        return new PersistenceAccessor(persistenceAccessorId, query, sqlType, sqlType.extractTable(query, persistenceAccessorId));
+    public static PersistenceAccessor forMyBatis(TypeId key, List<PersistenceAccessorOperation> value) {
+        return new PersistenceAccessor(key, PersistenceTargets.nothing(), value, PersistenceAccessorTechnology.MYBATIS);
     }
 
-    public static PersistenceAccessor from(PersistenceAccessorId statementId, SqlType sqlType, PersistenceTargets persistenceTargets) {
-        // TODO: Queryはunsupportedではなくauto-generateとかそんな感じかと思う
-        return new PersistenceAccessor(statementId, Query.unsupported(), sqlType, persistenceTargets);
+    public static PersistenceAccessor forSpringDataJdbc(TypeId typeId, PersistenceTargets defaultPersistenceTargets, List<PersistenceAccessorOperation> persistenceAccessorOperations) {
+        return new PersistenceAccessor(typeId, defaultPersistenceTargets, persistenceAccessorOperations, PersistenceAccessorTechnology.SPRING_DATA_JDBC);
+    }
+
+    public Optional<PersistenceAccessorOperation> findPersistenceAccessorById(PersistenceAccessorOperationId persistenceAccessorOperationId) {
+        return persistenceAccessorOperations.stream()
+                .filter(operation -> operation.persistenceAccessorOperationId().equals(persistenceAccessorOperationId))
+                .findAny();
     }
 }

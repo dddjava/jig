@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorsRepository;
-import org.dddjava.jig.domain.model.data.persistence.SqlType;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
@@ -27,9 +27,9 @@ class MyBatisStatementReaderTest {
 
     @Test
     void bindを使ってても解析できる(JigRepository jigRepository) {
-        PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+        PersistenceAccessorRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(SampleMapper.class, "binding"));
+        PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(SampleMapper.class, "binding"));
         assertEquals("[fuga]", myBatisStatement.persistenceTargets().asText());
     }
 
@@ -49,23 +49,23 @@ class MyBatisStatementReaderTest {
 
     @Test
     void OGNLを使ったSELECTが解析できない(JigRepository jigRepository) {
-        PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+        PersistenceAccessorRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl"));
+        PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl"));
         assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
         // OGNLを使ったSQLは現時点では空になりunsupportedになる
         assertFalse(myBatisStatement.query().supported());
     }
 
-    private static PersistenceAccessorId persistenceAccessorIdOf(Class<?> clz, String name) {
-        return PersistenceAccessorId.fromTypeIdAndName(TypeId.valueOf(clz.getCanonicalName()), name);
+    private static PersistenceAccessorOperationId persistenceAccessorIdOf(Class<?> clz, String name) {
+        return PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(clz.getCanonicalName()), name);
     }
 
     @Test
     void OGNLを使ったSELECTが解析できない2(JigRepository jigRepository) {
-        PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+        PersistenceAccessorRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
 
-        PersistenceAccessor myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl_where"));
+        PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl_where"));
 
         assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
         // OGNLを使ったSQLは現時点では空になる
@@ -75,41 +75,41 @@ class MyBatisStatementReaderTest {
 
     @ParameterizedTest
     @MethodSource
-    void 標準的なパターン(String methodName, String tableName, SqlType sqlType, JigRepository jigRepository) {
-        PersistenceAccessorsRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorsRepository();
+    void 標準的なパターン(String methodName, String tableName, PersistenceOperationType persistenceOperationType, JigRepository jigRepository) {
+        PersistenceAccessorRepository myBatisStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
 
-        PersistenceAccessor persistenceAccessor = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(CanonicalMapper.class, methodName));
-        assertEquals("[" + tableName + "]", persistenceAccessor.persistenceTargets().asText());
-        assertEquals(sqlType, persistenceAccessor.sqlType());
+        PersistenceAccessorOperation persistenceAccessorOperation = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(CanonicalMapper.class, methodName));
+        assertEquals("[" + tableName + "]", persistenceAccessorOperation.persistenceTargets().asText());
+        assertEquals(persistenceOperationType, persistenceAccessorOperation.persistenceOperationType());
     }
 
-    private static PersistenceAccessor persistenceAccessorOf(PersistenceAccessorsRepository repository,
-                                                             PersistenceAccessorId persistenceAccessorId) {
-        return repository.findByTypeId(persistenceAccessorId.typeId())
+    private static PersistenceAccessorOperation persistenceAccessorOf(PersistenceAccessorRepository repository,
+                                                                      PersistenceAccessorOperationId persistenceAccessorOperationId) {
+        return repository.findByTypeId(persistenceAccessorOperationId.typeId())
                 .stream()
-                .flatMap(ops -> ops.persistenceAccessors().stream())
-                .filter(operation -> operation.persistenceAccessorId().equals(persistenceAccessorId))
+                .flatMap(ops -> ops.persistenceAccessorOperations().stream())
+                .filter(operation -> operation.persistenceAccessorOperationId().equals(persistenceAccessorOperationId))
                 .findFirst()
                 .orElseThrow();
     }
 
     static Stream<Arguments> 標準的なパターン() {
         return Stream.of(
-                Arguments.of("insert", "crud_test", SqlType.INSERT),
-                Arguments.of("select", "crud_test", SqlType.SELECT),
-                Arguments.of("update", "crud_test", SqlType.UPDATE),
-                Arguments.of("delete", "crud_test", SqlType.DELETE),
-                Arguments.of("annotationInsert", "crud_test", SqlType.INSERT),
-                Arguments.of("annotationSelect", "crud_test", SqlType.SELECT),
-                Arguments.of("annotationUpdate", "crud_test", SqlType.UPDATE),
-                Arguments.of("annotationDelete", "crud_test", SqlType.DELETE),
-                Arguments.of("tabInsert", "tab_test", SqlType.INSERT),
-                Arguments.of("tabSelect", "tab_test", SqlType.SELECT),
-                Arguments.of("tabUpdate", "tab_test", SqlType.UPDATE),
-                Arguments.of("tabDelete", "tab_test", SqlType.DELETE),
-                Arguments.of("japanese", "あのスキーマ.このテーブル", SqlType.SELECT),
-                Arguments.of("illegal", "（解析失敗）", SqlType.INSERT),
-                Arguments.of("sequence_postgresql", "nextval('seq_test')", SqlType.SELECT)
+                Arguments.of("insert", "crud_test", PersistenceOperationType.INSERT),
+                Arguments.of("select", "crud_test", PersistenceOperationType.SELECT),
+                Arguments.of("update", "crud_test", PersistenceOperationType.UPDATE),
+                Arguments.of("delete", "crud_test", PersistenceOperationType.DELETE),
+                Arguments.of("annotationInsert", "crud_test", PersistenceOperationType.INSERT),
+                Arguments.of("annotationSelect", "crud_test", PersistenceOperationType.SELECT),
+                Arguments.of("annotationUpdate", "crud_test", PersistenceOperationType.UPDATE),
+                Arguments.of("annotationDelete", "crud_test", PersistenceOperationType.DELETE),
+                Arguments.of("tabInsert", "tab_test", PersistenceOperationType.INSERT),
+                Arguments.of("tabSelect", "tab_test", PersistenceOperationType.SELECT),
+                Arguments.of("tabUpdate", "tab_test", PersistenceOperationType.UPDATE),
+                Arguments.of("tabDelete", "tab_test", PersistenceOperationType.DELETE),
+                Arguments.of("japanese", "あのスキーマ.このテーブル", PersistenceOperationType.SELECT),
+                Arguments.of("illegal", "（解析失敗）", PersistenceOperationType.INSERT),
+                Arguments.of("sequence_postgresql", "nextval('seq_test')", PersistenceOperationType.SELECT)
         );
     }
 }

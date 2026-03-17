@@ -94,17 +94,22 @@ public class SpringDataJdbcStatementsReader {
     private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets, Set<TypeId> superTypeIds) {
         TypeId typeId = jigType.jigTypeHeader().id();
 
+        // インタフェースに直接定義されているメソッド
         List<PersistenceAccessorOperation> declaredOperations = jigType.instanceJigMethods().stream()
                 .map(jigMethod -> resolvePersistenceAccessor(jigMethod.jigMethodDeclaration(), typeId, defaultPersistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
+        // インタフェースに直接定義されているメソッド名（オーバーライド済みの判定用）
+        // MEMO: オーバーロードが考慮されていない。オーバーロードで @Query を使用している場合に対応する必要がある。
         Set<String> declaredMethodNames = declaredOperations.stream()
                 .map(op -> op.persistenceAccessorOperationId().id())
                 .collect(java.util.stream.Collectors.toSet());
 
         List<PersistenceAccessorOperation> inheritedOperations = SpringDataUtil.springDataBaseMethodNames().stream()
+                // メソッド名がかぶるものをオーバーライド済みとして除外（オーバーロードの考慮が必要）
                 .filter(methodName -> !declaredMethodNames.contains(methodName))
+                // TODO: ここでinferSqlTypeしているためOptionalになっているが、規定メソッド名が軸なのでOptionalにはなりえない。別メソッドにする。
                 .flatMap(methodName -> SpringDataUtil.inferSqlType(methodName)
                         .map(sqlType -> PersistenceAccessorOperation.from(
                                 PersistenceAccessorOperationId.fromTypeIdAndName(typeId, methodName),

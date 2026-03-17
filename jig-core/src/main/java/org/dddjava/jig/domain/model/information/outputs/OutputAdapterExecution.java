@@ -128,20 +128,22 @@ public record OutputAdapterExecution(
                 });
     }
 
-    private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> tracingMethodIds) {
-        if (!tracingMethodIds.add(jigMethod.jigMethodId())) {
+    /**
+     * 起点のメソッドからメソッド呼び出しを辿って解決できる範囲のJigMethodを収集する
+     */
+    private static Set<JigMethod> collectTracingJigMethods(JigMethod jigMethod, JigTypes jigTypes, Set<JigMethodId> stopper) {
+        // stopperにあるものは収集済みなのでスキップ（空を返す）
+        if (!stopper.add(jigMethod.jigMethodId())) {
             return Set.of();
         }
-        try {
-            Set<JigMethod> resolved = jigMethod.usingMethods().invokedMethodStream()
-                    .flatMap(methodCall -> jigTypes.resolveJigMethod(methodCall.jigMethodId()).stream())
-                    .flatMap(calledJigMethod -> collectTracingJigMethods(calledJigMethod, jigTypes, tracingMethodIds).stream())
-                    .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
-            resolved.add(jigMethod);
-            return resolved;
-        } finally {
-            tracingMethodIds.remove(jigMethod.jigMethodId());
-        }
+        Set<JigMethod> resolved = jigMethod.usingMethods().invokedMethodStream()
+                // MethodCallからJigMethodを引く
+                // MEMO: メソッドIDの一致でみているのでinterfaceのMethodCallは実装をとれない
+                .flatMap(methodCall -> jigTypes.resolveJigMethod(methodCall.jigMethodId()).stream())
+                .flatMap(calledJigMethod -> collectTracingJigMethods(calledJigMethod, jigTypes, stopper).stream())
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+        resolved.add(jigMethod);
+        return resolved;
     }
 
 }

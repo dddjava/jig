@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.data.persistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -14,13 +15,15 @@ import java.util.stream.Stream;
  * SQLの種類
  */
 public enum PersistenceOperationType {
-    INSERT("insert\\s+into\\s+([^\\s(]+).+"),
-    SELECT("select.+\\sfrom\\s+([^\\s(]+)\\b.*",
-            "select\\s+(nextval\\('.+'\\)).*"),
-    UPDATE("update\\s+([^\\s(]+)\\s.+"),
-    DELETE("delete\\s+from\\s+([^\\s(]+)\\b.*");
+    INSERT("insert\\s+into\\s+([^\\s(]+)"),
+    SELECT("\\bfrom\\s+([^\\s,(]+)",
+            "select\\s+(nextval\\('.+'\\))"),
+    UPDATE("\\bupdate\\s+([^\\s,(]+)"),
+    DELETE("delete\\s+from\\s+([^\\s(]+)\\b");
 
     private static final Logger logger = LoggerFactory.getLogger(PersistenceOperationType.class);
+    private static final Pattern JOIN_PATTERN =
+            Pattern.compile("\\bjoin\\s+([^\\s,(]+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
     private final List<Pattern> patterns;
 
     PersistenceOperationType(String... patterns) {
@@ -32,17 +35,27 @@ public enum PersistenceOperationType {
     /**
      * SQLから使用しているテーブルを抽出する
      *
-     * 現在は1テーブルのみ対応
-     * 複問い合わせやWITHなどは未対応
+     * JOINを含む複数テーブルの参照に対応。WITHなどは未対応。
      */
     public PersistenceTargets extractTable(Query query, PersistenceAccessorOperationId persistenceAccessorOperationId) {
         if (query.supported()) {
-            String sql = query.normalizedQuery();
+            String sql = query.normalizedQuery().replaceAll("\n", " ");
+            List<PersistenceTarget> targets = new ArrayList<>();
+
             for (Pattern pattern : patterns) {
-                Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
-                if (matcher.matches()) {
-                    return new PersistenceTargets(new PersistenceTarget(matcher.group(1)));
+                Matcher matcher = pattern.matcher(sql);
+                while (matcher.find()) {
+                    targets.add(new PersistenceTarget(matcher.group(1)));
                 }
+            }
+
+            Matcher joinMatcher = JOIN_PATTERN.matcher(sql);
+            while (joinMatcher.find()) {
+                targets.add(new PersistenceTarget(joinMatcher.group(1)));
+            }
+
+            if (!targets.isEmpty()) {
+                return new PersistenceTargets(targets);
             }
 
             logger.warn("{} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",

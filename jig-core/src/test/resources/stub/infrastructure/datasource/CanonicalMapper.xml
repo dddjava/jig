@@ -33,4 +33,13 @@
     <select id="tabSelect">SELECT * FROM tab_test WHERE 1 = 1</select>
     <update id="tabUpdate">UPDATE tab_test SET a = 'a'</update>
     <delete id="tabDelete">DELETE FROM tab_test WHERE true</delete>
+
+    <select id="joinSelect">
+        SELECT a.id, b.name FROM table_a a JOIN table_b b ON a.id = b.a_id
+    </select>
+    <select id="leftJoinSelect">
+        SELECT a.id, b.name, c.value FROM table_a a
+        LEFT JOIN table_b b ON a.id = b.a_id
+        LEFT JOIN table_c c ON b.id = c.b_id
+    </select>
 </mapper>

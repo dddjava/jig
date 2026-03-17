@@ -110,7 +110,9 @@ class MyBatisStatementReaderTest {
                 Arguments.of("tabDelete", "tab_test", PersistenceOperationType.DELETE),
                 Arguments.of("japanese", "あのスキーマ.このテーブル", PersistenceOperationType.SELECT),
                 Arguments.of("illegal", "（解析失敗）", PersistenceOperationType.INSERT),
-                Arguments.of("sequence_postgresql", "nextval('seq_test')", PersistenceOperationType.SELECT)
+                Arguments.of("sequence_postgresql", "nextval('seq_test')", PersistenceOperationType.SELECT),
+                Arguments.of("joinSelect", "table_a, table_b", PersistenceOperationType.SELECT),
+                Arguments.of("leftJoinSelect", "table_a, table_b, table_c", PersistenceOperationType.SELECT)
         );
     }
 }

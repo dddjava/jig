@@ -752,11 +752,11 @@ function readVisibility() {
     const direction = directionEl ? directionEl.value : 'LR';
     return {
         port,
-        operation: port && checked("show-operation"),
+        operation: checked("show-operation"),
         adapter,
-        execution: adapter && checked("show-execution"),
+        execution: checked("show-execution"),
         accessor,
-        accessorMethod: accessor && checked("show-accessor-method"),
+        accessorMethod: checked("show-accessor-method"),
         target: checked("show-target"),
         direction,
         crudCreate: checked("show-crud-c"),
@@ -803,23 +803,19 @@ const OutputsApp = {
     },
 
     bindEvents() {
-        const cascadeRules = {
-            "show-port": ["show-operation"],
-            "show-adapter": ["show-execution"],
-            "show-accessor": ["show-accessor-method"],
+        const parentRules = {
+            "show-operation": "show-port",
+            "show-execution": "show-adapter",
+            "show-accessor-method": "show-accessor",
         };
 
         document.querySelectorAll('input[name^="show-"]').forEach(input => {
             input.addEventListener('change', () => {
                 const name = input.getAttribute("name");
-                const children = cascadeRules[name] || [];
-                children.forEach(childName => {
-                    const childEl = document.querySelector(`input[name="${childName}"]`);
-                    if (childEl) {
-                        if (!input.checked) childEl.checked = false;
-                        childEl.disabled = !input.checked;
-                    }
-                });
+                if (input.checked && parentRules[name]) {
+                    const parentEl = document.querySelector(`input[name="${parentRules[name]}"]`);
+                    if (parentEl) parentEl.checked = true;
+                }
                 this.setState({visibility: readVisibility()});
             });
         });

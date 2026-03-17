@@ -2,13 +2,19 @@ package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.persistence.*;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * 出力アダプタの実装
@@ -61,7 +67,7 @@ public record OutputAdapterExecution(
                 PersistenceAccessorOperationId.fromTypeIdAndName(persistenceAccessor.typeId(), methodCall.methodName());
         return persistenceAccessor.findPersistenceAccessorById(persistenceAccessorOperationId)
                 .or(() -> {
-                    logger.warn("PersistenceAccessorsは見つかりましたが、PersistenceAccessorが見つかりませんでした。caller={} callee={} owner={} origin={}",
+                    logger.warn("PersistenceAccessorは見つかりましたが、対応する操作が見つかりませんでした。caller={} callee={} owner={} origin={}",
                             tracingJigMethod.fqn(),
                             methodCall.jigMethodId().value(),
                             methodCall.methodOwner().fqn(),

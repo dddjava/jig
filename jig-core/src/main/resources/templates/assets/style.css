@@ -989,6 +989,18 @@ table td.number {
 .outputs .outputs-display-mode label {
     cursor: pointer;
 }
+.outputs .outputs-display-mode .checkbox-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    border-left: 2px solid #aac4f0;
+    padding-left: 6px;
+}
+.outputs .outputs-display-mode .checkbox-child {
+    padding-left: 8px;
+    font-size: 0.95em;
+    color: #374151;
+}
 .outputs .outputs-tabs {
     display: flex;
     gap: 10px;

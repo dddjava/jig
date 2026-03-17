@@ -62,6 +62,16 @@ class PersistenceOperationTypeTest {
     }
 
     @Test
+    void コロン付きパラメータのfromをテーブル名として誤検出しない() {
+        // Spring Data JDBCの :from パラメータが FROM キーワードと誤認識されないこと
+        String sql = "SELECT * FROM hoge WHERE id IN (:idList) AND date BETWEEN :from AND :to";
+        Query query = Query.from(sql);
+        PersistenceTargets targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+
+        assertEquals("[hoge]", targets.asText());
+    }
+
+    @Test
     void nextvalはサブクエリパターンの影響を受けない() {
         String sql = "SELECT nextval('seq_name')";
         Query query = Query.from(sql);

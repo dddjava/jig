@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  */
 public enum PersistenceOperationType {
     INSERT("insert\\s+into\\s+([^\\s(]+)"),
-    SELECT("\\bfrom\\s+([^\\s,(]+)",
+    SELECT("(?<!:)\\bfrom\\s+([^\\s,(]+)",
             "select\\s+(nextval\\('.+'\\))"),
     UPDATE("\\bupdate\\s+([^\\s,(]+)"),
     DELETE("delete\\s+from\\s+([^\\s(]+)\\b");

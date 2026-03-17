@@ -2,11 +2,9 @@ package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
+import org.dddjava.jig.domain.model.data.persistence.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.outputs.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +65,19 @@ public record OutputAdapterExecution(
                 PersistenceAccessorOperationId.fromTypeIdAndName(persistenceAccessor.typeId(), methodCall.methodName());
         return persistenceAccessor.findPersistenceAccessorById(persistenceAccessorOperationId)
                 .or(() -> {
-                    logger.warn("PersistenceAccessorは見つかりましたが、対応する操作が見つかりませんでした。この関連は表示されません。caller={} callee={}",
+                    // SpringDataJDBCの場合はメソッド名から推測して作る
+                    // ここにくるのはPersistenceAccessorに事前登録できてないケース、典型的には内部の共通インタフェースで定義されているメソッドで、JIGの読み取り対象外のもの。
+                    // ひとまず動的に生成しているが、非効率ではあるのでPersistenceAccessorRepositoryに登録しておきたいところ。
+                    if (persistenceAccessor.technology() == PersistenceAccessorTechnology.SPRING_DATA_JDBC) {
+                        var persistenceOperationType = SpringDataUtil.inferSqlType(methodCall.methodName());
+                        if (persistenceOperationType.isPresent()) {
+                            return persistenceOperationType
+                                    .map(sqlType -> PersistenceAccessorOperation.from(persistenceAccessorOperationId, sqlType, persistenceAccessor.defaultPersistenceTargets()));
+                        }
+                    }
+
+                    // TODO 「不明」とかで載せたほうがよいかもしれない。
+                    logger.warn("PersistenceAccessorはに対する操作が解決できませんでした。この関連はドキュメントから除外されます。caller={} callee={}",
                             tracingJigMethod.fqn(),
                             methodCall.jigMethodId().value());
                     return Optional.empty();

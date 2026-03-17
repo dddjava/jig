@@ -381,12 +381,13 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     }
 }
 
-function addTargetEdges(builder, sourceNodeId, targets, targetNodes, sqlType) {
-    targets?.forEach(target => {
+function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
+    op.targets?.forEach(target => {
         if (!targetNodes.has(target)) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
         }
+        const sqlType = op.targetSqlTypes?.[target] || op.sqlType || "";
         if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
     });
 }
@@ -417,12 +418,11 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
 
         operation.persistenceAccessors?.forEach((op) => {
             if (!isCrudVisible(op.sqlType, visibility)) return;
-            const sqlType = op.sqlType || "";
 
             const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
             if (visibility.target) {
-                addTargetEdges(builder, currentNode, op.targets, targetNodes, sqlType);
+                addTargetEdges(builder, currentNode, op, targetNodes);
             }
         });
     });
@@ -470,7 +470,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
             currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
             if (visibility.target) {
-                addTargetEdges(builder, currentNode, [target], targetNodes, op.sqlType);
+                const targetSqlType = op.targetSqlTypes?.[target] || op.sqlType || "";
+                addTargetEdges(builder, currentNode, {targets: [target], sqlType: targetSqlType, targetSqlTypes: {[target]: targetSqlType}}, targetNodes);
             }
         });
     });
@@ -502,9 +503,12 @@ function createPortGroupRow(group, allTargets, visibility) {
                 const cruds = new Set();
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors?.forEach(op => {
-                        const crud = toCrudChar(op.sqlType);
-                        if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
-                            cruds.add(crud);
+                        if (op.targets?.includes(target)) {
+                            const targetSqlType = op.targetSqlTypes?.[target] || op.sqlType;
+                            const crud = toCrudChar(targetSqlType);
+                            if (crud && isCrudVisible(targetSqlType, visibility)) {
+                                cruds.add(crud);
+                            }
                         }
                     });
                 });
@@ -530,9 +534,12 @@ function createOperationRow(operation, allTargets, portId, visibility) {
                 const cell = createElement("td", {className: "crud-cell"});
                 const cruds = new Set();
                 operation.persistenceAccessors?.forEach(op => {
-                    const crud = toCrudChar(op.sqlType);
-                    if (crud && op.targets?.includes(target) && isCrudVisible(op.sqlType, visibility)) {
-                        cruds.add(crud);
+                    if (op.targets?.includes(target)) {
+                        const targetSqlType = op.targetSqlTypes?.[target] || op.sqlType;
+                        const crud = toCrudChar(targetSqlType);
+                        if (crud && isCrudVisible(targetSqlType, visibility)) {
+                            cruds.add(crud);
+                        }
                     }
                 });
                 if (cruds.size > 0) {

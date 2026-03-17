@@ -45,13 +45,13 @@ public enum PersistenceOperationType {
             for (Pattern pattern : patterns) {
                 Matcher matcher = pattern.matcher(sql);
                 while (matcher.find()) {
-                    targets.add(new PersistenceTarget(matcher.group(1)));
+                    targets.add(new PersistenceTarget(matcher.group(1), Optional.of(this)));
                 }
             }
 
             Matcher joinMatcher = JOIN_PATTERN.matcher(sql);
             while (joinMatcher.find()) {
-                targets.add(new PersistenceTarget(joinMatcher.group(1)));
+                targets.add(new PersistenceTarget(joinMatcher.group(1), Optional.of(SELECT)));
             }
 
             if (!targets.isEmpty()) {

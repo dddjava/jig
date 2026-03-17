@@ -85,8 +85,15 @@ public class OutputsSummaryAdapter {
                             String typeFqn = pOp.persistenceAccessorOperationId().typeId().fqn();
                             String typeLabel = typeFqn.contains(".")
                                     ? typeFqn.substring(typeFqn.lastIndexOf('.') + 1) : typeFqn;
+                            var targetSqlTypes = Json.object();
                             List<String> targets = pOp.persistenceTargets().persistenceTargets().stream()
-                                    .map(PersistenceTarget::name).toList();
+                                    .map(t -> {
+                                        String sqlType = t.operationType()
+                                                .map(Enum::name)
+                                                .orElse(pOp.persistenceOperationType().name());
+                                        targetSqlTypes.and(t.name(), sqlType);
+                                        return t.name();
+                                    }).toList();
 
                             targetsSet.addAll(targets);
                             accessorTypesMap.putIfAbsent(typeFqn, typeLabel);
@@ -94,7 +101,8 @@ public class OutputsSummaryAdapter {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
                                                 .and("sqlType", pOp.persistenceOperationType().name())
-                                                .and("targets", Json.array(targets)));
+                                                .and("targets", Json.array(targets))
+                                                .and("targetSqlTypes", targetSqlTypes));
                             }
 
                             executionToAccessor.add(Json.object("execution", execFqn)

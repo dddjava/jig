@@ -1,9 +1,14 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
+import java.util.Optional;
+
 /**
  * 永続化操作の操作対象
  *
  * テーブルなど
  */
-public record PersistenceTarget(String name) {
+public record PersistenceTarget(String name, Optional<PersistenceOperationType> operationType) {
+    public PersistenceTarget(String name) {
+        this(name, Optional.empty());
+    }
 }

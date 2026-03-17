@@ -17,6 +17,7 @@ import stub.infrastructure.datasource.SampleMapper;
 import stub.infrastructure.datasource.trace.TraceOutputPort;
 import testing.JigTest;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -85,7 +86,7 @@ class MyBatisStatementReaderTest {
 
     private static PersistenceAccessorOperation persistenceAccessorOf(PersistenceAccessorRepository repository,
                                                                       PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        return repository.findByTypeId(persistenceAccessorOperationId.typeId())
+        return repository.findByTypeId(persistenceAccessorOperationId.typeId(), Set.of())
                 .stream()
                 .flatMap(ops -> ops.persistenceAccessorOperations().stream())
                 .filter(operation -> operation.persistenceAccessorOperationId().equals(persistenceAccessorOperationId))

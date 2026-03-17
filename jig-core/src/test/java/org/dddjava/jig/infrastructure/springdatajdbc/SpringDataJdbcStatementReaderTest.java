@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import stub.infrastructure.datasource.springdata.*;
 import testing.JigTest;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -128,7 +129,7 @@ class SpringDataJdbcStatementReaderTest {
 
     private static java.util.Optional<PersistenceAccessorOperation> persistenceAccessorOptionalOf(PersistenceAccessorRepository repository,
                                                                                                   PersistenceAccessorOperationId persistenceAccessorOperationId) {
-        return repository.findByTypeId(persistenceAccessorOperationId.typeId())
+        return repository.findByTypeId(persistenceAccessorOperationId.typeId(), Set.of())
                 .stream()
                 .flatMap(ops -> ops.persistenceAccessorOperations().stream())
                 .filter(operation -> operation.persistenceAccessorOperationId().equals(persistenceAccessorOperationId))

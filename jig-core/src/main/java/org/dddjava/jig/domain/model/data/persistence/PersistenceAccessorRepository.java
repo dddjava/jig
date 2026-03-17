@@ -2,11 +2,7 @@ package org.dddjava.jig.domain.model.data.persistence;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 永続化操作リポジトリ
@@ -21,10 +17,6 @@ public record PersistenceAccessorRepository(Collection<PersistenceAccessor> valu
 
     public static PersistenceAccessorRepository from(Collection<PersistenceAccessor> statements) {
         return new PersistenceAccessorRepository(new ArrayList<>(statements));
-    }
-
-    public Optional<PersistenceAccessor> findByTypeId(TypeId typeId) {
-        return findByTypeId(typeId, Set.of());
     }
 
     /**

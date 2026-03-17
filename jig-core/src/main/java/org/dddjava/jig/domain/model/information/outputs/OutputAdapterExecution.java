@@ -29,7 +29,7 @@ public record OutputAdapterExecution(
                                               JigTypes jigTypes,
                                               PersistenceAccessorRepository persistenceAccessorRepository) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
-        var persistenceAccessors = resolvePersistenceAccessors(tracingJigMethods, jigTypes, persistenceAccessorRepository);
+        Collection<PersistenceAccessorOperation> persistenceAccessors = resolvePersistenceAccessors(tracingJigMethods, jigTypes, persistenceAccessorRepository);
         return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessors);
     }
 

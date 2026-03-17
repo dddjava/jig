@@ -16,6 +16,9 @@ import java.util.stream.Stream;
 public class SpringDataJdbcStatementsReader {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataJdbcStatementsReader.class);
 
+    // 推測したカスタム基底リポジトリの蓄積（interfaceId → 宣言元TypeIdリスト）
+    private Map<TypeId, List<TypeId>> inferredBaseRepositories;
+
     private static final String SPRING_DATA_TABLE = "org.springframework.data.relational.core.mapping.Table";
     private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
@@ -30,12 +33,21 @@ public class SpringDataJdbcStatementsReader {
      * 2) 継承先（再帰含む）に {@code org.springframework.data.repository.*} を持つ
      */
     public Collection<PersistenceAccessor> readFrom(JigTypes jigTypes) {
+        inferredBaseRepositories = new LinkedHashMap<>();
 
-        return jigTypes.stream()
+        var result = jigTypes.stream()
                 .filter(this::isInterface)
                 .flatMap(jigType -> resolvePersistenceTargets(jigType, jigTypes).stream()
                         .map(info -> resolvePersistenceAccessors(jigType, info.targets(), info.superTypeIds())))
                 .toList();
+
+        inferredBaseRepositories.forEach((interfaceId, declaringTypes) ->
+                logger.warn("インターフェース {} がJIGの解析対象に含まれていないため、名前と型引数からSpring Data Repositoryと推測して処理します。" +
+                        "正確に解析するには解析対象パスに含めてください。宣言元: {}",
+                        interfaceId.fqn(),
+                        declaringTypes.stream().map(TypeId::fqn).collect(java.util.stream.Collectors.joining(", "))));
+
+        return result;
     }
 
     /**
@@ -85,9 +97,7 @@ public class SpringDataJdbcStatementsReader {
             if (resolvedInterface.isEmpty()) {
                 List<JigTypeArgument> typeArguments = interfaceType.typeArgumentList();
                 if (!typeArguments.isEmpty() && interfaceId.fqn().endsWith("Repository")) {
-                    logger.warn("インターフェース {} がJIGの解析対象に含まれていないため、名前と型引数からSpring Data Repositoryと推測して処理します。" +
-                            "正確に解析するには解析対象パスに含めてください。宣言元: {}",
-                            interfaceId.fqn(), header.fqn());
+                    inferredBaseRepositories.computeIfAbsent(interfaceId, k -> new ArrayList<>()).add(header.id());
                     superTypeIds.add(interfaceId);
                     var entityTypeId = typeArguments.getFirst().typeId();
                     return Optional.of(new SpringDataPersistenceInfo(extractPersistenceTargets(jigTypes, entityTypeId), superTypeIds));

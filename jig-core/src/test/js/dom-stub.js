@@ -32,11 +32,30 @@ class Element {
         this.attributes = new Map();
         this.eventListeners = new Map();
         this.value = "";
-        this.checked = false;
+        this._checked = false;
     }
 
     get id() { return this.getAttribute("id"); }
     set id(value) { this.setAttribute("id", value); }
+
+    get name() { return this.getAttribute("name"); }
+    set name(value) { this.setAttribute("name", value); }
+
+    get type() { return this.getAttribute("type"); }
+    set type(value) { this.setAttribute("type", value); }
+
+    get checked() { return this._checked; }
+    set checked(value) {
+        this._checked = !!value;
+        // ラジオボタンの場合、同じ名前を持つ他のラジオボタンのcheckedをfalseにする
+        if (this.tagName === "input" && this.type === "radio" && this.name && this._checked && this.ownerDocument) {
+            this.ownerDocument.allElements.forEach(el => {
+                if (el !== this && el.tagName === "input" && el.type === "radio" && el.name === this.name) {
+                    el._checked = false;
+                }
+            });
+        }
+    }
 
     get textContent() {
         if (this.children.length > 0) return this.children.map(c => c.textContent).join("");
@@ -59,6 +78,12 @@ class Element {
         this.attributes.set(name, String(value));
         if (name === "id" && this.ownerDocument) {
             this.ownerDocument.elementsById.set(value, this);
+        }
+        if (name === "name" && this.ownerDocument) {
+            if (!this.ownerDocument.elementsByName.has(value)) {
+                this.ownerDocument.elementsByName.set(value, []);
+            }
+            this.ownerDocument.elementsByName.get(value).push(this);
         }
     }
 
@@ -90,6 +115,7 @@ class Element {
 class DocumentStub {
     constructor() {
         this.elementsById = new Map();
+        this.elementsByName = new Map();
         this.eventListeners = new Map();
         this.allElements = [];
     }
@@ -107,7 +133,15 @@ class DocumentStub {
         return el;
     }
 
+    createDocumentFragment() {
+        return new Element("fragment", this);
+    }
+
     getElementById(id) { return this.elementsById.get(id) || null; }
+
+    getElementsByClassName(className) {
+        return this.allElements.filter(el => el.classList.contains(className));
+    }
 
     querySelector(selector) {
         // 基本的なセレクタの実装

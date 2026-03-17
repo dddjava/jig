@@ -20,6 +20,8 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
+    private record SpringDataPersistenceInfo(PersistenceTargets targets, Set<TypeId> springDataBaseTypes) {}
+
     /**
      * Spring Data JDBCのRepositoryを抽出して永続化操作対象群を構築する
      *
@@ -32,7 +34,7 @@ public class SpringDataJdbcStatementsReader {
         return jigTypes.stream()
                 .filter(this::isInterface)
                 .flatMap(jigType -> resolvePersistenceTargets(jigType, jigTypes).stream()
-                        .map(persistenceTargets -> resolvePersistenceAccessors(jigType, persistenceTargets)))
+                        .map(info -> resolvePersistenceAccessors(jigType, info.targets(), info.springDataBaseTypes())))
                 .toList();
     }
 
@@ -44,11 +46,11 @@ public class SpringDataJdbcStatementsReader {
      * @param jigType  対象の型
      * @param jigTypes インタフェースの型を解決するための辞書
      */
-    private Optional<PersistenceTargets> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes) {
-        return resolvePersistenceTargets(jigType, jigTypes, new HashSet<>());
+    private Optional<SpringDataPersistenceInfo> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes) {
+        return resolvePersistenceTargets(jigType, jigTypes, new HashSet<>(), new HashSet<>());
     }
 
-    private Optional<PersistenceTargets> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes, Set<TypeId> visited) {
+    private Optional<SpringDataPersistenceInfo> resolvePersistenceTargets(JigType jigType, JigTypes jigTypes, Set<TypeId> visited, Set<TypeId> springDataBaseTypes) {
         var header = jigType.jigTypeHeader();
         // 再帰しているので一応チェック。普通に作れば型継承の循環はコンパイルエラーになるため、このチェックに出番はない。
         if (!visited.add(header.id())) return Optional.empty();
@@ -57,6 +59,7 @@ public class SpringDataJdbcStatementsReader {
         for (JigTypeReference interfaceType : header.interfaceTypeList()) {
             TypeId interfaceId = interfaceType.id();
             if (SpringDataUtil.isSpringDataRepositoryType(interfaceId)) {
+                springDataBaseTypes.add(interfaceId);
                 List<JigTypeArgument> jigTypeArguments = interfaceType.typeArgumentList();
                 if (jigTypeArguments.isEmpty()) {
                     logger.warn("Spring Data Repository {} の型引数が解決できないため、この継承はスキップします。宣言元: {}",
@@ -65,16 +68,16 @@ public class SpringDataJdbcStatementsReader {
                     continue;
                 }
                 var entityTypeId = jigTypeArguments.getFirst().typeId();
-                return Optional.of(extractPersistenceTargets(jigTypes, entityTypeId));
+                return Optional.of(new SpringDataPersistenceInfo(extractPersistenceTargets(jigTypes, entityTypeId), springDataBaseTypes));
                 // MEMO: SpringDataRepositoryのインタフェースを複数実装している場合も1つ目だけ扱う。複数実装していてもエンティティ型が違うのは想定しない。
             }
 
             // インタフェースを対象に再帰する。
-            Optional<PersistenceTargets> persistenceTargets = jigTypes.resolveJigType(interfaceId)
-                    .flatMap(interfaceJigType -> resolvePersistenceTargets(interfaceJigType, jigTypes, visited));
-            if (persistenceTargets.isPresent()) {
+            Optional<SpringDataPersistenceInfo> persistenceInfo = jigTypes.resolveJigType(interfaceId)
+                    .flatMap(interfaceJigType -> resolvePersistenceTargets(interfaceJigType, jigTypes, visited, springDataBaseTypes));
+            if (persistenceInfo.isPresent()) {
                 // 継承したインタフェースからPersistenceTargetsの解決に成功した
-                return persistenceTargets;
+                return persistenceInfo;
             }
 
             // インタフェースがJigTypesにない場合や継承階層を辿ってもemptyな場合
@@ -88,15 +91,32 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets) {
+    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets, Set<TypeId> springDataBaseTypes) {
         TypeId typeId = jigType.jigTypeHeader().id();
 
-        List<PersistenceAccessorOperation> persistenceAccessorOperations = jigType.instanceJigMethods().stream()
+        List<PersistenceAccessorOperation> declaredOperations = jigType.instanceJigMethods().stream()
                 .map(jigMethod -> resolvePersistenceAccessor(jigMethod.jigMethodDeclaration(), typeId, defaultPersistenceTargets))
                 .flatMap(Optional::stream)
                 .toList();
 
-        return PersistenceAccessor.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessorOperations);
+        Set<String> declaredMethodNames = declaredOperations.stream()
+                .map(op -> op.persistenceAccessorOperationId().id())
+                .collect(java.util.stream.Collectors.toSet());
+
+        List<PersistenceAccessorOperation> inheritedOperations = SpringDataUtil.springDataBaseMethodNames().stream()
+                .filter(methodName -> !declaredMethodNames.contains(methodName))
+                .flatMap(methodName -> SpringDataUtil.inferSqlType(methodName)
+                        .map(sqlType -> PersistenceAccessorOperation.from(
+                                PersistenceAccessorOperationId.fromTypeIdAndName(typeId, methodName),
+                                sqlType,
+                                defaultPersistenceTargets))
+                        .stream())
+                .toList();
+
+        List<PersistenceAccessorOperation> persistenceAccessorOperations = Stream.concat(
+                declaredOperations.stream(), inheritedOperations.stream()).toList();
+
+        return PersistenceAccessor.forSpringDataJdbc(typeId, defaultPersistenceTargets, persistenceAccessorOperations, springDataBaseTypes);
     }
 
     private Optional<PersistenceAccessorOperation> resolvePersistenceAccessor(JigMethodDeclaration jigMethodDeclaration,

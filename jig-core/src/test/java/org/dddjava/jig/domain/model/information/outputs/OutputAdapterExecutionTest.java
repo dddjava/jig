@@ -62,7 +62,7 @@ class OutputAdapterExecutionTest {
     }
 
     @Test
-    void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを動的に解決できる(JigService jigService, JigRepository jigRepository) {
+    void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
         var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
         var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);

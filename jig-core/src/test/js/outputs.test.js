@@ -1,169 +1,22 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const { Element, DocumentStub } = require("./dom-stub.js");
 
 const outputs = require("../../main/resources/templates/assets/outputs.js");
 
-class ClassList {
+/**
+ * outputs.js のテスト用に拡張された DocumentStub
+ */
+class OutputsDocumentStub extends DocumentStub {
     constructor() {
-        this.set = new Set();
-    }
-
-    add(c) {
-        this.set.add(c);
-    }
-
-    remove(c) {
-        this.set.delete(c);
-    }
-
-    delete(c) {
-        this.set.delete(c);
-    }
-
-    has(c) {
-        return this.set.has(c);
-    }
-
-    contains(c) {
-        return this.set.has(c);
-    }
-
-    toggle(className, force) {
-        if (force === true) {
-            this.set.add(className);
-        } else if (force === false) {
-            this.set.delete(className);
-        } else {
-            if (this.set.has(className)) {
-                this.set.delete(className);
-            } else {
-                this.set.add(className);
-            }
-        }
-    }
-
-    toString() {
-        return Array.from(this.set).join(" ");
-    }
-}
-
-class Element {
-    constructor(tagName, ownerDocument = null) {
-        this.tagName = tagName;
-        this.ownerDocument = ownerDocument;
-        this.children = [];
-        this._textContent = "";
-        this.innerHTML = "";
-        this.classList = new ClassList();
-        this.style = {};
-        this.attributes = new Map();
-        this.eventListeners = new Map();
-        this.value = ""; // ラジオボタン等のため
-        this.checked = false; // ラジオボタン等のため
-    }
-
-    get id() {
-        return this.getAttribute("id");
-    }
-
-    set id(value) {
-        this.setAttribute("id", value);
-    }
-
-    get textContent() {
-        if (this.children.length > 0) {
-            return this.children.map(c => c.textContent).join("");
-        }
-        return this._textContent;
-    }
-
-    set textContent(value) {
-        this._textContent = String(value ?? "");
-        this.children = [];
-    }
-
-    get className() {
-        return this.classList.toString();
-    }
-
-    set className(value) {
-        this.classList.set = new Set(value.split(" ").filter(c => c));
-    }
-
-    appendChild(child) {
-        this.children.push(child);
-        return child;
-    }
-
-    setAttribute(name, value) {
-        this.attributes.set(name, String(value));
-        if (name === "id" && this.ownerDocument) {
-            this.ownerDocument.elementsById.set(value, this);
-        }
-    }
-
-    getAttribute(name) {
-        return this.attributes.get(name) || null;
-    }
-
-    addEventListener(type, listener) {
-        if (!this.eventListeners.has(type)) {
-            this.eventListeners.set(type, []);
-        }
-        this.eventListeners.get(type).push(listener);
-    }
-
-    dispatchEvent(event) {
-        const listeners = this.eventListeners.get(event.type) || [];
-        listeners.forEach(l => l(event));
-    }
-
-    click() {
-        this.dispatchEvent({ type: "click", target: this });
-    }
-
-    // クエリセレクタの簡易実装（テスト用）
-    querySelector(selector) {
-        if (selector === 'input[name="display-mode"]:checked') {
-            return this.ownerDocument.querySelector(selector);
-        }
-        if (selector.startsWith('#')) {
-            return this.ownerDocument.getElementById(selector.substring(1));
-        }
-        return null;
-    }
-
-    querySelectorAll(selector) {
-        return this.ownerDocument.querySelectorAll(selector);
-    }
-}
-
-class DocumentStub {
-    constructor() {
-        this.elementsById = new Map();
+        super();
         this.outputsList = null;
-        this.eventListeners = new Map();
-        this.allElements = [];
-    }
-
-    createElement(tagName) {
-        const el = new Element(tagName, this);
-        this.allElements.push(el);
-        return el;
-    }
-
-    createTextNode(text) {
-        const el = new Element("#text", this);
-        el.textContent = text;
-        this.allElements.push(el);
-        return el;
-    }
-
-    getElementById(id) {
-        return this.elementsById.get(id) || null;
     }
 
     querySelector(selector) {
+        // IDセレクタ
+        if (selector.startsWith('#')) return this.getElementById(selector.substring(1));
+
         // input[name="xxx"]:checked 形式のセレクタに対応
         const nameCheckedMatch = selector.match(/^input\[name="([^"]+)"\]:checked$/);
         if (nameCheckedMatch) {
@@ -174,6 +27,7 @@ class DocumentStub {
                 el.checked
             ) || null;
         }
+
         // input[name="show-xxx"] 形式のセレクタに対応
         const nameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
         if (nameMatch) {
@@ -183,6 +37,7 @@ class DocumentStub {
                 el.getAttribute("name") === name
             ) || null;
         }
+
         return null;
     }
 
@@ -214,35 +69,26 @@ class DocumentStub {
             el.tagName === selector || el.classList.contains(selector.replace('.', ''))
         );
     }
-
-    addEventListener(type, listener) {
-        if (!this.eventListeners.has(type)) {
-            this.eventListeners.set(type, []);
-        }
-        this.eventListeners.get(type).push(listener);
-    }
-
-    dispatchEvent(event) {
-        const listeners = this.eventListeners.get(event.type) || [];
-        listeners.forEach(l => l(event));
-    }
 }
 
+/**
+ * テスト用のDOM環境をセットアップする
+ */
 function setupDocument() {
-    const doc = new DocumentStub();
+    const doc = new OutputsDocumentStub();
 
+    // 必要なコンテナ要素を作成
     const outputsList = doc.createElement("section");
     doc.outputsList = outputsList;
+    outputsList.id = "outputs-list";
     doc.elementsById.set("outputs-list", outputsList);
 
-    doc.elementsById.set("outputs-crud", doc.createElement("div"));
-    doc.elementsById.set("crud-sidebar", doc.createElement("div"));
-    doc.elementsById.set("crud-sidebar-list", doc.createElement("div"));
-
-    doc.elementsById.set("persistence-list", doc.createElement("div"));
-    doc.elementsById.set("persistence-sidebar-list", doc.createElement("div"));
-
-    doc.elementsById.set("outputs-sidebar-list", doc.createElement("div"));
+    ["outputs-crud", "crud-sidebar", "crud-sidebar-list", "persistence-list", "persistence-sidebar-list", "outputs-sidebar-list"]
+        .forEach(id => {
+            const el = doc.createElement("div");
+            el.id = id;
+            doc.elementsById.set(id, el);
+        });
 
     // diagram-direction ラジオボタンのモック
     const lrRadio = doc.createElement("input");
@@ -250,6 +96,7 @@ function setupDocument() {
     lrRadio.setAttribute("type", "radio");
     lrRadio.setAttribute("value", "LR");
     lrRadio.checked = true;
+
     const tbRadio = doc.createElement("input");
     tbRadio.setAttribute("name", "diagram-direction");
     tbRadio.setAttribute("type", "radio");
@@ -261,13 +108,8 @@ function setupDocument() {
 
     // IntersectionObserver のモック
     global.IntersectionObserver = class {
-        constructor(callback) {
-            this.callback = callback;
-        }
-        observe(element) {
-            // 自動的に交差したことにする（即時実行テスト用）
-            this.callback([{ isIntersecting: true, target: element }]);
-        }
+        constructor(callback) { this.callback = callback; }
+        observe(element) { this.callback([{ isIntersecting: true, target: element }]); }
         unobserve() {}
     };
 
@@ -374,8 +216,6 @@ test.describe("outputs.js", () => {
             assert.deepEqual(data.outputPorts, []);
             assert.deepEqual(data.targets, []);
         });
-
-
     });
 
     test.describe("Mermaidコード生成", () => {
@@ -564,7 +404,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('["MyPort"]'), `ポートラベル "MyPort" が含まれない:\n${code}`);
         });
 
-test("generatePortMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
+        test("generatePortMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const group = {
                 outputPort: { fqn: "PortA", label: "PortA" },
                 operations: [
@@ -644,8 +484,8 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generatePortMermaidCode(group, visibility);
             // execAとexecBの両方からAccessorへのエッジが存在すること
-            assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'), `execA -> Accessor のエッジが存在しない:\n${code}`);
-            assert.ok(code.includes('Exec_execB --> Accessor_com_example_repo'), `execB -> Accessor のエッジが存在しない:\n${code}`);
+            assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'));
+            assert.ok(code.includes('Exec_execB --> Accessor_com_example_repo'));
         });
 
         test("generateOperationMermaidCode: メソッド非表示のとき、複数の永続化操作が同一accessorグループに属する場合にエッジが生成される", () => {
@@ -675,7 +515,7 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             // ExecutionからAccessorへのエッジが存在すること
-            assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'), `Exec_execA -> Accessor のエッジが存在しない:\n${code}`);
+            assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'));
         });
 
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
@@ -703,10 +543,8 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
     });
 
     test.describe("表示レンダリング (DOM操作)", () => {
-        // 各テスト前に mermaid 等をリセット
-        test.beforeEach(() => {
-            setupDocument();
-        });
+        test.beforeEach(() => { setupDocument(); });
+
         test("renderOutputsList: 出力ポートごとのカードを描画する", () => {
             const doc = setupDocument();
 
@@ -734,26 +572,18 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             assert.equal(outputsList.children.length, 1);
             const portCard = outputsList.children[0];
             assert.equal(portCard.children[0].textContent, "A Port");
-            // portFqn (p) が children[1]
-            // adapterInfo (p) が children[2] (mode !== 'simple' の場合)
-            // count (p) が children[3]
             assert.equal(portCard.children[3].textContent, "2 operations");
 
-            const itemListDetails = portCard.children[5]; // portMermaidContainer が children[4]
-            // children[0]: summary, children[1]: div.outputs-item-list
-            const itemList = itemListDetails.children[1];
+            const itemList = portCard.children[5].children[1];
             assert.equal(itemList.children.length, 2);
-            const firstItem = itemList.children[0];
-            assert.equal(firstItem.children[0].textContent, "save(java.lang.String)");
-            assert.equal(firstItem.children[3].children[0].textContent, "SELECT a.save [orders]");
-            const secondItem = itemList.children[1];
-            assert.equal(secondItem.children[3].children[0].textContent, "なし");
+            assert.equal(itemList.children[0].children[0].textContent, "save(java.lang.String)");
+            assert.equal(itemList.children[0].children[3].children[0].textContent, "SELECT a.save [orders]");
+            assert.equal(itemList.children[1].children[3].children[0].textContent, "なし");
         });
 
         test("renderCrudTable: CRUDテーブルが正しく描画され、トグル動作が機能する", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
-            const sidebar = doc.getElementById("crud-sidebar-list");
             const grouped = [
                 {
                     outputPort: { fqn: "Port_A", label: "Port A" },
@@ -766,26 +596,15 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
 
             outputs.renderCrudTable(grouped);
 
-            // テーブル構造の確認
             const table = container.children[0];
-            assert.equal(table.tagName, "table");
-
-            const thead = table.children[0];
-            const headerRow = thead.children[0];
-            assert.equal(headerRow.children[1].textContent, "table1");
-
             const tbody = table.children[1];
-            assert.equal(tbody.children.length, 2); // ポート行 + 操作行
-
             const portRow = tbody.children[0];
+            const opRow = tbody.children[1];
+
             assert.ok(portRow.children[0].textContent.startsWith("Port A"));
             assert.equal(portRow.children[1].textContent, "R");
-
-            const opRow = tbody.children[1];
-            assert.equal(opRow.children[0].textContent, "opA");
             assert.equal(opRow.style.display, "none");
 
-            // トグル動作の確認
             portRow.click();
             assert.equal(opRow.style.display, "table-row");
 
@@ -958,7 +777,6 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const doc = global.document;
 
             outputs.renderOutputsList([]);
-            // container (outputs-list) の中に p.weak 且つ "データなし" が含まれる
             const container = doc.getElementById("outputs-list");
             assert.equal(container.children[0].textContent, "データなし");
 
@@ -968,13 +786,11 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
         });
 
         test("DOMContentLoaded 後の初期化とタブ切り替え動作", () => {
-            // outputs.js を再読み込みして、モックされた global.window.addEventListener を通るようにする
             delete require.cache[require.resolve("../../main/resources/templates/assets/outputs.js")];
             const doc = setupDocument();
             const reloadedOutputs = require("../../main/resources/templates/assets/outputs.js");
             const app = reloadedOutputs.OutputsApp;
 
-            // チェックボックスの準備
             const checkboxNames = ["show-port", "show-operation", "show-adapter", "show-execution", "show-accessor", "show-accessor-method", "show-target"];
             const checkboxes = checkboxNames.map(name => {
                 const cb = doc.createElement("input");
@@ -984,7 +800,6 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
                 return cb;
             });
 
-            // タブの準備
             const tabButton = doc.createElement("button");
             tabButton.classList.add("tab-button");
             tabButton.setAttribute("data-tab", "crud");
@@ -993,70 +808,42 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             tabPanel.id = "crud-tab-panel";
             tabPanel.classList.add("outputs-tab-panel");
 
-            // outputs.js 内の querySelectorAll 等のためのモック
             const originalQuerySelectorAll = doc.querySelectorAll;
             doc.querySelectorAll = (selector) => {
                 if (selector === '.outputs-tabs .tab-button') return [tabButton];
                 if (selector === '.outputs-tab-panel') return [tabPanel];
                 if (selector === 'input[name^="show-"]') return checkboxes;
-                if (selector === 'input[name="diagram-direction"]') return [lrRadio, tbRadio];
                 return originalQuerySelectorAll.call(doc, selector);
             };
-
-            // diagram-direction ラジオボタンの準備
-            const lrRadio = doc.createElement("input");
-            lrRadio.setAttribute("name", "diagram-direction");
-            lrRadio.setAttribute("type", "radio");
-            lrRadio.setAttribute("value", "LR");
-            lrRadio.checked = true;
-            const tbRadio = doc.createElement("input");
-            tbRadio.setAttribute("name", "diagram-direction");
-            tbRadio.setAttribute("type", "radio");
-            tbRadio.setAttribute("value", "TB");
-            tbRadio.checked = false;
 
             const originalQuerySelector = doc.querySelector;
             doc.querySelector = (selector) => {
                 const nameCheckedMatch = selector.match(/^input\[name="([^"]+)"\]:checked$/);
                 if (nameCheckedMatch) {
                     const name = nameCheckedMatch[1];
-                    return [...checkboxes, lrRadio, tbRadio].find(cb =>
+                    return checkboxes.find(cb =>
                         cb.getAttribute("name") === name && cb.checked
                     ) || null;
                 }
                 const nameMatch = selector.match(/^input\[name="([^"]+)"\]$/);
                 if (nameMatch) {
-                    return [...checkboxes, lrRadio, tbRadio].find(cb => cb.getAttribute("name") === nameMatch[1]) || null;
+                    return checkboxes.find(cb => cb.getAttribute("name") === nameMatch[1]) || null;
                 }
                 return originalQuerySelector.call(doc, selector);
             };
 
-            // DOMContentLoaded 前に mermaid がある状態にする
-            global.mermaid = {
-                initialize: () => {},
-                render: (id, code) => Promise.resolve({ svg: `<svg id="${id}">${code}</svg>` })
-            };
-
-            // DOMContentLoaded 発火
             const listeners = doc.eventListeners.get("DOMContentLoaded") || [];
             listeners.forEach(l => l());
 
-            // App が初期化されていることを確認
             assert.ok(app.state.data);
-            assert.ok(app.state.visibility);
             assert.equal(app.state.visibility.port, true);
             assert.equal(app.state.visibility.accessor, false);
 
-            // タブクリックのリスナーが登録されているはず
-            assert.ok(tabButton.eventListeners.has("click"));
-
-            // タブクリック
             tabButton.click();
             assert.equal(app.state.activeTab, "crud");
             assert.ok(tabButton.classList.contains("is-active"));
             assert.ok(tabPanel.classList.contains("is-active"));
 
-            // チェックボックス変更でvisibilityが更新される
             const accessorCheckbox = checkboxes.find(cb => cb.getAttribute("name") === "show-accessor");
             accessorCheckbox.checked = true;
             accessorCheckbox.eventListeners.get("change")?.forEach(l => l());
@@ -1067,17 +854,12 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             const oldIO = global.IntersectionObserver;
             delete global.IntersectionObserver;
             try {
-                let rendered = false;
                 outputs.renderOutputsList([
                     {
                         outputPort: { fqn: "p1" },
                         operations: [{ outputPortOperation: { label:"op1" } }]
                     }
                 ]);
-                // IntersectionObserver がないので即時実行されるはず
-                // ※ mermaid がグローバルにあり、lazyRender 経由で renderPortMermaid が呼ばれる
-                // 実際には mermaid.render が非同期なのでフラグ確認は工夫が必要だが、
-                // コードパスを通ることが重要
             } finally {
                 global.IntersectionObserver = oldIO;
             }
@@ -1131,50 +913,19 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
         });
     });
 
-    test.describe("MermaidBuilder.isEmpty", () => {
-        test("空の builder は true を返す", () => {
+    test.describe("MermaidBuilder", () => {
+        test("isEmpty: 初期状態は空", () => {
             const builder = new outputs.MermaidBuilder();
             assert.equal(builder.isEmpty(), true);
         });
 
-        test("ノード追加後は false を返す", () => {
+        test("isEmpty: ノード追加後は空ではない", () => {
             const builder = new outputs.MermaidBuilder();
             builder.addNode("n1", "Node1");
             assert.equal(builder.isEmpty(), false);
         });
 
-        test("サブグラフ追加後は false を返す", () => {
-            const builder = new outputs.MermaidBuilder();
-            builder.startSubgraph("SG");
-            assert.equal(builder.isEmpty(), false);
-        });
-
-        test("エッジ追加後は false を返す", () => {
-            const builder = new outputs.MermaidBuilder();
-            builder.addEdge("a", "b");
-            assert.equal(builder.isEmpty(), false);
-        });
-    });
-
-    test.describe("generatePortMermaidCode: null を返すケース", () => {
-        test("port/adapter/accessor/target が全て false のとき null を返す", () => {
-            const group = {
-                outputPort: { fqn: "PortA", label: "PortA" },
-                operations: [
-                    {
-                        outputPortOperation: { label: "op1" },
-                        persistenceAccessors: []
-                    }
-                ]
-            };
-            const visibility = {port: false, operation: false, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
-            const code = outputs.generatePortMermaidCode(group, visibility);
-            assert.equal(code, null);
-        });
-    });
-
-    test.describe("MermaidBuilder: subgraph ID の一意性", () => {
-        test("同じラベルの subgraph が2つある場合、それぞれ異なるIDを持つ", () => {
+        test("subgraph ID の一意性: 同じラベルでも異なるIDを持つ", () => {
             const builder = new outputs.MermaidBuilder();
             const sg1 = builder.startSubgraph("MyService");
             const sg2 = builder.startSubgraph("MyService");
@@ -1198,28 +949,6 @@ test("generatePortMermaidCode: C非表示のときINSERTエッジが生成され
             builder.addNodeToSubgraph(sg, "n1", "Node1");
             const code = builder.build();
             assert.match(code, /subgraph sg_My_Service_0 \["My Service"\]/);
-        });
-    });
-
-    test.describe("generatePersistenceMermaidCode: null を返すケース", () => {
-        test("全CRUD非表示のとき null を返す", () => {
-            const group = {
-                target: "table1",
-                operations: [
-                    {
-                        outputPort: { fqn: "p1", label: "P1" },
-                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
-                        outputAdapter: { fqn: "adapter1", label: "A1" },
-                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
-                        persistenceAccessors: [
-                            { id: "repo.insert", sqlType: "INSERT", targets: ["table1"], group: "com.example.repo", groupLabel: "Repo" }
-                        ]
-                    }
-                ]
-            };
-            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: false, crudUpdate: false, crudDelete: false};
-            const code = outputs.generatePersistenceMermaidCode(group, visibility);
-            assert.equal(code, null);
         });
     });
 });

@@ -104,6 +104,18 @@ class SpringDataJdbcStatementReaderTest {
         assertEquals(expectedPersistenceOperationType, statement.get().persistenceOperationType());
     }
 
+    @Test
+    void 解析対象外のカスタム基底RepositoryをSpringDataRepositoryと推測できる(JigRepository jigRepository) {
+        var statements = jigRepository.jigDataProvider().persistenceAccessorRepository();
+        // MyCrudRepository（解析対象外）を経由した場合でも save が解決できること
+        var statement = persistenceAccessorOptionalOf(statements,
+                getPersistenceAccessorId("save", SpringDataJdbcCustomBaseRepository.class));
+
+        assertTrue(statement.isPresent());
+        assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceTargets().asText());
+        assertEquals(PersistenceOperationType.INSERT, statement.get().persistenceOperationType());
+    }
+
     static Stream<Arguments> repositoryMethodAndSqlType() {
         return Stream.of(
                 Arguments.of("save", PersistenceOperationType.INSERT),

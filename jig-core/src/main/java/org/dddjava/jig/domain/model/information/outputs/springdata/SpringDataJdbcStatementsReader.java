@@ -73,11 +73,25 @@ public class SpringDataJdbcStatementsReader {
             }
 
             // インタフェースを対象に再帰する。
-            Optional<SpringDataPersistenceInfo> persistenceInfo = jigTypes.resolveJigType(interfaceId)
+            Optional<JigType> resolvedInterface = jigTypes.resolveJigType(interfaceId);
+            Optional<SpringDataPersistenceInfo> persistenceInfo = resolvedInterface
                     .flatMap(interfaceJigType -> resolvePersistenceTargets(interfaceJigType, jigTypes, visited, superTypeIds));
             if (persistenceInfo.isPresent()) {
                 // 継承したインタフェースからPersistenceTargetsの解決に成功した
                 return persistenceInfo;
+            }
+
+            // JigTypesに見つからないインターフェースが名前と型引数からSpring Data Repositoryと推測できる場合
+            if (resolvedInterface.isEmpty()) {
+                List<JigTypeArgument> typeArguments = interfaceType.typeArgumentList();
+                if (!typeArguments.isEmpty() && interfaceId.fqn().endsWith("Repository")) {
+                    logger.warn("インターフェース {} がJIGの解析対象に含まれていないため、名前と型引数からSpring Data Repositoryと推測して処理します。" +
+                            "正確に解析するには解析対象パスに含めてください。宣言元: {}",
+                            interfaceId.fqn(), header.fqn());
+                    superTypeIds.add(interfaceId);
+                    var entityTypeId = typeArguments.getFirst().typeId();
+                    return Optional.of(new SpringDataPersistenceInfo(extractPersistenceTargets(jigTypes, entityTypeId), superTypeIds));
+                }
             }
 
             // インタフェースがJigTypesにない場合や継承階層を辿ってもemptyな場合

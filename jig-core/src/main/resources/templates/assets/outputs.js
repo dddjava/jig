@@ -1,3 +1,5 @@
+// ===== データ取得・変換 =====
+
 /**
  * Java側（OutputsSummaryAdapter）が生成する出力ポートデータのスキーマ。
  * outputPortOperation の fqn・label は必ず設定される（Java側保証）。
@@ -77,6 +79,50 @@ function groupOperationsByOutputPort(data) {
     });
 }
 
+function groupOperationsByPersistenceTarget(operations) {
+    const map = new Map();
+    operations.forEach(operation => {
+        operation.persistenceAccessors?.forEach(op => {
+            op.targets?.forEach(target => {
+                if (!map.has(target)) {
+                    map.set(target, {
+                        target: target,
+                        operations: [],
+                    });
+                }
+                const group = map.get(target);
+                if (!group.operations.includes(operation)) {
+                    group.operations.push(operation);
+                }
+            });
+        });
+    });
+    return Array.from(map.values()).map(group => {
+        group.operations.sort((a, b) => {
+            const left = a.outputPort.label;
+            const right = b.outputPort.label;
+            return left.localeCompare(right, "ja");
+        });
+        return group;
+    }).sort((a, b) => {
+        return a.target.localeCompare(b.target, "ja");
+    });
+}
+
+function collectAllTargets(grouped) {
+    const targetsSet = new Set();
+    grouped.forEach(group => {
+        group.operations.forEach(operation => {
+            operation.persistenceAccessors?.forEach(op => {
+                op.targets?.forEach(target => targetsSet.add(target));
+            });
+        });
+    });
+    return Array.from(targetsSet).sort();
+}
+
+// ===== 変換ユーティリティ =====
+
 function formatPersistenceAccessors(persistenceAccessors) {
     if (!Array.isArray(persistenceAccessors) || persistenceAccessors.length === 0) {
         return ["なし"];
@@ -90,6 +136,26 @@ function formatPersistenceAccessors(persistenceAccessors) {
         });
 }
 
+function toCrudChar(sqlType) {
+    const type = (sqlType || "").toUpperCase();
+    if (type === "SELECT") return "R";
+    if (type === "INSERT") return "C";
+    if (type === "UPDATE") return "U";
+    if (type === "DELETE") return "D";
+    return "";
+}
+
+function isCrudVisible(sqlType, visibility) {
+    switch ((sqlType || "").toUpperCase()) {
+        case 'INSERT': return visibility.crudCreate !== false;
+        case 'SELECT': return visibility.crudRead !== false;
+        case 'UPDATE': return visibility.crudUpdate !== false;
+        case 'DELETE': return visibility.crudDelete !== false;
+        default: return true;
+    }
+}
+
+// ===== DOM ユーティリティ =====
 
 function createElement(tag, options = {}) {
     const element = document.createElement(tag);
@@ -155,6 +221,25 @@ function renderSidebarSection(container, title, items) {
         container.appendChild(section);
     }
 }
+
+function lazyRender(container, renderFn) {
+    if (typeof IntersectionObserver === "undefined") {
+        renderFn();
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                renderFn();
+                observer.unobserve(container);
+            }
+        });
+    }, {rootMargin: "200px"});
+    observer.observe(container);
+}
+
+// ===== Mermaid ダイアグラム生成 =====
 
 class MermaidBuilder {
     constructor() {
@@ -242,82 +327,6 @@ function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VIS
     });
 }
 
-function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY) {
-    return generatePortMermaidCode(
-        {outputPort: operation.outputPort, operations: [operation]},
-        visibility
-    );
-}
-
-function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
-    const builder = new MermaidBuilder();
-    const portFqn = group.outputPort.fqn;
-    const portLabel = group.outputPort.label;
-
-    const portSubgraphs = new Map();
-    const adapterSubgraphs = new Map();
-    const accessorSubgraphs = new Map();
-    const accessorNodes = new Map();
-    const targetNodes = new Map();
-
-    group.operations.forEach((operation, operationIndex) => {
-        const portOpName = operation.outputPortOperation.label;
-        const portOpFqn = operation.outputPortOperation.fqn;
-
-        const adapterFqn = operation.outputAdapter?.fqn;
-        const adapterLabel = operation.outputAdapter?.label;
-        const executionName = operation.outputAdapterExecution?.label;
-        const executionFqn = operation.outputAdapterExecution?.fqn;
-
-        let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
-
-        lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
-
-        operation.persistenceAccessors?.forEach((op) => {
-            if (!isCrudVisible(op.sqlType, visibility)) return;
-            const sqlType = op.sqlType || "";
-
-            const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
-
-            if (visibility.target) {
-                addTargetEdges(builder, currentNode, op.targets, targetNodes, sqlType);
-            }
-        });
-    });
-
-    if (builder.isEmpty()) return null;
-    return builder.build(visibility.direction);
-}
-
-function toCrudChar(sqlType) {
-    const type = (sqlType || "").toUpperCase();
-    if (type === "SELECT") return "R";
-    if (type === "INSERT") return "C";
-    if (type === "UPDATE") return "U";
-    if (type === "DELETE") return "D";
-    return "";
-}
-
-function isCrudVisible(sqlType, visibility) {
-    switch ((sqlType || "").toUpperCase()) {
-        case 'INSERT': return visibility.crudCreate !== false;
-        case 'SELECT': return visibility.crudRead !== false;
-        case 'UPDATE': return visibility.crudUpdate !== false;
-        case 'DELETE': return visibility.crudDelete !== false;
-        default: return true;
-    }
-}
-
-function addTargetEdges(builder, sourceNodeId, targets, targetNodes, sqlType) {
-    targets?.forEach(target => {
-        if (!targetNodes.has(target)) {
-            targetNodes.set(target, `Target_${targetNodes.size}`);
-            builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
-        }
-        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
-    });
-}
-
 function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
     if (!visibility.port) return null;
     if (visibility.operation) {
@@ -372,17 +381,105 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     }
 }
 
-function collectAllTargets(grouped) {
-    const targetsSet = new Set();
-    grouped.forEach(group => {
-        group.operations.forEach(operation => {
-            operation.persistenceAccessors?.forEach(op => {
-                op.targets?.forEach(target => targetsSet.add(target));
-            });
+function addTargetEdges(builder, sourceNodeId, targets, targetNodes, sqlType) {
+    targets?.forEach(target => {
+        if (!targetNodes.has(target)) {
+            targetNodes.set(target, `Target_${targetNodes.size}`);
+            builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
+        }
+        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
+    });
+}
+
+function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
+    const builder = new MermaidBuilder();
+    const portFqn = group.outputPort.fqn;
+    const portLabel = group.outputPort.label;
+
+    const portSubgraphs = new Map();
+    const adapterSubgraphs = new Map();
+    const accessorSubgraphs = new Map();
+    const accessorNodes = new Map();
+    const targetNodes = new Map();
+
+    group.operations.forEach((operation, operationIndex) => {
+        const portOpName = operation.outputPortOperation.label;
+        const portOpFqn = operation.outputPortOperation.fqn;
+
+        const adapterFqn = operation.outputAdapter?.fqn;
+        const adapterLabel = operation.outputAdapter?.label;
+        const executionName = operation.outputAdapterExecution?.label;
+        const executionFqn = operation.outputAdapterExecution?.fqn;
+
+        let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
+
+        lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
+
+        operation.persistenceAccessors?.forEach((op) => {
+            if (!isCrudVisible(op.sqlType, visibility)) return;
+            const sqlType = op.sqlType || "";
+
+            const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
+
+            if (visibility.target) {
+                addTargetEdges(builder, currentNode, op.targets, targetNodes, sqlType);
+            }
         });
     });
-    return Array.from(targetsSet).sort();
+
+    if (builder.isEmpty()) return null;
+    return builder.build(visibility.direction);
 }
+
+function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY) {
+    return generatePortMermaidCode(
+        {outputPort: operation.outputPort, operations: [operation]},
+        visibility
+    );
+}
+
+function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
+    const builder = new MermaidBuilder();
+    const target = group.target;
+
+    const portSubgraphs = new Map();
+    const adapterSubgraphs = new Map();
+    const accessorSubgraphs = new Map();
+    const accessorNodes = new Map();
+    const targetNodes = new Map();
+
+    group.operations.forEach((operation, operationIndex) => {
+        const relevantOps = operation.persistenceAccessors.filter(op =>
+            op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
+
+        const portFqn = operation.outputPort.fqn;
+        const portLabel = operation.outputPort.label;
+        const portOpName = operation.outputPortOperation.label;
+        const portOpFqn = operation.outputPortOperation.fqn;
+
+        const adapterFqn = operation.outputAdapter?.fqn;
+        const adapterLabel = operation.outputAdapter?.label;
+        const executionName = operation.outputAdapterExecution?.label;
+        const executionFqn = operation.outputAdapterExecution?.fqn;
+
+        relevantOps.forEach(op => {
+            let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
+
+            currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
+
+            currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
+
+            if (visibility.target) {
+                addTargetEdges(builder, currentNode, [target], targetNodes, op.sqlType);
+            }
+        });
+    });
+
+    if (builder.isEmpty()) return null;
+    return builder.build(visibility.direction);
+}
+
+// ===== CRUD テーブル描画 =====
 
 function createPortGroupRow(group, allTargets, visibility) {
     return createElement("tr", {
@@ -504,127 +601,7 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
     container.appendChild(table);
 }
 
-function lazyRender(container, renderFn) {
-    if (typeof IntersectionObserver === "undefined") {
-        renderFn();
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                renderFn();
-                observer.unobserve(container);
-            }
-        });
-    }, {rootMargin: "200px"});
-    observer.observe(container);
-}
-
-function groupOperationsByPersistenceTarget(operations) {
-    const map = new Map();
-    operations.forEach(operation => {
-        operation.persistenceAccessors?.forEach(op => {
-            op.targets?.forEach(target => {
-                if (!map.has(target)) {
-                    map.set(target, {
-                        target: target,
-                        operations: [],
-                    });
-                }
-                const group = map.get(target);
-                if (!group.operations.includes(operation)) {
-                    group.operations.push(operation);
-                }
-            });
-        });
-    });
-    return Array.from(map.values()).map(group => {
-        group.operations.sort((a, b) => {
-            const left = a.outputPort.label;
-            const right = b.outputPort.label;
-            return left.localeCompare(right, "ja");
-        });
-        return group;
-    }).sort((a, b) => {
-        return a.target.localeCompare(b.target, "ja");
-    });
-}
-
-function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
-    const builder = new MermaidBuilder();
-    const target = group.target;
-
-    const portSubgraphs = new Map();
-    const adapterSubgraphs = new Map();
-    const accessorSubgraphs = new Map();
-    const accessorNodes = new Map();
-    const targetNodes = new Map();
-
-    group.operations.forEach((operation, operationIndex) => {
-        const relevantOps = operation.persistenceAccessors.filter(op =>
-            op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
-
-        const portFqn = operation.outputPort.fqn;
-        const portLabel = operation.outputPort.label;
-        const portOpName = operation.outputPortOperation.label;
-        const portOpFqn = operation.outputPortOperation.fqn;
-
-        const adapterFqn = operation.outputAdapter?.fqn;
-        const adapterLabel = operation.outputAdapter?.label;
-        const executionName = operation.outputAdapterExecution?.label;
-        const executionFqn = operation.outputAdapterExecution?.fqn;
-
-        relevantOps.forEach(op => {
-            let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
-
-            currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
-
-            currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
-
-            if (visibility.target) {
-                addTargetEdges(builder, currentNode, [target], targetNodes, op.sqlType);
-            }
-        });
-    });
-
-    if (builder.isEmpty()) return null;
-    return builder.build(visibility.direction);
-}
-
-function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
-    const container = document.getElementById("persistence-list");
-    const sidebar = document.getElementById("persistence-sidebar-list");
-    if (!container) return;
-    container.innerHTML = "";
-    if (sidebar) sidebar.innerHTML = "";
-
-    grouped.forEach(group => {
-        if (!generatePersistenceMermaidCode(group, visibility)) return;
-        const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
-
-        const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(persistenceMermaidContainer, () => renderMermaid(generatePersistenceMermaidCode, group, persistenceMermaidContainer, visibility));
-
-        container.appendChild(createElement("section", {
-            className: "outputs-port-card",
-            id: targetId,
-            children: [
-                createElement("h3", {textContent: group.target}),
-                persistenceMermaidContainer
-            ]
-        }));
-    });
-
-    renderSidebarSection(sidebar, "永続化操作対象", grouped.map(group => ({
-        id: "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-'),
-        label: group.target
-    })));
-
-    if (grouped.length === 0) {
-        renderNoData(container);
-    }
-}
+// ===== コンテンツ描画 =====
 
 function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
     const container = document.getElementById("outputs-list");
@@ -719,6 +696,42 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         renderNoData(container);
     }
 }
+
+function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
+    const container = document.getElementById("persistence-list");
+    const sidebar = document.getElementById("persistence-sidebar-list");
+    if (!container) return;
+    container.innerHTML = "";
+    if (sidebar) sidebar.innerHTML = "";
+
+    grouped.forEach(group => {
+        if (!generatePersistenceMermaidCode(group, visibility)) return;
+        const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
+
+        const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
+        lazyRender(persistenceMermaidContainer, () => renderMermaid(generatePersistenceMermaidCode, group, persistenceMermaidContainer, visibility));
+
+        container.appendChild(createElement("section", {
+            className: "outputs-port-card",
+            id: targetId,
+            children: [
+                createElement("h3", {textContent: group.target}),
+                persistenceMermaidContainer
+            ]
+        }));
+    });
+
+    renderSidebarSection(sidebar, "永続化操作対象", grouped.map(group => ({
+        id: "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-'),
+        label: group.target
+    })));
+
+    if (grouped.length === 0) {
+        renderNoData(container);
+    }
+}
+
+// ===== 設定・アプリケーション本体 =====
 
 function readVisibility() {
     const checked = (name) => {

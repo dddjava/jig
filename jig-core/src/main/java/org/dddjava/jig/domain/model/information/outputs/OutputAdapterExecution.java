@@ -67,11 +67,9 @@ public record OutputAdapterExecution(
                 PersistenceAccessorOperationId.fromTypeIdAndName(persistenceAccessor.typeId(), methodCall.methodName());
         return persistenceAccessor.findPersistenceAccessorById(persistenceAccessorOperationId)
                 .or(() -> {
-                    logger.warn("PersistenceAccessorは見つかりましたが、対応する操作が見つかりませんでした。caller={} callee={} owner={} origin={}",
+                    logger.warn("PersistenceAccessorは見つかりましたが、対応する操作が見つかりませんでした。この関連は表示されません。caller={} callee={}",
                             tracingJigMethod.fqn(),
-                            methodCall.jigMethodId().value(),
-                            methodCall.methodOwner().fqn(),
-                            persistenceAccessor.technology());
+                            methodCall.jigMethodId().value());
                     return Optional.empty();
                 });
     }

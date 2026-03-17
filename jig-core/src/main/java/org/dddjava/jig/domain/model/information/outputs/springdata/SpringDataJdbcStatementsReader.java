@@ -106,16 +106,13 @@ public class SpringDataJdbcStatementsReader {
                 .map(op -> op.persistenceAccessorOperationId().id())
                 .collect(java.util.stream.Collectors.toSet());
 
-        List<PersistenceAccessorOperation> inheritedOperations = SpringDataUtil.springDataBaseMethodNames().stream()
+        List<PersistenceAccessorOperation> inheritedOperations = SpringDataBaseMethod.stream()
                 // メソッド名がかぶるものをオーバーライド済みとして除外（オーバーロードの考慮が必要）
-                .filter(methodName -> !declaredMethodNames.contains(methodName))
-                // TODO: ここでinferSqlTypeしているためOptionalになっているが、規定メソッド名が軸なのでOptionalにはなりえない。別メソッドにする。
-                .flatMap(methodName -> SpringDataUtil.inferSqlType(methodName)
-                        .map(sqlType -> PersistenceAccessorOperation.from(
-                                PersistenceAccessorOperationId.fromTypeIdAndName(typeId, methodName),
-                                sqlType,
-                                defaultPersistenceTargets))
-                        .stream())
+                .filter(baseMethod -> !declaredMethodNames.contains(baseMethod.methodName()))
+                .map(baseMethod -> PersistenceAccessorOperation.from(
+                        PersistenceAccessorOperationId.fromTypeIdAndName(typeId, baseMethod.methodName()),
+                        baseMethod.persistenceOperationType(),
+                        defaultPersistenceTargets))
                 .toList();
 
         List<PersistenceAccessorOperation> persistenceAccessorOperations = Stream.concat(

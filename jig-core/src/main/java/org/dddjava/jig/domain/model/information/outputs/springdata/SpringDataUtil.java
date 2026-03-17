@@ -13,15 +13,6 @@ public class SpringDataUtil {
     private static final Logger logger = LoggerFactory.getLogger(SpringDataUtil.class);
     private static final String SPRING_DATA_REPOSITORY_PREFIX = "org.springframework.data.repository.";
 
-    private static final List<String> SPRING_DATA_BASE_METHOD_NAMES = List.of(
-            "save", "saveAll", "findById", "findAll", "findAllById",
-            "existsById", "count", "deleteById", "delete", "deleteAllById", "deleteAll"
-    );
-
-    public static List<String> springDataBaseMethodNames() {
-        return SPRING_DATA_BASE_METHOD_NAMES;
-    }
-
     /**
      * SQLの種類を推測する
      *

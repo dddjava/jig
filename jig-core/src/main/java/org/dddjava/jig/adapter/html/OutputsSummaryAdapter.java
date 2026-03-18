@@ -136,9 +136,11 @@ public class OutputsSummaryAdapter {
                                 }
                             });
 
-                            String linkKey = execFqn + "|" + accessorFqn;
+                            String linkKey = execFqn + "|" + accessorFqn + "|" + accessorMethodName;
                             if (executionToExternalAccessorKeys.add(linkKey)) {
-                                executionToExternalAccessor.add(Json.object("execution", execFqn).and("accessor", accessorFqn));
+                                executionToExternalAccessor.add(Json.object("execution", execFqn)
+                                        .and("accessor", accessorFqn)
+                                        .and("method", accessorMethodName));
                             }
                         });
                     });

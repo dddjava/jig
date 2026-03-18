@@ -57,12 +57,15 @@ function groupOperationsByOutputPort(data) {
     const externalAccessorByFqn = new Map();
     (data.externalAccessors || []).forEach(a => externalAccessorByFqn.set(a.fqn, a));
 
-    // execution.fqn → [externalAccessor.fqn]
+    // execution.fqn → Map(accessorFqn → Set(methodName))
     const externalAccessorsByExecution = new Map();
     (data.links?.executionToExternalAccessor || []).forEach(link => {
         if (!externalAccessorsByExecution.has(link.execution))
-            externalAccessorsByExecution.set(link.execution, []);
-        externalAccessorsByExecution.get(link.execution).push(link.accessor);
+            externalAccessorsByExecution.set(link.execution, new Map());
+        const accessorMethods = externalAccessorsByExecution.get(link.execution);
+        if (!accessorMethods.has(link.accessor))
+            accessorMethods.set(link.accessor, new Set());
+        accessorMethods.get(link.accessor).add(link.method);
     });
 
     return (data.outputPorts || []).map(port => {
@@ -72,8 +75,12 @@ function groupOperationsByOutputPort(data) {
             const execEntry = executionByFqn.get(execFqn);
             const accessorIds = accessorsByExecution.get(execFqn) || [];
             const persistenceAccessors = accessorIds.map(id => methodById.get(id)).filter(Boolean);
-            const externalAccessorFqns = externalAccessorsByExecution.get(execFqn) || [];
-            const externalAccessors = externalAccessorFqns.map(fqn => externalAccessorByFqn.get(fqn)).filter(Boolean);
+            const executionAccessorMethods = externalAccessorsByExecution.get(execFqn) || new Map();
+            const externalAccessors = Array.from(executionAccessorMethods.entries()).flatMap(([fqn, methodNames]) => {
+                const accessor = externalAccessorByFqn.get(fqn);
+                if (!accessor) return [];
+                return [{...accessor, methods: (accessor.methods || []).filter(m => methodNames.has(m.name))}];
+            });
             return [{
                 outputPortOperation: op,
                 outputAdapter: execEntry?.adapter ?? null,

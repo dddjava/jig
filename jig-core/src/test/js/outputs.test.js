@@ -518,6 +518,52 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Exec_execA --> Accessor_com_example_repo'));
         });
 
+        test("generatePortMermaidCode: 複数のexecutionが同一外部アクセッサの異なるメソッドを使う場合にCartesian productが生じない", () => {
+            // バグ再現: e1→Y.m1, e2→Y.m2 のとき e1→m2, e2→m1 のエッジが生成されないことを確認
+            const group = {
+                outputPort: { fqn: "PortA", label: "PortA" },
+                operations: [
+                    {
+                        outputPortOperation: { fqn: "PortA.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapterX", label: "X" },
+                        outputAdapterExecution: { fqn: "e1", label: "e1" },
+                        persistenceAccessors: [],
+                        externalAccessors: [
+                            {
+                                fqn: "com.example.ExternalY",
+                                label: "Y",
+                                methods: [{ name: "m1", externals: [] }]
+                            }
+                        ]
+                    },
+                    {
+                        outputPortOperation: { fqn: "PortA.op2", label: "op2" },
+                        outputAdapter: { fqn: "adapterX", label: "X" },
+                        outputAdapterExecution: { fqn: "e2", label: "e2" },
+                        persistenceAccessors: [],
+                        externalAccessors: [
+                            {
+                                fqn: "com.example.ExternalY",
+                                label: "Y",
+                                methods: [{ name: "m2", externals: [] }]
+                            }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: false, externalAccessor: true, externalAccessorMethod: true, externalType: false, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePortMermaidCode(group, visibility);
+            // 外部アクセッサメソッドのノードIDは AccMethod_{sanitize(fqn + '_' + methodName)} の形式
+            const m1NodeId = 'AccMethod_com_example_ExternalY_m1';
+            const m2NodeId = 'AccMethod_com_example_ExternalY_m2';
+            // e1→m1, e2→m2 のエッジが存在すること
+            assert.ok(code.includes(`Exec_e1 --> ${m1NodeId}`), "e1からm1へのエッジが存在すること");
+            assert.ok(code.includes(`Exec_e2 --> ${m2NodeId}`), "e2からm2へのエッジが存在すること");
+            // Cartesian productが生じていないこと: e1→m2, e2→m1 のエッジが存在しない
+            assert.ok(!code.includes(`Exec_e1 --> ${m2NodeId}`), "e1からm2へのエッジが存在しないこと");
+            assert.ok(!code.includes(`Exec_e2 --> ${m1NodeId}`), "e2からm1へのエッジが存在しないこと");
+        });
+
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 target: "table1",

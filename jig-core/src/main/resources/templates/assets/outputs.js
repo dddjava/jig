@@ -931,9 +931,9 @@ function readVisibility() {
         accessor,
         accessorMethod: checked("show-accessor-method"),
         target: checked("show-target"),
-        externalAccessor: checked("show-external-accessor"),
-        externalAccessorMethod: checked("show-external-accessor-method"),
-        externalType: checked("show-external-type"),
+        externalAccessor: checked("show-accessor"),
+        externalAccessorMethod: checked("show-accessor-method"),
+        externalType: checked("show-target"),
         externalTypeMethod: checked("show-external-type-method"),
         direction,
         crudCreate: checked("show-crud-c"),
@@ -986,9 +986,7 @@ const OutputsApp = {
             "show-operation": "show-port",
             "show-execution": "show-adapter",
             "show-accessor-method": "show-accessor",
-            "show-external-accessor-method": "show-external-accessor",
-            "show-external-type": "show-external-accessor",
-            "show-external-type-method": "show-external-type",
+            "show-external-type-method": "show-target",
         };
 
         document.querySelectorAll('input[name^="show-"]').forEach(input => {

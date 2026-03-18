@@ -2,6 +2,9 @@ body {
     margin: 0;
     height: 100vh;
 }
+body.outputs {
+    overflow: hidden;
+}
 main, nav {
     padding: 0 1em;
 }
@@ -850,6 +853,12 @@ table td.number {
 }
 
 /* 外部利用概要 */
+.outputs main {
+    height: calc(100vh - 2em);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
 .outputs .outputs-container {
     display: flex;
     gap: 20px;
@@ -860,8 +869,8 @@ table td.number {
     max-width: 260px;
     min-width: 260px;
     position: sticky;
-    top: calc(2em + 16px);
-    max-height: calc(100vh - 90px);
+    top: 0;
+    max-height: calc(100vh - 2em);
 }
 .outputs .outputs-list {
     flex: 1;
@@ -938,9 +947,7 @@ table td.number {
     width: 100%;
 }
 .outputs .outputs-sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    flex-shrink: 0;
     background-color: #fff;
 }
 .outputs .outputs-common-settings {
@@ -1039,6 +1046,9 @@ table td.number {
 }
 .outputs .outputs-tab-panel.is-active {
     display: block;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 @media (max-width: 900px) {
     .outputs .outputs-container {

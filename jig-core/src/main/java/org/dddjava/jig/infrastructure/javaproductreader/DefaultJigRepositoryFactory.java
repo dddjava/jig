@@ -6,6 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -138,6 +139,11 @@ public class DefaultJigRepositoryFactory {
                                 fetchJigTypes().typeIds().size(),
                                 fetchJigTypes().stream().mapToInt(jigType -> Math.toIntExact(jigType.allJigMethodStream().count())).sum()
                         );
+                    }
+
+                    @Override
+                    public ExternalAccessorRepositories externalAccessorRepositories() {
+                        return new ExternalAccessorRepositories(persistenceAccessorRepository);
                     }
                 };
             });

@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.information;
 
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -30,6 +32,11 @@ public interface JigRepository {
             public JigResult.JigSummary summary() {
                 return JigResult.JigSummary.empty();
             }
+
+            @Override
+            public ExternalAccessorRepositories externalAccessorRepositories() {
+                return new ExternalAccessorRepositories(PersistenceAccessorRepository.empty());
+            }
         };
     }
 
@@ -44,4 +51,6 @@ public interface JigRepository {
     Glossary fetchGlossary();
 
     JigResult.JigSummary summary();
+
+    ExternalAccessorRepositories externalAccessorRepositories();
 }

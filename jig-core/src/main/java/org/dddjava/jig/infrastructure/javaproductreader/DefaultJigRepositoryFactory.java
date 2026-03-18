@@ -8,6 +8,7 @@ import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
@@ -108,12 +109,15 @@ public class DefaultJigRepositoryFactory {
             PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
                     createPersistenceAccessorRepository(sources, classDeclarations)));
 
+            JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
+            Collection<PersistenceAccessor> springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
+            persistenceAccessorRepository.register(springDataJdbcStatements);
+
+            ExternalAccessorRepository externalAccessorRepository = ExternalAccessorRepository.from(jigTypes);
+            ExternalAccessorRepositories externalAccessorRepositories = new ExternalAccessorRepositories(persistenceAccessorRepository, externalAccessorRepository);
+
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceAccessorRepository);
-                JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
-
-                var springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
-                persistenceAccessorRepository.register(springDataJdbcStatements);
 
                 return new JigRepository() {
                     @Override
@@ -144,7 +148,7 @@ public class DefaultJigRepositoryFactory {
 
                     @Override
                     public ExternalAccessorRepositories externalAccessorRepositories() {
-                        return new ExternalAccessorRepositories(persistenceAccessorRepository, ExternalAccessorRepository.from(jigTypes));
+                        return externalAccessorRepositories;
                     }
                 };
             });

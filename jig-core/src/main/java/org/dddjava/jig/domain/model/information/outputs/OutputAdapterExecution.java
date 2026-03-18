@@ -30,8 +30,8 @@ public record OutputAdapterExecution(
                                               JigTypes jigTypes,
                                               ExternalAccessorRepositories accessorRepositories) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
-        Collection<PersistenceAccessorOperation> persistenceAccessors = collectPersistenceAccessorOperation(tracingJigMethods, accessorRepositories.persistenceAccessorRepository());
-        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessors);
+        Collection<PersistenceAccessorOperation> persistenceAccessorOperations = collectPersistenceAccessorOperation(tracingJigMethods, accessorRepositories.persistenceAccessorRepository());
+        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations);
     }
 
     public boolean uses(PersistenceAccessorOperationId persistenceAccessorOperationId) {

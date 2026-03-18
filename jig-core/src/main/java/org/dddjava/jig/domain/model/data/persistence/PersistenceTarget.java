@@ -8,6 +8,10 @@ import java.util.Optional;
  * テーブルなど
  */
 public record PersistenceTarget(String name, Optional<PersistenceOperationType> operationType) {
+    public PersistenceTarget {
+        name = name.replace("\"", "").replace("`", "");
+    }
+
     public PersistenceTarget(String name) {
         this(name, Optional.empty());
     }

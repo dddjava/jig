@@ -79,4 +79,19 @@ class PersistenceOperationTypeTest {
 
         assertEquals("[nextval('seq_name')]", targets.asText());
     }
+
+    @Test
+    void テーブル名の引用符は除去される() {
+        String sql = "SELECT * FROM \"hoge\".\"fuga\" WHERE id = 1";
+        Query query = Query.from(sql);
+        PersistenceTargets targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+
+        assertEquals("[hoge.fuga]", targets.asText());
+
+        String mysqlSql = "SELECT * FROM `db`.`table` WHERE id = 1";
+        Query query2 = Query.from(mysqlSql);
+        PersistenceTargets targets2 = PersistenceOperationType.SELECT.extractTable(query2, DUMMY_ID);
+
+        assertEquals("[db.table]", targets2.asText());
+    }
 }

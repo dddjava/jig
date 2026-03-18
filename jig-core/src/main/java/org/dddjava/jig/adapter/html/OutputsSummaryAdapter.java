@@ -117,21 +117,24 @@ public class OutputsSummaryAdapter {
                             String accessorFqn = ea.accessorTypeId().fqn();
                             String accessorLabel = simpleLabel(accessorFqn);
                             String accessorMethodName = ea.accessorMethodName();
-                            String externalFqn = ea.externalTypeId().fqn();
-                            String externalLabel = simpleLabel(externalFqn);
-                            String externalMethodName = ea.externalMethodName();
 
                             externalAccessorLabels.putIfAbsent(accessorFqn, accessorLabel);
 
-                            String methodKey = accessorFqn + "|" + accessorMethodName + "|" + externalFqn + "|" + externalMethodName;
-                            if (externalAccessorMethodKeys.add(methodKey)) {
-                                externalAccessorMethods
-                                        .computeIfAbsent(accessorFqn, k -> new LinkedHashMap<>())
-                                        .computeIfAbsent(accessorMethodName, k -> new ArrayList<>())
-                                        .add(Json.object("fqn", externalFqn)
-                                                .and("label", externalLabel)
-                                                .and("method", externalMethodName));
-                            }
+                            ea.externalMethodCalls().forEach(methodCall -> {
+                                String externalFqn = methodCall.methodOwner().fqn();
+                                String externalLabel = simpleLabel(externalFqn);
+                                String externalMethodName = methodCall.methodName();
+
+                                String methodKey = accessorFqn + "|" + accessorMethodName + "|" + externalFqn + "|" + externalMethodName;
+                                if (externalAccessorMethodKeys.add(methodKey)) {
+                                    externalAccessorMethods
+                                            .computeIfAbsent(accessorFqn, k -> new LinkedHashMap<>())
+                                            .computeIfAbsent(accessorMethodName, k -> new ArrayList<>())
+                                            .add(Json.object("fqn", externalFqn)
+                                                    .and("label", externalLabel)
+                                                    .and("method", externalMethodName));
+                                }
+                            });
 
                             String linkKey = execFqn + "|" + accessorFqn;
                             if (executionToExternalAccessorKeys.add(linkKey)) {

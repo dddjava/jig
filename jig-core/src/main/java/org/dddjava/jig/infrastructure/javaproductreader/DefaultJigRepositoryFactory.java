@@ -6,6 +6,7 @@ import org.dddjava.jig.JigResult;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -143,7 +144,7 @@ public class DefaultJigRepositoryFactory {
 
                     @Override
                     public ExternalAccessorRepositories externalAccessorRepositories() {
-                        return new ExternalAccessorRepositories(persistenceAccessorRepository);
+                        return new ExternalAccessorRepositories(persistenceAccessorRepository, ExternalAccessorRepository.from(jigTypes));
                     }
                 };
             });

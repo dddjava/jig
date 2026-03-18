@@ -657,6 +657,46 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Exec_exec1 --> ExtType_0'), "Execution → ExternalType が直接接続されること");
         });
 
+        test("generateExternalTypeMermaidCode: 同じアクセッサが複数の外部型を持つとき、カード対象の外部型のみが表示される", () => {
+            // accessorX -> externalA, accessorX -> externalB のとき、externalAカードにexternalBが表示されない
+            const makeGroup = (targetFqn, targetLabel) => ({
+                externalType: { fqn: targetFqn, label: targetLabel },
+                operations: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        externalAccessors: [
+                            {
+                                fqn: "com.example.AccX",
+                                label: "AccX",
+                                methods: [
+                                    {
+                                        name: "callA",
+                                        externals: [{ fqn: "com.example.ExtA", label: "ExtA", method: "methodA" }]
+                                    },
+                                    {
+                                        name: "callB",
+                                        externals: [{ fqn: "com.example.ExtB", label: "ExtB", method: "methodB" }]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            });
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: false, externalAccessor: true, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+
+            const codeA = outputs.generateExternalTypeMermaidCode(makeGroup("com.example.ExtA", "ExtA"), visibility);
+            assert.ok(codeA.includes('{{ExtA}}'), "externalAカードにExtAノードが表示されること");
+            assert.ok(!codeA.includes('{{ExtB}}'), "externalAカードにExtBノードが表示されないこと");
+
+            const codeB = outputs.generateExternalTypeMermaidCode(makeGroup("com.example.ExtB", "ExtB"), visibility);
+            assert.ok(codeB.includes('{{ExtB}}'), "externalBカードにExtBノードが表示されること");
+            assert.ok(!codeB.includes('{{ExtA}}'), "externalBカードにExtAノードが表示されないこと");
+        });
+
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 target: "table1",

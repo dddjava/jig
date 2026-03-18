@@ -619,7 +619,14 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
 
             currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-            addExternalAccessorNode(builder, currentNode, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
+            // このカードの外部型のみに絞ったアクセッサを渡す
+            const filteredAccessor = {
+                ...accessor,
+                methods: (accessor.methods || [])
+                    .map(m => ({...m, externals: (m.externals || []).filter(ext => ext.fqn === externalType.fqn)}))
+                    .filter(m => m.externals.length > 0)
+            };
+            addExternalAccessorNode(builder, currentNode, filteredAccessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
         });
     });
 

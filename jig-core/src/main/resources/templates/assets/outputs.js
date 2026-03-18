@@ -609,7 +609,7 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
 
             currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-            addExternalAccessorNode(builder, currentNode, accessor, {...visibility, externalAccessor: true}, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
+            addExternalAccessorNode(builder, currentNode, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
         });
     });
 

@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 外部利用概要
@@ -56,9 +55,10 @@ public class OutputsSummaryAdapter {
         List<JsonObjectBuilder> executionToAccessor = new ArrayList<>();
         List<JsonObjectBuilder> executionToExternalAccessor = new ArrayList<>();
 
-        var externalAccessorLabels = new LinkedHashMap<String, String>();           // fqn → label
-        var externalAccessorExternals = new LinkedHashMap<String, Set<String>>();   // accessorFqn → Set<externalFqn>
-        var externalTypeFqnLabels = new LinkedHashMap<String, String>();            // externalFqn → label
+        var externalAccessorLabels = new LinkedHashMap<String, String>();                                                         // fqn → label
+        var externalAccessorMethods = new LinkedHashMap<String, LinkedHashMap<String, List<JsonObjectBuilder>>>();               // accessorFqn → accessorMethodName → externals
+        var externalAccessorMethodKeys = new LinkedHashSet<String>();                                                            // dedup key
+        var executionToExternalAccessorKeys = new LinkedHashSet<String>();                                                      // dedup key
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
@@ -114,12 +114,27 @@ public class OutputsSummaryAdapter {
                         exec.externalAccessors().forEach(ea -> {
                             String accessorFqn = ea.accessorTypeId().fqn();
                             String accessorLabel = simpleLabel(accessorFqn);
+                            String accessorMethodName = ea.accessorMethodName();
                             String externalFqn = ea.externalTypeId().fqn();
                             String externalLabel = simpleLabel(externalFqn);
+                            String externalMethodName = ea.externalMethodName();
+
                             externalAccessorLabels.putIfAbsent(accessorFqn, accessorLabel);
-                            externalAccessorExternals.computeIfAbsent(accessorFqn, k -> new LinkedHashSet<>()).add(externalFqn);
-                            externalTypeFqnLabels.putIfAbsent(externalFqn, externalLabel);
-                            executionToExternalAccessor.add(Json.object("execution", execFqn).and("accessor", accessorFqn));
+
+                            String methodKey = accessorFqn + "|" + accessorMethodName + "|" + externalFqn + "|" + externalMethodName;
+                            if (externalAccessorMethodKeys.add(methodKey)) {
+                                externalAccessorMethods
+                                        .computeIfAbsent(accessorFqn, k -> new LinkedHashMap<>())
+                                        .computeIfAbsent(accessorMethodName, k -> new ArrayList<>())
+                                        .add(Json.object("fqn", externalFqn)
+                                                .and("label", externalLabel)
+                                                .and("method", externalMethodName));
+                            }
+
+                            String linkKey = execFqn + "|" + accessorFqn;
+                            if (executionToExternalAccessorKeys.add(linkKey)) {
+                                executionToExternalAccessor.add(Json.object("execution", execFqn).and("accessor", accessorFqn));
+                            }
                         });
                     });
                 });
@@ -148,14 +163,15 @@ public class OutputsSummaryAdapter {
 
         List<JsonObjectBuilder> externalAccessorsList = new ArrayList<>();
         externalAccessorLabels.forEach((accessorFqn, accessorLabel) -> {
-            Set<String> externalFqns = externalAccessorExternals.getOrDefault(accessorFqn, Set.of());
-            List<JsonObjectBuilder> externals = externalFqns.stream()
-                    .map(externalFqn -> Json.object("fqn", externalFqn)
-                            .and("label", externalTypeFqnLabels.getOrDefault(externalFqn, simpleLabel(externalFqn))))
-                    .collect(Collectors.toList());
+            LinkedHashMap<String, List<JsonObjectBuilder>> methodsMap = externalAccessorMethods.getOrDefault(accessorFqn, new LinkedHashMap<>());
+            List<JsonObjectBuilder> methodsList = new ArrayList<>();
+            methodsMap.forEach((methodName, externals) -> {
+                methodsList.add(Json.object("name", methodName)
+                        .and("externals", Json.arrayObjects(externals)));
+            });
             externalAccessorsList.add(Json.object("fqn", accessorFqn)
                     .and("label", accessorLabel)
-                    .and("externals", Json.arrayObjects(externals)));
+                    .and("methods", Json.arrayObjects(methodsList)));
         });
 
         return Json.object("outputPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))

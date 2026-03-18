@@ -129,10 +129,12 @@ function groupOperationsByExternalType(operations) {
     const map = new Map();
     operations.forEach(operation => {
         operation.externalAccessors?.forEach(accessor => {
-            (accessor.externals || []).forEach(ext => {
-                if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: ext, operations: []});
-                const group = map.get(ext.fqn);
-                if (!group.operations.includes(operation)) group.operations.push(operation);
+            (accessor.methods || []).forEach(accMethod => {
+                (accMethod.externals || []).forEach(ext => {
+                    if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn, label: ext.label}, operations: []});
+                    const group = map.get(ext.fqn);
+                    if (!group.operations.includes(operation)) group.operations.push(operation);
+                });
             });
         });
     });
@@ -346,7 +348,7 @@ class MermaidBuilder {
     }
 }
 
-const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalType: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
 function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
@@ -423,25 +425,52 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
     });
 }
 
-function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extTypeNodes) {
+function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs) {
     if (!visibility.externalAccessor) return sourceNodeId;
-    const nodeId = `ExtAcc_${builder.sanitize(accessor.fqn)}`;
-    if (!extAccessorNodes.has(accessor.fqn)) {
-        extAccessorNodes.set(accessor.fqn, nodeId);
-        builder.addNode(nodeId, accessor.label, '[/$LABEL\\]');
-    }
-    if (sourceNodeId) builder.addEdge(sourceNodeId, extAccessorNodes.get(accessor.fqn));
 
-    if (visibility.externalType) {
-        (accessor.externals || []).forEach(ext => {
-            if (!extTypeNodes.has(ext.fqn)) {
-                extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-                builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '{{$LABEL}}');
+    if (visibility.externalAccessorMethod) {
+        // 外部アクセッサをsubgraph化してメソッドを個別ノードに
+        const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessor.label);
+        (accessor.methods || []).forEach(accMethod => {
+            const accMethodNodeId = `AccMethod_${builder.sanitize(accessor.fqn + '_' + accMethod.name)}`;
+            builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, '[/$LABEL\\]');
+            if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
+
+            if (visibility.externalType) {
+                (accMethod.externals || []).forEach(ext => {
+                    const extSg = builder.ensureSubgraph(extTypeSubgraphs, ext.fqn, ext.label);
+                    const extMethodNodeId = `ExtMethod_${builder.sanitize(ext.fqn + '_' + ext.method)}`;
+                    builder.addNodeToSubgraph(extSg, extMethodNodeId, ext.method, '{{$LABEL}}');
+                    builder.addEdge(accMethodNodeId, extMethodNodeId);
+                });
             }
-            builder.addEdge(extAccessorNodes.get(accessor.fqn), extTypeNodes.get(ext.fqn));
         });
+        return null; // subgraphの場合は返すノードIDなし
+    } else {
+        // 既存のクラス単位表示
+        const nodeId = `ExtAcc_${builder.sanitize(accessor.fqn)}`;
+        if (!extAccessorNodes.has(accessor.fqn)) {
+            extAccessorNodes.set(accessor.fqn, nodeId);
+            builder.addNode(nodeId, accessor.label, '[/$LABEL\\]');
+        }
+        if (sourceNodeId) builder.addEdge(sourceNodeId, extAccessorNodes.get(accessor.fqn));
+
+        if (visibility.externalType) {
+            // accessor.methods[].externals[] をフラットにして外部型ノードを追加
+            const uniqueExternals = new Map();
+            (accessor.methods || []).forEach(accMethod => {
+                (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
+            });
+            uniqueExternals.forEach((ext, extFqn) => {
+                if (!extTypeNodes.has(extFqn)) {
+                    extTypeNodes.set(extFqn, `ExtType_${extTypeNodes.size}`);
+                    builder.addNode(extTypeNodes.get(extFqn), ext.label, '{{$LABEL}}');
+                }
+                builder.addEdge(extAccessorNodes.get(accessor.fqn), extTypeNodes.get(extFqn));
+            });
+        }
+        return extAccessorNodes.get(accessor.fqn);
     }
-    return extAccessorNodes.get(accessor.fqn);
 }
 
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
@@ -455,7 +484,9 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const accessorNodes = new Map();
     const targetNodes = new Map();
     const extAccessorNodes = new Map();
+    const extAccessorSubgraphs = new Map();
     const extTypeNodes = new Map();
+    const extTypeSubgraphs = new Map();
 
     group.operations.forEach((operation, operationIndex) => {
         const portOpName = operation.outputPortOperation.label;
@@ -481,7 +512,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         });
 
         operation.externalAccessors?.forEach(accessor => {
-            addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extTypeNodes);
+            addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs);
         });
     });
 
@@ -545,11 +576,14 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
     const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();
     const extAccessorNodes = new Map();
+    const extAccessorSubgraphs = new Map();
     const extTypeNodes = new Map();
+    const extTypeSubgraphs = new Map();
 
     group.operations.forEach(operation => {
         const relevantAccessors = (operation.externalAccessors || []).filter(accessor =>
-            (accessor.externals || []).some(ext => ext.fqn === externalType.fqn));
+            (accessor.methods || []).some(accMethod =>
+                (accMethod.externals || []).some(ext => ext.fqn === externalType.fqn)));
 
         const portFqn = operation.outputPort.fqn;
         const portLabel = operation.outputPort.label;
@@ -566,9 +600,9 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
 
             currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-            const accessorNodeId = addExternalAccessorNode(builder, currentNode, accessor, {...visibility, externalAccessor: true}, extAccessorNodes, extTypeNodes);
+            addExternalAccessorNode(builder, currentNode, accessor, {...visibility, externalAccessor: true}, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs);
 
-            if (visibility.externalType) {
+            if (visibility.externalType && !visibility.externalAccessorMethod && extAccessorNodes.has(accessor.fqn)) {
                 const extFqn = externalType.fqn;
                 if (!extTypeNodes.has(extFqn)) {
                     extTypeNodes.set(extFqn, `ExtType_${extTypeNodes.size}`);
@@ -898,6 +932,7 @@ function readVisibility() {
         accessorMethod: checked("show-accessor-method"),
         target: checked("show-target"),
         externalAccessor: checked("show-external-accessor"),
+        externalAccessorMethod: checked("show-external-accessor-method"),
         externalType: checked("show-external-type"),
         direction,
         crudCreate: checked("show-crud-c"),
@@ -950,6 +985,7 @@ const OutputsApp = {
             "show-operation": "show-port",
             "show-execution": "show-adapter",
             "show-accessor-method": "show-accessor",
+            "show-external-accessor-method": "show-external-accessor",
             "show-external-type": "show-external-accessor",
         };
 

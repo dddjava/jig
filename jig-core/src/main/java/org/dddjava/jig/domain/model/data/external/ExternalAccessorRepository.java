@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.data.external;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,18 +32,22 @@ public record ExternalAccessorRepository(List<ExternalAccessor> values) {
                         return java.util.stream.Stream.empty();
                     }
 
-                    // メソッド呼び出しのオーナー型を収集
-                    Set<TypeId> invokedOwners = jigType.allJigMethodStream()
-                            .flatMap(jigMethod -> jigMethod.usingMethods().invokedMethodStream())
-                            .map(methodCall -> methodCall.methodOwner())
-                            .collect(Collectors.toSet());
-
-                    // 外部フィールド型 ∩ 呼び出しメソッドのオーナー型 → 実際に呼び出している外部型
-                    return externalFieldTypes.stream()
-                            .filter(invokedOwners::contains)
-                            .map(externalTypeId -> new ExternalAccessor(jigType.id(), externalTypeId));
+                    // アクセッサメソッドとその呼び出しを個別に収集
+                    return jigType.allJigMethodStream()
+                            .flatMap(jigMethod -> {
+                                String accessorMethodName = jigMethod.name();
+                                return jigMethod.usingMethods().invokedMethodStream()
+                                        .filter(mc -> externalFieldTypes.contains(mc.methodOwner()))
+                                        .map(mc -> new ExternalAccessor(
+                                                jigType.id(),
+                                                accessorMethodName,
+                                                mc.methodOwner(),
+                                                mc.methodName()
+                                        ));
+                            });
                 })
-                .toList();
+                .collect(Collectors.toCollection(LinkedHashSet::new))
+                .stream().toList();
         return new ExternalAccessorRepository(result);
     }
 }

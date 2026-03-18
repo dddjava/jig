@@ -81,6 +81,18 @@ class PersistenceOperationTypeTest {
     }
 
     @Test
+    void 算術式内のサブクエリからテーブル名を正しく抽出する() {
+        // COUNT(*) のような関数呼び出しを含むサブクエリ
+        String sql = "SELECT 20 - (SELECT COUNT(*) FROM hoge) FROM dual";
+        Map<String, PersistenceOperationType> result = extractTypeMap(sql, PersistenceOperationType.SELECT);
+
+        assertEquals(PersistenceOperationType.SELECT, result.get("hoge"));
+        assertEquals(PersistenceOperationType.SELECT, result.get("dual"));
+        // hoge) のようなゴミが入っていないこと
+        assertEquals(2, result.size());
+    }
+
+    @Test
     void テーブル名の引用符は除去される() {
         String sql = "SELECT * FROM \"hoge\".\"fuga\" WHERE id = 1";
         Query query = Query.from(sql);

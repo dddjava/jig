@@ -15,15 +15,15 @@ import java.util.stream.Stream;
  * SQLの種類
  */
 public enum PersistenceOperationType {
-    INSERT("insert\\s+into\\s+([^\\s(]+)"),
-    SELECT("(?<!:)\\bfrom\\s+([^\\s,(]+)",
+    INSERT("insert\\s+into\\s+([^\\s()]+)"),
+    SELECT("(?<!:)\\bfrom\\s+([^\\s,()]+)",
             "select\\s+(nextval\\('.+'\\))"),
-    UPDATE("\\bupdate\\s+([^\\s,(]+)"),
-    DELETE("delete\\s+from\\s+([^\\s(]+)\\b");
+    UPDATE("\\bupdate\\s+([^\\s,()]+)"),
+    DELETE("delete\\s+from\\s+([^\\s()]+)\\b");
 
     private static final Logger logger = LoggerFactory.getLogger(PersistenceOperationType.class);
     private static final Pattern JOIN_PATTERN =
-            Pattern.compile("\\bjoin\\s+([^\\s,(]+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
+            Pattern.compile("\\bjoin\\s+([^\\s,()]+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
     // 関数呼び出し（word(...) 形式）にマッチ — サブクエリ除去の前処理用
     private static final Pattern FUNCTION_CALL_PATTERN =
             Pattern.compile("\\w+\\([^()]*\\)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);

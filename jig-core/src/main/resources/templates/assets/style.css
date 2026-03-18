@@ -876,6 +876,8 @@ table td.number {
     flex: 1;
     display: grid;
     gap: 16px;
+    min-width: 0;
+    overflow-x: auto;
 }
 .outputs .outputs-port-card {
     border: 1px solid #d4d9e5;
@@ -1049,6 +1051,7 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 @media (max-width: 900px) {
     .outputs .outputs-container {

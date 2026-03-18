@@ -8,11 +8,13 @@ import java.util.Optional;
  * テーブルなど
  */
 public record PersistenceTarget(String name, Optional<PersistenceOperationType> operationType) {
-    public PersistenceTarget {
-        name = name.replace("\"", "").replace("`", "");
-    }
 
     public PersistenceTarget(String name) {
         this(name, Optional.empty());
+    }
+
+    public static PersistenceTarget fromSql(String extractedName, PersistenceOperationType persistenceOperationType) {
+        var name = extractedName.replace("\"", "").replace("`", "");
+        return new PersistenceTarget(name, Optional.of(persistenceOperationType));
     }
 }

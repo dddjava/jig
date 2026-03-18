@@ -56,18 +56,18 @@ public enum PersistenceOperationType {
             for (Pattern pattern : patterns) {
                 Matcher matcher = pattern.matcher(sqlWithoutSubqueries);
                 while (matcher.find()) {
-                    targets.add(new PersistenceTarget(matcher.group(1), Optional.of(this)));
+                    targets.add(PersistenceTarget.fromSql(matcher.group(1), this));
                 }
             }
 
             Matcher joinMatcher = JOIN_PATTERN.matcher(sqlWithoutSubqueries);
             while (joinMatcher.find()) {
-                targets.add(new PersistenceTarget(joinMatcher.group(1), Optional.of(SELECT)));
+                targets.add(PersistenceTarget.fromSql(joinMatcher.group(1), SELECT));
             }
 
             // サブクエリ内FROMをSELECTとして追加
             for (String table : extractSubqueryFromTargets(sql)) {
-                targets.add(new PersistenceTarget(table, Optional.of(SELECT)));
+                targets.add(PersistenceTarget.fromSql(table, SELECT));
             }
 
             if (!targets.isEmpty()) {
@@ -81,7 +81,9 @@ public enum PersistenceOperationType {
         return new PersistenceTargets(unexpectedTable());
     }
 
-    /** (SELECT ...) を () に置換して繰り返すことでネストを除去 */
+    /**
+     * (SELECT ...) を () に置換して繰り返すことでネストを除去
+     */
     private static String removeSubqueries(String sql) {
         String result = sql;
         String prev;
@@ -92,7 +94,9 @@ public enum PersistenceOperationType {
         return result;
     }
 
-    /** word(...) 形式の関数呼び出しを繰り返し除去し、括弧をサブクエリのみにする */
+    /**
+     * word(...) 形式の関数呼び出しを繰り返し除去し、括弧をサブクエリのみにする
+     */
     private static String removeFunctionCalls(String sql) {
         String result = sql;
         String prev;
@@ -103,7 +107,9 @@ public enum PersistenceOperationType {
         return result;
     }
 
-    /** サブクエリ内のFROMテーブル名を収集（繰り返しでネスト対応） */
+    /**
+     * サブクエリ内のFROMテーブル名を収集（繰り返しでネスト対応）
+     */
     private static List<String> extractSubqueryFromTargets(String sql) {
         // 関数呼び出しを先に除去してからサブクエリを抽出する
         String processed = removeFunctionCalls(sql);

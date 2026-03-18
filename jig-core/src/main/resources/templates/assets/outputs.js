@@ -441,7 +441,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
             builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '{{$LABEL}}');
         }
         const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
-        builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
+        if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
     };
 
     if (!visibility.externalAccessor) {

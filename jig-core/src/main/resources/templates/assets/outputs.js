@@ -348,7 +348,7 @@ class MermaidBuilder {
     }
 }
 
-const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
 function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
@@ -428,26 +428,35 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
 function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs) {
     if (!visibility.externalAccessor) return sourceNodeId;
 
+    // 外部型ノードの追加ヘルパー（externalTypeMethod で単一ノードかsubgraphか切り替え）
+    const addExternal = (fromNodeId, ext) => {
+        if (!visibility.externalType) return;
+        if (visibility.externalTypeMethod) {
+            const extSg = builder.ensureSubgraph(extTypeSubgraphs, ext.fqn, ext.label);
+            const extMethodNodeId = `ExtMethod_${builder.sanitize(ext.fqn + '_' + ext.method)}`;
+            builder.addNodeToSubgraph(extSg, extMethodNodeId, ext.method, '{{$LABEL}}');
+            builder.addEdge(fromNodeId, extMethodNodeId);
+        } else {
+            if (!extTypeNodes.has(ext.fqn)) {
+                extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
+                builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '{{$LABEL}}');
+            }
+            builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn));
+        }
+    };
+
     if (visibility.externalAccessorMethod) {
-        // 外部アクセッサをsubgraph化してメソッドを個別ノードに
+        // 外部アクセッサをsubgraphにして各メソッドをノードに
         const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessor.label);
         (accessor.methods || []).forEach(accMethod => {
             const accMethodNodeId = `AccMethod_${builder.sanitize(accessor.fqn + '_' + accMethod.name)}`;
             builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, '[/$LABEL\\]');
             if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
-
-            if (visibility.externalType) {
-                (accMethod.externals || []).forEach(ext => {
-                    const extSg = builder.ensureSubgraph(extTypeSubgraphs, ext.fqn, ext.label);
-                    const extMethodNodeId = `ExtMethod_${builder.sanitize(ext.fqn + '_' + ext.method)}`;
-                    builder.addNodeToSubgraph(extSg, extMethodNodeId, ext.method, '{{$LABEL}}');
-                    builder.addEdge(accMethodNodeId, extMethodNodeId);
-                });
-            }
+            (accMethod.externals || []).forEach(ext => addExternal(accMethodNodeId, ext));
         });
-        return null; // subgraphの場合は返すノードIDなし
+        return null;
     } else {
-        // 既存のクラス単位表示
+        // クラス単位の単一ノード
         const nodeId = `ExtAcc_${builder.sanitize(accessor.fqn)}`;
         if (!extAccessorNodes.has(accessor.fqn)) {
             extAccessorNodes.set(accessor.fqn, nodeId);
@@ -455,8 +464,13 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         }
         if (sourceNodeId) builder.addEdge(sourceNodeId, extAccessorNodes.get(accessor.fqn));
 
-        if (visibility.externalType) {
-            // accessor.methods[].externals[] をフラットにして外部型ノードを追加
+        if (visibility.externalTypeMethod) {
+            // 外部型をsubgraphにして各メソッドをノードに
+            (accessor.methods || []).forEach(accMethod => {
+                (accMethod.externals || []).forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
+            });
+        } else if (visibility.externalType) {
+            // 外部型を単一ノードで表示
             const uniqueExternals = new Map();
             (accessor.methods || []).forEach(accMethod => {
                 (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
@@ -601,15 +615,6 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
             currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
             addExternalAccessorNode(builder, currentNode, accessor, {...visibility, externalAccessor: true}, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs);
-
-            if (visibility.externalType && !visibility.externalAccessorMethod && extAccessorNodes.has(accessor.fqn)) {
-                const extFqn = externalType.fqn;
-                if (!extTypeNodes.has(extFqn)) {
-                    extTypeNodes.set(extFqn, `ExtType_${extTypeNodes.size}`);
-                    builder.addNode(extTypeNodes.get(extFqn), externalType.label, '{{$LABEL}}');
-                }
-                builder.addEdge(extAccessorNodes.get(accessor.fqn), extTypeNodes.get(extFqn));
-            }
         });
     });
 
@@ -934,6 +939,7 @@ function readVisibility() {
         externalAccessor: checked("show-external-accessor"),
         externalAccessorMethod: checked("show-external-accessor-method"),
         externalType: checked("show-external-type"),
+        externalTypeMethod: checked("show-external-type-method"),
         direction,
         crudCreate: checked("show-crud-c"),
         crudRead: checked("show-crud-r"),
@@ -987,14 +993,19 @@ const OutputsApp = {
             "show-accessor-method": "show-accessor",
             "show-external-accessor-method": "show-external-accessor",
             "show-external-type": "show-external-accessor",
+            "show-external-type-method": "show-external-type",
         };
 
         document.querySelectorAll('input[name^="show-"]').forEach(input => {
             input.addEventListener('change', () => {
                 const name = input.getAttribute("name");
-                if (input.checked && parentRules[name]) {
-                    const parentEl = document.querySelector(`input[name="${parentRules[name]}"]`);
-                    if (parentEl) parentEl.checked = true;
+                if (input.checked) {
+                    let current = name;
+                    while (parentRules[current]) {
+                        const parentEl = document.querySelector(`input[name="${parentRules[current]}"]`);
+                        if (parentEl) parentEl.checked = true;
+                        current = parentRules[current];
+                    }
                 }
                 this.setState({visibility: readVisibility()});
             });

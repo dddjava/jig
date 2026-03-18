@@ -1001,6 +1001,10 @@ table td.number {
     font-size: 0.95em;
     color: #374151;
 }
+.outputs .outputs-display-mode .checkbox-grandchild {
+    padding-left: 16px;
+    font-size: 0.90em;
+}
 .outputs .outputs-tabs {
     display: flex;
     gap: 10px;

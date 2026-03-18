@@ -433,8 +433,6 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
 }
 
 function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes) {
-    if (!visibility.externalAccessor) return sourceNodeId;
-
     // 外部型ノードの追加ヘルパー（externalTypeMethod でエッジラベルにメソッド名を付与）
     const addExternal = (fromNodeId, ext) => {
         if (!visibility.externalType) return;
@@ -445,6 +443,18 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
         builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
     };
+
+    if (!visibility.externalAccessor) {
+        // アクセッサ非表示時は外部型をアダプターから直接接続
+        if (visibility.externalType) {
+            const uniqueExternals = new Map();
+            (accessor.methods || []).forEach(accMethod => {
+                (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
+            });
+            uniqueExternals.forEach(ext => addExternal(sourceNodeId, ext));
+        }
+        return sourceNodeId;
+    }
 
     if (visibility.externalAccessorMethod) {
         // 外部アクセッサをsubgraphにして各メソッドをノードに

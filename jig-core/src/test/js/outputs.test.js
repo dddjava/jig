@@ -564,6 +564,68 @@ test.describe("outputs.js", () => {
             assert.ok(!code.includes(`Exec_e2 --> ${m1NodeId}`), "e2からm1へのエッジが存在しないこと");
         });
 
+        test("generatePortMermaidCode: externalAccessor非表示のとき、Execution → ExternalType が直接接続される", () => {
+            const group = {
+                outputPort: { fqn: "p1", label: "P1" },
+                operations: [
+                    {
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        persistenceAccessors: [],
+                        externalAccessors: [
+                            {
+                                fqn: "com.example.ExtAcc",
+                                label: "ExtAcc",
+                                methods: [
+                                    {
+                                        name: "call",
+                                        externals: [{ fqn: "com.example.ExtType", label: "ExtType", method: "call" }]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: false, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePortMermaidCode(group, visibility);
+            assert.ok(!code.includes('ExtAcc_'), "外部アクセッサノードが存在しないこと");
+            assert.ok(code.includes('ExtType_0'), "外部型ノードが存在すること");
+            assert.ok(code.includes('Exec_exec1 --> ExtType_0'), "Execution → ExternalType が直接接続されること");
+        });
+
+        test("generateExternalTypeMermaidCode: externalAccessor非表示のとき、Execution → ExternalType が直接接続される", () => {
+            const group = {
+                externalType: { fqn: "com.example.ExtType", label: "ExtType" },
+                operations: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        externalAccessors: [
+                            {
+                                fqn: "com.example.ExtAcc",
+                                label: "ExtAcc",
+                                methods: [
+                                    {
+                                        name: "call",
+                                        externals: [{ fqn: "com.example.ExtType", label: "ExtType", method: "call" }]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: false, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generateExternalTypeMermaidCode(group, visibility);
+            assert.ok(!code.includes('ExtAcc_'), "外部アクセッサノードが存在しないこと");
+            assert.ok(code.includes('ExtType_0'), "外部型ノードが存在すること");
+            assert.ok(code.includes('Exec_exec1 --> ExtType_0'), "Execution → ExternalType が直接接続されること");
+        });
+
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 target: "table1",

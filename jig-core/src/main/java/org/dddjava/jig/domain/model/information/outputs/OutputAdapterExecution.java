@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.external.ExternalAccessor;
+import org.dddjava.jig.domain.model.data.external.ExternalAccessorOperation;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
@@ -27,7 +27,7 @@ public record OutputAdapterExecution(
         Collection<OutputPortOperation> implementOperations,
         Collection<JigMethod> tracingJigMethods,
         Collection<PersistenceAccessorOperation> persistenceAccessorOperations,
-        Collection<ExternalAccessor> externalAccessors
+        Collection<ExternalAccessorOperation> externalAccessorOperations
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
@@ -37,11 +37,11 @@ public record OutputAdapterExecution(
                                               ExternalAccessorRepositories accessorRepositories) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
         Collection<PersistenceAccessorOperation> persistenceAccessorOperations = collectPersistenceAccessorOperation(tracingJigMethods, accessorRepositories.persistenceAccessorRepository());
-        Collection<ExternalAccessor> externalAccessors = collectExternalAccessors(tracingJigMethods, accessorRepositories.externalAccessorRepository());
-        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations, externalAccessors);
+        Collection<ExternalAccessorOperation> externalAccessorOperations = collectExternalAccessors(tracingJigMethods, accessorRepositories.externalAccessorRepository());
+        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations, externalAccessorOperations);
     }
 
-    private static Collection<ExternalAccessor> collectExternalAccessors(
+    private static Collection<ExternalAccessorOperation> collectExternalAccessors(
             Collection<JigMethod> tracingJigMethods,
             ExternalAccessorRepository externalAccessorRepository) {
         Set<TypeId> tracingTypeIds = tracingJigMethods.stream()

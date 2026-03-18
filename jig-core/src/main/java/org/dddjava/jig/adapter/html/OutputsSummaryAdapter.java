@@ -5,14 +5,16 @@ import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.persistence.PersistenceTarget;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * 外部利用概要
@@ -111,7 +113,7 @@ public class OutputsSummaryAdapter {
                                     .and("accessor", methodId));
                         });
 
-                        exec.externalAccessors().forEach(ea -> {
+                        exec.externalAccessorOperations().forEach(ea -> {
                             String accessorFqn = ea.accessorTypeId().fqn();
                             String accessorLabel = simpleLabel(accessorFqn);
                             String accessorMethodName = ea.accessorMethodName();

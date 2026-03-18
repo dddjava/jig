@@ -93,6 +93,16 @@ class PersistenceOperationTypeTest {
     }
 
     @Test
+    void EXISTSサブクエリからテーブル名を正しく抽出する() {
+        // EXISTS(SELECT ... FROM table FOR UPDATE OF "table") の形式
+        String sql = "SELECT exists(SELECT 1 FROM hoge WHERE journey_id = :xxxxId FOR UPDATE OF \"hoge\")";
+        Query query = Query.from(sql);
+        PersistenceTargets targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+
+        assertEquals("[hoge]", targets.asText());
+    }
+
+    @Test
     void テーブル名の引用符は除去される() {
         String sql = "SELECT * FROM \"hoge\".\"fuga\" WHERE id = 1";
         Query query = Query.from(sql);

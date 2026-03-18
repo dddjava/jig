@@ -25,8 +25,9 @@ public enum PersistenceOperationType {
     private static final Pattern JOIN_PATTERN =
             Pattern.compile("\\bjoin\\s+([^\\s,()]+)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
     // 関数呼び出し（word(...) 形式）にマッチ — サブクエリ除去の前処理用
+    // (?!\s*select\b) で exists(SELECT ...) などサブクエリラッパーは除外する
     private static final Pattern FUNCTION_CALL_PATTERN =
-            Pattern.compile("\\w+\\([^()]*\\)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
+            Pattern.compile("\\w+\\((?!\\s*select\\b)[^()]*\\)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
     // SELECT サブクエリにマッチ（空の () はネスト除去後の置換値として許容）
     private static final Pattern INNER_SUBQUERY_PATTERN =
             Pattern.compile("\\(\\s*select(?:[^()]+|\\(\\))*\\)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);

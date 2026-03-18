@@ -21,6 +21,8 @@ import java.util.*;
 
 /**
  * エントリーポイント概要
+ *
+ * FIXME Mermaidのダイアグラムに対応した出力をほとんどここで記述してしまっている。
  */
 public class EntrypointSummaryAdapter {
     private final JigService jigService;

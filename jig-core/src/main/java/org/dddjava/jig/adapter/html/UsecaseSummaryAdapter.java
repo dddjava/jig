@@ -18,11 +18,19 @@ import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
+/**
+ * ユースケース概要
+ *
+ * FIXME Mermaidのダイアグラムに対応した出力をほとんどここで記述してしまっている。
+ */
 public class UsecaseSummaryAdapter {
 
     private final JigService jigService;

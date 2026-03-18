@@ -432,24 +432,18 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
     });
 }
 
-function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs) {
+function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes) {
     if (!visibility.externalAccessor) return sourceNodeId;
 
-    // 外部型ノードの追加ヘルパー（externalTypeMethod で単一ノードかsubgraphか切り替え）
+    // 外部型ノードの追加ヘルパー（externalTypeMethod でエッジラベルにメソッド名を付与）
     const addExternal = (fromNodeId, ext) => {
         if (!visibility.externalType) return;
-        if (visibility.externalTypeMethod) {
-            const extSg = builder.ensureSubgraph(extTypeSubgraphs, ext.fqn, ext.label);
-            const extMethodNodeId = `ExtMethod_${builder.sanitize(ext.fqn + '_' + ext.method)}`;
-            builder.addNodeToSubgraph(extSg, extMethodNodeId, ext.method, '{{$LABEL}}');
-            builder.addEdge(fromNodeId, extMethodNodeId);
-        } else {
-            if (!extTypeNodes.has(ext.fqn)) {
-                extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-                builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '{{$LABEL}}');
-            }
-            builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn));
+        if (!extTypeNodes.has(ext.fqn)) {
+            extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
+            builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '{{$LABEL}}');
         }
+        const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
+        builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
     };
 
     if (visibility.externalAccessorMethod) {
@@ -471,24 +465,20 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         }
         if (sourceNodeId) builder.addEdge(sourceNodeId, extAccessorNodes.get(accessor.fqn));
 
-        if (visibility.externalTypeMethod) {
-            // 外部型をsubgraphにして各メソッドをノードに
-            (accessor.methods || []).forEach(accMethod => {
-                (accMethod.externals || []).forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
-            });
-        } else if (visibility.externalType) {
-            // 外部型を単一ノードで表示
-            const uniqueExternals = new Map();
-            (accessor.methods || []).forEach(accMethod => {
-                (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
-            });
-            uniqueExternals.forEach((ext, extFqn) => {
-                if (!extTypeNodes.has(extFqn)) {
-                    extTypeNodes.set(extFqn, `ExtType_${extTypeNodes.size}`);
-                    builder.addNode(extTypeNodes.get(extFqn), ext.label, '{{$LABEL}}');
-                }
-                builder.addEdge(extAccessorNodes.get(accessor.fqn), extTypeNodes.get(extFqn));
-            });
+        if (visibility.externalType) {
+            if (visibility.externalTypeMethod) {
+                // メソッドごとのエッジ（メソッド名をラベルとして）
+                (accessor.methods || []).forEach(accMethod => {
+                    (accMethod.externals || []).forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
+                });
+            } else {
+                // 外部型を単一ノードで表示（重複排除）
+                const uniqueExternals = new Map();
+                (accessor.methods || []).forEach(accMethod => {
+                    (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
+                });
+                uniqueExternals.forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
+            }
         }
         return extAccessorNodes.get(accessor.fqn);
     }
@@ -507,7 +497,6 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const extAccessorNodes = new Map();
     const extAccessorSubgraphs = new Map();
     const extTypeNodes = new Map();
-    const extTypeSubgraphs = new Map();
 
     group.operations.forEach((operation, operationIndex) => {
         const portOpName = operation.outputPortOperation.label;
@@ -533,7 +522,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         });
 
         operation.externalAccessors?.forEach(accessor => {
-            addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs);
+            addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
         });
     });
 
@@ -599,7 +588,6 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
     const extAccessorNodes = new Map();
     const extAccessorSubgraphs = new Map();
     const extTypeNodes = new Map();
-    const extTypeSubgraphs = new Map();
 
     group.operations.forEach(operation => {
         const relevantAccessors = (operation.externalAccessors || []).filter(accessor =>
@@ -621,7 +609,7 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
 
             currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-            addExternalAccessorNode(builder, currentNode, accessor, {...visibility, externalAccessor: true}, extAccessorNodes, extAccessorSubgraphs, extTypeNodes, extTypeSubgraphs);
+            addExternalAccessorNode(builder, currentNode, accessor, {...visibility, externalAccessor: true}, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
         });
     });
 

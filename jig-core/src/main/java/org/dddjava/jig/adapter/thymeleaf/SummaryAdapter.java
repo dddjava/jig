@@ -1,11 +1,9 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.HandleDocument;
-import org.dddjava.jig.adapter.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -34,14 +32,6 @@ public class SummaryAdapter {
     public List<Path> applicationSummary(JigRepository jigRepository, JigDocument jigDocument) {
         var jigTypes = jigService.serviceTypes(jigRepository);
         return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)));
-    }
-
-    @HandleDocument(JigDocument.UsecaseSummary)
-    public List<Path> usecaseSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        var jigTypes = jigService.serviceTypes(jigRepository);
-        var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.lambdaInlined(jigTypes));
-        var packages = jigService.packages(jigRepository);
-        return write(jigDocument, SummaryModel.withMermaidDiagram(jigTypes, packages, usecaseMermaidDiagram));
     }
 
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {

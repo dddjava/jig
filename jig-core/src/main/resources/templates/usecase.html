@@ -1,57 +1,31 @@
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja">
 <head>
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <link rel="icon" href="./assets/favicon.ico">
-    <title th:text="${title}">application</title>
+    <title>ユースケース概要</title>
 </head>
-<body>
-<header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
+<body class="usecase-summary">
+<header class="top">
+    <a href="./index.html">[INDEX]</a>
+    <b>ユースケース概要</b>
+</header>
 <div class="sideNavMain">
-    <nav class="tree" th:replace="~{fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})}">
-        パッケージツリーに置換
+    <nav id="usecase-sidebar" class="tree in-page-sidebar in-page-sidebar--tree" aria-label="パッケージツリー">
+        <div id="usecase-sidebar-list" class="in-page-sidebar__list"></div>
     </nav>
 
     <main class="usecase">
-        <th:block th:each="item : ${jigTypes}">
-            <section class="type">
-                <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
-                <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
-
-                <section class="markdown"  th:unless="${item.term().description().isEmpty()}" th:utext="${item.term().description()}">
-                    クラスの **Javadoc** コメント
-                </section>
-
-                <section class="method" th:each="method : ${#jig.listRemarkableInstanceMethods(item)}">
-                    <h3 th:id="${#jig.htmlIdText(method)}" th:text="${method.labelText()}">XXXメソッド</h3>
-                    <div class="fully-qualified-name"
-                         th:text="${#jig.simpleMethodDeclarationText(method)}">
-                        availableRoomList(OffsetDateTime):List
-                    </div>
-
-                    <pre class="mermaid" th:utext="${mermaidDiagram.textFor(method)}">
-                            graph LR
-                            a --> b
-                            a --> c
-                            b --> c
-                    </pre>
-
-                    <dl class="depends" th:with="methodReturn=${method.returnType().id()}">
-                        <dt th:if="${#jig.hasArgument(method)}">要求するもの（引数）</dt>
-                        <dd th:each="argText : ${#jig.methodParameterLinkTexts(method)}" th:utext="${argText}">xxx</dd>
-                        <dt th:unless="${methodReturn.isVoid()}">得られるもの（戻り値）</dt>
-                        <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnLinkText(method)}">xxxx</dd>
-                    </dl>
-
-                    <section class="description markdown" th:utext="${method.term().description()}">メソッドの **Javadoc**
-                        コメント
-                    </section>
-                </section>
-            </section>
-        </th:block>
+        <div id="usecase-list">
+            <!-- JavaScriptで描画されます -->
+        </div>
     </main>
 </div>
 
-<th:block th:replace="~{fragment-base::scripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+<script src="./assets/jig.js"></script>
+<script src="./data/usecase-data.js"></script>
+<script src="./assets/usecase.js"></script>
 </body>
 </html>

@@ -71,6 +71,7 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new OutputsSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new EntrypointSummaryAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new UsecaseSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new ListOutputAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new GlossaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new PackageSummaryAdapter(jigService, jigDocumentContext));

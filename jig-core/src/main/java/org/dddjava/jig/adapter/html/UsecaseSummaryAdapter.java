@@ -1,0 +1,186 @@
+package org.dddjava.jig.adapter.html;
+
+import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentWriter;
+import org.dddjava.jig.adapter.json.Json;
+import org.dddjava.jig.adapter.json.JsonObjectBuilder;
+import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
+import org.dddjava.jig.domain.model.data.types.JigTypeReference;
+import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
+
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+
+public class UsecaseSummaryAdapter {
+
+    private final JigService jigService;
+    private final JigDocumentContext jigDocumentContext;
+
+    public UsecaseSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+        this.jigService = jigService;
+        this.jigDocumentContext = jigDocumentContext;
+    }
+
+    @HandleDocument(JigDocument.UsecaseSummary)
+    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
+        var contextJigTypes = jigService.serviceTypes(repository);
+        var methodRelations = MethodRelations.lambdaInlined(contextJigTypes);
+
+        var json = buildJson(contextJigTypes, methodRelations);
+
+        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
+
+        jigDocumentWriter.writeHtmlTemplate();
+        jigDocumentWriter.writeJsData("usecaseData", json);
+
+        return jigDocumentWriter.outputFilePaths();
+    }
+
+    private String buildJson(JigTypes contextJigTypes, MethodRelations methodRelations) {
+        List<JsonObjectBuilder> usecaseList = new ArrayList<>();
+
+        for (var jigType : contextJigTypes.list()) {
+            List<JsonObjectBuilder> methodList = new ArrayList<>();
+            for (var jigMethod : jigType.instanceJigMethods().filterProgrammerDefined().excludeNotNoteworthyObjectMethod().listRemarkable()) {
+                methodList.add(Json.object("methodId", HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId()))
+                        .and("label", jigMethod.labelText())
+                        .and("declaration", jigMethod.simpleMethodDeclarationText())
+                        .and("returnTypeLink", methodReturnLinkText(jigMethod))
+                        .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))
+                        .and("description", jigMethod.term().description())
+                        .and("graph", buildGraphJson(jigMethod, contextJigTypes, methodRelations)));
+            }
+
+            if (!methodList.isEmpty()) {
+                usecaseList.add(Json.object("typeId", jigType.fqn())
+                        .and("label", jigType.label())
+                        .and("description", jigType.term().description())
+                        .and("methods", Json.arrayObjects(methodList)));
+            }
+        }
+
+        return Json.object("usecases", Json.arrayObjects(usecaseList)).build();
+    }
+
+    private JsonObjectBuilder buildGraphJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {
+        List<JsonObjectBuilder> nodes = new ArrayList<>();
+        List<JsonObjectBuilder> edges = new ArrayList<>();
+
+        // 基点からの呼び出し全部 + 直近の呼び出し元
+        var filteredRelations = methodRelations.filterFromRecursive(jigMethod.jigMethodId())
+                .merge(methodRelations.filterTo(jigMethod.jigMethodId()));
+
+        Set<JigMethodId> resolved = new HashSet<>();
+
+        // メソッドのノード
+        filteredRelations.toJigMethodIdStream().forEach(jigMethodId -> {
+            // 自分は太字にする
+            if (jigMethodId.equals(jigMethod.jigMethodId())) {
+                resolved.add(jigMethodId);
+                nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
+                        .and("label", jigMethod.labelTextOrLambda())
+                        .and("highlight", true)
+                        .and("type", "usecase"));
+            } else {
+                contextJigTypes.resolveJigMethod(jigMethodId)
+                        .ifPresent(method -> {
+                            resolved.add(jigMethodId);
+                            if (method.remarkable()) {
+                                // 出力対象のメソッドはusecase型＆クリックできるように
+                                nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
+                                        .and("label", method.labelTextOrLambda())
+                                        .and("link", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
+                                        .and("type", "usecase"));
+                            } else {
+                                // remarkableでないものは普通の。privateメソッドなど該当。
+                                String label = method.labelText();
+                                if (jigMethodId.isLambda()) label = "(lambda)";
+                                nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
+                                        .and("label", label)
+                                        .and("type", jigMethodId.isLambda() ? "lambda" : "normal"));
+                            }
+                        });
+            }
+        });
+
+        Set<TypeId> others = new HashSet<>();
+
+        // エッジ
+        filteredRelations.list().forEach(relation -> {
+            String fromId = resolveNodeId(relation.from(), resolved, others, jigMethod);
+            String toId = resolveNodeId(relation.to(), resolved, others, jigMethod);
+
+            if (fromId != null && toId != null) {
+                edges.add(Json.object("from", fromId).and("to", toId));
+            }
+        });
+
+        // JigMethodにならないものはクラスノードとして出力する
+        others.forEach(typeId ->
+                nodes.add(Json.object("id", htmlIdText(typeId))
+                        .and("label", typeId.asSimpleText())
+                        .and("type", "other")));
+
+        return Json.object("nodes", Json.arrayObjects(nodes))
+                .and("edges", Json.arrayObjects(edges));
+    }
+
+    private String resolveNodeId(JigMethodId jigMethodId, Set<JigMethodId> resolved, Set<TypeId> others, JigMethod contextMethod) {
+        if (resolved.contains(jigMethodId)) {
+            return HtmlSupport.htmlMethodIdText(jigMethodId);
+        }
+        // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
+        var typeId = jigMethodId.tuple().declaringTypeId();
+        if (typeId.packageId().equals(contextMethod.declaringType().packageId())) {
+            // 暫定的に同じパッケージのもののみ出力する
+            others.add(typeId);
+            return htmlIdText(typeId);
+        }
+        return null;
+    }
+
+    private static String htmlIdText(TypeId typeId) {
+        // 英数字以外を_に置換する
+        return typeId.value().replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
+    private String methodReturnLinkText(JigMethod jigMethod) {
+        return linkText(jigMethod.jigMethodDeclaration().header().returnType());
+    }
+
+    private List<String> methodParameterLinkTexts(JigMethod jigMethod) {
+        return jigMethod.jigMethodDeclaration().header().parameterTypeList().stream()
+                .map(this::linkText)
+                .collect(Collectors.toList());
+    }
+
+    private String linkText(JigTypeReference jigTypeReference) {
+        var typeArgumentList = jigTypeReference.typeArgumentList();
+        String typeArgumentText = typeArgumentList.isEmpty() ? "" :
+                typeArgumentList.stream()
+                        .map(JigTypeArgument::typeId)
+                        .map(this::typeIdToLinkText)
+                        .collect(joining(", ", "&lt;", "&gt;"));
+
+        return typeIdToLinkText(jigTypeReference.id()) + typeArgumentText;
+    }
+
+    private String typeIdToLinkText(TypeId typeId) {
+        if (typeId.isJavaLanguageType()) {
+            return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
+        }
+        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fqn(), jigDocumentContext.typeTerm(typeId).title());
+    }
+}

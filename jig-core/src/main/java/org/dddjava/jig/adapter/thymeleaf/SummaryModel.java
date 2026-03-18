@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
-import org.dddjava.jig.adapter.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
@@ -22,11 +21,6 @@ public record SummaryModel(JigTypes jigTypes, JigPackages jigPackages, Map<Strin
     static SummaryModel withMermaidDiagram(JigTypes jigTypes, JigPackages packages, UsecaseMermaidDiagram usecaseMermaidDiagram) {
         return of(jigTypes, packages)
                 .withAdditionalMap(Map.of(MERMAID_DIAGRAM_KEY, usecaseMermaidDiagram));
-    }
-
-    static SummaryModel withMermaidDiagram(JigTypes jigTypes, JigPackages packages, EntrypointMermaidDiagram entrypointMermaidDiagram) {
-        return of(jigTypes, packages)
-                .withAdditionalMap(Map.of(MERMAID_DIAGRAM_KEY, entrypointMermaidDiagram));
     }
 
     static SummaryModel forDomainSummary(JigTypes jigTypes, JigPackages packages, CoreTypesAndRelations coreTypesAndRelations, EnumModels enumModels) {

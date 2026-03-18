@@ -1,40 +1,32 @@
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html lang="ja">
 <head>
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <link rel="icon" href="./assets/favicon.ico">
-    <title th:text="${title}">application</title>
+    <title>エントリーポイント概要</title>
 </head>
-<body>
-<header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
+<body class="entrypoint-summary">
+<header class="top">
+    <a href="./index.html">[INDEX]</a>
+    <b>エントリーポイント概要</b>
+</header>
+
 <div class="sideNavMain">
-    <nav class="tree" th:replace="~{fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})}">
-        パッケージツリーに置換
+    <nav id="entrypoint-sidebar" class="tree in-page-sidebar in-page-sidebar--tree" aria-label="パッケージツリー">
+        <div id="entrypoint-sidebar-list" class="in-page-sidebar__list"></div>
     </nav>
 
     <main class="usecase">
-
-        <th:block th:each="item : ${jigTypes}">
-            <section class="type">
-                <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
-                <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
-                <p th:if="${#jigEntrypoint.tagDescription(item)}" th:text="'Description: ' + ${#jigEntrypoint.tagDescription(item)}"></p>
-                <p th:if="${#jigEntrypoint.handlePath(item)}" th:text="'Path: ' + ${#jigEntrypoint.handlePath(item)}">/hoge/fuga</p>
-
-                <section class="markdown" data-jig-opt-utext="${#jig.descriptionText(item)}">クラスのJavadocコメント</section>
-
-                <pre class="mermaid" th:utext="${mermaidDiagram.textFor(item)}">
-                    graph LR
-                    a --> b
-                    a --> c
-                    b --> c
-                </pre>
-
-            </section>
-        </th:block>
+        <div id="entrypoint-list">
+            <!-- JavaScriptで描画されます -->
+        </div>
     </main>
 </div>
 
-<th:block th:replace="~{fragment-base::scripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+<script src="./assets/jig.js"></script>
+<script src="./data/entrypoint-data.js"></script>
+<script src="./assets/entrypoint.js"></script>
 </body>
 </html>

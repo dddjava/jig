@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.thymeleaf;
 
 import org.dddjava.jig.adapter.HandleDocument;
-import org.dddjava.jig.adapter.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -43,16 +42,6 @@ public class SummaryAdapter {
         var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.lambdaInlined(jigTypes));
         var packages = jigService.packages(jigRepository);
         return write(jigDocument, SummaryModel.withMermaidDiagram(jigTypes, packages, usecaseMermaidDiagram));
-    }
-
-    @HandleDocument(JigDocument.EntrypointSummary)
-    public List<Path> entrypointSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        var contextJigTypes = jigService.jigTypes(jigRepository);
-        var inputAdapters = jigService.inputAdapters(jigRepository);
-        var jigTypes = inputAdapters.jigTypes();
-        var entrypointMermaidDiagram = new EntrypointMermaidDiagram(inputAdapters, contextJigTypes);
-        var packages = jigService.packages(jigRepository);
-        return write(jigDocument, SummaryModel.withMermaidDiagram(jigTypes, packages, entrypointMermaidDiagram));
     }
 
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {

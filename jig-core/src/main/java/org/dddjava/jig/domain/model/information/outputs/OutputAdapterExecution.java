@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.*;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -17,7 +16,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 出力アダプタの実装
@@ -44,12 +42,10 @@ public record OutputAdapterExecution(
     private static Collection<ExternalAccessorOperation> collectExternalAccessors(
             Collection<JigMethod> tracingJigMethods,
             ExternalAccessorRepository externalAccessorRepository) {
-        Set<TypeId> tracingTypeIds = tracingJigMethods.stream()
-                .map(JigMethod::declaringType)
-                .collect(Collectors.toSet());
-        return externalAccessorRepository.values().stream()
-                .filter(ea -> tracingTypeIds.contains(ea.accessorTypeId()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        // 使用しているメソッドが外部アクセサのメソッドであれば外部アクセサ操作に変換する
+        return tracingJigMethods.stream()
+                .flatMap(jigMethod -> externalAccessorRepository.findAccessorOperation(jigMethod).stream())
+                .toList();
     }
 
     public boolean uses(PersistenceAccessorOperationId persistenceAccessorOperationId) {

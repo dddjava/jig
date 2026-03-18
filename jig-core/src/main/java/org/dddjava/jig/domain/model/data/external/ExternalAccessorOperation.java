@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.external;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 
 /**
  * 外部アクセサ
@@ -9,8 +10,11 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
  */
 public record ExternalAccessorOperation(
         TypeId accessorTypeId,
-        String accessorMethodName,
+        JigMethod accessorJigMethod,
         TypeId externalTypeId,
         String externalMethodName
 ) {
+    public String accessorMethodName() {
+        return accessorJigMethod.name();
+    }
 }

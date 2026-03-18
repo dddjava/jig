@@ -40,7 +40,7 @@ class OutputAdapterExecutionTest {
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository(), ExternalAccessorRepository.empty());
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), ExternalAccessorRepository.empty());
         var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var traceOutputAdapter = findOutputAdapter(outputAdapters, TraceOutputAdapter.class);
@@ -66,7 +66,7 @@ class OutputAdapterExecutionTest {
     @Test
     void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository(), ExternalAccessorRepository.empty());
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), ExternalAccessorRepository.empty());
         var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcNameOutputAdapter.class);
@@ -85,7 +85,7 @@ class OutputAdapterExecutionTest {
     @Test
     void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository(), ExternalAccessorRepository.empty());
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), ExternalAccessorRepository.empty());
         var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcCrudDelegatingOutputAdapter.class);

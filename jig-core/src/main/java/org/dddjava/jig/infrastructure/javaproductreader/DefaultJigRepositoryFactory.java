@@ -117,7 +117,7 @@ public class DefaultJigRepositoryFactory {
             ExternalAccessorRepositories externalAccessorRepositories = new ExternalAccessorRepositories(persistenceAccessorRepository, externalAccessorRepository);
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
-                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel, persistenceAccessorRepository);
+                DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel);
 
                 return new JigRepository() {
                     @Override

@@ -30,7 +30,7 @@ class SpringDataJdbcStatementReaderTest {
             PersistenceOperationType expectedPersistenceOperationType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().persistenceAccessorRepository();
+        var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         var statement = persistenceAccessorOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderAccessor.class));
 
         assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
@@ -39,7 +39,7 @@ class SpringDataJdbcStatementReaderTest {
 
     @Test
     void SpringDataJdbcのRepositoryメソッドをSQLとして取得できる_Tableのnameから(JigRepository jigRepository) {
-        var statements = jigRepository.jigDataProvider().persistenceAccessorRepository();
+        var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         var statement = persistenceAccessorOf(statements, getPersistenceAccessorId("findByHoge", SpringDataJdbcNameRepository.class));
 
         assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
@@ -81,7 +81,7 @@ class SpringDataJdbcStatementReaderTest {
             PersistenceOperationType expectedPersistenceOperationType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().persistenceAccessorRepository();
+        var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         var statement = persistenceAccessorOptionalOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcMixedOrderRepository.class));
 
         assertTrue(statement.isPresent());
@@ -96,7 +96,7 @@ class SpringDataJdbcStatementReaderTest {
             PersistenceOperationType expectedPersistenceOperationType,
             JigRepository jigRepository
     ) {
-        var statements = jigRepository.jigDataProvider().persistenceAccessorRepository();
+        var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         var statement = persistenceAccessorOptionalOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
 
         assertTrue(statement.isPresent());
@@ -106,7 +106,7 @@ class SpringDataJdbcStatementReaderTest {
 
     @Test
     void 解析対象外のカスタム基底RepositoryをSpringDataRepositoryと推測できる(JigRepository jigRepository) {
-        var statements = jigRepository.jigDataProvider().persistenceAccessorRepository();
+        var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         // MyCrudRepository（解析対象外）を経由した場合でも save が解決できること
         var statement = persistenceAccessorOptionalOf(statements,
                 getPersistenceAccessorId("save", SpringDataJdbcCustomBaseRepository.class));

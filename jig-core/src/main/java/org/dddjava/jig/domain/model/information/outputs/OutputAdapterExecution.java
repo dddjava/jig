@@ -28,9 +28,9 @@ public record OutputAdapterExecution(
     public static OutputAdapterExecution from(JigMethod jigMethod,
                                               Collection<OutputPortOperation> outputPortOperations,
                                               JigTypes jigTypes,
-                                              PersistenceAccessorRepository persistenceAccessorRepository) {
+                                              ExternalAccessorRepositories accessorRepositories) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
-        Collection<PersistenceAccessorOperation> persistenceAccessors = collectPersistenceAccessorOperation(tracingJigMethods, persistenceAccessorRepository);
+        Collection<PersistenceAccessorOperation> persistenceAccessors = collectPersistenceAccessorOperation(tracingJigMethods, accessorRepositories.persistenceAccessorRepository());
         return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessors);
     }
 

@@ -1,5 +1,6 @@
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
@@ -32,8 +33,8 @@ class SampleDataWriterTest {
         var repository = factory.createJigRepository(sampleBasePaths);
 
         var jigTypes = jigService.jigTypes(repository);
-        var persistenceAccessorsRepository = repository.jigDataProvider().persistenceAccessorRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, persistenceAccessorsRepository);
+        var accessorRepositories = new ExternalAccessorRepositories(repository.jigDataProvider().persistenceAccessorRepository());
+        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         // outputs-data.js
         {

@@ -5,6 +5,7 @@ import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceTarget;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -33,8 +34,8 @@ public class OutputsSummaryAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var jigTypes = jigService.jigTypes(repository);
 
-        var persistenceAccessorsRepository = repository.jigDataProvider().persistenceAccessorRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, persistenceAccessorsRepository);
+        var accessorRepositories = new ExternalAccessorRepositories(repository.jigDataProvider().persistenceAccessorRepository());
+        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var json = buildJson(outputAdapters);
 

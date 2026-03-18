@@ -1,6 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementations;
@@ -21,8 +22,8 @@ public class InfrastructureQueryService {
     public OutputImplementations outputImplementations(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
 
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository());
+        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
         var outputImplementations = OutputImplementations.from(jigTypes, outputAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;

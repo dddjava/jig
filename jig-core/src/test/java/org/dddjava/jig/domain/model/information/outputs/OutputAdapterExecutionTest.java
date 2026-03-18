@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
@@ -38,8 +39,8 @@ class OutputAdapterExecutionTest {
     @Test
     void 自身起点で辿れるJigTypes内メソッドと永続化操作を解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository());
+        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var traceOutputAdapter = findOutputAdapter(outputAdapters, TraceOutputAdapter.class);
         var execution = findExecution(traceOutputAdapter, "save");
@@ -64,8 +65,8 @@ class OutputAdapterExecutionTest {
     @Test
     void SpringDataJdbcの継承メソッド呼び出しでPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository());
+        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcNameOutputAdapter.class);
         var execution = findExecution(targetOutputAdapter, "save");
@@ -83,8 +84,8 @@ class OutputAdapterExecutionTest {
     @Test
     void CrudRepository型経由の呼び出しでもSpringDataJdbcのPersistenceAccessorを解決できる(JigService jigService, JigRepository jigRepository) {
         var jigTypes = jigService.jigTypes(jigRepository);
-        var sqlStatements = jigRepository.jigDataProvider().persistenceAccessorRepository();
-        var outputAdapters = OutputAdapters.from(jigTypes, sqlStatements);
+        var accessorRepositories = new ExternalAccessorRepositories(jigRepository.jigDataProvider().persistenceAccessorRepository());
+        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
 
         var targetOutputAdapter = findOutputAdapter(outputAdapters, SpringDataJdbcCrudDelegatingOutputAdapter.class);
         var execution = findExecution(targetOutputAdapter, "save");

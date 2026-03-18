@@ -24,13 +24,15 @@ public record ExternalAccessorRepository(Collection<ExternalAccessor> values) {
     public static ExternalAccessorRepository from(JigTypes jigTypes) {
         List<ExternalAccessor> result = jigTypes.stream()
                 .flatMap(jigType -> {
-                    // インスタンスフィールドのうち、JIG範囲外かつJava標準型でない型を抽出
+                    // インスタンスフィールドのうち、JIG範囲外かつJava標準型でない型を「外部型」として抽出
+                    // TODO: 外部型でないものの条件を増やしたり、除外を設定で追加できるようにしたい
                     Set<TypeId> externalFieldTypes = jigType.instanceJigFields().fields().stream()
                             .map(jigField -> jigField.typeId())
                             .filter(typeId -> !jigTypes.contains(typeId))
                             .filter(typeId -> !typeId.isJavaLanguageType())
                             .collect(Collectors.toSet());
 
+                    // 外部型を持たないものは外部アクセサではない
                     if (externalFieldTypes.isEmpty()) {
                         return Stream.of();
                     }
@@ -42,7 +44,14 @@ public record ExternalAccessorRepository(Collection<ExternalAccessor> values) {
                                         .filter(mc -> externalFieldTypes.contains(mc.methodOwner()))
                                         .toList();
                                 return new ExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls);
-                            }).toList();
+                            })
+                            .toList();
+
+                    // フィールドのメソッドを呼び出している処理が一つもない場合は外部アクセサではない
+                    if (operations.isEmpty()) {
+                        return Stream.of();
+                    }
+
                     return Stream.of(new ExternalAccessor(jigType.id(), operations));
                 })
                 .toList();

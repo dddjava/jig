@@ -31,6 +31,6 @@ public class InfrastructureQueryService {
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
         var outputImplementations = outputImplementations(jigRepository);
-        return DatasourceAngles.from(outputImplementations, jigRepository.jigDataProvider().persistenceAccessorRepository(), MethodRelations.from(jigTypes));
+        return DatasourceAngles.from(outputImplementations, jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), MethodRelations.from(jigTypes));
     }
 }

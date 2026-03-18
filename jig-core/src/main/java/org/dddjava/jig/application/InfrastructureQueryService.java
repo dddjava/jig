@@ -23,7 +23,7 @@ public class InfrastructureQueryService {
 
         var accessorRepositories = jigRepository.externalAccessorRepositories();
         var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
-        var outputImplementations = OutputImplementations.from(jigTypes, outputAdapters);
+        var outputImplementations = OutputImplementations.from(outputAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;
     }

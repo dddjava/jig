@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapter;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 import org.dddjava.jig.domain.model.information.outputs.OutputPort;
-import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -30,10 +29,10 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
     }
 
     // FIXME これのテストがない
-    public static OutputImplementations from(JigTypes jigTypes, OutputAdapters outputAdapters) {
+    public static OutputImplementations from(OutputAdapters outputAdapters) {
         return outputAdapters.stream()
                 // interfaceのRepository(Spring Data JDBCなど)は実装クラスが存在しないため、自身をoutput portとして扱う
-                .flatMap(outputAdapter -> outputPorts(outputAdapter, jigTypes)
+                .flatMap(outputAdapter -> outputPorts(outputAdapter)
                         .flatMap(outputPort -> outputPort.operationStream()
                                 // 実装しているexecutionが
                                 .flatMap(outputPortOperation -> outputAdapter.findExecution(outputPortOperation).stream()
@@ -50,7 +49,7 @@ public record OutputImplementations(Collection<OutputImplementation> values) {
                                         map -> List.copyOf(map.values()))))));
     }
 
-    private static Stream<OutputPort> outputPorts(OutputAdapter outputAdapter, JigTypes jigTypes) {
+    private static Stream<OutputPort> outputPorts(OutputAdapter outputAdapter) {
         if (outputAdapter.jigType().jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
             return Stream.of(new OutputPort(outputAdapter.jigType()));
         }

@@ -12,10 +12,8 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 外部利用概要
@@ -56,6 +54,11 @@ public class OutputsSummaryAdapter {
 
         List<JsonObjectBuilder> operationToExecution = new ArrayList<>();
         List<JsonObjectBuilder> executionToAccessor = new ArrayList<>();
+        List<JsonObjectBuilder> executionToExternalAccessor = new ArrayList<>();
+
+        var externalAccessorLabels = new LinkedHashMap<String, String>();           // fqn → label
+        var externalAccessorExternals = new LinkedHashMap<String, Set<String>>();   // accessorFqn → Set<externalFqn>
+        var externalTypeFqnLabels = new LinkedHashMap<String, String>();            // externalFqn → label
 
         outputAdapters.stream().forEach(outputAdapter -> {
             String adapterFqn = outputAdapter.jigType().fqn();
@@ -83,8 +86,7 @@ public class OutputsSummaryAdapter {
                         exec.persistenceAccessorOperations().forEach(pOp -> {
                             String methodId = pOp.persistenceAccessorOperationId().value();
                             String typeFqn = pOp.persistenceAccessorOperationId().typeId().fqn();
-                            String typeLabel = typeFqn.contains(".")
-                                    ? typeFqn.substring(typeFqn.lastIndexOf('.') + 1) : typeFqn;
+                            String typeLabel = simpleLabel(typeFqn);
                             var targetSqlTypes = Json.object();
                             List<String> targets = pOp.persistenceTargets().persistenceTargets().stream()
                                     .map(t -> {
@@ -108,6 +110,17 @@ public class OutputsSummaryAdapter {
                             executionToAccessor.add(Json.object("execution", execFqn)
                                     .and("accessor", methodId));
                         });
+
+                        exec.externalAccessors().forEach(ea -> {
+                            String accessorFqn = ea.accessorTypeId().fqn();
+                            String accessorLabel = simpleLabel(accessorFqn);
+                            String externalFqn = ea.externalTypeId().fqn();
+                            String externalLabel = simpleLabel(externalFqn);
+                            externalAccessorLabels.putIfAbsent(accessorFqn, accessorLabel);
+                            externalAccessorExternals.computeIfAbsent(accessorFqn, k -> new LinkedHashSet<>()).add(externalFqn);
+                            externalTypeFqnLabels.putIfAbsent(externalFqn, externalLabel);
+                            executionToExternalAccessor.add(Json.object("execution", execFqn).and("accessor", accessorFqn));
+                        });
                     });
                 });
 
@@ -122,7 +135,8 @@ public class OutputsSummaryAdapter {
         });
 
         var links = Json.object("operationToExecution", Json.arrayObjects(operationToExecution))
-                .and("executionToAccessor", Json.arrayObjects(executionToAccessor));
+                .and("executionToAccessor", Json.arrayObjects(executionToAccessor))
+                .and("executionToExternalAccessor", Json.arrayObjects(executionToExternalAccessor));
 
         List<JsonObjectBuilder> accessorsList = new ArrayList<>();
         accessorTypesMap.forEach((typeFqn, typeLabel) -> {
@@ -132,12 +146,29 @@ public class OutputsSummaryAdapter {
                     .and("methods", Json.arrayObjects(methods)));
         });
 
+        List<JsonObjectBuilder> externalAccessorsList = new ArrayList<>();
+        externalAccessorLabels.forEach((accessorFqn, accessorLabel) -> {
+            Set<String> externalFqns = externalAccessorExternals.getOrDefault(accessorFqn, Set.of());
+            List<JsonObjectBuilder> externals = externalFqns.stream()
+                    .map(externalFqn -> Json.object("fqn", externalFqn)
+                            .and("label", externalTypeFqnLabels.getOrDefault(externalFqn, simpleLabel(externalFqn))))
+                    .collect(Collectors.toList());
+            externalAccessorsList.add(Json.object("fqn", accessorFqn)
+                    .and("label", accessorLabel)
+                    .and("externals", Json.arrayObjects(externals)));
+        });
+
         return Json.object("outputPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
                 .and("outputAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
                 .and("persistenceAccessors", Json.arrayObjects(accessorsList))
+                .and("externalAccessors", Json.arrayObjects(externalAccessorsList))
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();
+    }
+
+    private static String simpleLabel(String typeFqn) {
+        return typeFqn.contains(".") ? typeFqn.substring(typeFqn.lastIndexOf('.') + 1) : typeFqn;
     }
 
 }

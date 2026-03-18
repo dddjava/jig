@@ -1,8 +1,11 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
+import org.dddjava.jig.domain.model.data.external.ExternalAccessor;
+import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.*;
+import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -13,6 +16,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 出力アダプタの実装
@@ -21,7 +25,8 @@ public record OutputAdapterExecution(
         JigMethod jigMethod,
         Collection<OutputPortOperation> implementOperations,
         Collection<JigMethod> tracingJigMethods,
-        Collection<PersistenceAccessorOperation> persistenceAccessorOperations
+        Collection<PersistenceAccessorOperation> persistenceAccessorOperations,
+        Collection<ExternalAccessor> externalAccessors
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
@@ -31,7 +36,19 @@ public record OutputAdapterExecution(
                                               ExternalAccessorRepositories accessorRepositories) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
         Collection<PersistenceAccessorOperation> persistenceAccessorOperations = collectPersistenceAccessorOperation(tracingJigMethods, accessorRepositories.persistenceAccessorRepository());
-        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations);
+        Collection<ExternalAccessor> externalAccessors = collectExternalAccessors(tracingJigMethods, accessorRepositories.externalAccessorRepository());
+        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations, externalAccessors);
+    }
+
+    private static Collection<ExternalAccessor> collectExternalAccessors(
+            Collection<JigMethod> tracingJigMethods,
+            ExternalAccessorRepository externalAccessorRepository) {
+        Set<TypeId> tracingTypeIds = tracingJigMethods.stream()
+                .map(JigMethod::declaringType)
+                .collect(Collectors.toSet());
+        return externalAccessorRepository.values().stream()
+                .filter(ea -> tracingTypeIds.contains(ea.accessorTypeId()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     public boolean uses(PersistenceAccessorOperationId persistenceAccessorOperationId) {

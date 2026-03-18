@@ -1,6 +1,6 @@
-package org.dddjava.jig.domain.model.data.persistence;
+package org.dddjava.jig.domain.model.data.external;
 
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 
 /**
  * 外部アクセサリポジトリの集約

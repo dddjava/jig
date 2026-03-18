@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.data.external.ExternalAccessor;
+import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
-import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;

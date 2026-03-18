@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.information;
 
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
-import org.dddjava.jig.domain.model.data.persistence.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.types.JigTypes;

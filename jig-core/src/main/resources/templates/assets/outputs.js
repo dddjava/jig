@@ -109,7 +109,7 @@ function groupOperationsByPersistenceTarget(operations) {
             Object.keys(op.targetOperationTypes).forEach(persistenceTarget => {
                 if (!map.has(persistenceTarget)) {
                     map.set(persistenceTarget, {
-                        target: persistenceTarget,
+                        persistenceTarget: persistenceTarget,
                         operations: [],
                     });
                 }
@@ -128,7 +128,7 @@ function groupOperationsByPersistenceTarget(operations) {
         });
         return group;
     }).sort((a, b) => {
-        return a.target.localeCompare(b.target, "ja");
+        return a.persistenceTarget.localeCompare(b.persistenceTarget, "ja");
     });
 }
 
@@ -626,7 +626,7 @@ function extractOperationProps(operation) {
 
 function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
-    const persistenceTarget = group.target;
+    const persistenceTarget = group.persistenceTarget;
 
     const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();
@@ -930,7 +930,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
 
     grouped.forEach(group => {
         if (!generatePersistenceMermaidCode(group, visibility)) return;
-        const targetId = fqnToId("persistence", group.target);
+        const targetId = fqnToId("persistence", group.persistenceTarget);
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
         lazyRender(persistenceMermaidContainer, () => renderMermaid(generatePersistenceMermaidCode, group, persistenceMermaidContainer, visibility));
@@ -939,15 +939,15 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
             className: "outputs-port-card",
             id: targetId,
             children: [
-                createElement("h3", {textContent: group.target}),
+                createElement("h3", {textContent: group.persistenceTarget}),
                 persistenceMermaidContainer
             ]
         }));
     });
 
     renderSidebarSection(sidebar, "永続化操作対象", grouped.map(group => ({
-        id: fqnToId("persistence", group.target),
-        label: group.target
+        id: fqnToId("persistence", group.persistenceTarget),
+        label: group.persistenceTarget
     })));
 
     if (grouped.length === 0) {

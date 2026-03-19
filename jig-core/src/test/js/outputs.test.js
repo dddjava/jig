@@ -177,8 +177,8 @@ test.describe("outputs.js", () => {
             ];
             const grouped = outputs.groupOperationsByPersistenceTarget(operations);
             assert.equal(grouped.length, 2);
-            assert.equal(grouped[0].target, "table_a");
-            assert.equal(grouped[1].target, "table_b");
+            assert.equal(grouped[0].persistenceTarget, "table_a");
+            assert.equal(grouped[1].persistenceTarget, "table_b");
             assert.equal(grouped[0].operations[0].outputPort.label, "P2");
         });
 
@@ -348,7 +348,7 @@ test.describe("outputs.js", () => {
 
         test("generatePersistenceMermaidCode: visibility全表示のとき、ターゲット中心の図が生成される", () => {
             const group = {
-                target: "table1",
+                persistenceTarget: "table1",
                 operations: [
                     {
                         outputPort: { fqn: "P1", label: "P1" },
@@ -371,7 +371,7 @@ test.describe("outputs.js", () => {
 
         test("generatePersistenceMermaidCode: adapter非表示のとき、PortOp → POp が直接接続される", () => {
             const group = {
-                target: "table1",
+                persistenceTarget: "table1",
                 operations: [
                     {
                         outputPort: { fqn: "p1", label: "P1" },
@@ -441,7 +441,7 @@ test.describe("outputs.js", () => {
 
         test("generatePersistenceMermaidCode: C非表示のときINSERTエッジが生成されない", () => {
             const group = {
-                target: "table1",
+                persistenceTarget: "table1",
                 operations: [
                     {
                         outputPort: { fqn: "p1", label: "P1" },
@@ -715,7 +715,7 @@ test.describe("outputs.js", () => {
 
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
-                target: "table1",
+                persistenceTarget: "table1",
                 operations: [
                     {
                         outputPort: { fqn: "p1", label: "P1" },
@@ -844,7 +844,7 @@ test.describe("outputs.js", () => {
 
             const grouped = [
                 {
-                    target: "table1",
+                    persistenceTarget: "table1",
                     operations: [
                         {
                             outputPort: { fqn: "p1", label: "P1" },
@@ -1024,7 +1024,7 @@ test.describe("outputs.js", () => {
 
             const grouped = [
                 {
-                    target: "table1",
+                    persistenceTarget: "table1",
                     operations: [
                         {
                             outputPort: { fqn: "p1", label: "P1" },

@@ -169,10 +169,10 @@ function formatPersistenceAccessors(persistenceAccessors) {
     }
     return persistenceAccessors
         .map(operation => {
-            const id = operation.id ?? "";
-            const operationType = operation.statementOperationType ?? "";
-            const targets = Array.isArray(operation.persistenceTargets) ? operation.persistenceTargets.join(", ") : "";
-            return `${operationType} ${id} [${targets}]`.trim();
+            const operationTypes = Object.entries(operation.targetOperationTypes)
+                .map(([target, operationType]) => `${operationType}:${target}`)
+                .join(", ")
+            return `${operation.id} [${operationTypes}]`.trim();
         });
 }
 
@@ -492,9 +492,11 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[("$LABEL")]');
         }
-        const operationType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
-        const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
-        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
+        const operationType = op.targetOperationTypes?.[target] || "";
+        if (isCrudVisible(operationType, visibility)) {
+            const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
+            if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
+        }
     });
 }
 
@@ -588,7 +590,6 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
         (operation.persistenceAccessors || [])
-            .filter(op => isCrudVisible(op.statementOperationType, visibility))
             .forEach(op => {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
@@ -637,24 +638,25 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
     const targetNodes = new Map();
 
     group.operations.forEach((operation) => {
-        const relevantOps = operation.persistenceAccessors.filter(op =>
-            op.persistenceTargets.includes(target) && isCrudVisible(op.statementOperationType, visibility));
-
         const { portFqn, portLabel, portOpName, portOpFqn,
                 adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
 
-        relevantOps.forEach(op => {
-            let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
+        operation.persistenceAccessors
+            .filter(op => isCrudVisible(op.targetOperationTypes[target], visibility))
+            .forEach(op => {
+                let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
 
-            currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
+                currentNode = addAdapterNode(builder, currentNode, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-            currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
+                currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
-            if (visibility.target) {
-                const operationType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
-                addTargetEdges(builder, currentNode, {persistenceTargets: [target], statementOperationType: operationType, targetOperationTypes: {[target]: operationType}}, targetNodes, visibility);
-            }
-        });
+                if (visibility.target) {
+                    addTargetEdges(builder, currentNode, {
+                        persistenceTargets: [target],
+                        targetOperationTypes: {[target]: op.targetOperationTypes[target]}
+                    }, targetNodes, visibility);
+                }
+            });
     });
 
     if (builder.isEmpty()) return null;
@@ -723,7 +725,7 @@ function createPortGroupRow(group, allTargets) {
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors?.forEach(op => {
                         if (op.persistenceTargets?.includes(target)) {
-                            const operationType = op.targetOperationTypes?.[target] || op.statementOperationType;
+                            const operationType = op.targetOperationTypes?.[target];
                             const crud = toCrudChar(operationType);
                             if (crud) {
                                 cruds.add(crud);
@@ -754,7 +756,7 @@ function createOperationRow(operation, allTargets, portId) {
                 const cruds = new Set();
                 operation.persistenceAccessors?.forEach(op => {
                     if (op.persistenceTargets?.includes(target)) {
-                        const operationType = op.targetOperationTypes?.[target] || op.statementOperationType;
+                        const operationType = op.targetOperationTypes?.[target];
                         const crud = toCrudChar(operationType);
                         if (crud) {
                             cruds.add(crud);

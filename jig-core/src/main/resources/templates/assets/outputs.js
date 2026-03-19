@@ -626,20 +626,20 @@ function extractOperationProps(operation) {
 
 function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
-    const target = group.target;
+    const persistenceTarget = group.target;
 
     const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
-    const targetNodes = new Map();
+    const persistenceTargetNodes = new Map();
 
     group.operations.forEach((operation) => {
         const { portFqn, portLabel, portOpName, portOpFqn,
                 adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
 
         operation.persistenceAccessors
-            .filter(op => isCrudVisible(op.targetOperationTypes[target], visibility))
+            .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
             .forEach(op => {
                 let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
 
@@ -649,8 +649,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
 
                 if (visibility.target) {
                     addPersistenceTargetEdges(builder, currentNode, {
-                        targetOperationTypes: {[target]: op.targetOperationTypes[target]}
-                    }, targetNodes, visibility);
+                        targetOperationTypes: {[persistenceTarget]: op.targetOperationTypes[persistenceTarget]}
+                    }, persistenceTargetNodes, visibility);
                 }
             });
     });

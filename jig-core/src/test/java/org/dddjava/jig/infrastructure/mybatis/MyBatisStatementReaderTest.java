@@ -31,7 +31,7 @@ class MyBatisStatementReaderTest {
         PersistenceAccessorRepository myBatisStatements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(SampleMapper.class, "binding"));
-        assertEquals("[fuga]", myBatisStatement.persistenceOperations().asText());
+        assertEquals("[fuga]", myBatisStatement.operations().asText());
     }
 
     @Test
@@ -53,7 +53,7 @@ class MyBatisStatementReaderTest {
         PersistenceAccessorRepository myBatisStatements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl"));
-        assertEquals("[（解析失敗）]", myBatisStatement.persistenceOperations().asText());
+        assertEquals("[（解析失敗）]", myBatisStatement.operations().asText());
         // OGNLを使ったSQLは現時点では空になりunsupportedになる
         assertFalse(myBatisStatement.query().supported());
     }
@@ -68,7 +68,7 @@ class MyBatisStatementReaderTest {
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl_where"));
 
-        assertEquals("[（解析失敗）]", myBatisStatement.persistenceOperations().asText());
+        assertEquals("[（解析失敗）]", myBatisStatement.operations().asText());
         // OGNLを使ったSQLは現時点では空になる
         // ・・・のだが、 <where>タグなどで分割されているとOGNLを使用していない部分だけクエリが出てくる
         assertEquals("order by 1", myBatisStatement.query().rawText());
@@ -80,8 +80,8 @@ class MyBatisStatementReaderTest {
         PersistenceAccessorRepository myBatisStatements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
 
         PersistenceAccessorOperation persistenceAccessorOperation = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(CanonicalMapper.class, methodName));
-        assertEquals("[" + tableName + "]", persistenceAccessorOperation.persistenceOperations().asText());
-        assertEquals(persistenceOperationType, persistenceAccessorOperation.persistenceOperationType());
+        assertEquals("[" + tableName + "]", persistenceAccessorOperation.operations().asText());
+        assertEquals(persistenceOperationType, persistenceAccessorOperation.statementOperationType());
     }
 
     private static PersistenceAccessorOperation persistenceAccessorOf(PersistenceAccessorRepository repository,
@@ -89,7 +89,7 @@ class MyBatisStatementReaderTest {
         return repository.findByTypeId(persistenceAccessorOperationId.typeId(), Set.of())
                 .stream()
                 .flatMap(ops -> ops.persistenceAccessorOperations().stream())
-                .filter(operation -> operation.persistenceAccessorOperationId().equals(persistenceAccessorOperationId))
+                .filter(operation -> operation.id().equals(persistenceAccessorOperationId))
                 .findFirst()
                 .orElseThrow();
     }

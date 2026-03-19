@@ -34,7 +34,7 @@ public record PersistenceAccessor(
 
     public Optional<PersistenceAccessorOperation> findPersistenceAccessorById(PersistenceAccessorOperationId persistenceAccessorOperationId) {
         return persistenceAccessorOperations.stream()
-                .filter(operation -> operation.persistenceAccessorOperationId().equals(persistenceAccessorOperationId))
+                .filter(operation -> operation.id().equals(persistenceAccessorOperationId))
                 .findAny();
     }
 }

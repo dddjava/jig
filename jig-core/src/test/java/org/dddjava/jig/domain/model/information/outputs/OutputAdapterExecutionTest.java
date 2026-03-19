@@ -55,7 +55,7 @@ class OutputAdapterExecutionTest {
                         && method.name().equals("save")));
 
         var persistenceAccessorIdList = execution.persistenceAccessorOperations().stream()
-                .map(persistenceAccessor -> persistenceAccessor.persistenceAccessorOperationId())
+                .map(persistenceAccessor -> persistenceAccessor.id())
                 .toList();
         assertEquals(1, persistenceAccessorIdList.size());
         assertEquals(
@@ -73,13 +73,13 @@ class OutputAdapterExecutionTest {
         var execution = findExecution(targetOutputAdapter, "save");
 
         PersistenceAccessorOperation persistenceAccessorOperation = execution.persistenceAccessorOperations().stream()
-                .filter(found -> found.persistenceAccessorOperationId().equals(
+                .filter(found -> found.id().equals(
                         PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
                 .findAny()
                 .orElseThrow();
 
-        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.persistenceOperationType());
-        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceOperations().asText());
+        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
+        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.operations().asText());
     }
 
     @Test
@@ -92,12 +92,12 @@ class OutputAdapterExecutionTest {
         var execution = findExecution(targetOutputAdapter, "save");
 
         PersistenceAccessorOperation persistenceAccessorOperation = execution.persistenceAccessorOperations().stream()
-                .filter(found -> found.persistenceAccessorOperationId().equals(
+                .filter(found -> found.id().equals(
                         PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf(SpringDataJdbcNameRepository.class.getCanonicalName()), "save")))
                 .findAny()
                 .orElseThrow();
 
-        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.persistenceOperationType());
-        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceOperations().asText());
+        assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.statementOperationType());
+        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.operations().asText());
     }
 }

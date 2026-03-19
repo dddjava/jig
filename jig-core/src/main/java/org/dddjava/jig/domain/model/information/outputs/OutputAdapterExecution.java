@@ -50,7 +50,7 @@ public record OutputAdapterExecution(
 
     public boolean uses(PersistenceAccessorOperationId persistenceAccessorOperationId) {
         return persistenceAccessorOperations.stream()
-                .anyMatch(persistenceAccessor -> persistenceAccessor.persistenceAccessorOperationId().equals(persistenceAccessorOperationId));
+                .anyMatch(persistenceAccessor -> persistenceAccessor.id().equals(persistenceAccessorOperationId));
     }
 
     /**

@@ -128,7 +128,7 @@ public class SpringDataJdbcStatementsReader {
         // インタフェースに直接定義されているメソッド名（オーバーライド済みの判定用）
         // MEMO: オーバーロードが考慮されていない。オーバーロードで @Query を使用している場合に対応する必要がある。
         Set<String> declaredMethodNames = declaredOperations.stream()
-                .map(op -> op.persistenceAccessorOperationId().id())
+                .map(op -> op.id().id())
                 .collect(java.util.stream.Collectors.toSet());
 
         List<PersistenceAccessorOperation> inheritedOperations = SpringDataBaseMethod.stream()
@@ -166,7 +166,7 @@ public class SpringDataJdbcStatementsReader {
                             logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
                                     jigMethodDeclaration.fqn(), annotationQueryString);
                         }
-                        return optSqlType.map(sqlType -> PersistenceAccessorOperation.from(statementId, query, sqlType));
+                        return optSqlType.map(sqlType -> PersistenceAccessorOperation.from(statementId, sqlType, query));
                     });
                 }).orElseGet(() -> {
                     // @Queryがないものはメソッド名でエンティティに対する操作が決まる

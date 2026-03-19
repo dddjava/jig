@@ -31,15 +31,15 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                     Map<PersistenceOperationType, List<String>> map = persistenceAccessorRepository.values().stream()
                             .flatMap(ops -> ops.persistenceAccessorOperations().stream())
                             .filter(persistenceAccessor -> {
-                                PersistenceAccessorOperationId persistenceAccessorOperationId = persistenceAccessor.persistenceAccessorOperationId();
+                                PersistenceAccessorOperationId persistenceAccessorOperationId = persistenceAccessor.id();
                                 return outputPortOperationUseSQL(outputImplementation, persistenceAccessorOperationId)
                                         || outputAdapterExecutionUseSQL(outputImplementation, persistenceAccessorOperationId);
                             })
-                            .collect(groupingBy(PersistenceAccessorOperation::persistenceOperationType,
+                            .collect(groupingBy(PersistenceAccessorOperation::statementOperationType,
                                     Collectors.collectingAndThen(Collectors.toList(),
                                             // テーブル名の重複を排除してソートしたリストにする
                                             l -> l.stream()
-                                                    .flatMap(persistenceAccessor -> persistenceAccessor.persistenceOperations().persistenceTargets().stream())
+                                                    .flatMap(persistenceAccessor -> persistenceAccessor.operations().persistenceTargets().stream())
                                                     .map(persistenceOperation -> persistenceOperation.persistenceTarget().name())
                                                     .distinct()
                                                     .sorted()

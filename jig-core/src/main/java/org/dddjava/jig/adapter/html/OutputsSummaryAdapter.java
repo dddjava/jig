@@ -86,11 +86,11 @@ public class OutputsSummaryAdapter {
                                 .and("execution", adapterExecutionFqn));
 
                         adapterExecution.persistenceAccessorOperations().forEach(persistenceAccessorOperation -> {
-                            String methodId = persistenceAccessorOperation.persistenceAccessorOperationId().value();
-                            String typeFqn = persistenceAccessorOperation.persistenceAccessorOperationId().typeId().fqn();
+                            String methodId = persistenceAccessorOperation.id().value();
+                            String typeFqn = persistenceAccessorOperation.id().typeId().fqn();
                             String typeLabel = simpleLabel(typeFqn);
                             var targetSqlTypes = Json.object();
-                            List<String> targets = persistenceAccessorOperation.persistenceOperations().persistenceTargets().stream()
+                            List<String> targets = persistenceAccessorOperation.operations().persistenceTargets().stream()
                                     .map(persistenceOperation -> {
                                         String operationType = persistenceOperation.operationType().name();
                                         targetSqlTypes.and(persistenceOperation.persistenceTarget().name(), operationType);
@@ -102,7 +102,7 @@ public class OutputsSummaryAdapter {
                             if (accessorMethodIds.add(methodId)) {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
-                                                .and("sqlType", persistenceAccessorOperation.persistenceOperationType().name())
+                                                .and("sqlType", persistenceAccessorOperation.statementOperationType().name())
                                                 .and("targets", Json.array(targets))
                                                 .and("targetSqlTypes", targetSqlTypes));
                             }

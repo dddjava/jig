@@ -132,7 +132,7 @@ public class MyBatisStatementsReader {
                         yield PersistenceOperationType.SELECT;
                     }
                 };
-                PersistenceAccessorOperation myBatisStatement = PersistenceAccessorOperation.from(persistenceAccessorOperationId, query, persistenceOperationType);
+                PersistenceAccessorOperation myBatisStatement = PersistenceAccessorOperation.from(persistenceAccessorOperationId, persistenceOperationType, query);
                 list.add(myBatisStatement);
             }
         }
@@ -140,7 +140,7 @@ public class MyBatisStatementsReader {
         logger.debug("取得したSQL: {}件", list.size());
 
         PersistenceAccessorRepository repository = PersistenceAccessorRepository.from(list.stream()
-                .collect(Collectors.groupingBy(persistenceAccessor -> persistenceAccessor.persistenceAccessorOperationId().typeId()))
+                .collect(Collectors.groupingBy(persistenceAccessor -> persistenceAccessor.id().typeId()))
                 .entrySet()
                 .stream()
                 .map(entry -> PersistenceAccessor.forMyBatis(entry.getKey(), entry.getValue()))

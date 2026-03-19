@@ -799,7 +799,7 @@ test.describe("outputs.js", () => {
             assert.equal(opRow.style.display, "none");
         });
 
-        test("renderCrudTable: C非表示のとき、INSERTが除外される", () => {
+        test("renderCrudTable: C非表示のとき、CRUD表のINSERTは除外されない", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
@@ -817,12 +817,12 @@ test.describe("outputs.js", () => {
 
             const tbody = container.children[0].children[1];
             const portRow = tbody.children[0];
-            assert.equal(portRow.children[1].textContent, "R");
+            assert.equal(portRow.children[1].textContent, "CR");
             const opRow = tbody.children[1];
-            assert.equal(opRow.children[1].textContent, "R");
+            assert.equal(opRow.children[1].textContent, "CR");
         });
 
-        test("renderCrudTable: R非表示のとき、SELECTが除外される", () => {
+        test("renderCrudTable: R非表示のとき、CRUD表のSELECTは除外されない", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
@@ -839,12 +839,12 @@ test.describe("outputs.js", () => {
 
             const tbody = container.children[0].children[1];
             const portRow = tbody.children[0];
-            assert.equal(portRow.children[1].textContent, "");
+            assert.equal(portRow.children[1].textContent, "R");
             const opRow = tbody.children[1];
-            assert.equal(opRow.children[1].textContent, "");
+            assert.equal(opRow.children[1].textContent, "R");
         });
 
-        test("renderCrudTable: 全CRUD非表示のとき、セルが空になる", () => {
+        test("renderCrudTable: 全CRUD非表示のとき、CRUD表のセルは影響を受けない", () => {
             const doc = setupDocument();
             const container = doc.getElementById("outputs-crud");
             const grouped = [{
@@ -864,9 +864,9 @@ test.describe("outputs.js", () => {
 
             const tbody = container.children[0].children[1];
             const portRow = tbody.children[0];
-            assert.equal(portRow.children[1].textContent, "");
+            assert.equal(portRow.children[1].textContent, "CDRU");
             const opRow = tbody.children[1];
-            assert.equal(opRow.children[1].textContent, "");
+            assert.equal(opRow.children[1].textContent, "CDRU");
         });
 
         test("renderCrudTable: 全CRUD表示（デフォルト）のとき、CとRが両方表示される", () => {

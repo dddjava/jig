@@ -716,7 +716,7 @@ function createPortGroupRow(group, allTargets, visibility) {
                         if (op.targets?.includes(target)) {
                             const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType;
                             const crud = toCrudChar(targetSqlType);
-                            if (crud && isCrudVisible(targetSqlType, visibility)) {
+                            if (crud) {
                                 cruds.add(crud);
                             }
                         }
@@ -747,7 +747,7 @@ function createOperationRow(operation, allTargets, portId, visibility) {
                     if (op.targets?.includes(target)) {
                         const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType;
                         const crud = toCrudChar(targetSqlType);
-                        if (crud && isCrudVisible(targetSqlType, visibility)) {
+                        if (crud) {
                             cruds.add(crud);
                         }
                     }

@@ -477,14 +477,15 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     }
 }
 
-function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
+function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
     op.targets?.forEach(target => {
         if (!targetNodes.has(target)) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
         }
         const sqlType = op.targetOperationTypes?.[target] || op.sqlType || "";
-        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
+        const edgeLabel = visibility?.externalTypeMethod ? sqlType : undefined;
+        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
     });
 }
 
@@ -583,7 +584,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
                 if (visibility.target) {
-                    addTargetEdges(builder, currentNode, op, targetNodes);
+                    addTargetEdges(builder, currentNode, op, targetNodes, visibility);
                 }
             });
 
@@ -642,7 +643,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
 
             if (visibility.target) {
                 const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType || "";
-                addTargetEdges(builder, currentNode, {targets: [target], sqlType: targetSqlType, targetOperationTypes: {[target]: targetSqlType}}, targetNodes);
+                addTargetEdges(builder, currentNode, {targets: [target], sqlType: targetSqlType, targetOperationTypes: {[target]: targetSqlType}}, targetNodes, visibility);
             }
         });
     });

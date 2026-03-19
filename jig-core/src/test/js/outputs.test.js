@@ -237,7 +237,7 @@ test.describe("outputs.js", () => {
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
             };
-            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('["P1"]'));
             assert.ok(code.includes('PortOp_P1_op1["op1"]'));
@@ -256,7 +256,7 @@ test.describe("outputs.js", () => {
                     { id: "repo.save", sqlType: "INSERT", targets: ["table1"] }
                 ]
             };
-            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true};
+            const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('PortOp_P1_op1["op1"]'));
             assert.ok(!code.includes('subgraph "Adapter"'));
@@ -279,7 +279,7 @@ test.describe("outputs.js", () => {
                     }
                 ]
             };
-            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true, externalTypeMethod: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
             assert.ok(code.includes('["repo"]'));
             assert.ok(code.includes('POp_com_example_repo_save["save"]'));
@@ -356,7 +356,7 @@ test.describe("outputs.js", () => {
                     }
                 ]
             };
-            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true};
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true, externalTypeMethod: true};
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(code.includes('Target_0[(table1)]'));
             assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target_0'));
@@ -721,7 +721,7 @@ test.describe("outputs.js", () => {
                     }
                 ]
             };
-            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true};
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
             assert.ok(!code.includes('POp_'));
             assert.ok(code.includes('Exec_exec1'));

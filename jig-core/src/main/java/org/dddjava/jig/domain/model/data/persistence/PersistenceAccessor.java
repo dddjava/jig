@@ -18,17 +18,17 @@ import java.util.Set;
  */
 public record PersistenceAccessor(
         TypeId typeId,
-        PersistenceTargets defaultPersistenceTargets,
+        Collection<PersistenceTarget> defaultPersistenceTargets,
         Collection<PersistenceAccessorOperation> persistenceAccessorOperations,
         PersistenceAccessorTechnology technology,
         Set<TypeId> superTypeIds
 ) {
 
     public static PersistenceAccessor forMyBatis(TypeId key, List<PersistenceAccessorOperation> value) {
-        return new PersistenceAccessor(key, PersistenceTargets.nothing(), value, PersistenceAccessorTechnology.MYBATIS, Set.of());
+        return new PersistenceAccessor(key, List.of(), value, PersistenceAccessorTechnology.MYBATIS, Set.of());
     }
 
-    public static PersistenceAccessor forSpringDataJdbc(TypeId typeId, PersistenceTargets defaultPersistenceTargets, List<PersistenceAccessorOperation> persistenceAccessorOperations, Set<TypeId> superTypeIds) {
+    public static PersistenceAccessor forSpringDataJdbc(TypeId typeId, Collection<PersistenceTarget> defaultPersistenceTargets, List<PersistenceAccessorOperation> persistenceAccessorOperations, Set<TypeId> superTypeIds) {
         return new PersistenceAccessor(typeId, defaultPersistenceTargets, persistenceAccessorOperations, PersistenceAccessorTechnology.SPRING_DATA_JDBC, superTypeIds);
     }
 

@@ -23,7 +23,7 @@ public class SpringDataJdbcStatementsReader {
     private static final String SPRING_DATA_MAPPED_COLLECTION = "org.springframework.data.relational.core.mapping.MappedCollection";
     private static final String SPRING_DATA_QUERY_ANNOTATION = "org.springframework.data.jdbc.repository.query.Query";
 
-    private record SpringDataPersistenceInfo(PersistenceTargets targets, Set<TypeId> superTypeIds) {
+    private record SpringDataPersistenceInfo(Collection<PersistenceTarget> targets, Set<TypeId> superTypeIds) {
     }
 
     /**
@@ -116,7 +116,7 @@ public class SpringDataJdbcStatementsReader {
     /**
      * SpringDataのRepositoryに対する永続化操作群を作成する
      */
-    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, PersistenceTargets defaultPersistenceTargets, Set<TypeId> superTypeIds) {
+    private PersistenceAccessor resolvePersistenceAccessors(JigType jigType, Collection<PersistenceTarget> defaultPersistenceTargets, Set<TypeId> superTypeIds) {
         TypeId typeId = jigType.jigTypeHeader().id();
 
         // インタフェースに直接定義されているメソッド
@@ -148,7 +148,7 @@ public class SpringDataJdbcStatementsReader {
 
     private Optional<PersistenceAccessorOperation> resolvePersistenceAccessor(JigMethodDeclaration jigMethodDeclaration,
                                                                               TypeId typeId,
-                                                                              PersistenceTargets persistenceTargets) {
+                                                                              Collection<PersistenceTarget> persistenceTargets) {
         String methodName = jigMethodDeclaration.name();
         PersistenceAccessorOperationId statementId = PersistenceAccessorOperationId.fromTypeIdAndName(typeId, methodName);
 
@@ -196,8 +196,8 @@ public class SpringDataJdbcStatementsReader {
      * Tableアノテーションから永続化操作対象（テーブル名）を取得する。
      * シンプルなエンティティでは1件だが、MappedCollectionによる複数テーブルの場合に複数件となる。
      */
-    private static PersistenceTargets extractPersistenceTargets(JigTypes jigTypes, TypeId entityTypeId) {
-        return new PersistenceTargets(extractPersistenceTargets(entityTypeId, jigTypes, new HashSet<>()).toList());
+    private static Collection<PersistenceTarget> extractPersistenceTargets(JigTypes jigTypes, TypeId entityTypeId) {
+        return extractPersistenceTargets(entityTypeId, jigTypes, new HashSet<>()).toList();
     }
 
     private static Stream<PersistenceTarget> extractPersistenceTargets(TypeId entityTypeId, JigTypes jigTypes, Set<TypeId> visited) {

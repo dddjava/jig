@@ -39,8 +39,8 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                                     Collectors.collectingAndThen(Collectors.toList(),
                                             // テーブル名の重複を排除してソートしたリストにする
                                             l -> l.stream()
-                                                    .flatMap(persistenceAccessor -> persistenceAccessor.persistenceTargets().persistenceTargets().stream())
-                                                    .map(persistenceTarget -> persistenceTarget.name())
+                                                    .flatMap(persistenceAccessor -> persistenceAccessor.persistenceOperations().persistenceTargets().stream())
+                                                    .map(persistenceOperation -> persistenceOperation.persistenceTarget().name())
                                                     .distinct()
                                                     .sorted()
                                                     .toList())));

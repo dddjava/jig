@@ -31,7 +31,7 @@ class MyBatisStatementReaderTest {
         PersistenceAccessorRepository myBatisStatements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(SampleMapper.class, "binding"));
-        assertEquals("[fuga]", myBatisStatement.persistenceTargets().asText());
+        assertEquals("[fuga]", myBatisStatement.persistenceOperations().asText());
     }
 
     @Test
@@ -53,7 +53,7 @@ class MyBatisStatementReaderTest {
         PersistenceAccessorRepository myBatisStatements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl"));
-        assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
+        assertEquals("[（解析失敗）]", myBatisStatement.persistenceOperations().asText());
         // OGNLを使ったSQLは現時点では空になりunsupportedになる
         assertFalse(myBatisStatement.query().supported());
     }
@@ -68,7 +68,7 @@ class MyBatisStatementReaderTest {
 
         PersistenceAccessorOperation myBatisStatement = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(ComplexMapper.class, "select_ognl_where"));
 
-        assertEquals("[（解析失敗）]", myBatisStatement.persistenceTargets().asText());
+        assertEquals("[（解析失敗）]", myBatisStatement.persistenceOperations().asText());
         // OGNLを使ったSQLは現時点では空になる
         // ・・・のだが、 <where>タグなどで分割されているとOGNLを使用していない部分だけクエリが出てくる
         assertEquals("order by 1", myBatisStatement.query().rawText());
@@ -80,7 +80,7 @@ class MyBatisStatementReaderTest {
         PersistenceAccessorRepository myBatisStatements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
 
         PersistenceAccessorOperation persistenceAccessorOperation = persistenceAccessorOf(myBatisStatements, persistenceAccessorIdOf(CanonicalMapper.class, methodName));
-        assertEquals("[" + tableName + "]", persistenceAccessorOperation.persistenceTargets().asText());
+        assertEquals("[" + tableName + "]", persistenceAccessorOperation.persistenceOperations().asText());
         assertEquals(persistenceOperationType, persistenceAccessorOperation.persistenceOperationType());
     }
 

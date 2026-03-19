@@ -13,8 +13,8 @@ class PersistenceAccessorOperationTest {
                 PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf("example.ExampleRepository"), "findById"),
                 Query.unsupported(),
                 PersistenceOperationType.SELECT,
-                new PersistenceTargets(new PersistenceTarget("example_table")));
+                new PersistenceOperations(PersistenceOperation.from(new PersistenceTarget("example_table"), PersistenceOperationType.SELECT)));
 
-        assertEquals("[example_table]", statement.persistenceTargets().asText());
+        assertEquals("[example_table]", statement.persistenceOperations().asText());
     }
 }

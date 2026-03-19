@@ -79,7 +79,7 @@ class OutputAdapterExecutionTest {
                 .orElseThrow();
 
         assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.persistenceOperationType());
-        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceTargets().asText());
+        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceOperations().asText());
     }
 
     @Test
@@ -98,6 +98,6 @@ class OutputAdapterExecutionTest {
                 .orElseThrow();
 
         assertEquals(PersistenceOperationType.INSERT, persistenceAccessorOperation.persistenceOperationType());
-        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceTargets().asText());
+        assertEquals("[spring_data_table_name]", persistenceAccessorOperation.persistenceOperations().asText());
     }
 }

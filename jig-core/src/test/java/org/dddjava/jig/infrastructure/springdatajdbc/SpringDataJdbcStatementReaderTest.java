@@ -33,7 +33,7 @@ class SpringDataJdbcStatementReaderTest {
         var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         var statement = persistenceAccessorOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderAccessor.class));
 
-        assertEquals("[spring_data_jdbc_orders]", statement.persistenceTargets().asText());
+        assertEquals("[spring_data_jdbc_orders]", statement.persistenceOperations().asText());
         assertEquals(expectedPersistenceOperationType, statement.persistenceOperationType());
     }
 
@@ -42,7 +42,7 @@ class SpringDataJdbcStatementReaderTest {
         var statements = jigRepository.externalAccessorRepositories().persistenceAccessorRepository();
         var statement = persistenceAccessorOf(statements, getPersistenceAccessorId("findByHoge", SpringDataJdbcNameRepository.class));
 
-        assertEquals("[spring_data_table_name]", statement.persistenceTargets().asText());
+        assertEquals("[spring_data_table_name]", statement.persistenceOperations().asText());
         assertEquals(PersistenceOperationType.SELECT, statement.persistenceOperationType());
     }
 
@@ -85,7 +85,7 @@ class SpringDataJdbcStatementReaderTest {
         var statement = persistenceAccessorOptionalOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcMixedOrderRepository.class));
 
         assertTrue(statement.isPresent());
-        assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceTargets().asText());
+        assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceOperations().asText());
         assertEquals(expectedPersistenceOperationType, statement.get().persistenceOperationType());
     }
 
@@ -100,7 +100,7 @@ class SpringDataJdbcStatementReaderTest {
         var statement = persistenceAccessorOptionalOf(statements, getPersistenceAccessorId(methodName, SpringDataJdbcOrderWithItemsRepository.class));
 
         assertTrue(statement.isPresent());
-        assertEquals("[spring_data_jdbc_order_items, spring_data_jdbc_orders_with_items]", statement.get().persistenceTargets().asText());
+        assertEquals("[spring_data_jdbc_order_items, spring_data_jdbc_orders_with_items]", statement.get().persistenceOperations().asText());
         assertEquals(expectedPersistenceOperationType, statement.get().persistenceOperationType());
     }
 
@@ -112,7 +112,7 @@ class SpringDataJdbcStatementReaderTest {
                 getPersistenceAccessorId("save", SpringDataJdbcCustomBaseRepository.class));
 
         assertTrue(statement.isPresent());
-        assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceTargets().asText());
+        assertEquals("[spring_data_jdbc_orders]", statement.get().persistenceOperations().asText());
         assertEquals(PersistenceOperationType.INSERT, statement.get().persistenceOperationType());
     }
 

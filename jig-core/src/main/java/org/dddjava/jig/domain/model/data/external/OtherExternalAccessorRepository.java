@@ -12,17 +12,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * 外部アクセサリポジトリ
- * JIG読み取り範囲外のクラスのメソッドを呼び出しているクラスの一覧を保持する。
+ * 外部アクセサ（その他）リポジトリ
  */
-public record ExternalAccessorRepository(Collection<ExternalAccessor> values) {
+public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> values) {
 
-    public static ExternalAccessorRepository empty() {
-        return new ExternalAccessorRepository(List.of());
+    public static OtherExternalAccessorRepository empty() {
+        return new OtherExternalAccessorRepository(List.of());
     }
 
-    public static ExternalAccessorRepository from(JigTypes jigTypes) {
-        List<ExternalAccessor> result = jigTypes.stream()
+    public static OtherExternalAccessorRepository from(JigTypes jigTypes) {
+        List<OtherExternalAccessor> result = jigTypes.stream()
                 .flatMap(jigType -> {
                     // インスタンスフィールドのうち、JIG範囲外かつJava標準型でない型を「外部型」として抽出
                     // TODO: 外部型でないものの条件を増やしたり、除外を設定で追加できるようにしたい
@@ -43,7 +42,7 @@ public record ExternalAccessorRepository(Collection<ExternalAccessor> values) {
                                 var externalMethodCalls = jigMethod.usingMethods().invokedMethodStream()
                                         .filter(mc -> externalFieldTypes.contains(mc.methodOwner()))
                                         .toList();
-                                return new ExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls);
+                                return new OtherExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls);
                             })
                             .toList();
 
@@ -52,16 +51,16 @@ public record ExternalAccessorRepository(Collection<ExternalAccessor> values) {
                         return Stream.of();
                     }
 
-                    return Stream.of(new ExternalAccessor(jigType.id(), operations));
+                    return Stream.of(new OtherExternalAccessor(jigType.id(), operations));
                 })
                 .toList();
-        return new ExternalAccessorRepository(result);
+        return new OtherExternalAccessorRepository(result);
     }
 
-    public Optional<ExternalAccessorOperation> findAccessorOperation(JigMethod jigMethod) {
+    public Optional<OtherExternalAccessorOperation> findAccessorOperation(JigMethod jigMethod) {
         return values.stream()
-                .filter(externalAccessor -> externalAccessor.typeId().equals(jigMethod.declaringType()))
-                .flatMap(externalAccessor -> externalAccessor.operations().stream())
+                .filter(otherExternalAccessor -> otherExternalAccessor.typeId().equals(jigMethod.declaringType()))
+                .flatMap(otherExternalAccessor -> otherExternalAccessor.operations().stream())
                 .filter(operation -> operation.accessorJigMethod().jigMethodId().equals(jigMethod.jigMethodId()))
                 .findAny();
     }

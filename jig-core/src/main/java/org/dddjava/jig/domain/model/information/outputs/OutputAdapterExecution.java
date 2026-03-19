@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorOperation;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
+import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorOperation;
+import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.*;
@@ -25,7 +25,7 @@ public record OutputAdapterExecution(
         Collection<OutputPortOperation> implementOperations,
         Collection<JigMethod> tracingJigMethods,
         Collection<PersistenceAccessorOperation> persistenceAccessorOperations,
-        Collection<ExternalAccessorOperation> externalAccessorOperations
+        Collection<OtherExternalAccessorOperation> otherExternalAccessorOperations
 ) {
     private static final Logger logger = LoggerFactory.getLogger(OutputAdapterExecution.class);
 
@@ -35,16 +35,16 @@ public record OutputAdapterExecution(
                                               ExternalAccessorRepositories accessorRepositories) {
         Set<JigMethod> tracingJigMethods = collectTracingJigMethods(jigMethod, jigTypes, new LinkedHashSet<>());
         Collection<PersistenceAccessorOperation> persistenceAccessorOperations = collectPersistenceAccessorOperation(tracingJigMethods, accessorRepositories.persistenceAccessorRepository());
-        Collection<ExternalAccessorOperation> externalAccessorOperations = collectExternalAccessors(tracingJigMethods, accessorRepositories.externalAccessorRepository());
-        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations, externalAccessorOperations);
+        Collection<OtherExternalAccessorOperation> otherExternalAccessorOperations = collectExternalAccessors(tracingJigMethods, accessorRepositories.otherExternalAccessorRepository());
+        return new OutputAdapterExecution(jigMethod, outputPortOperations, tracingJigMethods, persistenceAccessorOperations, otherExternalAccessorOperations);
     }
 
-    private static Collection<ExternalAccessorOperation> collectExternalAccessors(
+    private static Collection<OtherExternalAccessorOperation> collectExternalAccessors(
             Collection<JigMethod> tracingJigMethods,
-            ExternalAccessorRepository externalAccessorRepository) {
+            OtherExternalAccessorRepository otherExternalAccessorRepository) {
         // 使用しているメソッドが外部アクセサのメソッドであれば外部アクセサ操作に変換する
         return tracingJigMethods.stream()
-                .flatMap(jigMethod -> externalAccessorRepository.findAccessorOperation(jigMethod).stream())
+                .flatMap(jigMethod -> otherExternalAccessorRepository.findAccessorOperation(jigMethod).stream())
                 .toList();
     }
 

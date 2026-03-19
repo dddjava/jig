@@ -7,7 +7,7 @@ import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
+import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -113,8 +113,8 @@ public class DefaultJigRepositoryFactory {
             Collection<PersistenceAccessor> springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
             persistenceAccessorRepository.register(springDataJdbcStatements);
 
-            ExternalAccessorRepository externalAccessorRepository = ExternalAccessorRepository.from(jigTypes);
-            ExternalAccessorRepositories externalAccessorRepositories = new ExternalAccessorRepositories(persistenceAccessorRepository, externalAccessorRepository);
+            OtherExternalAccessorRepository otherExternalAccessorRepository = OtherExternalAccessorRepository.from(jigTypes);
+            ExternalAccessorRepositories externalAccessorRepositories = new ExternalAccessorRepositories(persistenceAccessorRepository, otherExternalAccessorRepository);
 
             return Metrics.timer(metricName, "phase", "jig_repository_creation").record(() -> {
                 DefaultJigDataProvider defaultJigDataProvider = new DefaultJigDataProvider(javaSourceModel);

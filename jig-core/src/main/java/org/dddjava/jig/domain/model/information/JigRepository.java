@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepository;
+import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -36,7 +36,7 @@ public interface JigRepository {
 
             @Override
             public ExternalAccessorRepositories externalAccessorRepositories() {
-                return new ExternalAccessorRepositories(PersistenceAccessorRepository.empty(), ExternalAccessorRepository.empty());
+                return new ExternalAccessorRepositories(PersistenceAccessorRepository.empty(), OtherExternalAccessorRepository.empty());
             }
         };
     }

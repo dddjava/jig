@@ -8,6 +8,6 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorReposito
  */
 public record ExternalAccessorRepositories(
         PersistenceAccessorRepository persistenceAccessorRepository,
-        ExternalAccessorRepository externalAccessorRepository
+        OtherExternalAccessorRepository otherExternalAccessorRepository
 ) {
 }

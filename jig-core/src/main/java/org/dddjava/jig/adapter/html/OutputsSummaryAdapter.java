@@ -113,7 +113,7 @@ public class OutputsSummaryAdapter {
                                     .and("accessor", methodId));
                         });
 
-                        exec.externalAccessorOperations().forEach(ea -> {
+                        exec.otherExternalAccessorOperations().forEach(ea -> {
                             String accessorFqn = ea.accessorTypeId().fqn();
                             String accessorLabel = simpleLabel(accessorFqn);
                             String accessorMethodName = ea.accessorMethodName();

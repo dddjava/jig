@@ -102,7 +102,6 @@ public class OutputsSummaryAdapter {
                             if (accessorMethodIds.add(methodId)) {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
-                                                .and("persistenceTargets", Json.array(targets))
                                                 .and("targetOperationTypes", targetOperationTypes));
                             }
 

@@ -106,7 +106,7 @@ function groupOperationsByPersistenceTarget(operations) {
     const map = new Map();
     operations.forEach(operation => {
         operation.persistenceAccessors?.forEach(op => {
-            op.persistenceTargets?.forEach(target => {
+            Object.keys(op.targetOperationTypes || {}).forEach(target => {
                 if (!map.has(target)) {
                     map.set(target, {
                         target: target,
@@ -154,7 +154,7 @@ function collectAllTargets(grouped) {
     grouped.forEach(group => {
         group.operations.forEach(operation => {
             operation.persistenceAccessors?.forEach(op => {
-                op.persistenceTargets?.forEach(target => targetsSet.add(target));
+                Object.keys(op.targetOperationTypes || {}).forEach(target => targetsSet.add(target));
             });
         });
     });
@@ -487,7 +487,7 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
 }
 
 function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
-    op.persistenceTargets?.forEach(target => {
+    Object.keys(op.targetOperationTypes || {}).forEach(target => {
         const operationType = op.targetOperationTypes?.[target] || "";
         if (!isCrudVisible(operationType, visibility)) return;
         if (!targetNodes.has(target)) {
@@ -651,7 +651,6 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
 
                 if (visibility.target) {
                     addTargetEdges(builder, currentNode, {
-                        persistenceTargets: [target],
                         targetOperationTypes: {[target]: op.targetOperationTypes[target]}
                     }, targetNodes, visibility);
                 }
@@ -723,7 +722,7 @@ function createPortGroupRow(group, allTargets) {
                 const cruds = new Set();
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors?.forEach(op => {
-                        if (op.persistenceTargets?.includes(target)) {
+                        if (target in (op.targetOperationTypes || {})) {
                             const operationType = op.targetOperationTypes?.[target];
                             const crud = toCrudChar(operationType);
                             if (crud) {
@@ -754,7 +753,7 @@ function createOperationRow(operation, allTargets, portId) {
                 const cell = createElement("td", {className: "crud-cell"});
                 const cruds = new Set();
                 operation.persistenceAccessors?.forEach(op => {
-                    if (op.persistenceTargets?.includes(target)) {
+                    if (target in (op.targetOperationTypes || {})) {
                         const operationType = op.targetOperationTypes?.[target];
                         const crud = toCrudChar(operationType);
                         if (crud) {

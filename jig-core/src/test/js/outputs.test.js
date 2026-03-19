@@ -165,11 +165,11 @@ test.describe("outputs.js", () => {
         test("groupOperationsByPersistenceTarget: ターゲット単位でグルーピングし、ターゲット名でソートする", () => {
             const operations = [
                 {
-                    persistenceAccessors: [{ persistenceTargets: ["table_b"], id: "op1" }],
+                    persistenceAccessors: [{ id: "op1", targetOperationTypes: {"table_b": "SELECT"} }],
                     outputPort: { fqn: "port1", label: "P1" }
                 },
                 {
-                    persistenceAccessors: [{ persistenceTargets: ["table_a"], id: "op2" }],
+                    persistenceAccessors: [{ id: "op2", targetOperationTypes: {"table_a": "SELECT"} }],
                     outputPort: { fqn: "port2", label: "P2" }
                 }
             ];
@@ -191,8 +191,8 @@ test.describe("outputs.js", () => {
 
         test("formatPersistenceAccessors: 永続化操作を改行区切りで整形する", () => {
             const formatted = outputs.formatPersistenceAccessors([
-                {id: "com.example.Mapper.find", persistenceTargets: ["orders"], targetOperationTypes: {"orders": "SELECT"}},
-                {id: "com.example.Mapper.update", persistenceTargets: ["orders", "order_items"], targetOperationTypes: {"orders": "UPDATE", "order_items": "UPDATE"}},
+                {id: "com.example.Mapper.find", targetOperationTypes: {"orders": "SELECT"}},
+                {id: "com.example.Mapper.update", targetOperationTypes: {"orders": "UPDATE", "order_items": "UPDATE"}},
             ]);
 
             assert.deepEqual(formatted, [
@@ -205,7 +205,7 @@ test.describe("outputs.js", () => {
             globalThis.outputPortData = {
                 outputPorts: [{ fqn: "port1", label: "P1", operations: [{ fqn: "op1", label: "save" }] }],
                 outputAdapters: [{ fqn: "adapter1", label: "A1", executions: [{ fqn: "ex1", label: "exec" }] }],
-                persistenceAccessors: [{ fqn: "com.example.Repo", label: "Repo", methods: [{ id: "com.example.Repo.po1", statementOperationType: "INSERT", persistenceTargets: ["table1"] }] }],
+                persistenceAccessors: [{ fqn: "com.example.Repo", label: "Repo", methods: [{ id: "com.example.Repo.po1", statementOperationType: "INSERT", targetOperationTypes: {"table1": "INSERT"} }] }],
                 targets: ["table1"],
                 links: {
                     operationToExecution: [{ operation: "op1", execution: "ex1" }],
@@ -234,7 +234,7 @@ test.describe("outputs.js", () => {
                 outputAdapter: { fqn: "com.example.A1", label: "A1" },
                 outputAdapterExecution: { fqn: "com.example.A1.ex1", label:"ex1" },
                 persistenceAccessors: [
-                    { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
+                    { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
@@ -253,7 +253,7 @@ test.describe("outputs.js", () => {
                 outputPort: { fqn: "P1", label: "P1" },
                 outputPortOperation: { fqn: "P1.op1", label:"op1" },
                 persistenceAccessors: [
-                    { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
+                    { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
@@ -272,7 +272,6 @@ test.describe("outputs.js", () => {
                 persistenceAccessors: [
                     {
                         id: "com.example.repo.save",
-                        persistenceTargets: ["table1"],
                         group: "com.example.repo",
                         groupLabel: "repo",
                         targetOperationTypes: {"table1": "INSERT"}
@@ -325,9 +324,9 @@ test.describe("outputs.js", () => {
                             {
                                 id: "com.example.repo.save",
                                 statementOperationType: "INSERT",
-                                persistenceTargets: ["table1"],
                                 group: "com.example.repo",
-                                groupLabel: "repo"
+                                groupLabel: "repo",
+                                targetOperationTypes: {"table1": "INSERT"}
                             }
                         ]
                     }
@@ -350,7 +349,7 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", persistenceTargets: ["table1"],
+                            { id: "repo.save",
                               group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
@@ -373,7 +372,7 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", persistenceTargets: ["table1"],
+                            { id: "repo.save",
                               group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
@@ -392,7 +391,7 @@ test.describe("outputs.js", () => {
                 outputPort: { fqn: "P1", label: "P1" },
                 outputPortOperation: { fqn: "P1.op1", label: "op1" },
                 persistenceAccessors: [
-                    { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
+                    { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
@@ -419,7 +418,7 @@ test.describe("outputs.js", () => {
                     {
                         outputPortOperation: { fqn: "PortA.op1", label: "op1" },
                         persistenceAccessors: [
-                            { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
+                            { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
                 ]
@@ -440,7 +439,7 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", persistenceTargets: ["table1"],
+                            { id: "repo.save",
                               group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
@@ -466,7 +465,6 @@ test.describe("outputs.js", () => {
                         persistenceAccessors: [
                             {
                                 id: "com.example.repo.methodA",
-                                persistenceTargets: ["table1"],
                                 group: "com.example.repo",
                                 groupLabel: "Repo",
                                 targetOperationTypes: {"table1": "INSERT"}
@@ -480,7 +478,6 @@ test.describe("outputs.js", () => {
                         persistenceAccessors: [
                             {
                                 id: "com.example.repo.methodB",
-                                persistenceTargets: ["table1"],
                                 group: "com.example.repo",
                                 groupLabel: "Repo",
                                 targetOperationTypes: {"table1": "SELECT"}
@@ -506,14 +503,12 @@ test.describe("outputs.js", () => {
                 persistenceAccessors: [
                     {
                         id: "com.example.repo.methodA",
-                        persistenceTargets: ["table1"],
                         group: "com.example.repo",
                         groupLabel: "Repo",
                         targetOperationTypes: {"table1": "INSERT"}
                     },
                     {
                         id: "com.example.repo.methodB",
-                        persistenceTargets: ["table2"],
                         group: "com.example.repo",
                         groupLabel: "Repo",
                         targetOperationTypes: {"table2": "SELECT"}
@@ -715,7 +710,7 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", persistenceTargets: ["table1"],
+                            { id: "repo.save",
                               group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
@@ -743,7 +738,7 @@ test.describe("outputs.js", () => {
                             outputPortOperation: {fqn: "com.example.APort.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
                             outputAdapter: {fqn: "com.example.AAdapter", label: "A Adapter"},
                             outputAdapterExecution: {fqn: "com.example.AAdapter.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
-                            persistenceAccessors: [{id: "a.save", persistenceTargets: ["orders"], targetOperationTypes: {"orders": "SELECT"}}],
+                            persistenceAccessors: [{id: "a.save", targetOperationTypes: {"orders": "SELECT"}}],
                         },
                         {
                             outputPortOperation: {fqn: "com.example.APort.find", label: "find(java.lang.String)", signature: "find(java.lang.String)"},
@@ -776,7 +771,7 @@ test.describe("outputs.js", () => {
                     outputPort: { fqn: "Port_A", label: "Port A" },
                     operations: [{
                         outputPortOperation: { fqn: "Port_A.opA", label:"opA" },
-                        persistenceAccessors: [{ persistenceTargets: ["table1"], targetOperationTypes: {"table1": "SELECT"} }]
+                        persistenceAccessors: [{ targetOperationTypes: {"table1": "SELECT"} }]
                     }]
                 }
             ];
@@ -807,8 +802,8 @@ test.describe("outputs.js", () => {
                 operations: [{
                     outputPortOperation: { fqn: "Port_A.opA", label: "opA" },
                     persistenceAccessors: [
-                        { persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} },
-                        { persistenceTargets: ["table1"], targetOperationTypes: {"table1": "SELECT"} }
+                        { targetOperationTypes: {"table1": "INSERT"} },
+                        { targetOperationTypes: {"table1": "SELECT"} }
                     ]
                 }]
             }];
@@ -842,7 +837,7 @@ test.describe("outputs.js", () => {
                             outputAdapter: { fqn: "adapter1", label: "A1" },
                             outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                             persistenceAccessors: [
-                                { id: "repo.save", persistenceTargets: ["table1"], group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
+                                { id: "repo.save", group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                             ]
                         }
                     ]
@@ -1021,7 +1016,7 @@ test.describe("outputs.js", () => {
                             outputAdapter: { fqn: "adapter1", label: "A1" },
                             outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                             persistenceAccessors: [
-                                { id: "repo.insert", persistenceTargets: ["table1"], group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
+                                { id: "repo.insert", group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                             ]
                         }
                     ]

@@ -365,7 +365,7 @@ const DEFAULT_VISIBILITY = {
     accessor: false, accessorMethod: false,
     target: true,
     externalAccessor: false, externalAccessorMethod: false,
-    externalType: true, externalTypeMethod: false,
+    externalType: true, externalTypeMethod: true,
     direction: 'LR',
     crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
 };

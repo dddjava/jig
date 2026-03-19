@@ -24,32 +24,32 @@
                         <p class="outputs-display-mode__group-label">表示要素</p>
                         <div class="checkbox-pair">
                             <label><input type="checkbox" name="show-port" checked> ポート</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-operation" checked> 操作</label>
+                            <label class="checkbox-child"><input type="checkbox" name="show-operation" checked> メソッド</label>
                         </div>
                         <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-adapter" checked> アダプター</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-execution" checked> 実行</label>
+                            <label><input type="checkbox" name="show-adapter" checked> アダプタ</label>
+                            <label class="checkbox-child"><input type="checkbox" name="show-execution" checked> メソッド</label>
                         </div>
                         <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-accessor"> アクセッサ</label>
+                            <label><input type="checkbox" name="show-accessor"> 外部アクセサ</label>
                             <label class="checkbox-child"><input type="checkbox" name="show-accessor-method"> メソッド</label>
                         </div>
                         <div class="checkbox-pair">
-                            <label><input type="checkbox" name="show-target" checked> ターゲット</label>
-                            <label class="checkbox-child"><input type="checkbox" name="show-external-type-method"> メソッド</label>
+                            <label><input type="checkbox" name="show-target" checked> 外部操作対象</label>
+                            <label class="checkbox-child"><input type="checkbox" name="show-external-type-method"> 操作方法</label>
                         </div>
                     </div>
                     <div class="outputs-display-mode__group">
-                        <p class="outputs-display-mode__group-label">方向</p>
-                        <label><input type="radio" name="diagram-direction" value="LR" checked> 左→右</label>
-                        <label><input type="radio" name="diagram-direction" value="TB"> 上→下</label>
+                        <p class="outputs-display-mode__group-label">永続化操作方法</p>
+                        <label><input type="checkbox" name="show-crud-r" checked> SELECT</label>
+                        <label><input type="checkbox" name="show-crud-c" checked> INSERT</label>
+                        <label><input type="checkbox" name="show-crud-u" checked> UPDATE</label>
+                        <label><input type="checkbox" name="show-crud-d" checked> DELETE</label>
                     </div>
                     <div class="outputs-display-mode__group">
-                        <p class="outputs-display-mode__group-label">CRUD</p>
-                        <label><input type="checkbox" name="show-crud-c" checked> C</label>
-                        <label><input type="checkbox" name="show-crud-r" checked> R</label>
-                        <label><input type="checkbox" name="show-crud-u" checked> U</label>
-                        <label><input type="checkbox" name="show-crud-d" checked> D</label>
+                        <p class="outputs-display-mode__group-label">ダイアグラムの方向</p>
+                        <label><input type="radio" name="diagram-direction" value="LR" checked> 左→右</label>
+                        <label><input type="radio" name="diagram-direction" value="TB"> 上→下</label>
                     </div>
                 </div>
             </div>
@@ -57,9 +57,9 @@
 
         <nav class="outputs-tabs">
             <button class="tab-button is-active" data-tab="outputs">出力ポート一覧</button>
-            <button class="tab-button" data-tab="persistence">永続化操作一覧</button>
-            <button class="tab-button" data-tab="crud">CRUD表</button>
-            <button class="tab-button" data-tab="external">外部操作一覧</button>
+            <button class="tab-button" data-tab="persistence">永続化対象</button>
+            <button class="tab-button" data-tab="crud">永続化対象(CRUD)</button>
+            <button class="tab-button" data-tab="external">外部対象</button>
         </nav>
     </div>
 
@@ -77,7 +77,7 @@
             <nav id="persistence-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="永続化操作一覧ナビゲーション">
                 <div id="persistence-sidebar-list" class="in-page-sidebar__list"></div>
             </nav>
-            <section id="persistence-list" class="outputs-list" aria-label="永続化操作一覧"></section>
+            <section id="persistence-list" class="outputs-list" aria-label="永続化対象"></section>
         </div>
     </div>
 
@@ -90,7 +90,7 @@
             <nav id="external-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="外部操作一覧ナビゲーション">
                 <div id="external-sidebar-list" class="in-page-sidebar__list"></div>
             </nav>
-            <section id="external-list" class="outputs-list" aria-label="外部操作一覧"></section>
+            <section id="external-list" class="outputs-list" aria-label="外部対象"></section>
         </div>
     </div>
 </main>

@@ -123,6 +123,14 @@ function setupDocument() {
 }
 
 test.describe("outputs.js", () => {
+    test.describe("DOMユーティリティ", () => {
+        test("fqnToId: FQNをHTML IDに変換する", () => {
+            assert.equal(outputs.fqnToId("port", "com.example.MyPort"), "port-com-example-MyPort");
+            assert.equal(outputs.fqnToId("persistence", "my_table"), "persistence-my-table");
+            assert.equal(outputs.fqnToId("external", "com.example.Ext$Type"), "external-com-example-Ext-Type");
+        });
+    });
+
     test.describe("データ加工・ユーティリティ", () => {
         test("groupOperationsByOutputPort: 出力ポート単位でグルーピングし、表示名でソートする", () => {
             const data = {

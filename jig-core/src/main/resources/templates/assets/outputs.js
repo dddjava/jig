@@ -262,6 +262,10 @@ function renderSidebarSection(container, title, items) {
     }
 }
 
+function fqnToId(prefix, fqn) {
+    return prefix + "-" + fqn.replace(/[^a-zA-Z0-9]/g, '-');
+}
+
 function lazyRender(container, renderFn) {
     if (typeof IntersectionObserver === "undefined") {
         renderFn();
@@ -508,7 +512,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const extAccessorSubgraphs = new Map();
     const extTypeNodes = new Map();
 
-    group.operations.forEach((operation, operationIndex) => {
+    group.operations.forEach((operation) => {
         const portOpName = operation.outputPortOperation.label;
         const portOpFqn = operation.outputPortOperation.fqn;
 
@@ -521,15 +525,15 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
 
         lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-        operation.persistenceAccessors?.forEach((op) => {
-            if (!isCrudVisible(op.sqlType, visibility)) return;
+        (operation.persistenceAccessors || [])
+            .filter(op => isCrudVisible(op.sqlType, visibility))
+            .forEach(op => {
+                const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
-            const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
-
-            if (visibility.target) {
-                addTargetEdges(builder, currentNode, op, targetNodes);
-            }
-        });
+                if (visibility.target) {
+                    addTargetEdges(builder, currentNode, op, targetNodes);
+                }
+            });
 
         operation.externalAccessors?.forEach(accessor => {
             addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
@@ -547,6 +551,19 @@ function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY
     );
 }
 
+function extractOperationProps(operation) {
+    return {
+        portFqn:       operation.outputPort.fqn,
+        portLabel:     operation.outputPort.label,
+        portOpName:    operation.outputPortOperation.label,
+        portOpFqn:     operation.outputPortOperation.fqn,
+        adapterFqn:    operation.outputAdapter?.fqn,
+        adapterLabel:  operation.outputAdapter?.label,
+        executionName: operation.outputAdapterExecution?.label,
+        executionFqn:  operation.outputAdapterExecution?.fqn,
+    };
+}
+
 function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
     const target = group.target;
@@ -557,19 +574,12 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
     const accessorNodes = new Map();
     const targetNodes = new Map();
 
-    group.operations.forEach((operation, operationIndex) => {
+    group.operations.forEach((operation) => {
         const relevantOps = operation.persistenceAccessors.filter(op =>
             op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
 
-        const portFqn = operation.outputPort.fqn;
-        const portLabel = operation.outputPort.label;
-        const portOpName = operation.outputPortOperation.label;
-        const portOpFqn = operation.outputPortOperation.fqn;
-
-        const adapterFqn = operation.outputAdapter?.fqn;
-        const adapterLabel = operation.outputAdapter?.label;
-        const executionName = operation.outputAdapterExecution?.label;
-        const executionFqn = operation.outputAdapterExecution?.fqn;
+        const { portFqn, portLabel, portOpName, portOpFqn,
+                adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
 
         relevantOps.forEach(op => {
             let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -604,15 +614,8 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
             (accessor.methods || []).some(accMethod =>
                 (accMethod.externals || []).some(ext => ext.fqn === externalType.fqn)));
 
-        const portFqn = operation.outputPort.fqn;
-        const portLabel = operation.outputPort.label;
-        const portOpName = operation.outputPortOperation.label;
-        const portOpFqn = operation.outputPortOperation.fqn;
-
-        const adapterFqn = operation.outputAdapter?.fqn;
-        const adapterLabel = operation.outputAdapter?.label;
-        const executionName = operation.outputAdapterExecution?.label;
-        const executionFqn = operation.outputAdapterExecution?.fqn;
+        const { portFqn, portLabel, portOpName, portOpFqn,
+                adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
 
         relevantAccessors.forEach(accessor => {
             let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -706,7 +709,7 @@ function createOperationRow(operation, allTargets, portId, visibility) {
 }
 
 function appendGroupToTable(tbody, group, allTargets, visibility) {
-    const portId = "port-" + group.outputPort.fqn.replace(/[^a-zA-Z0-9]/g, '-');
+    const portId = fqnToId("port", group.outputPort.fqn);
     const portRow = createPortGroupRow(group, allTargets, visibility);
     tbody.appendChild(portRow);
 
@@ -774,7 +777,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
     grouped.forEach(group => {
         if (!generatePortMermaidCode(group, visibility)) return;
         const portFqnValue = group.outputPort.fqn;
-        const portId = "port-" + portFqnValue.replace(/[^a-zA-Z0-9]/g, '-');
+        const portId = fqnToId("port", portFqnValue);
         const portLabel = group.outputPort.label;
 
         const cardChildren = [
@@ -848,7 +851,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
 
     renderSidebarSection(sidebar, "出力ポート", grouped.map(group => {
         return {
-            id: "port-" + group.outputPort.fqn.replace(/[^a-zA-Z0-9]/g, '-'),
+            id: fqnToId("port", group.outputPort.fqn),
             label: group.outputPort.label
         };
     }));
@@ -867,7 +870,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
 
     grouped.forEach(group => {
         if (!generatePersistenceMermaidCode(group, visibility)) return;
-        const targetId = "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-');
+        const targetId = fqnToId("persistence", group.target);
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
         lazyRender(persistenceMermaidContainer, () => renderMermaid(generatePersistenceMermaidCode, group, persistenceMermaidContainer, visibility));
@@ -883,7 +886,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
     });
 
     renderSidebarSection(sidebar, "永続化操作対象", grouped.map(group => ({
-        id: "persistence-" + group.target.replace(/[^a-zA-Z0-9]/g, '-'),
+        id: fqnToId("persistence", group.target),
         label: group.target
     })));
 
@@ -902,7 +905,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
     grouped.forEach(group => {
         if (!generateExternalTypeMermaidCode(group, visibility)) return;
         const externalFqn = group.externalType.fqn;
-        const externalId = "external-" + externalFqn.replace(/[^a-zA-Z0-9]/g, '-');
+        const externalId = fqnToId("external", externalFqn);
 
         const externalMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
         lazyRender(externalMermaidContainer, () => renderMermaid(generateExternalTypeMermaidCode, group, externalMermaidContainer, visibility));
@@ -919,7 +922,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
     });
 
     renderSidebarSection(sidebar, "外部型", grouped.map(group => ({
-        id: "external-" + group.externalType.fqn.replace(/[^a-zA-Z0-9]/g, '-'),
+        id: fqnToId("external", group.externalType.fqn),
         label: group.externalType.label
     })));
 
@@ -945,9 +948,11 @@ function readVisibility() {
         operation: checked("show-operation"),
         adapter,
         execution: checked("show-execution"),
+        // 永続化アクセッサの表示制御
         accessor,
         accessorMethod: checked("show-accessor-method"),
         target: checked("show-target"),
+        // 外部アクセッサの表示制御（UIでは永続化アクセッサと同一チェックボックスで制御）
         externalAccessor: checked("show-accessor"),
         externalAccessorMethod: checked("show-accessor-method"),
         externalType: checked("show-target"),
@@ -1083,6 +1088,7 @@ if (typeof module !== "undefined" && module.exports) {
         renderExternalList,
         renderCrudTable,
         toCrudChar,
+        fqnToId,
         createElement,
         createSidebarSection,
         renderSidebarSection,

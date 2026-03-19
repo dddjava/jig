@@ -1023,10 +1023,14 @@ test.describe("outputs.js", () => {
             assert.ok(tabButton.classList.contains("is-active"));
             assert.ok(tabPanel.classList.contains("is-active"));
 
+            const accessorMethodCheckbox = checkboxes.find(cb => cb.getAttribute("name") === "show-accessor-method");
+            assert.ok(accessorMethodCheckbox.disabled, "show-accessor が未チェックなので show-accessor-method は disabled");
+
             const accessorCheckbox = checkboxes.find(cb => cb.getAttribute("name") === "show-accessor");
             accessorCheckbox.checked = true;
             accessorCheckbox.eventListeners.get("change")?.forEach(l => l());
             assert.equal(app.state.visibility.accessor, true);
+            assert.ok(!accessorMethodCheckbox.disabled, "show-accessor がチェック後は show-accessor-method が disabled でない");
         });
 
         test("lazyRender: IntersectionObserver がない場合のフォールバック", () => {

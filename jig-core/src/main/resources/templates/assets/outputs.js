@@ -999,27 +999,31 @@ const OutputsApp = {
     },
 
     bindEvents() {
-        const parentRules = {
-            "show-operation": "show-port",
-            "show-execution": "show-adapter",
-            "show-accessor-method": "show-accessor",
-            "show-external-type-method": "show-target",
+        const childRules = {
+            "show-port": "show-operation",
+            "show-adapter": "show-execution",
+            "show-accessor": "show-accessor-method",
+            "show-target": "show-external-type-method",
+        };
+
+        const updateChildDisabled = () => {
+            Object.entries(childRules).forEach(([parentName, childName]) => {
+                const parentEl = document.querySelector(`input[name="${parentName}"]`);
+                const childEl = document.querySelector(`input[name="${childName}"]`);
+                if (parentEl && childEl) {
+                    childEl.disabled = !parentEl.checked;
+                }
+            });
         };
 
         document.querySelectorAll('input[name^="show-"]').forEach(input => {
             input.addEventListener('change', () => {
-                const name = input.getAttribute("name");
-                if (input.checked) {
-                    let current = name;
-                    while (parentRules[current]) {
-                        const parentEl = document.querySelector(`input[name="${parentRules[current]}"]`);
-                        if (parentEl) parentEl.checked = true;
-                        current = parentRules[current];
-                    }
-                }
+                updateChildDisabled();
                 this.setState({visibility: readVisibility()});
             });
         });
+
+        updateChildDisabled();
 
         document.querySelectorAll('input[name="diagram-direction"]').forEach(input => {
             input.addEventListener('change', () => {

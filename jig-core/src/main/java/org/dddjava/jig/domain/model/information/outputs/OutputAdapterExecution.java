@@ -83,10 +83,10 @@ public record OutputAdapterExecution(
                     // ここにくるのはPersistenceAccessorに事前登録できてないケース、典型的には内部の共通インタフェースで定義されているメソッドで、JIGの読み取り対象外のもの。
                     // ひとまず動的に生成しているが、非効率ではあるのでPersistenceAccessorRepositoryに登録しておきたいところ。
                     if (persistenceAccessor.technology() == PersistenceAccessorTechnology.SPRING_DATA_JDBC) {
-                        var persistenceOperationType = SpringDataUtil.inferSqlType(methodCall.methodName());
-                        if (persistenceOperationType.isPresent()) {
-                            return persistenceOperationType
-                                    .map(sqlType -> PersistenceAccessorOperation.from(persistenceAccessorOperationId, sqlType, persistenceAccessor.defaultPersistenceTargets()));
+                        var optPersistenceOperationType = SpringDataUtil.inferOperationType(methodCall.methodName());
+                        if (optPersistenceOperationType.isPresent()) {
+                            return optPersistenceOperationType
+                                    .map(persistenceOperationType -> PersistenceAccessorOperation.from(persistenceAccessorOperationId, persistenceOperationType, persistenceAccessor.defaultPersistenceTargets()));
                         }
                     }
 

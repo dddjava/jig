@@ -161,17 +161,17 @@ public class SpringDataJdbcStatementsReader {
                                 jigMethodDeclaration.fqn(), annotationQueryString);
                     }
                     return optQuery.map(query -> {
-                        Optional<PersistenceOperationType> optSqlType = PersistenceOperationType.inferSqlTypeFromQuery(query);
-                        if (optSqlType.isEmpty()) {
+                        Optional<PersistenceOperationType> optOperationType = PersistenceOperationType.inferOperationTypeFromQuery(query);
+                        if (optOperationType.isEmpty()) {
                             logger.warn("{} の@QueryからCRUDが判別できませんでした。出力対象から除外されます。value=[{}]",
                                     jigMethodDeclaration.fqn(), annotationQueryString);
                         }
-                        return optSqlType.map(sqlType -> PersistenceAccessorOperation.from(statementId, sqlType, query));
+                        return optOperationType.map(persistenceOperationType -> PersistenceAccessorOperation.from(statementId, persistenceOperationType, query));
                     });
                 }).orElseGet(() -> {
                     // @Queryがないものはメソッド名でエンティティに対する操作が決まる
-                    return SpringDataUtil.inferSqlType(methodName)
-                            .map(sqlType -> PersistenceAccessorOperation.from(statementId, sqlType, persistenceTargets));
+                    return SpringDataUtil.inferOperationType(methodName)
+                            .map(persistenceOperationType -> PersistenceAccessorOperation.from(statementId, persistenceOperationType, persistenceTargets));
                 });
     }
 

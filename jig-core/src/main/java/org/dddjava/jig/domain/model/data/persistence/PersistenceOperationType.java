@@ -132,7 +132,8 @@ public enum PersistenceOperationType {
         return new PersistenceTarget("（解析失敗）");
     }
 
-    public static Optional<PersistenceOperationType> inferSqlTypeFromQuery(Query query) {
+    // FIXME: 半端な判定。これ自体なくせるはず。
+    public static Optional<PersistenceOperationType> inferOperationTypeFromQuery(Query query) {
         String normalizedQuery = query.normalizedQuery().toLowerCase(Locale.ROOT);
         if (normalizedQuery.startsWith("insert")) return Optional.of(INSERT);
         if (normalizedQuery.startsWith("select")) return Optional.of(SELECT);

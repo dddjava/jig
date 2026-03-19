@@ -1,11 +1,10 @@
 package org.dddjava.jig.domain.model.information.outputs.springdata;
 
-import org.dddjava.jig.domain.model.data.persistence.*;
+import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -18,7 +17,7 @@ public class SpringDataUtil {
      *
      * @see <a href="https://docs.spring.io/spring-data/relational/reference/data-commons/repositories/query-methods-details.html">Defining Query Methods</a>
      */
-    public static Optional<PersistenceOperationType> inferSqlType(String methodName) {
+    public static Optional<PersistenceOperationType> inferOperationType(String methodName) {
         String normalizedMethodName = methodName.toLowerCase(Locale.ROOT);
 
         if (normalizedMethodName.startsWith("find")

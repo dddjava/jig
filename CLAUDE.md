@@ -94,7 +94,11 @@ Conventional Commits 形式で **日本語** で記述する。
 
 ```
 <type>[optional scope]: <説明>
+
+<変更内容の要約>
 ```
+
+本文（body）には変更内容の要約を記述する。
 
 使用可能な type: `feat`, `fix`, `refactor`, `docs`, `test`, `other`
 

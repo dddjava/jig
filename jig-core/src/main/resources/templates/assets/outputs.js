@@ -170,14 +170,14 @@ function formatPersistenceAccessors(persistenceAccessors) {
     return persistenceAccessors
         .map(operation => {
             const id = operation.id ?? "";
-            const sqlType = operation.statementOperationType ?? "";
+            const operationType = operation.statementOperationType ?? "";
             const targets = Array.isArray(operation.persistenceTargets) ? operation.persistenceTargets.join(", ") : "";
-            return `${sqlType} ${id} [${targets}]`.trim();
+            return `${operationType} ${id} [${targets}]`.trim();
         });
 }
 
-function toCrudChar(sqlType) {
-    const type = (sqlType || "").toUpperCase();
+function toCrudChar(operationType) {
+    const type = (operationType || "").toUpperCase();
     if (type === "SELECT") return "R";
     if (type === "INSERT") return "C";
     if (type === "UPDATE") return "U";
@@ -185,8 +185,8 @@ function toCrudChar(sqlType) {
     return "";
 }
 
-function isCrudVisible(sqlType, visibility) {
-    switch ((sqlType || "").toUpperCase()) {
+function isCrudVisible(operationType, visibility) {
+    switch ((operationType || "").toUpperCase()) {
         case 'INSERT': return visibility.crudCreate !== false;
         case 'SELECT': return visibility.crudRead !== false;
         case 'UPDATE': return visibility.crudUpdate !== false;
@@ -483,8 +483,8 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
         }
-        const sqlType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
-        const edgeLabel = visibility?.externalTypeMethod ? sqlType : undefined;
+        const operationType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
+        const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
         if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
     });
 }
@@ -642,8 +642,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
             currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
             if (visibility.target) {
-                const targetSqlType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
-                addTargetEdges(builder, currentNode, {persistenceTargets: [target], statementOperationType: targetSqlType, targetOperationTypes: {[target]: targetSqlType}}, targetNodes, visibility);
+                const operationType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
+                addTargetEdges(builder, currentNode, {persistenceTargets: [target], statementOperationType: operationType, targetOperationTypes: {[target]: operationType}}, targetNodes, visibility);
             }
         });
     });
@@ -714,8 +714,8 @@ function createPortGroupRow(group, allTargets) {
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors?.forEach(op => {
                         if (op.persistenceTargets?.includes(target)) {
-                            const targetSqlType = op.targetOperationTypes?.[target] || op.statementOperationType;
-                            const crud = toCrudChar(targetSqlType);
+                            const operationType = op.targetOperationTypes?.[target] || op.statementOperationType;
+                            const crud = toCrudChar(operationType);
                             if (crud) {
                                 cruds.add(crud);
                             }
@@ -745,8 +745,8 @@ function createOperationRow(operation, allTargets, portId) {
                 const cruds = new Set();
                 operation.persistenceAccessors?.forEach(op => {
                     if (op.persistenceTargets?.includes(target)) {
-                        const targetSqlType = op.targetOperationTypes?.[target] || op.statementOperationType;
-                        const crud = toCrudChar(targetSqlType);
+                        const operationType = op.targetOperationTypes?.[target] || op.statementOperationType;
+                        const crud = toCrudChar(operationType);
                         if (crud) {
                             cruds.add(crud);
                         }

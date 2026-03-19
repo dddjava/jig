@@ -359,7 +359,16 @@ class MermaidBuilder {
     }
 }
 
-const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+const DEFAULT_VISIBILITY = {
+    port: true, operation: true,
+    adapter: true, execution: true,
+    accessor: false, accessorMethod: false,
+    target: true,
+    externalAccessor: false, externalAccessorMethod: false,
+    externalType: true, externalTypeMethod: false,
+    direction: 'LR',
+    crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
+};
 
 function copyMermaidText(source, button) {
     if (!source) return;

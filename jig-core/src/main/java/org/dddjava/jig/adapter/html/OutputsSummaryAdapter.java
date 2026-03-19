@@ -68,33 +68,33 @@ public class OutputsSummaryAdapter {
 
             outputAdapter.implementsPortStream().forEach(outputPort -> {
                 String portFqn = outputPort.jigType().fqn();
-                List<JsonObjectBuilder> opList = new ArrayList<>();
+                List<JsonObjectBuilder> portOperations = new ArrayList<>();
 
-                outputPort.operationStream().forEach(op -> {
-                    String opFqn = op.jigMethod().fqn();
-                    opList.add(Json.object("fqn", opFqn)
-                            .and("label", op.jigMethod().name())
-                            .and("signature", op.jigMethod().simpleMethodSignatureText()));
+                outputPort.operationStream().forEach(portOperation -> {
+                    String portOperationFqn = portOperation.jigMethod().fqn();
+                    portOperations.add(Json.object("fqn", portOperationFqn)
+                            .and("label", portOperation.jigMethod().name())
+                            .and("signature", portOperation.jigMethod().simpleMethodSignatureText()));
 
-                    outputAdapter.findExecution(op).ifPresent(exec -> {
-                        String execFqn = exec.jigMethod().fqn();
-                        execList.add(Json.object("fqn", execFqn)
-                                .and("label", exec.jigMethod().name())
-                                .and("signature", exec.jigMethod().simpleMethodSignatureText()));
+                    outputAdapter.findExecution(portOperation).ifPresent(adapterExecution -> {
+                        String adapterExecutionFqn = adapterExecution.jigMethod().fqn();
+                        execList.add(Json.object("fqn", adapterExecutionFqn)
+                                .and("label", adapterExecution.jigMethod().name())
+                                .and("signature", adapterExecution.jigMethod().simpleMethodSignatureText()));
 
-                        operationToExecution.add(Json.object("operation", opFqn)
-                                .and("execution", execFqn));
+                        operationToExecution.add(Json.object("operation", portOperationFqn)
+                                .and("execution", adapterExecutionFqn));
 
-                        exec.persistenceAccessorOperations().forEach(pOp -> {
-                            String methodId = pOp.persistenceAccessorOperationId().value();
-                            String typeFqn = pOp.persistenceAccessorOperationId().typeId().fqn();
+                        adapterExecution.persistenceAccessorOperations().forEach(persistenceAccessorOperation -> {
+                            String methodId = persistenceAccessorOperation.persistenceAccessorOperationId().value();
+                            String typeFqn = persistenceAccessorOperation.persistenceAccessorOperationId().typeId().fqn();
                             String typeLabel = simpleLabel(typeFqn);
                             var targetSqlTypes = Json.object();
-                            List<String> targets = pOp.persistenceTargets().persistenceTargets().stream()
+                            List<String> targets = persistenceAccessorOperation.persistenceTargets().persistenceTargets().stream()
                                     .map(t -> {
                                         String sqlType = t.operationType()
                                                 .map(Enum::name)
-                                                .orElse(pOp.persistenceOperationType().name());
+                                                .orElse(persistenceAccessorOperation.persistenceOperationType().name());
                                         targetSqlTypes.and(t.name(), sqlType);
                                         return t.name();
                                     }).toList();
@@ -104,23 +104,23 @@ public class OutputsSummaryAdapter {
                             if (accessorMethodIds.add(methodId)) {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
-                                                .and("sqlType", pOp.persistenceOperationType().name())
+                                                .and("sqlType", persistenceAccessorOperation.persistenceOperationType().name())
                                                 .and("targets", Json.array(targets))
                                                 .and("targetSqlTypes", targetSqlTypes));
                             }
 
-                            executionToAccessor.add(Json.object("execution", execFqn)
+                            executionToAccessor.add(Json.object("execution", adapterExecutionFqn)
                                     .and("accessor", methodId));
                         });
 
-                        exec.otherExternalAccessorOperations().forEach(ea -> {
-                            String accessorFqn = ea.accessorTypeId().fqn();
+                        adapterExecution.otherExternalAccessorOperations().forEach(accessorOperation -> {
+                            String accessorFqn = accessorOperation.accessorTypeId().fqn();
                             String accessorLabel = simpleLabel(accessorFqn);
-                            String accessorMethodName = ea.accessorMethodName();
+                            String accessorMethodName = accessorOperation.accessorMethodName();
 
                             externalAccessorLabels.putIfAbsent(accessorFqn, accessorLabel);
 
-                            ea.externalMethodCalls().forEach(methodCall -> {
+                            accessorOperation.externalMethodCalls().forEach(methodCall -> {
                                 String externalFqn = methodCall.methodOwner().fqn();
                                 String externalLabel = simpleLabel(externalFqn);
                                 String externalMethodName = methodCall.methodName();
@@ -136,9 +136,9 @@ public class OutputsSummaryAdapter {
                                 }
                             });
 
-                            String linkKey = execFqn + "|" + accessorFqn + "|" + accessorMethodName;
+                            String linkKey = adapterExecutionFqn + "|" + accessorFqn + "|" + accessorMethodName;
                             if (executionToExternalAccessorKeys.add(linkKey)) {
-                                executionToExternalAccessor.add(Json.object("execution", execFqn)
+                                executionToExternalAccessor.add(Json.object("execution", adapterExecutionFqn)
                                         .and("accessor", accessorFqn)
                                         .and("method", accessorMethodName));
                             }
@@ -148,7 +148,7 @@ public class OutputsSummaryAdapter {
 
                 portsMap.putIfAbsent(portFqn, Json.object("fqn", portFqn)
                         .and("label", outputPort.jigType().label())
-                        .and("operations", Json.arrayObjects(opList)));
+                        .and("operations", Json.arrayObjects(portOperations)));
             });
 
             adaptersMap.putIfAbsent(adapterFqn, Json.object("fqn", adapterFqn)

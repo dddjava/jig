@@ -14,6 +14,6 @@ class PersistenceAccessorOperationTest {
                 PersistenceOperationType.SELECT, new PersistenceTargetOperationTypes(PersistenceTargetOperationType.from(new PersistenceTarget("example_table"), PersistenceOperationType.SELECT)), Query.unsupported()
         );
 
-        assertEquals("[example_table]", statement.operations().asText());
+        assertEquals("[example_table]", statement.targetOperationTypes().asText());
     }
 }

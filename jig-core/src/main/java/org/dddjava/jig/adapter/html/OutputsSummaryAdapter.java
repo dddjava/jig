@@ -90,7 +90,7 @@ public class OutputsSummaryAdapter {
                             String typeFqn = persistenceAccessorOperation.id().typeId().fqn();
                             String typeLabel = simpleLabel(typeFqn);
                             var targetSqlTypes = Json.object();
-                            List<String> targets = persistenceAccessorOperation.operations().persistenceTargets().stream()
+                            List<String> targets = persistenceAccessorOperation.targetOperationTypes().persistenceTargets().stream()
                                     .map(persistenceOperation -> {
                                         String operationType = persistenceOperation.operationType().name();
                                         targetSqlTypes.and(persistenceOperation.persistenceTarget().name(), operationType);

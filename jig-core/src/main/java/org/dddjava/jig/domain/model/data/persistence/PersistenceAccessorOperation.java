@@ -5,13 +5,13 @@ import java.util.Collection;
 /**
  * 永続化アクセサ操作
  *
- * @param operations             永続化対象ごとにどのような操作を実行するかを表す
+ * @param targetOperationTypes   永続化対象ごとにどのような操作を実行するかを表す
  * @param statementOperationType この操作としての永続化操作の種類。SQLとして何文かに対応。
  * @param query                  参考情報。クエリが存在する場合のみ持つ
  */
 public record PersistenceAccessorOperation(PersistenceAccessorOperationId id,
                                            PersistenceOperationType statementOperationType,
-                                           PersistenceTargetOperationTypes operations,
+                                           PersistenceTargetOperationTypes targetOperationTypes,
                                            Query query
 ) {
 

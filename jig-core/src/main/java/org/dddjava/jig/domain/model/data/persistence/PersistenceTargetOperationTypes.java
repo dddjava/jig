@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.persistence;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -18,17 +17,6 @@ public record PersistenceTargetOperationTypes(Collection<PersistenceTargetOperat
 
     public PersistenceTargetOperationTypes(PersistenceTargetOperationType persistenceTarget) {
         this(Collections.singletonList(persistenceTarget));
-    }
-
-    public static PersistenceTargetOperationTypes nothing() {
-        return new PersistenceTargetOperationTypes(Collections.emptyList());
-    }
-
-    // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。
-    public PersistenceTargetOperationTypes merge(PersistenceTargetOperationTypes other) {
-        ArrayList<PersistenceTargetOperationType> list = new ArrayList<>(this.persistenceTargets);
-        list.addAll(other.persistenceTargets);
-        return new PersistenceTargetOperationTypes(list);
     }
 
     // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。

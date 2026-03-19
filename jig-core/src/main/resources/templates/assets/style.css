@@ -943,6 +943,26 @@ table td.number {
 }
 .outputs .mermaid-diagram {
     margin-top: 10px;
+    position: relative;
+}
+
+.mermaid-copy-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 4px 8px;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+    z-index: 1;
+}
+.mermaid-copy-button:hover {
+    background-color: #f0f0f0;
+    opacity: 1;
 }
 .outputs .outputs-crud {
     overflow-x: auto;

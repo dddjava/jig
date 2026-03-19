@@ -361,13 +361,64 @@ class MermaidBuilder {
 
 const DEFAULT_VISIBILITY = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
+function copyMermaidText(source, button) {
+    if (!source) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(source).then(() => {
+            flashButtonLabel(button, "コピーしました");
+        }).catch(() => {
+            fallbackCopyText(source, button);
+        });
+        return;
+    }
+    fallbackCopyText(source, button);
+}
+
+function fallbackCopyText(source, button) {
+    const textarea = document.createElement("textarea");
+    textarea.value = source;
+    textarea.style.top = "-1000px";
+    textarea.style.position = "fixed";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand("copy");
+        flashButtonLabel(button, "コピーしました");
+    } catch (e) {
+        flashButtonLabel(button, "コピーに失敗しました");
+    } finally {
+        document.body.removeChild(textarea);
+    }
+}
+
+function flashButtonLabel(button, text) {
+    if (!button) return;
+    const original = button.textContent;
+    button.textContent = text;
+    window.setTimeout(() => { button.textContent = original; }, 1500);
+}
+
 function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
     if (typeof mermaid === "undefined") return;
     const mermaidCode = generateCodeFn(data, visibility);
     if (!mermaidCode) return;
+
+    const svgContainer = createElement("div", {className: "mermaid-diagram__svg"});
+    const copyButton = createElement("button", {
+        className: "mermaid-copy-button",
+        textContent: "コピー",
+        attributes: {type: "button"}
+    });
+    copyButton.addEventListener("click", () => {
+        copyMermaidText(mermaidCode, copyButton);
+    });
+    container.appendChild(copyButton);
+    container.appendChild(svgContainer);
+
     const id = "mermaid-" + Math.random().toString(36).substring(2, 11);
     mermaid.render(id, mermaidCode).then(({svg}) => {
-        container.innerHTML = svg;
+        svgContainer.innerHTML = svg;
     });
 }
 

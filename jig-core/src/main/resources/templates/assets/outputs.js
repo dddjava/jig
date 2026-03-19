@@ -24,29 +24,29 @@ function groupOperationsByOutputPort(data) {
     // 結合に使うルックアップMapを事前構築
     // execution.fqn → {exec, adapter}
     const executionByFqn = new Map();
-    (data.outputAdapters || []).forEach(adapter => {
-        (adapter.executions || []).forEach(exec => {
+    data.outputAdapters.forEach(adapter => {
+        adapter.executions.forEach(exec => {
             executionByFqn.set(exec.fqn, {exec, adapter});
         });
     });
 
     // method.id → method（所属accessor情報付き）
     const methodById = new Map();
-    (data.persistenceAccessors || []).forEach(accessor => {
-        (accessor.methods || []).forEach(method => {
+    data.persistenceAccessors.forEach(accessor => {
+        accessor.methods.forEach(method => {
             methodById.set(method.id, {...method, group: accessor.fqn, groupLabel: accessor.label});
         });
     });
 
     // outputPortOperation.fqn → execution.fqn
     const executionByOperation = new Map();
-    (data.links?.operationToExecution || []).forEach(link => {
+    data.links.operationToExecution.forEach(link => {
         executionByOperation.set(link.operation, link.execution);
     });
 
     // execution.fqn → [accessor.id]
     const accessorsByExecution = new Map();
-    (data.links?.executionToPersistenceAccessor || []).forEach(link => {
+    data.links.executionToPersistenceAccessor.forEach(link => {
         if (!accessorsByExecution.has(link.execution)) {
             accessorsByExecution.set(link.execution, []);
         }
@@ -55,11 +55,11 @@ function groupOperationsByOutputPort(data) {
 
     // externalAccessor.fqn → externalAccessor
     const externalAccessorByFqn = new Map();
-    (data.otherExternalAccessors || []).forEach(a => externalAccessorByFqn.set(a.fqn, a));
+    data.otherExternalAccessors.forEach(a => externalAccessorByFqn.set(a.fqn, a));
 
     // execution.fqn → Map(accessorFqn → Set(methodName))
     const externalAccessorsByExecution = new Map();
-    (data.links?.executionToOtherExternalAccessor || []).forEach(link => {
+    data.links.executionToOtherExternalAccessor.forEach(link => {
         if (!externalAccessorsByExecution.has(link.execution))
             externalAccessorsByExecution.set(link.execution, new Map());
         const accessorMethods = externalAccessorsByExecution.get(link.execution);
@@ -68,8 +68,8 @@ function groupOperationsByOutputPort(data) {
         accessorMethods.get(link.accessor).add(link.method);
     });
 
-    return (data.outputPorts || []).map(port => {
-        const operations = (port.operations || []).flatMap(op => {
+    return data.outputPorts.map(port => {
+        const operations = port.operations.flatMap(op => {
             const execFqn = executionByOperation.get(op.fqn);
             if (!execFqn) return [];
             const execEntry = executionByFqn.get(execFqn);
@@ -79,7 +79,7 @@ function groupOperationsByOutputPort(data) {
             const externalAccessors = Array.from(executionAccessorMethods.entries()).flatMap(([fqn, methodNames]) => {
                 const accessor = externalAccessorByFqn.get(fqn);
                 if (!accessor) return [];
-                return [{...accessor, methods: (accessor.methods || []).filter(m => methodNames.has(m.name))}];
+                return [{...accessor, methods: accessor.methods.filter(m => methodNames.has(m.name))}];
             });
             return [{
                 outputPortOperation: op,
@@ -105,8 +105,8 @@ function groupOperationsByOutputPort(data) {
 function groupOperationsByPersistenceTarget(operations) {
     const map = new Map();
     operations.forEach(operation => {
-        operation.persistenceAccessors?.forEach(op => {
-            Object.keys(op.targetOperationTypes || {}).forEach(target => {
+        operation.persistenceAccessors.forEach(op => {
+            Object.keys(op.targetOperationTypes).forEach(target => {
                 if (!map.has(target)) {
                     map.set(target, {
                         target: target,
@@ -135,9 +135,9 @@ function groupOperationsByPersistenceTarget(operations) {
 function groupOperationsByExternalType(operations) {
     const map = new Map();
     operations.forEach(operation => {
-        operation.externalAccessors?.forEach(accessor => {
-            (accessor.methods || []).forEach(accMethod => {
-                (accMethod.externals || []).forEach(ext => {
+        operation.externalAccessors.forEach(accessor => {
+            accessor.methods.forEach(accMethod => {
+                accMethod.externals.forEach(ext => {
                     if (!map.has(ext.fqn)) map.set(ext.fqn, {externalType: {fqn: ext.fqn, label: ext.label}, operations: []});
                     const group = map.get(ext.fqn);
                     if (!group.operations.includes(operation)) group.operations.push(operation);
@@ -153,8 +153,8 @@ function collectAllTargets(grouped) {
     const targetsSet = new Set();
     grouped.forEach(group => {
         group.operations.forEach(operation => {
-            operation.persistenceAccessors?.forEach(op => {
-                Object.keys(op.targetOperationTypes || {}).forEach(target => targetsSet.add(target));
+            operation.persistenceAccessors.forEach(op => {
+                Object.keys(op.targetOperationTypes).forEach(target => targetsSet.add(target));
             });
         });
     });
@@ -487,14 +487,14 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
 }
 
 function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
-    Object.keys(op.targetOperationTypes || {}).forEach(target => {
-        const operationType = op.targetOperationTypes?.[target] || "";
+    Object.keys(op.targetOperationTypes).forEach(target => {
+        const operationType = op.targetOperationTypes[target];
         if (!isCrudVisible(operationType, visibility)) return;
         if (!targetNodes.has(target)) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[("$LABEL")]');
         }
-        const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
+        const edgeLabel = visibility.externalTypeMethod ? operationType : undefined;
         if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
     });
 }
@@ -515,8 +515,8 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         // アクセッサ非表示時は外部型をアダプターから直接接続
         if (visibility.externalType) {
             const uniqueExternals = new Map();
-            (accessor.methods || []).forEach(accMethod => {
-                (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
+            accessor.methods.forEach(accMethod => {
+                accMethod.externals.forEach(ext => uniqueExternals.set(ext.fqn, ext));
             });
             uniqueExternals.forEach(ext => addExternal(sourceNodeId, ext));
         }
@@ -526,11 +526,11 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
     if (visibility.externalAccessorMethod) {
         // 外部アクセッサをsubgraphにして各メソッドをノードに
         const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessor.label);
-        (accessor.methods || []).forEach(accMethod => {
+        accessor.methods.forEach(accMethod => {
             const accMethodNodeId = `AccMethod_${builder.sanitize(accessor.fqn + '_' + accMethod.name)}`;
             builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name);
             if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
-            (accMethod.externals || []).forEach(ext => addExternal(accMethodNodeId, ext));
+            accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
         });
         return null;
     } else {
@@ -545,14 +545,14 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         if (visibility.externalType) {
             if (visibility.externalTypeMethod) {
                 // メソッドごとのエッジ（メソッド名をラベルとして）
-                (accessor.methods || []).forEach(accMethod => {
-                    (accMethod.externals || []).forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
+                accessor.methods.forEach(accMethod => {
+                    accMethod.externals.forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
                 });
             } else {
                 // 外部型を単一ノードで表示（重複排除）
                 const uniqueExternals = new Map();
-                (accessor.methods || []).forEach(accMethod => {
-                    (accMethod.externals || []).forEach(ext => uniqueExternals.set(ext.fqn, ext));
+                accessor.methods.forEach(accMethod => {
+                    accMethod.externals.forEach(ext => uniqueExternals.set(ext.fqn, ext));
                 });
                 uniqueExternals.forEach(ext => addExternal(extAccessorNodes.get(accessor.fqn), ext));
             }
@@ -588,8 +588,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
 
         lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
-        (operation.persistenceAccessors || [])
-            .forEach(op => {
+        operation.persistenceAccessors.forEach(op => {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
                 if (visibility.target) {
@@ -597,7 +596,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
                 }
             });
 
-        operation.externalAccessors?.forEach(accessor => {
+        operation.externalAccessors.forEach(accessor => {
             addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
         });
     });
@@ -672,9 +671,9 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
     const extTypeNodes = new Map();
 
     group.operations.forEach(operation => {
-        const relevantAccessors = (operation.externalAccessors || []).filter(accessor =>
-            (accessor.methods || []).some(accMethod =>
-                (accMethod.externals || []).some(ext => ext.fqn === externalType.fqn)));
+        const relevantAccessors = operation.externalAccessors.filter(accessor =>
+            accessor.methods.some(accMethod =>
+                accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
 
         const { portFqn, portLabel, portOpName, portOpFqn,
                 adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
@@ -687,8 +686,8 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
             // このカードの外部型のみに絞ったアクセッサを渡す
             const filteredAccessor = {
                 ...accessor,
-                methods: (accessor.methods || [])
-                    .map(m => ({...m, externals: (m.externals || []).filter(ext => ext.fqn === externalType.fqn)}))
+                methods: accessor.methods
+                    .map(m => ({...m, externals: m.externals.filter(ext => ext.fqn === externalType.fqn)}))
                     .filter(m => m.externals.length > 0)
             };
             addExternalAccessorNode(builder, currentNode, filteredAccessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
@@ -721,9 +720,9 @@ function createPortGroupRow(group, allTargets) {
                 const cell = createElement("td", {className: "crud-cell port-crud-cell"});
                 const cruds = new Set();
                 group.operations.forEach(operation => {
-                    operation.persistenceAccessors?.forEach(op => {
-                        if (target in (op.targetOperationTypes || {})) {
-                            const operationType = op.targetOperationTypes?.[target];
+                    operation.persistenceAccessors.forEach(op => {
+                        if (target in op.targetOperationTypes) {
+                            const operationType = op.targetOperationTypes[target];
                             const crud = toCrudChar(operationType);
                             if (crud) {
                                 cruds.add(crud);
@@ -752,9 +751,9 @@ function createOperationRow(operation, allTargets, portId) {
             ...allTargets.map(target => {
                 const cell = createElement("td", {className: "crud-cell"});
                 const cruds = new Set();
-                operation.persistenceAccessors?.forEach(op => {
-                    if (target in (op.targetOperationTypes || {})) {
-                        const operationType = op.targetOperationTypes?.[target];
+                operation.persistenceAccessors.forEach(op => {
+                    if (target in op.targetOperationTypes) {
+                        const operationType = op.targetOperationTypes[target];
                         const crud = toCrudChar(operationType);
                         if (crud) {
                             cruds.add(crud);

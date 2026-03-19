@@ -143,12 +143,14 @@ test.describe("outputs.js", () => {
                     {fqn: "adapterB", label: "B", executions: [{fqn: "execB", label: "delete"}]},
                 ],
                 persistenceAccessors: [],
+                otherExternalAccessors: [],
                 links: {
                     operationToExecution: [
                         {operation: "opA", execution: "execA"},
                         {operation: "opB", execution: "execB"}
                     ],
-                    executionToPersistenceAccessor: []
+                    executionToPersistenceAccessor: [],
+                    executionToOtherExternalAccessor: []
                 }
             };
 
@@ -158,7 +160,7 @@ test.describe("outputs.js", () => {
         });
 
         test("groupOperationsByOutputPort: 境界条件（データなし）", () => {
-            const grouped = outputs.groupOperationsByOutputPort({outputPorts: [], outputAdapters: [], persistenceAccessors: [], links: {}});
+            const grouped = outputs.groupOperationsByOutputPort({outputPorts: [], outputAdapters: [], persistenceAccessors: [], otherExternalAccessors: [], links: {operationToExecution: [], executionToPersistenceAccessor: [], executionToOtherExternalAccessor: []}});
             assert.equal(grouped.length, 0);
         });
 
@@ -235,7 +237,8 @@ test.describe("outputs.js", () => {
                 outputAdapterExecution: { fqn: "com.example.A1.ex1", label:"ex1" },
                 persistenceAccessors: [
                     { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
-                ]
+                ],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
@@ -254,7 +257,8 @@ test.describe("outputs.js", () => {
                 outputPortOperation: { fqn: "P1.op1", label:"op1" },
                 persistenceAccessors: [
                     { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
-                ]
+                ],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
@@ -276,7 +280,8 @@ test.describe("outputs.js", () => {
                         groupLabel: "repo",
                         targetOperationTypes: {"table1": "INSERT"}
                     }
-                ]
+                ],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true, externalTypeMethod: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
@@ -290,7 +295,8 @@ test.describe("outputs.js", () => {
             const link = {
                 outputPort: { fqn: "P1", label: "P1" },
                 outputPortOperation: { fqn: "P1.op1", label: "op1" },
-                persistenceAccessors: []
+                persistenceAccessors: [],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false, direction: 'TB'};
             const code = outputs.generateOperationMermaidCode(link, visibility);
@@ -301,8 +307,8 @@ test.describe("outputs.js", () => {
             const group = {
                 outputPort: { fqn: "PortA", label: "PortA" },
                 operations: [
-                    { outputPortOperation: { fqn: "PortA.op1", label:"op1" } },
-                    { outputPortOperation: { fqn: "PortA.op2", label:"op2" } }
+                    { outputPortOperation: { fqn: "PortA.op1", label:"op1" }, persistenceAccessors: [], externalAccessors: [] },
+                    { outputPortOperation: { fqn: "PortA.op2", label:"op2" }, persistenceAccessors: [], externalAccessors: [] }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
@@ -328,7 +334,8 @@ test.describe("outputs.js", () => {
                                 groupLabel: "repo",
                                 targetOperationTypes: {"table1": "INSERT"}
                             }
-                        ]
+                        ],
+                        externalAccessors: []
                     }
                 ]
             };
@@ -392,7 +399,8 @@ test.describe("outputs.js", () => {
                 outputPortOperation: { fqn: "P1.op1", label: "op1" },
                 persistenceAccessors: [
                     { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
-                ]
+                ],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
@@ -404,7 +412,8 @@ test.describe("outputs.js", () => {
             const operation = {
                 outputPort: { fqn: "com.example.MyPort", label: "MyPort" },
                 outputPortOperation: { fqn: "com.example.MyPort.doSomething", label: "doSomething" },
-                persistenceAccessors: []
+                persistenceAccessors: [],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: false};
             const code = outputs.generateOperationMermaidCode(operation, visibility);
@@ -419,7 +428,8 @@ test.describe("outputs.js", () => {
                         outputPortOperation: { fqn: "PortA.op1", label: "op1" },
                         persistenceAccessors: [
                             { id: "repo.save", targetOperationTypes: {"table1": "INSERT"} }
-                        ]
+                        ],
+                        externalAccessors: []
                     }
                 ]
             };
@@ -469,7 +479,8 @@ test.describe("outputs.js", () => {
                                 groupLabel: "Repo",
                                 targetOperationTypes: {"table1": "INSERT"}
                             }
-                        ]
+                        ],
+                        externalAccessors: []
                     },
                     {
                         outputPortOperation: { fqn: "PortA.op2", label: "op2" },
@@ -482,7 +493,8 @@ test.describe("outputs.js", () => {
                                 groupLabel: "Repo",
                                 targetOperationTypes: {"table1": "SELECT"}
                             }
-                        ]
+                        ],
+                        externalAccessors: []
                     }
                 ]
             };
@@ -513,7 +525,8 @@ test.describe("outputs.js", () => {
                         groupLabel: "Repo",
                         targetOperationTypes: {"table2": "SELECT"}
                     }
-                ]
+                ],
+                externalAccessors: []
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: false, target: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
             const code = outputs.generateOperationMermaidCode(link, visibility);
@@ -739,12 +752,14 @@ test.describe("outputs.js", () => {
                             outputAdapter: {fqn: "com.example.AAdapter", label: "A Adapter"},
                             outputAdapterExecution: {fqn: "com.example.AAdapter.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
                             persistenceAccessors: [{id: "a.save", targetOperationTypes: {"orders": "SELECT"}}],
+                            externalAccessors: [],
                         },
                         {
                             outputPortOperation: {fqn: "com.example.APort.find", label: "find(java.lang.String)", signature: "find(java.lang.String)"},
                             outputAdapter: {fqn: "com.example.AAdapter", label: "A Adapter"},
                             outputAdapterExecution: {fqn: "com.example.AAdapter.find", label: "find(java.lang.String)", signature: "find(java.lang.String)"},
                             persistenceAccessors: [],
+                            externalAccessors: [],
                         },
                     ],
                 },
@@ -869,7 +884,7 @@ test.describe("outputs.js", () => {
             const grouped = [
                 {
                     outputPort: { fqn: "port1", label: "port1" },
-                    operations: [{ outputPortOperation: { fqn: "port1.op1", label: "op1" }, outputAdapter: { label: "adapter1" } }]
+                    operations: [{ outputPortOperation: { fqn: "port1.op1", label: "op1" }, outputAdapter: { label: "adapter1" }, persistenceAccessors: [], externalAccessors: [] }]
                 }
             ];
 
@@ -973,7 +988,7 @@ test.describe("outputs.js", () => {
                 outputs.renderOutputsList([
                     {
                         outputPort: { fqn: "p1" },
-                        operations: [{ outputPortOperation: { label:"op1" } }]
+                        operations: [{ outputPortOperation: { label:"op1" }, persistenceAccessors: [], externalAccessors: [] }]
                     }
                 ]);
             } finally {
@@ -991,7 +1006,8 @@ test.describe("outputs.js", () => {
                     operations: [
                         {
                             outputPortOperation: { label: "op1" },
-                            persistenceAccessors: []
+                            persistenceAccessors: [],
+                            externalAccessors: []
                         }
                     ]
                 }

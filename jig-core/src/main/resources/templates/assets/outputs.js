@@ -427,7 +427,7 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
         }
-        const sqlType = op.targetSqlTypes?.[target] || op.sqlType || "";
+        const sqlType = op.targetOperationTypes?.[target] || op.sqlType || "";
         if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), sqlType);
     });
 }
@@ -579,8 +579,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
             currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
             if (visibility.target) {
-                const targetSqlType = op.targetSqlTypes?.[target] || op.sqlType || "";
-                addTargetEdges(builder, currentNode, {targets: [target], sqlType: targetSqlType, targetSqlTypes: {[target]: targetSqlType}}, targetNodes);
+                const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType || "";
+                addTargetEdges(builder, currentNode, {targets: [target], sqlType: targetSqlType, targetOperationTypes: {[target]: targetSqlType}}, targetNodes);
             }
         });
     });
@@ -658,7 +658,7 @@ function createPortGroupRow(group, allTargets, visibility) {
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors?.forEach(op => {
                         if (op.targets?.includes(target)) {
-                            const targetSqlType = op.targetSqlTypes?.[target] || op.sqlType;
+                            const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType;
                             const crud = toCrudChar(targetSqlType);
                             if (crud && isCrudVisible(targetSqlType, visibility)) {
                                 cruds.add(crud);
@@ -689,7 +689,7 @@ function createOperationRow(operation, allTargets, portId, visibility) {
                 const cruds = new Set();
                 operation.persistenceAccessors?.forEach(op => {
                     if (op.targets?.includes(target)) {
-                        const targetSqlType = op.targetSqlTypes?.[target] || op.sqlType;
+                        const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType;
                         const crud = toCrudChar(targetSqlType);
                         if (crud && isCrudVisible(targetSqlType, visibility)) {
                             cruds.add(crud);

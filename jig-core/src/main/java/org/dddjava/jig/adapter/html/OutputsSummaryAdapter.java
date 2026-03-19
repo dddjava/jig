@@ -89,11 +89,11 @@ public class OutputsSummaryAdapter {
                             String methodId = persistenceAccessorOperation.id().value();
                             String typeFqn = persistenceAccessorOperation.id().typeId().fqn();
                             String typeLabel = simpleLabel(typeFqn);
-                            var targetSqlTypes = Json.object();
+                            var targetOperationTypes = Json.object();
                             List<String> targets = persistenceAccessorOperation.targetOperationTypes().persistenceTargets().stream()
                                     .map(persistenceOperation -> {
                                         String operationType = persistenceOperation.operationType().name();
-                                        targetSqlTypes.and(persistenceOperation.persistenceTarget().name(), operationType);
+                                        targetOperationTypes.and(persistenceOperation.persistenceTarget().name(), operationType);
                                         return persistenceOperation.persistenceTarget().name();
                                     }).toList();
 
@@ -104,7 +104,7 @@ public class OutputsSummaryAdapter {
                                         .add(Json.object("id", methodId)
                                                 .and("sqlType", persistenceAccessorOperation.statementOperationType().name())
                                                 .and("targets", Json.array(targets))
-                                                .and("targetSqlTypes", targetSqlTypes));
+                                                .and("targetOperationTypes", targetOperationTypes));
                             }
 
                             executionToAccessor.add(Json.object("execution", adapterExecutionFqn)

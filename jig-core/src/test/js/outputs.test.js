@@ -191,13 +191,13 @@ test.describe("outputs.js", () => {
 
         test("formatPersistenceAccessors: 永続化操作を改行区切りで整形する", () => {
             const formatted = outputs.formatPersistenceAccessors([
-                {statementOperationType: "SELECT", id: "com.example.Mapper.find", persistenceTargets: ["orders"]},
-                {statementOperationType: "UPDATE", id: "com.example.Mapper.update", persistenceTargets: ["orders", "order_items"]},
+                {id: "com.example.Mapper.find", persistenceTargets: ["orders"], targetOperationTypes: {"orders": "SELECT"}},
+                {id: "com.example.Mapper.update", persistenceTargets: ["orders", "order_items"], targetOperationTypes: {"orders": "UPDATE", "order_items": "UPDATE"}},
             ]);
 
             assert.deepEqual(formatted, [
-                "SELECT com.example.Mapper.find [orders]",
-                "UPDATE com.example.Mapper.update [orders, order_items]",
+                "com.example.Mapper.find [SELECT:orders]",
+                "com.example.Mapper.update [UPDATE:orders, UPDATE:order_items]",
             ]);
         });
 
@@ -234,7 +234,7 @@ test.describe("outputs.js", () => {
                 outputAdapter: { fqn: "com.example.A1", label: "A1" },
                 outputAdapterExecution: { fqn: "com.example.A1.ex1", label:"ex1" },
                 persistenceAccessors: [
-                    { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"] }
+                    { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
@@ -245,7 +245,7 @@ test.describe("outputs.js", () => {
             assert.ok(code.includes('Exec_com_example_A1_ex1["ex1"]'));
             assert.ok(code.includes('PortOp_P1_op1 --> Exec_com_example_A1_ex1'));
             assert.ok(code.includes('Exec_com_example_A1_ex1 -- "INSERT" --> Target_0'));
-            assert.ok(code.includes('Target_0[(table1)]'));
+            assert.ok(code.includes('Target_0[("table1")]'));
         });
 
         test("generateOperationMermaidCode: adapterを非表示にするとPortOpからTargetへ直接接続される", () => {
@@ -253,7 +253,7 @@ test.describe("outputs.js", () => {
                 outputPort: { fqn: "P1", label: "P1" },
                 outputPortOperation: { fqn: "P1.op1", label:"op1" },
                 persistenceAccessors: [
-                    { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"] }
+                    { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, externalTypeMethod: true};
@@ -272,10 +272,10 @@ test.describe("outputs.js", () => {
                 persistenceAccessors: [
                     {
                         id: "com.example.repo.save",
-                        statementOperationType: "INSERT",
                         persistenceTargets: ["table1"],
                         group: "com.example.repo",
-                        groupLabel: "repo"
+                        groupLabel: "repo",
+                        targetOperationTypes: {"table1": "INSERT"}
                     }
                 ]
             };
@@ -350,15 +350,15 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"],
-                              group: "com.example.repo", groupLabel: "Repo" }
+                            { id: "repo.save", persistenceTargets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true, externalTypeMethod: true};
             const code = outputs.generatePersistenceMermaidCode(group, visibility);
-            assert.ok(code.includes('Target_0[(table1)]'));
+            assert.ok(code.includes('Target_0[("table1")]'));
             assert.ok(code.includes('POp_repo_save -- "INSERT" --> Target_0'));
             assert.ok(code.includes('Exec_adapter1_exec1 --> POp_repo_save') || code.includes('Exec_exec1 --> POp_repo_save'));
         });
@@ -373,8 +373,8 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"],
-                              group: "com.example.repo", groupLabel: "Repo" }
+                            { id: "repo.save", persistenceTargets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
                 ]
@@ -392,7 +392,7 @@ test.describe("outputs.js", () => {
                 outputPort: { fqn: "P1", label: "P1" },
                 outputPortOperation: { fqn: "P1.op1", label: "op1" },
                 persistenceAccessors: [
-                    { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"] }
+                    { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
                 ]
             };
             const visibility = {port: true, operation: true, adapter: false, execution: false, accessor: false, accessorMethod: false, target: true, direction: 'LR', crudCreate: false, crudRead: true, crudUpdate: true, crudDelete: true};
@@ -419,7 +419,7 @@ test.describe("outputs.js", () => {
                     {
                         outputPortOperation: { fqn: "PortA.op1", label: "op1" },
                         persistenceAccessors: [
-                            { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"] }
+                            { id: "repo.save", persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
                 ]
@@ -440,8 +440,8 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"],
-                              group: "com.example.repo", groupLabel: "Repo" }
+                            { id: "repo.save", persistenceTargets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
                 ]
@@ -466,10 +466,10 @@ test.describe("outputs.js", () => {
                         persistenceAccessors: [
                             {
                                 id: "com.example.repo.methodA",
-                                statementOperationType: "INSERT",
                                 persistenceTargets: ["table1"],
                                 group: "com.example.repo",
-                                groupLabel: "Repo"
+                                groupLabel: "Repo",
+                                targetOperationTypes: {"table1": "INSERT"}
                             }
                         ]
                     },
@@ -480,10 +480,10 @@ test.describe("outputs.js", () => {
                         persistenceAccessors: [
                             {
                                 id: "com.example.repo.methodB",
-                                statementOperationType: "SELECT",
                                 persistenceTargets: ["table1"],
                                 group: "com.example.repo",
-                                groupLabel: "Repo"
+                                groupLabel: "Repo",
+                                targetOperationTypes: {"table1": "SELECT"}
                             }
                         ]
                     }
@@ -506,17 +506,17 @@ test.describe("outputs.js", () => {
                 persistenceAccessors: [
                     {
                         id: "com.example.repo.methodA",
-                        statementOperationType: "INSERT",
                         persistenceTargets: ["table1"],
                         group: "com.example.repo",
-                        groupLabel: "Repo"
+                        groupLabel: "Repo",
+                        targetOperationTypes: {"table1": "INSERT"}
                     },
                     {
                         id: "com.example.repo.methodB",
-                        statementOperationType: "SELECT",
                         persistenceTargets: ["table2"],
                         group: "com.example.repo",
-                        groupLabel: "Repo"
+                        groupLabel: "Repo",
+                        targetOperationTypes: {"table2": "SELECT"}
                     }
                 ]
             };
@@ -697,12 +697,12 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: false, externalAccessor: true, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
             const codeA = outputs.generateExternalTypeMermaidCode(makeGroup("com.example.ExtA", "ExtA"), visibility);
-            assert.ok(codeA.includes('((ExtA))'), "externalAカードにExtAノードが表示されること");
-            assert.ok(!codeA.includes('((ExtB))'), "externalAカードにExtBノードが表示されないこと");
+            assert.ok(codeA.includes('(("ExtA"))'), "externalAカードにExtAノードが表示されること");
+            assert.ok(!codeA.includes('(("ExtB"))'), "externalAカードにExtBノードが表示されないこと");
 
             const codeB = outputs.generateExternalTypeMermaidCode(makeGroup("com.example.ExtB", "ExtB"), visibility);
-            assert.ok(codeB.includes('((ExtB))'), "externalBカードにExtBノードが表示されること");
-            assert.ok(!codeB.includes('((ExtA))'), "externalBカードにExtAノードが表示されないこと");
+            assert.ok(codeB.includes('(("ExtB"))'), "externalBカードにExtBノードが表示されること");
+            assert.ok(!codeB.includes('(("ExtA"))'), "externalBカードにExtAノードが表示されないこと");
         });
 
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
@@ -715,8 +715,8 @@ test.describe("outputs.js", () => {
                         outputAdapter: { fqn: "adapter1", label: "A1" },
                         outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                         persistenceAccessors: [
-                            { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"],
-                              group: "com.example.repo", groupLabel: "Repo" }
+                            { id: "repo.save", persistenceTargets: ["table1"],
+                              group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                         ]
                     }
                 ]
@@ -743,7 +743,7 @@ test.describe("outputs.js", () => {
                             outputPortOperation: {fqn: "com.example.APort.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
                             outputAdapter: {fqn: "com.example.AAdapter", label: "A Adapter"},
                             outputAdapterExecution: {fqn: "com.example.AAdapter.save", label: "save(java.lang.String)", signature: "save(java.lang.String)"},
-                            persistenceAccessors: [{statementOperationType: "SELECT", id: "a.save", persistenceTargets: ["orders"]}],
+                            persistenceAccessors: [{id: "a.save", persistenceTargets: ["orders"], targetOperationTypes: {"orders": "SELECT"}}],
                         },
                         {
                             outputPortOperation: {fqn: "com.example.APort.find", label: "find(java.lang.String)", signature: "find(java.lang.String)"},
@@ -764,7 +764,7 @@ test.describe("outputs.js", () => {
             const itemList = portCard.children[5].children[1];
             assert.equal(itemList.children.length, 2);
             assert.equal(itemList.children[0].children[0].textContent, "save(java.lang.String)");
-            assert.equal(itemList.children[0].children[3].children[0].textContent, "SELECT a.save [orders]");
+            assert.equal(itemList.children[0].children[3].children[0].textContent, "a.save [SELECT:orders]");
             assert.equal(itemList.children[1].children[3].children[0].textContent, "なし");
         });
 
@@ -776,7 +776,7 @@ test.describe("outputs.js", () => {
                     outputPort: { fqn: "Port_A", label: "Port A" },
                     operations: [{
                         outputPortOperation: { fqn: "Port_A.opA", label:"opA" },
-                        persistenceAccessors: [{ statementOperationType: "SELECT", persistenceTargets: ["table1"] }]
+                        persistenceAccessors: [{ persistenceTargets: ["table1"], targetOperationTypes: {"table1": "SELECT"} }]
                     }]
                 }
             ];
@@ -807,8 +807,8 @@ test.describe("outputs.js", () => {
                 operations: [{
                     outputPortOperation: { fqn: "Port_A.opA", label: "opA" },
                     persistenceAccessors: [
-                        { statementOperationType: "INSERT", persistenceTargets: ["table1"] },
-                        { statementOperationType: "SELECT", persistenceTargets: ["table1"] }
+                        { persistenceTargets: ["table1"], targetOperationTypes: {"table1": "INSERT"} },
+                        { persistenceTargets: ["table1"], targetOperationTypes: {"table1": "SELECT"} }
                     ]
                 }]
             }];
@@ -842,7 +842,7 @@ test.describe("outputs.js", () => {
                             outputAdapter: { fqn: "adapter1", label: "A1" },
                             outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                             persistenceAccessors: [
-                                { id: "repo.save", statementOperationType: "INSERT", persistenceTargets: ["table1"], group: "com.example.repo", groupLabel: "Repo" }
+                                { id: "repo.save", persistenceTargets: ["table1"], group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                             ]
                         }
                     ]
@@ -1021,7 +1021,7 @@ test.describe("outputs.js", () => {
                             outputAdapter: { fqn: "adapter1", label: "A1" },
                             outputAdapterExecution: { fqn: "exec1", label: "ex1" },
                             persistenceAccessors: [
-                                { id: "repo.insert", statementOperationType: "INSERT", persistenceTargets: ["table1"], group: "com.example.repo", groupLabel: "Repo" }
+                                { id: "repo.insert", persistenceTargets: ["table1"], group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} }
                             ]
                         }
                     ]

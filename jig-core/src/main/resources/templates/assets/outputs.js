@@ -488,15 +488,14 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
 
 function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
     op.persistenceTargets?.forEach(target => {
+        const operationType = op.targetOperationTypes?.[target] || "";
+        if (!isCrudVisible(operationType, visibility)) return;
         if (!targetNodes.has(target)) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[("$LABEL")]');
         }
-        const operationType = op.targetOperationTypes?.[target] || "";
-        if (isCrudVisible(operationType, visibility)) {
-            const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
-            if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
-        }
+        const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
+        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
     });
 }
 

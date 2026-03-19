@@ -102,8 +102,8 @@ public class OutputsSummaryAdapter {
                             if (accessorMethodIds.add(methodId)) {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
-                                                .and("sqlType", persistenceAccessorOperation.statementOperationType().name())
-                                                .and("targets", Json.array(targets))
+                                                .and("statementOperationType", persistenceAccessorOperation.statementOperationType().name())
+                                                .and("persistenceTargets", Json.array(targets))
                                                 .and("targetOperationTypes", targetOperationTypes));
                             }
 
@@ -155,8 +155,8 @@ public class OutputsSummaryAdapter {
         });
 
         var links = Json.object("operationToExecution", Json.arrayObjects(operationToExecution))
-                .and("executionToAccessor", Json.arrayObjects(executionToAccessor))
-                .and("executionToExternalAccessor", Json.arrayObjects(executionToExternalAccessor));
+                .and("executionToPersistenceAccessor", Json.arrayObjects(executionToAccessor))
+                .and("executionToOtherExternalAccessor", Json.arrayObjects(executionToExternalAccessor));
 
         List<JsonObjectBuilder> accessorsList = new ArrayList<>();
         accessorTypesMap.forEach((typeFqn, typeLabel) -> {
@@ -182,7 +182,7 @@ public class OutputsSummaryAdapter {
         return Json.object("outputPorts", Json.arrayObjects(new ArrayList<>(portsMap.values())))
                 .and("outputAdapters", Json.arrayObjects(new ArrayList<>(adaptersMap.values())))
                 .and("persistenceAccessors", Json.arrayObjects(accessorsList))
-                .and("externalAccessors", Json.arrayObjects(externalAccessorsList))
+                .and("otherExternalAccessors", Json.arrayObjects(externalAccessorsList))
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();

@@ -14,9 +14,9 @@ function getOutputsData() {
         outputPorts: [],
         outputAdapters: [],
         persistenceAccessors: [],
-        externalAccessors: [],
+        otherExternalAccessors: [],
         targets: [],
-        links: {operationToExecution: [], executionToAccessor: [], executionToExternalAccessor: []}
+        links: {operationToExecution: [], executionToPersistenceAccessor: [], executionToOtherExternalAccessor: []}
     };
 }
 
@@ -46,7 +46,7 @@ function groupOperationsByOutputPort(data) {
 
     // execution.fqn → [accessor.id]
     const accessorsByExecution = new Map();
-    (data.links?.executionToAccessor || []).forEach(link => {
+    (data.links?.executionToPersistenceAccessor || []).forEach(link => {
         if (!accessorsByExecution.has(link.execution)) {
             accessorsByExecution.set(link.execution, []);
         }
@@ -55,11 +55,11 @@ function groupOperationsByOutputPort(data) {
 
     // externalAccessor.fqn → externalAccessor
     const externalAccessorByFqn = new Map();
-    (data.externalAccessors || []).forEach(a => externalAccessorByFqn.set(a.fqn, a));
+    (data.otherExternalAccessors || []).forEach(a => externalAccessorByFqn.set(a.fqn, a));
 
     // execution.fqn → Map(accessorFqn → Set(methodName))
     const externalAccessorsByExecution = new Map();
-    (data.links?.executionToExternalAccessor || []).forEach(link => {
+    (data.links?.executionToOtherExternalAccessor || []).forEach(link => {
         if (!externalAccessorsByExecution.has(link.execution))
             externalAccessorsByExecution.set(link.execution, new Map());
         const accessorMethods = externalAccessorsByExecution.get(link.execution);
@@ -106,7 +106,7 @@ function groupOperationsByPersistenceTarget(operations) {
     const map = new Map();
     operations.forEach(operation => {
         operation.persistenceAccessors?.forEach(op => {
-            op.targets?.forEach(target => {
+            op.persistenceTargets?.forEach(target => {
                 if (!map.has(target)) {
                     map.set(target, {
                         target: target,
@@ -154,7 +154,7 @@ function collectAllTargets(grouped) {
     grouped.forEach(group => {
         group.operations.forEach(operation => {
             operation.persistenceAccessors?.forEach(op => {
-                op.targets?.forEach(target => targetsSet.add(target));
+                op.persistenceTargets?.forEach(target => targetsSet.add(target));
             });
         });
     });
@@ -170,8 +170,8 @@ function formatPersistenceAccessors(persistenceAccessors) {
     return persistenceAccessors
         .map(operation => {
             const id = operation.id ?? "";
-            const sqlType = operation.sqlType ?? "";
-            const targets = Array.isArray(operation.targets) ? operation.targets.join(", ") : "";
+            const sqlType = operation.statementOperationType ?? "";
+            const targets = Array.isArray(operation.persistenceTargets) ? operation.persistenceTargets.join(", ") : "";
             return `${sqlType} ${id} [${targets}]`.trim();
         });
 }
@@ -478,12 +478,12 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
 }
 
 function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
-    op.targets?.forEach(target => {
+    op.persistenceTargets?.forEach(target => {
         if (!targetNodes.has(target)) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
             builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
         }
-        const sqlType = op.targetOperationTypes?.[target] || op.sqlType || "";
+        const sqlType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
         const edgeLabel = visibility?.externalTypeMethod ? sqlType : undefined;
         if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
     });
@@ -579,7 +579,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
         lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
         (operation.persistenceAccessors || [])
-            .filter(op => isCrudVisible(op.sqlType, visibility))
+            .filter(op => isCrudVisible(op.statementOperationType, visibility))
             .forEach(op => {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
@@ -629,7 +629,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
 
     group.operations.forEach((operation) => {
         const relevantOps = operation.persistenceAccessors.filter(op =>
-            op.targets.includes(target) && isCrudVisible(op.sqlType, visibility));
+            op.persistenceTargets.includes(target) && isCrudVisible(op.statementOperationType, visibility));
 
         const { portFqn, portLabel, portOpName, portOpFqn,
                 adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
@@ -642,8 +642,8 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
             currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
             if (visibility.target) {
-                const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType || "";
-                addTargetEdges(builder, currentNode, {targets: [target], sqlType: targetSqlType, targetOperationTypes: {[target]: targetSqlType}}, targetNodes, visibility);
+                const targetSqlType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
+                addTargetEdges(builder, currentNode, {persistenceTargets: [target], statementOperationType: targetSqlType, targetOperationTypes: {[target]: targetSqlType}}, targetNodes, visibility);
             }
         });
     });
@@ -713,8 +713,8 @@ function createPortGroupRow(group, allTargets, visibility) {
                 const cruds = new Set();
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors?.forEach(op => {
-                        if (op.targets?.includes(target)) {
-                            const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType;
+                        if (op.persistenceTargets?.includes(target)) {
+                            const targetSqlType = op.targetOperationTypes?.[target] || op.statementOperationType;
                             const crud = toCrudChar(targetSqlType);
                             if (crud) {
                                 cruds.add(crud);
@@ -744,8 +744,8 @@ function createOperationRow(operation, allTargets, portId, visibility) {
                 const cell = createElement("td", {className: "crud-cell"});
                 const cruds = new Set();
                 operation.persistenceAccessors?.forEach(op => {
-                    if (op.targets?.includes(target)) {
-                        const targetSqlType = op.targetOperationTypes?.[target] || op.sqlType;
+                    if (op.persistenceTargets?.includes(target)) {
+                        const targetSqlType = op.targetOperationTypes?.[target] || op.statementOperationType;
                         const crud = toCrudChar(targetSqlType);
                         if (crud) {
                             cruds.add(crud);

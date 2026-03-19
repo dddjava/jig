@@ -11,7 +11,7 @@ import java.util.Collection;
  */
 public record PersistenceAccessorOperation(PersistenceAccessorOperationId id,
                                            PersistenceOperationType statementOperationType,
-                                           PersistenceOperations operations,
+                                           PersistenceTargetOperationTypes operations,
                                            Query query
 ) {
 
@@ -23,8 +23,8 @@ public record PersistenceAccessorOperation(PersistenceAccessorOperationId id,
 
     public static PersistenceAccessorOperation from(PersistenceAccessorOperationId id, PersistenceOperationType statementOperationType, Collection<PersistenceTarget> persistenceTargets) {
         return new PersistenceAccessorOperation(id, statementOperationType,
-                new PersistenceOperations(persistenceTargets.stream()
-                        .map(persistenceTarget -> PersistenceOperation.from(persistenceTarget, statementOperationType))
+                new PersistenceTargetOperationTypes(persistenceTargets.stream()
+                        .map(persistenceTarget -> PersistenceTargetOperationType.from(persistenceTarget, statementOperationType))
                         .toList()),
                 // TODO: Queryはunsupportedではなくauto-generateとかそんな感じかと思う
                 Query.unsupported()

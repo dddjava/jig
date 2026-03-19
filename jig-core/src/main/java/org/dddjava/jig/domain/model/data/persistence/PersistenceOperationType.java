@@ -47,39 +47,39 @@ public enum PersistenceOperationType {
      *
      * JOINを含む複数テーブルの参照に対応。サブクエリ内FROMも対応。WITHなどは未対応。
      */
-    public PersistenceOperations extractTable(Query query, PersistenceAccessorOperationId persistenceAccessorOperationId) {
+    public PersistenceTargetOperationTypes extractTable(Query query, PersistenceAccessorOperationId persistenceAccessorOperationId) {
         if (query.supported()) {
             String sql = query.normalizedQuery().replaceAll("\n", " ");
-            List<PersistenceOperation> targets = new ArrayList<>();
+            List<PersistenceTargetOperationType> targets = new ArrayList<>();
 
             // サブクエリを除去したSQLに対してメインパターンとJOINを適用
             String sqlWithoutSubqueries = removeSubqueries(sql);
             for (Pattern pattern : patterns) {
                 Matcher matcher = pattern.matcher(sqlWithoutSubqueries);
                 while (matcher.find()) {
-                    targets.add(PersistenceOperation.from(PersistenceTarget.fromSql(matcher.group(1)), this));
+                    targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(matcher.group(1)), this));
                 }
             }
 
             Matcher joinMatcher = JOIN_PATTERN.matcher(sqlWithoutSubqueries);
             while (joinMatcher.find()) {
-                targets.add(PersistenceOperation.from(PersistenceTarget.fromSql(joinMatcher.group(1)), SELECT));
+                targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(joinMatcher.group(1)), SELECT));
             }
 
             // サブクエリ内FROMをSELECTとして追加
             for (String table : extractSubqueryFromTargets(sql)) {
-                targets.add(PersistenceOperation.from(PersistenceTarget.fromSql(table), SELECT));
+                targets.add(PersistenceTargetOperationType.from(PersistenceTarget.fromSql(table), SELECT));
             }
 
             if (!targets.isEmpty()) {
-                return new PersistenceOperations(targets);
+                return new PersistenceTargetOperationTypes(targets);
             }
 
             logger.warn("{} を {} としてテーブル名が解析できませんでした。テーブル名は「解析失敗」と表示されます。JIGが認識しているSQL文=[{}]",
                     persistenceAccessorOperationId.logText(), this, sql);
         }
 
-        return new PersistenceOperations(new PersistenceOperation(unexpectedTable(), this));
+        return new PersistenceTargetOperationTypes(new PersistenceTargetOperationType(unexpectedTable(), this));
     }
 
     /**

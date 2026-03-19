@@ -9,33 +9,33 @@ import static java.util.stream.Collectors.joining;
 /**
  * 永続化操作対象群
  */
-public record PersistenceOperations(Collection<PersistenceOperation> persistenceTargets) {
+public record PersistenceTargetOperationTypes(Collection<PersistenceTargetOperationType> persistenceTargets) {
 
-    public PersistenceOperations {
+    public PersistenceTargetOperationTypes {
         // if (persistenceTargets.isEmpty()) throw new IllegalArgumentException("永続化対象は1件以上である必要があります");
         // ...にしたいのだけど、出力時にnothing()を使用しているので今のところできない。永続化周りの出力が片付いたらできるようになるはず。
     }
 
-    public PersistenceOperations(PersistenceOperation persistenceTarget) {
+    public PersistenceTargetOperationTypes(PersistenceTargetOperationType persistenceTarget) {
         this(Collections.singletonList(persistenceTarget));
     }
 
-    public static PersistenceOperations nothing() {
-        return new PersistenceOperations(Collections.emptyList());
+    public static PersistenceTargetOperationTypes nothing() {
+        return new PersistenceTargetOperationTypes(Collections.emptyList());
     }
 
     // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。
-    public PersistenceOperations merge(PersistenceOperations other) {
-        ArrayList<PersistenceOperation> list = new ArrayList<>(this.persistenceTargets);
+    public PersistenceTargetOperationTypes merge(PersistenceTargetOperationTypes other) {
+        ArrayList<PersistenceTargetOperationType> list = new ArrayList<>(this.persistenceTargets);
         list.addAll(other.persistenceTargets);
-        return new PersistenceOperations(list);
+        return new PersistenceTargetOperationTypes(list);
     }
 
     // TODO テストでのみ使用している。テストにもっていくか、テストを見直してなくす。
     public String asText() {
         // 文字列としてユニーク。ソートされてるのは自然なのでメソッド名に含めない。
         return persistenceTargets.stream()
-                .map(PersistenceOperation::persistenceTarget)
+                .map(PersistenceTargetOperationType::persistenceTarget)
                 .map(PersistenceTarget::name)
                 .distinct()
                 .sorted()

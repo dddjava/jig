@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PersistenceOperationTypeTest {
+class PersistenceTargetOperationTypeTypeTest {
 
     private static final PersistenceAccessorOperationId DUMMY_ID =
             PersistenceAccessorOperationId.fromTypeIdAndName(TypeId.valueOf("example.Repo"), "method");
 
     private Map<String, PersistenceOperationType> extractTypeMap(String sql, PersistenceOperationType operationType) {
         Query query = Query.from(sql);
-        PersistenceOperations targets = operationType.extractTable(query, DUMMY_ID);
+        PersistenceTargetOperationTypes targets = operationType.extractTable(query, DUMMY_ID);
         return targets.persistenceTargets().stream()
                 .collect(Collectors.toMap(
                         persistenceOperation -> persistenceOperation.persistenceTarget().name(),
@@ -65,7 +65,7 @@ class PersistenceOperationTypeTest {
         // Spring Data JDBCの :from パラメータが FROM キーワードと誤認識されないこと
         String sql = "SELECT * FROM hoge WHERE id IN (:idList) AND date BETWEEN :from AND :to";
         Query query = Query.from(sql);
-        PersistenceOperations targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
 
         assertEquals("[hoge]", targets.asText());
     }
@@ -74,7 +74,7 @@ class PersistenceOperationTypeTest {
     void nextvalはサブクエリパターンの影響を受けない() {
         String sql = "SELECT nextval('seq_name')";
         Query query = Query.from(sql);
-        PersistenceOperations targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
 
         assertEquals("[nextval('seq_name')]", targets.asText());
     }
@@ -96,7 +96,7 @@ class PersistenceOperationTypeTest {
         // EXISTS(SELECT ... FROM table FOR UPDATE OF "table") の形式
         String sql = "SELECT exists(SELECT 1 FROM hoge WHERE journey_id = :xxxxId FOR UPDATE OF \"hoge\")";
         Query query = Query.from(sql);
-        PersistenceOperations targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
 
         assertEquals("[hoge]", targets.asText());
     }
@@ -105,13 +105,13 @@ class PersistenceOperationTypeTest {
     void テーブル名の引用符は除去される() {
         String sql = "SELECT * FROM \"hoge\".\"fuga\" WHERE id = 1";
         Query query = Query.from(sql);
-        PersistenceOperations targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
+        PersistenceTargetOperationTypes targets = PersistenceOperationType.SELECT.extractTable(query, DUMMY_ID);
 
         assertEquals("[hoge.fuga]", targets.asText());
 
         String mysqlSql = "SELECT * FROM `db`.`table` WHERE id = 1";
         Query query2 = Query.from(mysqlSql);
-        PersistenceOperations targets2 = PersistenceOperationType.SELECT.extractTable(query2, DUMMY_ID);
+        PersistenceTargetOperationTypes targets2 = PersistenceOperationType.SELECT.extractTable(query2, DUMMY_ID);
 
         assertEquals("[db.table]", targets2.asText());
     }

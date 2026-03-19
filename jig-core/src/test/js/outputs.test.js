@@ -697,12 +697,12 @@ test.describe("outputs.js", () => {
             const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: false, externalAccessor: true, externalAccessorMethod: false, externalType: true, externalTypeMethod: false, direction: 'LR', crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
 
             const codeA = outputs.generateExternalTypeMermaidCode(makeGroup("com.example.ExtA", "ExtA"), visibility);
-            assert.ok(codeA.includes('{{ExtA}}'), "externalAカードにExtAノードが表示されること");
-            assert.ok(!codeA.includes('{{ExtB}}'), "externalAカードにExtBノードが表示されないこと");
+            assert.ok(codeA.includes('((ExtA))'), "externalAカードにExtAノードが表示されること");
+            assert.ok(!codeA.includes('((ExtB))'), "externalAカードにExtBノードが表示されないこと");
 
             const codeB = outputs.generateExternalTypeMermaidCode(makeGroup("com.example.ExtB", "ExtB"), visibility);
-            assert.ok(codeB.includes('{{ExtB}}'), "externalBカードにExtBノードが表示されること");
-            assert.ok(!codeB.includes('{{ExtA}}'), "externalBカードにExtAノードが表示されないこと");
+            assert.ok(codeB.includes('((ExtB))'), "externalBカードにExtBノードが表示されること");
+            assert.ok(!codeB.includes('((ExtA))'), "externalBカードにExtAノードが表示されないこと");
         });
 
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {

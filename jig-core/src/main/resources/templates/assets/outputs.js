@@ -328,8 +328,8 @@ class MermaidBuilder {
         return map.get(key);
     }
 
-    addNodeToSubgraph(subgraph, id, label, shape = '["$LABEL"]') {
-        const nodeLine = `    ${id}${shape.replace('$LABEL', label)}`;
+    addNodeToSubgraph(subgraph, id, label) {
+        const nodeLine = `    ${id}["${label}"]`;
         if (!subgraph.lines.includes(nodeLine)) {
             subgraph.lines.push(nodeLine);
         }
@@ -490,7 +490,7 @@ function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
     op.persistenceTargets?.forEach(target => {
         if (!targetNodes.has(target)) {
             targetNodes.set(target, `Target_${targetNodes.size}`);
-            builder.addNode(targetNodes.get(target), target, '[($LABEL)]');
+            builder.addNode(targetNodes.get(target), target, '[("$LABEL")]');
         }
         const operationType = op.targetOperationTypes?.[target] || op.statementOperationType || "";
         const edgeLabel = visibility?.externalTypeMethod ? operationType : undefined;
@@ -504,7 +504,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         if (!visibility.externalType) return;
         if (!extTypeNodes.has(ext.fqn)) {
             extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-            builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '{{$LABEL}}');
+            builder.addNode(extTypeNodes.get(ext.fqn), ext.label, '(("$LABEL"))');
         }
         const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
         if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
@@ -527,7 +527,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessor.label);
         (accessor.methods || []).forEach(accMethod => {
             const accMethodNodeId = `AccMethod_${builder.sanitize(accessor.fqn + '_' + accMethod.name)}`;
-            builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, '[/$LABEL\\]');
+            builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name);
             if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
             (accMethod.externals || []).forEach(ext => addExternal(accMethodNodeId, ext));
         });
@@ -537,7 +537,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         const nodeId = `ExtAcc_${builder.sanitize(accessor.fqn)}`;
         if (!extAccessorNodes.has(accessor.fqn)) {
             extAccessorNodes.set(accessor.fqn, nodeId);
-            builder.addNode(nodeId, accessor.label, '[/$LABEL\\]');
+            builder.addNode(nodeId, accessor.label);
         }
         if (sourceNodeId) builder.addEdge(sourceNodeId, extAccessorNodes.get(accessor.fqn));
 

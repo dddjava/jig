@@ -486,16 +486,15 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     }
 }
 
-function addTargetEdges(builder, sourceNodeId, op, targetNodes, visibility) {
-    Object.keys(op.targetOperationTypes).forEach(target => {
-        const operationType = op.targetOperationTypes[target];
+function addPersistenceTargetEdges(builder, sourceNodeId, op, persistenceTargetNodes, visibility) {
+    Object.entries(op.targetOperationTypes).forEach(([persistenceTarget, operationType]) => {
         if (!isCrudVisible(operationType, visibility)) return;
-        if (!targetNodes.has(target)) {
-            targetNodes.set(target, `Target_${targetNodes.size}`);
-            builder.addNode(targetNodes.get(target), target, '[("$LABEL")]');
+        if (!persistenceTargetNodes.has(persistenceTarget)) {
+            persistenceTargetNodes.set(persistenceTarget, `Target_${persistenceTargetNodes.size}`);
+            builder.addNode(persistenceTargetNodes.get(persistenceTarget), persistenceTarget, '[("$LABEL")]');
         }
         const edgeLabel = visibility.externalTypeMethod ? operationType : undefined;
-        if (sourceNodeId) builder.addEdge(sourceNodeId, targetNodes.get(target), edgeLabel);
+        if (sourceNodeId) builder.addEdge(sourceNodeId, persistenceTargetNodes.get(persistenceTarget), edgeLabel);
     });
 }
 
@@ -570,7 +569,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const adapterSubgraphs = new Map();
     const accessorSubgraphs = new Map();
     const accessorNodes = new Map();
-    const targetNodes = new Map();
+    const persistenceTargetNodes = new Map();
     const extAccessorNodes = new Map();
     const extAccessorSubgraphs = new Map();
     const extTypeNodes = new Map();
@@ -592,7 +591,7 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
                 const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
                 if (visibility.target) {
-                    addTargetEdges(builder, currentNode, op, targetNodes, visibility);
+                    addPersistenceTargetEdges(builder, currentNode, op, persistenceTargetNodes, visibility);
                 }
             });
 
@@ -649,7 +648,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
                 currentNode = addAccessorNode(builder, currentNode, op, visibility, accessorSubgraphs, accessorNodes);
 
                 if (visibility.target) {
-                    addTargetEdges(builder, currentNode, {
+                    addPersistenceTargetEdges(builder, currentNode, {
                         targetOperationTypes: {[target]: op.targetOperationTypes[target]}
                     }, targetNodes, visibility);
                 }

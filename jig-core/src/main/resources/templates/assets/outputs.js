@@ -106,14 +106,14 @@ function groupOperationsByPersistenceTarget(operations) {
     const map = new Map();
     operations.forEach(operation => {
         operation.persistenceAccessors.forEach(op => {
-            Object.keys(op.targetOperationTypes).forEach(target => {
-                if (!map.has(target)) {
-                    map.set(target, {
-                        target: target,
+            Object.keys(op.targetOperationTypes).forEach(persistenceTarget => {
+                if (!map.has(persistenceTarget)) {
+                    map.set(persistenceTarget, {
+                        target: persistenceTarget,
                         operations: [],
                     });
                 }
-                const group = map.get(target);
+                const group = map.get(persistenceTarget);
                 if (!group.operations.includes(operation)) {
                     group.operations.push(operation);
                 }
@@ -154,7 +154,7 @@ function collectAllTargets(grouped) {
     grouped.forEach(group => {
         group.operations.forEach(operation => {
             operation.persistenceAccessors.forEach(op => {
-                Object.keys(op.targetOperationTypes).forEach(target => targetsSet.add(target));
+                Object.keys(op.targetOperationTypes).forEach(persistenceTarget => targetsSet.add(persistenceTarget));
             });
         });
     });
@@ -170,7 +170,7 @@ function formatPersistenceAccessors(persistenceAccessors) {
     return persistenceAccessors
         .map(operation => {
             const operationTypes = Object.entries(operation.targetOperationTypes)
-                .map(([target, operationType]) => `${operationType}:${target}`)
+                .map(([persistenceTarget, operationType]) => `${operationType}:${persistenceTarget}`)
                 .join(", ")
             return `${operation.id} [${operationTypes}]`.trim();
         });
@@ -699,7 +699,7 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
 
 // ===== CRUD テーブル描画 =====
 
-function createPortGroupRow(group, allTargets) {
+function createPortGroupRow(group, allPersistenceTargets) {
     return createElement("tr", {
         className: "port-group-row",
         style: {cursor: "pointer"},
@@ -715,13 +715,13 @@ function createPortGroupRow(group, allTargets) {
                     })
                 ]
             }),
-            ...allTargets.map(target => {
+            ...allPersistenceTargets.map(persistenceTarget => {
                 const cell = createElement("td", {className: "crud-cell port-crud-cell"});
                 const cruds = new Set();
                 group.operations.forEach(operation => {
                     operation.persistenceAccessors.forEach(op => {
-                        if (target in op.targetOperationTypes) {
-                            const operationType = op.targetOperationTypes[target];
+                        if (persistenceTarget in op.targetOperationTypes) {
+                            const operationType = op.targetOperationTypes[persistenceTarget];
                             const crud = toCrudChar(operationType);
                             if (crud) {
                                 cruds.add(crud);
@@ -738,7 +738,7 @@ function createPortGroupRow(group, allTargets) {
     });
 }
 
-function createOperationRow(operation, allTargets, portId) {
+function createOperationRow(operation, allPersistenceTargets, portId) {
     return createElement("tr", {
         className: `operation-row ${portId}`,
         style: {display: "none"},
@@ -747,12 +747,12 @@ function createOperationRow(operation, allTargets, portId) {
                 className: "operation-cell",
                 textContent: operation.outputPortOperation.label
             }),
-            ...allTargets.map(target => {
+            ...allPersistenceTargets.map(persistenceTarget => {
                 const cell = createElement("td", {className: "crud-cell"});
                 const cruds = new Set();
                 operation.persistenceAccessors.forEach(op => {
-                    if (target in op.targetOperationTypes) {
-                        const operationType = op.targetOperationTypes[target];
+                    if (persistenceTarget in op.targetOperationTypes) {
+                        const operationType = op.targetOperationTypes[persistenceTarget];
                         const crud = toCrudChar(operationType);
                         if (crud) {
                             cruds.add(crud);
@@ -768,13 +768,13 @@ function createOperationRow(operation, allTargets, portId) {
     });
 }
 
-function appendGroupToTable(tbody, group, allTargets) {
+function appendGroupToTable(tbody, group, allPersistenceTargets) {
     const portId = fqnToId("port", group.outputPort.fqn);
-    const portRow = createPortGroupRow(group, allTargets);
+    const portRow = createPortGroupRow(group, allPersistenceTargets);
     tbody.appendChild(portRow);
 
     const opRows = group.operations.map(operation => {
-        const row = createOperationRow(operation, allTargets, portId);
+        const row = createOperationRow(operation, allPersistenceTargets, portId);
         tbody.appendChild(row);
         return row;
     });
@@ -794,9 +794,9 @@ function renderCrudTable(grouped) {
 
     container.innerHTML = "";
 
-    const allTargets = collectAllTargets(grouped);
+    const allPersistenceTargets = collectAllTargets(grouped);
 
-    if (allTargets.length === 0) {
+    if (allPersistenceTargets.length === 0) {
         container.textContent = "永続化操作なし";
         return;
     }
@@ -804,15 +804,15 @@ function renderCrudTable(grouped) {
     const headerRow = createElement("tr", {
         children: [
             createElement("th", {textContent: "出力ポート / 操作"}),
-            ...allTargets.map(target => createElement("th", {
-                id: `crud-target-${target}`,
-                textContent: target
+            ...allPersistenceTargets.map(persistenceTarget => createElement("th", {
+                id: `crud-target-${persistenceTarget}`,
+                textContent: persistenceTarget
             }))
         ]
     });
 
     const tbody = createElement("tbody");
-    grouped.forEach(group => appendGroupToTable(tbody, group, allTargets));
+    grouped.forEach(group => appendGroupToTable(tbody, group, allPersistenceTargets));
 
     const table = createElement("table", {
         className: "zebra crud-table",

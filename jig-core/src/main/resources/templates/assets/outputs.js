@@ -692,7 +692,7 @@ function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY)
 
 // ===== CRUD テーブル描画 =====
 
-function createPortGroupRow(group, allTargets, visibility) {
+function createPortGroupRow(group, allTargets) {
     return createElement("tr", {
         className: "port-group-row",
         style: {cursor: "pointer"},
@@ -731,7 +731,7 @@ function createPortGroupRow(group, allTargets, visibility) {
     });
 }
 
-function createOperationRow(operation, allTargets, portId, visibility) {
+function createOperationRow(operation, allTargets, portId) {
     return createElement("tr", {
         className: `operation-row ${portId}`,
         style: {display: "none"},
@@ -761,13 +761,13 @@ function createOperationRow(operation, allTargets, portId, visibility) {
     });
 }
 
-function appendGroupToTable(tbody, group, allTargets, visibility) {
+function appendGroupToTable(tbody, group, allTargets) {
     const portId = fqnToId("port", group.outputPort.fqn);
-    const portRow = createPortGroupRow(group, allTargets, visibility);
+    const portRow = createPortGroupRow(group, allTargets);
     tbody.appendChild(portRow);
 
     const opRows = group.operations.map(operation => {
-        const row = createOperationRow(operation, allTargets, portId, visibility);
+        const row = createOperationRow(operation, allTargets, portId);
         tbody.appendChild(row);
         return row;
     });
@@ -781,7 +781,7 @@ function appendGroupToTable(tbody, group, allTargets, visibility) {
     });
 }
 
-function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
+function renderCrudTable(grouped) {
     const container = document.getElementById("outputs-crud");
     if (!container) return;
 
@@ -805,7 +805,7 @@ function renderCrudTable(grouped, visibility = DEFAULT_VISIBILITY) {
     });
 
     const tbody = createElement("tbody");
-    grouped.forEach(group => appendGroupToTable(tbody, group, allTargets, visibility));
+    grouped.forEach(group => appendGroupToTable(tbody, group, allTargets));
 
     const table = createElement("table", {
         className: "zebra crud-table",
@@ -1118,7 +1118,7 @@ const OutputsApp = {
         renderPersistenceList(persistenceGrouped, visibility);
         renderExternalList(externalGrouped, visibility);
         renderOutputsList(grouped, visibility);
-        renderCrudTable(grouped, visibility);
+        renderCrudTable(grouped);
     }
 };
 

@@ -54,7 +54,7 @@ class OutputsDocumentStub extends DocumentStub {
                 el.getAttribute("name") === "diagram-direction"
             );
         }
-        if (selector === '.outputs-tabs .tab-button') {
+        if (selector === '.outputs-tab-list .tab-button') {
             return this.allElements.filter(el =>
                 el.classList.contains("tab-button")
             );
@@ -80,10 +80,10 @@ function setupDocument() {
     // 必要なコンテナ要素を作成
     const outputsList = doc.createElement("section");
     doc.outputsList = outputsList;
-    outputsList.id = "outputs-list";
-    doc.elementsById.set("outputs-list", outputsList);
+    outputsList.id = "outputs-port-list";
+    doc.elementsById.set("outputs-port-list", outputsList);
 
-    ["outputs-crud", "crud-sidebar", "crud-sidebar-list", "persistence-list", "persistence-sidebar-list", "outputs-sidebar-list"]
+    ["outputs-crud-panel", "crud-sidebar", "crud-sidebar-list", "outputs-persistence-list", "persistence-sidebar-list", "outputs-sidebar-list", "outputs-external-list", "external-sidebar-list"]
         .forEach(id => {
             const el = doc.createElement("div");
             el.id = id;
@@ -780,7 +780,7 @@ test.describe("outputs.js", () => {
 
         test("renderCrudTable: CRUDテーブルが正しく描画され、トグル動作が機能する", () => {
             const doc = setupDocument();
-            const container = doc.getElementById("outputs-crud");
+            const container = doc.getElementById("outputs-crud-panel");
             const grouped = [
                 {
                     outputPort: { fqn: "Port_A", label: "Port A" },
@@ -811,7 +811,7 @@ test.describe("outputs.js", () => {
 
         test("renderCrudTable: 全CRUD表示（デフォルト）のとき、CとRが両方表示される", () => {
             const doc = setupDocument();
-            const container = doc.getElementById("outputs-crud");
+            const container = doc.getElementById("outputs-crud-panel");
             const grouped = [{
                 outputPort: { fqn: "Port_A", label: "Port A" },
                 operations: [{
@@ -831,7 +831,7 @@ test.describe("outputs.js", () => {
 
         test("renderCrudTable: 永続化操作がない場合の表示", () => {
             const doc = setupDocument();
-            const container = doc.getElementById("outputs-crud");
+            const container = doc.getElementById("outputs-crud-panel");
 
             outputs.renderCrudTable([{outputPort: {fqn: "P", label: "P"}, operations: []}]);
             assert.equal(container.textContent, "永続化操作なし");
@@ -839,7 +839,7 @@ test.describe("outputs.js", () => {
 
         test("renderPersistenceList: 永続化ターゲットごとのカードが描画される", () => {
             const doc = setupDocument();
-            const container = doc.getElementById("persistence-list");
+            const container = doc.getElementById("outputs-persistence-list");
             const sidebar = doc.getElementById("persistence-sidebar-list");
 
             const grouped = [
@@ -904,11 +904,11 @@ test.describe("outputs.js", () => {
             const doc = global.document;
 
             outputs.renderOutputsList([]);
-            const container = doc.getElementById("outputs-list");
+            const container = doc.getElementById("outputs-port-list");
             assert.equal(container.children[0].textContent, "データなし");
 
             outputs.renderPersistenceList([], {port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true});
-            const pContainer = doc.getElementById("persistence-list");
+            const pContainer = doc.getElementById("outputs-persistence-list");
             assert.equal(pContainer.children[0].textContent, "データなし");
         });
 
@@ -937,7 +937,7 @@ test.describe("outputs.js", () => {
 
             const originalQuerySelectorAll = doc.querySelectorAll;
             doc.querySelectorAll = (selector) => {
-                if (selector === '.outputs-tabs .tab-button') return [tabButton];
+                if (selector === '.outputs-tab-list .tab-button') return [tabButton];
                 if (selector === '.outputs-tab-panel') return [tabPanel];
                 if (selector === 'input[name^="show-"]') return checkboxes;
                 return originalQuerySelectorAll.call(doc, selector);
@@ -998,7 +998,7 @@ test.describe("outputs.js", () => {
 
         test("renderOutputsList: port/adapter/accessor/target が全て false のとき、カードが描画されない", () => {
             const doc = setupDocument();
-            const container = doc.getElementById("outputs-list");
+            const container = doc.getElementById("outputs-port-list");
 
             const grouped = [
                 {
@@ -1020,7 +1020,7 @@ test.describe("outputs.js", () => {
 
         test("renderPersistenceList: 全CRUD非表示でINSERTのみの操作があるとき、カードが描画されない", () => {
             const doc = setupDocument();
-            const container = doc.getElementById("persistence-list");
+            const container = doc.getElementById("outputs-persistence-list");
 
             const grouped = [
                 {

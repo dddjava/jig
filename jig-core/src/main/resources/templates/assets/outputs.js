@@ -788,7 +788,7 @@ function appendGroupToTable(tbody, group, allPersistenceTargets) {
 }
 
 function renderCrudTable(grouped) {
-    const container = document.getElementById("outputs-crud");
+    const container = document.getElementById("outputs-crud-panel");
     if (!container) return;
 
     container.innerHTML = "";
@@ -827,7 +827,7 @@ function renderCrudTable(grouped) {
 // ===== コンテンツ描画 =====
 
 function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
-    const container = document.getElementById("outputs-list");
+    const container = document.getElementById("outputs-port-list");
     const sidebar = document.getElementById("outputs-sidebar-list");
     if (!container) return;
     container.innerHTML = "";
@@ -871,7 +871,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
         cardChildren.push(portMermaidContainer);
 
-        const itemList = createElement("div", {className: "outputs-item-list"});
+        const itemList = createElement("div", {className: "outputs-operation-list"});
         group.operations.forEach(operation => {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
             const operationWithPort = {...operation, outputPort: group.outputPort};
@@ -879,16 +879,16 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
             lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
             itemList.appendChild(createElement("article", {
-                className: "outputs-item",
+                className: "outputs-operation-item",
                 children: [
                     createElement("h4", {textContent: operation.outputPortOperation.label}),
                     mermaidContainer,
                     createElement("p", {
-                        className: "outputs-persistence-title",
+                        className: "outputs-persistence-detail-title",
                         textContent: "永続化操作詳細"
                     }),
                     createElement("ul", {
-                        className: "outputs-persistence-list",
+                        className: "outputs-persistence-detail-list",
                         children: formatPersistenceAccessors(operation.persistenceAccessors).map(text => createElement("li", {textContent: text}))
                     })
                 ]
@@ -896,7 +896,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         });
         const itemListDetails = createElement("details", {});
         const itemListSummary = createElement("summary", {
-            className: "outputs-item-list-summary",
+            className: "outputs-operation-list-summary",
             textContent: `操作一覧 (${group.operations.length}件)`
         });
         itemListDetails.appendChild(itemListSummary);
@@ -904,7 +904,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         cardChildren.push(itemListDetails);
 
         container.appendChild(createElement("section", {
-            className: "outputs-port-card",
+            className: "outputs-group-card",
             id: portId,
             children: cardChildren
         }));
@@ -923,7 +923,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
 }
 
 function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
-    const container = document.getElementById("persistence-list");
+    const container = document.getElementById("outputs-persistence-list");
     const sidebar = document.getElementById("persistence-sidebar-list");
     if (!container) return;
     container.innerHTML = "";
@@ -938,7 +938,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
         container.appendChild(createElement("section", {
-            className: "outputs-port-card",
+            className: "outputs-group-card",
             id: targetId,
             children: [
                 createElement("h3", {textContent: group.persistenceTarget}),
@@ -958,7 +958,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
 }
 
 function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
-    const container = document.getElementById("external-list");
+    const container = document.getElementById("outputs-external-list");
     const sidebar = document.getElementById("external-sidebar-list");
     if (!container) return;
     container.innerHTML = "";
@@ -974,7 +974,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
         container.appendChild(createElement("section", {
-            className: "outputs-port-card",
+            className: "outputs-group-card",
             id: externalId,
             children: [
                 createElement("h3", {textContent: group.externalType.label}),
@@ -1099,7 +1099,7 @@ const OutputsApp = {
             });
         });
 
-        document.querySelectorAll('.outputs-tabs .tab-button').forEach(button => {
+        document.querySelectorAll('.outputs-tab-list .tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 const tabName = button.getAttribute('data-tab');
                 this.setState({activeTab: tabName});
@@ -1114,7 +1114,7 @@ const OutputsApp = {
 
     renderTabs() {
         const {activeTab} = this.state;
-        document.querySelectorAll('.outputs-tabs .tab-button').forEach(btn => {
+        document.querySelectorAll('.outputs-tab-list .tab-button').forEach(btn => {
             btn.classList.toggle('is-active', btn.getAttribute('data-tab') === activeTab);
         });
         document.querySelectorAll('.outputs-tab-panel').forEach(panel => {

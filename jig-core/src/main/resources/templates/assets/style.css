@@ -859,7 +859,7 @@ table td.number {
     flex-direction: column;
     overflow: hidden;
 }
-.outputs .outputs-container {
+.outputs .outputs-view-container {
     display: flex;
     gap: 20px;
     align-items: flex-start;
@@ -872,72 +872,72 @@ table td.number {
     top: 0;
     max-height: calc(100vh - 2em);
 }
-.outputs .outputs-list {
+.outputs .outputs-group-list {
     flex: 1;
     display: grid;
     gap: 16px;
     min-width: 0;
     overflow-x: auto;
 }
-.outputs .outputs-port-card {
+.outputs .outputs-group-card {
     border: 1px solid #d4d9e5;
     border-radius: 8px;
     padding: 14px 16px;
     background: linear-gradient(180deg, #f9fbff, #f3f6ff);
 }
-.outputs .outputs-port-card > h3 {
+.outputs .outputs-group-card > h3 {
     margin: 0;
 }
-.outputs .outputs-port-card > .fully-qualified-name {
+.outputs .outputs-group-card > .fully-qualified-name {
     margin-top: 4px;
     margin-bottom: 0;
 }
-.outputs .outputs-port-card > .weak {
+.outputs .outputs-group-card > .weak {
     margin-top: 4px;
     margin-bottom: 10px;
 }
-.outputs .outputs-item-list {
+.outputs .outputs-operation-list {
     display: grid;
     gap: 10px;
 }
-.outputs .outputs-item-list-summary {
+.outputs .outputs-operation-list-summary {
     cursor: pointer;
     padding: 6px 0;
     color: #31455f;
     font-weight: bold;
 }
-.outputs .outputs-item {
+.outputs .outputs-operation-item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;
     padding: 10px 12px;
     background-color: #fff;
 }
-.outputs .outputs-item > h4 {
+.outputs .outputs-operation-item > h4 {
     margin-top: 0;
     margin-bottom: 10px;
     color: #1b3a66;
 }
-.outputs .outputs-item-meta {
+.outputs .outputs-operation-item-meta {
     margin: 0;
     display: grid;
     gap: 6px;
 }
-.outputs .outputs-item-field {
+.outputs .outputs-operation-item-field {
     display: grid;
     grid-template-columns: 130px 1fr;
     gap: 8px;
 }
-.outputs .outputs-item-field > dt {
+.outputs .outputs-operation-item-field > dt {
     font-weight: bold;
 }
-.outputs .outputs-item-field > dd {
+.outputs .outputs-operation-item-field > dd {
     margin: 0;
 }
-.outputs .outputs-persistence-title {
+.outputs .outputs-persistence-detail-title {
     margin: 10px 0 6px 0;
     font-weight: bold;
 }
-.outputs .outputs-persistence-list {
+.outputs .outputs-persistence-detail-list {
     margin: 0;
     padding-left: 18px;
 }
@@ -964,7 +964,7 @@ table td.number {
     background-color: #f0f0f0;
     opacity: 1;
 }
-.outputs .outputs-crud {
+.outputs .outputs-crud-panel {
     overflow-x: auto;
     width: 100%;
 }
@@ -972,7 +972,7 @@ table td.number {
     flex-shrink: 0;
     background-color: #fff;
 }
-.outputs .outputs-common-settings {
+.outputs .outputs-settings-panel {
     margin: 16px 0 0 0;
     padding: 12px;
     border: 1px solid #d9e1ea;
@@ -980,7 +980,7 @@ table td.number {
     background: linear-gradient(180deg, #fbfcff, #f4f7fb);
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
 }
-.outputs .outputs-common-settings__title {
+.outputs .outputs-settings-panel__title {
     margin: 0;
     color: #31455f;
     font-size: 0.85rem;
@@ -991,50 +991,50 @@ table td.number {
     display: flex;
     align-items: center;
 }
-.outputs .outputs-display-mode {
+.outputs .outputs-visibility-panel {
     padding: 8px;
     background-color: #eef4ff;
     border-radius: 6px;
     font-size: 0.9em;
     margin-top: 8px;
 }
-.outputs .outputs-display-mode__groups {
+.outputs .outputs-visibility-panel__groups {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-.outputs .outputs-display-mode__group {
+.outputs .outputs-visibility-panel__group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 4px 12px;
 }
-.outputs .outputs-display-mode__group-label {
+.outputs .outputs-visibility-panel__group-label {
     margin: 0 0 2px 0;
     font-size: 0.8rem;
     color: #6b7280;
     font-weight: bold;
 }
-.outputs .outputs-display-mode label {
+.outputs .outputs-visibility-panel label {
     cursor: pointer;
 }
-.outputs .outputs-display-mode .checkbox-pair {
+.outputs .outputs-visibility-panel .checkbox-pair {
     display: flex;
     flex-direction: column;
     gap: 2px;
     border-left: 2px solid #aac4f0;
     padding-left: 6px;
 }
-.outputs .outputs-display-mode .checkbox-child {
+.outputs .outputs-visibility-panel .checkbox-child {
     padding-left: 8px;
     font-size: 0.95em;
     color: #374151;
 }
-.outputs .outputs-display-mode .checkbox-grandchild {
+.outputs .outputs-visibility-panel .checkbox-grandchild {
     padding-left: 16px;
     font-size: 0.90em;
 }
-.outputs .outputs-tabs {
+.outputs .outputs-tab-list {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;

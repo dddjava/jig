@@ -16,12 +16,12 @@
     </aside>
 
     <div class="outputs-sticky-header">
-        <details class="outputs-common-settings" open>
-            <summary class="outputs-common-settings__title">表示設定</summary>
-            <div class="outputs-display-mode" role="group" aria-labelledby="outputs-display-mode-title">
-                <div class="outputs-display-mode__groups">
-                    <div class="outputs-display-mode__group">
-                        <p class="outputs-display-mode__group-label">表示要素</p>
+        <details class="outputs-settings-panel" open>
+            <summary class="outputs-settings-panel__title">表示設定</summary>
+            <div class="outputs-visibility-panel" role="group" aria-labelledby="outputs-visibility-panel-title">
+                <div class="outputs-visibility-panel__groups">
+                    <div class="outputs-visibility-panel__group">
+                        <p class="outputs-visibility-panel__group-label">表示要素</p>
                         <div class="checkbox-pair">
                             <label><input type="checkbox" name="show-port" checked> ポート</label>
                             <label class="checkbox-child"><input type="checkbox" name="show-operation" checked> メソッド</label>
@@ -39,15 +39,15 @@
                             <label class="checkbox-child"><input type="checkbox" name="show-external-type-method" checked> 操作方法</label>
                         </div>
                     </div>
-                    <div class="outputs-display-mode__group">
-                        <p class="outputs-display-mode__group-label">永続化操作方法</p>
+                    <div class="outputs-visibility-panel__group">
+                        <p class="outputs-visibility-panel__group-label">永続化操作方法</p>
                         <label><input type="checkbox" name="show-crud-r" checked> SELECT</label>
                         <label><input type="checkbox" name="show-crud-c" checked> INSERT</label>
                         <label><input type="checkbox" name="show-crud-u" checked> UPDATE</label>
                         <label><input type="checkbox" name="show-crud-d" checked> DELETE</label>
                     </div>
-                    <div class="outputs-display-mode__group">
-                        <p class="outputs-display-mode__group-label">ダイアグラムの方向</p>
+                    <div class="outputs-visibility-panel__group">
+                        <p class="outputs-visibility-panel__group-label">ダイアグラムの方向</p>
                         <label><input type="radio" name="diagram-direction" value="LR" checked> 左→右</label>
                         <label><input type="radio" name="diagram-direction" value="TB"> 上→下</label>
                     </div>
@@ -55,7 +55,7 @@
             </div>
         </details>
 
-        <nav class="outputs-tabs">
+        <nav class="outputs-tab-list">
             <button class="tab-button is-active" data-tab="outputs">ポート</button>
             <button class="tab-button" data-tab="persistence">永続化</button>
             <button class="tab-button" data-tab="crud">永続化(CRUD)</button>
@@ -64,33 +64,33 @@
     </div>
 
     <div id="outputs-tab-panel" class="outputs-tab-panel is-active">
-        <div class="outputs-container">
-            <nav id="outputs-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="ポートナビゲーション">
+        <div class="outputs-view-container">
+            <nav id="outputs-port-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="ポートナビゲーション">
                 <div id="outputs-sidebar-list" class="in-page-sidebar__list"></div>
             </nav>
-            <section id="outputs-list" class="outputs-list" aria-label="ポート"></section>
+            <section id="outputs-port-list" class="outputs-group-list" aria-label="ポート"></section>
         </div>
     </div>
 
     <div id="persistence-tab-panel" class="outputs-tab-panel">
-        <div class="outputs-container">
-            <nav id="persistence-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="永続化ナビゲーション">
+        <div class="outputs-view-container">
+            <nav id="outputs-persistence-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="永続化ナビゲーション">
                 <div id="persistence-sidebar-list" class="in-page-sidebar__list"></div>
             </nav>
-            <section id="persistence-list" class="outputs-list" aria-label="永続化"></section>
+            <section id="outputs-persistence-list" class="outputs-group-list" aria-label="永続化"></section>
         </div>
     </div>
 
     <div id="crud-tab-panel" class="outputs-tab-panel">
-        <section id="outputs-crud" class="outputs-crud" aria-label="永続化(CRUD)"></section>
+        <section id="outputs-crud-panel" class="outputs-crud-panel" aria-label="永続化(CRUD)"></section>
     </div>
 
     <div id="external-tab-panel" class="outputs-tab-panel">
-        <div class="outputs-container">
-            <nav id="external-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="外部型ナビゲーション">
+        <div class="outputs-view-container">
+            <nav id="outputs-external-sidebar" class="outputs-sidebar in-page-sidebar" aria-label="外部型ナビゲーション">
                 <div id="external-sidebar-list" class="in-page-sidebar__list"></div>
             </nav>
-            <section id="external-list" class="outputs-list" aria-label="外部型"></section>
+            <section id="outputs-external-list" class="outputs-group-list" aria-label="外部型"></section>
         </div>
     </div>
 </main>

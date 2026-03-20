@@ -84,6 +84,7 @@ public class JigDocumentGenerator {
         var handleResults = generateDocuments(jigRepository);
 
         generateIndex(handleResults);
+        generateDebugHtml();
         generateAssets();
         return new JigResultData(handleResults, IndexView.indexFilePath(outputDirectory));
     }
@@ -146,6 +147,17 @@ public class JigDocumentGenerator {
                 return HandleResult.withException(jigDocument, e);
             }
         }));
+    }
+
+    private void generateDebugHtml() {
+        Path outputPath = outputDirectory.resolve("debug.html");
+        try (var resource = JigDocumentGenerator.class.getResourceAsStream("/templates/debug.html")) {
+            if (resource != null) {
+                Files.copy(resource, outputPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            logger.warn("debug.html の出力に失敗しました", e);
+        }
     }
 
     private void generateIndex(List<HandleResult> results) {

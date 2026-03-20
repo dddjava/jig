@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>JIG Debug - Data Viewer</title>
+    <style>
+        body {
+            font-family: monospace;
+            margin: 0;
+            padding: 0;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        header {
+            background: #252526;
+            padding: 12px 24px;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 16px;
+            color: #cccccc;
+        }
+        header a {
+            color: #9cdcfe;
+            font-size: 13px;
+        }
+        #container {
+            display: flex;
+            height: calc(100vh - 45px);
+        }
+        #sidebar {
+            width: 240px;
+            min-width: 240px;
+            background: #252526;
+            border-right: 1px solid #3c3c3c;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        #sidebar h2 {
+            font-size: 11px;
+            color: #bbb;
+            padding: 8px 16px 4px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .sidebar-item {
+            display: block;
+            padding: 6px 16px;
+            color: #cccccc;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .sidebar-item:hover {
+            background: #2a2d2e;
+        }
+        .sidebar-item.active {
+            background: #094771;
+            color: #ffffff;
+        }
+        .sidebar-item.missing {
+            color: #666;
+        }
+        #main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        #toolbar {
+            background: #2d2d2d;
+            padding: 6px 16px;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+            color: #aaa;
+        }
+        #toolbar span {
+            color: #9cdcfe;
+        }
+        #search-box {
+            margin-left: auto;
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #ccc;
+            padding: 3px 8px;
+            font-size: 12px;
+            width: 200px;
+        }
+        #json-view {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+        }
+        #json-view pre {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .json-key    { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-bool   { color: #569cd6; }
+        .json-null   { color: #569cd6; }
+        .highlight { background: #613315; }
+        #empty-msg {
+            color: #666;
+            padding: 32px 16px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>JIG Debug - Data Viewer</h1>
+    <a href="./index.html">[INDEX]</a>
+</header>
+<div id="container">
+    <nav id="sidebar">
+        <h2>データファイル</h2>
+        <div id="sidebar-items">読み込み中...</div>
+    </nav>
+    <div id="main">
+        <div id="toolbar">
+            <span id="current-file">-</span>
+            <input id="search-box" type="text" placeholder="キーワード検索...">
+        </div>
+        <div id="json-view">
+            <div id="empty-msg">左のリストからファイルを選択してください。</div>
+        </div>
+    </div>
+</div>
+
+<script>
+const DATA_FILES = [
+    { file: "data/usecase-data.js",      varName: "usecaseData" },
+    { file: "data/application-data.js",  varName: "applicationData" },
+    { file: "data/entrypoint-data.js",   varName: "entrypointData" },
+    { file: "data/outputs-data.js",      varName: "outputPortData" },
+    { file: "data/package-data.js",      varName: "packageData" },
+    { file: "data/insight-data.js",      varName: "insightData" },
+    { file: "data/glossary-data.js",     varName: "glossaryData" },
+    { file: "data/list-output-data.js",  varName: "listData" },
+];
+
+function loadScript(src) {
+    return new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = src + "?_=" + Date.now();
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
+function syntaxHighlight(json) {
+    return json
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+            let cls = "json-number";
+            if (/^"/.test(match)) {
+                cls = /:$/.test(match) ? "json-key" : "json-string";
+            } else if (/true|false/.test(match)) {
+                cls = "json-bool";
+            } else if (/null/.test(match)) {
+                cls = "json-null";
+            }
+            return `<span class="${cls}">${match}</span>`;
+        });
+}
+
+function showJson(entry) {
+    const data = globalThis[entry.varName];
+    const view = document.getElementById("json-view");
+    document.getElementById("current-file").textContent = entry.file;
+    document.getElementById("search-box").value = "";
+
+    const formatted = JSON.stringify(data, null, 2);
+    const pre = document.createElement("pre");
+    pre.innerHTML = syntaxHighlight(formatted);
+    view.innerHTML = "";
+    view.appendChild(pre);
+
+    document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
+    document.querySelector(`[data-file="${entry.file}"]`).classList.add("active");
+}
+
+function applySearch(keyword) {
+    const pre = document.querySelector("#json-view pre");
+    if (!pre) return;
+    if (!keyword) {
+        pre.querySelectorAll(".highlight").forEach(el => {
+            el.replaceWith(document.createTextNode(el.textContent));
+        });
+        pre.normalize();
+        return;
+    }
+    // rebuild from scratch on each search
+    const entry = DATA_FILES.find(e => e.file === document.getElementById("current-file").textContent);
+    if (!entry) return;
+    const data = globalThis[entry.varName];
+    const formatted = JSON.stringify(data, null, 2);
+    const highlighted = syntaxHighlight(formatted).replace(
+        new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"),
+        m => `<mark class="highlight">${m}</mark>`
+    );
+    pre.innerHTML = highlighted;
+}
+
+async function init() {
+    const sidebarItems = document.getElementById("sidebar-items");
+    sidebarItems.innerHTML = "";
+
+    let firstLoaded = null;
+
+    for (const entry of DATA_FILES) {
+        const btn = document.createElement("button");
+        btn.className = "sidebar-item";
+        btn.textContent = entry.file.replace("data/", "").replace("-data.js", "");
+        btn.dataset.file = entry.file;
+
+        try {
+            await loadScript(entry.file);
+            if (globalThis[entry.varName] !== undefined) {
+                btn.addEventListener("click", () => showJson(entry));
+                if (!firstLoaded) firstLoaded = entry;
+            } else {
+                btn.classList.add("missing");
+                btn.title = "データなし";
+            }
+        } catch (_) {
+            btn.classList.add("missing");
+            btn.title = "ファイルなし";
+        }
+
+        sidebarItems.appendChild(btn);
+    }
+
+    if (firstLoaded) {
+        showJson(firstLoaded);
+    } else {
+        document.getElementById("empty-msg").textContent = "data/*-data.js が見つかりませんでした。JIGを実行してからアクセスしてください。";
+    }
+
+    document.getElementById("search-box").addEventListener("input", e => {
+        applySearch(e.target.value.trim());
+    });
+}
+
+init();
+</script>
+</body>
+</html>

@@ -409,9 +409,8 @@ function flashButtonLabel(button, text) {
     window.setTimeout(() => { button.textContent = original; }, 1500);
 }
 
-function renderMermaid(generateCodeFn, data, container, visibility = DEFAULT_VISIBILITY) {
+function renderMermaid(mermaidCode, container) {
     if (typeof mermaid === "undefined") return;
-    const mermaidCode = generateCodeFn(data, visibility);
     if (!mermaidCode) return;
 
     const svgContainer = createElement("div", {className: "mermaid-diagram__svg"});
@@ -835,7 +834,8 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
     if (sidebar) sidebar.innerHTML = "";
 
     grouped.forEach(group => {
-        if (!generatePortMermaidCode(group, visibility)) return;
+        const portMermaidCode = generatePortMermaidCode(group, visibility);
+        if (!portMermaidCode) return;
         const portFqnValue = group.outputPort.fqn;
         const portId = fqnToId("port", portFqnValue);
         const portLabel = group.outputPort.label;
@@ -868,14 +868,15 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
 
         const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(portMermaidContainer, () => renderMermaid(generatePortMermaidCode, group, portMermaidContainer, visibility));
+        lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
         cardChildren.push(portMermaidContainer);
 
         const itemList = createElement("div", {className: "outputs-item-list"});
         group.operations.forEach(operation => {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
             const operationWithPort = {...operation, outputPort: group.outputPort};
-            lazyRender(mermaidContainer, () => renderMermaid(generateOperationMermaidCode, operationWithPort, mermaidContainer, visibility));
+            const operationMermaidCode = generateOperationMermaidCode(operationWithPort, visibility);
+            lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
             itemList.appendChild(createElement("article", {
                 className: "outputs-item",
@@ -929,11 +930,12 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
     if (sidebar) sidebar.innerHTML = "";
 
     grouped.forEach(group => {
-        if (!generatePersistenceMermaidCode(group, visibility)) return;
+        const persistenceMermaidCode = generatePersistenceMermaidCode(group, visibility);
+        if (!persistenceMermaidCode) return;
         const targetId = fqnToId("persistence", group.persistenceTarget);
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(persistenceMermaidContainer, () => renderMermaid(generatePersistenceMermaidCode, group, persistenceMermaidContainer, visibility));
+        lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outputs-port-card",
@@ -963,12 +965,13 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
     if (sidebar) sidebar.innerHTML = "";
 
     grouped.forEach(group => {
-        if (!generateExternalTypeMermaidCode(group, visibility)) return;
+        const externalMermaidCode = generateExternalTypeMermaidCode(group, visibility);
+        if (!externalMermaidCode) return;
         const externalFqn = group.externalType.fqn;
         const externalId = fqnToId("external", externalFqn);
 
         const externalMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(externalMermaidContainer, () => renderMermaid(generateExternalTypeMermaidCode, group, externalMermaidContainer, visibility));
+        lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outputs-port-card",

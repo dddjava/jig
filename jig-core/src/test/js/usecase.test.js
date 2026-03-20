@@ -61,9 +61,19 @@ test.describe('UsecaseApp', () => {
         const dom = new JSDOM(`
             <!DOCTYPE html>
             <html>
-            <body>
-                <div id="usecase-sidebar-list"></div>
-                <div id="usecase-list"></div>
+            <body class="usecase-summary">
+                <main class="usecase">
+                    <details class="controls">
+                        <summary>表示設定</summary>
+                        <div class="filter-controls">
+                            <label><input type="checkbox" id="show-fields" checked> フィールド</label>
+                            <label><input type="checkbox" id="show-diagrams" checked> ダイアグラム</label>
+                            <label><input type="checkbox" id="show-details" checked> 引数・戻り値</label>
+                        </div>
+                    </details>
+                    <div id="usecase-sidebar-list"></div>
+                    <div id="usecase-list"></div>
+                </main>
             </body>
             </html>
         `, { runScripts: "dangerously" });
@@ -72,6 +82,11 @@ test.describe('UsecaseApp', () => {
         document = window.document;
         global.window = window;
         global.document = document;
+        const storage = {};
+        global.localStorage = {
+            getItem: (key) => storage[key] || null,
+            setItem: (key, value) => storage[key] = String(value),
+        };
         global.IntersectionObserver = class {
             constructor(callback) {
                 this.callback = callback;
@@ -133,5 +148,36 @@ test.describe('UsecaseApp', () => {
         
         const mainList = document.getElementById('usecase-list');
         assert.strictEqual(mainList.textContent, 'データなし');
+    });
+
+    test('initControls should toggle body classes and save to localStorage', () => {
+        global.globalThis = { usecaseData: mockUsecaseData };
+        UsecaseApp.init();
+
+        const showFields = document.getElementById('show-fields');
+        const showDiagrams = document.getElementById('show-diagrams');
+        const showDetails = document.getElementById('show-details');
+
+        // Initial state
+        assert.strictEqual(showFields.checked, true);
+        assert.strictEqual(document.body.classList.contains('hide-usecase-fields'), false);
+
+        // Toggle fields
+        showFields.checked = false;
+        showFields.dispatchEvent(new window.Event('change'));
+        assert.strictEqual(document.body.classList.contains('hide-usecase-fields'), true);
+        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-fields'), 'false');
+
+        // Toggle diagrams
+        showDiagrams.checked = false;
+        showDiagrams.dispatchEvent(new window.Event('change'));
+        assert.strictEqual(document.body.classList.contains('hide-usecase-diagrams'), true);
+        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-diagrams'), 'false');
+
+        // Toggle details
+        showDetails.checked = false;
+        showDetails.dispatchEvent(new window.Event('change'));
+        assert.strictEqual(document.body.classList.contains('hide-usecase-details'), true);
+        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-details'), 'false');
     });
 });

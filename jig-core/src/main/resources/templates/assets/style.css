@@ -862,15 +862,19 @@ table td.number {
 .outputs .outputs-view-container {
     display: flex;
     gap: 20px;
-    align-items: flex-start;
+    align-items: stretch;
     padding-top: 16px;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 .outputs .outputs-sidebar {
     max-width: 260px;
     min-width: 260px;
-    position: sticky;
-    top: 0;
-    max-height: calc(100vh - 2em);
+    height: 100%;
+    overflow-y: auto;
+    padding-bottom: 20px;
+    box-sizing: border-box;
 }
 .outputs .outputs-group-list {
     flex: 1;
@@ -878,6 +882,11 @@ table td.number {
     gap: 16px;
     min-width: 0;
     overflow-x: auto;
+    overflow-y: auto;
+    height: 100%;
+    padding-bottom: 20px;
+    box-sizing: border-box;
+    align-content: start;
 }
 .outputs .outputs-group-card {
     border: 1px solid #d4d9e5;
@@ -965,8 +974,11 @@ table td.number {
     opacity: 1;
 }
 .outputs .outputs-crud-panel {
-    overflow-x: auto;
+    flex: 1;
+    overflow: auto;
     width: 100%;
+    height: 100%;
+    box-sizing: border-box;
 }
 .outputs .outputs-sticky-header {
     flex-shrink: 0;
@@ -1067,11 +1079,11 @@ table td.number {
     display: none;
 }
 .outputs .outputs-tab-panel.is-active {
-    display: block;
+    display: flex;
+    flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 @media (max-width: 900px) {
     .outputs .outputs-container {

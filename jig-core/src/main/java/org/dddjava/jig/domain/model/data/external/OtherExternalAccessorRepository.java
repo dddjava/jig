@@ -38,10 +38,13 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
 
                     // アクセサメソッドとその呼び出しを個別に収集
                     // インスタンスフィールドを使用するものなのでインスタンスメソッドだけとしたいところだが、
-                    // private staticメソッドに引数でインスタンスを渡して呼ぶようなケースもあったりするし、lambdaがそのようになるものもあるため当面はこれで。
+                    // private staticメソッドに引数でインスタンスを渡して呼ぶようなケースもあったりするので、当面はこれで。
                     var operations = jigType.allJigMethodStream()
+                            // lambdaメソッドを除外する。ここで除外しておかないと二重で登録されることになる
+                            .filter(jigMethod -> !jigMethod.jigMethodDeclaration().header().isLambdaSyntheticMethod())
                             .flatMap(jigMethod -> {
-                                var externalMethodCalls = jigMethod.usingMethods().invokedMethodStream()
+                                // lambdaの中のメソッド呼び出しも展開して探索する
+                                var externalMethodCalls = jigMethod.lambdaInlinedMethodCallStream()
                                         .filter(mc -> externalFieldTypes.contains(mc.methodOwner()))
                                         .toList();
                                 if (externalMethodCalls.isEmpty()) {

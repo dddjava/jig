@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
+import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.terms.Term;
@@ -158,5 +159,9 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
      */
     private JigMethodHeader header() {
         return jigMethodDeclaration.header();
+    }
+
+    public Stream<MethodCall> lambdaInlinedMethodCallStream() {
+        return instructions().lambdaInlinedMethodCallStream();
     }
 }

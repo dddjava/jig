@@ -108,12 +108,6 @@ public enum JigDocument {
             "domain"),
 
     /**
-     * アプリケーション概要
-     */
-    ApplicationSummary(
-            JigDocumentLabel.of("アプリケーション概要", "application"),
-            "application"),
-    /**
      * ユースケース概要
      */
     UsecaseSummary(

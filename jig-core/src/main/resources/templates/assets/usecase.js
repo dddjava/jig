@@ -57,6 +57,72 @@ function renderSidebarSection(container, title, items) {
     }
 }
 
+function createFieldsTable(fields) {
+    const thead = createElement("thead", {
+        children: [
+            createElement("tr", {
+                children: [
+                    createElement("th", { attributes: { width: "20%" }, textContent: "フィールド" }),
+                    createElement("th", { textContent: "フィールド型" })
+                ]
+            })
+        ]
+    });
+
+    const tbody = createElement("tbody", {
+        children: fields.map(field => createElement("tr", {
+            children: [
+                createElement("td", {
+                    className: field.isDeprecated ? "deprecated" : "",
+                    textContent: field.name
+                }),
+                createElement("td", { innerHTML: field.typeHtml })
+            ]
+        }))
+    });
+
+    return createElement("table", {
+        className: "fields",
+        children: [thead, tbody]
+    });
+}
+
+function createMethodsTable(kind, methods) {
+    const thead = createElement("thead", {
+        children: [
+            createElement("tr", {
+                children: [
+                    createElement("th", { attributes: { width: "20%" }, textContent: kind }),
+                    createElement("th", { textContent: "引数" }),
+                    createElement("th", { textContent: "戻り値型" }),
+                    createElement("th", { textContent: "説明" })
+                ]
+            })
+        ]
+    });
+
+    const tbody = createElement("tbody", {
+        children: methods.map(method => createElement("tr", {
+            children: [
+                createElement("td", { className: "method-name", textContent: method.labelWithSymbol }),
+                createElement("td", {
+                    children: (method.argumentsLinks || []).map(argLink => createElement("span", {
+                        className: "method-argument-item",
+                        innerHTML: argLink
+                    }))
+                }),
+                createElement("td", { innerHTML: method.returnTypeLink }),
+                createElement("td", {
+                    className: "markdown",
+                    innerHTML: method.description ? marked.parse(method.description) : ""
+                })
+            ]
+        }))
+    });
+
+    return createElement("table", { children: [thead, tbody] });
+}
+
 function lazyRender(container, renderFn) {
     if (typeof IntersectionObserver === "undefined") {
         renderFn();
@@ -201,6 +267,14 @@ const UsecaseApp = {
                     className: "markdown",
                     innerHTML: marked.parse(usecase.description)
                 }));
+            }
+
+            if (usecase.fields && usecase.fields.length > 0) {
+                section.appendChild(createFieldsTable(usecase.fields));
+            }
+
+            if (usecase.staticMethods && usecase.staticMethods.length > 0) {
+                section.appendChild(createMethodsTable("staticメソッド", usecase.staticMethods));
             }
 
             usecase.methods.forEach(method => {

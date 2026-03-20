@@ -10,12 +10,20 @@ import java.util.Collection;
  * 外部アクセサ（その他）操作
  *
  * JIG読み取り範囲外のクラスを外部型とし、そのメソッドを呼び出しているメソッドのこと。
+ *
+ * @param externalMethodCalls 外部型のメソッド呼び出し。これをもたないものは外部アクセサ操作ではないので、必ず1件以上。
  */
 public record OtherExternalAccessorOperation(
         TypeId accessorTypeId,
         JigMethod accessorJigMethod,
         Collection<MethodCall> externalMethodCalls
 ) {
+    public OtherExternalAccessorOperation {
+        if (externalMethodCalls.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+    }
+
     public String accessorMethodName() {
         return accessorJigMethod.name();
     }

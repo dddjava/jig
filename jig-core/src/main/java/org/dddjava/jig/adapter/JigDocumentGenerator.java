@@ -68,6 +68,7 @@ public class JigDocumentGenerator {
         compositeAdapter.register(new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext)));
         compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
         compositeAdapter.register(new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext)));
+        compositeAdapter.register(new ApplicationSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new OutputsSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new EntrypointSummaryAdapter(jigService, jigDocumentContext));

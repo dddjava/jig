@@ -28,12 +28,6 @@ public class SummaryAdapter {
         return write(jigDocument, SummaryModel.forDomainSummary(jigTypes, packages, coreTypesAndRelations, enumModels));
     }
 
-    @HandleDocument(JigDocument.ApplicationSummary)
-    public List<Path> applicationSummary(JigRepository jigRepository, JigDocument jigDocument) {
-        var jigTypes = jigService.serviceTypes(jigRepository);
-        return write(jigDocument, SummaryModel.of(jigTypes, jigService.packages(jigRepository)));
-    }
-
     private List<Path> write(JigDocument jigDocument, SummaryModel result) {
         return thymeleafSummaryWriter.write(jigDocument, result);
     }

@@ -155,6 +155,10 @@ const DATA_FILES = [
     { file: "data/glossary-data.js",     varName: "glossaryData" },
     { file: "data/list-output-data.js",  varName: "listData" },
 ];
+const TEXT_FILES = [
+    { file: "jig-metrics.txt", type: "text" },
+];
+const loadedTexts = {};
 
 function loadScript(src) {
     return new Promise((resolve, reject) => {
@@ -198,9 +202,25 @@ function showJson(entry) {
     document.querySelector(`[data-file="${entry.file}"]`).classList.add("active");
 }
 
+function showText(entry) {
+    const text = loadedTexts[entry.file];
+    const view = document.getElementById("json-view");
+    document.getElementById("current-file").textContent = entry.file;
+    document.getElementById("search-box").value = "";
+
+    const pre = document.createElement("pre");
+    pre.textContent = text;
+    view.innerHTML = "";
+    view.appendChild(pre);
+
+    document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
+    document.querySelector(`[data-file="${entry.file}"]`).classList.add("active");
+}
+
 function applySearch(keyword) {
     const pre = document.querySelector("#json-view pre");
     if (!pre) return;
+    const currentFile = document.getElementById("current-file").textContent;
     if (!keyword) {
         pre.querySelectorAll(".highlight").forEach(el => {
             el.replaceWith(document.createTextNode(el.textContent));
@@ -208,15 +228,20 @@ function applySearch(keyword) {
         pre.normalize();
         return;
     }
+    const re = new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
     // rebuild from scratch on each search
-    const entry = DATA_FILES.find(e => e.file === document.getElementById("current-file").textContent);
+    const textEntry = TEXT_FILES.find(e => e.file === currentFile);
+    if (textEntry) {
+        const escaped = loadedTexts[textEntry.file]
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        pre.innerHTML = escaped.replace(re, m => `<mark class="highlight">${m}</mark>`);
+        return;
+    }
+    const entry = DATA_FILES.find(e => e.file === currentFile);
     if (!entry) return;
     const data = globalThis[entry.varName];
     const formatted = JSON.stringify(data, null, 2);
-    const highlighted = syntaxHighlight(formatted).replace(
-        new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"),
-        m => `<mark class="highlight">${m}</mark>`
-    );
+    const highlighted = syntaxHighlight(formatted).replace(re, m => `<mark class="highlight">${m}</mark>`);
     pre.innerHTML = highlighted;
 }
 
@@ -236,7 +261,7 @@ async function init() {
             await loadScript(entry.file);
             if (globalThis[entry.varName] !== undefined) {
                 btn.addEventListener("click", () => showJson(entry));
-                if (!firstLoaded) firstLoaded = entry;
+                if (!firstLoaded) firstLoaded = { entry, show: () => showJson(entry) };
             } else {
                 btn.classList.add("missing");
                 btn.title = "データなし";
@@ -249,8 +274,36 @@ async function init() {
         sidebarItems.appendChild(btn);
     }
 
+    const metricsHeader = document.createElement("h2");
+    metricsHeader.textContent = "メトリクス";
+    sidebarItems.appendChild(metricsHeader);
+
+    for (const entry of TEXT_FILES) {
+        const btn = document.createElement("button");
+        btn.className = "sidebar-item";
+        btn.textContent = entry.file;
+        btn.dataset.file = entry.file;
+
+        try {
+            const res = await fetch(entry.file + "?_=" + Date.now());
+            if (res.ok) {
+                loadedTexts[entry.file] = await res.text();
+                btn.addEventListener("click", () => showText(entry));
+                if (!firstLoaded) firstLoaded = { entry, show: () => showText(entry) };
+            } else {
+                btn.classList.add("missing");
+                btn.title = "ファイルなし";
+            }
+        } catch (_) {
+            btn.classList.add("missing");
+            btn.title = "ファイルなし";
+        }
+
+        sidebarItems.appendChild(btn);
+    }
+
     if (firstLoaded) {
-        showJson(firstLoaded);
+        firstLoaded.show();
     } else {
         document.getElementById("empty-msg").textContent = "data/*-data.js が見つかりませんでした。JIGを実行してからアクセスしてください。";
     }

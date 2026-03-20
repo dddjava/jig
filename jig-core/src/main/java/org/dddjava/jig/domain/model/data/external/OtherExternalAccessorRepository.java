@@ -36,7 +36,9 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
                         return Stream.of();
                     }
 
-                    // アクセッサメソッドとその呼び出しを個別に収集
+                    // アクセサメソッドとその呼び出しを個別に収集
+                    // インスタンスフィールドを使用するものなのでインスタンスメソッドだけとしたいところだが、
+                    // private staticメソッドに引数でインスタンスを渡して呼ぶようなケースもあったりするし、lambdaがそのようになるものもあるため当面はこれで。
                     var operations = jigType.allJigMethodStream()
                             .flatMap(jigMethod -> {
                                 var externalMethodCalls = jigMethod.usingMethods().invokedMethodStream()

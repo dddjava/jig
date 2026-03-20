@@ -1,30 +1,3 @@
-// ===== サイドバーツリー描画 =====
-
-function buildTreeUl(node) {
-    const ul = document.createElement("ul");
-    ul.className = "in-page-sidebar__links";
-
-    const children = node.children || [];
-    children.forEach(child => {
-        const li = document.createElement("li");
-        li.className = "in-page-sidebar__item" + (child.isPackage ? " in-page-sidebar__item--package" : "");
-
-        const a = document.createElement("a");
-        a.className = "in-page-sidebar__link" + (child.isDeprecated ? " deprecated" : "");
-        a.href = child.href;
-        a.textContent = (child.isPackage ? "▶︎ " : "") + child.name;
-        li.appendChild(a);
-
-        if (child.isPackage && child.children && child.children.length > 0) {
-            li.appendChild(buildTreeUl(child));
-        }
-
-        ul.appendChild(li);
-    });
-
-    return ul;
-}
-
 // ===== アプリケーション本体 =====
 
 const ApplicationApp = {
@@ -39,19 +12,8 @@ const ApplicationApp = {
     },
 
     render() {
-        const { tree, packages, types } = this.state.data;
-        this.renderSidebar(tree);
+        const { packages, types } = this.state.data;
         this.renderList(packages, types);
-    },
-
-    renderSidebar(tree) {
-        const sidebar = document.getElementById("application-sidebar-list");
-        if (!sidebar) return;
-        sidebar.innerHTML = "";
-
-        if (tree && tree.children && tree.children.length > 0) {
-            sidebar.appendChild(buildTreeUl(tree));
-        }
     },
 
     renderList(packages, types) {

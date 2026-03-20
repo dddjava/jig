@@ -220,7 +220,36 @@ const UsecaseApp = {
         this.state.data = globalThis.usecaseData;
         if (!this.state.data) return;
 
+        this.initControls();
         this.render();
+    },
+
+    initControls() {
+        const controls = [
+            { id: 'show-fields', class: 'hide-usecase-fields' },
+            { id: 'show-diagrams', class: 'hide-usecase-diagrams' },
+            { id: 'show-details', class: 'hide-usecase-details' }
+        ];
+
+        controls.forEach(control => {
+            const checkbox = document.getElementById(control.id);
+            if (!checkbox) return;
+
+            const storageKey = `jig-usecase-${control.id}`;
+            const savedValue = localStorage.getItem(storageKey);
+            
+            if (savedValue !== null) {
+                checkbox.checked = savedValue === 'true';
+            }
+
+            const update = () => {
+                document.body.classList.toggle(control.class, !checkbox.checked);
+                localStorage.setItem(storageKey, checkbox.checked);
+            };
+
+            checkbox.addEventListener('change', update);
+            update();
+        });
     },
 
     render() {

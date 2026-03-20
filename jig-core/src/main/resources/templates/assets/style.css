@@ -237,6 +237,37 @@ main table.fields thead {
     margin-left: 2em;
 }
 
+body.hide-usecase-fields .fields {
+    display: none;
+}
+body.hide-usecase-diagrams .mermaid-diagram {
+    display: none;
+}
+body.hide-usecase-details .depends {
+    display: none;
+}
+
+.usecase-summary .controls {
+    background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1em;
+}
+.usecase-summary .controls summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 6px 0;
+    font-weight: 600;
+}
+.usecase-summary .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 10px;
+}
+
 /* 用語集 */
 .terms .identifier {
     text-overflow: clip;

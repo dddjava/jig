@@ -191,7 +191,7 @@ function isCrudVisible(operationType, visibility) {
         case 'SELECT': return visibility.crudRead !== false;
         case 'UPDATE': return visibility.crudUpdate !== false;
         case 'DELETE': return visibility.crudDelete !== false;
-        default: return false;
+        default: return true;
     }
 }
 
@@ -638,6 +638,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
                 adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
 
         operation.persistenceAccessors
+            .filter(op => persistenceTarget in op.targetOperationTypes)
             .filter(op => isCrudVisible(op.targetOperationTypes[persistenceTarget], visibility))
             .forEach(op => {
                 let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);

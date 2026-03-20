@@ -35,7 +35,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .label(usecase.usecaseLabel())
                 .tooltip(usecase.simpleTextWithDeclaringType())
                 .as(usecase.isHandler() ? NodeRole.主役 : NodeRole.準主役)
-                .url(usecase.declaringType(), JigDocument.ApplicationSummary);
+                .url(usecase.declaringType(), JigDocument.UsecaseSummary);
     }
 
     // TODO ダイアグラムにlambdaが表示されてもいいことないので、インライン化して廃止する

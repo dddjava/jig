@@ -47,7 +47,6 @@ public class HandleResultImpl implements HandleResult {
             case ApplicationList,
                  BusinessRuleList,
                  DomainSummary,
-                 ApplicationSummary,
                  UsecaseSummary,
                  EntrypointSummary,
                  OutputsSummary,

@@ -40,7 +40,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .label(jigMethod.aliasText())
                 .tooltip(jigMethod.simpleText())
                 .as(NodeRole.準主役)
-                .url(jigMethod.jigMethodDeclaration().declaringTypeId(), JigDocument.ApplicationSummary);
+                .url(jigMethod.jigMethodDeclaration().declaringTypeId(), JigDocument.UsecaseSummary);
     }
 
     @Override

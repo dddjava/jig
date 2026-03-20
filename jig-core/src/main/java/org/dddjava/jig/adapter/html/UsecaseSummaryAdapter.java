@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -60,26 +61,51 @@ public class UsecaseSummaryAdapter {
         List<JsonObjectBuilder> usecaseList = new ArrayList<>();
 
         for (var jigType : contextJigTypes.list()) {
+            List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
+                    .map(this::buildFieldJson)
+                    .collect(Collectors.toList());
+
+            List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods()
+                    .filterProgrammerDefined()
+                    .excludeNotNoteworthyObjectMethod()
+                    .listRemarkable()
+                    .stream()
+                    .map(jigMethod -> buildMethodJson(jigMethod, contextJigTypes, methodRelations))
+                    .collect(Collectors.toList());
+
             List<JsonObjectBuilder> methodList = new ArrayList<>();
             for (var jigMethod : jigType.instanceJigMethods().filterProgrammerDefined().excludeNotNoteworthyObjectMethod().listRemarkable()) {
-                methodList.add(Json.object("methodId", HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId()))
-                        .and("label", jigMethod.labelText())
-                        .and("declaration", jigMethod.simpleMethodDeclarationText())
-                        .and("returnTypeLink", methodReturnLinkText(jigMethod))
-                        .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))
-                        .and("description", jigMethod.term().description())
-                        .and("graph", buildGraphJson(jigMethod, contextJigTypes, methodRelations)));
+                methodList.add(buildMethodJson(jigMethod, contextJigTypes, methodRelations));
             }
 
-            if (!methodList.isEmpty()) {
+            if (!methodList.isEmpty() || !fields.isEmpty() || !staticMethods.isEmpty()) {
                 usecaseList.add(Json.object("typeId", jigType.fqn())
                         .and("label", jigType.label())
                         .and("description", jigType.term().description())
+                        .and("fields", Json.arrayObjects(fields))
+                        .and("staticMethods", Json.arrayObjects(staticMethods))
                         .and("methods", Json.arrayObjects(methodList)));
             }
         }
 
         return Json.object("usecases", Json.arrayObjects(usecaseList)).build();
+    }
+
+    private JsonObjectBuilder buildFieldJson(JigField field) {
+        return Json.object("name", field.nameText())
+                .and("typeHtml", linkText(field.jigTypeReference()))
+                .and("isDeprecated", field.isDeprecated());
+    }
+
+    private JsonObjectBuilder buildMethodJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {
+        return Json.object("methodId", HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId()))
+                .and("label", jigMethod.labelText())
+                .and("labelWithSymbol", jigMethod.labelTextWithSymbol())
+                .and("declaration", jigMethod.simpleMethodDeclarationText())
+                .and("returnTypeLink", methodReturnLinkText(jigMethod))
+                .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))
+                .and("description", jigMethod.term().description())
+                .and("graph", buildGraphJson(jigMethod, contextJigTypes, methodRelations));
     }
 
     private JsonObjectBuilder buildGraphJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {

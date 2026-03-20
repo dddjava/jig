@@ -15,10 +15,25 @@ const mockUsecaseData = {
             typeId: "com.example.ServiceA",
             label: "ServiceA",
             description: "Description of ServiceA",
+            fields: [
+                { name: "field1", typeHtml: "String", isDeprecated: false }
+            ],
+            staticMethods: [
+                {
+                    methodId: "staticMethod1",
+                    label: "staticMethod1",
+                    labelWithSymbol: "staticMethod1",
+                    declaration: "staticMethod1():void",
+                    returnTypeLink: '<span class="weak">void</span>',
+                    argumentsLinks: [],
+                    description: "Description of staticMethod1"
+                }
+            ],
             methods: [
                 {
                     methodId: "method1",
                     label: "method1",
+                    labelWithSymbol: "method1",
                     declaration: "method1():void",
                     returnTypeLink: '<span class="weak">void</span>',
                     argumentsLinks: [],
@@ -86,6 +101,15 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(serviceSection.querySelector('h2 a').textContent, 'ServiceA');
         assert.strictEqual(serviceSection.querySelector('.fully-qualified-name').textContent, 'com.example.ServiceA');
         assert.strictEqual(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
+
+        const fieldsTable = serviceSection.querySelector('table.fields');
+        assert.ok(fieldsTable);
+        assert.strictEqual(fieldsTable.querySelector('tbody td').textContent, 'field1');
+
+        const staticMethodsTable = serviceSection.querySelector('table:not(.fields)');
+        assert.ok(staticMethodsTable);
+        assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
+        assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
         
         const methodSection = serviceSection.querySelector('.method');
         assert.ok(methodSection);

@@ -67,6 +67,7 @@ test.describe('UsecaseApp', () => {
                         <summary>表示設定</summary>
                         <div class="filter-controls">
                             <label><input type="checkbox" id="show-fields" checked> フィールド</label>
+                            <label><input type="checkbox" id="show-static-methods" checked> staticメソッド</label>
                             <label><input type="checkbox" id="show-diagrams" checked> ダイアグラム</label>
                             <label><input type="checkbox" id="show-details" checked> 引数・戻り値</label>
                         </div>
@@ -155,6 +156,7 @@ test.describe('UsecaseApp', () => {
         UsecaseApp.init();
 
         const showFields = document.getElementById('show-fields');
+        const showStaticMethods = document.getElementById('show-static-methods');
         const showDiagrams = document.getElementById('show-diagrams');
         const showDetails = document.getElementById('show-details');
 
@@ -167,6 +169,12 @@ test.describe('UsecaseApp', () => {
         showFields.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-fields'), true);
         assert.strictEqual(global.localStorage.getItem('jig-usecase-show-fields'), 'false');
+
+        // Toggle static methods
+        showStaticMethods.checked = false;
+        showStaticMethods.dispatchEvent(new window.Event('change'));
+        assert.strictEqual(document.body.classList.contains('hide-usecase-static-methods'), true);
+        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-static-methods'), 'false');
 
         // Toggle diagrams
         showDiagrams.checked = false;

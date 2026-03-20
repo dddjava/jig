@@ -713,6 +713,37 @@ test.describe("outputs.js", () => {
             assert.ok(!codeB.includes('(("ExtA"))'), "externalBカードにExtAノードが表示されないこと");
         });
 
+        test("generatePersistenceMermaidCode: table2のみアクセスするアクセッサはtable1のカードに表示されない", () => {
+            // バグ再現: isCrudVisible(undefined, ...) が true を返すことで、
+            // 無関係なアクセッサが永続化カードに混入しラベルなしエッジが生じていた
+            const group = {
+                persistenceTarget: "table1",
+                operations: [
+                    {
+                        outputPort: { fqn: "p1", label: "P1" },
+                        outputPortOperation: { fqn: "p1.op1", label: "op1" },
+                        outputAdapter: { fqn: "adapter1", label: "A1" },
+                        outputAdapterExecution: { fqn: "exec1", label: "ex1" },
+                        persistenceAccessors: [
+                            // table1 へのアクセッサ
+                            { id: "repo.save", group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table1": "INSERT"} },
+                            // table2 のみへのアクセッサ（table1 とは無関係）
+                            { id: "repo.find", group: "com.example.repo", groupLabel: "Repo", targetOperationTypes: {"table2": "SELECT"} }
+                        ]
+                    }
+                ]
+            };
+            const visibility = {port: true, operation: true, adapter: true, execution: true, accessor: true, accessorMethod: true, target: true, externalTypeMethod: true, crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true};
+            const code = outputs.generatePersistenceMermaidCode(group, visibility);
+            // table1 への INSERT エッジが存在すること
+            assert.ok(code.includes('"INSERT"'), `INSERTエッジが存在すること:\n${code}`);
+            // table2 のみのアクセッサによるラベルなしエッジが存在しないこと
+            assert.ok(!code.includes('-- "" -->'), `ラベルなしエッジが存在しないこと:\n${code}`);
+            assert.ok(!code.includes('-->  '), `不正なエッジが存在しないこと:\n${code}`);
+            // repo.find (table2専用) のノードは存在しないこと
+            assert.ok(!code.includes('POp_repo_find'), `table2専用アクセッサノードが存在しないこと:\n${code}`);
+        });
+
         test("generatePersistenceMermaidCode: accessor非表示のとき、Execution → Target が直接接続される", () => {
             const group = {
                 persistenceTarget: "table1",

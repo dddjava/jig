@@ -191,7 +191,7 @@ function isCrudVisible(operationType, visibility) {
         case 'SELECT': return visibility.crudRead !== false;
         case 'UPDATE': return visibility.crudUpdate !== false;
         case 'DELETE': return visibility.crudDelete !== false;
-        default: return true;
+        default: return false;
     }
 }
 

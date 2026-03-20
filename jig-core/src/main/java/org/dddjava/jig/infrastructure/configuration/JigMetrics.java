@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -44,23 +43,38 @@ public class JigMetrics {
                 // メトリクスを出力
                 JigDocumentGenerator jigDocumentGenerator = configuration.jigDocumentGenerator();
                 jigDocumentGenerator.close(outputDirectory -> {
-                    String metricsFilePath = "jig-metrics.txt";
-                    var path = outputDirectory.resolve(metricsFilePath);
-                    try (var outputStream = Files.newOutputStream(path)) {
-                        var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
-                        globalRegistry.getRegistries().forEach(it -> {
-                            if (it instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
-                                try {
-                                    prometheusMeterRegistry.scrape(outputStream);
-                                } catch (IOException e) {
-                                    throw new UncheckedIOException(e);
-                                }
-                            }
-                        });
-                        // このclose以降は記録されない
-                        globalRegistry.close();
-                    } catch (IOException | UncheckedIOException e) {
-                        logger.error("Failed to export metrics to file: {}", path, e);
+                    var globalRegistry = io.micrometer.core.instrument.Metrics.globalRegistry;
+                    var metricsText = new StringBuilder();
+                    globalRegistry.getRegistries().forEach(it -> {
+                        if (it instanceof PrometheusMeterRegistry prometheusMeterRegistry) {
+                            metricsText.append(prometheusMeterRegistry.scrape());
+                        }
+                    });
+                    // このclose以降は記録されない
+                    globalRegistry.close();
+
+                    var text = metricsText.toString();
+
+                    // jig-metrics.txt に書き出す
+                    var txtPath = outputDirectory.resolve("jig-metrics.txt");
+                    try {
+                        Files.writeString(txtPath, text);
+                    } catch (IOException e) {
+                        logger.error("Failed to export metrics to file: {}", txtPath, e);
+                    }
+
+                    // data/metrics-data.js に書き出す（file:// でも loadScript で読める）
+                    var jsPath = outputDirectory.resolve("data/metrics-data.js");
+                    try {
+                        var escaped = text
+                                .replace("\\", "\\\\")
+                                .replace("\"", "\\\"")
+                                .replace("\r\n", "\\n")
+                                .replace("\n", "\\n")
+                                .replace("\r", "\\n");
+                        Files.writeString(jsPath, "globalThis.metricsData = \"" + escaped + "\";");
+                    } catch (IOException e) {
+                        logger.error("Failed to export metrics JS to file: {}", jsPath, e);
                     }
                 });
             } catch (Exception e) {

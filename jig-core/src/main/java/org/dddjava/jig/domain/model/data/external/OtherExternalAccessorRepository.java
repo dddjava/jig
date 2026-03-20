@@ -38,11 +38,14 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
 
                     // アクセッサメソッドとその呼び出しを個別に収集
                     var operations = jigType.allJigMethodStream()
-                            .map(jigMethod -> {
+                            .flatMap(jigMethod -> {
                                 var externalMethodCalls = jigMethod.usingMethods().invokedMethodStream()
                                         .filter(mc -> externalFieldTypes.contains(mc.methodOwner()))
                                         .toList();
-                                return new OtherExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls);
+                                if (externalMethodCalls.isEmpty()) {
+                                    return Stream.empty();
+                                }
+                                return Stream.of(new OtherExternalAccessorOperation(jigType.id(), jigMethod, externalMethodCalls));
                             })
                             .toList();
 

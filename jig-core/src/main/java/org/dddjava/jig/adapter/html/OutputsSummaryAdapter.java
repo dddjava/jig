@@ -114,9 +114,9 @@ public class OutputsSummaryAdapter {
                             String accessorLabel = simpleLabel(accessorFqn);
                             String accessorMethodName = accessorOperation.accessorMethodName();
 
-                            externalAccessorLabels.putIfAbsent(accessorFqn, accessorLabel);
-
                             accessorOperation.externalMethodCalls().forEach(methodCall -> {
+                                externalAccessorLabels.putIfAbsent(accessorFqn, accessorLabel);
+
                                 String externalFqn = methodCall.methodOwner().fqn();
                                 String externalLabel = simpleLabel(externalFqn);
                                 String externalMethodName = methodCall.methodName();

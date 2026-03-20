@@ -229,7 +229,9 @@ const UsecaseApp = {
             { id: 'show-fields', class: 'hide-usecase-fields' },
             { id: 'show-static-methods', class: 'hide-usecase-static-methods' },
             { id: 'show-diagrams', class: 'hide-usecase-diagrams' },
-            { id: 'show-details', class: 'hide-usecase-details' }
+            { id: 'show-details', class: 'hide-usecase-details' },
+            { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
+            { id: 'show-declarations', class: 'hide-usecase-declarations' }
         ];
 
         controls.forEach(control => {

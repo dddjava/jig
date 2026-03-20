@@ -70,6 +70,8 @@ test.describe('UsecaseApp', () => {
                             <label><input type="checkbox" id="show-static-methods" checked> staticメソッド</label>
                             <label><input type="checkbox" id="show-diagrams" checked> ダイアグラム</label>
                             <label><input type="checkbox" id="show-details" checked> 引数・戻り値</label>
+                            <label><input type="checkbox" id="show-descriptions" checked> 説明</label>
+                            <label><input type="checkbox" id="show-declarations" checked> 完全修飾名・宣言</label>
                         </div>
                     </details>
                     <div id="usecase-sidebar-list"></div>
@@ -159,6 +161,8 @@ test.describe('UsecaseApp', () => {
         const showStaticMethods = document.getElementById('show-static-methods');
         const showDiagrams = document.getElementById('show-diagrams');
         const showDetails = document.getElementById('show-details');
+        const showDescriptions = document.getElementById('show-descriptions');
+        const showDeclarations = document.getElementById('show-declarations');
 
         // Initial state
         assert.strictEqual(showFields.checked, true);
@@ -187,5 +191,17 @@ test.describe('UsecaseApp', () => {
         showDetails.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-details'), true);
         assert.strictEqual(global.localStorage.getItem('jig-usecase-show-details'), 'false');
+
+        // Toggle descriptions
+        showDescriptions.checked = false;
+        showDescriptions.dispatchEvent(new window.Event('change'));
+        assert.strictEqual(document.body.classList.contains('hide-usecase-descriptions'), true);
+        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-descriptions'), 'false');
+
+        // Toggle declarations
+        showDeclarations.checked = false;
+        showDeclarations.dispatchEvent(new window.Event('change'));
+        assert.strictEqual(document.body.classList.contains('hide-usecase-declarations'), true);
+        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-declarations'), 'false');
     });
 });

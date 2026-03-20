@@ -243,6 +243,12 @@ body.hide-usecase-fields .fields {
 body.hide-usecase-static-methods .static-methods {
     display: none;
 }
+body.hide-usecase-descriptions .markdown {
+    display: none;
+}
+body.hide-usecase-declarations .fully-qualified-name {
+    display: none;
+}
 body.hide-usecase-diagrams .mermaid-diagram {
     display: none;
 }

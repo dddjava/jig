@@ -192,20 +192,6 @@ function setupDomMocks() {
     });
 }
 
-function withConsoleErrorCapture(callback) {
-    const errors = [];
-    const originalError = console.error;
-    console.error = (...args) => {
-        errors.push(args.map(arg => String(arg)).join(' '));
-    };
-    try {
-        callback();
-    } finally {
-        console.error = originalError;
-    }
-    return errors;
-}
-
 function createPackageFilterControls(doc) {
     const input = doc.createElement('textarea');
     input.id = 'package-filter-input';
@@ -248,15 +234,12 @@ function setupDiagramEnvironment(doc, context) {
     transitiveReductionToggle.id = 'transitive-reduction-toggle';
     transitiveReductionToggle.type = 'checkbox';
     doc.elementsById.set('transitive-reduction-toggle', transitiveReductionToggle);
-    global.window = {
+    globalThis.Jig = {
         mermaid: {
-            initialize() {
-            },
-            run() {
-            },
-        },
+            renderWithControls() {
+            }
+        }
     };
-    global.mermaid = global.window.mermaid;
     return diagram;
 }
 
@@ -1122,14 +1105,15 @@ test.describe('package.js', () => {
                 button.style = {}; // Initialize style object
                 itemNode.appendChild(button);
 
-                global.window = { mermaid: { initialize: () => {}, run: () => {} } };
-                global.mermaid = global.window.mermaid;
+                const renderWithControls = test.mock.fn(() => {});
+                globalThis.Jig = { mermaid: { renderWithControls } };
 
                 const item = { causes: ['a.A -> b.B'] };
                 pkg.renderMutualDependencyDiagram(item, itemNode, testContext);
 
                 assert.equal(button.style.display, 'none');
                 assert.ok(diagram.style.display === 'block' || diagram.style.display === ''); // Mermaid rendering might change this
+                assert.equal(renderWithControls.mock.calls.length, 1);
             });
 
             test('renderPackageDiagram: 相互依存を含めて描画する', () => {
@@ -1155,23 +1139,11 @@ test.describe('package.js', () => {
                 assert.equal(mutual.children.length > 0, true);
             });
 
-            test('renderPackageDiagram: エッジ数超過時は保留/エラー表示する', () => {
+            test('renderPackageDiagram: エッジ数超過でもrenderWithControlsにedgeCountを渡す', () => {
                 const doc = setupDocument();
-                // setupDiagramEnvironmentが作るdiagramをdomヘルパーが操作することをモックする。
                 const diagramMock = setupDiagramEnvironment(doc, testContext);
-
-                // Mock dom helpers used by showDiagramErrorMessage internally
-                const errorBoxMock = { style: { display: 'none' } };
-                const messageNodeMock = { textContent: '' };
-                const actionNodeMock = { style: { display: 'none' }, onclick: null };
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
-                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // called by getOrCreate
-                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
-                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
-                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
-                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
-                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                const renderWithControls = test.mock.fn(() => {});
+                globalThis.Jig = { mermaid: { renderWithControls } };
 
                 // Data setup (same as before)
                 const packages = [];
@@ -1185,15 +1157,14 @@ test.describe('package.js', () => {
                 }
                 setPackageData({packages, relations}, testContext);
 
-                const errors = withConsoleErrorCapture(() => {
-                    pkg.renderPackageDiagram(testContext, [], null);
-                });
+                pkg.renderPackageDiagram(testContext, [], null);
 
-                assert.equal(errorBoxMock.style.display, '', 'errorBox should be displayed by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage
-                assert.equal(diagramMock.style.display, 'none', 'diagram should be hidden by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage
-                assert.equal(errors.some(line => line.includes('関連数が多すぎるため描画を省略しました。')), true);
-                assert.ok(actionNodeMock.onclick, 'actionNode should have onclick handler');
-                assert.equal(actionNodeMock.style.display, '', 'actionNode should be displayed');
+                assert.equal(diagramMock.textContent.includes('graph'), true);
+                assert.equal(renderWithControls.mock.calls.length, 1);
+                const call = renderWithControls.mock.calls[0].arguments;
+                assert.equal(call[0], diagramMock);
+                assert.equal(typeof call[1], 'string');
+                assert.equal(call[2].edgeCount, 501);
             });
 
             test('registerDiagramClickHandler: クリックで関連フィルタへ切り替える', () => {

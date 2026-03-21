@@ -15,7 +15,6 @@ const packageContext = {
 };
 
 const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
-const DEFAULT_MAX_EDGES = 500;
 
 const dom = {
     getFocusTarget: () => document.getElementById('focus-target'),
@@ -39,46 +38,7 @@ const dom = {
     getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
     getDiagram: () => document.getElementById('package-relation-diagram'),
     getDocumentBody: () => document.body,
-
-    getDiagramErrorBox: () => document.getElementById('package-diagram-error'),
-    createDiagramErrorBox: (diagram) => {
-        let errorBox = document.createElement('div');
-        errorBox.id = 'package-diagram-error';
-        errorBox.setAttribute('role', 'alert');
-        errorBox.style.display = 'none'; // Initially hidden
-        errorBox.style.whiteSpace = 'pre-wrap';
-        errorBox.style.border = '1px solid #cc3333';
-        errorBox.style.background = '#fff5f5';
-        errorBox.style.color = '#222222';
-        errorBox.style.padding = '8px 12px';
-        errorBox.style.margin = '12px 0';
-        // Message and action nodes created here too and appended
-        const message = document.createElement('pre');
-        message.id = 'package-diagram-error-message';
-        message.style.whiteSpace = 'pre-wrap';
-        message.style.margin = '0 0 8px 0';
-
-        const action = document.createElement('button');
-        action.id = 'package-diagram-error-action';
-        action.type = 'button';
-        action.style.display = 'none';
-        action.textContent = '描画する';
-
-        errorBox.appendChild(message);
-        errorBox.appendChild(action);
-        diagram.parentNode.insertBefore(errorBox, diagram); // Insert into DOM
-        return errorBox;
-    },
-    getDiagramErrorMessageNode: () => document.getElementById('package-diagram-error-message'),
-    getDiagramErrorActionNode: () => document.getElementById('package-diagram-error-action'),
-    setNodeTextContent: (element, text) => { if (element) element.textContent = text; },
-    setNodeDisplay: (element, display) => { if (element) element.style.display = display; },
-    setNodeOnClick: (element, handler) => { if (element) element.onclick = handler; },
-    setDiagramElementDisplay: (diagram, display) => { if (diagram) diagram.style.display = display; },
-    setDiagramContent: (element, content) => { if (element) element.textContent = content; },
-    removeDiagramAttribute: (element, attribute) => { if (element) element.removeAttribute(attribute); },
     getPackageDataScript: () => document.getElementById('package-data'),
-    getNodeTextContent: (element) => { return element ? element.textContent : ''; },
 };
 
 // データ取得/整形
@@ -961,61 +921,6 @@ function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText) {
     return lines;
 }
 
-// ダイアグラム表示/エラー
-function getOrCreateDiagramErrorBox(diagram) {
-    let errorBox = dom.getDiagramErrorBox();
-    if (errorBox) return errorBox;
-    return dom.createDiagramErrorBox(diagram);
-}
-
-function showDiagramErrorMessage(diagram, message, pendingRender, err, hash) {
-    if (!diagram) return;
-    console.error(message);
-    if (err) {
-        console.error(err);
-    }
-    if (hash) {
-        console.error('Mermaid error location:', hash.line, hash.loc);
-    }
-    const errorBox = getOrCreateDiagramErrorBox(diagram);
-    const messageNode = dom.getDiagramErrorMessageNode();
-    const actionNode = dom.getDiagramErrorActionNode();
-    dom.setNodeTextContent(messageNode, message);
-    if (actionNode) {
-        const hasAction = Boolean(pendingRender);
-        dom.setNodeDisplay(actionNode, hasAction ? '' : 'none');
-        if (hasAction) {
-            dom.setNodeOnClick(actionNode, function () {
-                renderDiagramWithMermaid(diagram, pendingRender.text, pendingRender.maxEdges);
-            });
-        } else {
-            dom.setNodeOnClick(actionNode, null);
-        }
-    }
-    dom.setNodeDisplay(errorBox, '');
-    dom.setDiagramElementDisplay(diagram, 'none');
-}
-
-function hideDiagramErrorMessage(diagram) {
-    const errorBox = getOrCreateDiagramErrorBox(diagram);
-    const messageNode = dom.getDiagramErrorMessageNode();
-    const actionNode = dom.getDiagramErrorActionNode();
-    dom.setNodeTextContent(messageNode, '');
-    dom.setNodeDisplay(actionNode, 'none');
-    dom.setNodeOnClick(actionNode, null);
-    dom.setNodeDisplay(errorBox, 'none');
-    dom.setDiagramElementDisplay(diagram, '');
-}
-
-function renderDiagramWithMermaid(diagram, text, maxEdges) {
-    if (!diagram || !window.mermaid) return;
-    hideDiagramErrorMessage(diagram);
-    dom.removeDiagramAttribute(diagram, 'data-processed');
-    dom.setDiagramContent(diagram, text);
-    mermaid.initialize({startOnLoad: false, securityLevel: 'loose', maxEdges: maxEdges});
-    mermaid.run({nodes: [diagram]});
-}
-
 // 描画/更新
 function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregationDepth, context) {
     const container = dom.getMutualDependencyList();
@@ -1385,40 +1290,9 @@ function applyDiagramRenderPlan(context, renderPlan) {
     renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
 }
 
-function shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context) {
-    const edgeCount = renderPlan.uniqueRelations.length;
-    if (edgeCount <= DEFAULT_MAX_EDGES) return false;
-    const pendingRender = {text: renderPlan.source, maxEdges: edgeCount};
-    const message = [
-        '関連数が多すぎるため描画を省略しました。',
-        `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
-        '描画する場合はボタンを押してください。',
-    ].join('\n');
-    showDiagramErrorMessage(diagram, message, pendingRender, null, null);
-    return true;
-}
-
 function setDiagramSource(diagram, source) {
     diagram.removeAttribute('data-processed');
     diagram.textContent = source;
-}
-
-function renderDiagramWithMermaidIfAvailable(diagram, renderPlan, context) {
-    if (!window.mermaid) return;
-    ensureMermaidParseErrorHandler(diagram, renderPlan, context);
-    renderDiagramWithMermaid(diagram, renderPlan.source, DEFAULT_MAX_EDGES);
-}
-
-function ensureMermaidParseErrorHandler(diagram, renderPlan, context) {
-    mermaid.parseError = function (err, hash) {
-        const message = err && err.message ? err.message : String(err);
-        const location = hash ? `\nLine: ${hash.line} Column: ${hash.loc}` : '';
-        const isEdgeLimit = message.includes('Edge limit exceeded');
-        const pendingRender = isEdgeLimit
-            ? {text: renderPlan.source, maxEdges: renderPlan.uniqueRelations.length}
-            : null;
-        showDiagramErrorMessage(diagram, `Mermaid parse error: ${message}${location}`, pendingRender, err, hash);
-    };
 }
 
 function renderDiagramAndTable(context) {
@@ -1714,10 +1588,6 @@ if (typeof module !== 'undefined' && module.exports) {
         buildDiagramNodeTooltip,
         buildDiagramGroupTree,
         buildSubgraphLines,
-        getOrCreateDiagramErrorBox,
-        showDiagramErrorMessage,
-        hideDiagramErrorMessage,
-        renderDiagramWithMermaid,
         renderMutualDependencyList,
         renderMutualDependencyDiagram,
         buildMutualDependencyDiagramSource,

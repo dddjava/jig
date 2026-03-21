@@ -282,13 +282,13 @@ test.describe('package.js', () => {
         test.describe('ロジック', () => {
             test('parsePackageSummaryData: 配列/オブジェクトに対応する', () => {
                 const arrayData = pkg.parsePackageSummaryData([
-                    {fqn: 'app.a', name: 'A', classCount: 1, description: ''},
+                    {fqn: 'app.a', classCount: 1},
                 ]);
                 assert.equal(arrayData.packages.length, 1);
                 assert.equal(arrayData.relations.length, 0);
 
                 const objectData = pkg.parsePackageSummaryData({
-                    packages: [{fqn: 'app.b', name: 'B', classCount: 2, description: ''}],
+                    packages: [{fqn: 'app.b', classCount: 2}],
                     relations: [{from: 'app.b', to: 'app.c'}],
                 });
                 assert.equal(objectData.packages.length, 1);
@@ -297,7 +297,7 @@ test.describe('package.js', () => {
 
             test('getPackageSummaryData: 配列/オブジェクトに対応する', () => {
                 setupDocument();
-                setPackageData([{fqn: 'app.a', name: 'A', classCount: 1, description: ''}], testContext);
+                setPackageData([{fqn: 'app.a', classCount: 1}], testContext);
 
                 const data = pkg.getPackageSummaryData(testContext);
 
@@ -743,7 +743,7 @@ test.describe('package.js', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
-                    packages: [{fqn: 'app.domain', name: 'Domain', classCount: 1}],
+                    packages: [{fqn: 'app.domain', classCount: 1}],
                     relations: [],
                 }, testContext);
                 doc.selectorsAll.set('#package-table tbody tr', []);
@@ -767,8 +767,9 @@ test.describe('package.js', () => {
     test.describe('テーブル', () => {
         test.describe('ロジック', () => {
             test('buildPackageTableRowSpecs: 行データを整形する', () => {
+                globalThis.glossaryData = {terms: [{fqn: 'app.a', title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}]};
                 const rows = [
-                    {fqn: 'app.a', name: 'A', classCount: 2, incomingCount: 0, outgoingCount: 1},
+                    {fqn: 'app.a', classCount: 2, incomingCount: 0, outgoingCount: 1},
                 ];
 
                 const specs = pkg.buildPackageTableRowSpecs(rows);
@@ -780,6 +781,7 @@ test.describe('package.js', () => {
                     incomingCount: 0,
                     outgoingCount: 1,
                 }]);
+                globalThis.glossaryData = undefined;
             });
 
             test('buildPackageTableActionSpecs: ボタン文言を返す', () => {
@@ -794,11 +796,15 @@ test.describe('package.js', () => {
 
         test.describe('UI', () => {
             test('renderPackageTable: 行とカウントを描画する', () => {
+                globalThis.glossaryData = {terms: [
+                    {fqn: 'app.a', title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
+                    {fqn: 'app.b', title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
+                ]};
                 const doc = setupDocument();
                 setPackageData({
                     packages: [
-                        {fqn: 'app.a', name: 'A', classCount: 2},
-                        {fqn: 'app.b', name: 'B', classCount: 1},
+                        {fqn: 'app.a', classCount: 2},
+                        {fqn: 'app.b', classCount: 1},
                     ],
                     relations: [
                         {from: 'app.a', to: 'app.b'},
@@ -815,6 +821,7 @@ test.describe('package.js', () => {
                 assert.equal(tbody.children[0].children[5].textContent, '2');
                 assert.equal(tbody.children[0].children[6].textContent, '0');
                 assert.equal(tbody.children[0].children[7].textContent, '2');
+                globalThis.glossaryData = undefined;
             });
         });
     });
@@ -1130,8 +1137,8 @@ test.describe('package.js', () => {
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
                     packages: [
-                        {fqn: 'app.a', name: 'A', classCount: 1},
-                        {fqn: 'app.b', name: 'B', classCount: 1},
+                        {fqn: 'app.a', classCount: 1},
+                        {fqn: 'app.b', classCount: 1},
                     ],
                     relations: [
                         {from: 'app.a', to: 'app.b'},
@@ -1172,8 +1179,8 @@ test.describe('package.js', () => {
                 for (let i = 0; i < 501; i += 1) {
                     const from = `app.p${i}`;
                     const to = `app.p${i + 1}`;
-                    packages.push({fqn: from, name: from, classCount: 1});
-                    packages.push({fqn: to, name: to, classCount: 1});
+                    packages.push({fqn: from, classCount: 1});
+                    packages.push({fqn: to, classCount: 1});
                     relations.push({from, to});
                 }
                 setPackageData({packages, relations}, testContext);

@@ -44,8 +44,6 @@ public class PackageSummaryAdapter {
     public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
         return Json.object("packages", Json.arrayObjects(jigPackages.listPackage().stream()
                         .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
-                                .and("name", packageInfo.label())
-                                .and("description", packageInfo.term().description())
                                 .and("classCount", packageInfo.numberOfClasses()))
                         .toList()))
                 .and("relations", Json.arrayObjects(packageRelations.listUnique().stream()

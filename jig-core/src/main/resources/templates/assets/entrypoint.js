@@ -39,7 +39,7 @@ const EntrypointApp = {
 
         controllers.forEach(controller => {
             const section = globalThis.Jig.dom.createElement("section", {
-                className: "usecase-type-card",
+                className: "jig-card jig-card--type",
                 id: controller.fqn,
                 children: [
                     globalThis.Jig.dom.createElement("h3", {
@@ -61,7 +61,7 @@ const EntrypointApp = {
 
             controller.entrypoints.forEach(ep => {
                 const epSection = globalThis.Jig.dom.createElement("article", {
-                    className: "usecase-method-card",
+                    className: "jig-card jig-card--item",
                     children: [
                         globalThis.Jig.dom.createElement("h4", {id: ep.methodId, textContent: ep.label}),
                         globalThis.Jig.dom.createElement("div", {

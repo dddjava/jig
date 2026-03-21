@@ -139,7 +139,7 @@ const UsecaseApp = {
 
         usecases.forEach(usecase => {
             const section = createElement("section", {
-                className: "usecase-type-card",
+                className: "jig-card jig-card--type",
                 children: [
                     createElement("h3", {
                         children: [createElement("a", {id: usecase.typeId, textContent: usecase.label})]
@@ -170,7 +170,7 @@ const UsecaseApp = {
 
             usecase.methods.forEach(method => {
                 const methodSection = createElement("article", {
-                    className: "usecase-method-card",
+                    className: "jig-card jig-card--item",
                     children: [
                         createElement("h4", {id: method.methodId, textContent: method.label}),
                         createElement("div", {

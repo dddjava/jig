@@ -97,7 +97,7 @@ test.describe('EntrypointApp', () => {
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
         
-        const entrypointSection = controllerSection.querySelector('.usecase-method-card');
+        const entrypointSection = controllerSection.querySelector('.jig-card--item');
         assert.ok(entrypointSection);
         assert.strictEqual(entrypointSection.querySelector('h4').textContent, 'method1');
         assert.strictEqual(entrypointSection.querySelector('.fully-qualified-name').textContent, 'GET /api/method1');

@@ -196,7 +196,7 @@ function renderPackages(packages, container) {
 
     packages.forEach(pkg => {
         const section = createElement("section", {
-            className: "usecase-type-card",
+            className: "jig-card jig-card--type",
             id: pkg.fqn,
             children: [
                 createElement("h3", {
@@ -245,7 +245,7 @@ function renderTypes(types, container) {
         });
 
         const section = createElement("section", {
-            className: "usecase-type-card",
+            className: "jig-card jig-card--type",
             id: type.fqn,
             children: [
                 createElement("h3", {children: [titleLink]}),

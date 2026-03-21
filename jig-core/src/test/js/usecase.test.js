@@ -133,7 +133,7 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
         assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
         
-        const methodSection = serviceSection.querySelector('.usecase-method-card');
+        const methodSection = serviceSection.querySelector('.jig-card--item');
         assert.ok(methodSection);
         assert.strictEqual(methodSection.querySelector('h4').id, 'method1');
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');

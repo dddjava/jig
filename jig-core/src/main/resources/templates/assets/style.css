@@ -226,14 +226,14 @@ main table.fields thead {
     border-bottom:solid 1px #999;
 }
 
-/* ユースケース概要 */
-.usecase-list {
+/* カード形式 */
+.jig-card-list {
     display: grid;
     gap: 20px;
     align-content: start;
 }
 
-.usecase-type-card {
+.jig-card.jig-card--type {
     border: 1px solid #d4d9e5;
     border-radius: 8px;
     padding: 16px;
@@ -241,12 +241,12 @@ main table.fields thead {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.usecase-type-card > h3 {
+.jig-card.jig-card--type > h3 {
     margin-top: 0;
     margin-bottom: 0.5em;
 }
 
-.usecase-method-card {
+.jig-card.jig-card--item {
     border: 1px solid #e2e4ea;
     border-radius: 6px;
     padding: 12px;
@@ -255,7 +255,7 @@ main table.fields thead {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.usecase-method-card > h4 {
+.jig-card.jig-card--item > h4 {
     margin-top: 0;
     margin-bottom: 0.5em;
     color: #1b3a66;

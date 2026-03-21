@@ -428,6 +428,8 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         this.nodes = [];
         this.edges = [];
         this.subgraphs = [];
+        this.styles = [];
+        this.clicks = [];
         this.edgeSet = new Set();
     }
 
@@ -452,6 +454,26 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
             const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
             this.edges.push(edgeLine);
         }
+    }
+
+    addStyle(id, style) {
+        if (!id || !style) return;
+        this.styles.push(`style ${id} ${style}`);
+    }
+
+    addClick(id, url) {
+        if (!id || !url) return;
+        this.clicks.push(`click ${id} "${url}"`);
+    }
+
+    addClass(id, className) {
+        if (!id || !className) return;
+        this.styles.push(`class ${id} ${className}`);
+    }
+
+    addClassDef(className, style) {
+        if (!className || !style) return;
+        this.styles.push(`classDef ${className} ${style}`);
     }
 
     startSubgraph(id, label) {
@@ -483,6 +505,12 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         });
         this.edges.forEach(edge => {
             code += `${edge}\n`;
+        });
+        this.styles.forEach(styleLine => {
+            code += `${styleLine}\n`;
+        });
+        this.clicks.forEach(clickLine => {
+            code += `${clickLine}\n`;
         });
         return code;
     }

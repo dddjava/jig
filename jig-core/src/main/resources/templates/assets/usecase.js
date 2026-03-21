@@ -1,61 +1,4 @@
-// ===== UI ユーティリティ =====
-
-function createElement(tagName, options = {}) {
-    const element = document.createElement(tagName);
-    if (options.className) element.className = options.className;
-    if (options.id) element.id = options.id;
-    if (options.textContent) element.textContent = options.textContent;
-    if (options.innerHTML) element.innerHTML = options.innerHTML;
-    if (options.attributes) {
-        for (const [key, value] of Object.entries(options.attributes)) {
-            element.setAttribute(key, value);
-        }
-    }
-    if (options.style) {
-        Object.assign(element.style, options.style);
-    }
-    if (options.children) {
-        options.children.forEach(child => {
-            if (child) element.appendChild(child);
-        });
-    }
-    return element;
-}
-
-function createSidebarSection(title, items) {
-    if (items.length === 0) return null;
-
-    return createElement("section", {
-        className: "in-page-sidebar__section",
-        children: [
-            createElement("h3", {
-                className: "in-page-sidebar__section-title",
-                textContent: title
-            }),
-            createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: items.map(({id, label}) => createElement("li", {
-                    className: "in-page-sidebar__item",
-                    children: [
-                        createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + id},
-                            textContent: label
-                        })
-                    ]
-                }))
-            })
-        ]
-    });
-}
-
-function renderSidebarSection(container, title, items) {
-    if (!container) return;
-    const section = createSidebarSection(title, items);
-    if (section) {
-        container.appendChild(section);
-    }
-}
+const createElement = (...args) => globalThis.Jig.dom.createElement(...args);
 
 function createFieldsTable(fields) {
     const thead = createElement("thead", {
@@ -114,99 +57,13 @@ function createMethodsTable(kind, methods) {
                 createElement("td", { innerHTML: method.returnTypeLink }),
                 createElement("td", {
                     className: "markdown",
-                    innerHTML: method.description ? marked.parse(method.description) : ""
+                    innerHTML: method.description ? globalThis.Jig.markdown.parse(method.description) : ""
                 })
             ]
         }))
     });
 
     return createElement("table", { children: [thead, tbody] });
-}
-
-function lazyRender(container, renderFn) {
-    if (typeof IntersectionObserver === "undefined") {
-        renderFn();
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                renderFn();
-                observer.unobserve(container);
-            }
-        });
-    }, {rootMargin: "200px"});
-    observer.observe(container);
-}
-
-// ===== Mermaid ダイアグラム生成 =====
-
-class MermaidBuilder {
-    constructor() {
-        this.nodes = [];
-        this.edges = [];
-        this.styles = [];
-        this.clicks = [];
-        this.subgraphs = [];
-        this.edgeSet = new Set();
-    }
-
-    sanitize(id) {
-        return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
-    }
-
-    addNode(id, label, shape = '["$LABEL"]') {
-        const escapedLabel = (label || "").replace(/"/g, '\\"');
-        const nodeLine = `${id}${shape.replace('$LABEL', escapedLabel)}`;
-        if (!this.nodes.includes(nodeLine)) {
-            this.nodes.push(nodeLine);
-        }
-        return id;
-    }
-
-    addEdge(from, to, label = "", dotted = false) {
-        const edgeType = dotted ? "-.->" : "-->";
-        const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
-        if (!this.edgeSet.has(edgeKey)) {
-            this.edgeSet.add(edgeKey);
-            const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
-            this.edges.push(edgeLine);
-        }
-    }
-
-    addStyle(id, style) {
-        this.styles.push(`style ${id} ${style}`);
-    }
-
-    addClick(id, url) {
-        this.clicks.push(`click ${id} "${url}"`);
-    }
-
-    addClass(id, className) {
-        this.styles.push(`class ${id} ${className}`);
-    }
-
-    addClassDef(className, style) {
-         this.styles.push(`classDef ${className} ${style}`);
-    }
-
-    build(direction = 'LR') {
-        let code = `graph ${direction}\n`;
-        this.nodes.forEach(node => {
-            code += `  ${node.trim()}\n`;
-        });
-        this.edges.forEach(edge => {
-            code += `${edge}\n`;
-        });
-        this.styles.forEach(style => {
-            code += `${style}\n`;
-        });
-        this.clicks.forEach(click => {
-            code += `${click}\n`;
-        });
-        return code;
-    }
 }
 
 // ===== アプリケーション本体 =====
@@ -267,7 +124,7 @@ const UsecaseApp = {
         sidebar.innerHTML = "";
 
         const items = usecases.map(c => ({id: c.typeId, label: c.label}));
-        renderSidebarSection(sidebar, "ユースケース", items);
+        globalThis.Jig.sidebar.renderSection(sidebar, "ユースケース", items);
     },
 
     renderUsecaseList(usecases) {
@@ -282,7 +139,7 @@ const UsecaseApp = {
 
         usecases.forEach(usecase => {
             const section = createElement("section", {
-                className: "usecase-type-card",
+                className: "jig-card jig-card--type",
                 children: [
                     createElement("h3", {
                         children: [createElement("a", {id: usecase.typeId, textContent: usecase.label})]
@@ -297,7 +154,7 @@ const UsecaseApp = {
             if (usecase.description) {
                 section.appendChild(createElement("section", {
                     className: "markdown",
-                    innerHTML: marked.parse(usecase.description)
+                    innerHTML: globalThis.Jig.markdown.parse(usecase.description)
                 }));
             }
 
@@ -313,7 +170,7 @@ const UsecaseApp = {
 
             usecase.methods.forEach(method => {
                 const methodSection = createElement("article", {
-                    className: "usecase-method-card",
+                    className: "jig-card jig-card--item",
                     children: [
                         createElement("h4", {id: method.methodId, textContent: method.label}),
                         createElement("div", {
@@ -329,8 +186,8 @@ const UsecaseApp = {
                     // Add directly to section before rendering mermaid to ensure layout
                     methodSection.appendChild(mmdContainer);
 
-                    lazyRender(mmdContainer, () => {
-                        const builder = new MermaidBuilder();
+                    globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                        const builder = new globalThis.Jig.mermaid.Builder();
 
                         // Add class definitions
                         builder.addClassDef("others", "fill:#AAA,font-size:90%;");
@@ -364,15 +221,11 @@ const UsecaseApp = {
                         const code = builder.build('LR');
                         const mmdPre = createElement("pre", {
                             className: "mermaid",
-                            textContent: code
+                            textContent: ""
                         });
                         mmdContainer.innerHTML = ''; // clear loading state if any
                         mmdContainer.appendChild(mmdPre);
-                        
-                        // We use global mermaid.run if available, scanning the newly added element
-                        if (window.mermaid) {
-                            mermaid.run({ nodes: [mmdPre] });
-                        }
+                        globalThis.Jig.mermaid.renderPre(mmdPre, code);
                     });
                 }
 
@@ -399,7 +252,7 @@ const UsecaseApp = {
                 if (method.description) {
                     methodSection.appendChild(createElement("section", {
                         className: "description markdown",
-                        innerHTML: marked.parse(method.description)
+                        innerHTML: globalThis.Jig.markdown.parse(method.description)
                     }));
                 }
 

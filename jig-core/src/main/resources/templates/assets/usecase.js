@@ -1,4 +1,4 @@
-const createElement = (...args) => globalThis.Jig.dom.createElement(...args);
+const createElement = globalThis.Jig.dom.createElement;
 
 function createFieldsTable(fields) {
     const thead = createElement("thead", {

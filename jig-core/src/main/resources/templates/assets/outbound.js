@@ -1,3 +1,5 @@
+const createElement = globalThis.Jig.dom.createElement;
+
 // ===== データ取得・変換 =====
 
 /**
@@ -196,7 +198,6 @@ function isCrudVisible(operationType, visibility) {
 }
 
 // ===== DOM ユーティリティ =====
-const createElement = globalThis.Jig.dom.createElement;
 
 function renderNoData(container) {
     container.appendChild(createElement("p", {
@@ -205,20 +206,8 @@ function renderNoData(container) {
     }));
 }
 
-function createSidebarSection(title, items) {
-    return globalThis.Jig.sidebar.createSection(title, items);
-}
-
-function renderSidebarSection(container, title, items) {
-    globalThis.Jig.sidebar.renderSection(container, title, items);
-}
-
 function fqnToId(prefix, fqn) {
     return prefix + "-" + fqn.replace(/[^a-zA-Z0-9]/g, '-');
-}
-
-function lazyRender(container, renderFn) {
-    globalThis.Jig.observe.lazyRender(container, renderFn);
 }
 
 // ===== Mermaid ダイアグラム生成 =====
@@ -754,7 +743,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
 
         const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
+        globalThis.Jig.observe.lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
         cardChildren.push(portMermaidContainer);
 
         const itemList = createElement("div", {className: "outbound-operation-list"});
@@ -762,7 +751,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
             const operationWithPort = {...operation, outboundPort: group.outboundPort};
             const operationMermaidCode = generateOperationMermaidCode(operationWithPort, visibility);
-            lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
+            globalThis.Jig.observe.lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
             itemList.appendChild(createElement("article", {
                 className: "outbound-operation-item jig-card jig-card--item",
@@ -796,7 +785,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
     });
 
-    renderSidebarSection(sidebar, "出力ポート", grouped.map(group => {
+    globalThis.Jig.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => {
         return {
             id: fqnToId("port", group.outboundPort.fqn),
             label: group.outboundPort.label
@@ -821,7 +810,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         const targetId = fqnToId("persistence", group.persistenceTarget);
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
+        globalThis.Jig.observe.lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outbound-group-card jig-card jig-card--type",
@@ -833,7 +822,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
     });
 
-    renderSidebarSection(sidebar, "永続化操作対象", grouped.map(group => ({
+    globalThis.Jig.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
         id: fqnToId("persistence", group.persistenceTarget),
         label: group.persistenceTarget
     })));
@@ -857,7 +846,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         const externalId = fqnToId("external", externalFqn);
 
         const externalMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
+        globalThis.Jig.observe.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outbound-group-card jig-card jig-card--type",
@@ -870,7 +859,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
     });
 
-    renderSidebarSection(sidebar, "外部型", grouped.map(group => ({
+    globalThis.Jig.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
         id: fqnToId("external", group.externalType.fqn),
         label: group.externalType.label
     })));

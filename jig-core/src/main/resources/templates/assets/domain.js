@@ -1,4 +1,4 @@
-const createElement = (...args) => globalThis.Jig.dom.createElement(...args);
+const createElement = globalThis.Jig.dom.createElement;
 
 function renderTreeNode(node) {
     if (!node) return null;
@@ -292,6 +292,12 @@ const DomainApp = {
     }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    DomainApp.init();
-});
+if (typeof document !== 'undefined') {
+    document.addEventListener("DOMContentLoaded", () => {
+        DomainApp.init();
+    });
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = { DomainApp };
+}

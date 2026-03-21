@@ -1,4 +1,6 @@
 
+const createElement = globalThis.Jig.dom.createElement;
+
 // 文字列の比較は日本語を優先しつつ大小を無視する
 const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
 
@@ -79,7 +81,6 @@ function renderGlossaryTerms(terms, displayMode) {
     if (!list) return;
     list.innerHTML = "";
 
-    const createElement = globalThis.Jig.dom.createElement;
     terms.forEach((term, index) => {
         const anchorId = buildTermAnchorId(term, index);
 

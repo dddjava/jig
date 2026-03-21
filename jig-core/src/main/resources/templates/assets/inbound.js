@@ -1,3 +1,5 @@
+const createElement = globalThis.Jig.dom.createElement;
+
 // ===== アプリケーション本体 =====
 
 const InboundApp = {
@@ -38,14 +40,14 @@ const InboundApp = {
         }
 
         controllers.forEach(controller => {
-            const section = globalThis.Jig.dom.createElement("section", {
+            const section = createElement("section", {
                 className: "jig-card jig-card--type",
                 id: controller.fqn,
                 children: [
-                    globalThis.Jig.dom.createElement("h3", {
-                        children: [globalThis.Jig.dom.createElement("a", {textContent: controller.label})]
+                    createElement("h3", {
+                        children: [createElement("a", {textContent: controller.label})]
                     }),
-                    globalThis.Jig.dom.createElement("div", {
+                    createElement("div", {
                         className: "fully-qualified-name",
                         textContent: controller.fqn
                     })
@@ -53,25 +55,25 @@ const InboundApp = {
             });
 
             if (controller.description) {
-                section.appendChild(globalThis.Jig.dom.createElement("section", {
+                section.appendChild(createElement("section", {
                     className: "markdown",
                     innerHTML: globalThis.Jig.markdown.parse(controller.description)
                 }));
             }
 
             controller.entrypoints.forEach(ep => {
-                const epSection = globalThis.Jig.dom.createElement("article", {
+                const epSection = createElement("article", {
                     className: "jig-card jig-card--item",
                     children: [
-                        globalThis.Jig.dom.createElement("h4", {id: ep.methodId, textContent: ep.label}),
-                        globalThis.Jig.dom.createElement("div", {
+                        createElement("h4", {id: ep.methodId, textContent: ep.label}),
+                        createElement("div", {
                             className: "fully-qualified-name",
                             textContent: ep.path
                         })
                     ]
                 });
 
-                const mmdContainer = globalThis.Jig.dom.createElement("div", {className: "mermaid-diagram"});
+                const mmdContainer = createElement("div", {className: "mermaid-diagram"});
                 epSection.appendChild(mmdContainer);
 
                 globalThis.Jig.observe.lazyRender(mmdContainer, () => {

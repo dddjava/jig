@@ -40,7 +40,7 @@ public class OutboundSummaryAdapter {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("outboundPortData", json);
+        jigDocumentWriter.writeJsData("outboundData", json);
 
         return jigDocumentWriter.outputFilePaths();
     }

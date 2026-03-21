@@ -4,10 +4,10 @@ const { JSDOM } = require('jsdom');
 const path = require('path');
 
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
-const entrypointJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/entrypoint.js');
+const inboundJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/inbound.js');
 
 // モック用のデータ
-const mockEntrypointData = {
+const mockInboundData = {
     controllers: [
         {
             fqn: "com.example.ControllerA",
@@ -42,18 +42,18 @@ const mockEntrypointData = {
     ]
 };
 
-test.describe('EntrypointApp', () => {
+test.describe('InboundApp', () => {
     let window;
     let document;
-    let EntrypointApp;
+    let InboundApp;
 
     beforeEach(() => {
         const dom = new JSDOM(`
             <!DOCTYPE html>
             <html>
             <body>
-                <div id="entrypoint-sidebar-list"></div>
-                <div id="entrypoint-list"></div>
+                <div id="inbound-sidebar-list"></div>
+                <div id="inbound-list"></div>
             </body>
             </html>
         `, { runScripts: "dangerously" });
@@ -75,21 +75,21 @@ test.describe('EntrypointApp', () => {
         global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
 
         delete require.cache[jigJsPath];
-        delete require.cache[entrypointJsPath];
+        delete require.cache[inboundJsPath];
         require(jigJsPath);
-        ({ EntrypointApp } = require(entrypointJsPath));
+        ({ InboundApp } = require(inboundJsPath));
     });
 
-    test('init should render data from globalThis.entrypointData', () => {
-        globalThis.entrypointData = mockEntrypointData;
-        EntrypointApp.init();
+    test('init should render data from globalThis.inboundData', () => {
+        globalThis.inboundData = mockInboundData;
+        InboundApp.init();
 
-        const sidebar = document.getElementById('entrypoint-sidebar-list');
+        const sidebar = document.getElementById('inbound-sidebar-list');
         assert.strictEqual(sidebar.children.length, 1);
         assert.strictEqual(sidebar.querySelector('p').textContent, 'コントローラー');
         assert.strictEqual(sidebar.querySelector('a').textContent, 'ControllerA');
 
-        const mainList = document.getElementById('entrypoint-list');
+        const mainList = document.getElementById('inbound-list');
         assert.strictEqual(mainList.children.length, 1);
         const controllerSection = mainList.children[0];
         assert.strictEqual(controllerSection.id, 'com.example.ControllerA');
@@ -97,21 +97,21 @@ test.describe('EntrypointApp', () => {
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
         
-        const entrypointSection = controllerSection.querySelector('.jig-card--item');
-        assert.ok(entrypointSection);
-        assert.strictEqual(entrypointSection.querySelector('h4').textContent, 'method1');
-        assert.strictEqual(entrypointSection.querySelector('.fully-qualified-name').textContent, 'GET /api/method1');
+        const inboundSection = controllerSection.querySelector('.jig-card--item');
+        assert.ok(inboundSection);
+        assert.strictEqual(inboundSection.querySelector('h4').textContent, 'method1');
+        assert.strictEqual(inboundSection.querySelector('.fully-qualified-name').textContent, 'GET /api/method1');
         
-        const mermaidPre = entrypointSection.querySelector('.mermaid');
+        const mermaidPre = inboundSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
         assert.ok(mermaidPre.textContent.includes('subgraph')); // Mermaid code generated
     });
 
     test('renderControllerList should handle empty data', () => {
-        globalThis.entrypointData = { controllers: [] };
-        EntrypointApp.init();
+        globalThis.inboundData = { controllers: [] };
+        InboundApp.init();
         
-        const mainList = document.getElementById('entrypoint-list');
+        const mainList = document.getElementById('inbound-list');
         assert.strictEqual(mainList.textContent, 'データなし');
     });
 });

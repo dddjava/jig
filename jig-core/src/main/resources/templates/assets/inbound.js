@@ -1,12 +1,12 @@
 // ===== アプリケーション本体 =====
 
-const EntrypointApp = {
+const InboundApp = {
     state: {
         data: null
     },
 
     init() {
-        this.state.data = globalThis.entrypointData;
+        this.state.data = globalThis.inboundData;
         if (!this.state.data) return;
 
         this.render();
@@ -19,7 +19,7 @@ const EntrypointApp = {
     },
 
     renderSidebar(controllers) {
-        const sidebar = document.getElementById("entrypoint-sidebar-list");
+        const sidebar = document.getElementById("inbound-sidebar-list");
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
@@ -28,7 +28,7 @@ const EntrypointApp = {
     },
 
     renderControllerList(controllers) {
-        const container = document.getElementById("entrypoint-list");
+        const container = document.getElementById("inbound-list");
         if (!container) return;
         container.innerHTML = "";
 
@@ -114,13 +114,13 @@ const EntrypointApp = {
 
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", () => {
-        EntrypointApp.init();
+        InboundApp.init();
     });
 }
 
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-        EntrypointApp
+        InboundApp
     };
 }

@@ -20,15 +20,15 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * エントリーポイント概要
+ * 入力インタフェース概要
  *
  * FIXME Mermaidのダイアグラムに対応した出力をほとんどここで記述してしまっている。
  */
-public class EntrypointSummaryAdapter {
+public class InboundSummaryAdapter {
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public EntrypointSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public InboundSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
@@ -43,7 +43,7 @@ public class EntrypointSummaryAdapter {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("entrypointData", json);
+        jigDocumentWriter.writeJsData("inboundData", json);
 
         return jigDocumentWriter.outputFilePaths();
     }

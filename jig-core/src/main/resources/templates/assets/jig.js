@@ -370,12 +370,14 @@ function renderWithExtendedLimit(diagram, source, button) {
         return;
     }
 
-    mermaid.initialize({
-        startOnLoad: false,
-        securityLevel: "loose",
-        maxTextSize: EXTENDED_MAX_TEXT_SIZE,
-        maxEdges: DEFAULT_MAX_EDGES
-    });
+    if (globalThis.mermaid && typeof globalThis.mermaid.initialize === "function") {
+        globalThis.mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: "loose",
+            maxTextSize: EXTENDED_MAX_TEXT_SIZE,
+            maxEdges: DEFAULT_MAX_EDGES
+        });
+    }
     diagram.classList.remove("too-large");
     diagram.innerHTML = source;
 
@@ -585,7 +587,9 @@ function renderMermaidNode(diagramEl, source, maxEdges, container) {
     }
 
     diagramEl.textContent = text;
-    globalThis.mermaid.initialize(baseMermaidConfig(maxEdges));
+    if (typeof globalThis.mermaid.initialize === "function") {
+        globalThis.mermaid.initialize(baseMermaidConfig(maxEdges));
+    }
 
     try {
         const result = globalThis.mermaid.run({nodes: [diagramEl]});
@@ -712,21 +716,6 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
 
     isEmpty() {
         return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
-    }
-};
-
-globalThis.Jig.mermaid.renderPre = function renderMermaidPre(preEl, source) {
-    if (!preEl) return;
-    const text = source != null ? String(source) : "";
-
-    if (isTooLarge(text)) {
-        renderTooLargeDiagram(preEl, text);
-        return;
-    }
-
-    preEl.textContent = text;
-    if (globalThis.mermaid && typeof globalThis.mermaid.run === "function") {
-        globalThis.mermaid.run({nodes: [preEl]});
     }
 };
 

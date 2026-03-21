@@ -192,20 +192,6 @@ function setupDomMocks() {
     });
 }
 
-function withConsoleErrorCapture(callback) {
-    const errors = [];
-    const originalError = console.error;
-    console.error = (...args) => {
-        errors.push(args.map(arg => String(arg)).join(' '));
-    };
-    try {
-        callback();
-    } finally {
-        console.error = originalError;
-    }
-    return errors;
-}
-
 function createPackageFilterControls(doc) {
     const input = doc.createElement('textarea');
     input.id = 'package-filter-input';
@@ -248,16 +234,12 @@ function setupDiagramEnvironment(doc, context) {
     transitiveReductionToggle.id = 'transitive-reduction-toggle';
     transitiveReductionToggle.type = 'checkbox';
     doc.elementsById.set('transitive-reduction-toggle', transitiveReductionToggle);
-    global.window = {
+    globalThis.Jig = {
         mermaid: {
-            initialize() {
-            },
-            run() {
-            },
-        },
+            renderWithControls() {
+            }
+        }
     };
-    global.mermaid = global.window.mermaid;
-    globalThis.Jig = { mermaid: { renderWithControls: () => {} } };
     return diagram;
 }
 
@@ -1123,14 +1105,15 @@ test.describe('package.js', () => {
                 button.style = {}; // Initialize style object
                 itemNode.appendChild(button);
 
-                global.window = { mermaid: { initialize: () => {}, run: () => {} } };
-                global.mermaid = global.window.mermaid;
+                const renderWithControls = test.mock.fn(() => {});
+                globalThis.Jig = { mermaid: { renderWithControls } };
 
                 const item = { causes: ['a.A -> b.B'] };
                 pkg.renderMutualDependencyDiagram(item, itemNode, testContext);
 
                 assert.equal(button.style.display, 'none');
                 assert.ok(diagram.style.display === 'block' || diagram.style.display === ''); // Mermaid rendering might change this
+                assert.equal(renderWithControls.mock.calls.length, 1);
             });
 
             test('renderPackageDiagram: 相互依存を含めて描画する', () => {
@@ -1156,9 +1139,10 @@ test.describe('package.js', () => {
                 assert.equal(mutual.children.length > 0, true);
             });
 
-            test('renderPackageDiagram: エッジ数超過時は保留/エラー表示する', () => {
+            test('renderPackageDiagram: エッジ数超過でもrenderWithControlsにedgeCountを渡す', () => {
                 const doc = setupDocument();
                 const diagramMock = setupDiagramEnvironment(doc, testContext);
+                const renderWithControls = test.mock.fn(() => {});
 
                 // renderWithControlsへの委譲をキャプチャする
                 let capturedRenderArgs = null;

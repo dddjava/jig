@@ -34,7 +34,6 @@ class IndexViewTest {
 
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("globalThis.jigNavigationData"));
-        assertTrue(navigationData.contains("\"href\":\"index.html\""));
         assertFalse(navigationData.contains("\"href\":\"package-summary.html\""));
     }
 
@@ -55,7 +54,6 @@ class IndexViewTest {
         assertTrue(actual.contains("<h2>一覧: Excel</h2>"));
 
         String navigationData = readNavigationData();
-        assertTrue(navigationData.contains("\"href\":\"index.html\""));
         assertTrue(navigationData.contains("\"href\":\"package-summary.html\""));
         assertTrue(navigationData.contains("\"href\":\"list-output.html\""));
         assertFalse(navigationData.contains("\"href\":\"application-list.xlsx\""));

@@ -1,21 +1,4 @@
-function createElement(tagName, options = {}) {
-    const element = document.createElement(tagName);
-    if (options.className) element.className = options.className;
-    if (options.id) element.id = options.id;
-    if (options.textContent != null) element.textContent = options.textContent;
-    if (options.innerHTML != null) element.innerHTML = options.innerHTML;
-    if (options.attributes) {
-        for (const [key, value] of Object.entries(options.attributes)) {
-            element.setAttribute(key, value);
-        }
-    }
-    if (options.children) {
-        options.children.forEach(child => {
-            if (child) element.appendChild(child);
-        });
-    }
-    return element;
-}
+const createElement = (...args) => globalThis.Jig.dom.createElement(...args);
 
 function renderTreeNode(node) {
     if (!node) return null;
@@ -133,7 +116,7 @@ function createMethodsTable(kind, methods) {
                 createElement("td", {innerHTML: method.returnTypeLink || ""}),
                 createElement("td", {
                     className: "markdown",
-                    innerHTML: method.description ? marked.parse(method.description) : ""
+                    innerHTML: method.description ? globalThis.Jig.markdown.parse(method.description) : ""
                 })
             ]
         }))
@@ -229,7 +212,7 @@ function renderPackages(packages, container) {
         if (pkg.description) {
             section.appendChild(createElement("section", {
                 className: "markdown",
-                innerHTML: marked.parse(pkg.description)
+                innerHTML: globalThis.Jig.markdown.parse(pkg.description)
             }));
         }
 
@@ -270,7 +253,7 @@ function renderTypes(types, container) {
         if (type.description) {
             section.appendChild(createElement("section", {
                 className: "markdown",
-                innerHTML: marked.parse(type.description)
+                innerHTML: globalThis.Jig.markdown.parse(type.description)
             }));
         }
 
@@ -307,4 +290,6 @@ const DomainApp = {
     }
 };
 
-DomainApp.init();
+document.addEventListener("DOMContentLoaded", () => {
+    DomainApp.init();
+});

@@ -1,5 +1,9 @@
 /* ===== 共通 ===== */
 
+// 共通ユーティリティ名前空間
+// ページ固有JSから参照されるため、衝突しない名前空間に集約する
+globalThis.Jig ??= {};
+
 // ブラウザバックなどで該当要素に移動する
 // Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
 // なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
@@ -327,6 +331,181 @@ function renderWithExtendedLimit(diagram, source, button) {
         });
     }
 }
+
+/* ===== 共通ユーティリティ (Jig.*) ===== */
+
+globalThis.Jig.dom ??= {};
+globalThis.Jig.observe ??= {};
+globalThis.Jig.sidebar ??= {};
+globalThis.Jig.markdown ??= {};
+globalThis.Jig.mermaid ??= {};
+
+globalThis.Jig.dom.createElement = function createElement(tagName, options = {}) {
+    const element = document.createElement(tagName);
+    if (options.className) element.className = options.className;
+    if (options.id) element.id = options.id;
+    if (options.textContent != null) element.textContent = options.textContent;
+    if (options.innerHTML != null) element.innerHTML = options.innerHTML;
+    if (options.attributes) {
+        for (const [key, value] of Object.entries(options.attributes)) {
+            element.setAttribute(key, value);
+        }
+    }
+    if (options.style) {
+        Object.assign(element.style, options.style);
+    }
+    if (options.children) {
+        options.children.forEach(child => {
+            if (child) element.appendChild(child);
+        });
+    }
+    return element;
+};
+
+globalThis.Jig.observe.lazyRender = function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
+    if (typeof IntersectionObserver === "undefined") {
+        renderFn();
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                renderFn();
+                observer.unobserve(container);
+            }
+        });
+    }, {rootMargin});
+    observer.observe(container);
+};
+
+globalThis.Jig.sidebar.createSection = function createSidebarSection(title, items) {
+    if (!items || items.length === 0) return null;
+
+    const createElement = globalThis.Jig.dom.createElement;
+    return createElement("section", {
+        className: "in-page-sidebar__section",
+        children: [
+            createElement("p", {
+                className: "in-page-sidebar__title",
+                textContent: title
+            }),
+            createElement("ul", {
+                className: "in-page-sidebar__links",
+                children: items.map(({id, label}) => createElement("li", {
+                    className: "in-page-sidebar__item",
+                    children: [
+                        createElement("a", {
+                            className: "in-page-sidebar__link",
+                            attributes: {href: "#" + id},
+                            textContent: label
+                        })
+                    ]
+                }))
+            })
+        ]
+    });
+};
+
+globalThis.Jig.sidebar.renderSection = function renderSidebarSection(container, title, items) {
+    if (!container) return;
+    const section = globalThis.Jig.sidebar.createSection(title, items);
+    if (section) {
+        container.appendChild(section);
+    }
+};
+
+globalThis.Jig.markdown.parse = function parseMarkdown(markdown) {
+    const source = markdown != null ? String(markdown) : "";
+    if (globalThis.marked && typeof globalThis.marked.parse === "function") {
+        return globalThis.marked.parse(source);
+    }
+    return source;
+};
+
+globalThis.Jig.mermaid.Builder = class MermaidBuilder {
+    constructor() {
+        this.nodes = [];
+        this.edges = [];
+        this.subgraphs = [];
+        this.edgeSet = new Set();
+    }
+
+    sanitize(id) {
+        return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
+    }
+
+    addNode(id, label, shape = '["$LABEL"]') {
+        const escapedLabel = (label || "").replace(/"/g, '\\"');
+        const nodeLine = `${id}${shape.replace('$LABEL', escapedLabel)}`;
+        if (!this.nodes.includes(nodeLine)) {
+            this.nodes.push(nodeLine);
+        }
+        return id;
+    }
+
+    addEdge(from, to, label = "", dotted = false) {
+        const edgeType = dotted ? "-.->" : "-->";
+        const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
+        if (!this.edgeSet.has(edgeKey)) {
+            this.edgeSet.add(edgeKey);
+            const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
+            this.edges.push(edgeLine);
+        }
+    }
+
+    startSubgraph(id, label) {
+        const subgraph = {id, label, lines: []};
+        this.subgraphs.push(subgraph);
+        return subgraph;
+    }
+
+    addNodeToSubgraph(subgraph, id, label, shape = '["$LABEL"]') {
+        const escapedLabel = (label || "").replace(/"/g, '\\"');
+        const nodeLine = `    ${id}${shape.replace('$LABEL', escapedLabel)}`;
+        if (!subgraph.lines.includes(nodeLine)) {
+            subgraph.lines.push(nodeLine);
+        }
+        return id;
+    }
+
+    build(direction = "LR") {
+        let code = `graph ${direction}\n`;
+        this.subgraphs.forEach(sg => {
+            code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
+            sg.lines.forEach(line => {
+                code += `    ${line.trim()}\n`;
+            });
+            code += `  end\n`;
+        });
+        this.nodes.forEach(node => {
+            code += `  ${node.trim()}\n`;
+        });
+        this.edges.forEach(edge => {
+            code += `${edge}\n`;
+        });
+        return code;
+    }
+
+    isEmpty() {
+        return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
+    }
+};
+
+globalThis.Jig.mermaid.renderPre = function renderMermaidPre(preEl, source) {
+    if (!preEl) return;
+    const text = source != null ? String(source) : "";
+
+    if (isTooLarge(text)) {
+        renderTooLargeDiagram(preEl, text);
+        return;
+    }
+
+    preEl.textContent = text;
+    if (globalThis.mermaid && typeof globalThis.mermaid.run === "function") {
+        globalThis.mermaid.run({nodes: [preEl]});
+    }
+};
 
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {

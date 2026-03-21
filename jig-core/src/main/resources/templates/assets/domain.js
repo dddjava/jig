@@ -155,7 +155,7 @@ function createEnumSection(enumInfo) {
 
     const section = createElement("section", {
         children: [
-            createElement("h3", {textContent: "列挙値"}),
+            createElement("h4", {textContent: "列挙値"}),
             dl
         ]
     });
@@ -196,13 +196,13 @@ function renderPackages(packages, container) {
 
     packages.forEach(pkg => {
         const section = createElement("section", {
-            className: "package",
+            className: "jig-card jig-card--type",
             id: pkg.fqn,
             children: [
-                createElement("h2", {
+                createElement("h3", {
                     children: [createElement("a", {textContent: pkg.label || ""})]
                 }),
-                createElement("small", {
+                createElement("div", {
                     className: "fully-qualified-name",
                     textContent: pkg.fqn || ""
                 })
@@ -222,10 +222,13 @@ function renderPackages(packages, container) {
         }
 
         if (pkg.relationDiagram) {
-            section.appendChild(createElement("pre", {
-                className: "mermaid",
-                textContent: pkg.relationDiagram
-            }));
+            const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+            section.appendChild(mmdContainer);
+            globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                const mmdPre = createElement("pre", {className: "mermaid", textContent: ""});
+                mmdContainer.appendChild(mmdPre);
+                globalThis.Jig.mermaid.renderPre(mmdPre, pkg.relationDiagram);
+            });
         }
 
         container.appendChild(section);
@@ -242,10 +245,10 @@ function renderTypes(types, container) {
         });
 
         const section = createElement("section", {
-            className: "type",
+            className: "jig-card jig-card--type",
             id: type.fqn,
             children: [
-                createElement("h2", {children: [titleLink]}),
+                createElement("h3", {children: [titleLink]}),
                 createElement("div", {className: "fully-qualified-name", textContent: type.fqn || ""})
             ]
         });

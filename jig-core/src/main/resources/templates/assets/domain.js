@@ -1,12 +1,21 @@
 const createElement = globalThis.Jig.dom.createElement;
 
+function getGlossaryTitle(fqn) {
+    const term = globalThis.glossaryData?.[fqn];
+    return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
+}
+
+function getGlossaryDescription(fqn) {
+    return globalThis.glossaryData?.[fqn]?.description ?? "";
+}
+
 function renderTreeNode(node) {
     if (!node) return null;
 
     if (node.kind === "package") {
         const summaryLink = createElement("a", {
             attributes: {href: node.href || "#"},
-            textContent: node.name || ""
+            textContent: getGlossaryTitle(node.fqn)
         });
         const details = createElement("details", {
             attributes: node.open ? {open: ""} : {open: ""}, // 互換性のため常にopen
@@ -29,7 +38,7 @@ function renderTreeNode(node) {
     const link = createElement("a", {
         className: linkClass,
         attributes: {href: node.href || "#"},
-        textContent: node.name || ""
+        textContent: getGlossaryTitle(node.fqn)
     });
     return createElement("div", {children: [link]});
 }
@@ -50,7 +59,7 @@ function createChildrenTable(children) {
             const prefix = child.kind === "package" ? "▶︎ " : "";
             const link = createElement("a", {
                 attributes: {href: child.href || "#"},
-                textContent: child.name || ""
+                textContent: getGlossaryTitle(child.fqn)
             });
             const cell = createElement("td", {
                 children: [document.createTextNode(prefix), link]
@@ -116,7 +125,7 @@ function createMethodsTable(kind, methods) {
                 createElement("td", {innerHTML: method.returnTypeLink || ""}),
                 createElement("td", {
                     className: "markdown",
-                    innerHTML: method.description ? globalThis.Jig.markdown.parse(method.description) : ""
+                    innerHTML: globalThis.Jig.markdown.parse(getGlossaryDescription(method.fqn))
                 })
             ]
         }))
@@ -200,7 +209,7 @@ function renderPackages(packages, container) {
             id: pkg.fqn,
             children: [
                 createElement("h3", {
-                    children: [createElement("a", {textContent: pkg.label || ""})]
+                    children: [createElement("a", {textContent: getGlossaryTitle(pkg.fqn)})]
                 }),
                 createElement("div", {
                     className: "fully-qualified-name",
@@ -209,10 +218,11 @@ function renderPackages(packages, container) {
             ]
         });
 
-        if (pkg.description) {
+        const pkgDescription = getGlossaryDescription(pkg.fqn);
+        if (pkgDescription) {
             section.appendChild(createElement("section", {
                 className: "markdown",
-                innerHTML: globalThis.Jig.markdown.parse(pkg.description)
+                innerHTML: globalThis.Jig.markdown.parse(pkgDescription)
             }));
         }
 
@@ -239,7 +249,7 @@ function renderTypes(types, container) {
 
     types.forEach(type => {
         const titleLink = createElement("a", {
-            textContent: type.label || "",
+            textContent: getGlossaryTitle(type.fqn),
             className: type.isDeprecated ? "deprecated" : ""
         });
 
@@ -252,10 +262,11 @@ function renderTypes(types, container) {
             ]
         });
 
-        if (type.description) {
+        const typeDescription = getGlossaryDescription(type.fqn);
+        if (typeDescription) {
             section.appendChild(createElement("section", {
                 className: "markdown",
-                innerHTML: globalThis.Jig.markdown.parse(type.description)
+                innerHTML: globalThis.Jig.markdown.parse(typeDescription)
             }));
         }
 

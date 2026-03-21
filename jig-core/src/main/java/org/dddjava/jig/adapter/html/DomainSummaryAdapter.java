@@ -97,7 +97,6 @@ public class DomainSummaryAdapter {
                     .map(this::buildTreeJson)
                     .toList();
             return Json.object("kind", "package")
-                    .and("name", composite.name())
                     .and("href", composite.href())
                     .and("fqn", composite.href().startsWith("#") ? composite.href().substring(1) : composite.href())
                     .and("children", Json.arrayObjects(children));
@@ -108,7 +107,6 @@ public class DomainSummaryAdapter {
         String href = node.href();
         String fqn = href.startsWith("#") ? href.substring(1) : href;
         return Json.object("kind", kind)
-                .and("name", node.name())
                 .and("href", href)
                 .and("fqn", fqn)
                 .and("isDeprecated", deprecated);
@@ -117,10 +115,14 @@ public class DomainSummaryAdapter {
     private JsonObjectBuilder buildPackageJson(JigPackage jigPackage, TreeComposite treeBaseComposite, CoreTypesAndRelations coreTypesAndRelations) {
         var composite = treeBaseComposite.findComposite(jigPackage.packageId());
         List<JsonObjectBuilder> children = composite.children().stream()
-                .map(child -> Json.object("kind", child.isPackage() ? "package" : "type")
-                        .and("name", child.name())
-                        .and("href", child.href())
-                        .and("isDeprecated", child.isDeprecated()))
+                .map(child -> {
+                    String childHref = child.href();
+                    String childFqn = childHref.startsWith("#") ? childHref.substring(1) : childHref;
+                    return Json.object("kind", child.isPackage() ? "package" : "type")
+                            .and("href", childHref)
+                            .and("fqn", childFqn)
+                            .and("isDeprecated", child.isDeprecated());
+                })
                 .toList();
 
         String diagram = new TypeRelationMermaidDiagram()
@@ -128,8 +130,6 @@ public class DomainSummaryAdapter {
                 .orElse("");
 
         return Json.object("fqn", jigPackage.fqn())
-                .and("label", jigPackage.label())
-                .and("description", jigPackage.term().description())
                 .and("children", Json.arrayObjects(children))
                 .and("relationDiagram", diagram);
     }
@@ -156,9 +156,7 @@ public class DomainSummaryAdapter {
                 .toList();
 
         JsonObjectBuilder builder = Json.object("fqn", jigType.fqn())
-                .and("label", jigType.label())
                 .and("isDeprecated", jigType.isDeprecated())
-                .and("description", jigType.term().description())
                 .and("fields", Json.arrayObjects(fields))
                 .and("methods", Json.arrayObjects(methods))
                 .and("staticMethods", Json.arrayObjects(staticMethods));
@@ -203,12 +201,12 @@ public class DomainSummaryAdapter {
     }
 
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
-        return Json.object("label", jigMethod.labelText())
+        return Json.object("fqn", jigMethod.fqn())
+                .and("label", jigMethod.labelText())
                 .and("labelWithSymbol", jigMethod.labelTextWithSymbol())
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("returnTypeLink", methodReturnLinkText(jigMethod))
-                .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))
-                .and("description", jigMethod.term().description());
+                .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)));
     }
 
     private String methodReturnLinkText(JigMethod jigMethod) {

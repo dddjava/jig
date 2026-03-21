@@ -66,6 +66,6 @@ class IndexViewTest {
     }
 
     private String readNavigationData() throws IOException {
-        return Files.readString(tempDir.resolve(IndexView.NAVIGATION_DATA_FILE_PATH), StandardCharsets.UTF_8);
+        return Files.readString(tempDir.resolve("data").resolve(IndexView.NAVIGATION_DATA_JS), StandardCharsets.UTF_8);
     }
 }

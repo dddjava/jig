@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class IndexView {
     static final String INDEX_FILE_NAME = "index.html";
-    static final String NAVIGATION_DATA_FILE_PATH = "data/navigation-data.js";
+    static final String NAVIGATION_DATA_JS = "navigation-data.js";
 
     private final Map<JigDocument, String> documentLinks;
     private final List<DiagramComponent> diagrams;
@@ -166,9 +166,6 @@ public class IndexView {
             Files.createDirectories(dataDirectory);
 
             List<NavigationLink> links = new ArrayList<>();
-            // 戻り先として常に index.html を含める
-            links.add(new NavigationLink(INDEX_FILE_NAME, "INDEX"));
-
             // 「概要: HTML」「一覧: HTML」の順序に揃える（主要HTMLのみ）
             addNavigationLinkIfPresent(links, JigDocument.PackageSummary);
             addNavigationLinkIfPresent(links, JigDocument.Glossary);
@@ -192,7 +189,7 @@ public class IndexView {
             }
             js.append("]};\n");
 
-            Files.writeString(dataDirectory.resolve("navigation-data.js"), js.toString(), StandardCharsets.UTF_8);
+            Files.writeString(dataDirectory.resolve(NAVIGATION_DATA_JS), js.toString(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

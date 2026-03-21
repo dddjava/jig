@@ -115,8 +115,8 @@ public enum JigDocument {
             "usecase"),
 
     EntrypointSummary(
-            JigDocumentLabel.of("エントリーポイント概要", "entrypoint"),
-            "entrypoint"),
+            JigDocumentLabel.of("入力インタフェース概要", "inbound"),
+            "inbound"),
 
     /**
      * 外部利用概要

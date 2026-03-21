@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
-import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorOperation;
-import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.persistence.*;
+import org.dddjava.jig.domain.model.information.external.ExternalAccessorRepositories;
+import org.dddjava.jig.domain.model.information.external.OtherExternalAccessorOperation;
+import org.dddjava.jig.domain.model.information.external.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.springdata.SpringDataUtil;
 import org.dddjava.jig.domain.model.information.types.JigTypes;

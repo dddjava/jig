@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.data.external.ExternalAccessorRepositories;
-import org.dddjava.jig.domain.model.data.external.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.external.ExternalAccessorRepositories;
+import org.dddjava.jig.domain.model.information.external.OtherExternalAccessorRepository;
 import org.junit.jupiter.api.Test;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcCrudDelegatingOutputAdapter;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcNameOutputAdapter;

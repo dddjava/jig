@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.external;
+package org.dddjava.jig.domain.model.information.external;
 
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 

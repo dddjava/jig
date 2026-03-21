@@ -359,9 +359,6 @@ label {
 }
 
 /* 用語集 */
-.glossary details.controls {
-    padding: 15px;
-}
 .glossary details.controls summary {
     list-style: none;
     cursor: pointer;
@@ -453,106 +450,7 @@ label {
     background-color: #2980b9;
 }
 
-.glossary .glossary-content {
-    display: grid;
-    grid-template-columns: minmax(180px, 260px) 1fr;
-    gap: 16px;
-    width: 95%; /* 幅を少し広げる */
-    max-width: 1400px; /* 最大幅を広げる */
-    margin: 0 auto;
-}
-
-.glossary .glossary-main-content {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-width: 0;
-}
-
-.glossary .term-sidebar {
-    height: fit-content;
-    position: sticky;
-    top: 16px;
-    align-self: start;
-    max-height: calc(100vh - 32px);
-    overflow: auto;
-}
-
-.glossary .term-list {
-    width: 100%;
-    margin-top: 0;
-}
-
-.glossary .term {
-    margin-top: 0;
-    margin-bottom: 10px;
-    padding: 1.5em;
-    border-bottom: 1px solid #e0e0e0;
-}
-.glossary .term h2.term-title {
-    margin: 0 0 0.5em 0;
-    color: #2c3e50;
-    font-size: 1.8em;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 0.3em;
-}
-.glossary .term .markdown h1 {
-    font-size: 1.3em;
-    font-weight: bold;
-    margin: 1em 0 0.4em 0;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 0.2em;
-}
-.glossary .term .markdown h2 {
-    font-size: 1.1em;
-    font-weight: bold;
-    margin: 0.8em 0 0.3em 0;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.2em;
-}
-.glossary .term .markdown h3 {
-    font-size: 1.0em;
-    font-weight: bold;
-    margin: 0.6em 0 0.2em 0;
-}
-.glossary .term p {
-    margin: 0.5em 0 0 0;
-}
-.glossary .term dl {
-    color: #555;
-    font-size: 0.9em;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.5rem 1.5rem;
-    margin: 1em 0;
-    padding-left: 1em;
-    border-left: 3px solid #f0f0f0;
-    overflow-x: hidden;
-}
-.glossary .term dl.hidden-dl { /* dlタグを非表示にするクラス */
-    display: none;
-}
-.glossary .term dl dt {
-    font-weight: bold;
-    width: 100px;
-    margin: 0;
-    color: #34495e;
-}
-.glossary .term dl dd {
-    margin: 0;
-    white-space: nowrap;
-}
-
-@media (max-width: 900px) {
-    .glossary .glossary-content {
-        grid-template-columns: 1fr;
-    }
-
-    .glossary .term-sidebar {
-        position: static;
-        max-height: none;
-    }
-}
+/* Glossaryのレイアウトは sideNavMain / in-page-sidebar / jig-card を利用する */
 
 /* パッケージ概要の表示設定 */
 .package-summary details.controls,

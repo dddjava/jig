@@ -71,15 +71,31 @@ function renderTermSidebar(terms) {
     list.innerHTML = "";
     if (terms.length === 0) return;
 
-    const fragment = document.createDocumentFragment();
+    const section = document.createElement("section");
+    section.className = "in-page-sidebar__section";
+
+    const title = document.createElement("p");
+    title.className = "in-page-sidebar__title";
+    title.textContent = "用語一覧";
+    section.appendChild(title);
+
+    const ul = document.createElement("ul");
+    ul.className = "in-page-sidebar__links";
+
     terms.forEach((term, index) => {
+        const li = document.createElement("li");
+        li.className = "in-page-sidebar__item";
+
         const link = document.createElement("a");
         link.className = "in-page-sidebar__link";
         link.href = `#${buildTermAnchorId(term, index)}`;
         link.textContent = term.title || "";
-        fragment.appendChild(link);
+
+        li.appendChild(link);
+        ul.appendChild(li);
     });
-    list.appendChild(fragment);
+    section.appendChild(ul);
+    list.appendChild(section);
 }
 
 function renderGlossaryTerms(terms, displayMode) { // displayMode を引数に追加
@@ -87,56 +103,45 @@ function renderGlossaryTerms(terms, displayMode) { // displayMode を引数に�
     if (!list) return;
     list.innerHTML = "";
 
-    const fragment = document.createDocumentFragment();
     terms.forEach((term, index) => {
         const article = document.createElement("article");
-        article.className = "term jig-card jig-card--item";
-        // 他ドキュメントからのリンク用にFQNをIDとして設定する
-        article.id = buildTermAnchorId(term, index);
+        article.className = "jig-card jig-card--type";
 
-        const title = document.createElement("h2");
-        title.className = "term-title";
-        title.textContent = term.title || "";
+        const anchorId = buildTermAnchorId(term, index);
+
+        const title = document.createElement("h3");
+        const titleLink = document.createElement("a");
+        titleLink.id = anchorId;
+        titleLink.textContent = term.title || "";
+        title.appendChild(titleLink);
         article.appendChild(title);
 
-        // 概要表示の場合はdlタグを出力しない
-        if (displayMode === 'full') {
-            const dl = document.createElement("dl");
+        if (displayMode === "full") {
+            if (term.fqn) {
+                const fqn = document.createElement("div");
+                fqn.className = "fully-qualified-name";
+                fqn.textContent = term.fqn;
+                article.appendChild(fqn);
+            }
 
-            const simpleNameTitle = document.createElement("dt");
-            simpleNameTitle.textContent = "単純名";
-            const simpleNameValue = document.createElement("dd");
-            simpleNameValue.textContent = term.simpleText || "";
-
-            const fqnTitle = document.createElement("dt");
-            fqnTitle.textContent = "完全修飾名";
-            const fqnValue = document.createElement("dd");
-            fqnValue.textContent = term.fqn || "";
-
-            const kindTitle = document.createElement("dt");
-            kindTitle.textContent = "種類";
-            const kindValue = document.createElement("dd");
-            kindValue.className = "kind";
-            kindValue.textContent = term.kind || "";
-
-            dl.appendChild(simpleNameTitle);
-            dl.appendChild(simpleNameValue);
-            dl.appendChild(fqnTitle);
-            dl.appendChild(fqnValue);
-            dl.appendChild(kindTitle);
-            dl.appendChild(kindValue);
-            article.appendChild(dl);
+            const metaTexts = [];
+            if (term.simpleText) metaTexts.push(`単純名: ${term.simpleText}`);
+            if (term.kind) metaTexts.push(`種類: ${term.kind}`);
+            if (metaTexts.length > 0) {
+                const meta = document.createElement("p");
+                meta.className = "weak";
+                meta.textContent = metaTexts.join(" / ");
+                article.appendChild(meta);
+            }
         }
 
         const description = document.createElement("div");
-        description.className = "description markdown";
+        description.className = "markdown";
         description.innerHTML = term.description || "";
         article.appendChild(description);
 
-        fragment.appendChild(article);
+        list.appendChild(article);
     });
-
-    list.appendChild(fragment);
 }
 
 function renderFilteredTerms(terms, controls) {
@@ -149,9 +154,16 @@ function renderFilteredTerms(terms, controls) {
 }
 
 function renderMarkdownDescriptions() {
-    if (!window.marked) return;
     Array.from(document.getElementsByClassName("markdown"))
-        .forEach(node => node.innerHTML = marked.parse(node.innerHTML));
+        .forEach(node => {
+            if (globalThis.Jig?.markdown?.parse) {
+                node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
+                return;
+            }
+            if (window.marked) {
+                node.innerHTML = marked.parse(node.innerHTML);
+            }
+        });
 }
 
 function getFilteredTerms(terms, controls) {

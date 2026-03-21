@@ -286,8 +286,16 @@ test.describe('glossary.js', () => {
             glossary.renderTermSidebar([{title: 'Acc', fqn: 'app.Acc'}]);
 
             assert.equal(sidebar.children.length, 1);
-            assert.equal(sidebar.children[0].children[0].textContent, 'Acc');
-            assert.equal(sidebar.children[0].children[0].href, '#app.Acc');
+            const section = sidebar.children[0];
+            assert.equal(section.tagName, 'section');
+            assert.equal(section.children[0].tagName, 'p');
+            assert.equal(section.children[0].textContent, '用語一覧');
+            const ul = section.children[1];
+            assert.equal(ul.tagName, 'ul');
+            const link = ul.children[0].children[0];
+            assert.equal(link.tagName, 'a');
+            assert.equal(link.textContent, 'Acc');
+            assert.equal(link.href, '#app.Acc');
         });
 
         test('FQNがない場合のアンカーID生成', () => {
@@ -301,9 +309,10 @@ test.describe('glossary.js', () => {
 
             glossary.renderGlossaryTerms([{title: 'T', simpleText: 'S', fqn: 'F', kind: 'K', description: 'D'}], 'full');
 
-            const article = list.children[0].children[0];
+            const article = list.children[0];
             assert.equal(article.tagName, 'article');
-            assert.ok(article.children.some(c => c.tagName === 'dl'), 'fullモードではdlタグがあるはず');
+            assert.ok(article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), 'fullモードではFQNがあるはず');
+            assert.ok(article.children.some(c => c.tagName === 'p' && c.classList.contains('weak')), 'fullモードではmetaがあるはず');
         });
 
         test('用語一覧を描画する (summaryモード)', () => {
@@ -313,8 +322,8 @@ test.describe('glossary.js', () => {
 
             glossary.renderGlossaryTerms([{title: 'T', description: 'D'}], 'summary');
 
-            const article = list.children[0].children[0];
-            assert.ok(!article.children.some(c => c.tagName === 'dl'), 'summaryモードではdlタグがないはず');
+            const article = list.children[0];
+            assert.ok(!article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), 'summaryモードではFQNがないはず');
         });
 
         test('Markdown説明文のレンダリング (markedがある場合)', () => {

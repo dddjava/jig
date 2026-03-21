@@ -196,29 +196,7 @@ function isCrudVisible(operationType, visibility) {
 }
 
 // ===== DOM ユーティリティ =====
-
-function createElement(tag, options = {}) {
-    const element = document.createElement(tag);
-    if (options.className) element.className = options.className;
-    if (options.id) element.id = options.id;
-    if (options.textContent) element.textContent = options.textContent;
-    if (options.attributes) {
-        for (const [key, value] of Object.entries(options.attributes)) {
-            element.setAttribute(key, value);
-        }
-    }
-    if (options.style) {
-        for (const [key, value] of Object.entries(options.style)) {
-            element.style[key] = value;
-        }
-    }
-    if (options.children) {
-        options.children.forEach(child => {
-            if (child != null) element.appendChild(child);
-        });
-    }
-    return element;
-}
+const createElement = globalThis.Jig.dom.createElement;
 
 function renderNoData(container) {
     container.appendChild(createElement("p", {
@@ -228,38 +206,11 @@ function renderNoData(container) {
 }
 
 function createSidebarSection(title, items) {
-    if (!items || items.length === 0) return null;
-
-    return createElement("section", {
-        className: "in-page-sidebar__section",
-        children: [
-            createElement("p", {
-                className: "in-page-sidebar__title",
-                textContent: title
-            }),
-            createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: items.map(({id, label}) => createElement("li", {
-                    className: "in-page-sidebar__item",
-                    children: [
-                        createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + id},
-                            textContent: label
-                        })
-                    ]
-                }))
-            })
-        ]
-    });
+    return globalThis.Jig.sidebar.createSection(title, items);
 }
 
 function renderSidebarSection(container, title, items) {
-    if (!container) return;
-    const section = createSidebarSection(title, items);
-    if (section) {
-        container.appendChild(section);
-    }
+    globalThis.Jig.sidebar.renderSection(container, title, items);
 }
 
 function fqnToId(prefix, fqn) {
@@ -267,20 +218,7 @@ function fqnToId(prefix, fqn) {
 }
 
 function lazyRender(container, renderFn) {
-    if (typeof IntersectionObserver === "undefined") {
-        renderFn();
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                renderFn();
-                observer.unobserve(container);
-            }
-        });
-    }, {rootMargin: "200px"});
-    observer.observe(container);
+    globalThis.Jig.observe.lazyRender(container, renderFn);
 }
 
 // ===== Mermaid ダイアグラム生成 =====

@@ -44,6 +44,9 @@ class Element {
     get type() { return this.getAttribute("type"); }
     set type(value) { this.setAttribute("type", value); }
 
+    get href() { return this.getAttribute("href"); }
+    set href(value) { this.setAttribute("href", value); }
+
     get checked() { return this._checked; }
     set checked(value) {
         this._checked = !!value;

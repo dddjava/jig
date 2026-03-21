@@ -1,7 +1,17 @@
+:root {
+    --sidebar-width: 260px;
+}
 body {
     margin: 0;
     height: 100vh;
 }
+/* split-view が直接の子のページ: body を flex column にして高さ計算不要に */
+body:has(> .split-view) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+/* outbound は従来通り（split-view は main の中にある） */
 body.outbound {
     overflow: hidden;
 }
@@ -110,83 +120,80 @@ main table thead {
     background-color: #CCC;
 }
 
-/* サイドナビのあるコンテナ */
-.sideNavMain {
+/* サイドバー＋コンテンツの横並びコンテナ */
+.split-view {
     display: flex;
-    flex-wrap: nowrap;
     gap: 20px;
-    align-items: flex-start;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
-.sideNavMain > nav {
-    position: sticky;
-    top: 16px;
-    align-self: start;
-    max-height: calc(100vh - 32px);
-    max-width: 20vw;
-    overflow: auto;
+.split-view > nav {
+    width: var(--sidebar-width);
     flex-shrink: 0;
-}
-.sideNavMain > main {
-    flex-grow: 1;
-    min-width: 0;
-    height: calc(100vh - 3em);
     overflow: auto;
-    /* 実際100pxになるわけではないけどこれを指定しておくとnav.treeのサイズ変更が期待通り動く */
-    width: 100px;
+    box-sizing: border-box;
+}
+.split-view > main,
+.split-view > section {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
 }
 
-/* ナビのツリー  */
-.sideNavMain > nav.tree {
+/* ナビのツリー */
+.split-view > nav.tree {
     font-size: 0.85em;
 }
-.sideNavMain > nav.tree a, .sideNavMain > nav.tree summary {
+.split-view > nav.tree a, .split-view > nav.tree summary {
     white-space: nowrap;
 }
-.sideNavMain > nav.tree summary,
-.sideNavMain > nav.tree details > div > a {
+.split-view > nav.tree summary,
+.split-view > nav.tree details > div > a {
     display: block;
     padding: 6px 8px;
     border-radius: 6px;
     color: #1b3a66;
     text-decoration: none;
 }
-.sideNavMain > nav.tree summary {
+.split-view > nav.tree summary {
     cursor: pointer;
 }
-.sideNavMain > nav.tree summary:hover,
-.sideNavMain > nav.tree summary:focus-visible,
-.sideNavMain > nav.tree details > div > a:hover,
-.sideNavMain > nav.tree details > div > a:focus-visible {
+.split-view > nav.tree summary:hover,
+.split-view > nav.tree summary:focus-visible,
+.split-view > nav.tree details > div > a:hover,
+.split-view > nav.tree details > div > a:focus-visible {
     background-color: #e8f0fb;
     color: #10253f;
     text-decoration: none;
 }
-.sideNavMain > nav.tree summary > a,
-.sideNavMain > nav.tree details > div > a {
+.split-view > nav.tree summary > a,
+.split-view > nav.tree details > div > a {
     color: inherit;
     text-decoration: none;
 }
-.sideNavMain > nav.tree details > div,
-.sideNavMain > nav.tree details > details {
+.split-view > nav.tree details > div,
+.split-view > nav.tree details > details {
     margin-left: 12px;
 }
-.sideNavMain > nav.tree details {
+.split-view > nav.tree details {
     margin-bottom: 4px;
 }
 
 @media (max-width: 900px) {
-    .sideNavMain {
+    body:has(> .split-view) {
         flex-direction: column;
     }
-    .sideNavMain > nav {
-        position: static;
-        width: 100%;
-        max-width: none;
-        max-height: none;
+    .split-view {
+        flex-direction: column;
     }
-    .sideNavMain > main {
+    .split-view > nav {
         width: 100%;
-        height: auto;
+        max-height: 40vh;
+    }
+    .split-view > main,
+    .split-view > section {
+        width: 100%;
     }
 }
 
@@ -491,7 +498,7 @@ label {
     background-color: #2980b9;
 }
 
-/* Glossaryのレイアウトは sideNavMain / in-page-sidebar / jig-card を利用する */
+/* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */
 
 /* パッケージ概要の表示設定 */
 .package-summary details.controls,
@@ -846,32 +853,16 @@ table td.number {
     overflow: hidden;
 }
 .outbound .outbound-view-container {
-    display: flex;
-    gap: 20px;
-    align-items: stretch;
     padding-top: 16px;
-    height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
 }
 .outbound .outbound-sidebar {
-    max-width: 260px;
-    min-width: 260px;
-    height: 100%;
-    overflow-y: auto;
     padding-bottom: 20px;
-    box-sizing: border-box;
 }
 .outbound .outbound-group-list {
-    flex: 1;
     display: grid;
     gap: 16px;
     min-width: 0;
-    overflow-x: auto;
-    overflow-y: auto;
-    height: 100%;
     padding-bottom: 20px;
-    box-sizing: border-box;
     align-content: start;
 }
 .outbound .outbound-group-card {
@@ -1054,15 +1045,6 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow: hidden;
-}
-@media (max-width: 900px) {
-    .outbound .outbound-sidebar {
-        position: static;
-        max-width: none;
-        min-width: 0;
-        width: 100%;
-        max-height: none;
-    }
 }
 .outbound .crud-table {
     border-collapse: collapse;

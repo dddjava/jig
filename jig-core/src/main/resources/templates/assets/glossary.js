@@ -70,77 +70,40 @@ function renderTermSidebar(terms) {
     if (!list) return;
 
     list.innerHTML = "";
-    if (terms.length === 0) return;
-
-    const section = document.createElement("section");
-    section.className = "in-page-sidebar__section";
-
-    const title = document.createElement("p");
-    title.className = "in-page-sidebar__title";
-    title.textContent = "用語一覧";
-    section.appendChild(title);
-
-    const ul = document.createElement("ul");
-    ul.className = "in-page-sidebar__links";
-
-    terms.forEach((term, index) => {
-        const li = document.createElement("li");
-        li.className = "in-page-sidebar__item";
-
-        const link = document.createElement("a");
-        link.className = "in-page-sidebar__link";
-        link.href = `#${buildTermAnchorId(term, index)}`;
-        link.textContent = term.title || "";
-
-        li.appendChild(link);
-        ul.appendChild(li);
-    });
-    section.appendChild(ul);
-    list.appendChild(section);
+    const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
+    globalThis.Jig.sidebar.renderSection(list, "用語一覧", items);
 }
 
-function renderGlossaryTerms(terms, displayMode) { // displayMode を引数に追加
+function renderGlossaryTerms(terms, displayMode) {
     const list = document.getElementById("term-list");
     if (!list) return;
     list.innerHTML = "";
 
+    const createElement = globalThis.Jig.dom.createElement;
     terms.forEach((term, index) => {
-        const article = document.createElement("article");
-        article.className = "jig-card jig-card--type";
-
         const anchorId = buildTermAnchorId(term, index);
 
-        const title = document.createElement("h3");
-        const titleLink = document.createElement("a");
-        titleLink.id = anchorId;
-        titleLink.textContent = term.title || "";
-        title.appendChild(titleLink);
-        article.appendChild(title);
-
+        const metaChildren = [];
         if (displayMode === "full") {
             if (term.fqn) {
-                const fqn = document.createElement("div");
-                fqn.className = "fully-qualified-name";
-                fqn.textContent = term.fqn;
-                article.appendChild(fqn);
+                metaChildren.push(createElement("div", {className: "fully-qualified-name", textContent: term.fqn}));
             }
-
             const metaTexts = [];
             if (term.simpleText) metaTexts.push(`単純名: ${term.simpleText}`);
             if (term.kind) metaTexts.push(`種類: ${term.kind}`);
             if (metaTexts.length > 0) {
-                const meta = document.createElement("p");
-                meta.className = "weak";
-                meta.textContent = metaTexts.join(" / ");
-                article.appendChild(meta);
+                metaChildren.push(createElement("p", {className: "weak", textContent: metaTexts.join(" / ")}));
             }
         }
 
-        const description = document.createElement("div");
-        description.className = "markdown";
-        description.innerHTML = term.description || "";
-        article.appendChild(description);
-
+        const article = createElement("article", {
+            className: "jig-card jig-card--type",
+            children: [
+                createElement("h3", {children: [createElement("a", {id: anchorId, textContent: term.title || ""})]}),
+                ...metaChildren,
+                createElement("div", {className: "markdown", innerHTML: term.description || ""}),
+            ]
+        });
         list.appendChild(article);
     });
 }

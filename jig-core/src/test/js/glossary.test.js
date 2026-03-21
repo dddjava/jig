@@ -2,6 +2,16 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Element, DocumentStub } = require('./dom-stub.js');
 
+// jig.js の共通ユーティリティをロード（window・document のスタブが必要）
+global.window = global.window || { addEventListener: () => {} };
+global.document = global.document || {
+    addEventListener: () => {},
+    getElementsByClassName: () => [],
+    createElement: (tag) => ({ tagName: tag, children: [], className: '', textContent: '', style: {}, appendChild(c) { this.children.push(c); } }),
+    body: { classList: { contains: () => false } },
+};
+require('../../main/resources/templates/assets/jig.js');
+
 const glossary = require('../../main/resources/templates/assets/glossary.js');
 
 /**

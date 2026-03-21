@@ -257,6 +257,7 @@ function setupDiagramEnvironment(doc, context) {
         },
     };
     global.mermaid = global.window.mermaid;
+    globalThis.Jig = { mermaid: { renderWithControls: () => {} } };
     return diagram;
 }
 
@@ -1157,23 +1158,14 @@ test.describe('package.js', () => {
 
             test('renderPackageDiagram: エッジ数超過時は保留/エラー表示する', () => {
                 const doc = setupDocument();
-                // setupDiagramEnvironmentが作るdiagramをdomヘルパーが操作することをモックする。
                 const diagramMock = setupDiagramEnvironment(doc, testContext);
 
-                // Mock dom helpers used by showDiagramErrorMessage internally
-                const errorBoxMock = { style: { display: 'none' } };
-                const messageNodeMock = { textContent: '' };
-                const actionNodeMock = { style: { display: 'none' }, onclick: null };
-                test.mock.method(pkg.dom, 'getDiagramErrorBox', test.mock.fn(() => errorBoxMock));
-                test.mock.method(pkg.dom, 'createDiagramErrorBox', test.mock.fn(() => errorBoxMock)); // called by getOrCreate
-                test.mock.method(pkg.dom, 'getDiagramErrorMessageNode', test.mock.fn(() => messageNodeMock));
-                test.mock.method(pkg.dom, 'getDiagramErrorActionNode', test.mock.fn(() => actionNodeMock));
-                test.mock.method(pkg.dom, 'setNodeTextContent', test.mock.fn((el, text) => { el.textContent = text; }));
-                test.mock.method(pkg.dom, 'setNodeDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
-                test.mock.method(pkg.dom, 'setNodeOnClick', test.mock.fn((el, handler) => { el.onclick = handler; }));
-                test.mock.method(pkg.dom, 'setDiagramElementDisplay', test.mock.fn((el, display) => { el.style.display = display; }));
+                // renderWithControlsへの委譲をキャプチャする
+                let capturedRenderArgs = null;
+                globalThis.Jig.mermaid.renderWithControls = (el, text, opts) => {
+                    capturedRenderArgs = { el, text, opts };
+                };
 
-                // Data setup (same as before)
                 const packages = [];
                 const relations = [];
                 for (let i = 0; i < 501; i += 1) {
@@ -1185,15 +1177,11 @@ test.describe('package.js', () => {
                 }
                 setPackageData({packages, relations}, testContext);
 
-                const errors = withConsoleErrorCapture(() => {
-                    pkg.renderPackageDiagram(testContext, [], null);
-                });
+                pkg.renderPackageDiagram(testContext, [], null);
 
-                assert.equal(errorBoxMock.style.display, '', 'errorBox should be displayed by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage
-                assert.equal(diagramMock.style.display, 'none', 'diagram should be hidden by showDiagramErrorMessage'); // Check display set by showDiagramErrorMessage
-                assert.equal(errors.some(line => line.includes('関連数が多すぎるため描画を省略しました。')), true);
-                assert.ok(actionNodeMock.onclick, 'actionNode should have onclick handler');
-                assert.equal(actionNodeMock.style.display, '', 'actionNode should be displayed');
+                assert.ok(capturedRenderArgs, 'renderWithControlsが呼ばれること');
+                assert.equal(capturedRenderArgs.el, diagramMock, 'diagramが渡されること');
+                assert.ok(capturedRenderArgs.opts.edgeCount > 500, `edgeCountが500超であること: ${capturedRenderArgs.opts.edgeCount}`);
             });
 
             test('registerDiagramClickHandler: クリックで関連フィルタへ切り替える', () => {

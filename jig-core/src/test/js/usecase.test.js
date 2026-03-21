@@ -99,7 +99,7 @@ test.describe('UsecaseApp', () => {
             unobserve() {}
         };
         global.marked = { parse: (text) => text }; // markedのモック
-        global.mermaid = { run: () => {} }; // mermaidのモック
+        global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
 
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];

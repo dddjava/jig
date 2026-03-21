@@ -244,9 +244,11 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('データ読み込み', () => {
-        test('globalThis.glossaryData (オブジェクト) から取得', () => {
-            globalThis.glossaryData = {terms: [{title: 'Account'}]};
-            assert.equal(glossary.getGlossaryData()[0].title, 'Account');
+        test('globalThis.glossaryData (fqnキーマップ) から取得', () => {
+            globalThis.glossaryData = {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}};
+            const result = glossary.getGlossaryData();
+            assert.equal(result[0].title, 'Account');
+            assert.equal(result[0].fqn, 'app.Account');
             delete globalThis.glossaryData;
         });
 
@@ -260,10 +262,12 @@ test.describe('glossary.js', () => {
             const doc = setupDocument();
             const script = doc.createElement('script');
             script.id = 'glossary-data';
-            script.textContent = JSON.stringify([{title: 'FromScript'}]);
+            script.textContent = JSON.stringify({'app.FromScript': {title: 'FromScript', simpleText: 'FromScript', kind: 'クラス', description: ''}});
             doc.elementsById.set('glossary-data', script);
 
-            assert.equal(glossary.getGlossaryData()[0].title, 'FromScript');
+            const result = glossary.getGlossaryData();
+            assert.equal(result[0].title, 'FromScript');
+            assert.equal(result[0].fqn, 'app.FromScript');
         });
 
         test('不正なJSONの場合は空配列を返す', () => {

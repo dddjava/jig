@@ -19,11 +19,11 @@ function sortTerms(terms, sortKey) {
 }
 
 function getGlossaryData() {
-    /** @type {{terms?: Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}>} | Array<{title: string, simpleText: string, fqn: string, kind: string, description: string}> | null | undefined} */
     const glossaryData = globalThis.glossaryData;
     if (glossaryData) {
         if (Array.isArray(glossaryData)) return glossaryData;
-        return glossaryData.terms ?? [];
+        if (glossaryData.terms) return glossaryData.terms;
+        return Object.entries(glossaryData).map(([fqn, term]) => ({...term, fqn}));
     }
 
     const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
@@ -33,7 +33,8 @@ function getGlossaryData() {
     try {
         const parsed = JSON.parse(jsonText);
         if (Array.isArray(parsed)) return parsed;
-        return parsed?.terms ?? [];
+        if (parsed?.terms) return parsed.terms;
+        return Object.entries(parsed).map(([fqn, term]) => ({...term, fqn}));
     } catch (e) {
         return [];
     }

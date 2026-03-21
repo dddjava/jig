@@ -23,7 +23,7 @@ class GlossaryAdapterTest {
         String js = "globalThis.glossaryData = " + GlossaryAdapter.buildJson(glossary);
 
         assertTrue(js.contains("globalThis.glossaryData = "));
-        assertTrue(js.contains("\"terms\""));
+        assertTrue(js.contains("\"app.Account\""));
         assertTrue(js.contains("Account"));
         assertFalse(js.contains("id=\"glossary-data\""));
     }

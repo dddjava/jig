@@ -750,7 +750,7 @@ test.describe('package.js', () => {
     test.describe('テーブル', () => {
         test.describe('ロジック', () => {
             test('buildPackageTableRowSpecs: 行データを整形する', () => {
-                globalThis.glossaryData = {terms: [{fqn: 'app.a', title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}]};
+                globalThis.glossaryData = {'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}};
                 const rows = [
                     {fqn: 'app.a', classCount: 2, incomingCount: 0, outgoingCount: 1},
                 ];
@@ -779,10 +779,10 @@ test.describe('package.js', () => {
 
         test.describe('UI', () => {
             test('renderPackageTable: 行とカウントを描画する', () => {
-                globalThis.glossaryData = {terms: [
-                    {fqn: 'app.a', title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
-                    {fqn: 'app.b', title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
-                ]};
+                globalThis.glossaryData = {
+                    'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
+                    'app.b': {title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
+                };
                 const doc = setupDocument();
                 setPackageData({
                     packages: [

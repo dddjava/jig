@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.information.outbound;
 
-import org.dddjava.jig.domain.model.information.external.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 

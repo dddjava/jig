@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.external;
+package org.dddjava.jig.domain.model.information.outbound.other;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;

@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorReposito
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.external.ExternalAccessorRepositories;
-import org.dddjava.jig.domain.model.information.external.OtherExternalAccessorRepository;
+import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
+import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.information.outbound.springdata.SpringDataJdbcStatementsReader;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.ReadStatus;

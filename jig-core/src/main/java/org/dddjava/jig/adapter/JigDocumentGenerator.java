@@ -8,8 +8,7 @@ import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.poi.ListAdapter;
 
-import org.dddjava.jig.adapter.thymeleaf.*;
-import org.dddjava.jig.adapter.thymeleaf.dialect.JigDialect;
+import org.dddjava.jig.adapter.html.view.*;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
@@ -17,9 +16,6 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +24,6 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Map;
@@ -44,25 +39,12 @@ public class JigDocumentGenerator {
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
-    private final TemplateEngine thymeleafTemplateEngine;
-
     private final CompositeAdapter compositeAdapter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.diagramOption = jigDocumentContext.diagramOption();
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
-
-        // setup Thymeleaf
-        TemplateEngine templateEngine = new TemplateEngine();
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        templateResolver.setSuffix(".html");
-        templateResolver.setPrefix("templates/");
-        templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        templateEngine.setTemplateResolver(templateResolver);
-        templateEngine.addDialect(new JigDialect(jigDocumentContext));
-        this.thymeleafTemplateEngine = templateEngine;
 
         compositeAdapter = new CompositeAdapter();
         compositeAdapter.register(new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext)));
@@ -161,7 +143,7 @@ public class JigDocumentGenerator {
 
     private void generateIndex(List<HandleResult> results) {
         Metrics.timer("jig.document.time", "phase", "index").record(() -> {
-            IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramOption.graphvizOutputFormat());
+            IndexView indexView = new IndexView(diagramOption.graphvizOutputFormat());
             indexView.render(results, outputDirectory);
         });
     }

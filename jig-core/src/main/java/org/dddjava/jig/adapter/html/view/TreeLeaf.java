@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.thymeleaf;
+package org.dddjava.jig.adapter.html.view;
 
 import org.dddjava.jig.domain.model.information.types.JigType;
 

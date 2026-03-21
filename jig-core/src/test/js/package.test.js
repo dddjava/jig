@@ -877,7 +877,7 @@ test.describe('package.js', () => {
                     'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.HandleResult',
                     'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.JigResult',
                     'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.JigResult$JigSummary',
-                    'org.dddjava.jig.adapter.thymeleaf.IndexView -> org.dddjava.jig.HandleResult',
+                    'org.dddjava.jig.adapter.html.view.IndexView -> org.dddjava.jig.HandleResult',
                 ];
                 const {source} = pkg.buildMutualDependencyDiagramSource(
                     causes,
@@ -888,7 +888,7 @@ test.describe('package.js', () => {
                 assert.ok(lines.includes('subgraph O0["jig"]'));
                 assert.ok(!lines.includes('subgraph O1["adapter"]'));
                 assert.ok(lines.some(l => l.match(/subgraph P\d+\["adapter"\]/)));
-                assert.ok(lines.some(l => l.match(/subgraph P\d+\["thymeleaf"\]/)));
+                assert.ok(lines.some(l => l.match(/subgraph P\d+\["view"\]/)));
                 assert.ok(lines.includes('org_dddjava_jig_adapter_JigDocumentGenerator["JigDocumentGenerator"]'));
                 assert.ok(lines.includes('org_dddjava_jig_adapter_JigResultData["JigResultData"]'));
             });

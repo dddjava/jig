@@ -19,6 +19,5 @@ module org.dddjava.jig.core {
     requires org.mybatis;
     requires org.objectweb.asm;
     requires org.slf4j;
-    requires thymeleaf;
     requires org.jspecify;
 }

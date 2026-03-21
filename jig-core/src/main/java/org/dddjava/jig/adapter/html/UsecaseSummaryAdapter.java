@@ -4,7 +4,7 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
-import org.dddjava.jig.adapter.thymeleaf.HtmlSupport;
+import org.dddjava.jig.adapter.html.view.HtmlSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;

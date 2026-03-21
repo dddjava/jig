@@ -4,7 +4,9 @@ import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +44,8 @@ public class IndexView {
     }
 
     private String resolveJigVersion() {
-        return this.getClass().getPackage().getImplementationVersion();
+        var implementationVersion = this.getClass().getPackage().getImplementationVersion();
+        return Objects.requireNonNullElse(implementationVersion, "unknown");
     }
 
     private void write(Path outputDirectory) {
@@ -65,9 +68,7 @@ public class IndexView {
         html.append("<header>\n");
         html.append("    <h1>").append(title).append("</h1>\n");
         html.append("    <p>出力日時: <span id=\"jig-timestamp\" data-jig-timestamp=\"").append(timestampText).append("\">").append(timestampText).append("</span>");
-        if (jigVersion != null) {
-            html.append(" Version: ").append(jigVersion);
-        }
+        html.append(" Version: ").append(jigVersion);
         html.append("</p>\n");
         html.append("</header>\n");
         html.append("\n");

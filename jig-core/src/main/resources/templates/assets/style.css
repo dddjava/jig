@@ -327,6 +327,10 @@ body.hide-usecase-details .depends {
 pre.mermaid {
     font-size: 0;
 }
+.mermaid-diagram {
+    margin-top: 10px;
+    position: relative;
+}
 .mermaid.too-large {
     font-size: 14px;
     white-space: normal;
@@ -355,6 +359,24 @@ pre.mermaid {
     cursor: pointer;
 }
 .mermaid-too-large__actions button:hover {
+    background-color: #f0f0f0;
+}
+.mermaid-edge-warning {
+    border: 1px solid #cc3333;
+    background: #fff5f5;
+    color: #222;
+    padding: 8px 12px;
+    margin: 12px 0;
+    border-radius: 6px;
+}
+.mermaid-edge-warning__action {
+    padding: 6px 10px;
+    border: 1px solid #888;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+.mermaid-edge-warning__action:hover {
     background-color: #f0f0f0;
 }
 /* Mermaidのツールチップ表示を調整 */
@@ -906,10 +928,6 @@ table td.number {
 .outputs .outputs-persistence-detail-list {
     margin: 0;
     padding-left: 18px;
-}
-.outputs .mermaid-diagram {
-    margin-top: 10px;
-    position: relative;
 }
 
 .mermaid-copy-button {

@@ -370,65 +370,12 @@ const DEFAULT_VISIBILITY = {
     crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
 };
 
-function copyMermaidText(source, button) {
-    if (!source) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(source).then(() => {
-            flashButtonLabel(button, "Copied!");
-        }).catch(() => {
-            fallbackCopyText(source, button);
-        });
-        return;
-    }
-    fallbackCopyText(source, button);
-}
-
-function fallbackCopyText(source, button) {
-    const textarea = document.createElement("textarea");
-    textarea.value = source;
-    textarea.style.top = "-1000px";
-    textarea.style.position = "fixed";
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-    try {
-        document.execCommand("copy");
-        flashButtonLabel(button, "Copied!");
-    } catch (e) {
-        flashButtonLabel(button, "Copy Failed...");
-        console.error("Copy failed:", e);
-    } finally {
-        document.body.removeChild(textarea);
-    }
-}
-
-function flashButtonLabel(button, text) {
-    if (!button) return;
-    const original = button.textContent;
-    button.textContent = text;
-    window.setTimeout(() => { button.textContent = original; }, 1500);
-}
-
 function renderMermaid(mermaidCode, container) {
-    if (typeof mermaid === "undefined") return;
     if (!mermaidCode) return;
-
-    const svgContainer = createElement("div", {className: "mermaid-diagram__svg"});
-    const copyButton = createElement("button", {
-        className: "mermaid-copy-button",
-        textContent: "Copy Source",
-        attributes: {type: "button"}
-    });
-    copyButton.addEventListener("click", () => {
-        copyMermaidText(mermaidCode, copyButton);
-    });
-    container.appendChild(copyButton);
-    container.appendChild(svgContainer);
-
-    const id = "mermaid-" + Math.random().toString(36).substring(2, 11);
-    mermaid.render(id, mermaidCode).then(({svg}) => {
-        svgContainer.innerHTML = svg;
-    });
+    if (!container) return;
+    if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== "function") return;
+    container.innerHTML = "";
+    globalThis.Jig.mermaid.renderWithControls(container, mermaidCode);
 }
 
 function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
@@ -1050,10 +997,6 @@ const OutputsApp = {
             group.operations.map(operation => ({...operation, outputPort: group.outputPort})));
         this.state.persistenceGrouped = groupOperationsByPersistenceTarget(allOperations);
         this.state.externalGrouped = groupOperationsByExternalType(allOperations);
-
-        if (typeof mermaid !== "undefined") {
-            mermaid.initialize({startOnLoad: false});
-        }
 
         this.bindEvents();
         this.render();

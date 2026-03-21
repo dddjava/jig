@@ -1144,7 +1144,8 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
     }
 
     diagram.style.display = 'block';
-    renderDiagramWithMermaid(diagram, source);
+    if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== 'function') return;
+    globalThis.Jig.mermaid.renderWithControls(diagram, source);
 }
 
 function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
@@ -1338,14 +1339,11 @@ function renderPackageDiagram(context, packageFilterFqn, focusedPackageFqn) {
     const diagram = dom.getDiagram();
     if (!diagram) return;
 
-
-
     const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn);
     applyDiagramRenderPlan(context, renderPlan);
-    if (shouldSkipDiagramRenderByEdgeLimit(diagram, renderPlan, context)) return;
     setDiagramSource(diagram, renderPlan.source);
-
-    renderDiagramWithMermaidIfAvailable(diagram, renderPlan, context);
+    if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== 'function') return;
+    globalThis.Jig.mermaid.renderWithControls(diagram, renderPlan.source, {edgeCount: renderPlan.uniqueRelations.length});
 }
 
 function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {

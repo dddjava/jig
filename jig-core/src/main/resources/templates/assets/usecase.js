@@ -219,13 +219,8 @@ const UsecaseApp = {
                         });
 
                         const code = builder.build('LR');
-                        const mmdPre = createElement("pre", {
-                            className: "mermaid",
-                            textContent: ""
-                        });
                         mmdContainer.innerHTML = ''; // clear loading state if any
-                        mmdContainer.appendChild(mmdPre);
-                        globalThis.Jig.mermaid.renderPre(mmdPre, code);
+                        globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
                     });
                 }
 

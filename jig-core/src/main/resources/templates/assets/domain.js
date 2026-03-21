@@ -225,9 +225,8 @@ function renderPackages(packages, container) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
-                const mmdPre = createElement("pre", {className: "mermaid", textContent: ""});
-                mmdContainer.appendChild(mmdPre);
-                globalThis.Jig.mermaid.renderPre(mmdPre, pkg.relationDiagram);
+                mmdContainer.innerHTML = "";
+                globalThis.Jig.mermaid.renderWithControls(mmdContainer, pkg.relationDiagram);
             });
         }
 

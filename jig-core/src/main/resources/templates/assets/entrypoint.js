@@ -99,13 +99,8 @@ const EntrypointApp = {
 
                     const code = builder.build('LR');
                     if (code) {
-                        const mmdPre = globalThis.Jig.dom.createElement("pre", {
-                            className: "mermaid",
-                            textContent: ""
-                        });
-                        mmdContainer.appendChild(mmdPre);
-
-                        globalThis.Jig.mermaid.renderPre(mmdPre, code);
+                        mmdContainer.innerHTML = "";
+                        globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
                     }
                 });
 

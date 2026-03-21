@@ -8,21 +8,21 @@ public enum TypeCategory {
      *
      * いわゆるService。
      */
-    InputPort,
+    InboundPort,
 
     /**
      * 入力アダプタ
      *
      * いわゆるController。プレゼンテーションやリクエストをハンドリングするものなど。
      */
-    InputAdapter,
+    InboundAdapter,
 
     /**
      * 出力アダプタ
      *
      * いわゆるRepository。DB書き込みなどの永続化や、外部サービス呼び出しなど。
      */
-    OutputAdapter,
+    OutboundAdapter,
 
     /**
      * その他のコンポーネント
@@ -40,17 +40,17 @@ public enum TypeCategory {
         // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Service"))
                 || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.annotation.Service"))) {
-            return InputPort;
+            return InboundPort;
         }
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Controller"))
                 || jigType.hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.RestController"))
                 || jigType.hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
                 || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.adapter.HandleDocument"))) {
-            return InputAdapter;
+            return InboundAdapter;
         }
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Repository"))
                 || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.annotation.Repository"))) {
-            return OutputAdapter;
+            return OutboundAdapter;
         }
         if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Component"))) {
             return OtherApplicationComponent;
@@ -64,7 +64,7 @@ public enum TypeCategory {
      */
     public boolean isApplicationComponent() {
         return switch (this) {
-            case InputPort, InputAdapter, OutputAdapter, OtherApplicationComponent -> true;
+            case InboundPort, InboundAdapter, OutboundAdapter, OtherApplicationComponent -> true;
             default -> false;
         };
     }

@@ -2,8 +2,8 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
-import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementations;
+import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
+import org.dddjava.jig.domain.model.information.outbound.pair.OutboundImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 
@@ -18,12 +18,12 @@ public class InfrastructureQueryService {
         this.typesQueryService = typesQueryService;
     }
 
-    public OutputImplementations outputImplementations(JigRepository jigRepository) {
+    public OutboundImplementations outputImplementations(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
 
         var accessorRepositories = jigRepository.externalAccessorRepositories();
-        var outputAdapters = OutputAdapters.from(jigTypes, accessorRepositories);
-        var outputImplementations = OutputImplementations.from(outputAdapters);
+        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        var outputImplementations = OutboundImplementations.from(outboundAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;
     }

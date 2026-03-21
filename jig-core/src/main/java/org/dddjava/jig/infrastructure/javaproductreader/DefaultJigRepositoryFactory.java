@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.external.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.external.OtherExternalAccessorRepository;
-import org.dddjava.jig.domain.model.information.outputs.springdata.SpringDataJdbcStatementsReader;
+import org.dddjava.jig.domain.model.information.outbound.springdata.SpringDataJdbcStatementsReader;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.sources.ReadStatus;
 import org.dddjava.jig.domain.model.sources.filesystem.FilesystemSources;

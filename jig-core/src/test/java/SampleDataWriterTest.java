@@ -1,6 +1,6 @@
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.information.outputs.OutputAdapters;
+import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -33,16 +33,16 @@ class SampleDataWriterTest {
 
         var jigTypes = jigService.jigTypes(repository);
         var externalAccessorRepositories = repository.externalAccessorRepositories();
-        var outputAdapters = OutputAdapters.from(jigTypes, externalAccessorRepositories);
+        var outboundAdapters = OutboundAdapters.from(jigTypes, externalAccessorRepositories);
 
-        // outputs-data.js
+        // outbound-data.js
         {
-            var json = OutputsSummaryAdapter.buildJson(outputAdapters);
-            Path sampleFile = Path.of("src/main/resources/templates/data/outputs-data.js");
+            var json = OutboundSummaryAdapter.buildJson(outboundAdapters);
+            Path sampleFile = Path.of("src/main/resources/templates/data/outbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
                 "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.outputPortData = " + json + "\n");
+                "globalThis.outboundData = " + json + "\n");
         }
 
         // glossary-data.js

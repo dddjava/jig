@@ -71,7 +71,7 @@ public class TypesQueryService {
 
     public JigTypes serviceTypes(JigRepository jigRepository) {
         return jigTypesCache.get("serviceTypes", key ->
-                jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.InputPort)
+                jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.InboundPort)
         );
     }
 

@@ -2,7 +2,7 @@ body {
     margin: 0;
     height: 100vh;
 }
-body.outputs {
+body.outbound {
     overflow: hidden;
 }
 main, nav {
@@ -839,13 +839,13 @@ table td.number {
 }
 
 /* 外部利用概要 */
-.outputs main {
+.outbound main {
     height: calc(100vh - 2em);
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
-.outputs .outputs-view-container {
+.outbound .outbound-view-container {
     display: flex;
     gap: 20px;
     align-items: stretch;
@@ -854,7 +854,7 @@ table td.number {
     overflow: hidden;
     box-sizing: border-box;
 }
-.outputs .outputs-sidebar {
+.outbound .outbound-sidebar {
     max-width: 260px;
     min-width: 260px;
     height: 100%;
@@ -862,7 +862,7 @@ table td.number {
     padding-bottom: 20px;
     box-sizing: border-box;
 }
-.outputs .outputs-group-list {
+.outbound .outbound-group-list {
     flex: 1;
     display: grid;
     gap: 16px;
@@ -874,58 +874,58 @@ table td.number {
     box-sizing: border-box;
     align-content: start;
 }
-.outputs .outputs-group-card {
+.outbound .outbound-group-card {
 }
-.outputs .outputs-group-card > h3 {
+.outbound .outbound-group-card > h3 {
     margin: 0;
 }
-.outputs .outputs-group-card > .fully-qualified-name {
+.outbound .outbound-group-card > .fully-qualified-name {
     margin-top: 4px;
     margin-bottom: 0;
 }
-.outputs .outputs-group-card > .weak {
+.outbound .outbound-group-card > .weak {
     margin-top: 4px;
     margin-bottom: 10px;
 }
-.outputs .outputs-operation-list {
+.outbound .outbound-operation-list {
     display: grid;
     gap: 10px;
 }
-.outputs .outputs-operation-list-summary {
+.outbound .outbound-operation-list-summary {
     cursor: pointer;
     padding: 6px 0;
     color: #31455f;
     font-weight: bold;
 }
-.outputs .outputs-operation-item {
+.outbound .outbound-operation-item {
     margin-top: 0;
 }
-.outputs .outputs-operation-item > h4 {
+.outbound .outbound-operation-item > h4 {
     margin-top: 0;
     margin-bottom: 10px;
     color: #1b3a66;
 }
-.outputs .outputs-operation-item-meta {
+.outbound .outbound-operation-item-meta {
     margin: 0;
     display: grid;
     gap: 6px;
 }
-.outputs .outputs-operation-item-field {
+.outbound .outbound-operation-item-field {
     display: grid;
     grid-template-columns: 130px 1fr;
     gap: 8px;
 }
-.outputs .outputs-operation-item-field > dt {
+.outbound .outbound-operation-item-field > dt {
     font-weight: bold;
 }
-.outputs .outputs-operation-item-field > dd {
+.outbound .outbound-operation-item-field > dd {
     margin: 0;
 }
-.outputs .outputs-persistence-detail-title {
+.outbound .outbound-persistence-detail-title {
     margin: 10px 0 6px 0;
     font-weight: bold;
 }
-.outputs .outputs-persistence-detail-list {
+.outbound .outbound-persistence-detail-list {
     margin: 0;
     padding-left: 18px;
 }
@@ -948,21 +948,21 @@ table td.number {
     background-color: #f0f0f0;
     opacity: 1;
 }
-.outputs .outputs-crud-panel {
+.outbound .outbound-crud-panel {
     flex: 1;
     overflow: auto;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
 }
-.outputs .outputs-sticky-header {
+.outbound .outbound-sticky-header {
     flex-shrink: 0;
     background-color: #fff;
 }
-.outputs .outputs-settings-panel {
+.outbound .outbound-settings-panel {
     margin: 16px 0 0 0;
 }
-.outputs .outputs-settings-panel__title {
+.outbound .outbound-settings-panel__title {
     margin: 0;
     color: #31455f;
     font-size: 0.85rem;
@@ -973,57 +973,57 @@ table td.number {
     display: flex;
     align-items: center;
 }
-.outputs .outputs-visibility-panel {
+.outbound .outbound-visibility-panel {
     padding: 8px;
     background-color: #eef4ff;
     border-radius: 6px;
     font-size: 0.9em;
     margin-top: 8px;
 }
-.outputs .outputs-visibility-panel__groups {
+.outbound .outbound-visibility-panel__groups {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
-.outputs .outputs-visibility-panel__group {
+.outbound .outbound-visibility-panel__group {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 4px 12px;
 }
-.outputs .outputs-visibility-panel__group-label {
+.outbound .outbound-visibility-panel__group-label {
     margin: 0 0 2px 0;
     font-size: 0.8rem;
     color: #6b7280;
     font-weight: bold;
 }
-.outputs .outputs-visibility-panel label {
+.outbound .outbound-visibility-panel label {
     cursor: pointer;
 }
-.outputs .outputs-visibility-panel .checkbox-pair {
+.outbound .outbound-visibility-panel .checkbox-pair {
     display: flex;
     flex-direction: column;
     gap: 2px;
     border-left: 2px solid #aac4f0;
     padding-left: 6px;
 }
-.outputs .outputs-visibility-panel .checkbox-child {
+.outbound .outbound-visibility-panel .checkbox-child {
     padding-left: 8px;
     font-size: 0.95em;
     color: #374151;
 }
-.outputs .outputs-visibility-panel .checkbox-grandchild {
+.outbound .outbound-visibility-panel .checkbox-grandchild {
     padding-left: 16px;
     font-size: 0.90em;
 }
-.outputs .outputs-tab-list {
+.outbound .outbound-tab-list {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
     border-bottom: 2px solid #dee2e6;
     padding-top: 10px;
 }
-.outputs .tab-button {
+.outbound .tab-button {
     padding: 10px 20px;
     border: 1px solid #dee2e6;
     border-bottom: none;
@@ -1036,19 +1036,19 @@ table td.number {
     color: #495057;
     margin-bottom: -2px;
 }
-.outputs .tab-button:hover {
+.outbound .tab-button:hover {
     background-color: #dee2e6;
 }
-.outputs .tab-button.is-active {
+.outbound .tab-button.is-active {
     background-color: #fff;
     border-color: #dee2e6;
     border-bottom: 2px solid #fff;
     color: #1b3a66;
 }
-.outputs .outputs-tab-panel {
+.outbound .outbound-tab-panel {
     display: none;
 }
-.outputs .outputs-tab-panel.is-active {
+.outbound .outbound-tab-panel.is-active {
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -1056,7 +1056,7 @@ table td.number {
     overflow: hidden;
 }
 @media (max-width: 900px) {
-    .outputs .outputs-sidebar {
+    .outbound .outbound-sidebar {
         position: static;
         max-width: none;
         min-width: 0;
@@ -1064,33 +1064,33 @@ table td.number {
         max-height: none;
     }
 }
-.outputs .crud-table {
+.outbound .crud-table {
     border-collapse: collapse;
     width: auto;
     min-width: 100%;
 }
-.outputs .crud-table th, .outputs .crud-table td {
+.outbound .crud-table th, .outbound .crud-table td {
     border: 1px solid #d4d9e5;
     padding: 8px;
     text-align: left;
 }
-.outputs .crud-table th {
+.outbound .crud-table th {
     white-space: normal;
     word-break: break-all;
     min-width: 120px;
 }
-.outputs .crud-table td {
+.outbound .crud-table td {
     white-space: nowrap;
 }
-.outputs .crud-table th {
+.outbound .crud-table th {
     background-color: #e6ecff;
     color: #1b3a66;
     position: sticky;
     top: 0;
     z-index: 2;
 }
-.outputs .crud-table th:first-child,
-.outputs .crud-table td:first-child {
+.outbound .crud-table th:first-child,
+.outbound .crud-table td:first-child {
     position: sticky;
     left: 0;
     z-index: 1;
@@ -1098,41 +1098,41 @@ table td.number {
     border-right: 2px solid #d4d9e5;
     min-width: 200px;
 }
-.outputs .crud-table th:first-child {
+.outbound .crud-table th:first-child {
     z-index: 3;
     background-color: #e6ecff; /* 左上角はヘッダー色 */
 }
-.outputs .port-group-row td:first-child {
+.outbound .port-group-row td:first-child {
     background-color: #f3f6ff; /* ポート行の1列目 */
 }
-.outputs .operation-row td:first-child {
+.outbound .operation-row td:first-child {
     background-color: #fff; /* 操作行の1列目 */
 }
-.outputs .crud-cell {
+.outbound .crud-cell {
     text-align: center;
     font-family: monospace;
     font-weight: bold;
     letter-spacing: 2px;
 }
-.outputs .port-group-row {
+.outbound .port-group-row {
     background-color: #f3f6ff !important;
     font-weight: bold;
 }
-.outputs .port-group-cell::before {
+.outbound .port-group-cell::before {
     content: '▶';
     display: inline-block;
     margin-right: 8px;
     transition: transform 0.2s;
     font-size: 0.8em;
 }
-.outputs .port-group-row.is-expanded .port-group-cell::before {
+.outbound .port-group-row.is-expanded .port-group-cell::before {
     transform: rotate(90deg);
 }
-.outputs .operation-cell {
+.outbound .operation-cell {
     padding-left: 32px !important;
     font-size: 0.9em;
     color: #555;
 }
-.outputs .port-crud-cell {
+.outbound .port-crud-cell {
     color: #1b3a66;
 }

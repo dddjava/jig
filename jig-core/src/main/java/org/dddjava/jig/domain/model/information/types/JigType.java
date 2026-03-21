@@ -123,7 +123,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
     }
 
     public boolean isService() {
-        return typeCategory() == TypeCategory.InputPort;
+        return typeCategory() == TypeCategory.InboundPort;
     }
 
     public boolean isApplicationComponent() {

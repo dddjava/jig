@@ -159,7 +159,7 @@ function setupHeaderNavigation() {
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
-    if (document.body.classList.contains("outputs")) {
+    if (document.body.classList.contains("outbound")) {
         setupSortableTables();
     }
     updateRelativeTime();

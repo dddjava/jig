@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.outputs.pair.OutputImplementation;
+import org.dddjava.jig.domain.model.information.outbound.pair.OutboundImplementation;
 
 import java.util.List;
 import java.util.Map;
@@ -17,22 +17,22 @@ import java.util.stream.Stream;
  */
 public class DatasourceAngle {
 
-    private final OutputImplementation outputImplementation;
+    private final OutboundImplementation outboundImplementation;
     private final Map<PersistenceOperationType, List<String>> tablesMap;
     private final CallerMethods callerMethods;
 
-    public DatasourceAngle(OutputImplementation outputImplementation, Map<PersistenceOperationType, List<String>> tablesMap, CallerMethods callerMethods) {
-        this.outputImplementation = outputImplementation;
+    public DatasourceAngle(OutboundImplementation outboundImplementation, Map<PersistenceOperationType, List<String>> tablesMap, CallerMethods callerMethods) {
+        this.outboundImplementation = outboundImplementation;
         this.tablesMap = tablesMap;
         this.callerMethods = callerMethods;
     }
 
     public TypeId declaringType() {
-        return outputImplementation.interfaceJigType().id();
+        return outboundImplementation.interfaceJigType().id();
     }
 
     public JigMethod interfaceMethod() {
-        return outputImplementation.outputPortOperaionAsJigMethod();
+        return outboundImplementation.outboundPortOperaionAsJigMethod();
     }
 
     public String simpleMethodSignatureText() {
@@ -84,7 +84,7 @@ public class DatasourceAngle {
     }
 
     public JigMethod concreteMethod() {
-        return outputImplementation.concreteMethod();
+        return outboundImplementation.concreteMethod();
     }
 
     public CallerMethods callerMethods() {
@@ -100,7 +100,7 @@ public class DatasourceAngle {
     }
 
     public String typeLabel() {
-        return outputImplementation.interfaceJigType().label();
+        return outboundImplementation.interfaceJigType().label();
     }
 
     private List<String> tableNames(PersistenceOperationType persistenceOperationType) {

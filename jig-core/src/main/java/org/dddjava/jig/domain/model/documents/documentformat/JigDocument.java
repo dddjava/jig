@@ -122,8 +122,8 @@ public enum JigDocument {
      * 外部利用概要
      */
     OutputsSummary(
-            JigDocumentLabel.of("外部利用概要", "outputs"),
-            "outputs"),
+            JigDocumentLabel.of("出力インタフェース概要", "outbound"),
+            "outbound"),
 
     /**
      * インサイト

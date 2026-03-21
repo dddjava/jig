@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import stub.infrastructure.datasource.CanonicalMapper;
 import stub.infrastructure.datasource.ComplexMapper;
 import stub.infrastructure.datasource.SampleMapper;
-import stub.infrastructure.datasource.trace.TraceOutputPort;
+import stub.infrastructure.datasource.trace.TraceOutboundPort;
 import testing.JigTest;
 
 import java.util.Set;
@@ -37,7 +37,7 @@ class MyBatisStatementReaderTest {
     @Test
     void DatasourceAnglesで他クラス経由のMyBatis呼び出しを解決できる(JigService jigService, JigRepository jigRepository) {
         var datasourceAngles = jigService.datasourceAngles(jigRepository).list().stream()
-                .filter(angle -> angle.declaringType().fqn().equals(TraceOutputPort.class.getCanonicalName()))
+                .filter(angle -> angle.declaringType().fqn().equals(TraceOutboundPort.class.getCanonicalName()))
                 .toList();
         var angle = datasourceAngles.stream()
                 .filter(found -> found.interfaceMethod().name().equals("save"))

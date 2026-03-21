@@ -98,6 +98,27 @@
             font-size: 12px;
             width: 200px;
         }
+        #schema-btn {
+            background: #3c3c3c;
+            border: 1px solid #555;
+            color: #ccc;
+            padding: 3px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        #schema-btn:hover {
+            background: #4a4a4a;
+        }
+        #schema-btn.active {
+            background: #094771;
+            color: #ffffff;
+            border-color: #0e639c;
+        }
+        #schema-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
         #json-view {
             flex: 1;
             overflow: auto;
@@ -135,6 +156,7 @@
     <div id="main">
         <div id="toolbar">
             <span id="current-file">-</span>
+            <button id="schema-btn" disabled>Schema</button>
             <input id="search-box" type="text" placeholder="キーワード検索 または .path[0].field | .[]">
         </div>
         <div id="json-view">
@@ -203,6 +225,9 @@ function showJson(entry) {
 
     document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
     document.querySelector(`[data-file="${entry.file}"]`).classList.add("active");
+    const schemaBtn = document.getElementById("schema-btn");
+    schemaBtn.disabled = false;
+    schemaBtn.classList.remove("active");
 }
 
 function showText(entry) {
@@ -220,7 +245,76 @@ function showText(entry) {
 
     document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
     document.querySelector(`[data-file="${entry.file}"]`).classList.add("active");
+    const schemaBtn = document.getElementById("schema-btn");
+    schemaBtn.disabled = true;
+    schemaBtn.classList.remove("active");
 }
+
+// ---- スキーマ推測エンジン ----
+function inferSchema(data) {
+    if (data === null) return "null";
+    if (Array.isArray(data)) {
+        if (data.length === 0) return { type: "array", items: "unknown" };
+        const merged = data.map(inferSchema).reduce(mergeSchemas);
+        return { type: "array", items: merged };
+    }
+    if (typeof data === "object") {
+        const properties = {};
+        for (const key of Object.keys(data)) {
+            properties[key] = inferSchema(data[key]);
+        }
+        return { type: "object", properties };
+    }
+    return typeof data;
+}
+
+function mergeSchemas(a, b) {
+    if (JSON.stringify(a) === JSON.stringify(b)) return a;
+    if (typeof a === "string" && typeof b === "string") {
+        // どちらもプリミティブ型文字列だが種類が異なる
+        return "any";
+    }
+    if (typeof a === "object" && typeof b === "object" && a !== null && b !== null) {
+        if (a.type === "object" && b.type === "object") {
+            const allKeys = new Set([...Object.keys(a.properties), ...Object.keys(b.properties)]);
+            const properties = {};
+            for (const key of allKeys) {
+                if (key in a.properties && key in b.properties) {
+                    properties[key] = mergeSchemas(a.properties[key], b.properties[key]);
+                } else {
+                    properties[key] = key in a.properties ? a.properties[key] : b.properties[key];
+                }
+            }
+            return { type: "object", properties };
+        }
+        if (a.type === "array" && b.type === "array") {
+            return { type: "array", items: mergeSchemas(a.items, b.items) };
+        }
+    }
+    return "any";
+}
+
+function showSchema(entry) {
+    const data = globalThis[entry.varName];
+    const schema = inferSchema(data);
+    const view = document.getElementById("json-view");
+    document.getElementById("current-file").textContent = entry.file + " [schema]";
+    document.getElementById("search-box").value = "";
+
+    currentEntry = entry;
+    currentEntryType = 'schema';
+
+    const formatted = JSON.stringify(schema, null, 2);
+    const pre = document.createElement("pre");
+    pre.innerHTML = syntaxHighlight(formatted);
+    view.innerHTML = "";
+    view.appendChild(pre);
+
+    document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
+    document.querySelector(`[data-file="${entry.file}"]`).classList.add("active");
+    document.getElementById("schema-btn").classList.add("active");
+}
+// ---- /スキーマ推測エンジン ----
 
 // ---- jq サブセットエンジン ----
 // サポート: . | .field | .[n] | .[] | パイプ |
@@ -337,7 +431,7 @@ function applySearch(keyword) {
 function applyFilter(keyword) {
     if (!currentEntry) return;
     if (!keyword) {
-        if (currentEntryType === 'json') showJson(currentEntry);
+        if (currentEntryType === 'json' || currentEntryType === 'schema') showJson(currentEntry);
         else showText(currentEntry);
         return;
     }
@@ -364,7 +458,7 @@ async function init() {
             await loadScript(entry.file);
             if (globalThis[entry.varName] !== undefined) {
                 btn.addEventListener("click", () => showJson(entry));
-                if (!firstLoaded) firstLoaded = { entry, show: () => showJson(entry) };
+                if (!firstLoaded) firstLoaded = { entry, show: () => showJson(entry), type: 'json' };
             } else {
                 btn.classList.add("missing");
                 btn.title = "データなし";
@@ -406,12 +500,23 @@ async function init() {
 
     if (firstLoaded) {
         firstLoaded.show();
+        if (firstLoaded.type === 'json') {
+            document.getElementById("schema-btn").disabled = false;
+        }
     } else {
         document.getElementById("empty-msg").textContent = "data/*-data.js が見つかりませんでした。JIGを実行してからアクセスしてください。";
     }
 
     document.getElementById("search-box").addEventListener("input", e => {
         applyFilter(e.target.value.trim());
+    });
+
+    document.getElementById("schema-btn").addEventListener("click", () => {
+        if (currentEntryType === 'schema') {
+            showJson(currentEntry);
+        } else if (currentEntry && currentEntryType === 'json') {
+            showSchema(currentEntry);
+        }
     });
 }
 

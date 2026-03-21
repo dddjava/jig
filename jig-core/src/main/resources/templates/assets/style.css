@@ -43,9 +43,6 @@ aside.notice {
 .hidden {
     display: none;
 }
-col.hidden {
-    visibility: collapse;
-}
 .screen-reader-only {
     position: absolute;
     width: 1px;
@@ -174,15 +171,6 @@ main table thead {
     }
 }
 
-section.package > h2, section.type > h2, section.type {
-    margin-bottom: 0;
-}
-section.package {
-    border-top: #000 solid 1px;
-    padding-left: 1em;
-    padding-bottom: 1em;
-}
-
 .method-name {
     white-space: nowrap;
 }
@@ -193,37 +181,6 @@ section.package {
 main table.fields thead {
     color: #FFF;
     background-color: #009900;
-}
-.enum-param-item {
-    display: block;
-    white-space: nowrap;
-}
-
-/* index */
-.index > header {
-    border-bottom:solid 2px #000;
-}
-.index > header > h1 {
-    margin-bottom: 0;
-}
-.index > header > p {
-    font-size: 0.8em;
-    color: #aaa;
-    margin-top: 0;
-    margin-bottom: 0;
-}
-.index > header, .index > main {
-    margin:0 auto;
-    max-width: 800px;
-}
-.index .diagram img {
-    max-width: 800px;
-}
-.index > main > section h2 {
-    border-bottom:solid 1px #000;
-}
-.index > main > section h3 {
-    border-bottom:solid 1px #999;
 }
 
 /* カード形式 */
@@ -318,16 +275,6 @@ body.hide-usecase-details .depends {
     flex-wrap: wrap;
     gap: 16px;
     margin-top: 10px;
-}
-
-/* 用語集 */
-.terms .identifier {
-    text-overflow: clip;
-    overflow: scroll;
-    white-space: nowrap;
-}
-.terms .term, .terms .kind {
-    white-space: nowrap;
 }
 
 /* Mermaidで画像が表示される前のテキストを表示しない */
@@ -1147,9 +1094,6 @@ table td.number {
     overflow: hidden;
 }
 @media (max-width: 900px) {
-    .outputs .outputs-container {
-        flex-direction: column;
-    }
     .outputs .outputs-sidebar {
         position: static;
         max-width: none;

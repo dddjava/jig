@@ -1,12 +1,10 @@
 const assert = require('assert');
 const { test, beforeEach } = require('node:test');
 const { JSDOM } = require('jsdom');
-const fs = require('fs');
 const path = require('path');
 
-// テスト対象のファイルを読み込む
+const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const usecaseJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/usecase.js');
-const { UsecaseApp } = require(usecaseJsPath);
 
 // モック用のデータ
 const mockUsecaseData = {
@@ -56,6 +54,7 @@ const mockUsecaseData = {
 test.describe('UsecaseApp', () => {
     let window;
     let document;
+    let UsecaseApp;
 
     beforeEach(() => {
         const dom = new JSDOM(`
@@ -101,15 +100,20 @@ test.describe('UsecaseApp', () => {
         };
         global.marked = { parse: (text) => text }; // markedのモック
         global.mermaid = { run: () => {} }; // mermaidのモック
+
+        delete require.cache[jigJsPath];
+        delete require.cache[usecaseJsPath];
+        require(jigJsPath);
+        ({ UsecaseApp } = require(usecaseJsPath));
     });
 
     test('init should render data from globalThis.usecaseData', () => {
-        global.globalThis = { usecaseData: mockUsecaseData };
+        globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();
 
         const sidebar = document.getElementById('usecase-sidebar-list');
         assert.strictEqual(sidebar.children.length, 1);
-        assert.strictEqual(sidebar.querySelector('h3').textContent, 'ユースケース');
+        assert.strictEqual(sidebar.querySelector('p').textContent, 'ユースケース');
         assert.strictEqual(sidebar.querySelector('a').textContent, 'ServiceA');
 
         const mainList = document.getElementById('usecase-list');
@@ -146,7 +150,7 @@ test.describe('UsecaseApp', () => {
     });
 
     test('renderUsecaseList should handle empty data', () => {
-        global.globalThis = { usecaseData: { usecases: [] } };
+        globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();
         
         const mainList = document.getElementById('usecase-list');
@@ -154,7 +158,7 @@ test.describe('UsecaseApp', () => {
     });
 
     test('initControls should toggle body classes and save to localStorage', () => {
-        global.globalThis = { usecaseData: mockUsecaseData };
+        globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();
 
         const showFields = document.getElementById('show-fields');

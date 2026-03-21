@@ -39,10 +39,10 @@ const EntrypointApp = {
 
         controllers.forEach(controller => {
             const section = globalThis.Jig.dom.createElement("section", {
-                className: "type",
+                className: "usecase-type-card",
                 id: controller.fqn,
                 children: [
-                    globalThis.Jig.dom.createElement("h2", {
+                    globalThis.Jig.dom.createElement("h3", {
                         children: [globalThis.Jig.dom.createElement("a", {textContent: controller.label})]
                     }),
                     globalThis.Jig.dom.createElement("div", {
@@ -60,11 +60,14 @@ const EntrypointApp = {
             }
 
             controller.entrypoints.forEach(ep => {
-                const epSection = globalThis.Jig.dom.createElement("section", {
-                    className: "entrypoint",
+                const epSection = globalThis.Jig.dom.createElement("article", {
+                    className: "usecase-method-card",
                     children: [
-                        globalThis.Jig.dom.createElement("h3", {textContent: ep.label}),
-                        globalThis.Jig.dom.createElement("p", {textContent: "Path: " + ep.path})
+                        globalThis.Jig.dom.createElement("h4", {id: ep.methodId, textContent: ep.label}),
+                        globalThis.Jig.dom.createElement("div", {
+                            className: "fully-qualified-name",
+                            textContent: ep.path
+                        })
                     ]
                 });
 
@@ -84,6 +87,9 @@ const EntrypointApp = {
                         const subgraph = builder.startSubgraph(builder.sanitize(sg.typeId), sg.label);
                         sg.methods.forEach(m => {
                             builder.addNodeToSubgraph(subgraph, m.id, m.label, '(["$LABEL"])');
+                            if (m.link) {
+                                builder.addClick(m.id, `./usecase.html#${m.link}`);
+                            }
                         });
                     });
 
@@ -91,17 +97,8 @@ const EntrypointApp = {
                         builder.addEdge(edge.from, edge.to, "", edge.style === 'dotted');
                     });
 
-                    let code = builder.build('LR');
+                    const code = builder.build('LR');
                     if (code) {
-                        // Click events for services
-                        ep.graph.serviceGroups.forEach(sg => {
-                            sg.methods.forEach(m => {
-                                if (m.link) {
-                                    code += `\n  click ${m.id} "./usecase.html#${m.link}"`;
-                                }
-                            });
-                        });
-
                         const mmdPre = globalThis.Jig.dom.createElement("pre", {
                             className: "mermaid",
                             textContent: ""

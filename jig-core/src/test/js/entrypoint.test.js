@@ -93,14 +93,14 @@ test.describe('EntrypointApp', () => {
         assert.strictEqual(mainList.children.length, 1);
         const controllerSection = mainList.children[0];
         assert.strictEqual(controllerSection.id, 'com.example.ControllerA');
-        assert.strictEqual(controllerSection.querySelector('h2 a').textContent, 'ControllerA');
+        assert.strictEqual(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
         
-        const entrypointSection = controllerSection.querySelector('.entrypoint');
+        const entrypointSection = controllerSection.querySelector('.usecase-method-card');
         assert.ok(entrypointSection);
-        assert.strictEqual(entrypointSection.querySelector('h3').textContent, 'method1');
-        assert.strictEqual(entrypointSection.querySelector('p').textContent, 'Path: GET /api/method1');
+        assert.strictEqual(entrypointSection.querySelector('h4').textContent, 'method1');
+        assert.strictEqual(entrypointSection.querySelector('.fully-qualified-name').textContent, 'GET /api/method1');
         
         const mermaidPre = entrypointSection.querySelector('.mermaid');
         assert.ok(mermaidPre);

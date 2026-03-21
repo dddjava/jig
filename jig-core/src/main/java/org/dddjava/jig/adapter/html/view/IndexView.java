@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class IndexView {
     static final String INDEX_FILE_NAME = "index.html";
+    static final String NAVIGATION_DATA_FILE_PATH = "data/navigation-data.js";
 
     private final Map<String, String> documentLinks;
     private final List<DiagramComponent> diagrams;
@@ -41,6 +42,7 @@ public class IndexView {
             }
         }
         write(outputDirectory);
+        writeNavigationData(outputDirectory);
     }
 
     private String resolveJigVersion() {
@@ -157,6 +159,62 @@ public class IndexView {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private void writeNavigationData(Path outputDirectory) {
+        try {
+            Path dataDirectory = outputDirectory.resolve("data");
+            Files.createDirectories(dataDirectory);
+
+            List<NavigationLink> links = new ArrayList<>();
+            // 戻り先として常に index.html を含める
+            links.add(new NavigationLink(INDEX_FILE_NAME, "INDEX"));
+
+            // 「概要: HTML」「一覧: HTML」の順序に揃える（主要HTMLのみ）
+            addNavigationLinkIfPresent(links, "PackageSummary", "パッケージ概要");
+            addNavigationLinkIfPresent(links, "Glossary", "用語集");
+            addNavigationLinkIfPresent(links, "DomainSummary", "ドメイン概要");
+            addNavigationLinkIfPresent(links, "UsecaseSummary", "ユースケース概要");
+            addNavigationLinkIfPresent(links, "EntrypointSummary", "エントリーポイント概要");
+            addNavigationLinkIfPresent(links, "OutputsSummary", "外部利用概要");
+            addNavigationLinkIfPresent(links, "Insight", "インサイト");
+            addNavigationLinkIfPresent(links, "ListOutput", "一覧出力");
+
+            StringBuilder js = new StringBuilder();
+            js.append("globalThis.jigNavigationData = {\"links\": [");
+            for (int i = 0; i < links.size(); i++) {
+                NavigationLink link = links.get(i);
+                if (i > 0) js.append(",");
+                js.append("{\"href\":\"")
+                        .append(escapeJson(link.href()))
+                        .append("\",\"label\":\"")
+                        .append(escapeJson(link.label()))
+                        .append("\"}");
+            }
+            js.append("]};\n");
+
+            Files.writeString(dataDirectory.resolve("navigation-data.js"), js.toString(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private void addNavigationLinkIfPresent(List<NavigationLink> links, String key, String label) {
+        if (documentLinks.containsKey(key)) {
+            links.add(new NavigationLink(documentLinks.get(key), label));
+        }
+    }
+
+    private String escapeJson(String input) {
+        if (input == null) return "";
+        return input
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\r", "\\r")
+                .replace("\n", "\\n");
+    }
+
+    record NavigationLink(String href, String label) {
     }
 
     private boolean hasAnyHtmlSummary() {

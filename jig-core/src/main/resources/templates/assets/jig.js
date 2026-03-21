@@ -105,6 +105,57 @@ function updateRelativeTime() {
     element.textContent = `${element.textContent.split(' (')[0]} (${relativeTime})`;
 }
 
+function normalizeNavigationHref(href) {
+    return String(href || "").replace(/^\.\//, "");
+}
+
+function setupHeaderNavigation() {
+    if (document.body.classList.contains("index")) return;
+
+    const navigationData = globalThis.jigNavigationData;
+    if (!navigationData || !Array.isArray(navigationData.links) || navigationData.links.length === 0) return;
+
+    const header = document.querySelector("header.top") || document.querySelector("header");
+    if (!header) return;
+    if (header.querySelector(".jig-header-nav")) return;
+
+    const container = document.createElement("div");
+    container.className = "jig-header-nav";
+
+    const select = document.createElement("select");
+    select.className = "jig-header-nav__select";
+    select.setAttribute("aria-label", "ページ移動");
+
+    const currentFileName = (location.pathname.split("/").pop() || "");
+    const normalizedCurrent = normalizeNavigationHref(currentFileName);
+
+    navigationData.links.forEach(link => {
+        if (!link) return;
+        const href = normalizeNavigationHref(link.href);
+        const label = link.label != null ? String(link.label) : href;
+        if (!href) return;
+
+        const option = document.createElement("option");
+        option.value = href;
+        option.textContent = label;
+        select.appendChild(option);
+    });
+
+    const options = Array.from(select.options);
+    const selected = options.find(o => normalizeNavigationHref(o.value) === normalizedCurrent);
+    if (selected) {
+        select.value = selected.value;
+    }
+
+    select.addEventListener("change", () => {
+        if (!select.value) return;
+        window.location.href = select.value;
+    });
+
+    container.appendChild(select);
+    header.appendChild(container);
+}
+
 // ページ読み込み時のイベント
 // リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
@@ -112,6 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
         setupSortableTables();
     }
     updateRelativeTime();
+    setupHeaderNavigation();
 });
 
 /* ===== marked ===== */

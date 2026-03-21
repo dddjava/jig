@@ -24,12 +24,31 @@ header.top {
     z-index: 1000;
     width: 100%;
     height: 2em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0 0.5em;
+    box-sizing: border-box;
     background-color: #243D1E;
     color: #FFF;
 }
 header a {
     color: #FFF;
     font-size: 0.8em;
+}
+
+.jig-header-nav {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+.jig-header-nav__select {
+    font-size: 0.8em;
+    height: 1.6em;
+    background-color: #243D1E;
+    color: #FFF;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
 }
 
 aside.notice {

@@ -31,6 +31,11 @@ class IndexViewTest {
         assertFalse(actual.contains("<h2>一覧: HTML</h2>"));
         assertFalse(actual.contains("<h2>一覧: Excel</h2>"));
         assertFalse(actual.contains("<h2>図: "));
+
+        String navigationData = readNavigationData();
+        assertTrue(navigationData.contains("globalThis.jigNavigationData"));
+        assertTrue(navigationData.contains("\"href\":\"index.html\""));
+        assertFalse(navigationData.contains("\"href\":\"package-summary.html\""));
     }
 
     @Test
@@ -48,9 +53,19 @@ class IndexViewTest {
         assertTrue(actual.contains("<h2>概要: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: Excel</h2>"));
+
+        String navigationData = readNavigationData();
+        assertTrue(navigationData.contains("\"href\":\"index.html\""));
+        assertTrue(navigationData.contains("\"href\":\"package-summary.html\""));
+        assertTrue(navigationData.contains("\"href\":\"list-output.html\""));
+        assertFalse(navigationData.contains("\"href\":\"application-list.xlsx\""));
     }
 
     private String readIndex() throws IOException {
         return Files.readString(tempDir.resolve(IndexView.INDEX_FILE_NAME), StandardCharsets.UTF_8);
+    }
+
+    private String readNavigationData() throws IOException {
+        return Files.readString(tempDir.resolve(IndexView.NAVIGATION_DATA_FILE_PATH), StandardCharsets.UTF_8);
     }
 }

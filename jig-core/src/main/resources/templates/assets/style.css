@@ -177,7 +177,7 @@ main table thead {
 section.package > h2, section.type > h2, section.type {
     margin-bottom: 0;
 }
-section.package, section.type {
+section.package {
     border-top: #000 solid 1px;
     padding-left: 1em;
     padding-bottom: 1em;
@@ -227,14 +227,57 @@ main table.fields thead {
 }
 
 /* ユースケース概要 */
+.usecase-list {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+}
+
+.usecase-type-card {
+    border: 1px solid #d4d9e5;
+    border-radius: 8px;
+    padding: 16px;
+    background: linear-gradient(180deg, #f9fbff, #f3f6ff);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.usecase-type-card > h3 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+}
+
+.usecase-method-card {
+    border: 1px solid #e2e4ea;
+    border-radius: 6px;
+    padding: 12px;
+    background-color: #fff;
+    margin-top: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.usecase-method-card > h4 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    color: #1b3a66;
+}
+
 .usecase .depends {
-    background-color: #ddd;
+    background-color: #f0f2f5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #e2e4ea;
 }
-.usecase h3 {
+.usecase .depends dt {
+    font-weight: bold;
+    color: #31455f;
+    margin-bottom: 4px;
+}
+.usecase .depends dd {
+    margin-left: 0;
+    margin-bottom: 8px;
+}
+.usecase .depends dd:last-child {
     margin-bottom: 0;
-}
-.usecase .method > :not(:first-child) {
-    margin-left: 2em;
 }
 
 body.hide-usecase-fields .fields {

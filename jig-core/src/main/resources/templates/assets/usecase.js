@@ -282,9 +282,9 @@ const UsecaseApp = {
 
         usecases.forEach(usecase => {
             const section = createElement("section", {
-                className: "type",
+                className: "usecase-type-card",
                 children: [
-                    createElement("h2", {
+                    createElement("h3", {
                         children: [createElement("a", {id: usecase.typeId, textContent: usecase.label})]
                     }),
                     createElement("div", {
@@ -312,10 +312,10 @@ const UsecaseApp = {
             }
 
             usecase.methods.forEach(method => {
-                const methodSection = createElement("section", {
-                    className: "method",
+                const methodSection = createElement("article", {
+                    className: "usecase-method-card",
                     children: [
-                        createElement("h3", {id: method.methodId, textContent: method.label}),
+                        createElement("h4", {id: method.methodId, textContent: method.label}),
                         createElement("div", {
                             className: "fully-qualified-name",
                             textContent: method.declaration

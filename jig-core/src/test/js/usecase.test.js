@@ -115,8 +115,8 @@ test.describe('UsecaseApp', () => {
         const mainList = document.getElementById('usecase-list');
         assert.strictEqual(mainList.children.length, 1);
         const serviceSection = mainList.children[0];
-        assert.strictEqual(serviceSection.querySelector('h2 a').id, 'com.example.ServiceA');
-        assert.strictEqual(serviceSection.querySelector('h2 a').textContent, 'ServiceA');
+        assert.strictEqual(serviceSection.querySelector('h3 a').id, 'com.example.ServiceA');
+        assert.strictEqual(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
         assert.strictEqual(serviceSection.querySelector('.fully-qualified-name').textContent, 'com.example.ServiceA');
         assert.strictEqual(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
 
@@ -129,10 +129,10 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
         assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
         
-        const methodSection = serviceSection.querySelector('.method');
+        const methodSection = serviceSection.querySelector('.usecase-method-card');
         assert.ok(methodSection);
-        assert.strictEqual(methodSection.querySelector('h3').id, 'method1');
-        assert.strictEqual(methodSection.querySelector('h3').textContent, 'method1');
+        assert.strictEqual(methodSection.querySelector('h4').id, 'method1');
+        assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
         assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'method1():void');
         
         const mermaidPre = methodSection.querySelector('.mermaid');

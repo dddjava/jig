@@ -386,11 +386,7 @@ label {
 
 /* 用語集 */
 .glossary details.controls {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .glossary details.controls summary {
     list-style: none;
@@ -406,10 +402,8 @@ label {
 .glossary .search-option,
 .glossary .kind-option,
 .glossary .misc-option {
-    padding: 12px;
-    border: 1px solid #eee;
-    background-color: #f9f9f9;
-    border-radius: 6px;
+    margin-top: 0;
+    box-shadow: none;
 }
 .glossary .search-option label,
 .glossary .misc-option label {
@@ -447,10 +441,8 @@ label {
 }
 
 .glossary .display-option {
-    padding: 12px;
-    border: 1px solid #eee;
-    background-color: #f9f9f9;
-    border-radius: 6px;
+    margin-top: 0;
+    box-shadow: none;
 }
 .glossary .display-controls-row {
     display: flex;
@@ -518,12 +510,10 @@ label {
 }
 
 .glossary .term {
+    margin-top: 0;
+    margin-bottom: 10px;
     padding: 1.5em;
     border-bottom: 1px solid #e0e0e0;
-    background-color: #ffffff;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 .glossary .term h2.term-title {
     margin: 0 0 0.5em 0;
@@ -972,10 +962,6 @@ table td.number {
     align-content: start;
 }
 .outputs .outputs-group-card {
-    border: 1px solid #d4d9e5;
-    border-radius: 8px;
-    padding: 14px 16px;
-    background: linear-gradient(180deg, #f9fbff, #f3f6ff);
 }
 .outputs .outputs-group-card > h3 {
     margin: 0;
@@ -999,10 +985,7 @@ table td.number {
     font-weight: bold;
 }
 .outputs .outputs-operation-item {
-    border: 1px solid #e2e4ea;
-    border-radius: 6px;
-    padding: 10px 12px;
-    background-color: #fff;
+    margin-top: 0;
 }
 .outputs .outputs-operation-item > h4 {
     margin-top: 0;
@@ -1069,11 +1052,6 @@ table td.number {
 }
 .outputs .outputs-settings-panel {
     margin: 16px 0 0 0;
-    padding: 12px;
-    border: 1px solid #d9e1ea;
-    border-radius: 10px;
-    background: linear-gradient(180deg, #fbfcff, #f4f7fb);
-    box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
 }
 .outputs .outputs-settings-panel__title {
     margin: 0;

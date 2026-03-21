@@ -880,7 +880,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
             lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
             itemList.appendChild(createElement("article", {
-                className: "outputs-operation-item",
+                className: "outputs-operation-item jig-card jig-card--item",
                 children: [
                     createElement("h4", {textContent: operation.outputPortOperation.label}),
                     mermaidContainer,
@@ -905,7 +905,7 @@ function renderOutputsList(grouped, visibility = DEFAULT_VISIBILITY) {
         cardChildren.push(itemListDetails);
 
         container.appendChild(createElement("section", {
-            className: "outputs-group-card",
+            className: "outputs-group-card jig-card jig-card--type",
             id: portId,
             children: cardChildren
         }));
@@ -939,7 +939,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
         container.appendChild(createElement("section", {
-            className: "outputs-group-card",
+            className: "outputs-group-card jig-card jig-card--type",
             id: targetId,
             children: [
                 createElement("h3", {textContent: group.persistenceTarget}),
@@ -975,7 +975,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
         container.appendChild(createElement("section", {
-            className: "outputs-group-card",
+            className: "outputs-group-card jig-card jig-card--type",
             id: externalId,
             children: [
                 createElement("h3", {textContent: group.externalType.label}),

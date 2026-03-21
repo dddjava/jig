@@ -1,12 +1,10 @@
 const assert = require('assert');
 const { test, beforeEach } = require('node:test');
 const { JSDOM } = require('jsdom');
-const fs = require('fs');
 const path = require('path');
 
-// テスト対象のファイルを読み込む
+const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const entrypointJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/entrypoint.js');
-const { EntrypointApp } = require(entrypointJsPath);
 
 // モック用のデータ
 const mockEntrypointData = {
@@ -47,6 +45,7 @@ const mockEntrypointData = {
 test.describe('EntrypointApp', () => {
     let window;
     let document;
+    let EntrypointApp;
 
     beforeEach(() => {
         const dom = new JSDOM(`
@@ -74,15 +73,20 @@ test.describe('EntrypointApp', () => {
         };
         global.marked = { parse: (text) => text }; // markedのモック
         global.mermaid = { run: () => {} }; // mermaidのモック
+
+        delete require.cache[jigJsPath];
+        delete require.cache[entrypointJsPath];
+        require(jigJsPath);
+        ({ EntrypointApp } = require(entrypointJsPath));
     });
 
     test('init should render data from globalThis.entrypointData', () => {
-        global.globalThis = { entrypointData: mockEntrypointData };
+        globalThis.entrypointData = mockEntrypointData;
         EntrypointApp.init();
 
         const sidebar = document.getElementById('entrypoint-sidebar-list');
         assert.strictEqual(sidebar.children.length, 1);
-        assert.strictEqual(sidebar.querySelector('h3').textContent, 'コントローラー');
+        assert.strictEqual(sidebar.querySelector('p').textContent, 'コントローラー');
         assert.strictEqual(sidebar.querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('entrypoint-list');
@@ -104,7 +108,7 @@ test.describe('EntrypointApp', () => {
     });
 
     test('renderControllerList should handle empty data', () => {
-        global.globalThis = { entrypointData: { controllers: [] } };
+        globalThis.entrypointData = { controllers: [] };
         EntrypointApp.init();
         
         const mainList = document.getElementById('entrypoint-list');

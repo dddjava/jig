@@ -1,150 +1,3 @@
-// ===== UI ユーティリティ =====
-
-function createElement(tagName, options = {}) {
-    const element = document.createElement(tagName);
-    if (options.className) element.className = options.className;
-    if (options.id) element.id = options.id;
-    if (options.textContent) element.textContent = options.textContent;
-    if (options.innerHTML) element.innerHTML = options.innerHTML;
-    if (options.attributes) {
-        for (const [key, value] of Object.entries(options.attributes)) {
-            element.setAttribute(key, value);
-        }
-    }
-    if (options.style) {
-        Object.assign(element.style, options.style);
-    }
-    if (options.children) {
-        options.children.forEach(child => {
-            if (child) element.appendChild(child);
-        });
-    }
-    return element;
-}
-
-function createSidebarSection(title, items) {
-    if (items.length === 0) return null;
-
-    return createElement("section", {
-        className: "in-page-sidebar__section",
-        children: [
-            createElement("h3", {
-                className: "in-page-sidebar__section-title",
-                textContent: title
-            }),
-            createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: items.map(({id, label}) => createElement("li", {
-                    className: "in-page-sidebar__item",
-                    children: [
-                        createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + id},
-                            textContent: label
-                        })
-                    ]
-                }))
-            })
-        ]
-    });
-}
-
-function renderSidebarSection(container, title, items) {
-    if (!container) return;
-    const section = createSidebarSection(title, items);
-    if (section) {
-        container.appendChild(section);
-    }
-}
-
-function lazyRender(container, renderFn) {
-    if (typeof IntersectionObserver === "undefined") {
-        renderFn();
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                renderFn();
-                observer.unobserve(container);
-            }
-        });
-    }, {rootMargin: "200px"});
-    observer.observe(container);
-}
-
-// ===== Mermaid ダイアグラム生成 =====
-
-class MermaidBuilder {
-    constructor() {
-        this.nodes = [];
-        this.edges = [];
-        this.subgraphs = [];
-        this.edgeSet = new Set();
-    }
-
-    sanitize(id) {
-        return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
-    }
-
-    addNode(id, label, shape = '["$LABEL"]') {
-        const escapedLabel = (label || "").replace(/"/g, '\\"');
-        const nodeLine = `${id}${shape.replace('$LABEL', escapedLabel)}`;
-        if (!this.nodes.includes(nodeLine)) {
-            this.nodes.push(nodeLine);
-        }
-        return id;
-    }
-
-    addEdge(from, to, label = "", dotted = false) {
-        const edgeType = dotted ? "-.->" : "-->";
-        const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
-        if (!this.edgeSet.has(edgeKey)) {
-            this.edgeSet.add(edgeKey);
-            const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
-            this.edges.push(edgeLine);
-        }
-    }
-
-    startSubgraph(id, label) {
-        const subgraph = {id, label, lines: []};
-        this.subgraphs.push(subgraph);
-        return subgraph;
-    }
-
-    addNodeToSubgraph(subgraph, id, label, shape = '["$LABEL"]') {
-        const escapedLabel = (label || "").replace(/"/g, '\\"');
-        const nodeLine = `    ${id}${shape.replace('$LABEL', escapedLabel)}`;
-        if (!subgraph.lines.includes(nodeLine)) {
-            subgraph.lines.push(nodeLine);
-        }
-        return id;
-    }
-
-    build(direction = 'LR') {
-        let code = `graph ${direction}\n`;
-        this.subgraphs.forEach(sg => {
-            code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
-            sg.lines.forEach(line => {
-                code += `    ${line.trim()}\n`;
-            });
-            code += `  end\n`;
-        });
-        this.nodes.forEach(node => {
-            code += `  ${node.trim()}\n`;
-        });
-        this.edges.forEach(edge => {
-            code += `${edge}\n`;
-        });
-        return code;
-    }
-
-    isEmpty() {
-        return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
-    }
-}
-
 // ===== アプリケーション本体 =====
 
 const EntrypointApp = {
@@ -171,7 +24,7 @@ const EntrypointApp = {
         sidebar.innerHTML = "";
 
         const items = controllers.map(c => ({id: c.fqn, label: c.label}));
-        renderSidebarSection(sidebar, "コントローラー", items);
+        globalThis.Jig.sidebar.renderSection(sidebar, "コントローラー", items);
     },
 
     renderControllerList(controllers) {
@@ -185,14 +38,14 @@ const EntrypointApp = {
         }
 
         controllers.forEach(controller => {
-            const section = createElement("section", {
+            const section = globalThis.Jig.dom.createElement("section", {
                 className: "type",
                 id: controller.fqn,
                 children: [
-                    createElement("h2", {
-                        children: [createElement("a", {textContent: controller.label})]
+                    globalThis.Jig.dom.createElement("h2", {
+                        children: [globalThis.Jig.dom.createElement("a", {textContent: controller.label})]
                     }),
-                    createElement("div", {
+                    globalThis.Jig.dom.createElement("div", {
                         className: "fully-qualified-name",
                         textContent: controller.fqn
                     })
@@ -200,26 +53,26 @@ const EntrypointApp = {
             });
 
             if (controller.description) {
-                section.appendChild(createElement("section", {
+                section.appendChild(globalThis.Jig.dom.createElement("section", {
                     className: "markdown",
-                    innerHTML: marked.parse(controller.description)
+                    innerHTML: globalThis.Jig.markdown.parse(controller.description)
                 }));
             }
 
             controller.entrypoints.forEach(ep => {
-                const epSection = createElement("section", {
+                const epSection = globalThis.Jig.dom.createElement("section", {
                     className: "entrypoint",
                     children: [
-                        createElement("h3", {textContent: ep.label}),
-                        createElement("p", {textContent: "Path: " + ep.path})
+                        globalThis.Jig.dom.createElement("h3", {textContent: ep.label}),
+                        globalThis.Jig.dom.createElement("p", {textContent: "Path: " + ep.path})
                     ]
                 });
 
-                const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+                const mmdContainer = globalThis.Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 epSection.appendChild(mmdContainer);
 
-                lazyRender(mmdContainer, () => {
-                    const builder = new MermaidBuilder();
+                globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                    const builder = new globalThis.Jig.mermaid.Builder();
                     ep.graph.nodes.forEach(node => {
                         let shape = '["$LABEL"]';
                         if (node.type === 'entrypoint') shape = '{{"$LABEL"}}';
@@ -249,15 +102,13 @@ const EntrypointApp = {
                             });
                         });
 
-                        const mmdPre = createElement("pre", {
+                        const mmdPre = globalThis.Jig.dom.createElement("pre", {
                             className: "mermaid",
-                            textContent: code
+                            textContent: ""
                         });
                         mmdContainer.appendChild(mmdPre);
 
-                        if (window.mermaid) {
-                            mermaid.run({nodes: [mmdPre]});
-                        }
+                        globalThis.Jig.mermaid.renderPre(mmdPre, code);
                     }
                 });
 

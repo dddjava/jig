@@ -838,7 +838,7 @@ table td.number {
     text-decoration: none;
 }
 
-/* 外部利用概要 */
+/* 出力インタフェース概要 */
 .outbound main {
     height: calc(100vh - 2em);
     display: flex;

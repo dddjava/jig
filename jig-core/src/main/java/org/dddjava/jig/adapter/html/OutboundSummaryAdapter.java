@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 外部利用概要
+ * 出力インタフェース概要
  */
 public class OutboundSummaryAdapter {
     private final JigService jigService;

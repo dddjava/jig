@@ -119,7 +119,7 @@ public enum JigDocument {
             "inbound"),
 
     /**
-     * 外部利用概要
+     * 出力インタフェース概要
      */
     OutputsSummary(
             JigDocumentLabel.of("出力インタフェース概要", "outbound"),

@@ -86,8 +86,7 @@ public class IndexView {
             appendLinkIfPresent(html, "DomainSummary", "ドメイン概要");
             appendLinkIfPresent(html, "UsecaseSummary", "ユースケース概要");
             appendLinkIfPresent(html, "EntrypointSummary", "入力インタフェース概要");
-            appendLinkIfPresent(html, "EnumSummary", "区分概要");
-            appendLinkIfPresent(html, "OutputsSummary", "外部利用概要 (incubate)");
+            appendLinkIfPresent(html, "OutputsSummary", "出力インタフェース概要");
             appendLinkIfPresent(html, "Insight", "インサイト (incubate)");
             html.append("        </ul>\n");
             html.append("    </section>\n");
@@ -175,8 +174,8 @@ public class IndexView {
             addNavigationLinkIfPresent(links, "Glossary", "用語集");
             addNavigationLinkIfPresent(links, "DomainSummary", "ドメイン概要");
             addNavigationLinkIfPresent(links, "UsecaseSummary", "ユースケース概要");
-            addNavigationLinkIfPresent(links, "EntrypointSummary", "エントリーポイント概要");
-            addNavigationLinkIfPresent(links, "OutputsSummary", "外部利用概要");
+            addNavigationLinkIfPresent(links, "EntrypointSummary", "入力インタフェース概要");
+            addNavigationLinkIfPresent(links, "OutputsSummary", "出力インタフェース概要");
             addNavigationLinkIfPresent(links, "Insight", "インサイト");
             addNavigationLinkIfPresent(links, "ListOutput", "一覧出力");
 
@@ -223,7 +222,6 @@ public class IndexView {
                 documentLinks.containsKey("DomainSummary") ||
                 documentLinks.containsKey("UsecaseSummary") ||
                 documentLinks.containsKey("EntrypointSummary") ||
-                documentLinks.containsKey("EnumSummary") ||
                 documentLinks.containsKey("OutputsSummary") ||
                 documentLinks.containsKey("Insight");
     }

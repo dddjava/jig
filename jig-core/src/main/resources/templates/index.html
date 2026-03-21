@@ -1,9 +1,9 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragment-base::head(${title})}">
+<head>
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <link rel="icon" href="./assets/favicon.ico">
-    <title>term</title>
+    <title th:text="${title}">共通</title>
 </head>
 <body class="index">
 
@@ -60,7 +60,9 @@
     </section>
 </main>
 
-<th:block th:replace="~{fragment-base::scripts}"></th:block>
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
 
 </body>
 </html>

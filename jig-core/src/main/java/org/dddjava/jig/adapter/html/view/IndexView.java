@@ -85,7 +85,7 @@ public class IndexView {
             appendLinkIfPresent(html, "Glossary", "用語集");
             appendLinkIfPresent(html, "DomainSummary", "ドメイン概要");
             appendLinkIfPresent(html, "UsecaseSummary", "ユースケース概要");
-            appendLinkIfPresent(html, "EntrypointSummary", "エントリーポイント概要");
+            appendLinkIfPresent(html, "EntrypointSummary", "入力インタフェース概要");
             appendLinkIfPresent(html, "EnumSummary", "区分概要");
             appendLinkIfPresent(html, "OutputsSummary", "外部利用概要 (incubate)");
             appendLinkIfPresent(html, "Insight", "インサイト (incubate)");

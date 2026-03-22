@@ -122,16 +122,18 @@ function createTypeLink(fqn, className = undefined) {
     });
 }
 
-function renderTreeNode(node) {
-    if (!node) return null;
+function renderSidebar(packages) {
+    const container = document.getElementById("domain-sidebar-list");
+    if (!container) return;
+    container.innerHTML = "";
 
-    if (node.kind === "package") {
+    (packages || []).forEach(pkg => {
         const summaryLink = createElement("a", {
-            attributes: {href: node.href || "#"},
-            textContent: getGlossaryTitle(node.fqn)
+            attributes: {href: "#" + pkg.fqn},
+            textContent: getGlossaryTitle(pkg.fqn)
         });
         const details = createElement("details", {
-            attributes: node.open ? {open: ""} : {open: ""}, // 互換性のため常にopen
+            attributes: {open: ""},
             children: [
                 createElement("summary", {
                     className: "package",
@@ -140,28 +142,16 @@ function renderTreeNode(node) {
             ]
         });
 
-        (node.children || []).forEach(child => {
-            const rendered = renderTreeNode(child);
-            if (rendered) details.appendChild(rendered);
+        (pkg.children || []).forEach(child => {
+            const link = createElement("a", {
+                attributes: {href: "#" + child.fqn},
+                textContent: getGlossaryTitle(child.fqn)
+            });
+            details.appendChild(createElement("div", {children: [link]}));
         });
-        return details;
-    }
 
-    const linkClass = node.isDeprecated ? "deprecated" : "";
-    const link = createElement("a", {
-        className: linkClass,
-        attributes: {href: node.href || "#"},
-        textContent: getGlossaryTitle(node.fqn)
+        container.appendChild(details);
     });
-    return createElement("div", {children: [link]});
-}
-
-function renderSidebar(treeRoot) {
-    const container = document.getElementById("domain-sidebar-list");
-    if (!container) return;
-    container.innerHTML = "";
-    const rendered = renderTreeNode(treeRoot);
-    if (rendered) container.appendChild(rendered);
 }
 
 function createChildrenTable(children) {
@@ -416,7 +406,7 @@ const DomainApp = {
         const data = globalThis.domainData;
         if (!data) return;
 
-        renderSidebar(data.tree);
+        renderSidebar(data.packages);
 
         const main = document.getElementById("domain-main");
         if (!main) return;

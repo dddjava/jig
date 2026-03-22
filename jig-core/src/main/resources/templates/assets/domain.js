@@ -132,9 +132,23 @@ function getDirectChildPackages(pkg) {
 }
 
 function renderPackageNavItem(pkg) {
+    // 子が1つだけでタイプを持たないパッケージを統合して表示
+    let currentPkg = pkg;
+    const mergedNames = [getGlossaryTitle(pkg.fqn)];
+
+    while (true) {
+        const childPackages = getDirectChildPackages(currentPkg);
+        if (childPackages.length !== 1) break;
+        if (currentPkg.children && currentPkg.children.length > 0) break;
+
+        const childPkg = childPackages[0];
+        mergedNames.push(getGlossaryTitle(childPkg.fqn));
+        currentPkg = childPkg;
+    }
+
     const summaryLink = createElement("a", {
-        attributes: {href: "#" + pkg.fqn},
-        textContent: getGlossaryTitle(pkg.fqn)
+        attributes: {href: "#" + currentPkg.fqn},
+        textContent: mergedNames.join("/")
     });
     const details = createElement("details", {
         attributes: {open: ""},
@@ -146,14 +160,14 @@ function renderPackageNavItem(pkg) {
         ]
     });
 
-    // 子パッケージを表示
-    const childPackages = getDirectChildPackages(pkg);
+    // 子パッケージを表示（統合後の currentPkg の直下のみ）
+    const childPackages = getDirectChildPackages(currentPkg);
     childPackages.forEach(childPkg => {
         details.appendChild(renderPackageNavItem(childPkg));
     });
 
     // 子タイプを表示
-    (pkg.children || []).forEach(child => {
+    (currentPkg.children || []).forEach(child => {
         const link = createElement("a", {
             attributes: {href: "#" + child.fqn},
             textContent: getGlossaryTitle(child.fqn)

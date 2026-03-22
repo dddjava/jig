@@ -21,7 +21,7 @@ function createFieldsList(fields) {
     }));
 
     return createElement("section", {
-        className: "methods-section jig-card jig-card--item",
+        className: "methods-section jig-card jig-card--item fields",
         children: [
             createElement("h4", {textContent: "フィールド"}),
             ...items

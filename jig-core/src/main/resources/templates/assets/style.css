@@ -847,14 +847,14 @@ table td.number {
 }
 
 
-/* ドメイン概要 表示設定パネル */
-.domain-settings {
+/* サイドバー 表示設定パネル */
+.sidebar-settings {
     flex-shrink: 0;
     margin-bottom: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #d9e1ea;
 }
-.domain-settings > summary {
+.sidebar-settings > summary {
     font-size: 0.85em;
     color: #31455f;
     cursor: pointer;
@@ -866,13 +866,13 @@ table td.number {
     align-items: center;
     gap: 4px;
 }
-.domain-settings > summary:hover {
+.sidebar-settings > summary:hover {
     background-color: #e8f0fb;
 }
-.domain-settings > summary::-webkit-details-marker {
+.sidebar-settings > summary::-webkit-details-marker {
     display: none;
 }
-.domain-settings-panel {
+.sidebar-settings-panel {
     display: grid;
     gap: 6px;
     padding: 6px 4px 2px;

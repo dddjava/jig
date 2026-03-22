@@ -200,15 +200,32 @@ function renderSidebar(packages) {
     });
 }
 
-function createChildrenTable(children) {
-    if (!children || children.length === 0) return null;
+function createChildrenTable(pkg) {
+    const types = pkg.children || [];
+    const childPackages = getDirectChildPackages(pkg);
+
+    // 子パッケージ（▶︎ プレフィックス） + 子タイプ を合わせて表示
+    const allChildren = [
+        ...childPackages.map(childPkg => ({
+            isPackage: true,
+            fqn: childPkg.fqn,
+            title: getGlossaryTitle(childPkg.fqn)
+        })),
+        ...types.map(type => ({
+            isPackage: false,
+            fqn: type.fqn,
+            title: getGlossaryTitle(type.fqn)
+        }))
+    ];
+
+    if (allChildren.length === 0) return null;
 
     const tbody = createElement("tbody", {
-        children: children.map(child => {
-            const prefix = child.kind === "package" ? "▶︎ " : "";
+        children: allChildren.map(child => {
+            const prefix = child.isPackage ? "▶︎ " : "";
             const link = createElement("a", {
                 attributes: {href: "#" + child.fqn},
-                textContent: getGlossaryTitle(child.fqn)
+                textContent: child.title
             });
             const cell = createElement("td", {
                 children: [document.createTextNode(prefix), link]
@@ -379,7 +396,7 @@ function renderPackages(packages, container) {
             }));
         }
 
-        const childrenTable = createChildrenTable(pkg.children);
+        const childrenTable = createChildrenTable(pkg);
         if (childrenTable) {
             section.appendChild(childrenTable);
         }

@@ -16,57 +16,63 @@
         <details id="domain-settings" class="domain-settings">
             <summary>&#x2699; 表示設定</summary>
             <div class="domain-settings-panel">
-                <div class="settings-row">
-                    <button type="button" id="direction-toggle" class="direction-toggle" title="ダイアグラム方向を切り替え">
-                        <svg class="direction-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <!-- 初期: 縦方向 -->
-                            <g class="vertical-arrows">
-                                <path d="M12 5v14"/>
-                                <path d="M12 5l-3 3"/>
-                                <path d="M12 5l3 3"/>
-                                <path d="M12 19l-3-3"/>
-                                <path d="M12 19l3-3"/>
-                            </g>
-                            <!-- 横方向（display:none） -->
-                            <g class="horizontal-arrows" style="display:none">
-                                <path d="M5 12h14"/>
-                                <path d="M19 12l-3-3"/>
-                                <path d="M19 12l-3 3"/>
-                                <path d="M5 12l3-3"/>
-                                <path d="M5 12l3 3"/>
-                            </g>
-                        </svg>
-                    </button>
+                <div class="settings-group">
+                    <div class="settings-group-title">ダイアグラム</div>
+                    <div class="settings-row">
+                        <button type="button" id="direction-toggle" class="direction-toggle" title="ダイアグラム方向を切り替え">
+                            <svg class="direction-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <!-- 初期: 縦方向 -->
+                                <g class="vertical-arrows">
+                                    <path d="M12 5v14"/>
+                                    <path d="M12 5l-3 3"/>
+                                    <path d="M12 5l3 3"/>
+                                    <path d="M12 19l-3-3"/>
+                                    <path d="M12 19l3-3"/>
+                                </g>
+                                <!-- 横方向（display:none） -->
+                                <g class="horizontal-arrows" style="display:none">
+                                    <path d="M5 12h14"/>
+                                    <path d="M19 12l-3-3"/>
+                                    <path d="M19 12l-3 3"/>
+                                    <path d="M5 12l3-3"/>
+                                    <path d="M5 12l3 3"/>
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="settings-row">
+                        <label>
+                            <input type="checkbox" id="show-external-relations" checked>
+                            外部パッケージへの関連
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <label>
+                            <input type="checkbox" id="show-deprecated-nodes" checked>
+                            Deprecated ノード
+                        </label>
+                    </div>
                 </div>
-                <div class="settings-row">
-                    <label>
-                        <input type="checkbox" id="show-external-relations" checked>
-                        外部パッケージへの関連
-                    </label>
-                </div>
-                <div class="settings-row">
-                    <label>
-                        <input type="checkbox" id="show-deprecated-nodes" checked>
-                        Deprecated ノード
-                    </label>
-                </div>
-                <div class="settings-row">
-                    <label>
-                        <input type="checkbox" id="show-fields" checked>
-                        フィールド
-                    </label>
-                </div>
-                <div class="settings-row">
-                    <label>
-                        <input type="checkbox" id="show-methods" checked>
-                        メソッド
-                    </label>
-                </div>
-                <div class="settings-row">
-                    <label>
-                        <input type="checkbox" id="show-static-methods" checked>
-                        staticメソッド
-                    </label>
+                <div class="settings-group">
+                    <div class="settings-group-title">表示内容</div>
+                    <div class="settings-row">
+                        <label>
+                            <input type="checkbox" id="show-fields" checked>
+                            フィールド
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <label>
+                            <input type="checkbox" id="show-methods" checked>
+                            メソッド
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <label>
+                            <input type="checkbox" id="show-static-methods" checked>
+                            staticメソッド
+                        </label>
+                    </div>
                 </div>
             </div>
         </details>

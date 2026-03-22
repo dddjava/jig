@@ -915,6 +915,22 @@ table td.number {
     gap: 6px;
     padding: 6px 4px 2px;
 }
+.settings-group {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8edf5;
+}
+.settings-group:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.settings-group-title {
+    font-size: 0.75em;
+    color: #5a7099;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
 .settings-row {
     display: grid;
     gap: 4px;

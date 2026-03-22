@@ -142,9 +142,6 @@ main table thead {
 }
 
 /* ナビのツリー */
-.split-view > nav.tree {
-    font-size: 0.85em;
-}
 .split-view > nav.tree a, .split-view > nav.tree summary {
     white-space: nowrap;
 }

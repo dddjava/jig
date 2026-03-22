@@ -45,6 +45,14 @@
 
 const createElement = globalThis.Jig.dom.createElement;
 
+const domainSettings = {
+    diagramDirection: 'TB',
+    showExternalRelations: true,
+    showDeprecatedNodes: true,
+};
+
+const diagramRegistry = []; // [{container, pkg}]
+
 function getGlossaryTitle(fqn) {
     const term = globalThis.glossaryData?.[fqn];
     return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
@@ -209,8 +217,15 @@ function createRelationDiagram(pkg) {
     const relations = globalThis.domainData.relations;
     if (!relations || relations.length === 0) return null;
 
-    const pkgTypeFqns = new Set((pkg.types || []).map(t => t.fqn));
+    let pkgTypeFqns = new Set((pkg.types || []).map(t => t.fqn));
     if (pkgTypeFqns.size === 0) return null;
+
+    // Deprecated ノード非表示の場合、deprecated 型を除外
+    if (!domainSettings.showDeprecatedNodes) {
+        const typesMap = globalThis.domainData._typesMap;
+        pkgTypeFqns = new Set([...pkgTypeFqns].filter(fqn => !typesMap?.get(fqn)?.isDeprecated));
+        if (pkgTypeFqns.size === 0) return null;
+    }
 
     // このパッケージの型から出る関連
     const fromPkgRelations = relations.filter(r => pkgTypeFqns.has(r.from));
@@ -220,7 +235,9 @@ function createRelationDiagram(pkg) {
     const internalRelations = fromPkgRelations.filter(r => pkgTypeFqns.has(r.to));
     if (internalRelations.length === 0) return null;
 
-    const externalRelations = fromPkgRelations.filter(r => !pkgTypeFqns.has(r.to));
+    const externalRelations = domainSettings.showExternalRelations
+        ? fromPkgRelations.filter(r => !pkgTypeFqns.has(r.to))
+        : [];
 
     function packageOf(fqn) {
         const idx = fqn.lastIndexOf('.');
@@ -254,7 +271,7 @@ function createRelationDiagram(pkg) {
     }
 
     const i = '    ';
-    const lines = ['\ngraph TB'];
+    const lines = [`\ngraph ${domainSettings.diagramDirection}`];
     lines.push(`${i}subgraph ${pkg.fqn}`);
     lines.push(`${i}direction TB`);
     internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
@@ -498,13 +515,20 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
-        const diagram = createRelationDiagram(pkg);
-        if (diagram) {
+        const hasDiagram = (pkg.types || []).some(t => {
+            const relations = globalThis.domainData.relations;
+            return relations && relations.some(r => r.from === t.fqn);
+        });
+        if (hasDiagram) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
+            diagramRegistry.push({container: mmdContainer, pkg});
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                 mmdContainer.innerHTML = "";
-                globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
+                const diagram = createRelationDiagram(pkg);
+                if (diagram) {
+                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
+                }
             });
         }
 
@@ -555,6 +579,42 @@ function renderTypes(types, container) {
     });
 }
 
+function rerenderDiagrams() {
+    diagramRegistry.forEach(({container, pkg}) => {
+        container.innerHTML = "";
+        const diagram = createRelationDiagram(pkg);
+        if (diagram) {
+            globalThis.Jig.mermaid.renderWithControls(container, diagram);
+        }
+    });
+}
+
+function initSettings() {
+    const directionInputs = document.querySelectorAll('input[name="diagram-direction"]');
+    directionInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            domainSettings.diagramDirection = input.value;
+            rerenderDiagrams();
+        });
+    });
+
+    const externalCheckbox = document.getElementById('show-external-relations');
+    if (externalCheckbox) {
+        externalCheckbox.addEventListener('change', () => {
+            domainSettings.showExternalRelations = externalCheckbox.checked;
+            rerenderDiagrams();
+        });
+    }
+
+    const deprecatedCheckbox = document.getElementById('show-deprecated-nodes');
+    if (deprecatedCheckbox) {
+        deprecatedCheckbox.addEventListener('change', () => {
+            domainSettings.showDeprecatedNodes = deprecatedCheckbox.checked;
+            rerenderDiagrams();
+        });
+    }
+}
+
 const DomainApp = {
     init() {
         /**
@@ -566,6 +626,9 @@ const DomainApp = {
          */
         const data = globalThis.domainData;
         if (!data) return;
+
+        diagramRegistry.length = 0;
+        initSettings();
 
         // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）
         globalThis.domainData._typesMap = new Map(

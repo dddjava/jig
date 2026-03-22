@@ -13,6 +13,28 @@
 </header>
 <div class="split-view">
     <nav id="domain-sidebar" class="tree in-page-sidebar in-page-sidebar--tree" aria-label="パッケージツリー">
+        <details id="domain-settings" class="domain-settings">
+            <summary>&#x2699; 表示設定</summary>
+            <div class="domain-settings-panel">
+                <div class="settings-row">
+                    <span class="settings-label">ダイアグラム方向</span>
+                    <label><input type="radio" name="diagram-direction" value="TB" checked> TB（縦）</label>
+                    <label><input type="radio" name="diagram-direction" value="LR"> LR（横）</label>
+                </div>
+                <div class="settings-row">
+                    <label>
+                        <input type="checkbox" id="show-external-relations" checked>
+                        外部パッケージへの関連
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <label>
+                        <input type="checkbox" id="show-deprecated-nodes" checked>
+                        Deprecated ノード
+                    </label>
+                </div>
+            </div>
+        </details>
         <div id="domain-sidebar-list" class="in-page-sidebar__list"></div>
     </nav>
     <main id="domain-main" class="jig-card-list">

@@ -9,6 +9,8 @@
 /**
  * @typedef {{
  *     name: string,
+ *     typeRef: TypeRef,
+ *     isDeprecated: boolean,
  * }} DomainField
  */
 /**
@@ -189,7 +191,9 @@ function createFieldsTable(fields) {
                     className: field.isDeprecated ? "deprecated" : "",
                     textContent: field.name || ""
                 }),
-                createElement("td", {innerHTML: field.typeHtml || ""})
+                createElement("td", {
+                    children: [createTypeRefLink(field.typeRef)]
+                })
             ]
         }))
     });

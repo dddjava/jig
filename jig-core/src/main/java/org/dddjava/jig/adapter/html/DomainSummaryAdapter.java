@@ -197,7 +197,7 @@ public class DomainSummaryAdapter {
 
     private JsonObjectBuilder buildFieldJson(JigField field) {
         return Json.object("name", field.nameText())
-                .and("typeHtml", linkText(field.jigTypeReference()))
+                .and("typeRef", buildTypeRef(field.jigTypeReference()))
                 .and("isDeprecated", field.isDeprecated());
     }
 

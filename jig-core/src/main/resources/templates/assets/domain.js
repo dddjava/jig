@@ -214,8 +214,7 @@ function renderPackageNavItem(pkg) {
  * @returns {string | null} Mermaid記法のダイアグラム文字列、または関連がない場合はnull
  */
 function createRelationDiagram(pkg) {
-    const relations = globalThis.domainData.relations;
-    if (!relations || relations.length === 0) return null;
+    const relations = globalThis.domainData.relations || [];
 
     let pkgTypeFqns = new Set((pkg.types || []).map(t => t.fqn));
     if (pkgTypeFqns.size === 0) return null;
@@ -229,11 +228,9 @@ function createRelationDiagram(pkg) {
 
     // このパッケージの型から出る関連
     const fromPkgRelations = relations.filter(r => pkgTypeFqns.has(r.from));
-    if (fromPkgRelations.length === 0) return null;
 
     // 内部関連と外部関連に分類
     const internalRelations = fromPkgRelations.filter(r => pkgTypeFqns.has(r.to));
-    if (internalRelations.length === 0) return null;
 
     const externalRelations = domainSettings.showExternalRelations
         ? fromPkgRelations.filter(r => !pkgTypeFqns.has(r.to))
@@ -244,10 +241,15 @@ function createRelationDiagram(pkg) {
         return idx < 0 ? fqn : fqn.substring(0, idx);
     }
 
-    // サブグラフ内ノード（from全部 + 内部to）
-    const internalFqns = new Set();
-    fromPkgRelations.forEach(r => internalFqns.add(r.from));
-    internalRelations.forEach(r => internalFqns.add(r.to));
+    // 型が関連を持つ場合は関連から、ない場合はパッケージ内全型をノードにする
+    const internalFqns = (fromPkgRelations.length > 0 || internalRelations.length > 0)
+        ? new Set()
+        : pkgTypeFqns;
+
+    if (fromPkgRelations.length > 0 || internalRelations.length > 0) {
+        fromPkgRelations.forEach(r => internalFqns.add(r.from));
+        internalRelations.forEach(r => internalFqns.add(r.to));
+    }
 
     // 外部パッケージノード
     const externalPkgFqns = new Set();
@@ -515,11 +517,7 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
-        const hasDiagram = (pkg.types || []).some(t => {
-            const relations = globalThis.domainData.relations;
-            return relations && relations.some(r => r.from === t.fqn);
-        });
-        if (hasDiagram) {
+        if ((pkg.types || []).length > 0) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
             diagramRegistry.push({container: mmdContainer, pkg});

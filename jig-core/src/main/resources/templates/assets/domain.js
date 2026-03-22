@@ -1,6 +1,15 @@
 /**
  * @typedef {{
  *     fqn: string,
+ *     fields: DomainField[],
+ *     methods: DomainMethod[],
+ *     staticMethods: DomainMethod[],
+ * }} DomainType
+ * @typedef {{
+ *     name: string,
+ * }} DomainField
+ * @typedef {{
+ *     fqn: string,
  *     parameterFqns: string[],
  *     returnFqn: string
  * }} DomainMethod

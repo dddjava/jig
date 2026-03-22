@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * ドメイン概要
@@ -220,24 +221,6 @@ public class DomainSummaryAdapter {
                 .map(JigTypeArgument::jigTypeReference)
                 .map(this::buildTypeRef)
                 .toList()));
-    }
-
-    private String linkText(JigTypeReference jigTypeReference) {
-        var typeArgumentList = jigTypeReference.typeArgumentList();
-        String typeArgumentText = typeArgumentList.isEmpty() ? "" :
-                typeArgumentList.stream()
-                        .map(JigTypeArgument::typeId)
-                        .map(this::typeIdToLinkText)
-                        .collect(joining(", ", "&lt;", "&gt;"));
-
-        return typeIdToLinkText(jigTypeReference.id()) + typeArgumentText;
-    }
-
-    private String typeIdToLinkText(TypeId typeId) {
-        if (typeId.isJavaLanguageType()) {
-            return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
-        }
-        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fqn(), jigDocumentContext.typeTerm(typeId).title());
     }
 
     private TreeComposite createTreeBaseComposite(JigTypes jigTypes) {

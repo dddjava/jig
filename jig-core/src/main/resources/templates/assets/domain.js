@@ -1,12 +1,7 @@
 /**
  * @typedef {Object} PackageType
  * @property {string} fqn
- * @property {PackageChild[]} [children]
- */
-/**
- * @typedef {Object} PackageChild
- * @property {string} fqn
- * @property {string} kind
+ * @property {{fqn: string}[]} [children]
  */
 /**
  * @typedef {{
@@ -122,27 +117,24 @@ function createTypeLink(fqn, className = undefined) {
     });
 }
 
+/**
+ * パッケージの直下の子パッケージを取得する
+ * @param {PackageType} pkg
+ * @returns {PackageType[]}
+ */
+function getDirectChildPackages(pkg) {
+    const prefix = pkg.fqn + ".";
+    return (globalThis.domainData.packages || []).filter(p => {
+        if (!p.fqn.startsWith(prefix)) return false;
+        // prefix より後にドットが含まれない = 直接の子
+        return p.fqn.indexOf(".", prefix.length) === -1;
+    });
+}
+
 function renderPackageNavItem(pkg) {
-    // 子が1つだけでパッケージの場合、統合して表示する
-    let currentPkg = pkg;
-    const mergedNames = [getGlossaryTitle(pkg.fqn)];
-
-    while (true) {
-        const children = currentPkg.children || [];
-        if (children.length !== 1 || children[0].kind !== "package") break;
-
-        const child = children[0];
-        const childPkg = globalThis.domainData.types.find(t => t.fqn === child.fqn) ||
-                        globalThis.domainData.packages.find(p => p.fqn === child.fqn);
-        if (!childPkg) break;
-
-        mergedNames.push(getGlossaryTitle(childPkg.fqn));
-        currentPkg = childPkg;
-    }
-
     const summaryLink = createElement("a", {
-        attributes: {href: "#" + currentPkg.fqn},
-        textContent: mergedNames.join("/")
+        attributes: {href: "#" + pkg.fqn},
+        textContent: getGlossaryTitle(pkg.fqn)
     });
     const details = createElement("details", {
         attributes: {open: ""},
@@ -154,22 +146,19 @@ function renderPackageNavItem(pkg) {
         ]
     });
 
-    (currentPkg.children || []).forEach(child => {
-        if (child.kind === "package") {
-            // 子がパッケージの場合、再帰的に表示
-            const childPkg = globalThis.domainData.types.find(t => t.fqn === child.fqn) ||
-                            globalThis.domainData.packages.find(p => p.fqn === child.fqn);
-            if (childPkg) {
-                details.appendChild(renderPackageNavItem(childPkg));
-            }
-        } else {
-            // 子がタイプの場合、リンクとして表示
-            const link = createElement("a", {
-                attributes: {href: "#" + child.fqn},
-                textContent: getGlossaryTitle(child.fqn)
-            });
-            details.appendChild(createElement("div", {children: [link]}));
-        }
+    // 子パッケージを表示
+    const childPackages = getDirectChildPackages(pkg);
+    childPackages.forEach(childPkg => {
+        details.appendChild(renderPackageNavItem(childPkg));
+    });
+
+    // 子タイプを表示
+    (pkg.children || []).forEach(child => {
+        const link = createElement("a", {
+            attributes: {href: "#" + child.fqn},
+            textContent: getGlossaryTitle(child.fqn)
+        });
+        details.appendChild(createElement("div", {children: [link]}));
     });
 
     return details;
@@ -180,17 +169,16 @@ function renderSidebar(packages) {
     if (!container) return;
     container.innerHTML = "";
 
-    // 子として参照されているパッケージ fqn の集合
+    // 直接の子パッケージ fqn の集合
     const childPackageFqns = new Set();
     (packages || []).forEach(pkg => {
-        (pkg.children || []).forEach(child => {
-            if (child.kind === "package") {
-                childPackageFqns.add(child.fqn);
-            }
+        const children = getDirectChildPackages(pkg);
+        children.forEach(child => {
+            childPackageFqns.add(child.fqn);
         });
     });
 
-    // トップレベルのパッケージのみを表示（子として参照されていないもの）
+    // トップレベルのパッケージのみを表示（直接の親を持たないもの）
     (packages || []).forEach(pkg => {
         if (!childPackageFqns.has(pkg.fqn)) {
             container.appendChild(renderPackageNavItem(pkg));
@@ -468,5 +456,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem };
+    module.exports = { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages };
 }

@@ -2,8 +2,6 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
-import org.dddjava.jig.adapter.html.view.TreeComposite;
-import org.dddjava.jig.adapter.html.view.TreeLeaf;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
@@ -27,6 +25,7 @@ import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,10 +57,10 @@ public class DomainSummaryAdapter {
         var enumModelMap = enumModels.toMap();
         var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
 
-        var treeBaseComposite = createTreeBaseComposite(jigTypes);
-        var packageList = listPackages(jigTypes);
+        var packageMap = buildPackageMap(jigTypes);
+        var packageList = listPackages(packageMap);
 
-        var json = buildJson(treeBaseComposite, packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
+        var json = buildJson(packageMap, packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
@@ -69,13 +68,16 @@ public class DomainSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String buildJson(TreeComposite baseComposite,
+    private String buildJson(Map<PackageId, Set<PackageId>> packageMap,
                              List<JigPackage> jigPackages,
                              List<JigType> jigTypes,
                              Map<TypeId, EnumModel> enumModelMap,
                              CoreTypesAndRelations coreTypesAndRelations) {
+        Map<PackageId, List<JigType>> typesByPackage = jigTypes.stream()
+                .collect(groupingBy(JigType::packageId));
+
         List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(jigPackage -> buildPackageJson(jigPackage, baseComposite, coreTypesAndRelations))
+                .map(jigPackage -> buildPackageJson(jigPackage, typesByPackage, coreTypesAndRelations))
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
@@ -87,15 +89,13 @@ public class DomainSummaryAdapter {
                 .build();
     }
 
-    private JsonObjectBuilder buildPackageJson(JigPackage jigPackage, TreeComposite treeBaseComposite, CoreTypesAndRelations coreTypesAndRelations) {
-        var composite = treeBaseComposite.findComposite(jigPackage.packageId());
-        List<JsonObjectBuilder> children = composite.children().stream()
-                .map(child -> {
-                    String childHref = child.href();
-                    String childFqn = childHref.startsWith("#") ? childHref.substring(1) : childHref;
-                    return Json.object("kind", child.isPackage() ? "package" : "type")
-                            .and("fqn", childFqn);
-                })
+    private JsonObjectBuilder buildPackageJson(JigPackage jigPackage,
+                                                Map<PackageId, List<JigType>> typesByPackage,
+                                                CoreTypesAndRelations coreTypesAndRelations) {
+        List<JsonObjectBuilder> children = typesByPackage
+                .getOrDefault(jigPackage.packageId(), Collections.emptyList()).stream()
+                .sorted(Comparator.comparing(t -> t.id().fqn()))
+                .map(type -> Json.object("fqn", type.id().fqn()))
                 .toList();
 
         String diagram = new TypeRelationMermaidDiagram()
@@ -193,36 +193,15 @@ public class DomainSummaryAdapter {
                 .toList()));
     }
 
-    private TreeComposite createTreeBaseComposite(JigTypes jigTypes) {
+    private Map<PackageId, Set<PackageId>> buildPackageMap(JigTypes jigTypes) {
         List<JigPackageWithJigTypes> jigPackageWithJigTypes = JigPackageWithJigTypes.from(jigTypes);
-        Map<PackageId, Set<PackageId>> packageMap = jigPackageWithJigTypes.stream()
+        return jigPackageWithJigTypes.stream()
                 .map(JigPackageWithJigTypes::packageId)
                 .flatMap(packageId -> packageId.genealogical().stream())
                 .collect(groupingBy(PackageId::parent, toSet()));
-
-        TreeComposite baseComposite = new TreeComposite(jigPackage(PackageId.defaultPackage()));
-        createTree(jigTypes, packageMap, baseComposite);
-        return baseComposite;
     }
 
-    private void createTree(JigTypes jigTypes, Map<PackageId, Set<PackageId>> packageMap, TreeComposite baseComposite) {
-        for (PackageId current : packageMap.getOrDefault(baseComposite.packageId(), Collections.emptySet())) {
-            TreeComposite composite = new TreeComposite(jigPackage(current));
-            baseComposite.addComponent(composite);
-            for (JigType jigType : jigTypes.listMatches(type -> type.packageId().equals(current))) {
-                composite.addComponent(new TreeLeaf(jigType));
-            }
-            createTree(jigTypes, packageMap, composite);
-        }
-    }
-
-    private List<JigPackage> listPackages(JigTypes jigTypes) {
-        List<JigPackageWithJigTypes> jigPackageWithJigTypes = JigPackageWithJigTypes.from(jigTypes);
-        Map<PackageId, Set<PackageId>> packageMap = jigPackageWithJigTypes.stream()
-                .map(JigPackageWithJigTypes::packageId)
-                .flatMap(packageId -> packageId.genealogical().stream())
-                .collect(groupingBy(PackageId::parent, toSet()));
-
+    private List<JigPackage> listPackages(Map<PackageId, Set<PackageId>> packageMap) {
         return packageMap.values().stream()
                 .flatMap(Set::stream)
                 .sorted()

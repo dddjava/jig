@@ -122,35 +122,49 @@ function createTypeLink(fqn, className = undefined) {
     });
 }
 
+function renderPackageNavItem(pkg) {
+    const summaryLink = createElement("a", {
+        attributes: {href: "#" + pkg.fqn},
+        textContent: getGlossaryTitle(pkg.fqn)
+    });
+    const details = createElement("details", {
+        attributes: {open: ""},
+        children: [
+            createElement("summary", {
+                className: "package",
+                children: [summaryLink, document.createTextNode("/")]
+            })
+        ]
+    });
+
+    (pkg.children || []).forEach(child => {
+        if (child.kind === "package") {
+            // 子がパッケージの場合、再帰的に表示
+            const childPkg = globalThis.domainData.types.find(t => t.fqn === child.fqn) ||
+                            globalThis.domainData.packages.find(p => p.fqn === child.fqn);
+            if (childPkg) {
+                details.appendChild(renderPackageNavItem(childPkg));
+            }
+        } else {
+            // 子がタイプの場合、リンクとして表示
+            const link = createElement("a", {
+                attributes: {href: "#" + child.fqn},
+                textContent: getGlossaryTitle(child.fqn)
+            });
+            details.appendChild(createElement("div", {children: [link]}));
+        }
+    });
+
+    return details;
+}
+
 function renderSidebar(packages) {
     const container = document.getElementById("domain-sidebar-list");
     if (!container) return;
     container.innerHTML = "";
 
     (packages || []).forEach(pkg => {
-        const summaryLink = createElement("a", {
-            attributes: {href: "#" + pkg.fqn},
-            textContent: getGlossaryTitle(pkg.fqn)
-        });
-        const details = createElement("details", {
-            attributes: {open: ""},
-            children: [
-                createElement("summary", {
-                    className: "package",
-                    children: [summaryLink, document.createTextNode("/")]
-                })
-            ]
-        });
-
-        (pkg.children || []).forEach(child => {
-            const link = createElement("a", {
-                attributes: {href: "#" + child.fqn},
-                textContent: getGlossaryTitle(child.fqn)
-            });
-            details.appendChild(createElement("div", {children: [link]}));
-        });
-
-        container.appendChild(details);
+        container.appendChild(renderPackageNavItem(pkg));
     });
 }
 

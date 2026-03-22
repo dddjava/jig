@@ -1,17 +1,13 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { Element, DocumentStub } = require('./dom-stub.js');
 
 // jig.js の共通ユーティリティをロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
-global.document = global.document || {
-    addEventListener: () => {},
-    getElementsByClassName: () => [],
-    createElement: (tag) => ({ tagName: tag, children: [], className: '', textContent: '', style: {}, appendChild(c) { this.children.push(c); } }),
-    body: { classList: { contains: () => false } },
-};
+global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig.js');
 
-const { getGlossaryMethodTerm } = require('../../main/resources/templates/assets/domain.js');
+const { getGlossaryMethodTerm, createTypeLink, createTypeRefLink } = require('../../main/resources/templates/assets/domain.js');
 
 test.describe('domain.js', () => {
     test.describe('getGlossaryMethodTerm', () => {
@@ -134,6 +130,125 @@ test.describe('domain.js', () => {
                 description: ''
             });
 
+            delete globalThis.glossaryData;
+        });
+    });
+
+    test.describe('createTypeLink', () => {
+        test('domain型が存在する場合、リンク（<a>タグ）を返す', () => {
+            const domainType = {fqn: 'org.example.Account', methods: []};
+            globalThis.domainData = {types: [domainType]};
+            globalThis.glossaryData = {
+                'org.example.Account': {title: '口座', description: ''}
+            };
+
+            const result = createTypeLink('org.example.Account', 'test-class');
+
+            assert.equal(result.tagName, 'a');
+            assert.equal(result.className, 'test-class');
+            assert.equal(result.textContent, '口座');
+            assert.equal(result.attributes.get('href'), '#org.example.Account');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('domain型が存在しない場合、spanを返す（weak クラス付き）', () => {
+            globalThis.domainData = {types: []};
+            globalThis.glossaryData = {};
+
+            const result = createTypeLink('java.lang.String', 'test-class');
+
+            assert.equal(result.tagName, 'span');
+            assert.equal(result.textContent, 'String');
+            assert.ok(result.className.includes('weak'));
+            assert.ok(result.className.includes('test-class'));
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('classNameが指定されない場合、weakクラスのみ', () => {
+            globalThis.domainData = {types: []};
+            globalThis.glossaryData = {};
+
+            const result = createTypeLink('java.lang.String');
+
+            assert.equal(result.className, 'weak');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+    });
+
+    test.describe('createTypeRefLink', () => {
+        test('型引数なしの場合、createTypeLinkの結果を返す', () => {
+            const domainType = {fqn: 'org.example.User', methods: []};
+            globalThis.domainData = {types: [domainType]};
+            globalThis.glossaryData = {
+                'org.example.User': {title: 'ユーザー', description: ''}
+            };
+
+            const typeRef = {fqn: 'org.example.User'};
+            const result = createTypeRefLink(typeRef, 'arg-class');
+
+            assert.equal(result.tagName, 'a');
+            assert.equal(result.className, 'arg-class');
+            assert.equal(result.textContent, 'ユーザー');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('型引数がある場合、spanで型と型引数を組み立てる', () => {
+            const domainType = {fqn: 'java.util.List', methods: []};
+            globalThis.domainData = {types: [domainType]};
+            globalThis.glossaryData = {
+                'java.util.List': {title: 'List', description: ''}
+            };
+
+            const typeRef = {
+                fqn: 'java.util.List',
+                typeArgumentRefs: [
+                    {fqn: 'org.example.Item'}
+                ]
+            };
+            const result = createTypeRefLink(typeRef, 'generic-type');
+
+            assert.equal(result.tagName, 'span');
+            assert.equal(result.className, 'generic-type');
+            // 子要素に型と型引数が含まれる（最初の要素は createTypeLink の結果）
+            assert.ok(result.children.length > 0);
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('ネストした型引数がある場合、再帰的に処理する', () => {
+            const domainTypes = [
+                {fqn: 'java.util.List', methods: []},
+                {fqn: 'java.util.Map', methods: []}
+            ];
+            globalThis.domainData = {types: domainTypes};
+            globalThis.glossaryData = {};
+
+            const typeRef = {
+                fqn: 'java.util.Map',
+                typeArgumentRefs: [
+                    {fqn: 'java.lang.String'},
+                    {
+                        fqn: 'java.util.List',
+                        typeArgumentRefs: [{fqn: 'org.example.Item'}]
+                    }
+                ]
+            };
+            const result = createTypeRefLink(typeRef);
+
+            assert.equal(result.tagName, 'span');
+            // 子要素が複数（型と区切り文字と型引数）
+            assert.ok(result.children.length > 2);
+
+            delete globalThis.domainData;
             delete globalThis.glossaryData;
         });
     });

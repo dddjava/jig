@@ -420,5 +420,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, getGlossaryMethodTerm };
+    module.exports = { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink };
 }

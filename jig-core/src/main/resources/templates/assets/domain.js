@@ -421,7 +421,7 @@ function createMethodItem(method) {
     }
 
     return createElement("div", {
-        className: "method-item",
+        className: "method-item jig-card jig-card--item",
         children
     });
 }

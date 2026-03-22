@@ -88,17 +88,17 @@ function renderGlossaryTerms(terms, displayMode) {
         if (displayMode === "full") {
             const metaItems = [];
             if (term.fqn) {
-                metaItems.push(createElement("div", {className: "fully-qualified-name", textContent: term.fqn}));
+                metaItems.push(createElement("div", {textContent: `完全修飾名: ${term.fqn}`}));
             }
             if (term.simpleText) {
-                metaItems.push(createElement("div", {className: "weak", textContent: `単純名: ${term.simpleText}`}));
+                metaItems.push(createElement("div", {textContent: `単純名: ${term.simpleText}`}));
             }
             if (term.kind) {
-                metaItems.push(createElement("div", {className: "weak", textContent: `種類: ${term.kind}`}));
+                metaItems.push(createElement("div", {textContent: `種類: ${term.kind}`}));
             }
             if (metaItems.length > 0) {
                 metaChildren.push(createElement("section", {
-                    className: "jig-card jig-card--item",
+                    className: "jig-card jig-card--item weak",
                     children: metaItems
                 }));
             }

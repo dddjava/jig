@@ -163,8 +163,21 @@ function renderSidebar(packages) {
     if (!container) return;
     container.innerHTML = "";
 
+    // 子として参照されているパッケージ fqn の集合
+    const childPackageFqns = new Set();
     (packages || []).forEach(pkg => {
-        container.appendChild(renderPackageNavItem(pkg));
+        (pkg.children || []).forEach(child => {
+            if (child.kind === "package") {
+                childPackageFqns.add(child.fqn);
+            }
+        });
+    });
+
+    // トップレベルのパッケージのみを表示（子として参照されていないもの）
+    (packages || []).forEach(pkg => {
+        if (!childPackageFqns.has(pkg.fqn)) {
+            container.appendChild(renderPackageNavItem(pkg));
+        }
     });
 }
 

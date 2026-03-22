@@ -357,5 +357,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp };
+    module.exports = { DomainApp, getGlossaryMethodTerm };
 }

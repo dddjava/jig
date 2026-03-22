@@ -28,7 +28,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: methodFqn,
-                parameterFqns: ['java.lang.String']
+                parameterTypeFqns: ['java.lang.String']
             };
 
             const result = getGlossaryMethodTerm(method);
@@ -52,7 +52,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: methodFqn,
-                parameterFqns: ['java.lang.String', 'int']
+                parameterTypeFqns: ['java.lang.String', 'int']
             };
 
             const result = getGlossaryMethodTerm(method);
@@ -66,7 +66,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: 'org.example.Account#create(java.lang.String)',
-                parameterFqns: ['java.lang.String']
+                parameterTypeFqns: ['java.lang.String']
             };
 
             const result = getGlossaryMethodTerm(method);
@@ -91,7 +91,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: methodFqn,
-                parameterFqns: []
+                parameterTypeFqns: []
             };
 
             const result = getGlossaryMethodTerm(method);
@@ -105,7 +105,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: 'org.example.User#getName()',
-                parameterFqns: []
+                parameterTypeFqns: []
             };
 
             const result = getGlossaryMethodTerm(method);
@@ -122,7 +122,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: 'org.example.domain.user.service.UserApplicationService#createUser(org.example.domain.user.value.UserId,org.example.domain.user.value.UserName)',
-                parameterFqns: ['org.example.domain.user.value.UserId', 'org.example.domain.user.value.UserName']
+                parameterTypeFqns: ['org.example.domain.user.value.UserId', 'org.example.domain.user.value.UserName']
             };
 
             const result = getGlossaryMethodTerm(method);

@@ -10,7 +10,7 @@
  * }} DomainField
  * @typedef {{
  *     fqn: string,
- *     parameterFqns: string[],
+ *     parameterTypeFqns: string[],
  *     returnFqn: string
  * }} DomainMethod
  * @typedef {{
@@ -40,7 +40,7 @@ function getGlossaryMethodTerm(method) {
 
     // 引数の完全修飾名を単純名に変換して再取得
     const glossaryFqn = fqn.substring(0, fqn.lastIndexOf('(') + 1)
-        + method.parameterFqns.map(x => x.substring(x.lastIndexOf('.') + 1)).join(",")
+        + method.parameterTypeFqns.map(x => x.substring(x.lastIndexOf('.') + 1)).join(",")
         + ')';
     const term2 = globalThis.glossaryData[glossaryFqn];
     if (term2) return term2;
@@ -181,7 +181,7 @@ function createMethodsTable(kind, methods) {
                 children: [
                     createElement("td", {className: "method-name", textContent: methodTerm.title}),
                     createElement("td", {
-                        children: method.parameterFqns.map(param => createDomainTypeLink(param, "method-argument-item"))
+                        children: method.parameterTypeFqns.map(param => createDomainTypeLink(param, "method-argument-item"))
                     }),
                     createElement("td", {innerHTML: method.returnTypeLink || ""}),
                     createElement("td", {

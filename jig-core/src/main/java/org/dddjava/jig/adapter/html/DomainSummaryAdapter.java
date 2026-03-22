@@ -205,7 +205,7 @@ public class DomainSummaryAdapter {
         return Json.object("fqn", jigMethod.fqn())
                 .and("label", jigMethod.labelText())
                 .and("visibility", jigMethod.visibility())
-                .and("parameterFqns", Json.array(jigMethod.parameterTypeStream().map(JigTypeReference::fqn).toList()))
+                .and("parameterTypeFqns", Json.array(jigMethod.parameterTypeStream().map(JigTypeReference::fqn).toList()))
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("returnTypeLink", methodReturnLinkText(jigMethod));
     }

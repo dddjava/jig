@@ -853,6 +853,7 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow: auto;
+    align-content: start;
 }
 .usecase-summary #usecase-sidebar {
     display: flex;
@@ -874,6 +875,7 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow: auto;
+    align-content: start;
 }
 
 /* ドメイン概要 表示設定パネル */

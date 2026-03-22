@@ -276,7 +276,7 @@ function createRelationDiagram(pkg) {
     const i = '    ';
     const lines = [`\ngraph ${domainSettings.diagramDirection}`];
     lines.push(`${i}subgraph ${pkg.fqn}`);
-    lines.push(`${i}direction TB`);
+    lines.push(`${i}direction ${domainSettings.diagramDirection}`);
     internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
     lines.push(`${i}end`);
     externalPkgFqns.forEach(fqn => lines.push(`${i}${mermaidPackageBox(fqn)}`));

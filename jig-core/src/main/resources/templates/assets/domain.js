@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} PackageType
  * @property {string} fqn
- * @property {{fqn: string}[]} [children]
+ * @property {{fqn: string}[]} [types]
  */
 /**
  * @typedef {{
@@ -145,7 +145,7 @@ function renderPackageNavItem(pkg) {
     while (true) {
         const childPackages = getDirectChildPackages(currentPkg);
         if (childPackages.length !== 1) break;
-        if (currentPkg.children && currentPkg.children.length > 0) break;
+        if (currentPkg.types && currentPkg.types.length > 0) break;
 
         const childPkg = childPackages[0];
         mergedNames.push(getGlossaryTitle(childPkg.fqn));
@@ -173,7 +173,7 @@ function renderPackageNavItem(pkg) {
     });
 
     // 子タイプを表示
-    (currentPkg.children || []).forEach(child => {
+    (currentPkg.types || []).forEach(child => {
         const link = createElement("a", {
             attributes: {href: "#" + child.fqn},
             textContent: getGlossaryTitle(child.fqn)
@@ -207,7 +207,7 @@ function renderSidebar(packages) {
 }
 
 function createChildrenTable(pkg) {
-    const types = pkg.children || [];
+    const types = pkg.types || [];
     const childPackages = getDirectChildPackages(pkg);
 
     // 子パッケージ（▶︎ プレフィックス） + 子タイプ を合わせて表示

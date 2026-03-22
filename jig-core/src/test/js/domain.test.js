@@ -257,11 +257,11 @@ test.describe('domain.js', () => {
         test('子が1つだけでタイプを持たないパッケージの場合、統合して表示する', () => {
             const examplePkg = {
                 fqn: 'com.example',
-                children: []
+                types: []
             };
             const comPkg = {
                 fqn: 'com',
-                children: []
+                types: []
             };
 
             globalThis.domainData = {
@@ -288,17 +288,17 @@ test.describe('domain.js', () => {
         test('タイプを持つパッケージを表示する', () => {
             const deepPkg = {
                 fqn: 'com.example.deep',
-                children: [
+                types: [
                     {fqn: 'com.example.deep.MyClass'}
                 ]
             };
             const examplePkg = {
                 fqn: 'com.example',
-                children: []
+                types: []
             };
             const comPkg = {
                 fqn: 'com',
-                children: []
+                types: []
             };
 
             globalThis.domainData = {
@@ -328,21 +328,21 @@ test.describe('domain.js', () => {
         test('複数段階のパッケージが1つずつ続く場合、全て統合して表示する', () => {
             const deepPkg = {
                 fqn: 'com.example.sub.deep',
-                children: [
+                types: [
                     {fqn: 'com.example.sub.deep.MyClass'}
                 ]
             };
             const subPkg = {
                 fqn: 'com.example.sub',
-                children: []
+                types: []
             };
             const examplePkg = {
                 fqn: 'com.example',
-                children: []
+                types: []
             };
             const comPkg = {
                 fqn: 'com',
-                children: []
+                types: []
             };
 
             globalThis.domainData = {
@@ -371,19 +371,19 @@ test.describe('domain.js', () => {
         test('子パッケージを持つパッケージを表示する', () => {
             const sub2Pkg = {
                 fqn: 'com.example.sub2',
-                children: []
+                types: []
             };
             const sub1Pkg = {
                 fqn: 'com.example.sub1',
-                children: []
+                types: []
             };
             const examplePkg = {
                 fqn: 'com.example',
-                children: []
+                types: []
             };
             const comPkg = {
                 fqn: 'com',
-                children: []
+                types: []
             };
 
             globalThis.domainData = {

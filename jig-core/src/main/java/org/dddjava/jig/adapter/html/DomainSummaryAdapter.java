@@ -103,7 +103,7 @@ public class DomainSummaryAdapter {
                 .orElse("");
 
         return Json.object("fqn", jigPackage.fqn())
-                .and("children", Json.arrayObjects(children))
+                .and("types", Json.arrayObjects(children))
                 .and("relationDiagram", diagram);
     }
 

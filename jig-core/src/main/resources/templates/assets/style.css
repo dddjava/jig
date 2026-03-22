@@ -863,6 +863,7 @@ table td.number {
     flex: 1;
     min-height: 0;
     overflow: auto;
+    align-content: start;
 }
 .glossary #term-sidebar {
     display: flex;

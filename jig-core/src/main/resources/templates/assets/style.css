@@ -910,6 +910,24 @@ table td.number {
 .settings-row input[type="checkbox"] {
     cursor: pointer;
 }
+.direction-toggle {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #f9f9f9;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: bold;
+    transition: all 0.2s;
+    color: #1b3a66;
+}
+.direction-toggle:hover {
+    border-color: #999;
+    background: #f0f0f0;
+}
+.direction-toggle:active {
+    background: #e8e8e8;
+}
 
 /* 出力インタフェース概要 */
 .outbound main {

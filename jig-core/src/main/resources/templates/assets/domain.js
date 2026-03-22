@@ -592,13 +592,14 @@ function rerenderDiagrams() {
 }
 
 function initSettings() {
-    const directionInputs = document.querySelectorAll('input[name="diagram-direction"]');
-    directionInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            domainSettings.diagramDirection = input.value;
+    const directionToggle = document.getElementById('direction-toggle');
+    if (directionToggle) {
+        directionToggle.addEventListener('click', () => {
+            domainSettings.diagramDirection = domainSettings.diagramDirection === 'TB' ? 'LR' : 'TB';
+            directionToggle.textContent = domainSettings.diagramDirection === 'TB' ? '⬍⬇' : '⬅➡';
             rerenderDiagrams();
         });
-    });
+    }
 
     const externalCheckbox = document.getElementById('show-external-relations');
     if (externalCheckbox) {

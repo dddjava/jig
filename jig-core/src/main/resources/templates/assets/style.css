@@ -876,6 +876,7 @@ table td.number {
     display: grid;
     gap: 6px;
     padding: 6px 4px 2px;
+    font-size: 0.85em;
 }
 .settings-group {
     padding-bottom: 8px;
@@ -896,7 +897,6 @@ table td.number {
 .settings-row {
     display: grid;
     gap: 4px;
-    font-size: 0.82em;
     color: #1b3a66;
 }
 .settings-label {

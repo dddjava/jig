@@ -579,6 +579,20 @@ function renderTypes(types, container) {
     });
 }
 
+function updateDirectionIcon() {
+    const verticalArrows = document.querySelector('.vertical-arrows');
+    const horizontalArrows = document.querySelector('.horizontal-arrows');
+    if (verticalArrows && horizontalArrows) {
+        if (domainSettings.diagramDirection === 'TB') {
+            verticalArrows.style.display = '';
+            horizontalArrows.style.display = 'none';
+        } else {
+            verticalArrows.style.display = 'none';
+            horizontalArrows.style.display = '';
+        }
+    }
+}
+
 function rerenderDiagrams() {
     diagramRegistry
         .filter(({container}) => renderedContainers.has(container))
@@ -596,7 +610,7 @@ function initSettings() {
     if (directionToggle) {
         directionToggle.addEventListener('click', () => {
             domainSettings.diagramDirection = domainSettings.diagramDirection === 'TB' ? 'LR' : 'TB';
-            directionToggle.textContent = domainSettings.diagramDirection === 'TB' ? '⬍⬇' : '⬅➡';
+            updateDirectionIcon();
             rerenderDiagrams();
         });
     }

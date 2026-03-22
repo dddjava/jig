@@ -916,10 +916,11 @@ table td.number {
     border-radius: 4px;
     background: #f9f9f9;
     cursor: pointer;
-    font-size: 0.95em;
-    font-weight: bold;
     transition: all 0.2s;
     color: #1b3a66;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .direction-toggle:hover {
     border-color: #999;
@@ -927,6 +928,10 @@ table td.number {
 }
 .direction-toggle:active {
     background: #e8e8e8;
+}
+.direction-icon {
+    width: 20px;
+    height: 20px;
 }
 
 /* 出力インタフェース概要 */

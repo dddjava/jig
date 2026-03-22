@@ -17,7 +17,14 @@
             <summary>&#x2699; 表示設定</summary>
             <div class="domain-settings-panel">
                 <div class="settings-row">
-                    <button type="button" id="direction-toggle" class="direction-toggle" title="ダイアグラム方向を切り替え">⬍⬇</button>
+                    <button type="button" id="direction-toggle" class="direction-toggle" title="ダイアグラム方向を切り替え">
+                        <svg class="direction-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- 初期: 縦方向 -->
+                            <path class="vertical-arrows" d="M12 5v14M12 5l-3 3m3-3l3 3M12 19l-3-3m3 3l3-3"/>
+                            <!-- 横方向（display:none） -->
+                            <path class="horizontal-arrows" d="M5 12h14M5 12l3-3m-3 3l-3 3M19 12l-3 3m3-3l3-3" style="display:none"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="settings-row">
                     <label>

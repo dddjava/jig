@@ -22,7 +22,8 @@
  * @typedef {{
  *     fqn: string,
  *     parameterTypeRefs: TypeRef[],
- *     returnTypeRef: TypeRef
+ *     returnTypeRef: TypeRef,
+ *     isDeprecated: boolean
  * }} DomainMethod
  */
 /**
@@ -370,7 +371,10 @@ function createMethodsTable(kind, methods) {
             const methodTerm = getGlossaryMethodTerm(method);
             return createElement("tr", {
                 children: [
-                    createElement("td", {className: "method-name", textContent: methodTerm.title}),
+                    createElement("td", {
+                        className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
+                        textContent: methodTerm.title
+                    }),
                     createElement("td", {
                         children: method.parameterTypeRefs.map(param => createTypeRefLink(param, "method-argument-item"))
                     }),

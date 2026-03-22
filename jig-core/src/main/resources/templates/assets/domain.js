@@ -99,7 +99,8 @@ function createTypeRefLink(typeRef, className= undefined) {
  * @param {string} className
  */
 function createTypeLink(fqn, className = undefined) {
-    const domainType = globalThis.domainData.types.find(type => type.fqn === fqn);
+    const typesMap = globalThis.domainData._typesMap;
+    const domainType = typesMap ? typesMap.get(fqn) : globalThis.domainData.types.find(type => type.fqn === fqn);
     if (!domainType) {
         // domain型でなければ単純名のspan
         const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
@@ -123,6 +124,11 @@ function createTypeLink(fqn, className = undefined) {
  * @returns {PackageType[]}
  */
 function getDirectChildPackages(pkg) {
+    const childPackagesMap = globalThis.domainData._childPackagesMap;
+    if (childPackagesMap) {
+        return childPackagesMap.get(pkg.fqn) || [];
+    }
+    // フォールバック（init 前に呼ばれた場合）
     const prefix = pkg.fqn + ".";
     return (globalThis.domainData.packages || []).filter(p => {
         if (!p.fqn.startsWith(prefix)) return false;
@@ -468,6 +474,21 @@ const DomainApp = {
          */
         const data = globalThis.domainData;
         if (!data) return;
+
+        // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）
+        globalThis.domainData._typesMap = new Map(
+            (data.types || []).map(type => [type.fqn, type])
+        );
+
+        // packages の直下の子を事前計算（O(n) → O(1) 取得）
+        const childrenMap = new Map((data.packages || []).map(p => [p.fqn, []]));
+        (data.packages || []).forEach(p => {
+            const parentFqn = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
+            if (childrenMap.has(parentFqn)) {
+                childrenMap.get(parentFqn).push(p);
+            }
+        });
+        globalThis.domainData._childPackagesMap = childrenMap;
 
         renderSidebar(data.packages);
 

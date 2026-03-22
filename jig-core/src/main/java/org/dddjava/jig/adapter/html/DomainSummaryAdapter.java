@@ -18,6 +18,7 @@ import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.nio.file.Path;
@@ -43,12 +44,11 @@ public class DomainSummaryAdapter {
             return List.of();
         }
 
+        var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
         var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
 
-        var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
-
-        var json = buildJson(packageList, jigTypes.list(), enumModels, coreTypesAndRelations);
+        var json = buildJson(packageList, jigTypes, enumModels, coreTypesAndRelations);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
@@ -57,7 +57,7 @@ public class DomainSummaryAdapter {
     }
 
     private String buildJson(List<JigPackageWithJigTypes> jigPackages,
-                             List<JigType> jigTypes,
+                             JigTypes jigTypes,
                              EnumModels enumModels,
                              CoreTypesAndRelations coreTypesAndRelations) {
         List<JsonObjectBuilder> packages = jigPackages.stream()

@@ -136,6 +136,31 @@
         .json-number { color: #b5cea8; }
         .json-bool   { color: #569cd6; }
         .json-null   { color: #569cd6; }
+        .json-toggle {
+            cursor: pointer;
+            color: #858585;
+            display: inline-block;
+            width: 1.5ch;
+            text-align: center;
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        .json-toggle:hover { color: #ccc; }
+        .json-collapsible { position: relative; }
+        .json-inner { display: inline; }
+        .json-collapsed-marker {
+            display: none;
+            color: #858585;
+            background: #333;
+            border-radius: 3px;
+            padding: 0 4px;
+            font-size: 0.9em;
+            cursor: pointer;
+            user-select: none;
+        }
+        .collapsed > .json-inner { display: none; }
+        .collapsed > .json-collapsed-marker { display: inline; }
+        .collapsed > .json-toggle { transform: rotate(-90deg); }
         .highlight { background: #613315; }
         #empty-msg {
             color: #666;
@@ -194,9 +219,17 @@ function loadScript(src) {
 }
 
 function syntaxHighlight(json) {
+    if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
     return json
         .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|\{\}|\[\]|[\{\}\[\]])/g, match => {
+            if (match === '{}' || match === '[]') return match;
+            if (match === '{' || match === '[') {
+                return `<span class="json-collapsible"><span class="json-toggle">▼</span>${match}<span class="json-inner">`;
+            }
+            if (match === '}' || match === ']') {
+                return `</span><span class="json-collapsed-marker">...</span>${match}</span>`;
+            }
             let cls = "json-number";
             if (/^"/.test(match)) {
                 cls = /:$/.test(match) ? "json-key" : "json-string";
@@ -424,8 +457,13 @@ function applySearch(keyword) {
     }
     const data = globalThis[currentEntry.varName];
     const formatted = JSON.stringify(data, null, 2);
-    const highlighted = syntaxHighlight(formatted).replace(re, m => `<mark class="highlight">${m}</mark>`);
-    pre.innerHTML = highlighted;
+    const html = syntaxHighlight(formatted);
+    const parts = html.split(/(<[^>]*>)/);
+    const highlightedParts = parts.map(part => {
+        if (part.startsWith('<')) return part;
+        return part.replace(re, m => `<mark class="highlight">${m}</mark>`);
+    });
+    pre.innerHTML = highlightedParts.join('');
 }
 
 function applyFilter(keyword) {
@@ -516,6 +554,12 @@ async function init() {
             showJson(currentEntry);
         } else if (currentEntry && currentEntryType === 'json') {
             showSchema(currentEntry);
+        }
+    });
+
+    document.getElementById("json-view").addEventListener("click", e => {
+        if (e.target.classList.contains("json-toggle") || e.target.classList.contains("json-collapsed-marker")) {
+            e.target.closest(".json-collapsible").classList.toggle("collapsed");
         }
     });
 }

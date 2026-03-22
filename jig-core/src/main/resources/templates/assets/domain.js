@@ -49,6 +49,9 @@ const domainSettings = {
     diagramDirection: 'TB',
     showExternalRelations: true,
     showDeprecatedNodes: true,
+    showFields: true,
+    showMethods: true,
+    showStaticMethods: true,
 };
 
 const diagramRegistry = []; // [{container, pkg}]
@@ -631,6 +634,47 @@ function initSettings() {
             rerenderDiagrams();
         });
     }
+
+    const fieldsCheckbox = document.getElementById('show-fields');
+    if (fieldsCheckbox) {
+        fieldsCheckbox.addEventListener('change', () => {
+            domainSettings.showFields = fieldsCheckbox.checked;
+            applyVisibilitySettings();
+        });
+    }
+
+    const methodsCheckbox = document.getElementById('show-methods');
+    if (methodsCheckbox) {
+        methodsCheckbox.addEventListener('change', () => {
+            domainSettings.showMethods = methodsCheckbox.checked;
+            applyVisibilitySettings();
+        });
+    }
+
+    const staticMethodsCheckbox = document.getElementById('show-static-methods');
+    if (staticMethodsCheckbox) {
+        staticMethodsCheckbox.addEventListener('change', () => {
+            domainSettings.showStaticMethods = staticMethodsCheckbox.checked;
+            applyVisibilitySettings();
+        });
+    }
+}
+
+function applyVisibilitySettings() {
+    const main = document.getElementById('domain-main');
+    if (!main) return;
+
+    const fieldsSections = main.querySelectorAll('section.methods-section');
+    fieldsSections.forEach(section => {
+        const h4 = section.querySelector('h4');
+        if (h4 && h4.textContent === 'フィールド') {
+            section.style.display = domainSettings.showFields ? '' : 'none';
+        } else if (h4 && h4.textContent === 'メソッド') {
+            section.style.display = domainSettings.showMethods ? '' : 'none';
+        } else if (h4 && h4.textContent === 'staticメソッド') {
+            section.style.display = domainSettings.showStaticMethods ? '' : 'none';
+        }
+    });
 }
 
 const DomainApp = {

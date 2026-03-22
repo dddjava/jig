@@ -845,6 +845,21 @@ table td.number {
     text-decoration: none;
 }
 
+/* ドメイン概要 表示設定パネルを上部固定・ツリーのみスクロール */
+.domain-summary #domain-sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.domain-summary #domain-settings {
+    flex-shrink: 0;
+}
+.domain-summary #domain-sidebar-list {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+
 /* ドメイン概要 表示設定パネル */
 .domain-settings {
     margin-bottom: 8px;

@@ -205,9 +205,21 @@ public class DomainSummaryAdapter {
         return Json.object("fqn", jigMethod.fqn())
                 .and("label", jigMethod.labelText())
                 .and("visibility", jigMethod.visibility())
-                .and("parameterTypeFqns", Json.array(jigMethod.parameterTypeStream().map(JigTypeReference::fqn).toList()))
-                .and("declaration", jigMethod.simpleMethodDeclarationText())
+                .and("parameterTypeRefs", Json.arrayObjects(jigMethod.parameterTypeStream()
+                        .map(this::buildTypeRef)
+                        .toList()))
                 .and("returnTypeLink", methodReturnLinkText(jigMethod));
+    }
+
+    private JsonObjectBuilder buildTypeRef(JigTypeReference jigTypeReference) {
+        var obj = Json.object("fqn", jigTypeReference.fqn());
+        // 型引数がない場合は fqn だけのオブジェクトにする
+        if (jigTypeReference.typeArgumentList().isEmpty()) return obj;
+
+        return obj.and("typeArgumentRefs", Json.arrayObjects(jigTypeReference.typeArgumentList().stream()
+                .map(JigTypeArgument::jigTypeReference)
+                .map(this::buildTypeRef)
+                .toList()));
     }
 
     private String methodReturnLinkText(JigMethod jigMethod) {

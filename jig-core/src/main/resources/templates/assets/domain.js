@@ -5,14 +5,25 @@
  *     methods: DomainMethod[],
  *     staticMethods: DomainMethod[],
  * }} DomainType
+ */
+/**
  * @typedef {{
  *     name: string,
  * }} DomainField
+ */
+/**
  * @typedef {{
  *     fqn: string,
- *     parameterTypeFqns: string[],
+ *     parameterTypeRefs: TypeRef[],
  *     returnFqn: string
  * }} DomainMethod
+ */
+/**
+ * @typedef {Object} TypeRef
+ * @property {string} fqn
+ * @property {TypeRef[]} [typeArgumentRefs]
+ */
+/**
  * @typedef {{
  *     title: string,
  *     description: string,
@@ -40,7 +51,10 @@ function getGlossaryMethodTerm(method) {
 
     // 引数の完全修飾名を単純名に変換して再取得
     const glossaryFqn = fqn.substring(0, fqn.lastIndexOf('(') + 1)
-        + method.parameterTypeFqns.map(x => x.substring(x.lastIndexOf('.') + 1)).join(",")
+        + method.parameterTypeRefs
+            .map(typeRef => typeRef.fqn)
+            .map(x => x.substring(x.lastIndexOf('.') + 1))
+            .join(",")
         + ')';
     const term2 = globalThis.glossaryData[glossaryFqn];
     if (term2) return term2;
@@ -51,14 +65,39 @@ function getGlossaryMethodTerm(method) {
     return {title: name, description: ""}
 }
 
-function createDomainTypeLink(fqn, className) {
+/**
+ * @param {TypeRef} typeRef
+ * @param {string} className
+ */
+function createTypeRefLink(typeRef, className= undefined) {
+    if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
+        const typeElements= createTypeLink(typeRef.fqn);
+        const argumentElements = typeRef.typeArgumentRefs
+            .map(typeRef => createTypeRefLink(typeRef))
+            // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
+            .flatMap((v, i) => i ? [', ', v] : [v]);
+
+        return createElement("span", {
+            className: className,
+            children: [typeElements, '<', ...argumentElements, '>']
+        })
+    }
+
+    // 型引数なし
+    return createTypeLink(typeRef.fqn, className);
+}
+
+/**
+ * @param {string} fqn
+ * @param {string} className
+ */
+function createTypeLink(fqn, className = undefined) {
     const domainType = globalThis.domainData.types.find(type => type.fqn === fqn);
     if (!domainType) {
         // domain型でなければ単純名のspan
-        // TODO ジェネリクスの対応が必要
         const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
-        return createElement("span", {
-            className: className + " weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
+        return createElement('span', {
+            className: (className ? className + ' ' : '') + "weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
             textContent: simpleName
         });
     }
@@ -181,7 +220,7 @@ function createMethodsTable(kind, methods) {
                 children: [
                     createElement("td", {className: "method-name", textContent: methodTerm.title}),
                     createElement("td", {
-                        children: method.parameterTypeFqns.map(param => createDomainTypeLink(param, "method-argument-item"))
+                        children: method.parameterTypeRefs.map(param => createTypeRefLink(param, "method-argument-item"))
                     }),
                     createElement("td", {innerHTML: method.returnTypeLink || ""}),
                     createElement("td", {

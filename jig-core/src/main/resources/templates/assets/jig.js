@@ -413,7 +413,8 @@ globalThis.Jig.dom.createElement = function createElement(tagName, options = {})
     }
     if (options.children) {
         options.children.forEach(child => {
-            if (child) element.appendChild(child);
+            // 文字列を指定することもあるのでappendChildではなくappendを使用する
+            if (child) element.append(child);
         });
     }
     return element;

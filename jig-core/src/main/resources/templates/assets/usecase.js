@@ -1,32 +1,31 @@
 const createElement = globalThis.Jig.dom.createElement;
 
-function createFieldsTable(fields) {
-    const thead = createElement("thead", {
+function createFieldsList(fields) {
+    if (!fields || fields.length === 0) return null;
+
+    const items = fields.map(field => createElement("div", {
+        className: "method-item",
         children: [
-            createElement("tr", {
+            createElement("div", {
+                className: "method-signature",
                 children: [
-                    createElement("th", { attributes: { width: "20%" }, textContent: "フィールド" }),
-                    createElement("th", { textContent: "フィールド型" })
+                    createElement("span", {
+                        className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                        textContent: field.name
+                    }),
+                    createElement("span", {className: "method-return-sep", textContent: ":"}),
+                    createElement("span", {innerHTML: field.typeHtml})
                 ]
             })
         ]
-    });
+    }));
 
-    const tbody = createElement("tbody", {
-        children: fields.map(field => createElement("tr", {
-            children: [
-                createElement("td", {
-                    className: field.isDeprecated ? "deprecated" : "",
-                    textContent: field.name
-                }),
-                createElement("td", { innerHTML: field.typeHtml })
-            ]
-        }))
-    });
-
-    return createElement("table", {
-        className: "fields",
-        children: [thead, tbody]
+    return createElement("section", {
+        className: "methods-section jig-card jig-card--item",
+        children: [
+            createElement("h4", {textContent: "フィールド"}),
+            ...items
+        ]
     });
 }
 
@@ -158,9 +157,8 @@ const UsecaseApp = {
                 }));
             }
 
-            if (usecase.fields && usecase.fields.length > 0) {
-                section.appendChild(createFieldsTable(usecase.fields));
-            }
+            const fieldsList = createFieldsList(usecase.fields);
+            if (fieldsList) section.appendChild(fieldsList);
 
             if (usecase.staticMethods && usecase.staticMethods.length > 0) {
                 const staticMethodsTable = createMethodsTable("staticメソッド", usecase.staticMethods);

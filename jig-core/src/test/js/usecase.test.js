@@ -124,16 +124,16 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(serviceSection.querySelector('.fully-qualified-name').textContent, 'com.example.ServiceA');
         assert.strictEqual(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
 
-        const fieldsTable = serviceSection.querySelector('table.fields');
-        assert.ok(fieldsTable);
-        assert.strictEqual(fieldsTable.querySelector('tbody td').textContent, 'field1');
+        const fieldsSection = serviceSection.querySelector('section.methods-section');
+        assert.ok(fieldsSection);
+        assert.strictEqual(fieldsSection.querySelector('.method-name').textContent, 'field1');
 
         const staticMethodsTable = serviceSection.querySelector('table:not(.fields)');
         assert.ok(staticMethodsTable);
         assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
         assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
         
-        const methodSection = serviceSection.querySelector('.jig-card--item');
+        const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);
         assert.strictEqual(methodSection.querySelector('h4').id, 'method1');
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');

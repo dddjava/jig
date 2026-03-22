@@ -14,10 +14,6 @@
  *     returnFqn: string
  * }} DomainMethod
  * @typedef {{
- *   methods: DomainMethod[],
- *   staticMethods: []
- * }} DomainType
- * @typedef {{
  *     title: string,
  *     description: string,
  * }} Term

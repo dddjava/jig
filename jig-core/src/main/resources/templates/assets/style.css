@@ -896,11 +896,6 @@ table td.number {
     gap: 4px;
     color: #1b3a66;
 }
-.settings-label {
-    font-size: 0.9em;
-    color: #5a7099;
-    font-weight: bold;
-}
 .settings-row label {
     display: flex;
     align-items: center;
@@ -1092,10 +1087,6 @@ table td.number {
     padding-left: 8px;
     font-size: 0.95em;
     color: #374151;
-}
-.outbound .outbound-visibility-panel .checkbox-grandchild {
-    padding-left: 16px;
-    font-size: 0.90em;
 }
 .outbound .outbound-tab-list {
     display: flex;

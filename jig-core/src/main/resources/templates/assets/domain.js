@@ -357,35 +357,31 @@ function createChildrenTable(pkg) {
     });
 }
 
-function createFieldsTable(fields) {
+function createFieldsList(fields) {
     if (!fields || fields.length === 0) return null;
 
-    const tbody = createElement("tbody", {
-        children: fields.map(field => createElement("tr", {
-            children: [
-                createElement("td", {
-                    className: field.isDeprecated ? "deprecated" : "",
-                    textContent: field.name || ""
-                }),
-                createElement("td", {
-                    children: [createTypeRefLink(field.typeRef)]
-                })
-            ]
-        }))
-    });
-
-    return createElement("table", {
-        className: "fields",
+    const items = fields.map(field => createElement("div", {
+        className: "method-item",
         children: [
-            createElement("thead", {
-                children: [createElement("tr", {
-                    children: [
-                        createElement("th", {attributes: {width: "20%"}, textContent: "フィールド"}),
-                        createElement("th", {textContent: "フィールド型"})
-                    ]
-                })]
-            }),
-            tbody
+            createElement("div", {
+                className: "method-signature",
+                children: [
+                    createElement("span", {
+                        className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                        textContent: field.name || ""
+                    }),
+                    createElement("span", {className: "method-return-sep", textContent: ":"}),
+                    createTypeRefLink(field.typeRef)
+                ]
+            })
+        ]
+    }));
+
+    return createElement("section", {
+        className: "methods-section jig-card jig-card--item",
+        children: [
+            createElement("h4", {textContent: "フィールド"}),
+            ...items
         ]
     });
 }
@@ -454,6 +450,7 @@ function createEnumSection(type) {
     });
 
     const section = createElement("section", {
+        className: "jig-card jig-card--item",
         children: [
             createElement("h4", {textContent: "列挙値"}),
             dl
@@ -570,8 +567,8 @@ function renderTypes(types, container) {
             section.appendChild(createEnumSection(type));
         }
 
-        const fieldsTable = createFieldsTable(type.fields);
-        if (fieldsTable) section.appendChild(fieldsTable);
+        const fieldsList = createFieldsList(type.fields);
+        if (fieldsList) section.appendChild(fieldsList);
 
         const methodList = createMethodsList("メソッド", type.methods);
         if (methodList) section.appendChild(methodList);

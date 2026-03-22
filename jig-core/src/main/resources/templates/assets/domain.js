@@ -1,3 +1,19 @@
+/**
+ * @typedef {{
+ *     fqn: string,
+ *     parameterFqns: string[],
+ *     returnFqn: string
+ * }} DomainMethod
+ * @typedef {{
+ *   methods: DomainMethod[],
+ *   staticMethods: []
+ * }} DomainType
+ * @typedef {{
+ *     title: string,
+ *     description: string,
+ * }} Term
+ */
+
 const createElement = globalThis.Jig.dom.createElement;
 
 function getGlossaryTitle(fqn) {
@@ -7,6 +23,27 @@ function getGlossaryTitle(fqn) {
 
 function getGlossaryDescription(fqn) {
     return globalThis.glossaryData?.[fqn]?.description ?? "";
+}
+
+/**
+ * @returns Term
+ */
+function getGlossaryMethodTerm(method) {
+    const fqn = method.fqn;
+    const term = globalThis.glossaryData[fqn];
+    if (term) return term;
+
+    // 引数の完全修飾名を単純名に変換して再取得
+    const glossaryFqn = fqn.substring(fqn.lastIndexOf('('))
+        + method.parameterFqns.map(x => x.substring(0, x.lastIndexOf('.') + 1)).join(",")
+        + ")"
+    const term2 = globalThis.glossaryData[glossaryFqn];
+    if (term2) return term2;
+
+    // glossaryになし
+    // hoge.fuga.piyo#foo(bar, baz) => foo
+    const name = fqn.substring(fqn.lastIndexOf('#') + 1, fqn.lastIndexOf('('));
+    return {title: name, description: ""}
 }
 
 function renderTreeNode(node) {
@@ -113,22 +150,25 @@ function createMethodsTable(kind, methods) {
     if (!methods || methods.length === 0) return null;
 
     const tbody = createElement("tbody", {
-        children: methods.map(method => createElement("tr", {
-            children: [
-                createElement("td", {className: "method-name", textContent: method.labelWithSymbol || ""}),
-                createElement("td", {
-                    children: (method.argumentsLinks || []).map(arg => createElement("span", {
-                        className: "method-argument-item",
-                        innerHTML: arg
-                    }))
-                }),
-                createElement("td", {innerHTML: method.returnTypeLink || ""}),
-                createElement("td", {
-                    className: "markdown",
-                    innerHTML: globalThis.Jig.markdown.parse(getGlossaryDescription(method.fqn))
-                })
-            ]
-        }))
+        children: methods.map(method => {
+            const methodTerm = getGlossaryMethodTerm(method);
+            return createElement("tr", {
+                children: [
+                    createElement("td", {className: "method-name", textContent: methodTerm.title}),
+                    createElement("td", {
+                        children: (method.argumentsLinks || []).map(arg => createElement("span", {
+                            className: "method-argument-item",
+                            innerHTML: arg
+                        }))
+                    }),
+                    createElement("td", {innerHTML: method.returnTypeLink || ""}),
+                    createElement("td", {
+                        className: "markdown",
+                        innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
+                    })
+                ]
+            })
+        })
     });
 
     return createElement("table", {
@@ -289,6 +329,13 @@ function renderTypes(types, container) {
 
 const DomainApp = {
     init() {
+        /**
+         * @type {{
+         *   tree: [],
+         *   packages: [],
+         *   types: DomainType[]
+         * }}
+         */
         const data = globalThis.domainData;
         if (!data) return;
 

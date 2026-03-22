@@ -2,12 +2,12 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
+import org.dddjava.jig.adapter.html.view.TreeComponent;
+import org.dddjava.jig.adapter.html.view.TreeComposite;
+import org.dddjava.jig.adapter.html.view.TreeLeaf;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
-import org.dddjava.jig.adapter.html.view.TreeComposite;
-import org.dddjava.jig.adapter.html.view.TreeComponent;
-import org.dddjava.jig.adapter.html.view.TreeLeaf;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
@@ -27,11 +27,12 @@ import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toSet;
-import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.*;
 
 /**
  * ドメイン概要
@@ -203,6 +204,8 @@ public class DomainSummaryAdapter {
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return Json.object("fqn", jigMethod.fqn())
                 .and("label", jigMethod.labelText())
+                .and("visibility", jigMethod.visibility())
+                .and("parameterFqns", Json.array(jigMethod.parameterTypeStream().map(JigTypeReference::fqn).toList()))
                 .and("labelWithSymbol", jigMethod.labelTextWithSymbol())
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("returnTypeLink", methodReturnLinkText(jigMethod))

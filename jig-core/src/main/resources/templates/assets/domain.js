@@ -123,9 +123,26 @@ function createTypeLink(fqn, className = undefined) {
 }
 
 function renderPackageNavItem(pkg) {
+    // 子が1つだけでパッケージの場合、統合して表示する
+    let currentPkg = pkg;
+    const mergedNames = [getGlossaryTitle(pkg.fqn)];
+
+    while (true) {
+        const children = currentPkg.children || [];
+        if (children.length !== 1 || children[0].kind !== "package") break;
+
+        const child = children[0];
+        const childPkg = globalThis.domainData.types.find(t => t.fqn === child.fqn) ||
+                        globalThis.domainData.packages.find(p => p.fqn === child.fqn);
+        if (!childPkg) break;
+
+        mergedNames.push(getGlossaryTitle(childPkg.fqn));
+        currentPkg = childPkg;
+    }
+
     const summaryLink = createElement("a", {
-        attributes: {href: "#" + pkg.fqn},
-        textContent: getGlossaryTitle(pkg.fqn)
+        attributes: {href: "#" + currentPkg.fqn},
+        textContent: mergedNames.join("/")
     });
     const details = createElement("details", {
         attributes: {open: ""},
@@ -137,7 +154,7 @@ function renderPackageNavItem(pkg) {
         ]
     });
 
-    (pkg.children || []).forEach(child => {
+    (currentPkg.children || []).forEach(child => {
         if (child.kind === "package") {
             // 子がパッケージの場合、再帰的に表示
             const childPkg = globalThis.domainData.types.find(t => t.fqn === child.fqn) ||
@@ -451,5 +468,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink };
+    module.exports = { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem };
 }

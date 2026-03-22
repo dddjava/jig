@@ -7,7 +7,7 @@ global.window = global.window || { addEventListener: () => {} };
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig.js');
 
-const { getGlossaryMethodTerm, createTypeLink, createTypeRefLink } = require('../../main/resources/templates/assets/domain.js');
+const { getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem } = require('../../main/resources/templates/assets/domain.js');
 
 test.describe('domain.js', () => {
     test.describe('getGlossaryMethodTerm', () => {
@@ -247,6 +247,156 @@ test.describe('domain.js', () => {
             assert.equal(result.tagName, 'span');
             // 子要素が複数（型と区切り文字と型引数）
             assert.ok(result.children.length > 2);
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+    });
+
+    test.describe('renderPackageNavItem', () => {
+        test('子が1つだけでそれがパッケージの場合、名前を統合して表示する', () => {
+            const examplePkg = {
+                fqn: 'com.example',
+                children: [
+                    {kind: 'type', fqn: 'com.example.MyClass'}
+                ]
+            };
+            const comPkg = {
+                fqn: 'com',
+                children: [
+                    {kind: 'package', fqn: 'com.example'}
+                ]
+            };
+
+            globalThis.domainData = {
+                packages: [comPkg, examplePkg],
+                types: [{fqn: 'com.example.MyClass', methods: []}]
+            };
+            globalThis.glossaryData = {
+                'com': {title: 'com'},
+                'com.example': {title: 'example'},
+                'com.example.MyClass': {title: 'MyClass'}
+            };
+
+            const result = renderPackageNavItem(comPkg);
+
+            assert.equal(result.tagName, 'details');
+            const summaryLink = result.children[0].children[0];
+            assert.equal(summaryLink.tagName, 'a');
+            assert.equal(summaryLink.textContent, 'com/example');
+            assert.equal(summaryLink.attributes.get('href'), '#com.example');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('複数段階のパッケージが1つずつ続く場合、全て統合して表示する', () => {
+            const deepPkg = {
+                fqn: 'com.example.sub.deep',
+                children: [
+                    {kind: 'type', fqn: 'com.example.sub.deep.MyClass'}
+                ]
+            };
+            const subPkg = {
+                fqn: 'com.example.sub',
+                children: [
+                    {kind: 'package', fqn: 'com.example.sub.deep'}
+                ]
+            };
+            const examplePkg = {
+                fqn: 'com.example',
+                children: [
+                    {kind: 'package', fqn: 'com.example.sub'}
+                ]
+            };
+            const comPkg = {
+                fqn: 'com',
+                children: [
+                    {kind: 'package', fqn: 'com.example'}
+                ]
+            };
+
+            globalThis.domainData = {
+                packages: [comPkg, examplePkg, subPkg, deepPkg],
+                types: [{fqn: 'com.example.sub.deep.MyClass', methods: []}]
+            };
+            globalThis.glossaryData = {
+                'com': {title: 'com'},
+                'com.example': {title: 'example'},
+                'com.example.sub': {title: 'sub'},
+                'com.example.sub.deep': {title: 'deep'},
+                'com.example.sub.deep.MyClass': {title: 'MyClass'}
+            };
+
+            const result = renderPackageNavItem(comPkg);
+
+            const summaryLink = result.children[0].children[0];
+            assert.equal(summaryLink.textContent, 'com/example/sub/deep');
+            assert.equal(summaryLink.attributes.get('href'), '#com.example.sub.deep');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('子が複数の場合は統合しない', () => {
+            const pkg1 = {
+                fqn: 'com.example.sub1',
+                children: []
+            };
+            const pkg2 = {
+                fqn: 'com.example.sub2',
+                children: []
+            };
+            const parentPkg = {
+                fqn: 'com',
+                children: [
+                    {kind: 'package', fqn: 'com.example.sub1'},
+                    {kind: 'package', fqn: 'com.example.sub2'}
+                ]
+            };
+
+            globalThis.domainData = {
+                packages: [parentPkg, pkg1, pkg2],
+                types: []
+            };
+            globalThis.glossaryData = {
+                'com': {title: 'com'},
+                'com.example.sub1': {title: 'sub1'},
+                'com.example.sub2': {title: 'sub2'}
+            };
+
+            const result = renderPackageNavItem(parentPkg);
+
+            const summaryLink = result.children[0].children[0];
+            assert.equal(summaryLink.textContent, 'com');
+            assert.equal(summaryLink.attributes.get('href'), '#com');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('子がタイプの場合は統合しない', () => {
+            const pkg = {
+                fqn: 'com.example',
+                children: [
+                    {kind: 'type', fqn: 'com.example.MyClass'}
+                ]
+            };
+
+            globalThis.domainData = {
+                packages: [pkg],
+                types: [{fqn: 'com.example.MyClass', methods: []}]
+            };
+            globalThis.glossaryData = {
+                'com.example': {title: 'example'},
+                'com.example.MyClass': {title: 'MyClass'}
+            };
+
+            const result = renderPackageNavItem(pkg);
+
+            const summaryLink = result.children[0].children[0];
+            assert.equal(summaryLink.textContent, 'example');
+            assert.equal(summaryLink.attributes.get('href'), '#com.example');
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;

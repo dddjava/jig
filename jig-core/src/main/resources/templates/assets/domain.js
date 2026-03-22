@@ -51,6 +51,26 @@ function getGlossaryMethodTerm(method) {
     return {title: name, description: ""}
 }
 
+function createDomainTypeLink(fqn, className) {
+    const domainType = globalThis.domainData.types.find(type => type.fqn === fqn);
+    if (!domainType) {
+        // domain型でなければ単純名のspan
+        // TODO ジェネリクスの対応が必要
+        const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
+        return createElement("span", {
+            className: className + " weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
+            textContent: simpleName
+        });
+    }
+
+    // domainに含まれるのはページ内リンク
+    return createElement("a", {
+        className: className,
+        attributes: {href: `#${fqn}`},
+        textContent: getGlossaryTitle(fqn)
+    });
+}
+
 function renderTreeNode(node) {
     if (!node) return null;
 
@@ -161,10 +181,7 @@ function createMethodsTable(kind, methods) {
                 children: [
                     createElement("td", {className: "method-name", textContent: methodTerm.title}),
                     createElement("td", {
-                        children: (method.argumentsLinks || []).map(arg => createElement("span", {
-                            className: "method-argument-item",
-                            innerHTML: arg
-                        }))
+                        children: method.parameterFqns.map(param => createDomainTypeLink(param, "method-argument-item"))
                     }),
                     createElement("td", {innerHTML: method.returnTypeLink || ""}),
                     createElement("td", {

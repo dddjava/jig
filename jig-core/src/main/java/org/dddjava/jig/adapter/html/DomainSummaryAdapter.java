@@ -207,18 +207,11 @@ public class DomainSummaryAdapter {
                 .and("visibility", jigMethod.visibility())
                 .and("parameterFqns", Json.array(jigMethod.parameterTypeStream().map(JigTypeReference::fqn).toList()))
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
-                .and("returnTypeLink", methodReturnLinkText(jigMethod))
-                .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)));
+                .and("returnTypeLink", methodReturnLinkText(jigMethod));
     }
 
     private String methodReturnLinkText(JigMethod jigMethod) {
         return linkText(jigMethod.jigMethodDeclaration().header().returnType());
-    }
-
-    private List<String> methodParameterLinkTexts(JigMethod jigMethod) {
-        return jigMethod.jigMethodDeclaration().header().parameterTypeList().stream()
-                .map(this::linkText)
-                .toList();
     }
 
     private String linkText(JigTypeReference jigTypeReference) {

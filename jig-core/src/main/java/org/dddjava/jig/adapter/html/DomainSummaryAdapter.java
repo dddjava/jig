@@ -208,7 +208,7 @@ public class DomainSummaryAdapter {
                 .and("parameterTypeRefs", Json.arrayObjects(jigMethod.parameterTypeStream()
                         .map(this::buildTypeRef)
                         .toList()))
-                .and("returnTypeLink", methodReturnLinkText(jigMethod));
+                .and("returnTypeRef", buildTypeRef(jigMethod.returnType()));
     }
 
     private JsonObjectBuilder buildTypeRef(JigTypeReference jigTypeReference) {
@@ -220,10 +220,6 @@ public class DomainSummaryAdapter {
                 .map(JigTypeArgument::jigTypeReference)
                 .map(this::buildTypeRef)
                 .toList()));
-    }
-
-    private String methodReturnLinkText(JigMethod jigMethod) {
-        return linkText(jigMethod.jigMethodDeclaration().header().returnType());
     }
 
     private String linkText(JigTypeReference jigTypeReference) {

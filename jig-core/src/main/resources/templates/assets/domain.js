@@ -15,7 +15,7 @@
  * @typedef {{
  *     fqn: string,
  *     parameterTypeRefs: TypeRef[],
- *     returnFqn: string
+ *     returnTypeRef: TypeRef
  * }} DomainMethod
  */
 /**
@@ -222,7 +222,9 @@ function createMethodsTable(kind, methods) {
                     createElement("td", {
                         children: method.parameterTypeRefs.map(param => createTypeRefLink(param, "method-argument-item"))
                     }),
-                    createElement("td", {innerHTML: method.returnTypeLink || ""}),
+                    createElement("td", {
+                        children: [createTypeRefLink(method.returnTypeRef)]
+                    }),
                     createElement("td", {
                         className: "markdown",
                         innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)

@@ -4,12 +4,12 @@
  * @property {{fqn: string}[]} [types]
  */
 /**
- * @typedef {{
- *     fqn: string,
- *     fields: DomainField[],
- *     methods: DomainMethod[],
- *     staticMethods: DomainMethod[],
- * }} DomainType
+ * @typedef {Object} DomainType
+ * @property {string} fqn
+ * @property {DomainField[]} fields
+ * @property {DomainMethod} methods
+ * @property {DomainMethod[]} staticMethods
+ * @property {EnumInfo} [enumInfo]
  */
 /**
  * @typedef {{
@@ -24,6 +24,11 @@
  *     parameterTypeRefs: TypeRef[],
  *     returnTypeRef: TypeRef
  * }} DomainMethod
+ */
+/**
+ * @typedef {Object} EnumInfo
+ * @property {{name: string, params: string[]}} constants
+ * @property {string[]} parameterNames
  */
 /**
  * @typedef {Object} TypeRef
@@ -46,6 +51,13 @@ function getGlossaryTitle(fqn) {
 
 function getGlossaryDescription(fqn) {
     return globalThis.glossaryData?.[fqn]?.description ?? "";
+}
+
+/**
+ * @returns  {Term | undefined}
+ */
+function findGlossary(fqn) {
+    return globalThis.glossaryData[fqn];
 }
 
 /**
@@ -324,15 +336,16 @@ function createMethodsTable(kind, methods) {
     });
 }
 
-function createEnumSection(enumInfo) {
-    if (!enumInfo) return null;
+function createEnumSection(type) {
+    if (!type.enumInfo) return null;
 
-    const constants = enumInfo.constants || [];
+    const constants = type.enumInfo.constants;
     const dl = createElement("dl", {
         children: constants.flatMap(constant => {
-            const nodes = [createElement("dt", {textContent: constant.simpleText || ""})];
-            if (constant.hasAlias && constant.title) {
-                nodes.push(createElement("dd", {textContent: constant.title}));
+            const nodes = [createElement("dt", {textContent: constant.name})];
+            const term = findGlossary(`${type.fqn}#${constant.name}`);
+            if (term && term.title !== constant.name) {
+                nodes.push(createElement("dd", {textContent: term.title}));
             }
             return nodes;
         })
@@ -345,9 +358,8 @@ function createEnumSection(enumInfo) {
         ]
     });
 
-    const parameterNames = enumInfo.parameterNames || [];
-    const parameterRows = enumInfo.parameterRows || [];
-    if (parameterNames.length > 0 && parameterRows.length > 0) {
+    const parameterNames = type.enumInfo.parameterNames;
+    if (parameterNames.length) {
         const thead = createElement("thead", {
             children: [createElement("tr", {
                 children: [
@@ -357,12 +369,13 @@ function createEnumSection(enumInfo) {
             })]
         });
         const tbody = createElement("tbody", {
-            children: parameterRows.map(row => createElement("tr", {
-                children: [
-                    createElement("td", {className: "method-name", textContent: row.name || ""}),
-                    ...(row.params || []).map(param => createElement("td", {textContent: param}))
-                ]
-            }))
+            children:
+                constants.map(constant => createElement("tr", {
+                    children: [
+                        createElement("td", {className: "method-name", textContent: constant.name || ""}),
+                        ...constant.params.map(param => createElement("td", {textContent: param}))
+                    ]
+                }))
         });
 
         section.appendChild(createElement("details", {
@@ -447,7 +460,7 @@ function renderTypes(types, container) {
         }
 
         if (type.enumInfo) {
-            section.appendChild(createEnumSection(type.enumInfo));
+            section.appendChild(createEnumSection(type));
         }
 
         const fieldsTable = createFieldsTable(type.fields);

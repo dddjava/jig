@@ -131,25 +131,19 @@ public class DomainSummaryAdapter {
     }
 
     private JsonObjectBuilder buildEnumInfoJson(JigType jigType, Map<TypeId, EnumModel> enumModelMap) {
-        List<JsonObjectBuilder> constants = jigType.jigTypeMembers().enumConstantStream()
-                .map(JigField::term)
-                .map(term -> Json.object("simpleText", term.simpleText())
-                        .and("title", term.title())
-                        .and("hasAlias", term.hasAlias()))
-                .toList();
-
         EnumModel enumModel = enumModelMap.getOrDefault(jigType.id(), new EnumModel(jigType.id(), List.of(), List.of()));
         List<String> parameterNames = enumModel.constructorParameterNames();
 
-        List<JsonObjectBuilder> parameterRows = jigType.jigTypeMembers().enumConstantStream()
-                .map(JigField::nameText)
-                .map(constantName -> Json.object("name", constantName)
-                        .and("params", Json.array(enumModel.paramOf(constantName))))
+        List<JsonObjectBuilder> constants = jigType.jigTypeMembers().enumConstantStream()
+                .map(constant -> {
+                    var name = constant.nameText();
+                    return Json.object("name", name)
+                            .and("params", Json.array(enumModel.paramOf(name)));
+                })
                 .toList();
 
         return Json.object("constants", Json.arrayObjects(constants))
-                .and("parameterNames", Json.array(parameterNames))
-                .and("parameterRows", Json.arrayObjects(parameterRows));
+                .and("parameterNames", Json.array(parameterNames));
     }
 
     private JsonObjectBuilder buildFieldJson(JigField field) {

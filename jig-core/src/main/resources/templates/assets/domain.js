@@ -421,7 +421,7 @@ function createMethodItem(method) {
     }
 
     return createElement("div", {
-        className: "method-item jig-card jig-card--item",
+        className: "method-item",
         children
     });
 }
@@ -430,7 +430,7 @@ function createMethodsList(kind, methods) {
     if (!methods || methods.length === 0) return null;
 
     return createElement("section", {
-        className: "methods-section",
+        className: "methods-section jig-card jig-card--item",
         children: [
             createElement("h4", {textContent: kind}),
             ...methods.map(method => createMethodItem(method))

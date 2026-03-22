@@ -201,12 +201,12 @@ main table thead {
     display: grid;
     gap: 8px;
 }
-.methods-section h4 {
-    margin: 0 0 6px 0;
-    font-size: 0.9em;
-    color: #31455f;
-    border-bottom: 1px solid #d9e1ea;
-    padding-bottom: 4px;
+.method-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #eef0f5;
+}
+.method-item:last-child {
+    border-bottom: none;
 }
 .method-signature {
     display: flex;

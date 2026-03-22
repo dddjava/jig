@@ -1,4 +1,14 @@
 /**
+ * @typedef {Object} PackageType
+ * @property {string} fqn
+ * @property {PackageChild[]} [children]
+ */
+/**
+ * @typedef {Object} PackageChild
+ * @property {string} fqn
+ * @property {string} kind
+ */
+/**
  * @typedef {{
  *     fqn: string,
  *     fields: DomainField[],
@@ -161,7 +171,7 @@ function createChildrenTable(children) {
         children: children.map(child => {
             const prefix = child.kind === "package" ? "▶︎ " : "";
             const link = createElement("a", {
-                attributes: {href: child.href || "#"},
+                attributes: {href: "#" + child.fqn},
                 textContent: getGlossaryTitle(child.fqn)
             });
             const cell = createElement("td", {
@@ -320,7 +330,7 @@ function renderPackages(packages, container) {
                 }),
                 createElement("div", {
                     className: "fully-qualified-name",
-                    textContent: pkg.fqn || ""
+                    textContent: pkg.fqn
                 })
             ]
         });
@@ -399,7 +409,7 @@ const DomainApp = {
         /**
          * @type {{
          *   tree: [],
-         *   packages: [],
+         *   packages: PackageType[],
          *   types: DomainType[]
          * }}
          */

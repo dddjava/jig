@@ -121,9 +121,7 @@ public class DomainSummaryAdapter {
                     String childHref = child.href();
                     String childFqn = childHref.startsWith("#") ? childHref.substring(1) : childHref;
                     return Json.object("kind", child.isPackage() ? "package" : "type")
-                            .and("href", childHref)
-                            .and("fqn", childFqn)
-                            .and("isDeprecated", child.isDeprecated());
+                            .and("fqn", childFqn);
                 })
                 .toList();
 

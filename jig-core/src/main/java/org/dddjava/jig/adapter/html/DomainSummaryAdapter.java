@@ -204,7 +204,6 @@ public class DomainSummaryAdapter {
 
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return Json.object("fqn", jigMethod.fqn())
-                .and("label", jigMethod.labelText())
                 .and("visibility", jigMethod.visibility())
                 .and("parameterTypeRefs", Json.arrayObjects(jigMethod.parameterTypeStream()
                         .map(this::buildTypeRef)

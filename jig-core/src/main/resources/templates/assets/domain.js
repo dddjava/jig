@@ -313,10 +313,13 @@ function createChildrenTable(pkg) {
     const tbody = createElement("tbody", {
         children: allChildren.map(child => {
             const prefix = child.isPackage ? "▶︎ " : "";
-            const link = createElement("a", {
-                attributes: {href: "#" + child.fqn},
-                textContent: child.title
-            });
+            // 型の場合は createTypeLink を使用して deprecated 処理を統一
+            const link = child.isPackage
+                ? createElement("a", {
+                    attributes: {href: "#" + child.fqn},
+                    textContent: child.title
+                })
+                : createTypeLink(child.fqn);
             const cell = createElement("td", {
                 children: [document.createTextNode(prefix), link]
             });

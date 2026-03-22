@@ -124,8 +124,10 @@ function createTypeLink(fqn, className = undefined) {
     }
 
     // domainに含まれるのはページ内リンク
+    const deprecatedClass = domainType.isDeprecated ? "deprecated" : undefined;
+    const mergedClass = [className, deprecatedClass].filter(Boolean).join(" ") || undefined;
     return createElement("a", {
-        className: className,
+        className: mergedClass,
         attributes: {href: `#${fqn}`},
         textContent: getGlossaryTitle(fqn)
     });
@@ -187,8 +189,10 @@ function renderPackageNavItem(pkg) {
 
     // 子タイプを表示
     (currentPkg.types || []).forEach(child => {
+        const domainType = globalThis.domainData?._typesMap?.get(child.fqn);
         const link = createElement("a", {
             attributes: {href: "#" + child.fqn},
+            className: domainType?.isDeprecated ? "deprecated" : "",
             textContent: getGlossaryTitle(child.fqn)
         });
         details.appendChild(createElement("div", {children: [link]}));

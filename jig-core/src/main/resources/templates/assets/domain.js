@@ -52,6 +52,7 @@ const domainSettings = {
 };
 
 const diagramRegistry = []; // [{container, pkg}]
+const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
 
 function getGlossaryTitle(fqn) {
     const term = globalThis.glossaryData?.[fqn];
@@ -522,6 +523,7 @@ function renderPackages(packages, container) {
             section.appendChild(mmdContainer);
             diagramRegistry.push({container: mmdContainer, pkg});
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                renderedContainers.add(mmdContainer);
                 mmdContainer.innerHTML = "";
                 const diagram = createRelationDiagram(pkg);
                 if (diagram) {
@@ -578,13 +580,15 @@ function renderTypes(types, container) {
 }
 
 function rerenderDiagrams() {
-    diagramRegistry.forEach(({container, pkg}) => {
-        container.innerHTML = "";
-        const diagram = createRelationDiagram(pkg);
-        if (diagram) {
-            globalThis.Jig.mermaid.renderWithControls(container, diagram);
-        }
-    });
+    diagramRegistry
+        .filter(({container}) => renderedContainers.has(container))
+        .forEach(({container, pkg}) => {
+            container.innerHTML = "";
+            const diagram = createRelationDiagram(pkg);
+            if (diagram) {
+                globalThis.Jig.mermaid.renderWithControls(container, diagram);
+            }
+        });
 }
 
 function initSettings() {
@@ -626,6 +630,7 @@ const DomainApp = {
         if (!data) return;
 
         diagramRegistry.length = 0;
+        renderedContainers.clear();
         initSettings();
 
         // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）

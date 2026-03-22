@@ -197,11 +197,40 @@ main table thead {
     }
 }
 
+.methods-section h4 {
+    margin: 0 0 6px 0;
+    font-size: 0.9em;
+    color: #31455f;
+    border-bottom: 1px solid #d9e1ea;
+    padding-bottom: 4px;
+}
+.method-item {
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f3f8;
+}
+.method-item:last-child {
+    border-bottom: none;
+}
+.method-signature {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px;
+    font-size: 0.9em;
+}
 .method-name {
+    font-weight: bold;
+    color: #1b3a66;
     white-space: nowrap;
 }
-.method-argument-item {
-    display: block;
+.method-return-sep {
+    margin: 0 4px;
+    color: #999;
+}
+.method-item .markdown {
+    margin: 4px 0 0 0;
+    font-size: 0.9em;
+    color: #444;
 }
 
 main table.fields thead {

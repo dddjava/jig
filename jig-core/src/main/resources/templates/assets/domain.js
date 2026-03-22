@@ -390,46 +390,50 @@ function createFieldsTable(fields) {
     });
 }
 
-function createMethodsTable(kind, methods) {
-    if (!methods || methods.length === 0) return null;
+function createMethodItem(method) {
+    const methodTerm = getGlossaryMethodTerm(method);
 
-    const tbody = createElement("tbody", {
-        children: methods.map(method => {
-            const methodTerm = getGlossaryMethodTerm(method);
-            return createElement("tr", {
-                children: [
-                    createElement("td", {
-                        className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
-                        textContent: methodTerm.title
-                    }),
-                    createElement("td", {
-                        children: method.parameterTypeRefs.map(param => createTypeRefLink(param, "method-argument-item"))
-                    }),
-                    createElement("td", {
-                        children: [createTypeRefLink(method.returnTypeRef)]
-                    }),
-                    createElement("td", {
-                        className: "markdown",
-                        innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
-                    })
-                ]
-            })
-        })
+    const paramElements = method.parameterTypeRefs
+        .map(param => createTypeRefLink(param))
+        .flatMap((el, i) => i ? [', ', el] : [el]);
+
+    const signatureEl = createElement("div", {
+        className: "method-signature",
+        children: [
+            createElement("span", {
+                className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
+                textContent: methodTerm.title
+            }),
+            '(',
+            ...paramElements,
+            ')',
+            createElement("span", {className: "method-return-sep", textContent: ":"}),
+            createTypeRefLink(method.returnTypeRef)
+        ]
     });
 
-    return createElement("table", {
+    const children = [signatureEl];
+    if (methodTerm.description) {
+        children.push(createElement("div", {
+            className: "markdown",
+            innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
+        }));
+    }
+
+    return createElement("div", {
+        className: "method-item",
+        children
+    });
+}
+
+function createMethodsList(kind, methods) {
+    if (!methods || methods.length === 0) return null;
+
+    return createElement("section", {
+        className: "methods-section",
         children: [
-            createElement("thead", {
-                children: [createElement("tr", {
-                    children: [
-                        createElement("th", {attributes: {width: "20%"}, textContent: kind}),
-                        createElement("th", {textContent: "引数"}),
-                        createElement("th", {textContent: "戻り値型"}),
-                        createElement("th", {textContent: "説明"})
-                    ]
-                })]
-            }),
-            tbody
+            createElement("h4", {textContent: kind}),
+            ...methods.map(method => createMethodItem(method))
         ]
     });
 }
@@ -569,11 +573,11 @@ function renderTypes(types, container) {
         const fieldsTable = createFieldsTable(type.fields);
         if (fieldsTable) section.appendChild(fieldsTable);
 
-        const methodTable = createMethodsTable("メソッド", type.methods);
-        if (methodTable) section.appendChild(methodTable);
+        const methodList = createMethodsList("メソッド", type.methods);
+        if (methodList) section.appendChild(methodList);
 
-        const staticTable = createMethodsTable("staticメソッド", type.staticMethods);
-        if (staticTable) section.appendChild(staticTable);
+        const staticList = createMethodsList("staticメソッド", type.staticMethods);
+        if (staticList) section.appendChild(staticList);
 
         container.appendChild(section);
     });

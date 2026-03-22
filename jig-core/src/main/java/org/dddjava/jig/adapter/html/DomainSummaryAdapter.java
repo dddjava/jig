@@ -2,7 +2,6 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
-import org.dddjava.jig.adapter.html.view.TreeComponent;
 import org.dddjava.jig.adapter.html.view.TreeComposite;
 import org.dddjava.jig.adapter.html.view.TreeLeaf;
 import org.dddjava.jig.adapter.json.Json;
@@ -60,10 +59,9 @@ public class DomainSummaryAdapter {
         var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
 
         var treeBaseComposite = createTreeBaseComposite(jigTypes);
-        var treeRootComposite = treeBaseComposite.resolveRootComposite();
         var packageList = listPackages(jigTypes);
 
-        var json = buildJson(treeBaseComposite, treeRootComposite, packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
+        var json = buildJson(treeBaseComposite, packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
@@ -72,13 +70,10 @@ public class DomainSummaryAdapter {
     }
 
     private String buildJson(TreeComposite baseComposite,
-                             TreeComposite treeRootComposite,
                              List<JigPackage> jigPackages,
                              List<JigType> jigTypes,
                              Map<TypeId, EnumModel> enumModelMap,
                              CoreTypesAndRelations coreTypesAndRelations) {
-        var tree = buildTreeJson(treeRootComposite);
-
         List<JsonObjectBuilder> packages = jigPackages.stream()
                 .map(jigPackage -> buildPackageJson(jigPackage, baseComposite, coreTypesAndRelations))
                 .toList();
@@ -87,31 +82,9 @@ public class DomainSummaryAdapter {
                 .map(jigType -> buildTypeJson(jigType, enumModelMap))
                 .toList();
 
-        return Json.object("tree", tree)
-                .and("packages", Json.arrayObjects(packages))
+        return Json.object("packages", Json.arrayObjects(packages))
                 .and("types", Json.arrayObjects(types))
                 .build();
-    }
-
-    private JsonObjectBuilder buildTreeJson(TreeComponent node) {
-        if (node instanceof TreeComposite composite) {
-            List<JsonObjectBuilder> children = composite.children().stream()
-                    .map(this::buildTreeJson)
-                    .toList();
-            return Json.object("kind", "package")
-                    .and("href", composite.href())
-                    .and("fqn", composite.href().startsWith("#") ? composite.href().substring(1) : composite.href())
-                    .and("children", Json.arrayObjects(children));
-        }
-
-        String kind = "type";
-        boolean deprecated = node.isDeprecated();
-        String href = node.href();
-        String fqn = href.startsWith("#") ? href.substring(1) : href;
-        return Json.object("kind", kind)
-                .and("href", href)
-                .and("fqn", fqn)
-                .and("isDeprecated", deprecated);
     }
 
     private JsonObjectBuilder buildPackageJson(JigPackage jigPackage, TreeComposite treeBaseComposite, CoreTypesAndRelations coreTypesAndRelations) {

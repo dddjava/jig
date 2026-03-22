@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -26,7 +26,7 @@ public class TypeRelationMermaidDiagram {
      * @param coreTypesAndRelations 出力コンテキスト
      * @return Mermaidテキスト
      */
-    public Optional<String> write(JigPackage jigPackage, CoreTypesAndRelations coreTypesAndRelations) {
+    public Optional<String> write(JigPackageWithJigTypes jigPackage, CoreTypesAndRelations coreTypesAndRelations) {
         PackageId packageId = jigPackage.packageId();
         TypeRelationships typeRelationships = coreTypesAndRelations.internalTypeRelationships();
 
@@ -66,7 +66,7 @@ public class TypeRelationMermaidDiagram {
 
         StringJoiner diagramText = new StringJoiner("\n    ", "\ngraph TB\n    ", "");
         if (nodeMap.containsKey(true)) {
-            diagramText.add("subgraph %s[\"%s\"]".formatted(mermaidId(jigPackage.packageId()), jigPackage.label()));
+            diagramText.add("subgraph %s".formatted(mermaidId(jigPackage.packageId())));
             diagramText.add("direction TB");
             nodeMap.get(true).forEach(diagramText::add);
             diagramText.add("end");

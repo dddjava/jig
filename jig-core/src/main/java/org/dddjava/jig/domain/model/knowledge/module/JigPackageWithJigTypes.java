@@ -23,4 +23,16 @@ public record JigPackageWithJigTypes(PackageId packageId, List<JigType> jigTypes
                 .sorted(Comparator.comparing(jigPackageWithJigTypes -> jigPackageWithJigTypes.packageId.asText()))
                 .toList();
     }
+
+    public static  List<JigPackageWithJigTypes>  listWithParent(JigTypes jigTypes) {
+        Map<PackageId, List<JigType>> map = jigTypes.orderedStream()
+                .collect(groupingBy(JigType::packageId));
+
+        return map.keySet().stream()
+                .flatMap(packageId -> packageId.genealogical().stream())
+                .distinct()
+                .sorted(Comparable::compareTo)
+                .map(packageId -> new JigPackageWithJigTypes(packageId, map.getOrDefault(packageId, List.of())))
+                .toList();
+    }
 }

@@ -7,7 +7,6 @@ import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
@@ -19,19 +18,11 @@ import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
-import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * ドメイン概要
@@ -57,10 +48,9 @@ public class DomainSummaryAdapter {
         var enumModelMap = enumModels.toMap();
         var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
 
-        var packageMap = buildPackageMap(jigTypes);
-        var packageList = listPackages(packageMap);
+        var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
 
-        var json = buildJson(packageMap, packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
+        var json = buildJson(packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
@@ -68,16 +58,12 @@ public class DomainSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String buildJson(Map<PackageId, Set<PackageId>> packageMap,
-                             List<JigPackage> jigPackages,
+    private String buildJson(List<JigPackageWithJigTypes> jigPackages,
                              List<JigType> jigTypes,
                              Map<TypeId, EnumModel> enumModelMap,
                              CoreTypesAndRelations coreTypesAndRelations) {
-        Map<PackageId, List<JigType>> typesByPackage = jigTypes.stream()
-                .collect(groupingBy(JigType::packageId));
-
         List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(jigPackage -> buildPackageJson(jigPackage, typesByPackage, coreTypesAndRelations))
+                .map(jigPackage -> buildPackageJson(jigPackage, coreTypesAndRelations))
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
@@ -89,21 +75,20 @@ public class DomainSummaryAdapter {
                 .build();
     }
 
-    private JsonObjectBuilder buildPackageJson(JigPackage jigPackage,
-                                                Map<PackageId, List<JigType>> typesByPackage,
-                                                CoreTypesAndRelations coreTypesAndRelations) {
-        List<JsonObjectBuilder> children = typesByPackage
-                .getOrDefault(jigPackage.packageId(), Collections.emptyList()).stream()
-                .sorted(Comparator.comparing(t -> t.id().fqn()))
-                .map(type -> Json.object("fqn", type.id().fqn()))
+    private JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage,
+                                               CoreTypesAndRelations coreTypesAndRelations) {
+        List<JsonObjectBuilder> types = jigPackage.jigTypes().stream()
+                .map(JigType::id)
+                .sorted(Comparable::compareTo)
+                .map(typeId -> Json.object("fqn", typeId.fqn()))
                 .toList();
 
         String diagram = new TypeRelationMermaidDiagram()
                 .write(jigPackage, coreTypesAndRelations)
                 .orElse("");
 
-        return Json.object("fqn", jigPackage.fqn())
-                .and("types", Json.arrayObjects(children))
+        return Json.object("fqn", jigPackage.packageId().asText())
+                .and("types", Json.arrayObjects(types))
                 .and("relationDiagram", diagram);
     }
 
@@ -191,25 +176,5 @@ public class DomainSummaryAdapter {
                 .map(JigTypeArgument::jigTypeReference)
                 .map(this::buildTypeRef)
                 .toList()));
-    }
-
-    private Map<PackageId, Set<PackageId>> buildPackageMap(JigTypes jigTypes) {
-        List<JigPackageWithJigTypes> jigPackageWithJigTypes = JigPackageWithJigTypes.from(jigTypes);
-        return jigPackageWithJigTypes.stream()
-                .map(JigPackageWithJigTypes::packageId)
-                .flatMap(packageId -> packageId.genealogical().stream())
-                .collect(groupingBy(PackageId::parent, toSet()));
-    }
-
-    private List<JigPackage> listPackages(Map<PackageId, Set<PackageId>> packageMap) {
-        return packageMap.values().stream()
-                .flatMap(Set::stream)
-                .sorted()
-                .map(this::jigPackage)
-                .toList();
-    }
-
-    private JigPackage jigPackage(PackageId packageId) {
-        return new JigPackage(packageId, jigDocumentContext.packageTerm(packageId));
     }
 }

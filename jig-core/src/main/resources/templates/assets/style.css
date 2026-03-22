@@ -792,11 +792,17 @@ table td.number {
     border-radius: 10px;
     box-shadow: 0 8px 24px rgba(27, 58, 102, 0.08);
     padding: 12px;
-    overflow: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 .in-page-sidebar__list {
     display: grid;
     gap: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    align-content: start;
 }
 .in-page-sidebar__section {
     display: grid;
@@ -840,46 +846,10 @@ table td.number {
     text-decoration: none;
 }
 
-/* ドメイン概要 表示設定パネルを上部固定・ツリーのみスクロール */
-.domain-summary #domain-sidebar {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.domain-summary #domain-settings {
-    flex-shrink: 0;
-}
-.domain-summary #domain-sidebar-list {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    align-content: start;
-}
-.usecase-summary #usecase-sidebar {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.usecase-summary #usecase-sidebar-list {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    align-content: start;
-}
-.glossary #term-sidebar {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-.glossary #term-sidebar-list {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-    align-content: start;
-}
 
 /* ドメイン概要 表示設定パネル */
 .domain-settings {
+    flex-shrink: 0;
     margin-bottom: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #d9e1ea;

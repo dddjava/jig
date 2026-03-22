@@ -77,6 +77,22 @@ class Element {
         return child;
     }
 
+    append(...children) {
+        children.forEach(child => {
+            if (typeof child === "string") {
+                if (this.ownerDocument) {
+                    this.appendChild(this.ownerDocument.createTextNode(child));
+                } else {
+                    const textNode = new Element("#text");
+                    textNode.textContent = child;
+                    this.appendChild(textNode);
+                }
+            } else if (child) {
+                this.appendChild(child);
+            }
+        });
+    }
+
     setAttribute(name, value) {
         this.attributes.set(name, String(value));
         if (name === "id" && this.ownerDocument) {

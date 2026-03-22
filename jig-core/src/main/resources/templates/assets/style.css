@@ -91,7 +91,7 @@ aside.notice {
     color: silver;
 }
 .deprecated {
-    text-decoration: line-through;
+    text-decoration: line-through !important;
 }
 
 /* メインコンテンツ */

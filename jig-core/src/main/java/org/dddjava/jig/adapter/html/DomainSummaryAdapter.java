@@ -7,9 +7,9 @@ import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
+import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -22,7 +22,6 @@ import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
 /**
  * ドメイン概要
@@ -45,12 +44,11 @@ public class DomainSummaryAdapter {
         }
 
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        var enumModelMap = enumModels.toMap();
         var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
 
         var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
 
-        var json = buildJson(packageList, jigTypes.list(), enumModelMap, coreTypesAndRelations);
+        var json = buildJson(packageList, jigTypes.list(), enumModels, coreTypesAndRelations);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
@@ -60,14 +58,14 @@ public class DomainSummaryAdapter {
 
     private String buildJson(List<JigPackageWithJigTypes> jigPackages,
                              List<JigType> jigTypes,
-                             Map<TypeId, EnumModel> enumModelMap,
+                             EnumModels enumModels,
                              CoreTypesAndRelations coreTypesAndRelations) {
         List<JsonObjectBuilder> packages = jigPackages.stream()
                 .map(jigPackage -> buildPackageJson(jigPackage, coreTypesAndRelations))
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
-                .map(jigType -> buildTypeJson(jigType, enumModelMap))
+                .map(jigType -> buildTypeJson(jigType, enumModels))
                 .toList();
 
         return Json.object("packages", Json.arrayObjects(packages))
@@ -92,7 +90,7 @@ public class DomainSummaryAdapter {
                 .and("relationDiagram", diagram);
     }
 
-    private JsonObjectBuilder buildTypeJson(JigType jigType, Map<TypeId, EnumModel> enumModelMap) {
+    private JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
         List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
                 .map(this::buildFieldJson)
                 .toList();
@@ -120,7 +118,7 @@ public class DomainSummaryAdapter {
                 .and("staticMethods", Json.arrayObjects(staticMethods));
 
         if (isEnum(jigType)) {
-            builder.and("enumInfo", buildEnumInfoJson(jigType, enumModelMap));
+            builder.and("enumInfo", buildEnumInfoJson(jigType, enumModels));
         }
 
         return builder;
@@ -130,8 +128,9 @@ public class DomainSummaryAdapter {
         return jigType.toValueKind() == JigTypeValueKind.区分;
     }
 
-    private JsonObjectBuilder buildEnumInfoJson(JigType jigType, Map<TypeId, EnumModel> enumModelMap) {
-        EnumModel enumModel = enumModelMap.getOrDefault(jigType.id(), new EnumModel(jigType.id(), List.of(), List.of()));
+    private JsonObjectBuilder buildEnumInfoJson(JigType jigType, EnumModels enumModels) {
+        EnumModel enumModel = enumModels.find(jigType.id())
+                .orElseGet(() -> new EnumModel(jigType.id(), List.of(), List.of()));
         List<String> parameterNames = enumModel.constructorParameterNames();
 
         List<JsonObjectBuilder> constants = jigType.jigTypeMembers().enumConstantStream()

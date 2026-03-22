@@ -16,6 +16,8 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
+import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -68,9 +70,20 @@ public class DomainSummaryAdapter {
                 .map(jigType -> buildTypeJson(jigType, enumModels))
                 .toList();
 
+        var coreInternalRtypeRelationships = TypeRelationships.internalRelation(jigTypes);
+        var relations = coreInternalRtypeRelationships.typeRelationships().stream()
+                .map(typeRelationship -> buildRelationship(typeRelationship))
+                .toList();
+
         return Json.object("packages", Json.arrayObjects(packages))
                 .and("types", Json.arrayObjects(types))
+                .and("relations", Json.arrayObjects(relations))
                 .build();
+    }
+
+    private JsonObjectBuilder buildRelationship(TypeRelationship typeRelationship) {
+        return Json.object("from", typeRelationship.from().fqn())
+                .and("to", typeRelationship.to().fqn());
     }
 
     private JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage,

@@ -480,9 +480,9 @@ const DomainApp = {
     init() {
         /**
          * @type {{
-         *   tree: [],
          *   packages: PackageType[],
          *   types: DomainType[]
+         *   relations: {from: string, to: string}[]
          * }}
          */
         const data = globalThis.domainData;

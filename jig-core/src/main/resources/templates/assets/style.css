@@ -335,26 +335,6 @@ body.hide-usecase-details .depends {
     display: none;
 }
 
-.usecase-summary .controls {
-    background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 12px 16px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    margin-bottom: 1em;
-}
-.usecase-summary .controls summary {
-    list-style: none;
-    cursor: pointer;
-    padding: 6px 0;
-    font-weight: 600;
-}
-.usecase-summary .filter-controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 10px;
-}
 
 /* Mermaidで画像が表示される前のテキストを表示しない */
 pre.mermaid {
@@ -433,17 +413,6 @@ label {
 }
 
 /* 用語集 */
-.glossary details.controls summary {
-    list-style: none;
-    cursor: pointer;
-    margin-bottom: 10px;
-    padding: 5px 0;
-}
-.glossary .filter-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
 .glossary .search-option,
 .glossary .kind-option,
 .glossary .misc-option {
@@ -477,7 +446,7 @@ label {
     align-items: center;
     flex-direction: row;
 }
-.glossary details.controls input[type="text"] {
+.glossary input[type="text"] {
     width: 100%;
     box-sizing: border-box;
     padding: 8px;
@@ -881,6 +850,26 @@ table td.number {
     flex-shrink: 0;
 }
 .domain-summary #domain-sidebar-list {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+.usecase-summary #usecase-sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.usecase-summary #usecase-sidebar-list {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+}
+.glossary #term-sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.glossary #term-sidebar-list {
     flex: 1;
     min-height: 0;
     overflow: auto;

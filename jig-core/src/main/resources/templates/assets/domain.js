@@ -34,9 +34,9 @@ function getGlossaryMethodTerm(method) {
     if (term) return term;
 
     // 引数の完全修飾名を単純名に変換して再取得
-    const glossaryFqn = fqn.substring(fqn.lastIndexOf('('))
-        + method.parameterFqns.map(x => x.substring(0, x.lastIndexOf('.') + 1)).join(",")
-        + ")"
+    const glossaryFqn = fqn.substring(0, fqn.lastIndexOf('(') + 1)
+        + method.parameterFqns.map(x => x.substring(x.lastIndexOf('.') + 1)).join(",")
+        + ')';
     const term2 = globalThis.glossaryData[glossaryFqn];
     if (term2) return term2;
 

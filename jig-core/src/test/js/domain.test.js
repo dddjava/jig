@@ -40,11 +40,7 @@ test.describe('domain.js', () => {
         test('fqn が一致しないが、引数変換キーで一致する場合、その用語を返す', () => {
             const methodFqn = 'org.example.Account#create(java.lang.String,int)';
             // 引数変換キーの構築:
-            // fqn.substring(fqn.lastIndexOf('(')) = "(java.lang.String,int)"
-            // parameterFqns.map(x => x.substring(0, x.lastIndexOf('.') + 1)).join(",")
-            //   = "java.lang.,java.lang."
-            // 結果: "(java.lang.String,int)java.lang.,java.lang.)"
-            const transformedKey = '(java.lang.String,int)java.lang.,java.lang.)';
+            const transformedKey = 'org.example.Account#create(String,int)';
             const expectedTerm = {
                 title: 'create',
                 description: 'Creates an account'
@@ -56,7 +52,7 @@ test.describe('domain.js', () => {
 
             const method = {
                 fqn: methodFqn,
-                parameterFqns: ['java.lang.String', 'java.lang.Integer']
+                parameterFqns: ['java.lang.String', 'int']
             };
 
             const result = getGlossaryMethodTerm(method);

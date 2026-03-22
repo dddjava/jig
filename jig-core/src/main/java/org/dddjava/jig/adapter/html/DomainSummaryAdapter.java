@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
-import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -116,10 +115,10 @@ public class DomainSummaryAdapter {
                 .toList();
 
         JsonObjectBuilder builder = Json.object("fqn", jigType.fqn())
-                .and("isDeprecated", jigType.isDeprecated())
                 .and("fields", Json.arrayObjects(fields))
                 .and("methods", Json.arrayObjects(methods))
-                .and("staticMethods", Json.arrayObjects(staticMethods));
+                .and("staticMethods", Json.arrayObjects(staticMethods))
+                .and("isDeprecated", jigType.isDeprecated());
 
         if (isEnum(jigType)) {
             builder.and("enumInfo", buildEnumInfoJson(jigType, enumModels));
@@ -161,7 +160,8 @@ public class DomainSummaryAdapter {
                 .and("parameterTypeRefs", Json.arrayObjects(jigMethod.parameterTypeStream()
                         .map(this::buildTypeRef)
                         .toList()))
-                .and("returnTypeRef", buildTypeRef(jigMethod.returnType()));
+                .and("returnTypeRef", buildTypeRef(jigMethod.returnType()))
+                .and("isDeprecated", jigMethod.isDeprecated());
     }
 
     private JsonObjectBuilder buildTypeRef(JigTypeReference jigTypeReference) {

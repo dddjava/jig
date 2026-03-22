@@ -101,4 +101,8 @@ public record JigMethodHeader(JigMethodId id,
         return jigMethodAttribute.flags().contains(JigMethodFlag.INITIALIZER) ||
                 jigMethodAttribute.flags().contains(JigMethodFlag.STATIC_INITIALIZER);
     }
+
+    public boolean isDeprecated() {
+        return jigMethodAttribute.isDeprecated();
+    }
 }

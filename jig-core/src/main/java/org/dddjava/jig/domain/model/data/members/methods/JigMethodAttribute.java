@@ -31,4 +31,9 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
                         throwTypes.stream().flatMap(JigTypeReference::toTypeIdStream))
                 .flatMap(Function.identity());
     }
+
+    public boolean isDeprecated() {
+        return declarationAnnotations.stream()
+                .anyMatch(annotation -> annotation.id().equals(TypeId.DEPRECATED_ANNOTATION));
+    }
 }

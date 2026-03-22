@@ -164,4 +164,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     public Stream<MethodCall> lambdaInlinedMethodCallStream() {
         return instructions().lambdaInlinedMethodCallStream();
     }
+
+    public boolean isDeprecated() {
+        return header().isDeprecated();
+    }
 }

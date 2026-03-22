@@ -196,6 +196,73 @@ function renderPackageNavItem(pkg) {
     return details;
 }
 
+/**
+ * @param {PackageType} pkg
+ * @returns {string | null} Mermaid記法のダイアグラム文字列、または関連がない場合はnull
+ */
+function createRelationDiagram(pkg) {
+    const relations = globalThis.domainData.relations;
+    if (!relations || relations.length === 0) return null;
+
+    const pkgTypeFqns = new Set((pkg.types || []).map(t => t.fqn));
+    if (pkgTypeFqns.size === 0) return null;
+
+    // このパッケージの型から出る関連
+    const fromPkgRelations = relations.filter(r => pkgTypeFqns.has(r.from));
+    if (fromPkgRelations.length === 0) return null;
+
+    // 内部関連と外部関連に分類
+    const internalRelations = fromPkgRelations.filter(r => pkgTypeFqns.has(r.to));
+    if (internalRelations.length === 0) return null;
+
+    const externalRelations = fromPkgRelations.filter(r => !pkgTypeFqns.has(r.to));
+
+    function packageOf(fqn) {
+        const idx = fqn.lastIndexOf('.');
+        return idx < 0 ? fqn : fqn.substring(0, idx);
+    }
+
+    // サブグラフ内ノード（from全部 + 内部to）
+    const internalFqns = new Set();
+    fromPkgRelations.forEach(r => internalFqns.add(r.from));
+    internalRelations.forEach(r => internalFqns.add(r.to));
+
+    // 外部パッケージノード
+    const externalPkgFqns = new Set();
+    externalRelations.forEach(r => externalPkgFqns.add(packageOf(r.to)));
+
+    // エッジ（重複排除）
+    const edgeSet = new Set();
+    internalRelations.forEach(r => edgeSet.add(`${r.from} --> ${r.to}`));
+    externalRelations.forEach(r => edgeSet.add(`${r.from} --> ${packageOf(r.to)}`));
+
+    function escapeMermaidLabel(label) {
+        return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function mermaidTypeBox(fqn) {
+        return `${fqn}["${escapeMermaidLabel(getGlossaryTitle(fqn))}"]`;
+    }
+
+    function mermaidPackageBox(fqn) {
+        return `${fqn}(["${escapeMermaidLabel(getGlossaryTitle(fqn))}"])`;
+    }
+
+    const i = '    ';
+    const lines = ['\ngraph TB'];
+    lines.push(`${i}subgraph ${pkg.fqn}`);
+    lines.push(`${i}direction TB`);
+    internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
+    lines.push(`${i}end`);
+    externalPkgFqns.forEach(fqn => lines.push(`${i}${mermaidPackageBox(fqn)}`));
+    [...internalFqns, ...externalPkgFqns].forEach(fqn =>
+        lines.push(`${i}click ${fqn} "#${fqn}"`)
+    );
+    edgeSet.forEach(edge => lines.push(`${i}${edge}`));
+
+    return lines.join('\n');
+}
+
 function renderSidebar(packages) {
     const container = document.getElementById("domain-sidebar-list");
     if (!container) return;
@@ -420,12 +487,13 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
-        if (pkg.relationDiagram) {
+        const diagram = createRelationDiagram(pkg);
+        if (diagram) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                 mmdContainer.innerHTML = "";
-                globalThis.Jig.mermaid.renderWithControls(mmdContainer, pkg.relationDiagram);
+                globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
             });
         }
 

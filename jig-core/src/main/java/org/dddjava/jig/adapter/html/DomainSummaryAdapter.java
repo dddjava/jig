@@ -4,7 +4,6 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
-import org.dddjava.jig.adapter.mermaid.TypeRelationMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
@@ -48,9 +47,8 @@ public class DomainSummaryAdapter {
 
         var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        var coreTypesAndRelations = jigService.coreTypesAndRelations(jigRepository);
 
-        var json = buildJson(packageList, jigTypes, enumModels, coreTypesAndRelations);
+        var json = buildJson(packageList, jigTypes, enumModels);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
@@ -60,10 +58,9 @@ public class DomainSummaryAdapter {
 
     private String buildJson(List<JigPackageWithJigTypes> jigPackages,
                              JigTypes jigTypes,
-                             EnumModels enumModels,
-                             CoreTypesAndRelations coreTypesAndRelations) {
+                             EnumModels enumModels) {
         List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(jigPackage -> buildPackageJson(jigPackage, coreTypesAndRelations))
+                .map(this::buildPackageJson)
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
@@ -86,21 +83,15 @@ public class DomainSummaryAdapter {
                 .and("to", typeRelationship.to().fqn());
     }
 
-    private JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage,
-                                               CoreTypesAndRelations coreTypesAndRelations) {
+    private JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage) {
         List<JsonObjectBuilder> types = jigPackage.jigTypes().stream()
                 .map(JigType::id)
                 .sorted(Comparable::compareTo)
                 .map(typeId -> Json.object("fqn", typeId.fqn()))
                 .toList();
 
-        String diagram = new TypeRelationMermaidDiagram()
-                .write(jigPackage, coreTypesAndRelations)
-                .orElse("");
-
         return Json.object("fqn", jigPackage.packageId().asText())
-                .and("types", Json.arrayObjects(types))
-                .and("relationDiagram", diagram);
+                .and("types", Json.arrayObjects(types));
     }
 
     private JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {

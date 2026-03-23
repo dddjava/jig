@@ -217,15 +217,11 @@ if (typeof document !== "undefined") {
             showMethod: document.getElementById("show-method"),
             showField: document.getElementById("show-field"),
             sortOrder: document.getElementById("sort-order"),
-
-            // 新しい検索オプション
             searchTargetName: document.getElementById('search-target-name'),
             searchTargetDescription: document.getElementById('search-target-description'),
             searchTargetFqn: document.getElementById('search-target-fqn'),
             searchTargetSimple: document.getElementById('search-target-simple'),
             searchTargetKind: document.getElementById('search-target-kind'),
-
-            // 新しい表示モード選択
             displayModeSelect: document.getElementById('display-mode-select'),
         };
 

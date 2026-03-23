@@ -218,27 +218,27 @@ if (typeof document !== "undefined") {
 
         const updateArticles = () => renderFilteredTerms(terms, controls);
 
-        controls.searchInput.addEventListener("input", updateArticles);
-        controls.showEmptyDescription.addEventListener("change", updateArticles);
-        controls.showPackage.addEventListener("change", updateArticles);
-        controls.showClass.addEventListener("change", updateArticles);
-        controls.showMethod.addEventListener("change", updateArticles);
-        controls.showField.addEventListener("change", updateArticles);
-        if (controls.sortOrder) {
-            controls.sortOrder.addEventListener("change", updateArticles);
-        }
-        // 新しい表示モード選択のイベントリスナー
-        if (controls.displayModeSelect) {
-            controls.displayModeSelect.addEventListener("change", updateArticles);
-        }
+        // "change" イベントを購読するコントロールを配列で管理
+        const changeControls = [
+            controls.showEmptyDescription,
+            controls.showPackage,
+            controls.showClass,
+            controls.showMethod,
+            controls.showField,
+            controls.sortOrder,
+            controls.displayModeSelect,
+            controls.searchTargetName,
+            controls.searchTargetDescription,
+            controls.searchTargetFqn,
+            controls.searchTargetSimple,
+            controls.searchTargetKind,
+        ].filter(Boolean);
 
-        // 新しい検索オプションのイベントリスナー
-        document.querySelectorAll('input[name="search-method"]').forEach(radio => radio.addEventListener('change', updateArticles));
-        controls.searchTargetName.addEventListener('change', updateArticles);
-        controls.searchTargetDescription.addEventListener('change', updateArticles);
-        controls.searchTargetFqn.addEventListener('change', updateArticles);
-        controls.searchTargetSimple.addEventListener('change', updateArticles);
-        controls.searchTargetKind.addEventListener('change', updateArticles);
+        changeControls.forEach(el => el.addEventListener("change", updateArticles));
+
+        controls.searchInput.addEventListener("input", updateArticles);
+        document.querySelectorAll('input[name="search-method"]')
+            .forEach(radio => radio.addEventListener('change', updateArticles));
 
         const exportButton = document.getElementById("export-csv");
         if (exportButton) {

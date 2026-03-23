@@ -79,7 +79,8 @@ function renderTermSidebar(terms) {
 function renderGlossaryTerms(terms, displayMode) {
     const list = document.getElementById("term-list");
     if (!list) return;
-    list.innerHTML = "";
+
+    const articles = [];
 
     terms.forEach((term, index) => {
         const anchorId = buildTermAnchorId(term, index);
@@ -112,8 +113,11 @@ function renderGlossaryTerms(terms, displayMode) {
                 createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
             ]
         });
-        list.appendChild(article);
+        articles.push(article);
     });
+
+    list.textContent = "";
+    articles.forEach(article => list.appendChild(article));
 }
 
 function renderFilteredTerms(terms, controls) {

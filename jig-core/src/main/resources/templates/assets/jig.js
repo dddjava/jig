@@ -420,6 +420,18 @@ globalThis.Jig.dom.createElement = function createElement(tagName, options = {})
     return element;
 };
 
+globalThis.Jig.dom.downloadCsv = function downloadCsv(text, filename) {
+    const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+};
+
 globalThis.Jig.observe.lazyRender = function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
     if (typeof IntersectionObserver === "undefined") {
         renderFn();

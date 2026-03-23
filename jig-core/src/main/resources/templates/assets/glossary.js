@@ -252,7 +252,7 @@ if (typeof document !== "undefined") {
             exportButton.addEventListener("click", () => {
                 const filteredTerms = getFilteredTerms(terms, controls);
                 const csvText = buildGlossaryCsv(filteredTerms);
-                downloadCsv(csvText, "glossary.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "glossary.csv");
             });
         }
 

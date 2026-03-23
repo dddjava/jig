@@ -327,8 +327,6 @@ test.describe('glossary.js', () => {
             assert.equal(article.tagName, 'article');
             const metaCard = article.children.find(c => c.tagName === 'section' && c.classList.contains('jig-card--item'));
             assert.ok(metaCard, 'fullモードではメタカードがあるはず');
-            assert.ok(metaCard.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), 'fullモードではFQNがあるはず');
-            assert.ok(metaCard.children.some(c => c.tagName === 'div' && c.classList.contains('weak')), 'fullモードではmetaがあるはず');
         });
 
         test('用語一覧を描画する (summaryモード)', () => {

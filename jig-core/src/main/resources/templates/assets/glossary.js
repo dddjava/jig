@@ -143,6 +143,18 @@ function getFilteredTerms(terms, controls) {
     const searchKeyword = controls.searchInput.value;
 
     const searchMethod = document.querySelector('input[name="search-method"]:checked')?.value || 'partial';
+
+    // 正規表現を関数の先頭で一度だけコンパイル
+    let compiledRegex = null;
+    if (searchMethod === "regex" && searchKeyword.trim() !== '') {
+        try {
+            compiledRegex = new RegExp(searchKeyword, 'i');
+        } catch (e) {
+            // 不正な正規表現: 全件不一致とする
+            return [];
+        }
+    }
+
     const targetsToSearch = {
         title: controls.searchTargetName.checked,
         description: controls.searchTargetDescription.checked,
@@ -171,12 +183,7 @@ function getFilteredTerms(terms, controls) {
                     case "exact":
                         return targetText.toLowerCase() === searchKeyword.toLowerCase();
                     case "regex":
-                        try {
-                            if (searchKeyword.trim() === '') return false;
-                            return new RegExp(searchKeyword, 'i').test(targetText);
-                        } catch (e) {
-                            return false; // 不正な正規表現
-                        }
+                        return compiledRegex ? compiledRegex.test(targetText) : false;
                     case "partial":
                     default:
                         return targetText.toLowerCase().includes(searchKeyword.toLowerCase());

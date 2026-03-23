@@ -18,11 +18,14 @@ public class InfrastructureQueryService {
         this.typesQueryService = typesQueryService;
     }
 
-    public OutboundImplementations outputImplementations(JigRepository jigRepository) {
+    public OutboundAdapters outboundAdapters(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
-
         var accessorRepositories = jigRepository.externalAccessorRepositories();
-        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        return OutboundAdapters.from(jigTypes, accessorRepositories);
+    }
+
+    public OutboundImplementations outputImplementations(JigRepository jigRepository) {
+        var outboundAdapters = outboundAdapters(jigRepository);
         var outputImplementations = OutboundImplementations.from(outboundAdapters);
         if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
         return outputImplementations;

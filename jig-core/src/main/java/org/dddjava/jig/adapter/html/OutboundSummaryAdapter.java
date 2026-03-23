@@ -30,10 +30,7 @@ public class OutboundSummaryAdapter {
 
     @HandleDocument(JigDocument.OutputsSummary)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
-        var jigTypes = jigService.jigTypes(repository);
-
-        var accessorRepositories = repository.externalAccessorRepositories();
-        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        var outboundAdapters = jigService.outboundAdapters(repository);
 
         var json = buildJson(outboundAdapters);
 

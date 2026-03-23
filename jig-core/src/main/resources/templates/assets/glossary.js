@@ -20,13 +20,17 @@ function sortTerms(terms, sortKey) {
     });
 }
 
+function normalizeGlossaryData(data) {
+    if (!data) return null;
+    if (Array.isArray(data)) return data;
+    if (data.terms) return data.terms;
+    return Object.entries(data).map(([fqn, term]) => ({...term, fqn}));
+}
+
 function getGlossaryData() {
     const glossaryData = globalThis.glossaryData;
-    if (glossaryData) {
-        if (Array.isArray(glossaryData)) return glossaryData;
-        if (glossaryData.terms) return glossaryData.terms;
-        return Object.entries(glossaryData).map(([fqn, term]) => ({...term, fqn}));
-    }
+    const normalized = normalizeGlossaryData(glossaryData);
+    if (normalized) return normalized;
 
     const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
     if (!script) return [];
@@ -34,9 +38,7 @@ function getGlossaryData() {
     const jsonText = script.textContent || "{}";
     try {
         const parsed = JSON.parse(jsonText);
-        if (Array.isArray(parsed)) return parsed;
-        if (parsed?.terms) return parsed.terms;
-        return Object.entries(parsed).map(([fqn, term]) => ({...term, fqn}));
+        return normalizeGlossaryData(parsed) ?? [];
     } catch (e) {
         return [];
     }
@@ -270,6 +272,7 @@ if (typeof module !== "undefined" && module.exports) {
         sortTerms,
         getFilteredTerms,
         getGlossaryData,
+        normalizeGlossaryData,
         buildTermAnchorId,
         escapeCsvValue,
         buildGlossaryCsv,

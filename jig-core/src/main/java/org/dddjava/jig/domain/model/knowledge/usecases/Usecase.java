@@ -43,6 +43,7 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
 
         List<JigMethod> usingRepositoryMethods = usingMethods.invokedMethodStream()
                 .map(methodCall -> methodCall.jigMethodId())
+                .distinct() // 同じメソッドの複数回呼び出しによる重複を排除
                 .flatMap(jigMethodId -> outboundAdapters.findPortOperation(jigMethodId).stream())
                 .map(OutboundPortOperation::jigMethod)
                 .toList();

@@ -20,6 +20,7 @@ import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * ユースケース
@@ -55,7 +56,7 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
         return new Usecase(serviceMethod, usingRepositoryMethods, usingServiceMethods, userServiceMethods, usecaseCategory);
     }
 
-    private static java.util.stream.Stream<OutboundPort> outboundPorts(OutboundAdapter outboundAdapter) {
+    private static Stream<OutboundPort> outboundPorts(OutboundAdapter outboundAdapter) {
         var jigType = outboundAdapter.jigType();
         if (jigType.jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
             return java.util.stream.Stream.of(new OutboundPort(jigType));

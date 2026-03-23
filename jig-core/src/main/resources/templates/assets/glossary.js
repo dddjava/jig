@@ -128,13 +128,7 @@ function renderFilteredTerms(terms, controls) {
 function renderMarkdownDescriptions() {
     Array.from(document.getElementsByClassName("markdown"))
         .forEach(node => {
-            if (globalThis.Jig?.markdown?.parse) {
-                node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
-                return;
-            }
-            if (window.marked) {
-                node.innerHTML = marked.parse(node.innerHTML);
-            }
+            node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
         });
 }
 

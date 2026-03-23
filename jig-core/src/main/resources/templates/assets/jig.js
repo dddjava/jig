@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* ===== marked ===== */
-Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked.parse(x.innerHTML))
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = globalThis.Jig.markdown.parse(x.innerHTML))
 
 /* ===== Mermaid ===== */
 const DEFAULT_MAX_TEXT_SIZE = 50000;

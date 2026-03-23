@@ -416,8 +416,7 @@ label {
     margin-top: 0;
     box-shadow: none;
 }
-.glossary .search-option label,
-.glossary .misc-option label {
+.glossary .search-option label {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -440,8 +439,10 @@ label {
 .glossary .checkbox-options label,
 .glossary .radio-options label,
 .glossary .misc-option label {
+    display: flex;
     align-items: center;
     flex-direction: row;
+    gap: 8px;
 }
 .glossary input[type="text"] {
     width: 100%;

@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.SimpleInstruction;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
@@ -13,14 +12,12 @@ import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
-import org.dddjava.jig.domain.model.information.outbound.OutboundAdapter;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.OutboundPort;
 import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * ユースケース
@@ -45,7 +42,7 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
         List<JigMethod> usingRepositoryMethods = outboundAdapters.stream()
-                .flatMap(adapter -> outboundPorts(adapter)
+                .flatMap(adapter -> adapter.outboundPortStream()
                         .flatMap(OutboundPort::operationStream))
                 .filter(op -> usingMethods.invokedMethodStream().anyMatch(m -> m.jigMethodIdIs(op.jigMethodId())))
                 .map(OutboundPortOperation::jigMethod)
@@ -54,14 +51,6 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
         return new Usecase(serviceMethod, usingRepositoryMethods, usingServiceMethods, userServiceMethods, usecaseCategory);
-    }
-
-    private static Stream<OutboundPort> outboundPorts(OutboundAdapter outboundAdapter) {
-        var jigType = outboundAdapter.jigType();
-        if (jigType.jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
-            return Stream.of(new OutboundPort(jigType));
-        }
-        return outboundAdapter.implementsPortStream();
     }
 
     public boolean usingFromController() {

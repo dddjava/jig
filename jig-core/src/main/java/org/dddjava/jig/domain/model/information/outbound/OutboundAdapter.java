@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.outbound;
 
+import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -49,6 +50,16 @@ public record OutboundAdapter(
                 .toList();
 
         return new OutboundAdapter(jigType, outboundPorts, outboundAdapterExecutions);
+    }
+
+    public Stream<OutboundPort> outboundPortStream() {
+        // 自身がインタフェースの場合は自身も加える
+        // MEMO: というかimplementsPortStreamの時点で含まれていていいのでは？
+        var jigType = jigType();
+        if (jigType.jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
+            return Stream.concat(Stream.of(new OutboundPort(jigType)), implementsPortStream());
+        }
+        return implementsPortStream();
     }
 
     public Stream<OutboundPort> implementsPortStream() {

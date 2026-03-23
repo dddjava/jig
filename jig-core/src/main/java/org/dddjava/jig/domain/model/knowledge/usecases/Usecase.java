@@ -42,11 +42,13 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
         List<JigMethod> usingRepositoryMethods = outboundAdapters.stream()
-                .flatMap(adapter -> adapter.outboundPortStream()
-                        .flatMap(OutboundPort::operationStream))
+                // PortOperationをかき集める
+                // FIXME: Usecaseごとにやることではない
+                .flatMap(adapter -> adapter.outboundPortStream().flatMap(OutboundPort::operationStream))
+                // ServiceMethodで使用しているメソッドに絞り込み
                 .filter(op -> usingMethods.invokedMethodStream().anyMatch(m -> m.jigMethodIdIs(op.jigMethodId())))
                 .map(OutboundPortOperation::jigMethod)
-                .distinct()
+                .distinct() // 同じPortを複数のAdapterが実装している場合に重複するため除去
                 .toList();
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;

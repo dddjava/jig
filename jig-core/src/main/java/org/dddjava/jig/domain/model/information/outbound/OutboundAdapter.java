@@ -54,6 +54,8 @@ public record OutboundAdapter(
 
     public Stream<OutboundPort> outboundPortStream() {
         // 自身がインタフェースの場合は自身も加える
+        // たとえばinterfaceのRepository(Spring Data JDBCなど)は実装クラスが存在しない。これを直接Usecaseで使用する場合はPortかつAdapterになる
+        // MEMO: Portか否かはOutboundAdapterの実装だけからは判断がつかない。@RepositoryをPortと決め打つなら可能だが・・・。
         // MEMO: というかimplementsPortStreamの時点で含まれていていいのでは？
         var jigType = jigType();
         if (jigType.jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {

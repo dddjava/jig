@@ -6,9 +6,7 @@ import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorReposito
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
-import org.dddjava.jig.domain.model.information.outbound.OutboundAdapter;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
-import org.dddjava.jig.domain.model.information.outbound.OutboundPort;
 import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 
@@ -26,7 +24,7 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
 
     public static DatasourceAngles from(OutboundAdapters outboundAdapters, PersistenceAccessorRepository persistenceAccessorRepository, CallerMethodsFactory callerMethodsFactory) {
         return new DatasourceAngles(outboundAdapters.stream()
-                .flatMap(adapter -> outboundPorts(adapter)
+                .flatMap(adapter -> adapter.outboundPortStream()
                         .flatMap(port -> port.operationStream()
                                 .flatMap(portOp -> adapter.findExecution(portOp).stream()
                                         .map(exec -> {
@@ -54,15 +52,6 @@ public record DatasourceAngles(List<DatasourceAngle> list) {
                                         }))))
                 .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.interfaceMethod().jigMethodId().value()))
                 .toList());
-    }
-
-    private static java.util.stream.Stream<OutboundPort> outboundPorts(OutboundAdapter outboundAdapter) {
-        // interfaceのRepository(Spring Data JDBCなど)は実装クラスが存在しないため、自身をoutput portとして扱う
-        var jigType = outboundAdapter.jigType();
-        if (jigType.jigTypeHeader().javaTypeDeclarationKind() == org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind.INTERFACE) {
-            return java.util.stream.Stream.of(new OutboundPort(jigType));
-        }
-        return outboundAdapter.implementsPortStream();
     }
 
     /**

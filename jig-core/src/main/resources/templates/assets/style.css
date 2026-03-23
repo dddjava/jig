@@ -90,6 +90,15 @@ aside.notice {
     font-size: 0.8em;
     color: silver;
 }
+.meta-label {
+    font-size: 0.8em;
+    color: silver;
+    margin-right: 4px;
+}
+.meta-value {
+    font-size: 0.9em;
+    color: gray;
+}
 .deprecated {
     text-decoration: line-through !important;
 }

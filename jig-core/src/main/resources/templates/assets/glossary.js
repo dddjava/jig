@@ -91,13 +91,22 @@ function renderGlossaryTerms(terms, displayMode) {
         if (displayMode === "full") {
             const metaItems = [];
             if (term.fqn) {
-                metaItems.push(createElement("div", {textContent: `完全修飾名: ${term.fqn}`}));
+                metaItems.push(createElement("div", {children: [
+                    createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
+                    createElement("span", {className: "meta-value", textContent: term.fqn}),
+                ]}));
             }
             if (term.simpleText) {
-                metaItems.push(createElement("div", {textContent: `単純名: ${term.simpleText}`}));
+                metaItems.push(createElement("div", {children: [
+                    createElement("span", {className: "meta-label", textContent: "単純名"}),
+                    createElement("span", {className: "meta-value", textContent: term.simpleText}),
+                ]}));
             }
             if (term.kind) {
-                metaItems.push(createElement("div", {textContent: `種類: ${term.kind}`}));
+                metaItems.push(createElement("div", {children: [
+                    createElement("span", {className: "meta-label", textContent: "種類"}),
+                    createElement("span", {className: "meta-value", textContent: term.kind}),
+                ]}));
             }
             if (metaItems.length > 0) {
                 metaChildren.push(createElement("section", {

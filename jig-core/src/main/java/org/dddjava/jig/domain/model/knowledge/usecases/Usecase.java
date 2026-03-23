@@ -59,7 +59,7 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
     private static Stream<OutboundPort> outboundPorts(OutboundAdapter outboundAdapter) {
         var jigType = outboundAdapter.jigType();
         if (jigType.jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
-            return java.util.stream.Stream.of(new OutboundPort(jigType));
+            return Stream.of(new OutboundPort(jigType));
         }
         return outboundAdapter.implementsPortStream();
     }

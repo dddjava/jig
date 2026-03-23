@@ -39,8 +39,8 @@ public class UsecaseQueryService {
 
     public ServiceAngles serviceAngles(JigRepository jigRepository) {
         var serviceMethods = serviceMethods(jigRepository);
-        var outputImplementations = infrastructureQueryService.outputImplementations(jigRepository);
-        return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outputImplementations);
+        var outboundAdapters = infrastructureQueryService.outboundAdapters(jigRepository);
+        return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outboundAdapters);
     }
 
     public StringComparingMethodList stringComparing(JigRepository jigRepository) {

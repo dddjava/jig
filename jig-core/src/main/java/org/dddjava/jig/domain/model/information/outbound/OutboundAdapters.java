@@ -24,4 +24,8 @@ public record OutboundAdapters(Collection<OutboundAdapter> values) {
     public Stream<OutboundAdapter> stream() {
         return values.stream();
     }
+
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
 }

@@ -201,7 +201,7 @@ public class ListAdapter {
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofNumber("循環的複雑度", item -> item.serviceMethod().method().instructions().cyclomaticComplexity()),
                         ReportItem.ofString("使用しているサービスのメソッド", item -> item.usingServiceMethods().stream().map(invokedMethod -> invokedMethod.asSignatureAndReturnTypeSimpleText()).collect(STREAM_COLLECTOR)),
-                        ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().list().stream()
+                        ReportItem.ofString("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().stream()
                                 .map(JigMethod::simpleMethodSignatureText)
                                 .collect(STREAM_COLLECTOR)),
                         ReportItem.ofString("null使用", item -> markIfTrue(item.useNull())),

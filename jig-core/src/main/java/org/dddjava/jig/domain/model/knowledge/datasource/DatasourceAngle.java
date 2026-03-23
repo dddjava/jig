@@ -5,7 +5,9 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.outbound.pair.OutboundImplementation;
+import org.dddjava.jig.domain.model.information.outbound.OutboundAdapterExecution;
+import org.dddjava.jig.domain.model.information.outbound.OutboundPort;
+import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 
 import java.util.List;
 import java.util.Map;
@@ -17,22 +19,26 @@ import java.util.stream.Stream;
  */
 public class DatasourceAngle {
 
-    private final OutboundImplementation outboundImplementation;
+    private final OutboundPortOperation portOperation;
+    private final OutboundAdapterExecution adapterExecution;
+    private final OutboundPort outboundPort;
     private final Map<PersistenceOperationType, List<String>> tablesMap;
     private final CallerMethods callerMethods;
 
-    public DatasourceAngle(OutboundImplementation outboundImplementation, Map<PersistenceOperationType, List<String>> tablesMap, CallerMethods callerMethods) {
-        this.outboundImplementation = outboundImplementation;
+    public DatasourceAngle(OutboundPortOperation portOperation, OutboundAdapterExecution adapterExecution, OutboundPort outboundPort, Map<PersistenceOperationType, List<String>> tablesMap, CallerMethods callerMethods) {
+        this.portOperation = portOperation;
+        this.adapterExecution = adapterExecution;
+        this.outboundPort = outboundPort;
         this.tablesMap = tablesMap;
         this.callerMethods = callerMethods;
     }
 
     public TypeId declaringType() {
-        return outboundImplementation.interfaceJigType().id();
+        return outboundPort.jigType().id();
     }
 
     public JigMethod interfaceMethod() {
-        return outboundImplementation.outboundPortOperaionAsJigMethod();
+        return portOperation.jigMethod();
     }
 
     public String simpleMethodSignatureText() {
@@ -84,7 +90,7 @@ public class DatasourceAngle {
     }
 
     public JigMethod concreteMethod() {
-        return outboundImplementation.concreteMethod();
+        return adapterExecution.jigMethod();
     }
 
     public CallerMethods callerMethods() {
@@ -100,7 +106,7 @@ public class DatasourceAngle {
     }
 
     public String typeLabel() {
-        return outboundImplementation.interfaceJigType().label();
+        return outboundPort.jigType().label();
     }
 
     private List<String> tableNames(PersistenceOperationType persistenceOperationType) {

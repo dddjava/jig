@@ -3,7 +3,6 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
-import org.dddjava.jig.domain.model.information.outbound.pair.OutboundImplementations;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngles;
 
@@ -21,19 +20,14 @@ public class InfrastructureQueryService {
     public OutboundAdapters outboundAdapters(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
         var accessorRepositories = jigRepository.externalAccessorRepositories();
-        return OutboundAdapters.from(jigTypes, accessorRepositories);
-    }
-
-    public OutboundImplementations outputImplementations(JigRepository jigRepository) {
-        var outboundAdapters = outboundAdapters(jigRepository);
-        var outputImplementations = OutboundImplementations.from(outboundAdapters);
-        if (outputImplementations.empty()) jigEventRepository.registerリポジトリが見つからない();
-        return outputImplementations;
+        var outboundAdapters = OutboundAdapters.from(jigTypes, accessorRepositories);
+        if (outboundAdapters.isEmpty()) jigEventRepository.registerリポジトリが見つからない();
+        return outboundAdapters;
     }
 
     public DatasourceAngles datasourceAngles(JigRepository jigRepository) {
         var jigTypes = typesQueryService.jigTypes(jigRepository);
-        var outputImplementations = outputImplementations(jigRepository);
-        return DatasourceAngles.from(outputImplementations, jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), MethodRelations.from(jigTypes));
+        var outboundAdapters = outboundAdapters(jigRepository);
+        return DatasourceAngles.from(outboundAdapters, jigRepository.externalAccessorRepositories().persistenceAccessorRepository(), MethodRelations.from(jigTypes));
     }
 }

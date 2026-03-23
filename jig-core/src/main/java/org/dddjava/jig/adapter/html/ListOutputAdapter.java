@@ -148,7 +148,7 @@ public class ListOutputAdapter {
         List<String> usingServiceMethods = usecase.usingServiceMethods().stream()
                 .map(methodCall -> methodCall.asSignatureAndReturnTypeSimpleText())
                 .toList();
-        List<String> usingRepositoryMethods = usecase.usingRepositoryMethods().list().stream()
+        List<String> usingRepositoryMethods = usecase.usingRepositoryMethods().stream()
                 .map(jigMethod -> jigMethod.simpleMethodSignatureText())
                 .toList();
         return Json.object("packageName", usecase.serviceMethod().declaringType().packageId().asText())

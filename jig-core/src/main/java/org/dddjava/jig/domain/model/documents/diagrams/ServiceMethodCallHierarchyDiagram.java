@@ -113,7 +113,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         Set<TypeId> repositories = new HashSet<>();
         RelationText repositoryRelation = new RelationText();
         for (Usecase usecase : angles) {
-            for (JigMethod repositoryMethod : usecase.usingRepositoryMethods().list()) {
+            for (JigMethod repositoryMethod : usecase.usingRepositoryMethods()) {
                 repositoryRelation.add(usecase.serviceMethod().method().jigMethodId(), repositoryMethod.declaringType());
                 repositories.add(repositoryMethod.declaringType());
             }

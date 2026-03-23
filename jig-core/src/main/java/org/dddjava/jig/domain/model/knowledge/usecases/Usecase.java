@@ -9,10 +9,12 @@ import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
+import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
-import org.dddjava.jig.domain.model.information.outbound.pair.OutboundImplementationPortMethods;
-import org.dddjava.jig.domain.model.information.outbound.pair.OutboundImplementations;
+import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
+import org.dddjava.jig.domain.model.information.outbound.OutboundPort;
+import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 
 import java.util.Collection;
 
@@ -27,21 +29,35 @@ import java.util.Collection;
  * ハンドラはユースケースだが、ハンドラでないものもユースケースの可能性がある。実装上の区別はつけづらいので、
  * Javadocコメントの記述有無などで判断する？
  */
-public record Usecase(ServiceMethod serviceMethod, OutboundImplementationPortMethods usingOutboundImplementationPortMethods,
+public record Usecase(ServiceMethod serviceMethod, java.util.List<JigMethod> usingRepositoryMethods,
                       Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
                       UsecaseCategory usecaseCategory) {
 
-    public static Usecase from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutboundImplementations outboundImplementations) {
+    public static Usecase from(ServiceMethod serviceMethod, ServiceMethods serviceMethods, InputAdapters inputAdapters, OutboundAdapters outboundAdapters) {
         UsingMethods usingMethods = serviceMethod.usingMethods();
 
         Collection<JigMethodId> userServiceMethods = serviceMethod.callerMethods().filter(jigMethodId -> serviceMethods.contains(jigMethodId));
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
-        OutboundImplementationPortMethods usingOutboundImplementationPortMethods = outboundImplementations.repositoryMethods().filter(usingMethods);
+        java.util.List<JigMethod> usingRepositoryMethods = outboundAdapters.stream()
+                .flatMap(adapter -> outboundPorts(adapter)
+                        .flatMap(OutboundPort::operationStream))
+                .filter(op -> usingMethods.invokedMethodStream().anyMatch(m -> m.jigMethodIdIs(op.jigMethodId())))
+                .map(OutboundPortOperation::jigMethod)
+                .distinct()
+                .toList();
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
-        return new Usecase(serviceMethod, usingOutboundImplementationPortMethods, usingServiceMethods, userServiceMethods, usecaseCategory);
+        return new Usecase(serviceMethod, usingRepositoryMethods, usingServiceMethods, userServiceMethods, usecaseCategory);
+    }
+
+    private static java.util.stream.Stream<OutboundPort> outboundPorts(org.dddjava.jig.domain.model.information.outbound.OutboundAdapter outboundAdapter) {
+        var jigType = outboundAdapter.jigType();
+        if (jigType.jigTypeHeader().javaTypeDeclarationKind() == org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind.INTERFACE) {
+            return java.util.stream.Stream.of(new OutboundPort(jigType));
+        }
+        return outboundAdapter.implementsPortStream();
     }
 
     public boolean usingFromController() {
@@ -52,8 +68,8 @@ public record Usecase(ServiceMethod serviceMethod, OutboundImplementationPortMet
         return serviceMethod.methodUsingFields();
     }
 
-    public OutboundImplementationPortMethods usingRepositoryMethods() {
-        return usingOutboundImplementationPortMethods;
+    public java.util.List<JigMethod> usingRepositoryMethods() {
+        return usingRepositoryMethods;
     }
 
     public boolean useStream() {

@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.SimpleInstruction;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
@@ -12,11 +13,13 @@ import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
+import org.dddjava.jig.domain.model.information.outbound.OutboundAdapter;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.outbound.OutboundPort;
 import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * ユースケース
@@ -29,7 +32,7 @@ import java.util.Collection;
  * ハンドラはユースケースだが、ハンドラでないものもユースケースの可能性がある。実装上の区別はつけづらいので、
  * Javadocコメントの記述有無などで判断する？
  */
-public record Usecase(ServiceMethod serviceMethod, java.util.List<JigMethod> usingRepositoryMethods,
+public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingRepositoryMethods,
                       Collection<MethodCall> usingServiceMethods, Collection<JigMethodId> userServiceMethods,
                       UsecaseCategory usecaseCategory) {
 
@@ -40,7 +43,7 @@ public record Usecase(ServiceMethod serviceMethod, java.util.List<JigMethod> usi
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
-        java.util.List<JigMethod> usingRepositoryMethods = outboundAdapters.stream()
+        List<JigMethod> usingRepositoryMethods = outboundAdapters.stream()
                 .flatMap(adapter -> outboundPorts(adapter)
                         .flatMap(OutboundPort::operationStream))
                 .filter(op -> usingMethods.invokedMethodStream().anyMatch(m -> m.jigMethodIdIs(op.jigMethodId())))
@@ -52,9 +55,9 @@ public record Usecase(ServiceMethod serviceMethod, java.util.List<JigMethod> usi
         return new Usecase(serviceMethod, usingRepositoryMethods, usingServiceMethods, userServiceMethods, usecaseCategory);
     }
 
-    private static java.util.stream.Stream<OutboundPort> outboundPorts(org.dddjava.jig.domain.model.information.outbound.OutboundAdapter outboundAdapter) {
+    private static java.util.stream.Stream<OutboundPort> outboundPorts(OutboundAdapter outboundAdapter) {
         var jigType = outboundAdapter.jigType();
-        if (jigType.jigTypeHeader().javaTypeDeclarationKind() == org.dddjava.jig.domain.model.data.types.JavaTypeDeclarationKind.INTERFACE) {
+        if (jigType.jigTypeHeader().javaTypeDeclarationKind() == JavaTypeDeclarationKind.INTERFACE) {
             return java.util.stream.Stream.of(new OutboundPort(jigType));
         }
         return outboundAdapter.implementsPortStream();
@@ -68,7 +71,7 @@ public record Usecase(ServiceMethod serviceMethod, java.util.List<JigMethod> usi
         return serviceMethod.methodUsingFields();
     }
 
-    public java.util.List<JigMethod> usingRepositoryMethods() {
+    public List<JigMethod> usingRepositoryMethods() {
         return usingRepositoryMethods;
     }
 

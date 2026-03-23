@@ -109,7 +109,7 @@ function renderGlossaryTerms(terms, displayMode) {
             children: [
                 createElement("h3", {children: [createElement("a", {id: anchorId, textContent: term.title || ""})]}),
                 ...metaChildren,
-                createElement("div", {className: "markdown", innerHTML: term.description || ""}),
+                createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
             ]
         });
         list.appendChild(article);
@@ -122,7 +122,6 @@ function renderFilteredTerms(terms, controls) {
     // renderGlossaryTerms に表示モードを渡す
     renderTermSidebar(sortedTerms);
     renderGlossaryTerms(sortedTerms, controls.displayModeSelect?.value);
-    renderMarkdownDescriptions();
 }
 
 function renderMarkdownDescriptions() {

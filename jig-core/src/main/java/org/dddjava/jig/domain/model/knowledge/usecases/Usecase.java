@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
-import org.dddjava.jig.domain.model.information.outbound.OutboundPort;
 import org.dddjava.jig.domain.model.information.outbound.OutboundPortOperation;
 
 import java.util.Collection;
@@ -41,15 +40,13 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
         Collection<MethodCall> usingServiceMethods = serviceMethod.usingMethods().invokedMethodStream()
                 .filter(invokedMethod -> serviceMethods.contains(invokedMethod.jigMethodId()))
                 .toList();
-        List<JigMethod> usingRepositoryMethods = outboundAdapters.stream()
-                // PortOperationをかき集める
-                // FIXME: Usecaseごとにやることではない
-                .flatMap(adapter -> adapter.outboundPortStream().flatMap(OutboundPort::operationStream))
-                // ServiceMethodで使用しているメソッドに絞り込み
-                .filter(op -> usingMethods.invokedMethodStream().anyMatch(m -> m.jigMethodIdIs(op.jigMethodId())))
+
+        List<JigMethod> usingRepositoryMethods = usingMethods.invokedMethodStream()
+                .map(methodCall -> methodCall.jigMethodId())
+                .flatMap(jigMethodId -> outboundAdapters.findPortOperation(jigMethodId).stream())
                 .map(OutboundPortOperation::jigMethod)
-                .distinct() // 同じPortを複数のAdapterが実装している場合に重複するため除去
                 .toList();
+
         Collection<Entrypoint> entrypointMethods = inputAdapters.collectEntrypointMethodOf(serviceMethod.callerMethods());
         UsecaseCategory usecaseCategory = entrypointMethods.isEmpty() ? UsecaseCategory.その他 : UsecaseCategory.ハンドラ;
         return new Usecase(serviceMethod, usingRepositoryMethods, usingServiceMethods, userServiceMethods, usecaseCategory);

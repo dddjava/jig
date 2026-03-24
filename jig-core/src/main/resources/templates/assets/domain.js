@@ -12,8 +12,6 @@ const domainSettings = {
 const diagramRegistry = []; // [{container, pkg}]
 const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
 
-// ===== 型定義（globalThis.domainData スキーマ） =====
-
 /**
  * @typedef {Object} TypeRef
  * @property {string} fqn

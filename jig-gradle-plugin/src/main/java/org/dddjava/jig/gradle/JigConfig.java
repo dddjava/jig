@@ -2,13 +2,8 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.gradle.api.Project;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -50,38 +45,12 @@ public class JigConfig {
                 .toList();
     }
 
-    public JigProperties toJigProperties(Project project) {
-        return new JigProperties(
-                documentTypes(),
-                Optional.ofNullable(modelPattern).filter(s -> !s.isEmpty()), resolveOutputDirectory(project),
-                diagramFormat,
-                diagramTransitiveReduction,
-                parseDotTimeout()
-        );
+    public List<String> getDocumentTypesExclude() {
+        return documentTypesExclude;
     }
 
-    private Duration parseDotTimeout() {
-        if (dotTimeout.endsWith("ms")) {
-            return Duration.ofMillis(Long.parseLong(dotTimeout.substring(0, dotTimeout.length() - 2)));
-        }
-        if (dotTimeout.endsWith("s")) {
-            return Duration.ofSeconds(Long.parseLong(dotTimeout.substring(0, dotTimeout.length() - 1)));
-        }
-        throw new IllegalArgumentException("dotTimeout must be end with ms or s. " + dotTimeout + " is invalid.");
-    }
-
-    private Path resolveOutputDirectory(Project project) {
-        if (this.outputDirectory.isEmpty()) {
-            return defaultOutputDirectory(project);
-        }
-        return Paths.get(this.outputDirectory);
-    }
-
-    private Path defaultOutputDirectory(Project project) {
-        Path path = Paths.get(getOutputDirectory());
-        if (path.isAbsolute()) return path;
-        var buildDirectory = project.getLayout().getBuildDirectory();
-        return buildDirectory.getAsFile().get().toPath().resolve("jig");
+    public void setDocumentTypesExclude(List<String> documentTypesExclude) {
+        this.documentTypesExclude = documentTypesExclude;
     }
 
     public String getModelPattern() {

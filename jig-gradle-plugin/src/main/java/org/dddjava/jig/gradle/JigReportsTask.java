@@ -3,35 +3,106 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
 import org.dddjava.jig.JigResult;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.Project;
+import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
 @DisableCachingByDefault(because = "JigReportsTask depends on JigExecutor and cannot define output")
-public class JigReportsTask extends DefaultTask {
+public abstract class JigReportsTask extends DefaultTask {
+
+    @Input
+    public abstract Property<String> getModelPattern();
+
+    @Input
+    public abstract ListProperty<String> getDocumentTypes();
+
+    @Input
+    public abstract ListProperty<String> getDocumentTypesExclude();
+
+    @Input
+    public abstract Property<String> getDiagramFormat();
+
+    @Input
+    public abstract Property<Boolean> getDiagramTransitiveReduction();
+
+    @Input
+    public abstract Property<String> getDotTimeout();
+
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    public abstract ConfigurableFileCollection getClassFiles();
+
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    public abstract ConfigurableFileCollection getSourceFiles();
+
+    @Internal
+    public abstract Property<Boolean> getJavaPluginApplied();
+
+    @OutputDirectory
+    public abstract DirectoryProperty getOutputDirectory();
 
     @TaskAction
     void outputReports() {
-        Project project = getProject();
-        JigConfig config = project.getExtensions().findByType(JigConfig.class);
-        if (config == null) {
-            getLogger().warn("jig-gradle-pluginの設定が取得できません。通常は起こらないはずで、疑われるのはプラグイン側の実装ミスです。続行できないため終了します。");
-            return;
+        if (!getJavaPluginApplied().getOrElse(false)) {
+            throw new IllegalStateException("Java プラグインが適用されていません。");
         }
 
-        Configuration configuration = Configuration.from(config.toJigProperties(getProject()));
+        List<JigDocument> documentTypes = resolveDocumentTypes();
+        Path outputDirectory = getOutputDirectory().getAsFile().get().toPath();
 
-        getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
+        JigProperties jigProperties = new JigProperties(
+                documentTypes,
+                Optional.ofNullable(getModelPattern().getOrNull()).filter(s -> !s.isEmpty()),
+                outputDirectory,
+                JigDiagramFormat.valueOf(getDiagramFormat().get()),
+                getDiagramTransitiveReduction().get(),
+                parseDotTimeout(getDotTimeout().get())
+        );
+
+        Configuration configuration = Configuration.from(jigProperties);
+
+        getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------",
+                jigProperties);
 
         long startTime = System.currentTimeMillis();
-        SourceBasePaths sourceBasePaths = new GradleProject(project).rawSourceLocations();
+
+        Set<Path> classPaths = getClassFiles().getFiles().stream()
+                .map(File::toPath)
+                .collect(Collectors.toSet());
+        Set<Path> sourcePaths = getSourceFiles().getFiles().stream()
+                .map(File::toPath)
+                .collect(Collectors.toSet());
+        SourceBasePaths sourceBasePaths = new SourceBasePaths(
+                new SourceBasePath(classPaths),
+                new SourceBasePath(sourcePaths)
+        );
 
         JigResult jigResult = JigExecutor.standard(configuration, sourceBasePaths);
         List<HandleResult> handleResultList = jigResult.listResult();
@@ -48,4 +119,28 @@ public class JigReportsTask extends DefaultTask {
                 System.currentTimeMillis() - startTime, resultLog);
     }
 
+    private List<JigDocument> resolveDocumentTypes() {
+        List<JigDocument> toExclude = getDocumentTypesExclude().get().stream()
+                .map(JigDocument::valueOf)
+                .toList();
+
+        List<String> includeTypes = getDocumentTypes().get();
+        List<JigDocument> toInclude = includeTypes.isEmpty()
+                ? JigDocument.canonical()
+                : includeTypes.stream().map(JigDocument::valueOf).toList();
+
+        return toInclude.stream()
+                .filter(each -> !toExclude.contains(each))
+                .toList();
+    }
+
+    private Duration parseDotTimeout(String dotTimeout) {
+        if (dotTimeout.endsWith("ms")) {
+            return Duration.ofMillis(Long.parseLong(dotTimeout.substring(0, dotTimeout.length() - 2)));
+        }
+        if (dotTimeout.endsWith("s")) {
+            return Duration.ofSeconds(Long.parseLong(dotTimeout.substring(0, dotTimeout.length() - 1)));
+        }
+        throw new IllegalArgumentException("dotTimeout must be end with ms or s. " + dotTimeout + " is invalid.");
+    }
 }

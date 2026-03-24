@@ -53,7 +53,7 @@ function parsePackageSummaryData(packageData) {
     return {
         packages: Array.isArray(packageData) ? packageData : (packageData?.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData?.relations ?? []),
-        causeRelationEvidence: Array.isArray(packageData) ? [] : (packageData?.causeRelationEvidence ?? []),
+        causeRelationEvidence: globalThis.typeRelationsData?.relations ?? [],
     };
 }
 

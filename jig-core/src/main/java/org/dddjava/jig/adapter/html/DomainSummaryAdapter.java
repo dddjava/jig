@@ -52,6 +52,14 @@ public class DomainSummaryAdapter {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("domainData", json);
+
+        var typeRelationships = jigService.typeRelationships(jigRepository);
+        var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
+                .map(relation -> Json.object("from", relation.from().fqn())
+                        .and("to", relation.to().fqn()))
+                .toList())).build();
+        jigDocumentWriter.writeJsDataAs("typeRelationsData", typeRelationsJson, "type-relations-data");
+
         return jigDocumentWriter.outputFilePaths();
     }
 
@@ -66,20 +74,9 @@ public class DomainSummaryAdapter {
                 .map(jigType -> buildTypeJson(jigType, enumModels))
                 .toList();
 
-        var coreInternalRtypeRelationships = TypeRelationships.internalRelation(jigTypes);
-        var relations = coreInternalRtypeRelationships.typeRelationships().stream()
-                .map(typeRelationship -> buildRelationship(typeRelationship))
-                .toList();
-
         return Json.object("packages", Json.arrayObjects(packages))
                 .and("types", Json.arrayObjects(types))
-                .and("relations", Json.arrayObjects(relations))
                 .build();
-    }
-
-    private JsonObjectBuilder buildRelationship(TypeRelationship typeRelationship) {
-        return Json.object("from", typeRelationship.from().fqn())
-                .and("to", typeRelationship.to().fqn());
     }
 
     private JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage) {

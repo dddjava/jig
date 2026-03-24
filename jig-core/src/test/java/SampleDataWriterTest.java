@@ -60,8 +60,7 @@ class SampleDataWriterTest {
         {
             var jigPackages = jigService.packages(repository);
             var packageRelations = jigService.packageRelations(repository);
-            var typeRelationships = jigService.typeRelationships(repository);
-            var json = PackageSummaryAdapter.buildJson(jigPackages, packageRelations, typeRelationships);
+            var json = PackageSummaryAdapter.buildJson(jigPackages, packageRelations);
             Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +

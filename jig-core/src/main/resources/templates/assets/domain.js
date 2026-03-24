@@ -218,7 +218,9 @@ function renderPackageNavItem(pkg) {
  * @returns {string | null} Mermaid記法のダイアグラム文字列、または関連がない場合はnull
  */
 function createRelationDiagram(pkg) {
-    const relations = globalThis.domainData.relations || [];
+    const typesMap = globalThis.domainData._typesMap;
+    const relations = (globalThis.typeRelationsData?.relations || [])
+        .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
     let pkgTypeFqns = new Set((pkg.types || []).map(t => t.fqn));
     if (pkgTypeFqns.size === 0) return null;

@@ -36,12 +36,18 @@ public class PackageSummaryAdapter {
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
         jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations, typeRelationships));
+        jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations));
+
+        var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
+                .map(relation -> Json.object("from", relation.from().fqn())
+                        .and("to", relation.to().fqn()))
+                .toList())).build();
+        jigDocumentWriter.writeJsDataAs("typeRelationsData", typeRelationsJson, "type-relations-data");
 
         return jigDocumentWriter.outputFilePaths();
     }
 
-    public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations, TypeRelationships typeRelationships) {
+    public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations) {
         return Json.object("packages", Json.arrayObjects(jigPackages.listPackage().stream()
                         .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
                                 .and("classCount", packageInfo.numberOfClasses()))
@@ -50,10 +56,6 @@ public class PackageSummaryAdapter {
                         .map(relation -> Json.object("from", relation.from().asText())
                                 .and("to", relation.to().asText()))
                         .toList()))
-                .and("causeRelationEvidence", Json.arrayObjects(typeRelationships.list().stream()
-                        .map(relation -> Json.object("from", relation.from().fqn())
-                                .and("to", relation.to().fqn()))
-                        .toList())
-                ).build();
+                .build();
     }
 }

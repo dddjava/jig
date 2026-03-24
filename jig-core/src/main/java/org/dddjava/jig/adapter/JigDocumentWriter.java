@@ -95,6 +95,17 @@ public class JigDocumentWriter {
         );
     }
 
+    public void writeJsDataAs(String variableName, String json, String fileName) {
+        write(
+                outputStream -> {
+                    try (var writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+                        writer.write("globalThis." + variableName + " = " + json);
+                    }
+                },
+                "data/" + fileName + ".js"
+        );
+    }
+
     public JigDocument jigDocument() {
         return jigDocument;
     }

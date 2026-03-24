@@ -762,13 +762,6 @@ const DomainApp = {
      * @returns {void}
      */
     init() {
-        /**
-         * @type {{
-         *   packages: PackageType[],
-         *   types: DomainType[],
-         *   relations: {from: string, to: string}[]
-         * }}
-         */
         const data = getDomainData();
         if (!data) return;
 

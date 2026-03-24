@@ -162,6 +162,27 @@
         .collapsed > .json-collapsed-marker { display: inline; }
         .collapsed > .json-toggle { transform: rotate(-90deg); }
         .highlight { background: #613315; }
+        .line {
+            display: flex;
+            min-height: 1.5em;
+        }
+        .line-gutter {
+            min-width: 3ch;
+            text-align: right;
+            color: #555;
+            padding-right: 12px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .line-gutter.foldable {
+            cursor: pointer;
+            color: #858585;
+        }
+        .line-gutter.foldable:hover {
+            color: #ccc;
+            background: #2a2a2a;
+        }
+        .line-content { flex: 1; }
         #empty-msg {
             color: #666;
             padding: 32px 16px;
@@ -242,6 +263,27 @@ function syntaxHighlight(json) {
         });
 }
 
+function addLineNumbers(html) {
+    const lines = html.split('\n');
+    return lines.map((line, i) => {
+        const lineNum = i + 1;
+        const isFoldable = line.includes('json-collapsible') &&
+                           !line.includes('json-collapsed-marker');
+        const gutterClass = isFoldable ? 'line-gutter foldable' : 'line-gutter';
+        return `<div class="line"><span class="${gutterClass}">${lineNum}</span><span class="line-content">${line}</span></div>`;
+    }).join('');
+}
+
+function addLineNumbersText(text) {
+    const lines = text.split('\n');
+    const escaped = lines.map(line => line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")).join('\n');
+    const htmlLines = escaped.split('\n');
+    return htmlLines.map((line, i) => {
+        const lineNum = i + 1;
+        return `<div class="line"><span class="line-gutter">${lineNum}</span><span class="line-content">${line}</span></div>`;
+    }).join('');
+}
+
 function showJson(entry) {
     currentEntry = entry;
     currentEntryType = 'json';
@@ -252,7 +294,7 @@ function showJson(entry) {
 
     const formatted = JSON.stringify(data, null, 2);
     const pre = document.createElement("pre");
-    pre.innerHTML = syntaxHighlight(formatted);
+    pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
     view.innerHTML = "";
     view.appendChild(pre);
 
@@ -272,7 +314,7 @@ function showText(entry) {
     document.getElementById("search-box").value = "";
 
     const pre = document.createElement("pre");
-    pre.textContent = text;
+    pre.innerHTML = addLineNumbersText(text);
     view.innerHTML = "";
     view.appendChild(pre);
 
@@ -339,7 +381,7 @@ function showSchema(entry) {
 
     const formatted = JSON.stringify(schema, null, 2);
     const pre = document.createElement("pre");
-    pre.innerHTML = syntaxHighlight(formatted);
+    pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
     view.innerHTML = "";
     view.appendChild(pre);
 
@@ -439,31 +481,37 @@ function applyJq(expr) {
     }
     const formatted = results.map(r => JSON.stringify(r, null, 2)).join('\n');
     const pre = document.createElement("pre");
-    pre.innerHTML = syntaxHighlight(formatted);
+    pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
     view.innerHTML = "";
     view.appendChild(pre);
 }
 // ---- /jq サブセットエンジン ----
 
 function applySearch(keyword) {
-    const pre = document.querySelector("#json-view pre");
-    if (!pre) return;
     const re = new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+    const view = document.getElementById("json-view");
+    const pre = document.createElement("pre");
+
     if (currentEntryType === 'text') {
-        const escaped = globalThis[currentEntry.varName]
+        const text = globalThis[currentEntry.varName];
+        const escaped = text
             .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        pre.innerHTML = escaped.replace(re, m => `<mark class="highlight">${m}</mark>`);
-        return;
+        const highlighted = escaped.replace(re, m => `<mark class="highlight">${m}</mark>`);
+        pre.innerHTML = addLineNumbersText(highlighted);
+    } else {
+        const data = globalThis[currentEntry.varName];
+        const formatted = JSON.stringify(data, null, 2);
+        const html = syntaxHighlight(formatted);
+        const parts = html.split(/(<[^>]*>)/);
+        const highlightedParts = parts.map(part => {
+            if (part.startsWith('<')) return part;
+            return part.replace(re, m => `<mark class="highlight">${m}</mark>`);
+        });
+        pre.innerHTML = addLineNumbers(highlightedParts.join(''));
     }
-    const data = globalThis[currentEntry.varName];
-    const formatted = JSON.stringify(data, null, 2);
-    const html = syntaxHighlight(formatted);
-    const parts = html.split(/(<[^>]*>)/);
-    const highlightedParts = parts.map(part => {
-        if (part.startsWith('<')) return part;
-        return part.replace(re, m => `<mark class="highlight">${m}</mark>`);
-    });
-    pre.innerHTML = highlightedParts.join('');
+
+    view.innerHTML = "";
+    view.appendChild(pre);
 }
 
 function applyFilter(keyword) {
@@ -560,6 +608,9 @@ async function init() {
     document.getElementById("json-view").addEventListener("click", e => {
         if (e.target.classList.contains("json-toggle") || e.target.classList.contains("json-collapsed-marker")) {
             e.target.closest(".json-collapsible").classList.toggle("collapsed");
+        } else if (e.target.classList.contains("foldable")) {
+            const collapsible = e.target.closest(".line")?.querySelector(".json-collapsible");
+            if (collapsible) collapsible.classList.toggle("collapsed");
         }
     });
 }

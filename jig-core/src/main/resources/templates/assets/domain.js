@@ -12,6 +12,70 @@ const domainSettings = {
 const diagramRegistry = []; // [{container, pkg}]
 const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
 
+// ===== 型定義（globalThis.domainData スキーマ） =====
+
+/**
+ * @typedef {Object} TypeRef
+ * @property {string} fqn
+ * @property {TypeRef[]} [typeArgumentRefs]
+ */
+
+/**
+ * @typedef {Object} DomainField
+ * @property {string} name
+ * @property {TypeRef} typeRef
+ * @property {boolean} isDeprecated
+ */
+
+/**
+ * @typedef {Object} DomainMethod
+ * @property {string} fqn
+ * @property {TypeRef[]} parameterTypeRefs
+ * @property {TypeRef} returnTypeRef
+ * @property {boolean} isDeprecated
+ */
+
+/**
+ * @typedef {Object} EnumConstant
+ * @property {string} name
+ * @property {string[]} params
+ */
+
+/**
+ * @typedef {Object} EnumInfo
+ * @property {EnumConstant[]} constants
+ * @property {string[]} parameterNames
+ */
+
+/**
+ * @typedef {Object} DomainType
+ * @property {string} fqn
+ * @property {DomainField[]} fields
+ * @property {DomainMethod[]} methods
+ * @property {DomainMethod[]} staticMethods
+ * @property {EnumInfo} [enumInfo]
+ * @property {boolean} isDeprecated
+ */
+
+/**
+ * @typedef {Object} PackageType
+ * @property {string} fqn
+ * @property {{fqn: string}[]} types
+ */
+
+/**
+ * @typedef {Object} DomainData
+ * @property {PackageType[]} packages
+ * @property {DomainType[]} types
+ */
+
+/**
+ * @returns {DomainData}
+ */
+function getDomainData() {
+    return globalThis.domainData;
+}
+
 /**
  * @param {string} fqn
  * @returns {string}
@@ -43,21 +107,6 @@ function getGlossaryDescription(fqn) {
 function findGlossary(fqn) {
     return globalThis.glossaryData[fqn];
 }
-
-/**
- * @typedef {Object} TypeRef
- * @property {string} fqn
- * @property {TypeRef[]} [typeArgumentRefs]
- */
-
-/**
- * @typedef {{
- *     fqn: string,
- *     parameterTypeRefs: TypeRef[],
- *     returnTypeRef: TypeRef,
- *     isDeprecated: boolean
- * }} DomainMethod
- */
 
 /**
  * @param {DomainMethod} method
@@ -132,12 +181,6 @@ function createTypeLink(fqn, className = undefined) {
         textContent: getGlossaryTitle(fqn)
     });
 }
-
-/**
- * @typedef {Object} PackageType
- * @property {string} fqn
- * @property {{fqn: string}[]} types
- */
 
 /**
  * パッケージの直下の子パッケージを取得する
@@ -359,14 +402,6 @@ function createChildrenTable(pkg) {
 }
 
 /**
- * @typedef {{
- *     name: string,
- *     typeRef: TypeRef,
- *     isDeprecated: boolean,
- * }} DomainField
- */
-
-/**
  * @param {DomainField[]} fields
  * @returns {HTMLElement | null}
  */
@@ -455,18 +490,6 @@ function createMethodsList(kind, methods) {
         ]
     });
 }
-
-/**
- * @typedef {Object} EnumConstant
- * @property {string} name
- * @property {string[]} params
- */
-
-/**
- * @typedef {Object} EnumInfo
- * @property {EnumConstant[]} constants
- * @property {string[]} parameterNames
- */
 
 /**
  * @param {{enumInfo: EnumInfo | undefined, fqn: string}} type
@@ -579,16 +602,6 @@ function renderPackages(packages, container) {
         container.appendChild(section);
     });
 }
-
-/**
- * @typedef {Object} DomainType
- * @property {string} fqn
- * @property {DomainField[]} fields
- * @property {DomainMethod[]} methods
- * @property {DomainMethod[]} staticMethods
- * @property {EnumInfo} [enumInfo]
- * @property {boolean} isDeprecated
- */
 
 /**
  * @param {DomainType[]} types

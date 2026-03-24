@@ -59,6 +59,47 @@ const simpleGroup = {
 
 test.describe("outbound.js", () => {
 
+    // ----- getGlossaryMethodTitle -----
+
+    test.describe("getGlossaryMethodTitle", () => {
+        test("glossary未登録の場合はメソッド名と引数単純名を返す", () => {
+            assert.equal(
+                outbound.getGlossaryMethodTitle("com.example.Repository#hoge(java.lang.String)"),
+                "hoge(String)"
+            );
+        });
+
+        test("引数なしの場合は空括弧を返す", () => {
+            assert.equal(
+                outbound.getGlossaryMethodTitle("com.example.Port#list()"),
+                "list()"
+            );
+        });
+
+        test("複数引数の場合は全引数の単純名をカンマ区切りで返す", () => {
+            assert.equal(
+                outbound.getGlossaryMethodTitle("com.example.Service#save(com.example.User, java.lang.Long)"),
+                "save(User, Long)"
+            );
+        });
+
+        test("プリミティブ型はそのまま返す", () => {
+            assert.equal(
+                outbound.getGlossaryMethodTitle("com.example.Repo#find(int)"),
+                "find(int)"
+            );
+        });
+
+        test("glossary登録済みの場合はtitleを返す", () => {
+            globalThis.glossaryData = { "com.example.Port#save(com.example.User)": { title: "ユーザー保存" } };
+            assert.equal(
+                outbound.getGlossaryMethodTitle("com.example.Port#save(com.example.User)"),
+                "ユーザー保存"
+            );
+            delete globalThis.glossaryData;
+        });
+    });
+
     // ----- toCrudChar -----
 
     test.describe("toCrudChar", () => {

@@ -23,18 +23,28 @@ function getGlossaryTitle(fqn) {
 
 /**
  * メソッド FQN（"pkg.Class#method(args)" 形式）から表示用のタイトルを取得します。
- * glossary に登録されていない場合は、メソッド名部分を返します。
+ * glossary に登録されていない場合は、メソッド名＋引数の単純名を返します。
  * @param {string} fqn
  * @returns {string}
  */
 function getGlossaryMethodTitle(fqn) {
     const term = findGlossary(fqn);
     if (term) return term.title;
-    // メソッド名部分を取得: hoge.fuga.Class#foo(bar, baz) => foo
+    // メソッド名＋引数単純名を取得: hoge.fuga.Class#foo(java.lang.String) => foo(String)
     const hashIdx = fqn.lastIndexOf('#');
-    const parenIdx = fqn.lastIndexOf('(');
+    const parenIdx = fqn.indexOf('(', hashIdx);
+    const closeParenIdx = fqn.lastIndexOf(')');
     if (hashIdx >= 0 && parenIdx > hashIdx) {
-        return fqn.substring(hashIdx + 1, parenIdx);
+        const methodName = fqn.substring(hashIdx + 1, parenIdx);
+        const argsStr = closeParenIdx > parenIdx ? fqn.substring(parenIdx + 1, closeParenIdx) : '';
+        const simpleArgs = argsStr
+            ? argsStr.split(',').map(arg => {
+                const trimmed = arg.trim();
+                const dotIdx = trimmed.lastIndexOf('.');
+                return dotIdx >= 0 ? trimmed.substring(dotIdx + 1) : trimmed;
+              }).join(', ')
+            : '';
+        return `${methodName}(${simpleArgs})`;
     }
     return fqn;
 }
@@ -1071,6 +1081,7 @@ if (typeof module !== "undefined" && module.exports) {
         generatePersistenceMermaidCode,
         generateExternalTypeMermaidCode,
         addExternalAccessorNode,
+        getGlossaryMethodTitle,
         MermaidBuilder,
     };
 }

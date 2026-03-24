@@ -1,12 +1,10 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 public class JigConfig {
 
@@ -23,27 +21,6 @@ public class JigConfig {
     String dotTimeout = "10s";
 
     boolean diagramTransitiveReduction = true;
-
-    List<JigDocument> documentTypes() {
-        List<JigDocument> toExclude = documentTypesToExclude();
-        return documentTypesToInclude().stream()
-                .filter(each -> !toExclude.contains(each))
-                .toList();
-    }
-
-    List<JigDocument> documentTypesToExclude() {
-        if (documentTypesExclude.isEmpty()) return List.of();
-        return documentTypesExclude.stream()
-                .map(JigDocument::valueOf)
-                .toList();
-    }
-
-    List<JigDocument> documentTypesToInclude() {
-        if (documentTypes.isEmpty()) return JigDocument.canonical();
-        return documentTypes.stream()
-                .map(JigDocument::valueOf)
-                .toList();
-    }
 
     public List<String> getDocumentTypesExclude() {
         return documentTypesExclude;
@@ -112,15 +89,4 @@ public class JigConfig {
         this.outputOmitPrefix = outputOmitPrefix;
     }
 
-    public String propertiesText() {
-        return new StringJoiner("\n\t", "jig {\n\t", "\n}")
-                .add("documentTypes = '" + documentTypes + '\'')
-                .add("modelPattern = '" + modelPattern + '\'')
-                .add("outputDirectory = '" + outputDirectory + '\'')
-                .add("diagramFormat= '" + diagramFormat + '\'')
-                .add("dotTimeout= '" + dotTimeout + '\'')
-                .add("diagramTransitiveReduction= '" + diagramTransitiveReduction + '\'')
-                .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
-                .toString();
-    }
 }

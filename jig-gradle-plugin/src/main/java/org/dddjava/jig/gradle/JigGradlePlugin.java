@@ -27,17 +27,16 @@ public class JigGradlePlugin implements Plugin<Project> {
             task.getDiagramTransitiveReduction().convention(project.provider(config::isDiagramTransitiveReduction));
             task.getDotTimeout().convention(project.provider(config::getDotTimeout));
 
-            // 出力ディレクトリ
-            task.getOutputDirectory().convention(project.provider(() -> {
-                String outputDir = config.getOutputDirectory();
-                if (outputDir.isEmpty()) {
-                    return project.getLayout().getBuildDirectory().dir("jig").get();
-                }
-                return project.getLayout().getProjectDirectory().dir(outputDir);
-            }));
+            // 出力ディレクトリ（project をキャプチャしないよう configuration phase で解決）
+            String outputDir = config.getOutputDirectory();
+            if (outputDir.isEmpty()) {
+                task.getOutputDirectory().convention(project.getLayout().getBuildDirectory().dir("jig"));
+            } else {
+                task.getOutputDirectory().set(project.getLayout().getProjectDirectory().dir(outputDir));
+            }
 
-            // Java プラグインの適用状態
-            task.getJavaPluginApplied().convention(project.provider(() -> GradleProject.isJavaProject(project)));
+            // Java プラグインの適用状態（configuration phase で解決）
+            task.getJavaPluginApplied().convention(GradleProject.isJavaProject(project));
 
             // ソース/クラスパス（configuration phase で解決し直接設定。
             // Provider でラップすると project をキャプチャしてしまい、Gradle 8 の configuration cache でシリアライズできないため。）

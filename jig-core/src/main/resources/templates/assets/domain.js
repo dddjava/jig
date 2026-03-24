@@ -27,8 +27,9 @@ function getGlossaryDescription(fqn) {
  *     description: string,
  * }} Term
  */
+
 /**
- * @returns  {Term | undefined}
+ * @returns {Term | undefined}
  */
 function findGlossary(fqn) {
     return globalThis.glossaryData[fqn];
@@ -39,6 +40,7 @@ function findGlossary(fqn) {
  * @property {string} fqn
  * @property {TypeRef[]} [typeArgumentRefs]
  */
+
 /**
  * @typedef {{
  *     fqn: string,
@@ -47,8 +49,10 @@ function findGlossary(fqn) {
  *     isDeprecated: boolean
  * }} DomainMethod
  */
+
 /**
- * @returns Term
+ * @param {DomainMethod} method
+ * @returns {Term}
  */
 function getGlossaryMethodTerm(method) {
     const fqn = method.fqn;
@@ -124,6 +128,7 @@ function createTypeLink(fqn, className = undefined) {
  * @property {string} fqn
  * @property {{fqn: string}[]} [types]
  */
+
 /**
  * パッケージの直下の子パッケージを取得する
  * @param {PackageType} pkg
@@ -348,6 +353,10 @@ function createChildrenTable(pkg) {
  *     isDeprecated: boolean,
  * }} DomainField
  */
+
+/**
+ * @param {DomainField[]} fields
+ */
 function createFieldsList(fields) {
     if (!fields || fields.length === 0) return null;
 
@@ -377,6 +386,9 @@ function createFieldsList(fields) {
     });
 }
 
+/**
+ * @param {DomainMethod} method
+ */
 function createMethodItem(method) {
     const methodTerm = getGlossaryMethodTerm(method);
 
@@ -413,6 +425,10 @@ function createMethodItem(method) {
     });
 }
 
+/**
+ * @param {string} kind
+ * @param {DomainMethod[]} methods
+ */
 function createMethodsList(kind, methods) {
     if (!methods || methods.length === 0) return null;
 
@@ -429,6 +445,10 @@ function createMethodsList(kind, methods) {
  * @typedef {Object} EnumInfo
  * @property {{name: string, params: string[]}} constants
  * @property {string[]} parameterNames
+ */
+
+/**
+ * @param {{enumInfo: EnumInfo, fqn: string}} type
  */
 function createEnumSection(type) {
     if (!type.enumInfo) return null;
@@ -484,6 +504,10 @@ function createEnumSection(type) {
     return section;
 }
 
+/**
+ * @param {PackageType[]} packages
+ * @param {HTMLElement} container
+ */
 function renderPackages(packages, container) {
     if (!packages || packages.length === 0) return;
 
@@ -540,6 +564,11 @@ function renderPackages(packages, container) {
  * @property {DomainMethod} methods
  * @property {DomainMethod[]} staticMethods
  * @property {EnumInfo} [enumInfo]
+ */
+
+/**
+ * @param {DomainType[]} types
+ * @param {HTMLElement} container
  */
 function renderTypes(types, container) {
     if (!types || types.length === 0) return;

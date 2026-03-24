@@ -621,7 +621,7 @@ function createPortGroupRow(group, allPersistenceTargets) {
             createElement("td", {
                 className: "port-group-cell",
                 children: [
-                    document.createTextNode(group.outboundPort.label),
+                    document.createTextNode(getGlossaryTitle(group.outboundPort.fqn)),
                     createElement("span", {
                         className: "weak",
                         style: {marginLeft: "8px"},
@@ -659,7 +659,7 @@ function createOperationRow(operation, allPersistenceTargets, portId) {
         children: [
             createElement("td", {
                 className: "operation-cell",
-                textContent: operation.outboundPortOperation.label
+                textContent: getGlossaryMethodTitle(operation.outboundPortOperation.fqn)
             }),
             ...allPersistenceTargets.map(persistenceTarget => {
                 const cell = createElement("td", {className: "crud-cell"});

@@ -113,13 +113,12 @@ function createTypeRefLink(typeRef, className= undefined) {
  * @returns {HTMLElement}
  */
 function createTypeLink(fqn, className = undefined) {
-    const typesMap = globalThis.domainData._typesMap;
-    const domainType = typesMap ? typesMap.get(fqn) : globalThis.domainData.types.find(type => type.fqn === fqn);
+    const domainType = globalThis.domainData._typesMap.get(fqn);
     if (!domainType) {
         // domain型でなければ単純名のspan
         const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
         return createElement('span', {
-            className: (className ? className + ' ' : '') + "weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
+            className: (className ? className + ' ' : '') + "weak",
             textContent: simpleName
         });
     }
@@ -137,7 +136,7 @@ function createTypeLink(fqn, className = undefined) {
 /**
  * @typedef {Object} PackageType
  * @property {string} fqn
- * @property {{fqn: string}[]} [types]
+ * @property {{fqn: string}[]} types
  */
 
 /**
@@ -146,17 +145,7 @@ function createTypeLink(fqn, className = undefined) {
  * @returns {PackageType[]}
  */
 function getDirectChildPackages(pkg) {
-    const childPackagesMap = globalThis.domainData._childPackagesMap;
-    if (childPackagesMap) {
-        return childPackagesMap.get(pkg.fqn) || [];
-    }
-    // フォールバック（init 前に呼ばれた場合）
-    const prefix = pkg.fqn + ".";
-    return (globalThis.domainData.packages || []).filter(p => {
-        if (!p.fqn.startsWith(prefix)) return false;
-        // prefix より後にドットが含まれない = 直接の子
-        return p.fqn.indexOf(".", prefix.length) === -1;
-    });
+    return globalThis.domainData._childPackagesMap.get(pkg.fqn);
 }
 
 /**
@@ -171,7 +160,7 @@ function renderPackageNavItem(pkg) {
     while (true) {
         const childPackages = getDirectChildPackages(currentPkg);
         if (childPackages.length !== 1) break;
-        if (currentPkg.types && currentPkg.types.length > 0) break;
+        if (currentPkg.types.length > 0) break;
 
         const childPkg = childPackages[0];
         mergedNames.push(getGlossaryTitle(childPkg.fqn));
@@ -199,7 +188,7 @@ function renderPackageNavItem(pkg) {
     });
 
     // 子タイプを表示
-    (currentPkg.types || []).forEach(child => {
+    currentPkg.types.forEach(child => {
         const domainType = globalThis.domainData?._typesMap?.get(child.fqn);
         const link = createElement("a", {
             attributes: {href: "#" + child.fqn},
@@ -221,7 +210,7 @@ function createRelationDiagram(pkg) {
     const relations = (globalThis.typeRelationsData?.relations || [])
         .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
-    let pkgTypeFqns = new Set((pkg.types || []).map(t => t.fqn));
+    let pkgTypeFqns = new Set(pkg.types.map(t => t.fqn));
     if (pkgTypeFqns.size === 0) return null;
 
     // Deprecated ノード非表示の場合、deprecated 型を除外
@@ -293,7 +282,7 @@ function createRelationDiagram(pkg) {
 }
 
 /**
- * @param {PackageType[] | undefined} packages
+ * @param {PackageType[]} packages
  * @returns {void}
  */
 function renderSidebar(packages) {
@@ -303,7 +292,7 @@ function renderSidebar(packages) {
 
     // 直接の子パッケージ fqn の集合
     const childPackageFqns = new Set();
-    (packages || []).forEach(pkg => {
+    packages.forEach(pkg => {
         const children = getDirectChildPackages(pkg);
         children.forEach(child => {
             childPackageFqns.add(child.fqn);
@@ -311,7 +300,7 @@ function renderSidebar(packages) {
     });
 
     // トップレベルのパッケージのみを表示（直接の親を持たないもの）
-    (packages || []).forEach(pkg => {
+    packages.forEach(pkg => {
         if (!childPackageFqns.has(pkg.fqn)) {
             container.appendChild(renderPackageNavItem(pkg));
         }
@@ -323,7 +312,7 @@ function renderSidebar(packages) {
  * @returns {HTMLElement | null}
  */
 function createChildrenTable(pkg) {
-    const types = pkg.types || [];
+    const types = pkg.types;
     const childPackages = getDirectChildPackages(pkg);
 
     // 子パッケージ（▶︎ プレフィックス） + 子タイプ を合わせて表示
@@ -378,11 +367,11 @@ function createChildrenTable(pkg) {
  */
 
 /**
- * @param {DomainField[] | undefined} fields
+ * @param {DomainField[]} fields
  * @returns {HTMLElement | null}
  */
 function createFieldsList(fields) {
-    if (!fields || fields.length === 0) return null;
+    if (fields.length === 0) return null;
 
     const items = fields.map(field => createElement("div", {
         className: "method-item",
@@ -392,7 +381,7 @@ function createFieldsList(fields) {
                 children: [
                     createElement("span", {
                         className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
-                        textContent: field.name || ""
+                        textContent: field.name
                     }),
                     createElement("span", {className: "method-return-sep", textContent: ":"}),
                     createTypeRefLink(field.typeRef)
@@ -452,11 +441,11 @@ function createMethodItem(method) {
 
 /**
  * @param {string} kind
- * @param {DomainMethod[] | undefined} methods
+ * @param {DomainMethod[]} methods
  * @returns {HTMLElement | null}
  */
 function createMethodsList(kind, methods) {
-    if (!methods || methods.length === 0) return null;
+    if (methods.length === 0) return null;
 
     return createElement("section", {
         className: "methods-section jig-card jig-card--item",
@@ -469,7 +458,7 @@ function createMethodsList(kind, methods) {
 
 /**
  * @typedef {Object} EnumInfo
- * @property {{name: string, params: string[]}} constants
+ * @property {{name: string, params: string[]}[]} constants
  * @property {string[]} parameterNames
  */
 
@@ -514,7 +503,7 @@ function createEnumSection(type) {
             children:
                 constants.map(constant => createElement("tr", {
                     children: [
-                        createElement("td", {className: "method-name", textContent: constant.name || ""}),
+                        createElement("td", {className: "method-name", textContent: constant.name}),
                         ...constant.params.map(param => createElement("td", {textContent: param}))
                     ]
                 }))
@@ -532,12 +521,12 @@ function createEnumSection(type) {
 }
 
 /**
- * @param {PackageType[] | undefined} packages
+ * @param {PackageType[]} packages
  * @param {HTMLElement} container
  * @returns {void}
  */
 function renderPackages(packages, container) {
-    if (!packages || packages.length === 0) return;
+    if (packages.length === 0) return;
 
     packages.forEach(pkg => {
         const section = createElement("section", {
@@ -567,7 +556,7 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
-        if ((pkg.types || []).length > 0) {
+        if (pkg.types.length > 0) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
             diagramRegistry.push({container: mmdContainer, pkg});
@@ -588,20 +577,20 @@ function renderPackages(packages, container) {
 /**
  * @typedef {Object} DomainType
  * @property {string} fqn
- * @property {DomainField[]} [fields]
- * @property {DomainMethod} methods
- * @property {DomainMethod[]} [staticMethods]
+ * @property {DomainField[]} fields
+ * @property {DomainMethod[]} methods
+ * @property {DomainMethod[]} staticMethods
  * @property {EnumInfo} [enumInfo]
- * @property {boolean} [isDeprecated]
+ * @property {boolean} isDeprecated
  */
 
 /**
- * @param {DomainType[] | undefined} types
+ * @param {DomainType[]} types
  * @param {HTMLElement} container
  * @returns {void}
  */
 function renderTypes(types, container) {
-    if (!types || types.length === 0) return;
+    if (types.length === 0) return;
 
     types.forEach(type => {
         const titleLink = createElement("a", {
@@ -614,7 +603,7 @@ function renderTypes(types, container) {
             id: type.fqn,
             children: [
                 createElement("h3", {children: [titleLink]}),
-                createElement("div", {className: "fully-qualified-name", textContent: type.fqn || ""})
+                createElement("div", {className: "fully-qualified-name", textContent: type.fqn})
             ]
         });
 
@@ -770,12 +759,12 @@ const DomainApp = {
 
         // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）
         globalThis.domainData._typesMap = new Map(
-            (data.types || []).map(type => [type.fqn, type])
+            data.types.map(type => [type.fqn, type])
         );
 
         // packages の直下の子を事前計算（O(n) → O(1) 取得）
-        const childrenMap = new Map((data.packages || []).map(p => [p.fqn, []]));
-        (data.packages || []).forEach(p => {
+        const childrenMap = new Map(data.packages.map(p => [p.fqn, []]));
+        data.packages.forEach(p => {
             const parentFqn = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
             if (childrenMap.has(parentFqn)) {
                 childrenMap.get(parentFqn).push(p);

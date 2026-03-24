@@ -9,6 +9,18 @@ require('../../main/resources/templates/assets/jig.js');
 
 const { getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');
 
+// ヘルパー関数：_typesMap と _childPackagesMap を設定
+function setupDomainData(packages, types) {
+    globalThis.domainData = { packages, types };
+    globalThis.domainData._typesMap = new Map(types.map(t => [t.fqn, t]));
+    globalThis.domainData._childPackagesMap = new Map(
+        packages.map(p => [p.fqn, packages.filter(q => {
+            const prefix = p.fqn + ".";
+            return q.fqn.startsWith(prefix) && q.fqn.indexOf(".", prefix.length) === -1;
+        })])
+    );
+}
+
 test.describe('domain.js', () => {
     test.describe('getGlossaryMethodTerm', () => {
         test('fqn が glossaryData に完全一致する場合、その用語を返す', () => {
@@ -137,7 +149,7 @@ test.describe('domain.js', () => {
     test.describe('createTypeLink', () => {
         test('domain型が存在する場合、リンク（<a>タグ）を返す', () => {
             const domainType = {fqn: 'org.example.Account', methods: []};
-            globalThis.domainData = {types: [domainType]};
+            setupDomainData([], [domainType]);
             globalThis.glossaryData = {
                 'org.example.Account': {title: '口座', description: ''}
             };
@@ -154,7 +166,7 @@ test.describe('domain.js', () => {
         });
 
         test('domain型が存在しない場合、spanを返す（weak クラス付き）', () => {
-            globalThis.domainData = {types: []};
+            setupDomainData([], []);
             globalThis.glossaryData = {};
 
             const result = createTypeLink('java.lang.String', 'test-class');
@@ -169,7 +181,7 @@ test.describe('domain.js', () => {
         });
 
         test('classNameが指定されない場合、weakクラスのみ', () => {
-            globalThis.domainData = {types: []};
+            setupDomainData([], []);
             globalThis.glossaryData = {};
 
             const result = createTypeLink('java.lang.String');
@@ -184,7 +196,7 @@ test.describe('domain.js', () => {
     test.describe('createTypeRefLink', () => {
         test('型引数なしの場合、createTypeLinkの結果を返す', () => {
             const domainType = {fqn: 'org.example.User', methods: []};
-            globalThis.domainData = {types: [domainType]};
+            setupDomainData([], [domainType]);
             globalThis.glossaryData = {
                 'org.example.User': {title: 'ユーザー', description: ''}
             };
@@ -202,7 +214,7 @@ test.describe('domain.js', () => {
 
         test('型引数がある場合、spanで型と型引数を組み立てる', () => {
             const domainType = {fqn: 'java.util.List', methods: []};
-            globalThis.domainData = {types: [domainType]};
+            setupDomainData([], [domainType]);
             globalThis.glossaryData = {
                 'java.util.List': {title: 'List', description: ''}
             };
@@ -217,7 +229,7 @@ test.describe('domain.js', () => {
 
             assert.equal(result.tagName, 'span');
             assert.equal(result.className, 'generic-type');
-            // 子要素に型と型引数が含まれる（最初の要素は createTypeLink の結果）
+            // 子要소에 型と型引数が含まれる（最初の要素は createTypeLink の結果）
             assert.ok(result.children.length > 0);
 
             delete globalThis.domainData;
@@ -229,7 +241,7 @@ test.describe('domain.js', () => {
                 {fqn: 'java.util.List', methods: []},
                 {fqn: 'java.util.Map', methods: []}
             ];
-            globalThis.domainData = {types: domainTypes};
+            setupDomainData([], domainTypes);
             globalThis.glossaryData = {};
 
             const typeRef = {
@@ -264,10 +276,7 @@ test.describe('domain.js', () => {
                 types: []
             };
 
-            globalThis.domainData = {
-                packages: [comPkg, examplePkg],
-                types: []
-            };
+            setupDomainData([comPkg, examplePkg], []);
             globalThis.glossaryData = {
                 'com': {title: 'com'},
                 'com.example': {title: 'example'}
@@ -301,10 +310,7 @@ test.describe('domain.js', () => {
                 types: []
             };
 
-            globalThis.domainData = {
-                packages: [comPkg, examplePkg, deepPkg],
-                types: [{fqn: 'com.example.deep.MyClass', methods: []}]
-            };
+            setupDomainData([comPkg, examplePkg, deepPkg], [{fqn: 'com.example.deep.MyClass', methods: []}]);
             globalThis.glossaryData = {
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
@@ -345,10 +351,7 @@ test.describe('domain.js', () => {
                 types: []
             };
 
-            globalThis.domainData = {
-                packages: [comPkg, examplePkg, subPkg, deepPkg],
-                types: [{fqn: 'com.example.sub.deep.MyClass', methods: []}]
-            };
+            setupDomainData([comPkg, examplePkg, subPkg, deepPkg], [{fqn: 'com.example.sub.deep.MyClass', methods: []}]);
             globalThis.glossaryData = {
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
@@ -386,10 +389,7 @@ test.describe('domain.js', () => {
                 types: []
             };
 
-            globalThis.domainData = {
-                packages: [comPkg, examplePkg, sub1Pkg, sub2Pkg],
-                types: []
-            };
+            setupDomainData([comPkg, examplePkg, sub1Pkg, sub2Pkg], []);
             globalThis.glossaryData = {
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
@@ -424,10 +424,7 @@ test.describe('domain.js', () => {
             const subPkg = {fqn: 'com.example.sub'};
             const deepPkg = {fqn: 'com.example.sub.deep'};
 
-            globalThis.domainData = {
-                packages: [comPkg, examplePkg, subPkg, deepPkg],
-                types: []
-            };
+            setupDomainData([comPkg, examplePkg, subPkg, deepPkg], []);
 
             const result = getDirectChildPackages(comPkg);
 
@@ -442,10 +439,7 @@ test.describe('domain.js', () => {
             const examplePkg = {fqn: 'com.example'};
             const utilPkg = {fqn: 'com.util'};
 
-            globalThis.domainData = {
-                packages: [comPkg, examplePkg, utilPkg],
-                types: []
-            };
+            setupDomainData([comPkg, examplePkg, utilPkg], []);
 
             const result = getDirectChildPackages(comPkg);
 
@@ -459,10 +453,7 @@ test.describe('domain.js', () => {
         test('子パッケージがない場合は空配列を返す', () => {
             const comPkg = {fqn: 'com'};
 
-            globalThis.domainData = {
-                packages: [comPkg],
-                types: []
-            };
+            setupDomainData([comPkg], []);
 
             const result = getDirectChildPackages(comPkg);
 

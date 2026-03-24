@@ -256,7 +256,16 @@ function renderNoData(container) {
 }
 
 function fqnToId(prefix, fqn) {
-    return prefix + "-" + fqn.replace(/[^a-zA-Z0-9]/g, '-');
+    // マルチバイト文字をハッシュ化して一意なIDを生成
+    let hash = 0;
+    for (let i = 0; i < fqn.length; i++) {
+        const char = fqn.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    const hashStr = Math.abs(hash).toString(36); // 36進数で短くする
+    const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 10);
+    return `${prefix}-${sanitized}-${hashStr}`;
 }
 
 // ===== Mermaid ダイアグラム生成 =====

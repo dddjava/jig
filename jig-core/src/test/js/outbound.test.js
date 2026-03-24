@@ -125,20 +125,28 @@ test.describe("outbound.js", () => {
     // ----- fqnToId -----
 
     test.describe("fqnToId", () => {
-        test("プレフィックスを付けてFQNの非英数字をハイフンに変換する", () => {
-            assert.equal(outbound.fqnToId("port", "com.example.MyPort"), "port-com-example-MyPort");
+        test("プレフィックスを付けてIDを生成する", () => {
+            const id = outbound.fqnToId("port", "com.example.MyPort");
+            assert.match(id, /^port-com-exampl-[a-z0-9]+$/);
         });
 
-        test("アンダースコアやドル記号も変換される", () => {
-            assert.equal(outbound.fqnToId("persistence", "my_table"), "persistence-my-table");
-            assert.equal(outbound.fqnToId("external", "com.example.Ext$Type"), "external-com-example-Ext-Type");
+        test("異なるfqnなら異なるIDを生成する", () => {
+            const id1 = outbound.fqnToId("persistence", "my_table");
+            const id2 = outbound.fqnToId("persistence", "another_table");
+            assert.notEqual(id1, id2);
         });
 
-        test("メソッド名区切り文字（#・括弧）も変換される", () => {
-            assert.equal(
-                outbound.fqnToId("op", "com.example.Port#save(java.lang.String)"),
-                "op-com-example-Port-save-java-lang-String-"
-            );
+        test("同じfqnなら同じIDを生成する（一意性）", () => {
+            const id1 = outbound.fqnToId("op", "com.example.Port#save(java.lang.String)");
+            const id2 = outbound.fqnToId("op", "com.example.Port#save(java.lang.String)");
+            assert.equal(id1, id2);
+        });
+
+        test("マルチバイト文字でも正しくハッシュ化される", () => {
+            const id1 = outbound.fqnToId("persistence", "テーブル1");
+            const id2 = outbound.fqnToId("persistence", "テーブル2");
+            assert.notEqual(id1, id2);
+            assert.match(id1, /^persistence-[\w-]+-[a-z0-9]+$/);
         });
     });
 

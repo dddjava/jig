@@ -779,6 +779,20 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
     renderMermaidNode(diagramEl, text, DEFAULT_MAX_EDGES, container);
 };
 
+// FQNから一意なHTML IDを生成する
+globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
+    // マルチバイト文字をハッシュ化して一意なIDを生成
+    let hash = 0;
+    for (let i = 0; i < fqn.length; i++) {
+        const char = fqn.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    const hashStr = Math.abs(hash).toString(36); // 36進数で短くする
+    const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 10);
+    return `${prefix}-${sanitized}-${hashStr}`;
+};
+
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
@@ -786,5 +800,6 @@ if (typeof module !== "undefined" && module.exports) {
         renderTooLargeDiagram,
         flashButtonLabel,
         estimateEdgeCount,
+        fqnToId: globalThis.Jig.fqnToId,
     };
 }

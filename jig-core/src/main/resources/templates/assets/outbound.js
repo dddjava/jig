@@ -1,4 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
+const fqnToId = globalThis.Jig.fqnToId;
 
 // ===== Glossary ユーティリティ =====
 
@@ -255,18 +256,6 @@ function renderNoData(container) {
     }));
 }
 
-function fqnToId(prefix, fqn) {
-    // マルチバイト文字をハッシュ化して一意なIDを生成
-    let hash = 0;
-    for (let i = 0; i < fqn.length; i++) {
-        const char = fqn.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    const hashStr = Math.abs(hash).toString(36); // 36進数で短くする
-    const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 10);
-    return `${prefix}-${sanitized}-${hashStr}`;
-}
 
 // ===== Mermaid ダイアグラム生成 =====
 
@@ -1082,7 +1071,6 @@ if (typeof module !== "undefined" && module.exports) {
         renderExternalList,
         renderCrudTable,
         toCrudChar,
-        fqnToId,
         createElement,
         renderNoData,
         generateOperationMermaidCode,

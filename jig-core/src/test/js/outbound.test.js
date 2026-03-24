@@ -7,6 +7,7 @@ global.window = { addEventListener: () => {} };
 global.document = new DocumentStub();
 require("../../main/resources/templates/assets/jig.js");
 
+const jig = require("../../main/resources/templates/assets/jig.js");
 const outbound = require("../../main/resources/templates/assets/outbound.js");
 
 // ===== テスト用ヘルパー =====
@@ -119,34 +120,6 @@ test.describe("outbound.js", () => {
         test("小文字でも変換できる", () => {
             assert.equal(outbound.toCrudChar("select"), "R");
             assert.equal(outbound.toCrudChar("insert"), "C");
-        });
-    });
-
-    // ----- fqnToId -----
-
-    test.describe("fqnToId", () => {
-        test("プレフィックスを付けてIDを生成する", () => {
-            const id = outbound.fqnToId("port", "com.example.MyPort");
-            assert.match(id, /^port-com-exampl-[a-z0-9]+$/);
-        });
-
-        test("異なるfqnなら異なるIDを生成する", () => {
-            const id1 = outbound.fqnToId("persistence", "my_table");
-            const id2 = outbound.fqnToId("persistence", "another_table");
-            assert.notEqual(id1, id2);
-        });
-
-        test("同じfqnなら同じIDを生成する（一意性）", () => {
-            const id1 = outbound.fqnToId("op", "com.example.Port#save(java.lang.String)");
-            const id2 = outbound.fqnToId("op", "com.example.Port#save(java.lang.String)");
-            assert.equal(id1, id2);
-        });
-
-        test("マルチバイト文字でも正しくハッシュ化される", () => {
-            const id1 = outbound.fqnToId("persistence", "テーブル1");
-            const id2 = outbound.fqnToId("persistence", "テーブル2");
-            assert.notEqual(id1, id2);
-            assert.match(id1, /^persistence-[\w-]+-[a-z0-9]+$/);
         });
     });
 
@@ -619,7 +592,7 @@ test.describe("outbound.js", () => {
             assert.ok(container.children.length > 0, "セクションが描画されていない");
             const section = container.children[0];
             assert.ok(section.className.includes("outbound-group-card"));
-            assert.equal(section.id, outbound.fqnToId("port", simpleGroup.outboundPort.fqn));
+            assert.equal(section.id, jig.fqnToId("port", simpleGroup.outboundPort.fqn));
         });
 
         test("ポートのラベルと FQN を描画する", () => {

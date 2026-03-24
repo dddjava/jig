@@ -125,3 +125,31 @@ test.describe('jig.js', () => {
         }
     });
 });
+
+// ----- fqnToId -----
+
+test.describe("fqnToId", () => {
+    test("プレフィックスを付けてIDを生成する", () => {
+        const id = jig.fqnToId("port", "com.example.MyPort");
+        assert.match(id, /^port-com-exampl-[a-z0-9]+$/);
+    });
+
+    test("異なるfqnなら異なるIDを生成する", () => {
+        const id1 = jig.fqnToId("persistence", "my_table");
+        const id2 = jig.fqnToId("persistence", "another_table");
+        assert.notEqual(id1, id2);
+    });
+
+    test("同じfqnなら同じIDを生成する（一意性）", () => {
+        const id1 = jig.fqnToId("op", "com.example.Port#save(java.lang.String)");
+        const id2 = jig.fqnToId("op", "com.example.Port#save(java.lang.String)");
+        assert.equal(id1, id2);
+    });
+
+    test("マルチバイト文字でも正しくハッシュ化される", () => {
+        const id1 = jig.fqnToId("persistence", "テーブル1");
+        const id2 = jig.fqnToId("persistence", "テーブル2");
+        assert.notEqual(id1, id2);
+        assert.match(id1, /^persistence-[\w-]+-[a-z0-9]+$/);
+    });
+});

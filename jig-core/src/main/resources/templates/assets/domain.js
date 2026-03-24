@@ -81,7 +81,7 @@ function getDomainData() {
  * @returns {string}
  */
 function getGlossaryTitle(fqn) {
-    const term = globalThis.glossaryData?.[fqn];
+    const term = findGlossary(fqn);
     return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
 }
 
@@ -90,7 +90,8 @@ function getGlossaryTitle(fqn) {
  * @returns {string}
  */
 function getGlossaryDescription(fqn) {
-    return globalThis.glossaryData?.[fqn]?.description ?? "";
+    const term = findGlossary(fqn);
+    return term?.description ?? "";
 }
 
 /**
@@ -105,7 +106,7 @@ function getGlossaryDescription(fqn) {
  * @returns {Term | undefined}
  */
 function findGlossary(fqn) {
-    return globalThis.glossaryData[fqn];
+    return globalThis.glossaryData?.[fqn];
 }
 
 /**
@@ -114,7 +115,7 @@ function findGlossary(fqn) {
  */
 function getGlossaryMethodTerm(method) {
     const fqn = method.fqn;
-    const term = globalThis.glossaryData[fqn];
+    const term = findGlossary(fqn);
     if (term) return term;
 
     // 引数の完全修飾名を単純名に変換して再取得
@@ -124,7 +125,7 @@ function getGlossaryMethodTerm(method) {
             .map(x => x.substring(x.lastIndexOf('.') + 1))
             .join(",")
         + ')';
-    const term2 = globalThis.glossaryData[glossaryFqn];
+    const term2 = findGlossary(glossaryFqn);
     if (term2) return term2;
 
     // glossaryになし

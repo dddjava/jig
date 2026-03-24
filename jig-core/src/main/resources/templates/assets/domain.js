@@ -383,7 +383,7 @@ function createFieldsList(fields) {
  * @returns {HTMLElement}
  */
 function createMethodItem(method) {
-    const methodTerm = getMethodTerm(method.fqn);
+    const methodTerm = getMethodTerm(method.fqn, true);
 
     const paramElements = method.parameterTypeRefs
         .map(param => createTypeRefLink(param))

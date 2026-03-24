@@ -795,7 +795,7 @@ globalThis.Jig.glossary.getTypeTerm = function getTypeTerm(fqn) {
 };
 
 // メソッドFQN（"pkg.Class#method(args)"形式）から Term{title, description} を取得
-globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn) {
+globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn, fallbackNameOnly = false) {
     if (!fqn) return { title: "", description: "" };
     const term = globalThis.Jig.glossary.findTerm(fqn);
     if (term) return term;
@@ -816,6 +816,11 @@ globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn) {
             + ')';
         const term2 = globalThis.Jig.glossary.findTerm(simpleArgsFqn);
         if (term2) return term2;
+
+        // フォールバック: methodName 形式
+        if (fallbackNameOnly) {
+            return { title: methodName, description: "" };
+        }
 
         // フォールバック: methodName(simpleArgs) 形式
         const simpleArgs = argsStr

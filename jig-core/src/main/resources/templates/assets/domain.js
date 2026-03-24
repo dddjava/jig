@@ -12,11 +12,19 @@ const domainSettings = {
 const diagramRegistry = []; // [{container, pkg}]
 const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
 
+/**
+ * @param {string} fqn
+ * @returns {string}
+ */
 function getGlossaryTitle(fqn) {
     const term = globalThis.glossaryData?.[fqn];
     return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
 }
 
+/**
+ * @param {string} fqn
+ * @returns {string}
+ */
 function getGlossaryDescription(fqn) {
     return globalThis.glossaryData?.[fqn]?.description ?? "";
 }
@@ -29,6 +37,7 @@ function getGlossaryDescription(fqn) {
  */
 
 /**
+ * @param {string} fqn
  * @returns {Term | undefined}
  */
 function findGlossary(fqn) {
@@ -77,7 +86,8 @@ function getGlossaryMethodTerm(method) {
 
 /**
  * @param {TypeRef} typeRef
- * @param {string} className
+ * @param {string | undefined} className
+ * @returns {HTMLElement}
  */
 function createTypeRefLink(typeRef, className= undefined) {
     if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
@@ -99,7 +109,8 @@ function createTypeRefLink(typeRef, className= undefined) {
 
 /**
  * @param {string} fqn
- * @param {string} className
+ * @param {string | undefined} className
+ * @returns {HTMLElement}
  */
 function createTypeLink(fqn, className = undefined) {
     const typesMap = globalThis.domainData._typesMap;
@@ -148,6 +159,10 @@ function getDirectChildPackages(pkg) {
     });
 }
 
+/**
+ * @param {PackageType} pkg
+ * @returns {HTMLElement}
+ */
 function renderPackageNavItem(pkg) {
     // 子が1つだけでタイプを持たないパッケージを統合して表示
     let currentPkg = pkg;
@@ -199,7 +214,7 @@ function renderPackageNavItem(pkg) {
 
 /**
  * @param {PackageType} pkg
- * @returns {string | null} Mermaid記法のダイアグラム文字列、または関連がない場合はnull
+ * @returns {string | null}
  */
 function createRelationDiagram(pkg) {
     const typesMap = globalThis.domainData._typesMap;
@@ -277,6 +292,10 @@ function createRelationDiagram(pkg) {
     return lines.join('\n');
 }
 
+/**
+ * @param {PackageType[] | undefined} packages
+ * @returns {void}
+ */
 function renderSidebar(packages) {
     const container = document.getElementById("domain-sidebar-list");
     if (!container) return;
@@ -299,6 +318,10 @@ function renderSidebar(packages) {
     });
 }
 
+/**
+ * @param {PackageType} pkg
+ * @returns {HTMLElement | null}
+ */
 function createChildrenTable(pkg) {
     const types = pkg.types || [];
     const childPackages = getDirectChildPackages(pkg);
@@ -355,7 +378,8 @@ function createChildrenTable(pkg) {
  */
 
 /**
- * @param {DomainField[]} fields
+ * @param {DomainField[] | undefined} fields
+ * @returns {HTMLElement | null}
  */
 function createFieldsList(fields) {
     if (!fields || fields.length === 0) return null;
@@ -388,6 +412,7 @@ function createFieldsList(fields) {
 
 /**
  * @param {DomainMethod} method
+ * @returns {HTMLElement}
  */
 function createMethodItem(method) {
     const methodTerm = getGlossaryMethodTerm(method);
@@ -427,7 +452,8 @@ function createMethodItem(method) {
 
 /**
  * @param {string} kind
- * @param {DomainMethod[]} methods
+ * @param {DomainMethod[] | undefined} methods
+ * @returns {HTMLElement | null}
  */
 function createMethodsList(kind, methods) {
     if (!methods || methods.length === 0) return null;
@@ -448,7 +474,8 @@ function createMethodsList(kind, methods) {
  */
 
 /**
- * @param {{enumInfo: EnumInfo, fqn: string}} type
+ * @param {{enumInfo: EnumInfo | undefined, fqn: string}} type
+ * @returns {HTMLElement | null}
  */
 function createEnumSection(type) {
     if (!type.enumInfo) return null;
@@ -505,8 +532,9 @@ function createEnumSection(type) {
 }
 
 /**
- * @param {PackageType[]} packages
+ * @param {PackageType[] | undefined} packages
  * @param {HTMLElement} container
+ * @returns {void}
  */
 function renderPackages(packages, container) {
     if (!packages || packages.length === 0) return;
@@ -560,15 +588,17 @@ function renderPackages(packages, container) {
 /**
  * @typedef {Object} DomainType
  * @property {string} fqn
- * @property {DomainField[]} fields
+ * @property {DomainField[]} [fields]
  * @property {DomainMethod} methods
- * @property {DomainMethod[]} staticMethods
+ * @property {DomainMethod[]} [staticMethods]
  * @property {EnumInfo} [enumInfo]
+ * @property {boolean} [isDeprecated]
  */
 
 /**
- * @param {DomainType[]} types
+ * @param {DomainType[] | undefined} types
  * @param {HTMLElement} container
+ * @returns {void}
  */
 function renderTypes(types, container) {
     if (!types || types.length === 0) return;
@@ -613,6 +643,9 @@ function renderTypes(types, container) {
     });
 }
 
+/**
+ * @returns {void}
+ */
 function updateDirectionIcon() {
     const verticalArrows = document.querySelector('.vertical-arrows');
     const horizontalArrows = document.querySelector('.horizontal-arrows');
@@ -627,6 +660,9 @@ function updateDirectionIcon() {
     }
 }
 
+/**
+ * @returns {void}
+ */
 function rerenderDiagrams() {
     diagramRegistry
         .filter(({container}) => renderedContainers.has(container))
@@ -639,6 +675,9 @@ function rerenderDiagrams() {
         });
 }
 
+/**
+ * @returns {void}
+ */
 function initSettings() {
     const directionToggle = document.getElementById('direction-toggle');
     if (directionToggle) {
@@ -690,6 +729,9 @@ function initSettings() {
     }
 }
 
+/**
+ * @returns {void}
+ */
 function applyVisibilitySettings() {
     const main = document.getElementById('domain-main');
     if (!main) return;
@@ -708,11 +750,14 @@ function applyVisibilitySettings() {
 }
 
 const DomainApp = {
+    /**
+     * @returns {void}
+     */
     init() {
         /**
          * @type {{
          *   packages: PackageType[],
-         *   types: DomainType[]
+         *   types: DomainType[],
          *   relations: {from: string, to: string}[]
          * }}
          */

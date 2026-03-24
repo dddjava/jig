@@ -764,7 +764,16 @@ const DomainApp = {
      */
     init() {
         const data = getDomainData();
-        if (!data) return;
+        if (!data) {
+            const main = document.getElementById("domain-main");
+            if (main) {
+                main.appendChild(createElement("p", {
+                    className: "jig-data-error",
+                    textContent: "ドメインデータ（domain-data.js）が読み込まれていません。JIG を実行してデータファイルを生成してください。"
+                }));
+            }
+            return;
+        }
 
         diagramRegistry.length = 0;
         renderedContainers.clear();
@@ -790,6 +799,24 @@ const DomainApp = {
         const main = document.getElementById("domain-main");
         if (!main) return;
         main.innerHTML = "";
+
+        // optional データの警告表示
+        const warnings = [];
+        if (!globalThis.glossaryData) {
+            warnings.push("用語集（glossary-data.js）が読み込まれていません");
+        }
+        if (!globalThis.typeRelationsData) {
+            warnings.push("型関連情報（type-relations-data.js）が読み込まれていません");
+        }
+
+        if (warnings.length > 0) {
+            warnings.forEach(warning => {
+                main.appendChild(createElement("p", {
+                    className: "jig-data-warning",
+                    textContent: warning + "。一部の情報が表示されない可能性があります。"
+                }));
+            });
+        }
 
         renderPackages(data.packages, main);
         renderTypes(data.types, main);

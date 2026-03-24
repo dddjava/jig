@@ -7,7 +7,7 @@ global.window = global.window || { addEventListener: () => {} };
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig.js');
 
-const { getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');
+const { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
@@ -460,6 +460,71 @@ test.describe('domain.js', () => {
             assert.equal(result.length, 0);
 
             delete globalThis.domainData;
+        });
+    });
+
+    test.describe('DomainApp', () => {
+        test('domainData が undefined の場合、#domain-main にエラーメッセージを表示する', () => {
+            delete globalThis.domainData;
+            const doc = new DocumentStub();
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+
+            DomainApp.init();
+
+            // エラー要素が追加されているか確認
+            assert.equal(main.children.length, 1, "main に 1 つの子要素があること");
+            assert.equal(main.children[0].tagName, 'p', "子要素が <p> タグであること");
+            assert.ok(main.children[0].className.includes('jig-data-error'), "class に jig-data-error が含まれること");
+            assert.ok(main.children[0].textContent.includes('domain-data.js'), "エラーメッセージに data ファイル名が含まれること");
+        });
+
+        test('glossaryData が undefined の場合、警告を表示してレンダリング続行する', () => {
+            delete globalThis.glossaryData;
+            globalThis.typeRelationsData = { relations: [] }; // 他の optional データは設定
+            const doc = new DocumentStub();
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+
+            // setupDomainData で domainData を初期化
+            setupDomainData([], []);
+
+            DomainApp.init();
+
+            // 警告要素が追加されているか確認
+            const warning = main.children.find(el => el.className && el.className.includes('jig-data-warning'));
+            assert.ok(warning, "warning 要素が存在すること");
+            assert.ok(warning.textContent.includes('glossary-data.js'), "警告メッセージに glossary-data.js が含まれること");
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+        });
+
+        test('typeRelationsData が undefined の場合、警告を表示してレンダリング続行する', () => {
+            delete globalThis.typeRelationsData;
+            globalThis.glossaryData = {}; // 他の optional データは設定
+            const doc = new DocumentStub();
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+
+            setupDomainData([], []);
+
+            DomainApp.init();
+
+            const warning = main.children.find(el => el.className && el.className.includes('jig-data-warning'));
+            assert.ok(warning, "warning 要素が存在すること");
+            assert.ok(warning.textContent.includes('type-relations-data.js'), "警告メッセージに type-relations-data.js が含まれること");
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
         });
     });
 });

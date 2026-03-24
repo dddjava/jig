@@ -1209,3 +1209,23 @@ table td.number {
 .outbound .port-crud-cell {
     color: #1b3a66;
 }
+
+/* エラーメッセージ（必須データ欠落） */
+p.jig-data-error {
+    color: #d32f2f;
+    padding: 1rem;
+    background-color: #ffebee;
+    border-left: 4px solid #d32f2f;
+    margin: 1rem;
+    border-radius: 2px;
+}
+
+/* 警告メッセージ（optional データ欠落） */
+p.jig-data-warning {
+    color: #f57f17;
+    padding: 1rem;
+    background-color: #fff3e0;
+    border-left: 4px solid #f57f17;
+    margin: 1rem;
+    border-radius: 2px;
+}

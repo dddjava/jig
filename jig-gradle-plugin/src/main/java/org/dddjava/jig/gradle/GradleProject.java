@@ -1,7 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
-import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
@@ -59,18 +57,6 @@ public class GradleProject {
                 .stream()
                 .flatMap(extension -> extension.getSourceSets().stream()
                         .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME)));
-    }
-
-    public SourceBasePaths rawSourceLocations() {
-        return allDependencyProjectsFrom(project)
-                .map(GradleProject::new)
-                .map(gradleProject ->
-                        new SourceBasePaths(
-                                new SourceBasePath(gradleProject.classPaths()),
-                                new SourceBasePath(gradleProject.sourcePaths())
-                        ))
-                .reduce(SourceBasePaths::merge)
-                .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));
     }
 
     /**

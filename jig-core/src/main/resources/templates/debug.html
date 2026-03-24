@@ -265,13 +265,22 @@ function syntaxHighlight(json) {
 
 function addLineNumbers(html) {
     const lines = html.split('\n');
-    return lines.map((line, i) => {
-        const lineNum = i + 1;
-        const isFoldable = line.includes('json-collapsible') &&
-                           !line.includes('json-collapsed-marker');
-        const gutterClass = isFoldable ? 'line-gutter foldable' : 'line-gutter';
-        return `<div class="line"><span class="${gutterClass}">${lineNum}</span><span class="line-content">${line}</span></div>`;
-    }).join('');
+    let lineNum = 1;
+    let result = `<div class="line"><span class="line-gutter">1</span><span class="line-content">`;
+
+    for (let i = 0; i < lines.length; i++) {
+        result += lines[i];
+        if (i < lines.length - 1) {
+            lineNum++;
+            const isFoldable = lines[i].includes('json-collapsible') &&
+                               !lines[i].includes('json-collapsed-marker');
+            const gutterClass = isFoldable ? 'line-gutter foldable' : 'line-gutter';
+            result += `</span></div>\n<div class="line"><span class="${gutterClass}">${lineNum}</span><span class="line-content">`;
+        }
+    }
+
+    result += `</span></div>`;
+    return result;
 }
 
 function addLineNumbersText(text) {

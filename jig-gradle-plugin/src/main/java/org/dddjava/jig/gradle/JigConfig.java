@@ -15,8 +15,6 @@ public class JigConfig {
 
     String outputDirectory = "";
 
-    String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
-
     JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
     String dotTimeout = "10s";
 
@@ -79,14 +77,6 @@ public class JigConfig {
 
     public void setDiagramTransitiveReduction(boolean diagramTransitiveReduction) {
         this.diagramTransitiveReduction = diagramTransitiveReduction;
-    }
-
-    public String getOutputOmitPrefix() {
-        return outputOmitPrefix;
-    }
-
-    public void setOutputOmitPrefix(String outputOmitPrefix) {
-        this.outputOmitPrefix = outputOmitPrefix;
     }
 
 }

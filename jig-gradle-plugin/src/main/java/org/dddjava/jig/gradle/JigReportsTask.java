@@ -29,11 +29,11 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toSet;
 
-@DisableCachingByDefault(because = "JigReportsTask depends on JigExecutor and cannot define output")
+@DisableCachingByDefault(because = "JigReportsTask generates files via JigExecutor whose outputs are not fully declarable")
 public abstract class JigReportsTask extends DefaultTask {
 
     @Input
@@ -95,10 +95,10 @@ public abstract class JigReportsTask extends DefaultTask {
 
         Set<Path> classPaths = getClassFiles().getFiles().stream()
                 .map(File::toPath)
-                .collect(Collectors.toSet());
+                .collect(toSet());
         Set<Path> sourcePaths = getSourceFiles().getFiles().stream()
                 .map(File::toPath)
-                .collect(Collectors.toSet());
+                .collect(toSet());
         SourceBasePaths sourceBasePaths = new SourceBasePaths(
                 new SourceBasePath(classPaths),
                 new SourceBasePath(sourcePaths)

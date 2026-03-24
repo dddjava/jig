@@ -136,16 +136,6 @@
         .json-number { color: #b5cea8; }
         .json-bool   { color: #569cd6; }
         .json-null   { color: #569cd6; }
-        .json-toggle {
-            cursor: pointer;
-            color: #858585;
-            display: inline-block;
-            width: 1.5ch;
-            text-align: center;
-            transition: transform 0.1s;
-            user-select: none;
-        }
-        .json-toggle:hover { color: #ccc; }
         .json-collapsible { position: relative; }
         .json-inner { display: inline; }
         .json-collapsed-marker {
@@ -160,7 +150,6 @@
         }
         .collapsed > .json-inner { display: none; }
         .collapsed > .json-collapsed-marker { display: inline; }
-        .collapsed > .json-toggle { transform: rotate(-90deg); }
         .highlight { background: #613315; }
         .line-number {
             display: inline-block;
@@ -174,6 +163,12 @@
         .line-number.foldable {
             cursor: pointer;
             color: #858585;
+        }
+        .line-number.foldable::before {
+            content: '›';
+            font-size: 1em;
+            opacity: 0.5;
+            margin-right: 4px;
         }
         .line-number.foldable:hover {
             color: #ccc;
@@ -243,7 +238,7 @@ function syntaxHighlight(json) {
         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|\{\}|\[\]|[\{\}\[\]])/g, match => {
             if (match === '{}' || match === '[]') return match;
             if (match === '{' || match === '[') {
-                return `<span class="json-collapsible"><span class="json-toggle">▼</span>${match}<span class="json-inner">`;
+                return `<span class="json-collapsible">${match}<span class="json-inner">`;
             }
             if (match === '}' || match === ']') {
                 return `</span><span class="json-collapsed-marker">...</span>${match}</span>`;

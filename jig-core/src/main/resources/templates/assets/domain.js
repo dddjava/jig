@@ -67,6 +67,8 @@ const renderedContainers = new Set(); // 実際に描画済みのコンテナ（
  * @typedef {Object} DomainData
  * @property {PackageType[]} packages
  * @property {DomainType[]} types
+ * @property {Map<string, DomainType>} _typesMap
+ * @property {Map<string, PackageType[]>} _childPackagesMap
  */
 
 /**
@@ -162,7 +164,7 @@ function createTypeRefLink(typeRef, className= undefined) {
  * @returns {HTMLElement}
  */
 function createTypeLink(fqn, className = undefined) {
-    const domainType = globalThis.domainData._typesMap.get(fqn);
+    const domainType = getDomainData()._typesMap.get(fqn);
     if (!domainType) {
         // domain型でなければ単純名のspan
         const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
@@ -188,7 +190,7 @@ function createTypeLink(fqn, className = undefined) {
  * @returns {PackageType[]}
  */
 function getDirectChildPackages(pkg) {
-    return globalThis.domainData._childPackagesMap.get(pkg.fqn);
+    return getDomainData()._childPackagesMap.get(pkg.fqn);
 }
 
 /**
@@ -232,7 +234,7 @@ function renderPackageNavItem(pkg) {
 
     // 子タイプを表示
     currentPkg.types.forEach(child => {
-        const domainType = globalThis.domainData?._typesMap?.get(child.fqn);
+        const domainType = getDomainData()._typesMap?.get(child.fqn);
         const link = createElement("a", {
             attributes: {href: "#" + child.fqn},
             className: domainType?.isDeprecated ? "deprecated" : "",
@@ -249,7 +251,7 @@ function renderPackageNavItem(pkg) {
  * @returns {string | null}
  */
 function createRelationDiagram(pkg) {
-    const typesMap = globalThis.domainData._typesMap;
+    const typesMap = getDomainData()._typesMap;
     const relations = (globalThis.typeRelationsData?.relations || [])
         .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
@@ -258,7 +260,7 @@ function createRelationDiagram(pkg) {
 
     // Deprecated ノード非表示の場合、deprecated 型を除外
     if (!domainSettings.showDeprecatedNodes) {
-        const typesMap = globalThis.domainData._typesMap;
+        const typesMap = getDomainData()._typesMap;
         pkgTypeFqns = new Set([...pkgTypeFqns].filter(fqn => !typesMap?.get(fqn)?.isDeprecated));
         if (pkgTypeFqns.size === 0) return null;
     }
@@ -769,7 +771,7 @@ const DomainApp = {
          *   relations: {from: string, to: string}[]
          * }}
          */
-        const data = globalThis.domainData;
+        const data = getDomainData();
         if (!data) return;
 
         diagramRegistry.length = 0;

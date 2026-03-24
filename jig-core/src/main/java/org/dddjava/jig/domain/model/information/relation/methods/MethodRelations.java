@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -57,19 +56,6 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                 .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodId))
                 .map(MethodRelation::from)
                 .collect(toSet()));
-    }
-
-    public String mermaidEdgeText(Function<JigMethodId, Optional<String>> converter) {
-        // 型がMethodRelationではなくなるのでここで文字列化してしまう
-        return list.stream()
-                .flatMap(methodRelation ->
-                        converter.apply(methodRelation.from()).flatMap(fromText -> converter.apply(methodRelation.to()).map(toText ->
-                                "%s --> %s".formatted(fromText, toText))
-                        ).stream()
-                )
-                .sorted()
-                .distinct()
-                .collect(joining("\n"));
     }
 
     public MethodRelations filterFromRecursive(JigMethodId baseMethod) {

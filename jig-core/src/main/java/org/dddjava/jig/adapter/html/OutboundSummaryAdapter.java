@@ -45,7 +45,7 @@ public class OutboundSummaryAdapter {
     public static String buildJson(OutboundAdapters outboundAdapters) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
-        var accessorTypesMap = new LinkedHashMap<String, String>();              // typeFqn → typeLabel
+        var accessorTypesMap = new LinkedHashSet<String>();              // typeFqn
         var accessorMethodsMap = new LinkedHashMap<String, List<JsonObjectBuilder>>(); // typeFqn → methods
         var accessorMethodIds = new LinkedHashSet<String>();                     // method ID重複排除
         var targetsSet = new LinkedHashSet<String>();
@@ -54,7 +54,7 @@ public class OutboundSummaryAdapter {
         List<JsonObjectBuilder> executionToAccessor = new ArrayList<>();
         List<JsonObjectBuilder> executionToExternalAccessor = new ArrayList<>();
 
-        var externalAccessorLabels = new LinkedHashMap<String, String>();                                                         // fqn → label
+        var externalAccessorFqns = new LinkedHashSet<String>();                                                        // fqn
         var externalAccessorMethods = new LinkedHashMap<String, LinkedHashMap<String, List<JsonObjectBuilder>>>();               // accessorFqn → accessorMethodName → externals
         var externalAccessorMethodKeys = new LinkedHashSet<String>();                                                            // dedup key
         var executionToExternalAccessorKeys = new LinkedHashSet<String>();                                                      // dedup key
@@ -70,13 +70,11 @@ public class OutboundSummaryAdapter {
                 outboundPort.operationStream().forEach(portOperation -> {
                     String portOperationFqn = portOperation.jigMethod().fqn();
                     portOperations.add(Json.object("fqn", portOperationFqn)
-                            .and("label", portOperation.jigMethod().name())
                             .and("signature", portOperation.jigMethod().simpleMethodSignatureText()));
 
                     outboundAdapter.findExecution(portOperation).ifPresent(adapterExecution -> {
                         String adapterExecutionFqn = adapterExecution.jigMethod().fqn();
                         execList.add(Json.object("fqn", adapterExecutionFqn)
-                                .and("label", adapterExecution.jigMethod().name())
                                 .and("signature", adapterExecution.jigMethod().simpleMethodSignatureText()));
 
                         operationToExecution.add(Json.object("operation", portOperationFqn)
@@ -85,7 +83,6 @@ public class OutboundSummaryAdapter {
                         adapterExecution.persistenceAccessorOperations().forEach(persistenceAccessorOperation -> {
                             String methodId = persistenceAccessorOperation.id().value();
                             String typeFqn = persistenceAccessorOperation.id().typeId().fqn();
-                            String typeLabel = simpleLabel(typeFqn);
                             var targetOperationTypes = Json.object();
                             List<String> targets = persistenceAccessorOperation.targetOperationTypes().persistenceTargets().stream()
                                     .map(persistenceOperation -> {
@@ -95,7 +92,7 @@ public class OutboundSummaryAdapter {
                                     }).toList();
 
                             targetsSet.addAll(targets);
-                            accessorTypesMap.putIfAbsent(typeFqn, typeLabel);
+                            accessorTypesMap.add(typeFqn);
                             if (accessorMethodIds.add(methodId)) {
                                 accessorMethodsMap.computeIfAbsent(typeFqn, k -> new ArrayList<>())
                                         .add(Json.object("id", methodId)
@@ -108,14 +105,12 @@ public class OutboundSummaryAdapter {
 
                         adapterExecution.otherExternalAccessorOperations().forEach(accessorOperation -> {
                             String accessorFqn = accessorOperation.accessorTypeId().fqn();
-                            String accessorLabel = simpleLabel(accessorFqn);
                             String accessorMethodName = accessorOperation.accessorMethodName();
-                            externalAccessorLabels.put(accessorFqn, accessorLabel);
+                            externalAccessorFqns.add(accessorFqn);
 
                             accessorOperation.externalMethodCalls().forEach(methodCall -> {
 
                                 String externalFqn = methodCall.methodOwner().fqn();
-                                String externalLabel = simpleLabel(externalFqn);
                                 String externalMethodName = methodCall.methodName();
 
                                 String methodKey = accessorFqn + "|" + accessorMethodName + "|" + externalFqn + "|" + externalMethodName;
@@ -124,7 +119,6 @@ public class OutboundSummaryAdapter {
                                             .computeIfAbsent(accessorFqn, k -> new LinkedHashMap<>())
                                             .computeIfAbsent(accessorMethodName, k -> new ArrayList<>())
                                             .add(Json.object("fqn", externalFqn)
-                                                    .and("label", externalLabel)
                                                     .and("method", externalMethodName));
                                 }
                             });
@@ -140,12 +134,10 @@ public class OutboundSummaryAdapter {
                 });
 
                 portsMap.putIfAbsent(portFqn, Json.object("fqn", portFqn)
-                        .and("label", outboundPort.jigType().label())
                         .and("operations", Json.arrayObjects(portOperations)));
             });
 
             adaptersMap.putIfAbsent(adapterFqn, Json.object("fqn", adapterFqn)
-                    .and("label", outboundAdapter.jigType().label())
                     .and("executions", Json.arrayObjects(execList)));
         });
 
@@ -154,15 +146,14 @@ public class OutboundSummaryAdapter {
                 .and("executionToOtherExternalAccessor", Json.arrayObjects(executionToExternalAccessor));
 
         List<JsonObjectBuilder> accessorsList = new ArrayList<>();
-        accessorTypesMap.forEach((typeFqn, typeLabel) -> {
+        accessorTypesMap.forEach(typeFqn -> {
             List<JsonObjectBuilder> methods = accessorMethodsMap.getOrDefault(typeFqn, List.of());
             accessorsList.add(Json.object("fqn", typeFqn)
-                    .and("label", typeLabel)
                     .and("methods", Json.arrayObjects(methods)));
         });
 
         List<JsonObjectBuilder> externalAccessorsList = new ArrayList<>();
-        externalAccessorLabels.forEach((accessorFqn, accessorLabel) -> {
+        externalAccessorFqns.forEach(accessorFqn -> {
             LinkedHashMap<String, List<JsonObjectBuilder>> methodsMap = externalAccessorMethods.getOrDefault(accessorFqn, new LinkedHashMap<>());
             List<JsonObjectBuilder> methodsList = new ArrayList<>();
             methodsMap.forEach((methodName, externals) -> {
@@ -170,7 +161,6 @@ public class OutboundSummaryAdapter {
                         .and("externals", Json.arrayObjects(externals)));
             });
             externalAccessorsList.add(Json.object("fqn", accessorFqn)
-                    .and("label", accessorLabel)
                     .and("methods", Json.arrayObjects(methodsList)));
         });
 
@@ -181,10 +171,6 @@ public class OutboundSummaryAdapter {
                 .and("targets", Json.array(new ArrayList<>(targetsSet)))
                 .and("links", links)
                 .build();
-    }
-
-    private static String simpleLabel(String typeFqn) {
-        return typeFqn.contains(".") ? typeFqn.substring(typeFqn.lastIndexOf('.') + 1) : typeFqn;
     }
 
 }

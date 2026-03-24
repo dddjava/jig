@@ -1024,8 +1024,6 @@ if (typeof module !== "undefined" && module.exports) {
         toCrudChar,
         fqnToId,
         createElement,
-        createSidebarSection,
-        renderSidebarSection,
         renderNoData,
         generateOperationMermaidCode,
         generatePortMermaidCode,

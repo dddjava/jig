@@ -57,11 +57,6 @@ function parsePackageSummaryData(packageData) {
     };
 }
 
-function getGlossaryTitle(fqn) {
-    const term = globalThis.glossaryData?.[fqn];
-    return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
-}
-
 function getPackageDepth(fqn) {
     if (!fqn || fqn === '(default)') return 0;
     return fqn.split('.').length;
@@ -437,7 +432,7 @@ function buildPackageTableRowData(packages, relations) {
 function buildPackageTableRowSpecs(rows) {
     return rows.map(item => ({
         fqn: item.fqn,
-        name: getGlossaryTitle(item.fqn),
+        name: globalThis.Jig.glossary.getTypeTerm(item.fqn).title,
         classCount: item.classCount,
         incomingCount: item.incomingCount ?? 0,
         outgoingCount: item.outgoingCount ?? 0,
@@ -1267,7 +1262,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
         context.focusCalleeMode,
         context.transitiveReductionEnabled
     );
-    const nameByFqn = new Map(packages.map(item => [item.fqn, getGlossaryTitle(item.fqn)]));
+    const nameByFqn = new Map(packages.map(item => [item.fqn, globalThis.Jig.glossary.getTypeTerm(item.fqn).title]));
     const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
         visibleSet,
         uniqueRelations,
@@ -1547,7 +1542,6 @@ if (typeof module !== 'undefined' && module.exports) {
         // private
         getPackageSummaryData,
         parsePackageSummaryData,
-        getGlossaryTitle,
         getPackageDepth,
         getMaxPackageDepth,
         getAggregatedFqn,

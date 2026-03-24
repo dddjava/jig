@@ -1,54 +1,6 @@
 const createElement = globalThis.Jig.dom.createElement;
 const fqnToId = globalThis.Jig.fqnToId;
-
-// ===== Glossary ユーティリティ =====
-
-/**
- * @param {string} fqn
- * @returns {Term | undefined}
- */
-function findGlossary(fqn) {
-    return globalThis.glossaryData?.[fqn];
-}
-
-/**
- * 型の FQN から表示用のタイトルを取得します。
- * glossary に登録されていない場合は、FQN の最後の . 以降を返します。
- * @param {string} fqn
- * @returns {string}
- */
-function getGlossaryTitle(fqn) {
-    const term = findGlossary(fqn);
-    return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
-}
-
-/**
- * メソッド FQN（"pkg.Class#method(args)" 形式）から表示用のタイトルを取得します。
- * glossary に登録されていない場合は、メソッド名＋引数の単純名を返します。
- * @param {string} fqn
- * @returns {string}
- */
-function getGlossaryMethodTitle(fqn) {
-    const term = findGlossary(fqn);
-    if (term) return term.title;
-    // メソッド名＋引数単純名を取得: hoge.fuga.Class#foo(java.lang.String) => foo(String)
-    const hashIdx = fqn.lastIndexOf('#');
-    const parenIdx = fqn.indexOf('(', hashIdx);
-    const closeParenIdx = fqn.lastIndexOf(')');
-    if (hashIdx >= 0 && parenIdx > hashIdx) {
-        const methodName = fqn.substring(hashIdx + 1, parenIdx);
-        const argsStr = closeParenIdx > parenIdx ? fqn.substring(parenIdx + 1, closeParenIdx) : '';
-        const simpleArgs = argsStr
-            ? argsStr.split(',').map(arg => {
-                const trimmed = arg.trim();
-                const dotIdx = trimmed.lastIndexOf('.');
-                return dotIdx >= 0 ? trimmed.substring(dotIdx + 1) : trimmed;
-              }).join(', ')
-            : '';
-        return `${methodName}(${simpleArgs})`;
-    }
-    return fqn;
-}
+const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
 
 // ===== データ取得・変換 =====
 
@@ -141,15 +93,15 @@ function groupOperationsByOutboundPort(data) {
                 externalAccessors
             }];
         }).sort((a, b) => {
-            const left = getGlossaryMethodTitle(a.outboundPortOperation.fqn);
-            const right = getGlossaryMethodTitle(b.outboundPortOperation.fqn);
+            const left = getMethodTerm(a.outboundPortOperation.fqn).title;
+            const right = getMethodTerm(b.outboundPortOperation.fqn).title;
             return left.localeCompare(right, "ja");
         });
         return {outboundPort: port, operations};
     }).filter(group => group.operations.length > 0)
       .sort((a, b) => {
-        const left = getGlossaryTitle(a.outboundPort.fqn);
-        const right = getGlossaryTitle(b.outboundPort.fqn);
+        const left = getTypeTerm(a.outboundPort.fqn).title;
+        const right = getTypeTerm(b.outboundPort.fqn).title;
         return left.localeCompare(right, "ja");
     });
 }
@@ -174,8 +126,8 @@ function groupOperationsByPersistenceTarget(operations) {
     });
     return Array.from(map.values()).map(group => {
         group.operations.sort((a, b) => {
-            const left = getGlossaryTitle(a.outboundPort.fqn);
-            const right = getGlossaryTitle(b.outboundPort.fqn);
+            const left = getTypeTerm(a.outboundPort.fqn).title;
+            const right = getTypeTerm(b.outboundPort.fqn).title;
             return left.localeCompare(right, "ja");
         });
         return group;
@@ -198,7 +150,7 @@ function groupOperationsByExternalType(operations) {
         });
     });
     return Array.from(map.values())
-        .sort((a, b) => getGlossaryTitle(a.externalType.fqn).localeCompare(getGlossaryTitle(b.externalType.fqn), "ja"));
+        .sort((a, b) => getTypeTerm(a.externalType.fqn).title.localeCompare(getTypeTerm(b.externalType.fqn).title, "ja"));
 }
 
 function collectAllTargets(grouped) {
@@ -389,7 +341,7 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     const groupId = op.group;
     if (!visibility.accessor || !groupId) return sourceNodeId;
 
-    const groupLabel = getGlossaryTitle(groupId);
+    const groupLabel = getTypeTerm(groupId).title;
     if (visibility.accessorMethod) {
         const opNodeId = `POp_${builder.sanitize(op.id)}`;
         builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop());
@@ -424,7 +376,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         if (!visibility.externalType) return;
         if (!extTypeNodes.has(ext.fqn)) {
             extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-            builder.addNode(extTypeNodes.get(ext.fqn), getGlossaryTitle(ext.fqn), '(("$LABEL"))');
+            builder.addNode(extTypeNodes.get(ext.fqn), getTypeTerm(ext.fqn).title, '(("$LABEL"))');
         }
         const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
         if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
@@ -442,7 +394,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         return sourceNodeId;
     }
 
-    const accessorLabel = getGlossaryTitle(accessor.fqn);
+    const accessorLabel = getTypeTerm(accessor.fqn).title;
     if (visibility.externalAccessorMethod) {
         // 外部アクセッサをsubgraphにして各メソッドをノードに
         const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
@@ -484,7 +436,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
     const portFqn = group.outboundPort.fqn;
-    const portLabel = getGlossaryTitle(portFqn);
+    const portLabel = getTypeTerm(portFqn).title;
 
     const portSubgraphs = new Map();
     const adapterSubgraphs = new Map();
@@ -496,12 +448,12 @@ function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const extTypeNodes = new Map();
 
     group.operations.forEach((operation) => {
-        const portOpName = getGlossaryMethodTitle(operation.outboundPortOperation.fqn);
+        const portOpName = getMethodTerm(operation.outboundPortOperation.fqn).title;
         const portOpFqn = operation.outboundPortOperation.fqn;
 
         const adapterFqn = operation.outboundAdapter?.fqn;
-        const adapterLabel = getGlossaryTitle(operation.outboundAdapter?.fqn);
-        const executionName = getGlossaryMethodTitle(operation.outboundAdapterExecution?.fqn);
+        const adapterLabel = getTypeTerm(operation.outboundAdapter?.fqn).title;
+        const executionName = getMethodTerm(operation.outboundAdapterExecution?.fqn).title;
         const executionFqn = operation.outboundAdapterExecution?.fqn;
 
         let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -535,12 +487,12 @@ function generateOperationMermaidCode(operation, visibility = DEFAULT_VISIBILITY
 function extractOperationProps(operation) {
     return {
         portFqn:       operation.outboundPort.fqn,
-        portLabel:     getGlossaryTitle(operation.outboundPort.fqn),
-        portOpName:    getGlossaryMethodTitle(operation.outboundPortOperation.fqn),
+        portLabel:     getTypeTerm(operation.outboundPort.fqn).title,
+        portOpName:    getMethodTerm(operation.outboundPortOperation.fqn).title,
         portOpFqn:     operation.outboundPortOperation.fqn,
         adapterFqn:    operation.outboundAdapter?.fqn,
-        adapterLabel:  getGlossaryTitle(operation.outboundAdapter?.fqn),
-        executionName: getGlossaryMethodTitle(operation.outboundAdapterExecution?.fqn),
+        adapterLabel:  getTypeTerm(operation.outboundAdapter?.fqn).title,
+        executionName: getMethodTerm(operation.outboundAdapterExecution?.fqn).title,
         executionFqn:  operation.outboundAdapterExecution?.fqn,
     };
 }
@@ -629,7 +581,7 @@ function createPortGroupRow(group, allPersistenceTargets) {
             createElement("td", {
                 className: "port-group-cell",
                 children: [
-                    document.createTextNode(getGlossaryTitle(group.outboundPort.fqn)),
+                    document.createTextNode(getTypeTerm(group.outboundPort.fqn).title),
                     createElement("span", {
                         className: "weak",
                         style: {marginLeft: "8px"},
@@ -667,7 +619,7 @@ function createOperationRow(operation, allPersistenceTargets, portId) {
         children: [
             createElement("td", {
                 className: "operation-cell",
-                textContent: getGlossaryMethodTitle(operation.outboundPortOperation.fqn)
+                textContent: getMethodTerm(operation.outboundPortOperation.fqn).title
             }),
             ...allPersistenceTargets.map(persistenceTarget => {
                 const cell = createElement("td", {className: "crud-cell"});
@@ -761,7 +713,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         if (!portMermaidCode) return;
         const portFqnValue = group.outboundPort.fqn;
         const portId = fqnToId("port", portFqnValue);
-        const portLabel = getGlossaryTitle(portFqnValue);
+        const portLabel = getTypeTerm(portFqnValue).title;
 
         const cardChildren = [
             createElement("h3", {textContent: portLabel}),
@@ -774,7 +726,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         if (visibility.adapter) {
             const adapterLabels = Array.from(new Set(group.operations.map(operation => {
                 const fqn = operation.outboundAdapter?.fqn ?? "";
-                const label = getGlossaryTitle(fqn);
+                const label = getTypeTerm(fqn).title;
                 return label + (label !== fqn ? ` (${fqn})` : "");
             })));
             if (adapterLabels.length > 0) {
@@ -804,7 +756,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
             itemList.appendChild(createElement("article", {
                 className: "outbound-operation-item jig-card jig-card--item",
                 children: [
-                    createElement("h4", {textContent: getGlossaryMethodTitle(operation.outboundPortOperation.fqn)}),
+                    createElement("h4", {textContent: getMethodTerm(operation.outboundPortOperation.fqn).title}),
                     mermaidContainer,
                     createElement("p", {
                         className: "outbound-persistence-detail-title",
@@ -836,7 +788,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
     globalThis.Jig.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => {
         return {
             id: fqnToId("port", group.outboundPort.fqn),
-            label: getGlossaryTitle(group.outboundPort.fqn)
+            label: getTypeTerm(group.outboundPort.fqn).title
         };
     }));
 
@@ -892,7 +844,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         if (!externalMermaidCode) return;
         const externalFqn = group.externalType.fqn;
         const externalId = fqnToId("external", externalFqn);
-        const externalLabel = getGlossaryTitle(externalFqn);
+        const externalLabel = getTypeTerm(externalFqn).title;
 
         const externalMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
         globalThis.Jig.observe.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
@@ -910,7 +862,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
 
     globalThis.Jig.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
         id: fqnToId("external", group.externalType.fqn),
-        label: getGlossaryTitle(group.externalType.fqn)
+        label: getTypeTerm(group.externalType.fqn).title
     })));
 
     if (grouped.length === 0) {
@@ -1078,7 +1030,6 @@ if (typeof module !== "undefined" && module.exports) {
         generatePersistenceMermaidCode,
         generateExternalTypeMermaidCode,
         addExternalAccessorNode,
-        getGlossaryMethodTitle,
         MermaidBuilder,
     };
 }

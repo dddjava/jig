@@ -779,6 +779,56 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
     renderMermaidNode(diagramEl, text, DEFAULT_MAX_EDGES, container);
 };
 
+// 用語集ユーティリティ
+globalThis.Jig.glossary ??= {};
+
+// FQNから用語を検索。登録がなければ undefined
+globalThis.Jig.glossary.findTerm = function findTerm(fqn) {
+    return globalThis.glossaryData?.[fqn];
+};
+
+// 型FQNから Term{title, description} を取得。登録がなければフォールバック
+globalThis.Jig.glossary.getTypeTerm = function getTypeTerm(fqn) {
+    const term = globalThis.Jig.glossary.findTerm(fqn);
+    if (term) return term;
+    return { title: fqn.substring(fqn.lastIndexOf('.') + 1) || fqn, description: "" };
+};
+
+// メソッドFQN（"pkg.Class#method(args)"形式）から Term{title, description} を取得
+globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn) {
+    if (!fqn) return { title: "", description: "" };
+    const term = globalThis.Jig.glossary.findTerm(fqn);
+    if (term) return term;
+
+    const hashIdx = fqn.lastIndexOf('#');
+    const parenIdx = fqn.indexOf('(', hashIdx);
+    const closeParenIdx = fqn.lastIndexOf(')');
+    if (hashIdx >= 0 && parenIdx > hashIdx) {
+        const methodName = fqn.substring(hashIdx + 1, parenIdx);
+        const argsStr = closeParenIdx > parenIdx ? fqn.substring(parenIdx + 1, closeParenIdx) : '';
+
+        // 引数を単純名に変換した FQN で再検索（例: Foo#bar(java.lang.String) → Foo#bar(String)）
+        const simpleArgsFqn = fqn.substring(0, parenIdx + 1)
+            + (argsStr ? argsStr.split(',').map(arg => {
+                const trimmed = arg.trim();
+                return trimmed.substring(trimmed.lastIndexOf('.') + 1);
+            }).join(',') : '')
+            + ')';
+        const term2 = globalThis.Jig.glossary.findTerm(simpleArgsFqn);
+        if (term2) return term2;
+
+        // フォールバック: methodName(simpleArgs) 形式
+        const simpleArgs = argsStr
+            ? argsStr.split(',').map(arg => {
+                const trimmed = arg.trim();
+                return trimmed.substring(trimmed.lastIndexOf('.') + 1);
+            }).join(', ')
+            : '';
+        return { title: `${methodName}(${simpleArgs})`, description: "" };
+    }
+    return { title: fqn, description: "" };
+};
+
 // FQNから一意なHTML IDを生成する
 globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
     // マルチバイト文字をハッシュ化して一意なIDを生成
@@ -801,5 +851,7 @@ if (typeof module !== "undefined" && module.exports) {
         flashButtonLabel,
         estimateEdgeCount,
         fqnToId: globalThis.Jig.fqnToId,
+        getTypeTerm: globalThis.Jig.glossary.getTypeTerm,
+        getMethodTerm: globalThis.Jig.glossary.getMethodTerm,
     };
 }

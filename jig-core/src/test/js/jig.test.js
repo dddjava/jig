@@ -153,3 +153,77 @@ test.describe("fqnToId", () => {
         assert.match(id1, /^persistence-[\w-]+-[a-z0-9]+$/);
     });
 });
+
+// ----- getTypeTerm -----
+
+test.describe("getTypeTerm", () => {
+    test("glossaryに登録されている場合はterm全体を返す", () => {
+        globalThis.glossaryData = {
+            "com.example.MyClass": {title: "マイクラス", description: "説明文"}
+        };
+        const term = jig.getTypeTerm("com.example.MyClass");
+        assert.equal(term.title, "マイクラス");
+        assert.equal(term.description, "説明文");
+    });
+
+    test("glossaryに登録されていない場合、単純名をtitleとして返す", () => {
+        globalThis.glossaryData = {};
+        const term = jig.getTypeTerm("java.lang.String");
+        assert.equal(term.title, "String");
+        assert.equal(term.description, "");
+    });
+
+    test("単純名がない場合、fqn全体をtitleとして返す", () => {
+        globalThis.glossaryData = {};
+        const term = jig.getTypeTerm("(default)");
+        assert.equal(term.title, "(default)");
+        assert.equal(term.description, "");
+    });
+});
+
+// ----- getMethodTerm -----
+
+test.describe("getMethodTerm", () => {
+    test("glossaryに登録されている場合はterm全体を返す", () => {
+        globalThis.glossaryData = {
+            "com.example.Foo#bar(java.lang.String)": {title: "文字列で保存", description: "説明"}
+        };
+        const term = jig.getMethodTerm("com.example.Foo#bar(java.lang.String)");
+        assert.equal(term.title, "文字列で保存");
+        assert.equal(term.description, "説明");
+    });
+
+    test("引数を単純名に変換して再検索する", () => {
+        globalThis.glossaryData = {
+            "com.example.Foo#bar(String)": {title: "文字列版", description: ""}
+        };
+        const term = jig.getMethodTerm("com.example.Foo#bar(java.lang.String)");
+        assert.equal(term.title, "文字列版");
+    });
+
+    test("登録なしの場合、メソッド名と引数単純名を返す", () => {
+        globalThis.glossaryData = {};
+        const term = jig.getMethodTerm("hoge.fuga.Class#save(java.lang.String)");
+        assert.equal(term.title, "save(String)");
+        assert.equal(term.description, "");
+    });
+
+    test("引数なしメソッドの場合", () => {
+        globalThis.glossaryData = {};
+        const term = jig.getMethodTerm("hoge.fuga.Class#list()");
+        assert.equal(term.title, "list()");
+    });
+
+    test("複数引数の場合、カンマ区切りで表示", () => {
+        globalThis.glossaryData = {};
+        const term = jig.getMethodTerm("hoge.fuga.Class#save(com.example.User, java.lang.Long)");
+        assert.equal(term.title, "save(User, Long)");
+    });
+
+    test("空のfqnの場合", () => {
+        globalThis.glossaryData = {};
+        const term = jig.getMethodTerm("");
+        assert.equal(term.title, "");
+        assert.equal(term.description, "");
+    });
+});

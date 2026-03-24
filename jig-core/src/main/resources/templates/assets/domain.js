@@ -1,4 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
+const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
     diagramDirection: 'TB',
@@ -77,64 +78,6 @@ function getDomainData() {
 }
 
 /**
- * @param {string} fqn
- * @returns {string}
- */
-function getGlossaryTitle(fqn) {
-    const term = findGlossary(fqn);
-    return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
-}
-
-/**
- * @param {string} fqn
- * @returns {string}
- */
-function getGlossaryDescription(fqn) {
-    const term = findGlossary(fqn);
-    return term?.description ?? "";
-}
-
-/**
- * @typedef {{
- *     title: string,
- *     description: string,
- * }} Term
- */
-
-/**
- * @param {string} fqn
- * @returns {Term | undefined}
- */
-function findGlossary(fqn) {
-    return globalThis.glossaryData?.[fqn];
-}
-
-/**
- * @param {DomainMethod} method
- * @returns {Term}
- */
-function getGlossaryMethodTerm(method) {
-    const fqn = method.fqn;
-    const term = findGlossary(fqn);
-    if (term) return term;
-
-    // 引数の完全修飾名を単純名に変換して再取得
-    const glossaryFqn = fqn.substring(0, fqn.lastIndexOf('(') + 1)
-        + method.parameterTypeRefs
-            .map(typeRef => typeRef.fqn)
-            .map(x => x.substring(x.lastIndexOf('.') + 1))
-            .join(",")
-        + ')';
-    const term2 = findGlossary(glossaryFqn);
-    if (term2) return term2;
-
-    // glossaryになし
-    // hoge.fuga.piyo#foo(bar, baz) => foo
-    const name = fqn.substring(fqn.lastIndexOf('#') + 1, fqn.lastIndexOf('('));
-    return {title: name, description: ""}
-}
-
-/**
  * @param {TypeRef} typeRef
  * @param {string | undefined} className
  * @returns {HTMLElement}
@@ -179,7 +122,7 @@ function createTypeLink(fqn, className = undefined) {
     return createElement("a", {
         className: mergedClass,
         attributes: {href: `#${fqn}`},
-        textContent: getGlossaryTitle(fqn)
+        textContent: getTypeTerm(fqn).title
     });
 }
 
@@ -199,7 +142,7 @@ function getDirectChildPackages(pkg) {
 function renderPackageNavItem(pkg) {
     // 子が1つだけでタイプを持たないパッケージを統合して表示
     let currentPkg = pkg;
-    const mergedNames = [getGlossaryTitle(pkg.fqn)];
+    const mergedNames = [getTypeTerm(pkg.fqn).title];
 
     while (true) {
         const childPackages = getDirectChildPackages(currentPkg);
@@ -207,7 +150,7 @@ function renderPackageNavItem(pkg) {
         if (currentPkg.types.length > 0) break;
 
         const childPkg = childPackages[0];
-        mergedNames.push(getGlossaryTitle(childPkg.fqn));
+        mergedNames.push(getTypeTerm(childPkg.fqn).title);
         currentPkg = childPkg;
     }
 
@@ -237,7 +180,7 @@ function renderPackageNavItem(pkg) {
         const link = createElement("a", {
             attributes: {href: "#" + child.fqn},
             className: domainType?.isDeprecated ? "deprecated" : "",
-            textContent: getGlossaryTitle(child.fqn)
+            textContent: getTypeTerm(child.fqn).title
         });
         details.appendChild(createElement("div", {children: [link]}));
     });
@@ -303,11 +246,11 @@ function createRelationDiagram(pkg) {
     }
 
     function mermaidTypeBox(fqn) {
-        return `${fqn}["${escapeMermaidLabel(getGlossaryTitle(fqn))}"]`;
+        return `${fqn}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`;
     }
 
     function mermaidPackageBox(fqn) {
-        return `${fqn}(["${escapeMermaidLabel(getGlossaryTitle(fqn))}"])`;
+        return `${fqn}(["${escapeMermaidLabel(getTypeTerm(fqn).title)}"])`;
     }
 
     const i = '    ';
@@ -364,12 +307,12 @@ function createChildrenTable(pkg) {
         ...childPackages.map(childPkg => ({
             isPackage: true,
             fqn: childPkg.fqn,
-            title: getGlossaryTitle(childPkg.fqn)
+            title: getTypeTerm(childPkg.fqn).title
         })),
         ...types.map(type => ({
             isPackage: false,
             fqn: type.fqn,
-            title: getGlossaryTitle(type.fqn)
+            title: getTypeTerm(type.fqn).title
         }))
     ];
 
@@ -440,7 +383,7 @@ function createFieldsList(fields) {
  * @returns {HTMLElement}
  */
 function createMethodItem(method) {
-    const methodTerm = getGlossaryMethodTerm(method);
+    const methodTerm = getMethodTerm(method.fqn);
 
     const paramElements = method.parameterTypeRefs
         .map(param => createTypeRefLink(param))
@@ -564,7 +507,7 @@ function renderPackages(packages, container) {
             id: pkg.fqn,
             children: [
                 createElement("h3", {
-                    children: [createElement("a", {textContent: getGlossaryTitle(pkg.fqn)})]
+                    children: [createElement("a", {textContent: getTypeTerm(pkg.fqn).title})]
                 }),
                 createElement("div", {
                     className: "fully-qualified-name",
@@ -573,7 +516,7 @@ function renderPackages(packages, container) {
             ]
         });
 
-        const pkgDescription = getGlossaryDescription(pkg.fqn);
+        const pkgDescription = getTypeTerm(pkg.fqn).description;
         if (pkgDescription) {
             section.appendChild(createElement("section", {
                 className: "markdown",
@@ -614,7 +557,7 @@ function renderTypes(types, container) {
 
     types.forEach(type => {
         const titleLink = createElement("a", {
-            textContent: getGlossaryTitle(type.fqn),
+            textContent: getTypeTerm(type.fqn).title,
             className: type.isDeprecated ? "deprecated" : ""
         });
 
@@ -627,7 +570,7 @@ function renderTypes(types, container) {
             ]
         });
 
-        const typeDescription = getGlossaryDescription(type.fqn);
+        const typeDescription = getTypeTerm(type.fqn).description;
         if (typeDescription) {
             section.appendChild(createElement("section", {
                 className: "markdown",
@@ -830,5 +773,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, getGlossaryMethodTerm, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages };
+    module.exports = { DomainApp, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages };
 }

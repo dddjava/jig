@@ -1,9 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const pkg = require('../../main/resources/templates/assets/package.js');
-const originalDom = {...pkg.dom};
-
 let testContext;
 
 class ClassList {
@@ -158,7 +155,23 @@ class DocumentStub {
     querySelectorAll(selector) {
         return this.selectorsAll.get(selector) || [];
     }
+
+    addEventListener() {
+        // no-op for testing
+    }
+
+    getElementsByClassName() {
+        return [];
+    }
 }
+
+// jig.js をロード（package.js が require 時に Jig 名前空間を参照するため先に行う）
+global.window = { addEventListener: () => {} };
+global.document = new DocumentStub();
+require('../../main/resources/templates/assets/jig.js');
+
+const pkg = require('../../main/resources/templates/assets/package.js');
+const originalDom = {...pkg.dom};
 
 function setupDocument() {
     const doc = new DocumentStub();

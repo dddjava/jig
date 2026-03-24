@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -235,12 +237,72 @@ public class JigPluginFunctionalTest {
         Files.writeString(testProjectDir.resolve("build.gradle"), buildScript);
     }
 
-    private GradleRunner runner(String version) throws IOException {
+    @ParameterizedTest
+    @MethodSource("supportGradleVersion")
+    void コンフィグレーションキャッシュが有効でも実行できる(String version) throws IOException {
+        settingsGradle("""
+                rootProject.name = 'my-test'
+                """);
+        buildGradle("""
+                plugins {
+                    id 'java'
+                    id 'org.dddjava.jig-gradle-plugin'
+                }
+                """);
+
+        // 1回目: キャッシュ保存
+        var result1 = runner(version, "--configuration-cache").build();
+        var taskResult1 = Objects.requireNonNull(result1.task(":jigReports"));
+        assertEquals(TaskOutcome.SUCCESS, taskResult1.getOutcome());
+        assertTrue(result1.getOutput().contains("[JIG] all JIG documents completed: "), result1.getOutput());
+
+        // 2回目: キャッシュ再利用（タスクはUP_TO_DATEになりうる）
+        var result2 = runner(version, "--configuration-cache").build();
+        assertNotNull(result2.task(":jigReports"));
+        assertTrue(result2.getOutput().contains("Reusing configuration cache"), result2.getOutput());
+    }
+
+    @ParameterizedTest
+    @MethodSource("supportGradleVersion")
+    void コンフィグレーションキャッシュが有効でもマルチプロジェクトで実行できる(String version) throws IOException {
+        settingsGradle("""
+                rootProject.name = 'my-test'
+                include 'a', 'b'
+                """);
+        buildGradle("a", """
+                plugins {
+                    id 'java'
+                    id 'org.dddjava.jig-gradle-plugin'
+                }
+                dependencies {
+                    implementation project(':b');
+                }
+                """);
+        buildGradle("b", """
+                plugins {
+                    id 'java'
+                }
+                """);
+
+        // 1回目: キャッシュ保存
+        var result1 = runner(version, "--configuration-cache").build();
+        var taskResult1 = Objects.requireNonNull(result1.task(":a:jigReports"));
+        assertEquals(TaskOutcome.SUCCESS, taskResult1.getOutcome());
+
+        // 2回目: キャッシュ再利用（タスクはUP_TO_DATEになりうる）
+        var result2 = runner(version, "--configuration-cache").build();
+        assertNotNull(result2.task(":a:jigReports"));
+        assertTrue(result2.getOutput().contains("Reusing configuration cache"), result2.getOutput());
+    }
+
+    private GradleRunner runner(String version, String... additionalArgs) throws IOException {
+        List<String> args = new ArrayList<>(List.of("jig", "--info"));
+        args.addAll(List.of(additionalArgs));
 
         return GradleRunner.create()
                 .withGradleVersion(version)
                 .withProjectDir(testProjectDir.toFile())
-                .withArguments("jig", "--info")
+                .withArguments(args)
                 .withPluginClasspath();
     }
 }

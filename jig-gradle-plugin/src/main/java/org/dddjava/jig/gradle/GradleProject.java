@@ -1,7 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
-import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
@@ -22,10 +20,11 @@ public class GradleProject {
     final Project project;
 
     public GradleProject(Project project) {
-        if (isNonJavaProject(project)) {
-            throw new IllegalStateException("Java プラグインが適用されていません。");
-        }
         this.project = project;
+    }
+
+    public static boolean isJavaProject(Project project) {
+        return findJavaPluginExtension(project).isPresent();
     }
 
     public Set<Path> classPaths() {
@@ -60,16 +59,24 @@ public class GradleProject {
                         .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME)));
     }
 
-    public SourceBasePaths rawSourceLocations() {
+    /**
+     * 依存プロジェクトを含むすべてのクラスパスを返す
+     */
+    public Set<Path> allClassPaths() {
         return allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
-                .map(gradleProject ->
-                        new SourceBasePaths(
-                                new SourceBasePath(gradleProject.classPaths()),
-                                new SourceBasePath(gradleProject.sourcePaths())
-                        ))
-                .reduce(SourceBasePaths::merge)
-                .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));
+                .flatMap(gp -> gp.classPaths().stream())
+                .collect(toSet());
+    }
+
+    /**
+     * 依存プロジェクトを含むすべてのソースパスを返す
+     */
+    public Set<Path> allSourcePaths() {
+        return allDependencyProjectsFrom(project)
+                .map(GradleProject::new)
+                .flatMap(gp -> gp.sourcePaths().stream())
+                .collect(toSet());
     }
 
     private Stream<Project> allDependencyProjectsFrom(Project currentProject) {

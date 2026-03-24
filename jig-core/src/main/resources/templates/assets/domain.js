@@ -118,7 +118,7 @@ function createTypeLink(fqn, className = undefined) {
         // domain型でなければ単純名のspan
         const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
         return createElement('span', {
-            className: (className ? className + ' ' : '') + "weak",
+            className: (className ? className + ' ' : '') + "weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
             textContent: simpleName
         });
     }

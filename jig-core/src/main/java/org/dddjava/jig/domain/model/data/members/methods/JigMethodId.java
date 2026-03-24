@@ -9,6 +9,12 @@ import static java.util.stream.Collectors.joining;
 
 /**
  * メソッドのID
+ *
+ * メソッドのIDは、宣言されたクラスのFQN、メソッド名、引数のFQNリストから生成される。
+ * 引数の型引数は持たない。同一引数型で型引数違いのメソッドはJavaで実装できないし、
+ * 呼び出し側（MethoRef）も扱わないので、含めてしまうと色々無理が出てくるため。
+ *
+ * 例: com.example.Foo#bar(com.example.Baz, java.util.List)
  */
 public record JigMethodId(String value) implements Comparable<JigMethodId> {
 

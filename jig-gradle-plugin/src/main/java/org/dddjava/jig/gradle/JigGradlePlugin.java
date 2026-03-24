@@ -6,7 +6,6 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskContainer;
 
 import java.nio.file.Path;
-import java.util.List;
 
 public class JigGradlePlugin implements Plugin<Project> {
 
@@ -40,17 +39,13 @@ public class JigGradlePlugin implements Plugin<Project> {
             // Java プラグインの適用状態
             task.getJavaPluginApplied().convention(project.provider(() -> GradleProject.isJavaProject(project)));
 
-            // ソース/クラスパス（Provider で遅延解決、configuration phase 内で評価される）
-            task.getClassFiles().from(project.provider(() -> {
-                if (!GradleProject.isJavaProject(project)) return List.of();
+            // ソース/クラスパス（configuration phase で解決し直接設定。
+            // Provider でラップすると project をキャプチャしてしまい、Gradle 8 の configuration cache でシリアライズできないため。）
+            if (GradleProject.isJavaProject(project)) {
                 GradleProject gp = new GradleProject(project);
-                return gp.allClassPaths().stream().map(Path::toFile).toList();
-            }));
-            task.getSourceFiles().from(project.provider(() -> {
-                if (!GradleProject.isJavaProject(project)) return List.of();
-                GradleProject gp = new GradleProject(project);
-                return gp.allSourcePaths().stream().map(Path::toFile).toList();
-            }));
+                task.getClassFiles().from(gp.allClassPaths().stream().map(Path::toFile).toList());
+                task.getSourceFiles().from(gp.allSourcePaths().stream().map(Path::toFile).toList());
+            }
         });
     }
 }

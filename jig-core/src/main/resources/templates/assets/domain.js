@@ -1,48 +1,3 @@
-/**
- * @typedef {Object} PackageType
- * @property {string} fqn
- * @property {{fqn: string}[]} [types]
- */
-/**
- * @typedef {Object} DomainType
- * @property {string} fqn
- * @property {DomainField[]} fields
- * @property {DomainMethod} methods
- * @property {DomainMethod[]} staticMethods
- * @property {EnumInfo} [enumInfo]
- */
-/**
- * @typedef {{
- *     name: string,
- *     typeRef: TypeRef,
- *     isDeprecated: boolean,
- * }} DomainField
- */
-/**
- * @typedef {{
- *     fqn: string,
- *     parameterTypeRefs: TypeRef[],
- *     returnTypeRef: TypeRef,
- *     isDeprecated: boolean
- * }} DomainMethod
- */
-/**
- * @typedef {Object} EnumInfo
- * @property {{name: string, params: string[]}} constants
- * @property {string[]} parameterNames
- */
-/**
- * @typedef {Object} TypeRef
- * @property {string} fqn
- * @property {TypeRef[]} [typeArgumentRefs]
- */
-/**
- * @typedef {{
- *     title: string,
- *     description: string,
- * }} Term
- */
-
 const createElement = globalThis.Jig.dom.createElement;
 
 const domainSettings = {
@@ -67,12 +22,31 @@ function getGlossaryDescription(fqn) {
 }
 
 /**
+ * @typedef {{
+ *     title: string,
+ *     description: string,
+ * }} Term
+ */
+/**
  * @returns  {Term | undefined}
  */
 function findGlossary(fqn) {
     return globalThis.glossaryData[fqn];
 }
 
+/**
+ * @typedef {Object} TypeRef
+ * @property {string} fqn
+ * @property {TypeRef[]} [typeArgumentRefs]
+ */
+/**
+ * @typedef {{
+ *     fqn: string,
+ *     parameterTypeRefs: TypeRef[],
+ *     returnTypeRef: TypeRef,
+ *     isDeprecated: boolean
+ * }} DomainMethod
+ */
 /**
  * @returns Term
  */
@@ -145,6 +119,11 @@ function createTypeLink(fqn, className = undefined) {
     });
 }
 
+/**
+ * @typedef {Object} PackageType
+ * @property {string} fqn
+ * @property {{fqn: string}[]} [types]
+ */
 /**
  * パッケージの直下の子パッケージを取得する
  * @param {PackageType} pkg
@@ -362,6 +341,13 @@ function createChildrenTable(pkg) {
     });
 }
 
+/**
+ * @typedef {{
+ *     name: string,
+ *     typeRef: TypeRef,
+ *     isDeprecated: boolean,
+ * }} DomainField
+ */
 function createFieldsList(fields) {
     if (!fields || fields.length === 0) return null;
 
@@ -439,6 +425,11 @@ function createMethodsList(kind, methods) {
     });
 }
 
+/**
+ * @typedef {Object} EnumInfo
+ * @property {{name: string, params: string[]}} constants
+ * @property {string[]} parameterNames
+ */
 function createEnumSection(type) {
     if (!type.enumInfo) return null;
 
@@ -542,6 +533,14 @@ function renderPackages(packages, container) {
     });
 }
 
+/**
+ * @typedef {Object} DomainType
+ * @property {string} fqn
+ * @property {DomainField[]} fields
+ * @property {DomainMethod} methods
+ * @property {DomainMethod[]} staticMethods
+ * @property {EnumInfo} [enumInfo]
+ */
 function renderTypes(types, container) {
     if (!types || types.length === 0) return;
 

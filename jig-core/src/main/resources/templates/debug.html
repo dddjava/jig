@@ -162,27 +162,24 @@
         .collapsed > .json-collapsed-marker { display: inline; }
         .collapsed > .json-toggle { transform: rotate(-90deg); }
         .highlight { background: #613315; }
-        .line {
-            display: flex;
-            min-height: 1.5em;
-        }
-        .line-gutter {
+        .line-number {
+            display: inline-block;
             min-width: 3ch;
             text-align: right;
-            color: #555;
             padding-right: 12px;
             user-select: none;
-            flex-shrink: 0;
+            color: #555;
+            margin-right: 0;
         }
-        .line-gutter.foldable {
+        .line-number.foldable {
             cursor: pointer;
             color: #858585;
         }
-        .line-gutter.foldable:hover {
+        .line-number.foldable:hover {
             color: #ccc;
             background: #2a2a2a;
+            border-radius: 2px;
         }
-        .line-content { flex: 1; }
         #empty-msg {
             color: #666;
             padding: 32px 16px;
@@ -265,32 +262,33 @@ function syntaxHighlight(json) {
 
 function addLineNumbers(html) {
     const lines = html.split('\n');
-    let lineNum = 1;
-    let result = `<div class="line"><span class="line-gutter">1</span><span class="line-content">`;
+    let collapsibleId = 0;
 
-    for (let i = 0; i < lines.length; i++) {
-        result += lines[i];
-        if (i < lines.length - 1) {
-            lineNum++;
-            const isFoldable = lines[i].includes('json-collapsible') &&
-                               !lines[i].includes('json-collapsed-marker');
-            const gutterClass = isFoldable ? 'line-gutter foldable' : 'line-gutter';
-            result += `</span></div>\n<div class="line"><span class="${gutterClass}">${lineNum}</span><span class="line-content">`;
+    return lines.map((line, i) => {
+        const lineNum = i + 1;
+        const isFoldable = line.includes('json-collapsible') &&
+                           !line.includes('json-collapsed-marker');
+        const gutterClass = isFoldable ? 'line-number foldable' : 'line-number';
+
+        let lineHtml = line;
+        let foldAttr = '';
+        if (isFoldable) {
+            collapsibleId++;
+            lineHtml = line.replace(/class="json-collapsible"/g, `class="json-collapsible" data-fold-id="${collapsibleId}"`);
+            foldAttr = ` data-fold-target="${collapsibleId}"`;
         }
-    }
 
-    result += `</span></div>`;
-    return result;
+        return `<span class="${gutterClass}" data-line="${lineNum}"${foldAttr}>${lineNum}</span>${lineHtml}`;
+    }).join('\n');
 }
 
 function addLineNumbersText(text) {
     const lines = text.split('\n');
-    const escaped = lines.map(line => line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")).join('\n');
-    const htmlLines = escaped.split('\n');
-    return htmlLines.map((line, i) => {
+    const escaped = lines.map(line => line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+    return escaped.map((line, i) => {
         const lineNum = i + 1;
-        return `<div class="line"><span class="line-gutter">${lineNum}</span><span class="line-content">${line}</span></div>`;
-    }).join('');
+        return `<span class="line-number" data-line="${lineNum}">${lineNum}</span>${line}`;
+    }).join('\n');
 }
 
 function showJson(entry) {
@@ -618,8 +616,12 @@ async function init() {
         if (e.target.classList.contains("json-toggle") || e.target.classList.contains("json-collapsed-marker")) {
             e.target.closest(".json-collapsible").classList.toggle("collapsed");
         } else if (e.target.classList.contains("foldable")) {
-            const collapsible = e.target.closest(".line")?.querySelector(".json-collapsible");
-            if (collapsible) collapsible.classList.toggle("collapsed");
+            const foldId = e.target.dataset.foldTarget;
+            const pre = e.target.closest("pre");
+            if (pre && foldId) {
+                const collapsible = pre.querySelector(`[data-fold-id="${foldId}"]`);
+                if (collapsible) collapsible.classList.toggle("collapsed");
+            }
         }
     });
 }

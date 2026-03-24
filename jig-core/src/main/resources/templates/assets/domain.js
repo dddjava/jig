@@ -457,8 +457,14 @@ function createMethodsList(kind, methods) {
 }
 
 /**
+ * @typedef {Object} EnumConstant
+ * @property {string} name
+ * @property {string[]} params
+ */
+
+/**
  * @typedef {Object} EnumInfo
- * @property {{name: string, params: string[]}[]} constants
+ * @property {EnumConstant[]} constants
  * @property {string[]} parameterNames
  */
 

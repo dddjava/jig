@@ -429,6 +429,47 @@ globalThis.Jig.dom.createElement = function createElement(tagName, options = {})
     return element;
 };
 
+
+/**
+ * TypeRefを `<span>TypeName</span>` で表現する。
+ * 型の名前は辞書にあればその言葉、なければなければ単純名。
+ * TODO fqnに対して適切な場所へのリンクをつけたい
+ *
+ * @param {TypeRef} typeRef
+ * @param {string | undefined} className
+ * @returns {HTMLElement}
+ */
+globalThis.Jig.dom.createElementForTypeRef = function createTypeRefLink(typeRef, className= undefined) {
+    if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
+        const typeElements= createTypeLink(typeRef.fqn);
+        const argumentElements = typeRef.typeArgumentRefs
+            .map(typeRef => createTypeRefLink(typeRef))
+            // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
+            .flatMap((v, i) => i ? [', ', v] : [v]);
+
+        return globalThis.Jig.dom.createElement("span", {
+            className: className,
+            children: [typeElements, '<', ...argumentElements, '>']
+        })
+    }
+
+    // 型引数なし
+    return createTypeLink(typeRef.fqn, className);
+}
+
+/**
+ * @param {string} fqn
+ * @param {string | undefined} className
+ * @returns {HTMLElement}
+ */
+function createTypeLink(fqn, className = undefined) {
+    // とりあえずリンクは無し
+    return globalThis.Jig.dom.createElement('span', {
+        className: className,
+        textContent: globalThis.Jig.glossary.getTypeTerm(fqn).title
+    });
+}
+
 globalThis.Jig.dom.downloadCsv = function downloadCsv(text, filename) {
     const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
     const url = URL.createObjectURL(blob);

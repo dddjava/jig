@@ -8,8 +8,6 @@ import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
-import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -24,8 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * ユースケース概要
@@ -93,8 +89,6 @@ public class UsecaseSummaryAdapter {
         return JsonSupport.buildMethodJson(jigMethod)
                 // 以下をなくしたらこのメソッドがいらなくなる
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
-                .and("returnTypeLink", methodReturnLinkText(jigMethod))
-                .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))
                 .and("graph", buildGraphJson(jigMethod, contextJigTypes, methodRelations));
     }
 
@@ -176,31 +170,4 @@ public class UsecaseSummaryAdapter {
         return typeId.value().replaceAll("[^a-zA-Z0-9]", "_");
     }
 
-    private String methodReturnLinkText(JigMethod jigMethod) {
-        return linkText(jigMethod.jigMethodDeclaration().header().returnType());
-    }
-
-    private List<String> methodParameterLinkTexts(JigMethod jigMethod) {
-        return jigMethod.jigMethodDeclaration().header().parameterTypeList().stream()
-                .map(this::linkText)
-                .collect(Collectors.toList());
-    }
-
-    private String linkText(JigTypeReference jigTypeReference) {
-        var typeArgumentList = jigTypeReference.typeArgumentList();
-        String typeArgumentText = typeArgumentList.isEmpty() ? "" :
-                typeArgumentList.stream()
-                        .map(JigTypeArgument::typeId)
-                        .map(this::typeIdToLinkText)
-                        .collect(joining(", ", "&lt;", "&gt;"));
-
-        return typeIdToLinkText(jigTypeReference.id()) + typeArgumentText;
-    }
-
-    private String typeIdToLinkText(TypeId typeId) {
-        if (typeId.isJavaLanguageType()) {
-            return String.format("<span class=\"weak\">%s</span>", typeId.asSimpleText());
-        }
-        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeId.fqn(), jigDocumentContext.typeTerm(typeId).title());
-    }
 }

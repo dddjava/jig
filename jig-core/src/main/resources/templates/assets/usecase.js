@@ -1,4 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
+const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 
 function createFieldsList(fields) {
     if (!fields || fields.length === 0) return null;
@@ -14,8 +15,7 @@ function createFieldsList(fields) {
                         textContent: field.name
                     }),
                     createElement("span", {className: "method-return-sep", textContent: ":"}),
-                    // 通常はサービスやリポジトリ。リンクできるならしたいが、一旦ただのテキストで。
-                    createElement("span", {textContent: globalThis.Jig.glossary.getTypeTerm(field.typeRef.fqn).title})
+                    createElementForTypeRef(field.typeRef)
                 ]
             })
         ]
@@ -52,12 +52,12 @@ function createMethodsTable(kind, methods) {
                 children: [
                     createElement("td", { className: "method-name", textContent: methodTerm.title }),
                     createElement("td", {
-                        children: (method.argumentsLinks || []).map(argLink => createElement("span", {
-                            className: "method-argument-item",
-                            innerHTML: argLink
-                        }))
+                        children: method.parameterTypeRefs
+                            .map(typeRef => createElementForTypeRef(typeRef), "method-argument-item")
                     }),
-                    createElement("td", { innerHTML: method.returnTypeLink }),
+                    createElement("td", {
+                        children: [createElementForTypeRef(method.returnTypeRef)]
+                    }),
                     createElement("td", {
                         className: "markdown",
                         innerHTML: methodTerm.description ? globalThis.Jig.markdown.parse(methodTerm.description) : ""
@@ -247,21 +247,18 @@ const UsecaseApp = {
                     });
                 }
 
-                // Arguments and Return
                 const dl = createElement("dl", { className: "depends" });
                 
-                // Arguments
-                if (method.argumentsLinks && method.argumentsLinks.length > 0) {
+                if (method.parameterTypeRefs.length > 0) {
                      dl.appendChild(createElement("dt", { textContent: "要求するもの（引数）" }));
-                     method.argumentsLinks.forEach(argLink => {
-                         dl.appendChild(createElement("dd", { innerHTML: argLink }));
+                     method.parameterTypeRefs.forEach(parameterTypeRef => {
+                         dl.appendChild(createElement("dd", { children: [createElementForTypeRef(parameterTypeRef)] }));
                      });
                 }
 
-                // Return
-                if (method.returnTypeLink && method.returnTypeLink !== '<span class="weak">void</span>') {
+                if (method.returnTypeRef.fqn !== 'void') {
                     dl.appendChild(createElement("dt", { textContent: "得られるもの（戻り値）" }));
-                    dl.appendChild(createElement("dd", { innerHTML: method.returnTypeLink }));
+                    dl.appendChild(createElement("dd", { children: [createElementForTypeRef(method.returnTypeRef)] }));
                 }
                 
                 methodSection.appendChild(dl);

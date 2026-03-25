@@ -18,22 +18,20 @@ const mockUsecaseData = {
             staticMethods: [
                 {
                     fqn: "com.example.ServiceA#staticMethod1()",
-                    visibility: "+",
+                    visibility: "PUBLIC",
                     declaration: "staticMethod1():void",
-                    returnTypeLink: '<span class="weak">void</span>',
-                    argumentsLinks: []
+                    parameterTypeRefs: [],
+                    returnTypeRef: { fqn: "void" }
                 }
             ],
             methods: [
                 {
                     fqn: "com.example.ServiceA#method1()",
-                    visibility: "+",
+                    visibility: "PRIVATE",
                     parameterTypeRefs: [],
                     returnTypeRef: { fqn: "void" },
                     declaration: "method1():void",
-                    returnTypeLink: '<span class="weak">void</span>',
                     isDeprecated: false,
-                    argumentsLinks: [],
                     graph: {
                         nodes: [
                             { id: "n1", fqn: "com.example.ServiceA#method1()", type: "usecase" },

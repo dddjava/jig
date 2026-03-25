@@ -4,18 +4,6 @@ const assert = require('node:assert/strict');
 // Pure functions - no DOM setup needed
 const jigCommon = require('../../main/resources/templates/assets/jig-common.js');
 
-// ----- isTooLarge -----
-
-test.describe('isTooLarge', () => {
-    test('閾値を超えるとtrueを返す', () => {
-        const max = 'a'.repeat(50000);
-        const over = 'a'.repeat(50001);
-
-        assert.equal(jigCommon.isTooLarge(max), false);
-        assert.equal(jigCommon.isTooLarge(over), true);
-    });
-});
-
 // ----- estimateEdgeCount -----
 
 test.describe('estimateEdgeCount', () => {

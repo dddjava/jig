@@ -5,14 +5,6 @@ globalThis.Jig ??= {};
 globalThis.Jig.glossary ??= {};
 globalThis.Jig.mermaid ??= {};
 
-// Constants used by pure functions
-const DEFAULT_MAX_TEXT_SIZE = 50000;
-
-// Mermaid diagram size check
-function isTooLarge(source) {
-    return source.length > DEFAULT_MAX_TEXT_SIZE;
-}
-
 // Estimate Mermaid edge count from source
 function estimateEdgeCount(source) {
     const text = source != null ? String(source) : "";
@@ -190,7 +182,6 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-        isTooLarge,
         estimateEdgeCount,
         fqnToId: globalThis.Jig.fqnToId,
         getTypeTerm: globalThis.Jig.glossary.getTypeTerm,

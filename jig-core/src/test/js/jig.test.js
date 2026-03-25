@@ -117,5 +117,16 @@ test.describe('jig.js - DOM dependent functions', () => {
             global.window.setTimeout = originalSetTimeout;
         }
     });
+
+    test.describe('isTooLarge', () => {
+        test('閾値を超えるとtrueを返す', () => {
+            const max = 'a'.repeat(50000);
+            const over = 'a'.repeat(50001);
+
+            assert.equal(jig.isTooLarge(max), false);
+            assert.equal(jig.isTooLarge(over), true);
+        });
+    });
+
 });
 // Pure function tests have been moved to jig-common.test.js

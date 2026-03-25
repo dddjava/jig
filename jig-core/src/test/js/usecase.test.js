@@ -136,7 +136,7 @@ test.describe('UsecaseApp', () => {
         const staticMethodsTable = serviceSection.querySelector('table:not(.fields)');
         assert.ok(staticMethodsTable);
         assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
-        assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, '+ staticMethod1');
+        assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
 
         const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);

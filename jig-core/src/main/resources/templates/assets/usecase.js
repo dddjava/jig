@@ -47,11 +47,10 @@ function createMethodsTable(kind, methods) {
     const tbody = createElement("tbody", {
         children: methods.map(method => {
             const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
-            const labelWithSymbol = (method.visibility || "") + " " + methodTerm.title;
 
             return createElement("tr", {
                 children: [
-                    createElement("td", { className: "method-name", textContent: labelWithSymbol }),
+                    createElement("td", { className: "method-name", textContent: methodTerm.title }),
                     createElement("td", {
                         children: (method.argumentsLinks || []).map(argLink => createElement("span", {
                             className: "method-argument-item",

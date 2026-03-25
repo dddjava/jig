@@ -221,11 +221,13 @@ const UsecaseApp = {
 
                             builder.addNode(node.id, nodeLabel, shape);
 
-                            if (node.highlight) {
+                            // 自身を強調表示
+                            if (node.fqn === method.fqn) {
                                 builder.addStyle(node.id, "font-weight:bold");
                             }
-                            if (node.link) {
-                                builder.addClick(node.id, "#" + node.link);
+                            // ユースケースはページ内リンク
+                            if (node.type === 'usecase') {
+                                builder.addClick(node.id, "#" + node.fqn);
                             }
                             if (node.type === 'other') {
                                 builder.addClass(node.id, "others");

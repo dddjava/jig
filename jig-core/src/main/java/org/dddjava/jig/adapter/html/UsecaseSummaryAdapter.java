@@ -110,12 +110,11 @@ public class UsecaseSummaryAdapter {
 
         // メソッドのノード
         filteredRelations.toJigMethodIdStream().forEach(jigMethodId -> {
-            // 自分は太字にする
+            // 自分
             if (jigMethodId.equals(jigMethod.jigMethodId())) {
                 resolved.add(jigMethodId);
                 nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
                         .and("fqn", jigMethodId.fqn())
-                        .and("highlight", true)
                         .and("type", "usecase"));
             } else {
                 contextJigTypes.resolveJigMethod(jigMethodId)
@@ -125,7 +124,6 @@ public class UsecaseSummaryAdapter {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
                                         .and("fqn", method.fqn())
-                                        .and("link", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
                                         .and("type", "usecase"));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。

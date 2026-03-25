@@ -36,8 +36,8 @@ const mockUsecaseData = {
                     argumentsLinks: [],
                     graph: {
                         nodes: [
-                            { id: "n1", fqn: "com.example.ServiceA#method1()", type: "usecase", highlight: true },
-                            { id: "n2", fqn: "com.example.ServiceA#otherMethod()", type: "normal", link: "otherMethod" }
+                            { id: "n1", fqn: "com.example.ServiceA#method1()", type: "usecase" },
+                            { id: "n2", fqn: "com.example.ServiceA#otherMethod()", type: "usecase" }
                         ],
                         edges: [
                             { from: "n2", to: "n1" }
@@ -148,7 +148,7 @@ test.describe('UsecaseApp', () => {
         assert.ok(mermaidPre);
         assert.ok(mermaidPre.textContent.includes('graph LR'));
         assert.ok(mermaidPre.textContent.includes('style n1 font-weight:bold'));
-        assert.ok(mermaidPre.textContent.includes('click n2 "#otherMethod"'));
+        assert.ok(mermaidPre.textContent.includes('click n2 "#com.example.ServiceA#otherMethod()"'));
 
         const description = methodSection.querySelector('.description');
         assert.strictEqual(description.innerHTML, 'Description of method1');

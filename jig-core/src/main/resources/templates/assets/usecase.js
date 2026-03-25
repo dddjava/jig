@@ -208,7 +208,8 @@ const UsecaseApp = {
                             // lambdaはラベル名固定
                             else if (node.type === 'lambda') shape = '["(lambda)"]';
 
-                            builder.addNode(node.id, globalThis.Jig.glossary.getMethodTerm(node.fqn).title, shape);
+                            var nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                            builder.addNode(node.id, nodeLabel, shape);
 
                             if (node.highlight) {
                                 builder.addStyle(node.id, "font-weight:bold");

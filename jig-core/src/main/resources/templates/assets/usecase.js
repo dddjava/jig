@@ -204,11 +204,21 @@ const UsecaseApp = {
 
                         method.graph.nodes.forEach(node => {
                             let shape = '["$LABEL"]';
-                            if (node.type === 'usecase') shape = '(["$LABEL"])';
-                            // lambdaはラベル名固定
-                            else if (node.type === 'lambda') shape = '["(lambda)"]';
+                            let nodeLabel;
+                            // usecase, normal, labmda, other
+                            if (node.type === 'usecase') {
+                                shape = '(["$LABEL"])';
+                                nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                            } else if (node.type === 'normal') {
+                                nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                            } else if (node.type === 'lambda') {
+                                // lambdaはラベル名固定
+                                nodeLabel = '(lambda)';
+                            } else {
+                                // otherが該当するが、その他全部としておく
+                                nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                            }
 
-                            var nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
                             builder.addNode(node.id, nodeLabel, shape);
 
                             if (node.highlight) {

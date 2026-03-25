@@ -12,31 +12,29 @@ const mockUsecaseData = {
     usecases: [
         {
             typeId: "com.example.ServiceA",
-            label: "ServiceA",
-            description: "Description of ServiceA",
             fields: [
                 { name: "field1", typeHtml: "String", isDeprecated: false }
             ],
             staticMethods: [
                 {
                     methodId: "staticMethod1",
-                    label: "staticMethod1",
-                    labelWithSymbol: "staticMethod1",
+                    termId: "com.example.ServiceA#staticMethod1()",
+                    name: "staticMethod1",
+                    visibility: "+",
                     declaration: "staticMethod1():void",
                     returnTypeLink: '<span class="weak">void</span>',
-                    argumentsLinks: [],
-                    description: "Description of staticMethod1"
+                    argumentsLinks: []
                 }
             ],
             methods: [
                 {
                     methodId: "method1",
-                    label: "method1",
-                    labelWithSymbol: "method1",
+                    termId: "com.example.ServiceA#method1()",
+                    name: "method1",
+                    visibility: "+",
                     declaration: "method1():void",
                     returnTypeLink: '<span class="weak">void</span>',
                     argumentsLinks: [],
-                    description: "Description of method1",
                     graph: {
                         nodes: [
                             { id: "n1", label: "method1", type: "usecase", highlight: true },
@@ -111,6 +109,11 @@ test.describe('UsecaseApp', () => {
     });
 
     test('init should render data from globalThis.usecaseData', () => {
+        globalThis.glossaryData = {
+            "com.example.ServiceA": { title: "ServiceA", description: "Description of ServiceA" },
+            "com.example.ServiceA#staticMethod1()": { title: "staticMethod1", description: "Description of staticMethod1" },
+            "com.example.ServiceA#method1()": { title: "method1", description: "Description of method1" }
+        };
         globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();
 
@@ -134,7 +137,7 @@ test.describe('UsecaseApp', () => {
         const staticMethodsTable = serviceSection.querySelector('table:not(.fields)');
         assert.ok(staticMethodsTable);
         assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
-        assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
+        assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, '+ staticMethod1');
         
         const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);

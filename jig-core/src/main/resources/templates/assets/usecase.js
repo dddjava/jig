@@ -44,22 +44,28 @@ function createMethodsTable(kind, methods) {
     });
 
     const tbody = createElement("tbody", {
-        children: methods.map(method => createElement("tr", {
-            children: [
-                createElement("td", { className: "method-name", textContent: method.labelWithSymbol }),
-                createElement("td", {
-                    children: (method.argumentsLinks || []).map(argLink => createElement("span", {
-                        className: "method-argument-item",
-                        innerHTML: argLink
-                    }))
-                }),
-                createElement("td", { innerHTML: method.returnTypeLink }),
-                createElement("td", {
-                    className: "markdown",
-                    innerHTML: method.description ? globalThis.Jig.markdown.parse(method.description) : ""
-                })
-            ]
-        }))
+        children: methods.map(method => {
+            const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.termId);
+            const methodLabel = methodTerm.title || method.name;
+            const labelWithSymbol = (method.visibility || "") + " " + methodLabel;
+
+            return createElement("tr", {
+                children: [
+                    createElement("td", { className: "method-name", textContent: labelWithSymbol }),
+                    createElement("td", {
+                        children: (method.argumentsLinks || []).map(argLink => createElement("span", {
+                            className: "method-argument-item",
+                            innerHTML: argLink
+                        }))
+                    }),
+                    createElement("td", { innerHTML: method.returnTypeLink }),
+                    createElement("td", {
+                        className: "markdown",
+                        innerHTML: methodTerm.description ? globalThis.Jig.markdown.parse(methodTerm.description) : ""
+                    })
+                ]
+            });
+        })
     });
 
     return createElement("table", { children: [thead, tbody] });
@@ -122,7 +128,10 @@ const UsecaseApp = {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        const items = usecases.map(c => ({id: c.typeId, label: c.label}));
+        const items = usecases.map(c => {
+            const term = globalThis.Jig.glossary.getTypeTerm(c.typeId);
+            return {id: c.typeId, label: term.title || c.typeId};
+        });
         globalThis.Jig.sidebar.renderSection(sidebar, "ユースケース", items);
     },
 
@@ -137,11 +146,15 @@ const UsecaseApp = {
         }
 
         usecases.forEach(usecase => {
+            const term = globalThis.Jig.glossary.getTypeTerm(usecase.typeId);
+            const label = term.title || usecase.typeId;
+            const description = term.description;
+
             const section = createElement("section", {
                 className: "jig-card jig-card--type",
                 children: [
                     createElement("h3", {
-                        children: [createElement("a", {id: usecase.typeId, textContent: usecase.label})]
+                        children: [createElement("a", {id: usecase.typeId, textContent: label})]
                     }),
                     createElement("div", {
                         className: "fully-qualified-name",
@@ -150,10 +163,10 @@ const UsecaseApp = {
                 ]
             });
 
-            if (usecase.description) {
+            if (description) {
                 section.appendChild(createElement("section", {
                     className: "markdown",
-                    innerHTML: globalThis.Jig.markdown.parse(usecase.description)
+                    innerHTML: globalThis.Jig.markdown.parse(description)
                 }));
             }
 
@@ -167,10 +180,14 @@ const UsecaseApp = {
             }
 
             usecase.methods.forEach(method => {
+                const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.termId);
+                const methodLabel = methodTerm.title || method.name;
+                const methodDescription = methodTerm.description;
+
                 const methodSection = createElement("article", {
                     className: "jig-card jig-card--item",
                     children: [
-                        createElement("h4", {id: method.methodId, textContent: method.label}),
+                        createElement("h4", {id: method.methodId, textContent: methodLabel}),
                         createElement("div", {
                             className: "fully-qualified-name",
                             textContent: method.declaration
@@ -242,10 +259,10 @@ const UsecaseApp = {
                 methodSection.appendChild(dl);
 
                 // Method Description
-                if (method.description) {
+                if (methodDescription) {
                     methodSection.appendChild(createElement("section", {
                         className: "description markdown",
-                        innerHTML: globalThis.Jig.markdown.parse(method.description)
+                        innerHTML: globalThis.Jig.markdown.parse(methodDescription)
                     }));
                 }
 

@@ -80,8 +80,6 @@ public class UsecaseSummaryAdapter {
 
             if (!methodList.isEmpty() || !fields.isEmpty() || !staticMethods.isEmpty()) {
                 usecaseList.add(Json.object("typeId", jigType.fqn())
-                        .and("label", jigType.label())
-                        .and("description", jigType.term().description())
                         .and("fields", Json.arrayObjects(fields))
                         .and("staticMethods", Json.arrayObjects(staticMethods))
                         .and("methods", Json.arrayObjects(methodList)));
@@ -99,12 +97,12 @@ public class UsecaseSummaryAdapter {
 
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {
         return Json.object("methodId", HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId()))
-                .and("label", jigMethod.labelText())
-                .and("labelWithSymbol", jigMethod.labelTextWithSymbol())
+                .and("termId", jigMethod.term().id().asText())
+                .and("name", jigMethod.name())
+                .and("visibility", jigMethod.visibility().symbol())
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("returnTypeLink", methodReturnLinkText(jigMethod))
                 .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))
-                .and("description", jigMethod.term().description())
                 .and("graph", buildGraphJson(jigMethod, contextJigTypes, methodRelations));
     }
 

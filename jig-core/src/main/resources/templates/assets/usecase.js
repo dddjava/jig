@@ -1,5 +1,6 @@
 const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
+const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);
 
 function createFieldsList(fields) {
     if (!fields || fields.length === 0) return null;
@@ -219,26 +220,27 @@ const UsecaseApp = {
                                 nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
                             }
 
-                            builder.addNode(node.id, nodeLabel, shape);
+                            const nodeId = fqnToNodeId(node.fqn);
+                            builder.addNode(nodeId, nodeLabel, shape);
 
                             // 自身を強調表示
                             if (node.fqn === method.fqn) {
-                                builder.addStyle(node.id, "font-weight:bold");
+                                builder.addStyle(nodeId, "font-weight:bold");
                             }
                             // ユースケースはページ内リンク
                             if (node.type === 'usecase') {
-                                builder.addClick(node.id, "#" + node.fqn);
+                                builder.addClick(nodeId, "#" + node.fqn);
                             }
                             if (node.type === 'other') {
-                                builder.addClass(node.id, "others");
+                                builder.addClass(nodeId, "others");
                             }
                             if (node.type === 'lambda') {
-                                builder.addClass(node.id, "lambda");
+                                builder.addClass(nodeId, "lambda");
                             }
                         });
 
                         method.graph.edges.forEach(edge => {
-                            builder.addEdge(edge.from, edge.to);
+                            builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                         });
 
                         const code = builder.build('LR');

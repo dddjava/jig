@@ -2,7 +2,6 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
-import org.dddjava.jig.adapter.html.view.HtmlSupport;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
@@ -107,7 +106,7 @@ public class UsecaseSummaryAdapter {
             // 自分
             if (jigMethodId.equals(jigMethod.jigMethodId())) {
                 resolved.add(jigMethodId);
-                nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
+                nodes.add(Json.object()
                         .and("fqn", jigMethodId.fqn())
                         .and("type", "usecase"));
             } else {
@@ -116,12 +115,12 @@ public class UsecaseSummaryAdapter {
                             resolved.add(jigMethodId);
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
-                                nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
+                                nodes.add(Json.object()
                                         .and("fqn", method.fqn())
                                         .and("type", "usecase"));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。
-                                nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
+                                nodes.add(Json.object()
                                         .and("fqn", method.fqn())
                                         .and("type", jigMethodId.isLambda() ? "lambda" : "normal"));
                             }
@@ -143,7 +142,7 @@ public class UsecaseSummaryAdapter {
 
         // JigMethodにならないものはクラスノードとして出力する
         others.forEach(typeId ->
-                nodes.add(Json.object("id", htmlIdText(typeId))
+                nodes.add(Json.object()
                         .and("fqn", typeId.fqn())
                         .and("type", "other")));
 
@@ -153,21 +152,16 @@ public class UsecaseSummaryAdapter {
 
     private String resolveNodeId(JigMethodId jigMethodId, Set<JigMethodId> resolved, Set<TypeId> others, JigMethod contextMethod) {
         if (resolved.contains(jigMethodId)) {
-            return HtmlSupport.htmlMethodIdText(jigMethodId);
+            return jigMethodId.fqn();
         }
         // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
         var typeId = jigMethodId.tuple().declaringTypeId();
         if (typeId.packageId().equals(contextMethod.declaringType().packageId())) {
             // 暫定的に同じパッケージのもののみ出力する
             others.add(typeId);
-            return htmlIdText(typeId);
+            return typeId.fqn();
         }
+        // パッケージ外は出力しない
         return null;
     }
-
-    private static String htmlIdText(TypeId typeId) {
-        // 英数字以外を_に置換する
-        return typeId.value().replaceAll("[^a-zA-Z0-9]", "_");
-    }
-
 }

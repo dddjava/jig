@@ -58,6 +58,7 @@ function setupGlobals() {
     global.document = createDocument();
 }
 
+// DOM setup needed for DOM-dependent tests (renderTooLargeDiagram, flashButtonLabel)
 setupGlobals();
 const jig = require('../../main/resources/templates/assets/jig.js');
 
@@ -65,15 +66,7 @@ function resetDocument() {
     global.document = createDocument();
 }
 
-test.describe('jig.js', () => {
-    test('isTooLargeは閾値を超えるとtrueを返す', () => {
-        const max = 'a'.repeat(50000);
-        const over = 'a'.repeat(50001);
-
-        assert.equal(jig.isTooLarge(max), false);
-        assert.equal(jig.isTooLarge(over), true);
-    });
-
+test.describe('jig.js - DOM dependent functions', () => {
     test('renderTooLargeDiagramは案内表示を追加する', () => {
         resetDocument();
 
@@ -125,105 +118,4 @@ test.describe('jig.js', () => {
         }
     });
 });
-
-// ----- fqnToId -----
-
-test.describe("fqnToId", () => {
-    test("プレフィックスを付けてIDを生成する", () => {
-        const id = jig.fqnToId("port", "com.example.MyPort");
-        assert.match(id, /^port-com-exampl-[a-z0-9]+$/);
-    });
-
-    test("異なるfqnなら異なるIDを生成する", () => {
-        const id1 = jig.fqnToId("persistence", "my_table");
-        const id2 = jig.fqnToId("persistence", "another_table");
-        assert.notEqual(id1, id2);
-    });
-
-    test("同じfqnなら同じIDを生成する（一意性）", () => {
-        const id1 = jig.fqnToId("op", "com.example.Port#save(java.lang.String)");
-        const id2 = jig.fqnToId("op", "com.example.Port#save(java.lang.String)");
-        assert.equal(id1, id2);
-    });
-
-    test("マルチバイト文字でも正しくハッシュ化される", () => {
-        const id1 = jig.fqnToId("persistence", "テーブル1");
-        const id2 = jig.fqnToId("persistence", "テーブル2");
-        assert.notEqual(id1, id2);
-        assert.match(id1, /^persistence-[\w-]+-[a-z0-9]+$/);
-    });
-});
-
-// ----- getTypeTerm -----
-
-test.describe("getTypeTerm", () => {
-    test("glossaryに登録されている場合はterm全体を返す", () => {
-        globalThis.glossaryData = {
-            "com.example.MyClass": {title: "マイクラス", description: "説明文"}
-        };
-        const term = jig.getTypeTerm("com.example.MyClass");
-        assert.equal(term.title, "マイクラス");
-        assert.equal(term.description, "説明文");
-    });
-
-    test("glossaryに登録されていない場合、単純名をtitleとして返す", () => {
-        globalThis.glossaryData = {};
-        const term = jig.getTypeTerm("java.lang.String");
-        assert.equal(term.title, "String");
-        assert.equal(term.description, "");
-    });
-
-    test("単純名がない場合、fqn全体をtitleとして返す", () => {
-        globalThis.glossaryData = {};
-        const term = jig.getTypeTerm("(default)");
-        assert.equal(term.title, "(default)");
-        assert.equal(term.description, "");
-    });
-});
-
-// ----- getMethodTerm -----
-
-test.describe("getMethodTerm", () => {
-    test("glossaryに登録されている場合はterm全体を返す", () => {
-        globalThis.glossaryData = {
-            "com.example.Foo#bar(java.lang.String)": {title: "文字列で保存", description: "説明"}
-        };
-        const term = jig.getMethodTerm("com.example.Foo#bar(java.lang.String)");
-        assert.equal(term.title, "文字列で保存");
-        assert.equal(term.description, "説明");
-    });
-
-    test("引数を単純名に変換して再検索する", () => {
-        globalThis.glossaryData = {
-            "com.example.Foo#bar(String)": {title: "文字列版", description: ""}
-        };
-        const term = jig.getMethodTerm("com.example.Foo#bar(java.lang.String)");
-        assert.equal(term.title, "文字列版");
-    });
-
-    test("登録なしの場合、メソッド名と引数単純名を返す", () => {
-        globalThis.glossaryData = {};
-        const term = jig.getMethodTerm("hoge.fuga.Class#save(java.lang.String)");
-        assert.equal(term.title, "save(String)");
-        assert.equal(term.description, "");
-    });
-
-    test("引数なしメソッドの場合", () => {
-        globalThis.glossaryData = {};
-        const term = jig.getMethodTerm("hoge.fuga.Class#list()");
-        assert.equal(term.title, "list()");
-    });
-
-    test("複数引数の場合、カンマ区切りで表示", () => {
-        globalThis.glossaryData = {};
-        const term = jig.getMethodTerm("hoge.fuga.Class#save(com.example.User, java.lang.Long)");
-        assert.equal(term.title, "save(User, Long)");
-    });
-
-    test("空のfqnの場合", () => {
-        globalThis.glossaryData = {};
-        const term = jig.getMethodTerm("");
-        assert.equal(term.title, "");
-        assert.equal(term.description, "");
-    });
-});
+// Pure function tests have been moved to jig-common.test.js

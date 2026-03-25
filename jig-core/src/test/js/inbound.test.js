@@ -3,6 +3,7 @@ const { test, beforeEach } = require('node:test');
 const { JSDOM } = require('jsdom');
 const path = require('path');
 
+const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const inboundJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/inbound.js');
 
@@ -74,8 +75,10 @@ test.describe('InboundApp', () => {
         global.marked = { parse: (text) => text }; // markedのモック
         global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
 
+        delete require.cache[jigCommonJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[inboundJsPath];
+        require(jigCommonJsPath);
         require(jigJsPath);
         ({ InboundApp } = require(inboundJsPath));
     });

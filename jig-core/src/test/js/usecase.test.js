@@ -3,6 +3,7 @@ const { test, beforeEach } = require('node:test');
 const { JSDOM } = require('jsdom');
 const path = require('path');
 
+const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const usecaseJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/usecase.js');
 
@@ -101,8 +102,10 @@ test.describe('UsecaseApp', () => {
         global.marked = { parse: (text) => text }; // markedのモック
         global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
 
+        delete require.cache[jigCommonJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
+        require(jigCommonJsPath);
         require(jigJsPath);
         ({ UsecaseApp } = require(usecaseJsPath));
     });

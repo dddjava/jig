@@ -5,6 +5,7 @@ import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.html.view.HtmlSupport;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
+import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
@@ -13,7 +14,6 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -62,7 +62,7 @@ public class UsecaseSummaryAdapter {
 
         for (var jigType : contextJigTypes.list()) {
             List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
-                    .map(this::buildFieldJson)
+                    .map(JsonSupport::buildFieldJson)
                     .collect(Collectors.toList());
 
             List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods()
@@ -89,16 +89,9 @@ public class UsecaseSummaryAdapter {
         return Json.object("usecases", Json.arrayObjects(usecaseList)).build();
     }
 
-    private JsonObjectBuilder buildFieldJson(JigField field) {
-        return Json.object("name", field.nameText())
-                .and("typeHtml", linkText(field.jigTypeReference()))
-                .and("isDeprecated", field.isDeprecated());
-    }
-
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {
-        return Json.object("methodId", HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId()))
-                .and("fqn", jigMethod.fqn())
-                .and("visibility", jigMethod.visibility().symbol())
+        return JsonSupport.buildMethodJson(jigMethod)
+                // 以下をなくしたらこのメソッドがいらなくなる
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("returnTypeLink", methodReturnLinkText(jigMethod))
                 .and("argumentsLinks", Json.array(methodParameterLinkTexts(jigMethod)))

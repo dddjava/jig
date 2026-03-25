@@ -13,11 +13,10 @@ const mockUsecaseData = {
         {
             fqn: "com.example.ServiceA",
             fields: [
-                { name: "field1", typeHtml: "String", isDeprecated: false }
+                { name: "field1", typeRef: { fqn: "java.lang.String"}, isDeprecated: false }
             ],
             staticMethods: [
                 {
-                    methodId: "staticMethod1",
                     fqn: "com.example.ServiceA#staticMethod1()",
                     visibility: "+",
                     declaration: "staticMethod1():void",
@@ -27,11 +26,13 @@ const mockUsecaseData = {
             ],
             methods: [
                 {
-                    methodId: "method1",
                     fqn: "com.example.ServiceA#method1()",
                     visibility: "+",
+                    parameterTypeRefs: [],
+                    returnTypeRef: { fqn: "void" },
                     declaration: "method1():void",
                     returnTypeLink: '<span class="weak">void</span>',
+                    isDeprecated: false,
                     argumentsLinks: [],
                     graph: {
                         nodes: [
@@ -136,13 +137,13 @@ test.describe('UsecaseApp', () => {
         assert.ok(staticMethodsTable);
         assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
         assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, '+ staticMethod1');
-        
+
         const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);
         assert.strictEqual(methodSection.querySelector('h4').id, 'com.example.ServiceA#method1()');
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
         assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'method1():void');
-        
+
         const mermaidPre = methodSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
         assert.ok(mermaidPre.textContent.includes('graph LR'));
@@ -156,7 +157,7 @@ test.describe('UsecaseApp', () => {
     test('renderUsecaseList should handle empty data', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();
-        
+
         const mainList = document.getElementById('usecase-list');
         assert.strictEqual(mainList.textContent, 'データなし');
     });

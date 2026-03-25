@@ -14,7 +14,8 @@ function createFieldsList(fields) {
                         textContent: field.name
                     }),
                     createElement("span", {className: "method-return-sep", textContent: ":"}),
-                    createElement("span", {innerHTML: field.typeHtml})
+                    // 通常はサービスやリポジトリ。リンクできるならしたいが、一旦ただのテキストで。
+                    createElement("span", {textContent: globalThis.Jig.glossary.getTypeTerm(field.typeRef.fqn).title})
                 ]
             })
         ]

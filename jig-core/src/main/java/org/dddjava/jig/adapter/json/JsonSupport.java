@@ -57,12 +57,29 @@ public final class JsonSupport {
                 .collect(Collectors.joining(",", "{", "}"));
     }
 
+    /**
+     * {@code
+     * @typedef {Object} JigField
+     * @property {string} name
+     * @property {TypeRef} typeRef
+     * @property {boolean} isDeprecated
+     * }
+     */
     public static JsonObjectBuilder buildFieldJson(JigField field) {
         return Json.object("name", field.nameText())
                 .and("typeRef", buildTypeRef(field.jigTypeReference()))
                 .and("isDeprecated", field.isDeprecated());
     }
 
+    /**
+     * {@code
+     * @typedef {Object} JigMethod
+     * @property {string} fqn
+     * @property {TypeRef[]} parameterTypeRefs
+     * @property {TypeRef} returnTypeRef
+     * @property {boolean} isDeprecated
+     * }
+     */
     public static JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return Json.object("fqn", jigMethod.fqn())
                 .and("visibility", jigMethod.visibility())
@@ -73,6 +90,13 @@ public final class JsonSupport {
                 .and("isDeprecated", jigMethod.isDeprecated());
     }
 
+    /**
+     * {@code
+     * @typedef {Object} TypeRef
+     * @property {string} fqn
+     * @property {TypeRef[]} [typeArgumentRefs]
+     * }
+     */
     private static JsonObjectBuilder buildTypeRef(JigTypeReference jigTypeReference) {
         var obj = Json.object("fqn", jigTypeReference.fqn());
         // 型引数がない場合は fqn だけのオブジェクトにする

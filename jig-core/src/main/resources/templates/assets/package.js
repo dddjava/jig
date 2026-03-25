@@ -58,8 +58,7 @@ function parsePackageSummaryData(packageData) {
 }
 
 function getGlossaryTitle(fqn) {
-    const term = globalThis.glossaryData?.[fqn];
-    return term?.title ?? (fqn.substring(fqn.lastIndexOf('.') + 1) || fqn);
+    return globalThis.Jig.glossary.getTypeTerm(fqn).title
 }
 
 function getPackageDepth(fqn) {

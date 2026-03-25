@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
+require('../../main/resources/templates/assets/jig-common.js');
+
 const pkg = require('../../main/resources/templates/assets/package.js');
 const originalDom = {...pkg.dom};
 
@@ -234,10 +236,9 @@ function setupDiagramEnvironment(doc, context) {
     transitiveReductionToggle.id = 'transitive-reduction-toggle';
     transitiveReductionToggle.type = 'checkbox';
     doc.elementsById.set('transitive-reduction-toggle', transitiveReductionToggle);
-    globalThis.Jig = {
-        mermaid: {
-            renderWithControls() {
-            }
+
+    globalThis.Jig.mermaid = {
+        renderWithControls() {
         }
     };
     return diagram;
@@ -1106,7 +1107,7 @@ test.describe('package.js', () => {
                 itemNode.appendChild(button);
 
                 const renderWithControls = test.mock.fn(() => {});
-                globalThis.Jig = { mermaid: { renderWithControls } };
+                globalThis.Jig.mermaid = { renderWithControls };
 
                 const item = { causes: ['a.A -> b.B'] };
                 pkg.renderMutualDependencyDiagram(item, itemNode, testContext);

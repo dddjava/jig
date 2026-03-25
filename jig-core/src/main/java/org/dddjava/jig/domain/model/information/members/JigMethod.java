@@ -27,7 +27,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     }
 
     public String fqn() {
-        return jigMethodId().value();
+        return jigMethodId().fqn();
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {

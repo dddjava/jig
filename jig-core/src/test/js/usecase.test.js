@@ -11,15 +11,14 @@ const usecaseJsPath = path.resolve(__dirname, '../../main/resources/templates/as
 const mockUsecaseData = {
     usecases: [
         {
-            typeId: "com.example.ServiceA",
+            fqn: "com.example.ServiceA",
             fields: [
                 { name: "field1", typeHtml: "String", isDeprecated: false }
             ],
             staticMethods: [
                 {
                     methodId: "staticMethod1",
-                    termId: "com.example.ServiceA#staticMethod1()",
-                    name: "staticMethod1",
+                    fqn: "com.example.ServiceA#staticMethod1()",
                     visibility: "+",
                     declaration: "staticMethod1():void",
                     returnTypeLink: '<span class="weak">void</span>',
@@ -29,16 +28,15 @@ const mockUsecaseData = {
             methods: [
                 {
                     methodId: "method1",
-                    termId: "com.example.ServiceA#method1()",
-                    name: "method1",
+                    fqn: "com.example.ServiceA#method1()",
                     visibility: "+",
                     declaration: "method1():void",
                     returnTypeLink: '<span class="weak">void</span>',
                     argumentsLinks: [],
                     graph: {
                         nodes: [
-                            { id: "n1", label: "method1", type: "usecase", highlight: true },
-                            { id: "n2", label: "otherMethod", type: "normal", link: "otherMethod" }
+                            { id: "n1", fqn: "com.example.ServiceA#method1()", type: "usecase", highlight: true },
+                            { id: "n2", fqn: "com.example.ServiceA#otherMethod()", type: "normal", link: "otherMethod" }
                         ],
                         edges: [
                             { from: "n2", to: "n1" }
@@ -141,7 +139,7 @@ test.describe('UsecaseApp', () => {
         
         const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);
-        assert.strictEqual(methodSection.querySelector('h4').id, 'method1');
+        assert.strictEqual(methodSection.querySelector('h4').id, 'com.example.ServiceA#method1()');
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
         assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'method1():void');
         

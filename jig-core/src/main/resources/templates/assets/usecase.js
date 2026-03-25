@@ -45,9 +45,8 @@ function createMethodsTable(kind, methods) {
 
     const tbody = createElement("tbody", {
         children: methods.map(method => {
-            const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.termId);
-            const methodLabel = methodTerm.title || method.name;
-            const labelWithSymbol = (method.visibility || "") + " " + methodLabel;
+            const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
+            const labelWithSymbol = (method.visibility || "") + " " + methodTerm.title;
 
             return createElement("tr", {
                 children: [
@@ -129,8 +128,7 @@ const UsecaseApp = {
         sidebar.innerHTML = "";
 
         const items = usecases.map(c => {
-            const term = globalThis.Jig.glossary.getTypeTerm(c.typeId);
-            return {id: c.typeId, label: term.title || c.typeId};
+            return {id: c.fqn, label: globalThis.Jig.glossary.getTypeTerm(c.fqn).title};
         });
         globalThis.Jig.sidebar.renderSection(sidebar, "ユースケース", items);
     },
@@ -146,27 +144,24 @@ const UsecaseApp = {
         }
 
         usecases.forEach(usecase => {
-            const term = globalThis.Jig.glossary.getTypeTerm(usecase.typeId);
-            const label = term.title || usecase.typeId;
-            const description = term.description;
-
+            const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
             const section = createElement("section", {
                 className: "jig-card jig-card--type",
                 children: [
                     createElement("h3", {
-                        children: [createElement("a", {id: usecase.typeId, textContent: label})]
+                        children: [createElement("a", {id: usecase.fqn, textContent: term.title})]
                     }),
                     createElement("div", {
                         className: "fully-qualified-name",
-                        textContent: usecase.typeId
+                        textContent: usecase.fqn
                     })
                 ]
             });
 
-            if (description) {
+            if (term.description) {
                 section.appendChild(createElement("section", {
                     className: "markdown",
-                    innerHTML: globalThis.Jig.markdown.parse(description)
+                    innerHTML: globalThis.Jig.markdown.parse(term.description)
                 }));
             }
 
@@ -180,14 +175,13 @@ const UsecaseApp = {
             }
 
             usecase.methods.forEach(method => {
-                const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.termId);
-                const methodLabel = methodTerm.title || method.name;
+                const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
                 const methodDescription = methodTerm.description;
 
                 const methodSection = createElement("article", {
                     className: "jig-card jig-card--item",
                     children: [
-                        createElement("h4", {id: method.methodId, textContent: methodLabel}),
+                        createElement("h4", {id: method.fqn, textContent: methodTerm.title}),
                         createElement("div", {
                             className: "fully-qualified-name",
                             textContent: method.declaration
@@ -211,9 +205,10 @@ const UsecaseApp = {
                         method.graph.nodes.forEach(node => {
                             let shape = '["$LABEL"]';
                             if (node.type === 'usecase') shape = '(["$LABEL"])';
-                            else if (node.type === 'lambda') shape = '["$LABEL"]';
-                            
-                            builder.addNode(node.id, node.label, shape);
+                            // lambdaはラベル名固定
+                            else if (node.type === 'lambda') shape = '["(lambda)"]';
+
+                            builder.addNode(node.id, globalThis.Jig.glossary.getMethodTerm(node.fqn).title, shape);
 
                             if (node.highlight) {
                                 builder.addStyle(node.id, "font-weight:bold");

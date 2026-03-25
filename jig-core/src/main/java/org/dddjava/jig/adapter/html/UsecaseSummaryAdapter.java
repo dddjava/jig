@@ -2,9 +2,9 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
+import org.dddjava.jig.adapter.html.view.HtmlSupport;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
-import org.dddjava.jig.adapter.html.view.HtmlSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
@@ -79,7 +79,7 @@ public class UsecaseSummaryAdapter {
             }
 
             if (!methodList.isEmpty() || !fields.isEmpty() || !staticMethods.isEmpty()) {
-                usecaseList.add(Json.object("typeId", jigType.fqn())
+                usecaseList.add(Json.object("fqn", jigType.fqn())
                         .and("fields", Json.arrayObjects(fields))
                         .and("staticMethods", Json.arrayObjects(staticMethods))
                         .and("methods", Json.arrayObjects(methodList)));
@@ -97,8 +97,7 @@ public class UsecaseSummaryAdapter {
 
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {
         return Json.object("methodId", HtmlSupport.htmlMethodIdText(jigMethod.jigMethodId()))
-                .and("termId", jigMethod.term().id().asText())
-                .and("name", jigMethod.name())
+                .and("fqn", jigMethod.fqn())
                 .and("visibility", jigMethod.visibility().symbol())
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("returnTypeLink", methodReturnLinkText(jigMethod))
@@ -122,7 +121,7 @@ public class UsecaseSummaryAdapter {
             if (jigMethodId.equals(jigMethod.jigMethodId())) {
                 resolved.add(jigMethodId);
                 nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
-                        .and("label", jigMethod.labelTextOrLambda())
+                        .and("fqn", jigMethodId.fqn())
                         .and("highlight", true)
                         .and("type", "usecase"));
             } else {
@@ -132,15 +131,13 @@ public class UsecaseSummaryAdapter {
                             if (method.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように
                                 nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
-                                        .and("label", method.labelTextOrLambda())
+                                        .and("fqn", method.fqn())
                                         .and("link", HtmlSupport.htmlMethodIdText(method.jigMethodId()))
                                         .and("type", "usecase"));
                             } else {
                                 // remarkableでないものは普通の。privateメソッドなど該当。
-                                String label = method.labelText();
-                                if (jigMethodId.isLambda()) label = "(lambda)";
                                 nodes.add(Json.object("id", HtmlSupport.htmlMethodIdText(jigMethodId))
-                                        .and("label", label)
+                                        .and("fqn", method.fqn())
                                         .and("type", jigMethodId.isLambda() ? "lambda" : "normal"));
                             }
                         });
@@ -162,7 +159,7 @@ public class UsecaseSummaryAdapter {
         // JigMethodにならないものはクラスノードとして出力する
         others.forEach(typeId ->
                 nodes.add(Json.object("id", htmlIdText(typeId))
-                        .and("label", typeId.asSimpleText())
+                        .and("fqn", typeId.fqn())
                         .and("type", "other")));
 
         return Json.object("nodes", Json.arrayObjects(nodes))

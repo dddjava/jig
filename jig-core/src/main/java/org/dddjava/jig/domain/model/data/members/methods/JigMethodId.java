@@ -57,6 +57,10 @@ public record JigMethodId(String value) implements Comparable<JigMethodId> {
                 tuple.parameterTypeIdList().stream().map(TypeId::asSimpleName).collect(joining(",")));
     }
 
+    public String fqn() {
+        return value;
+    }
+
     public record Tuple(String declaringTypeName, String name, List<String> parameterTypeNameList) {
         public TypeId declaringTypeId() {
             return TypeId.valueOf(declaringTypeName);

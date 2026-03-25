@@ -2,9 +2,10 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Element, DocumentStub } = require('./dom-stub.js');
 
-// jig.js の共通ユーティリティをロード（window・document のスタブが必要）
+// jig-common.js と jig.js をロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
 global.document = new DocumentStub();
+require('../../main/resources/templates/assets/jig-common.js');
 require('../../main/resources/templates/assets/jig.js');
 
 const { DomainApp, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');

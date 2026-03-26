@@ -2,35 +2,6 @@ const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);
 
-function createFieldsList(fields) {
-    if (!fields || fields.length === 0) return null;
-
-    const items = fields.map(field => createElement("div", {
-        className: "method-item",
-        children: [
-            createElement("div", {
-                className: "method-signature",
-                children: [
-                    createElement("span", {
-                        className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
-                        textContent: field.name
-                    }),
-                    createElement("span", {className: "method-return-sep", textContent: ":"}),
-                    createElementForTypeRef(field.typeRef)
-                ]
-            })
-        ]
-    }));
-
-    return createElement("section", {
-        className: "methods-section jig-card jig-card--item fields",
-        children: [
-            createElement("h4", {textContent: "フィールド"}),
-            ...items
-        ]
-    });
-}
-
 // ===== アプリケーション本体 =====
 
 const UsecaseApp = {
@@ -126,7 +97,7 @@ const UsecaseApp = {
                 }));
             }
 
-            const fieldsList = createFieldsList(usecase.fields);
+            const fieldsList = globalThis.Jig.dom.createFieldsList(usecase.fields, createElementForTypeRef);
             if (fieldsList) section.appendChild(fieldsList);
 
             if (usecase.staticMethods && usecase.staticMethods.length > 0) {

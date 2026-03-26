@@ -332,7 +332,7 @@ function renderControllerTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -344,7 +344,7 @@ function renderControllerTable(items) {
             item.path,
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if (index === 6) {
                 cell.className = "number";
             }
@@ -364,7 +364,7 @@ function renderServiceTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -383,7 +383,7 @@ function renderServiceTable(items) {
             markIfTrue(item.useStream),
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if (index === 10) {
                 cell.className = "number";
             }
@@ -403,7 +403,7 @@ function renderRepositoryTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -421,7 +421,7 @@ function renderRepositoryTable(items) {
             item.callerMethodCount,
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if ([7, 12, 13].includes(index)) {
                 cell.className = "number";
             }
@@ -441,14 +441,14 @@ function renderBusinessPackageTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.packageLabel,
             item.classCount,
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if (index === 2) {
                 cell.className = "number";
             }
@@ -468,7 +468,7 @@ function renderBusinessAllTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -482,7 +482,7 @@ function renderBusinessAllTable(items) {
             item.incomingClassList,
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if ([4, 5, 6].includes(index)) {
                 cell.className = "number";
             }
@@ -502,7 +502,7 @@ function renderBusinessEnumTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -516,7 +516,7 @@ function renderBusinessEnumTable(items) {
             markIfTrue(item.isPolymorphic),
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if (index === 5) {
                 cell.className = "number";
             }
@@ -536,7 +536,7 @@ function renderBusinessCollectionTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -548,7 +548,7 @@ function renderBusinessCollectionTable(items) {
             item.methods,
         ];
         values.forEach((value, index) => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             if ([4, 6].includes(index)) {
                 cell.className = "number";
             }
@@ -568,7 +568,7 @@ function renderBusinessValidationTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -579,7 +579,7 @@ function renderBusinessValidationTable(items) {
             item.annotationDescription,
         ];
         values.forEach(value => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             cell.textContent = value ?? "";
             row.appendChild(cell);
         });
@@ -596,7 +596,7 @@ function renderBusinessSmellTable(items) {
 
     const fragment = document.createDocumentFragment();
     items.forEach(item => {
-        const row = document.createElement("tr");
+        const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
             item.typeName,
@@ -611,7 +611,7 @@ function renderBusinessSmellTable(items) {
             markIfTrue(item.returnsVoid),
         ];
         values.forEach(value => {
-            const cell = document.createElement("td");
+            const cell = globalThis.Jig.dom.createElement("td");
             cell.textContent = value ?? "";
             row.appendChild(cell);
         });
@@ -625,11 +625,11 @@ function renderTableHeader(tableElementId, headers) {
     const table = document.getElementById(tableElementId);
     if (!table) return;
 
-    const thead = document.createElement("thead");
-    const tr = document.createElement("tr");
+    const thead = globalThis.Jig.dom.createElement("thead");
+    const tr = globalThis.Jig.dom.createElement("tr");
 
     headers.forEach(headerText => {
-        const th = document.createElement("th");
+        const th = globalThis.Jig.dom.createElement("th");
         th.textContent = headerText;
         tr.appendChild(th);
     });

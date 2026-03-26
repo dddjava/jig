@@ -86,6 +86,23 @@ function setupDocument() {
     return doc;
 }
 
+function setupJig() {
+    global.Jig ??= {};
+    global.Jig.dom ??= {};
+
+    // Jig.dom.createElementはdocument.createElementを使用する
+    global.Jig.dom.createElement = function createElement(tagName, options = {}) {
+        const element = global.document.createElement(tagName);
+        if (options.className) element.className = options.className;
+        if (options.textContent != null) element.textContent = options.textContent;
+        if (options.children) {
+            options.children.forEach(child => {
+                element.appendChild(child);
+            });
+        }
+        return element;
+    };
+}
 
 test.describe('list-output.js', () => {
     test.describe('CSV', () => {
@@ -398,6 +415,7 @@ test.describe('list-output.js', () => {
         test.describe('renderControllerTable', () => {
             test('CONTROLLERのテーブルを描画する', () => {
                 const doc = setupDocument();
+                setupJig();
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -431,6 +449,7 @@ test.describe('list-output.js', () => {
         test.describe('renderServiceTable', () => {
             test('SERVICEのテーブルを描画する', () => {
                 const doc = setupDocument();
+                setupJig();
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -459,6 +478,7 @@ test.describe('list-output.js', () => {
         test.describe('renderRepositoryTable', () => {
             test('REPOSITORYのテーブルを描画する', () => {
                 const doc = setupDocument();
+                setupJig();
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);

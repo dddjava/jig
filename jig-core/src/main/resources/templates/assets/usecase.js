@@ -31,46 +31,6 @@ function createFieldsList(fields) {
     });
 }
 
-function createMethodsTable(kind, methods) {
-    const thead = createElement("thead", {
-        children: [
-            createElement("tr", {
-                children: [
-                    createElement("th", { attributes: { width: "20%" }, textContent: kind }),
-                    createElement("th", { textContent: "引数" }),
-                    createElement("th", { textContent: "戻り値型" }),
-                    createElement("th", { textContent: "説明" })
-                ]
-            })
-        ]
-    });
-
-    const tbody = createElement("tbody", {
-        children: methods.map(method => {
-            const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
-
-            return createElement("tr", {
-                children: [
-                    createElement("td", { className: "method-name", textContent: methodTerm.title }),
-                    createElement("td", {
-                        children: method.parameterTypeRefs
-                            .map(typeRef => createElementForTypeRef(typeRef), "method-argument-item")
-                    }),
-                    createElement("td", {
-                        children: [createElementForTypeRef(method.returnTypeRef)]
-                    }),
-                    createElement("td", {
-                        className: "markdown",
-                        innerHTML: methodTerm.description ? globalThis.Jig.markdown.parse(methodTerm.description) : ""
-                    })
-                ]
-            });
-        })
-    });
-
-    return createElement("table", { children: [thead, tbody] });
-}
-
 // ===== アプリケーション本体 =====
 
 const UsecaseApp = {

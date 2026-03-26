@@ -27,6 +27,13 @@ globalThis.Jig.glossary.getTypeTerm = function getTypeTerm(fqn) {
     return { title: fqn.substring(fqn.lastIndexOf('.') + 1) || fqn, description: "" };
 };
 
+
+globalThis.Jig.glossary.getFieldTerm = function getFieldTerm(fqn) {
+    var term = globalThis.Jig.glossary.findTerm(fqn);
+    if (term) return term;
+    return { title: fqn.substring(fqn.lastIndexOf('#') + 1) || fqn, description: "" };
+}
+
 // メソッドFQN（"pkg.Class#method(args)"形式）から Term{title, description} を取得
 globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn, fallbackNameOnly = false) {
     if (!fqn) return { title: "", description: "" };
@@ -193,6 +200,7 @@ if (typeof module !== "undefined" && module.exports) {
         fqnToId: globalThis.Jig.fqnToId,
         getTypeTerm: globalThis.Jig.glossary.getTypeTerm,
         getMethodTerm: globalThis.Jig.glossary.getMethodTerm,
+        getFieldTerm: globalThis.Jig.glossary.getFieldTerm,
         findTerm: globalThis.Jig.glossary.findTerm,
         MermaidBuilder: globalThis.Jig.mermaid.Builder,
     };

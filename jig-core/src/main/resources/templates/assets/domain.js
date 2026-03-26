@@ -1,5 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
-const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
+const { getTypeTerm, getMethodTerm, getFieldTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
     diagramDirection: 'TB',
@@ -364,7 +364,8 @@ function createEnumSection(type) {
     const dl = createElement("dl", {
         children: constants.flatMap(constant => {
             const nodes = [createElement("dt", {textContent: constant.name})];
-            const term = findGlossary(`${type.fqn}#${constant.name}`);
+            const term = getFieldTerm(`${type.fqn}#${constant.name}`);
+            // 取れたかどうかに関わらず異なる場合のみ出す
             if (term && term.title !== constant.name) {
                 nodes.push(createElement("dd", {textContent: term.title}));
             }

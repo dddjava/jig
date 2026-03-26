@@ -40,6 +40,7 @@ public class UsecaseSummaryAdapter {
     @HandleDocument(JigDocument.UsecaseSummary)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var contextJigTypes = jigService.serviceTypes(repository);
+        // FIXME インライン化された結果、 hoge -> lambda -> fuga が hoge -> fuga, lambda -> fuga に増幅している
         var methodRelations = MethodRelations.lambdaInlined(contextJigTypes);
 
         var json = buildJson(contextJigTypes, methodRelations);

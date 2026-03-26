@@ -21,6 +21,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     public static MethodRelations lambdaInlined(JigTypes jigTypes) {
         return new MethodRelations(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream())
+                .filter(jigMethod -> !jigMethod.jigMethodId().isLambda()) // ラムダ自体はスキップ（呼び出し元でインライン化済み）
                 .flatMap(jigMethod -> jigMethod.instructions().lambdaInlinedMethodCallStream()
                         .filter(methodCall -> methodCall.isNotJSL()) // JSLを除く
                         .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く

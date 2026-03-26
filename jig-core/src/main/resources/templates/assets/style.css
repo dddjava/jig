@@ -338,10 +338,40 @@ body.hide-usecase-declarations .fully-qualified-name {
 body.hide-usecase-diagrams .mermaid-diagram {
     display: none;
 }
+body.hide-usecase-diagrams .diagram-container {
+    display: none;
+}
 body.hide-usecase-details .depends {
     display: none;
 }
 
+.diagram-container {
+    margin-top: 10px;
+}
+.diagram-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+.diagram-tab {
+    padding: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 4px 0 0;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    font-size: 0.85em;
+}
+.diagram-tab.active {
+    background-color: #fff;
+    border-bottom-color: #fff;
+    font-weight: bold;
+}
+.diagram-tab:hover:not(.active) {
+    background-color: #eaeaea;
+}
+.diagram-panel.hidden {
+    display: none;
+}
 
 /* Mermaidで画像が表示される前のテキストを表示しない */
 pre.mermaid {

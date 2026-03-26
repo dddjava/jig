@@ -32,6 +32,80 @@ function buildGraphFromCallMethods(rootMethod, methodMap) {
     return {nodes: [...nodes.values()], edges};
 }
 
+function buildSequenceFromCallMethods(rootMethod, methodMap) {
+    const participantKeys = [];
+    const participants = new Map();
+    const calls = [];
+    const visited = new Set();
+
+    function getMethodSimpleName(fqn) {
+        const hashIdx = fqn.indexOf('#');
+        if (hashIdx === -1) return fqn;
+        const parenIdx = fqn.indexOf('(', hashIdx);
+        return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
+    }
+
+    function getClassFqnFromMethodFqn(fqn) {
+        const hashIdx = fqn.indexOf('#');
+        return hashIdx === -1 ? fqn : fqn.slice(0, hashIdx);
+    }
+
+    function getSimpleClassName(classFqn) {
+        const dotIdx = classFqn.lastIndexOf('.');
+        return dotIdx === -1 ? classFqn : classFqn.slice(dotIdx + 1);
+    }
+
+    function ensureParticipant(key, label, isExternal) {
+        if (!participants.has(key)) {
+            participants.set(key, {id: fqnToNodeId(key), label, isExternal});
+            participantKeys.push(key);
+        }
+        return participants.get(key);
+    }
+
+    ensureParticipant(rootMethod.fqn, getMethodSimpleName(rootMethod.fqn), false);
+    visited.add(rootMethod.fqn);
+
+    function traverse(callerFqn, callMethods) {
+        if (!callMethods) return;
+        for (const calleeFqn of callMethods) {
+            const caller = participants.get(callerFqn);
+            if (methodMap.has(calleeFqn)) {
+                const callee = ensureParticipant(calleeFqn, getMethodSimpleName(calleeFqn), false);
+                calls.push({from: caller.id, to: callee.id, label: ''});
+                if (!visited.has(calleeFqn)) {
+                    visited.add(calleeFqn);
+                    traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
+                }
+            } else {
+                const classFqn = getClassFqnFromMethodFqn(calleeFqn);
+                const methodName = getMethodSimpleName(calleeFqn);
+                const callee = ensureParticipant(classFqn, getSimpleClassName(classFqn), true);
+                calls.push({from: caller.id, to: callee.id, label: methodName});
+            }
+        }
+    }
+
+    traverse(rootMethod.fqn, rootMethod.callMethods);
+
+    return {
+        participants: participantKeys.map(k => participants.get(k)),
+        calls
+    };
+}
+
+function buildSequenceDiagramCode(sequence) {
+    if (sequence.calls.length === 0) return null;
+    let code = 'sequenceDiagram\n';
+    sequence.participants.forEach(p => {
+        code += `  participant ${p.id} as ${p.label}\n`;
+    });
+    sequence.calls.forEach(call => {
+        code += `  ${call.from}->>${call.to}: ${call.label}\n`;
+    });
+    return code;
+}
+
 // ===== アプリケーション本体 =====
 
 const UsecaseApp = {
@@ -198,39 +272,95 @@ const UsecaseApp = {
                     ]
                 });
 
-                // Mermaid Graph
+                // Diagrams
                 const graph = buildGraphFromCallMethods(method, methodMap);
-                if (graph.edges.length > 0) {
-                    const mmdContainer = createElement("div", {className: "mermaid-diagram"});
-                    // Add directly to section before rendering mermaid to ensure layout
-                    methodSection.appendChild(mmdContainer);
+                const hasGraph = graph.edges.length > 0;
 
-                    globalThis.Jig.observe.lazyRender(mmdContainer, () => {
-                        const builder = new globalThis.Jig.mermaid.Builder();
+                const sequence = buildSequenceFromCallMethods(method, methodMap);
+                const seqCode = buildSequenceDiagramCode(sequence);
+                const hasSequence = seqCode !== null;
 
-                        graph.nodes.forEach(node => {
-                            const shape = '(["$LABEL"])';
-                            const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                if (hasGraph || hasSequence) {
+                    const diagramContainer = createElement("div", {className: "diagram-container"});
+                    methodSection.appendChild(diagramContainer);
 
-                            const nodeId = fqnToNodeId(node.fqn);
-                            builder.addNode(nodeId, nodeLabel, shape);
+                    let graphPanel = null;
+                    let seqPanel = null;
 
-                            // 自身を強調表示
-                            if (node.fqn === method.fqn) {
-                                builder.addStyle(nodeId, "font-weight:bold");
-                            }
-                            // ページ内リンク
-                            builder.addClick(nodeId, "#" + node.fqn);
+                    if (hasGraph && hasSequence) {
+                        const graphBtn = createElement("button", {
+                            className: "diagram-tab active",
+                            textContent: "ユースケース図"
+                        });
+                        const seqBtn = createElement("button", {
+                            className: "diagram-tab",
+                            textContent: "シーケンス図"
+                        });
+                        diagramContainer.appendChild(createElement("div", {
+                            className: "diagram-tabs",
+                            children: [graphBtn, seqBtn]
+                        }));
+
+                        graphPanel = createElement("div", {className: "diagram-panel"});
+                        seqPanel = createElement("div", {className: "diagram-panel hidden"});
+
+                        graphBtn.addEventListener('click', () => {
+                            graphBtn.classList.add('active');
+                            seqBtn.classList.remove('active');
+                            graphPanel.classList.remove('hidden');
+                            seqPanel.classList.add('hidden');
+                        });
+                        seqBtn.addEventListener('click', () => {
+                            seqBtn.classList.add('active');
+                            graphBtn.classList.remove('active');
+                            seqPanel.classList.remove('hidden');
+                            graphPanel.classList.add('hidden');
                         });
 
-                        graph.edges.forEach(edge => {
-                            builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
-                        });
+                        diagramContainer.appendChild(graphPanel);
+                        diagramContainer.appendChild(seqPanel);
+                    }
 
-                        const code = builder.build('LR');
-                        mmdContainer.innerHTML = ''; // clear loading state if any
-                        globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
-                    });
+                    if (hasGraph) {
+                        const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+                        (graphPanel || diagramContainer).appendChild(mmdContainer);
+
+                        globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                            const builder = new globalThis.Jig.mermaid.Builder();
+
+                            graph.nodes.forEach(node => {
+                                const shape = '(["$LABEL"])';
+                                const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+
+                                const nodeId = fqnToNodeId(node.fqn);
+                                builder.addNode(nodeId, nodeLabel, shape);
+
+                                // 自身を強調表示
+                                if (node.fqn === method.fqn) {
+                                    builder.addStyle(nodeId, "font-weight:bold");
+                                }
+                                // ページ内リンク
+                                builder.addClick(nodeId, "#" + node.fqn);
+                            });
+
+                            graph.edges.forEach(edge => {
+                                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
+                            });
+
+                            const code = builder.build('LR');
+                            mmdContainer.innerHTML = ''; // clear loading state if any
+                            globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
+                        });
+                    }
+
+                    if (hasSequence) {
+                        const seqContainer = createElement("div", {className: "mermaid-diagram"});
+                        (seqPanel || diagramContainer).appendChild(seqContainer);
+
+                        globalThis.Jig.observe.lazyRender(seqContainer, () => {
+                            globalThis.Jig.mermaid.renderWithControls(seqContainer, seqCode);
+                        });
+                    }
                 }
 
                 const dl = createElement("dl", { className: "depends" });
@@ -274,6 +404,8 @@ if (typeof document !== 'undefined') {
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-        UsecaseApp
+        UsecaseApp,
+        buildSequenceFromCallMethods,
+        buildSequenceDiagramCode
     };
 }

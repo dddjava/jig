@@ -51,6 +51,8 @@ const mockUsecaseData = {
 test.describe('UsecaseApp', () => {
     let doc;
     let UsecaseApp;
+    let buildSequenceFromCallMethods;
+    let buildSequenceDiagramCode;
 
     beforeEach(() => {
         doc = new DocumentStub();
@@ -87,7 +89,7 @@ test.describe('UsecaseApp', () => {
             container.appendChild(pre);
         };
 
-        ({ UsecaseApp } = require(usecaseJsPath));
+        ({ UsecaseApp, buildSequenceFromCallMethods, buildSequenceDiagramCode } = require(usecaseJsPath));
     });
 
     test('init should render data from globalThis.usecaseData', () => {
@@ -132,9 +134,18 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
         assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'method1():void');
 
-        const mermaidPre = methodSection.querySelector('.mermaid');
-        assert.ok(mermaidPre);
-        assert.ok(mermaidPre.textContent.includes('graph LR'));
+        const diagramContainer = methodSection.querySelector('.diagram-container');
+        assert.ok(diagramContainer);
+        const tabs = diagramContainer.querySelector('.diagram-tabs');
+        assert.ok(tabs);
+        assert.strictEqual(tabs.children.length, 2);
+        assert.strictEqual(tabs.children[0].textContent, 'ユースケース図');
+        assert.strictEqual(tabs.children[1].textContent, 'シーケンス図');
+
+        const mermaidPres = methodSection.querySelectorAll('.mermaid');
+        assert.strictEqual(mermaidPres.length, 2);
+        assert.ok(mermaidPres[0].textContent.includes('graph LR'));
+        assert.ok(mermaidPres[1].textContent.includes('sequenceDiagram'));
 
         const description = methodSection.querySelector('.description');
         assert.strictEqual(description.innerHTML, 'Description of method1');
@@ -198,5 +209,183 @@ test.describe('UsecaseApp', () => {
         showDeclarations.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-declarations'), true);
         assert.strictEqual(global.localStorage.getItem('jig-usecase-show-declarations'), 'false');
+    });
+});
+
+test.describe('buildSequenceFromCallMethods', () => {
+    let buildSequenceFromCallMethods;
+
+    beforeEach(() => {
+        delete require.cache[jigCommonJsPath];
+        delete require.cache[jigJsPath];
+        delete require.cache[usecaseJsPath];
+
+        global.document = new DocumentStub();
+        global.window = { addEventListener: () => {}, Event: EventStub };
+        global.localStorage = new LocalStorageStub();
+        global.marked = { parse: (text) => text };
+        global.mermaid = { initialize: () => {}, run: () => {} };
+
+        require(jigCommonJsPath);
+        require(jigJsPath);
+        ({ buildSequenceFromCallMethods } = require(usecaseJsPath));
+    });
+
+    test('callMethodsが空の場合はcallsが空', () => {
+        const rootMethod = { fqn: 'com.example.ServiceA#method1()', callMethods: [] };
+        const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.calls.length, 0);
+        assert.strictEqual(result.participants.length, 1);
+        assert.strictEqual(result.participants[0].label, 'method1');
+        assert.strictEqual(result.participants[0].isExternal, false);
+    });
+
+    test('ユースケース内メソッドへの呼び出しはメソッド単位のパーティシパント', () => {
+        const otherMethod = { fqn: 'com.example.ServiceA#otherMethod()', callMethods: [] };
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.ServiceA#otherMethod()']
+        };
+        const methodMap = new Map([
+            ['com.example.ServiceA#method1()', rootMethod],
+            ['com.example.ServiceA#otherMethod()', otherMethod]
+        ]);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.participants.length, 2);
+        assert.strictEqual(result.participants[0].label, 'method1');
+        assert.strictEqual(result.participants[0].isExternal, false);
+        assert.strictEqual(result.participants[1].label, 'otherMethod');
+        assert.strictEqual(result.participants[1].isExternal, false);
+        assert.strictEqual(result.calls.length, 1);
+        assert.strictEqual(result.calls[0].label, '');
+    });
+
+    test('ユースケース外メソッドへの呼び出しはクラス単位のパーティシパントでラベルにメソッド名', () => {
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.RepositoryB#save(com.example.Entity)']
+        };
+        const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.participants.length, 2);
+        assert.strictEqual(result.participants[1].label, 'RepositoryB');
+        assert.strictEqual(result.participants[1].isExternal, true);
+        assert.strictEqual(result.calls.length, 1);
+        assert.strictEqual(result.calls[0].label, 'save');
+    });
+
+    test('内部と外部への呼び出しが混在する場合も両方適切に処理', () => {
+        const otherMethod = { fqn: 'com.example.ServiceA#otherMethod()', callMethods: [] };
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: [
+                'com.example.ServiceA#otherMethod()',
+                'com.example.RepositoryB#save()'
+            ]
+        };
+        const methodMap = new Map([
+            ['com.example.ServiceA#method1()', rootMethod],
+            ['com.example.ServiceA#otherMethod()', otherMethod]
+        ]);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.participants.length, 3);
+        assert.strictEqual(result.calls.length, 2);
+        assert.strictEqual(result.calls[0].label, '');
+        assert.strictEqual(result.calls[1].label, 'save');
+    });
+
+    test('再帰的に内部メソッドを処理する', () => {
+        const deepMethod = { fqn: 'com.example.ServiceA#deepMethod()', callMethods: [] };
+        const middleMethod = {
+            fqn: 'com.example.ServiceA#middleMethod()',
+            callMethods: ['com.example.ServiceA#deepMethod()']
+        };
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.ServiceA#middleMethod()']
+        };
+        const methodMap = new Map([
+            ['com.example.ServiceA#method1()', rootMethod],
+            ['com.example.ServiceA#middleMethod()', middleMethod],
+            ['com.example.ServiceA#deepMethod()', deepMethod]
+        ]);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.participants.length, 3);
+        assert.strictEqual(result.calls.length, 2);
+    });
+
+    test('循環参照があっても無限ループしない', () => {
+        const methodB = {
+            fqn: 'com.example.ServiceA#methodB()',
+            callMethods: ['com.example.ServiceA#methodA()']
+        };
+        const methodA = {
+            fqn: 'com.example.ServiceA#methodA()',
+            callMethods: ['com.example.ServiceA#methodB()']
+        };
+        const methodMap = new Map([
+            ['com.example.ServiceA#methodA()', methodA],
+            ['com.example.ServiceA#methodB()', methodB]
+        ]);
+
+        const result = buildSequenceFromCallMethods(methodA, methodMap);
+
+        assert.strictEqual(result.participants.length, 2);
+        // methodA->methodB と methodB->methodA の2呼び出し
+        assert.strictEqual(result.calls.length, 2);
+    });
+});
+
+test.describe('buildSequenceDiagramCode', () => {
+    let buildSequenceDiagramCode;
+
+    beforeEach(() => {
+        delete require.cache[jigCommonJsPath];
+        delete require.cache[jigJsPath];
+        delete require.cache[usecaseJsPath];
+
+        global.document = new DocumentStub();
+        global.window = { addEventListener: () => {}, Event: EventStub };
+        global.localStorage = new LocalStorageStub();
+        global.marked = { parse: (text) => text };
+        global.mermaid = { initialize: () => {}, run: () => {} };
+
+        require(jigCommonJsPath);
+        require(jigJsPath);
+        ({ buildSequenceDiagramCode } = require(usecaseJsPath));
+    });
+
+    test('callsが空の場合はnullを返す', () => {
+        const sequence = { participants: [{id: 'node-a', label: 'methodA', isExternal: false}], calls: [] };
+        assert.strictEqual(buildSequenceDiagramCode(sequence), null);
+    });
+
+    test('sequenceDiagramコードを生成する', () => {
+        const sequence = {
+            participants: [
+                {id: 'node-a', label: 'methodA', isExternal: false},
+                {id: 'node-b', label: 'ClassB', isExternal: true}
+            ],
+            calls: [
+                {from: 'node-a', to: 'node-b', label: 'save'}
+            ]
+        };
+        const code = buildSequenceDiagramCode(sequence);
+
+        assert.ok(code.startsWith('sequenceDiagram\n'));
+        assert.ok(code.includes('participant node-a as methodA'));
+        assert.ok(code.includes('participant node-b as ClassB'));
+        assert.ok(code.includes('node-a->>node-b: save'));
     });
 });

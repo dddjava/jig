@@ -18,17 +18,6 @@ import static java.util.stream.Collectors.*;
 public record MethodRelations(List<MethodRelation> list) implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
-    public static MethodRelations lambdaInlined(JigTypes jigTypes) {
-        return new MethodRelations(jigTypes.orderedStream()
-                .flatMap(jigType -> jigType.allJigMethodStream())
-                .filter(jigMethod -> !jigMethod.jigMethodId().isLambda()) // ラムダ自体はスキップ（呼び出し元でインライン化済み）
-                .flatMap(jigMethod -> jigMethod.instructions().lambdaInlinedMethodCallStream()
-                        .filter(methodCall -> methodCall.isNotJSL()) // JSLを除く
-                        .filter(methodCall -> !methodCall.isConstructor()) // コンストラクタ呼び出しを除く
-                        .map(methodCall -> MethodRelation.from(jigMethod.jigMethodId(), methodCall.jigMethodId())))
-                .toList());
-    }
-
     public static MethodRelations from(JigTypes jigTypes) {
         return new MethodRelations(jigTypes.orderedStream()
                 .flatMap(jigType -> jigType.allJigMethodStream())

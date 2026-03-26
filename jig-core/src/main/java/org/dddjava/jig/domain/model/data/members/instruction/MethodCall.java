@@ -24,6 +24,10 @@ public record MethodCall(TypeId methodOwner, String methodName,
         return JigMethodId.from(methodOwner, methodName, argumentTypes);
     }
 
+    public String fqn() {
+        return jigMethodId().fqn();
+    }
+
     public String asSignatureAndReturnTypeSimpleText() {
         return "%s(%s):%s".formatted(methodName,
                 argumentTypes.stream().map(TypeId::asSimpleText).collect(joining(", ")),

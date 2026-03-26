@@ -6,6 +6,7 @@ import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -86,6 +87,9 @@ public class UsecaseSummaryAdapter {
 
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod, JigTypes contextJigTypes, MethodRelations methodRelations) {
         return JsonSupport.buildMethodJson(jigMethod)
+                .and("callMethods", Json.array(jigMethod.lambdaInlinedMethodCallStream()
+                        .map(MethodCall::fqn)
+                        .toList()))
                 // 以下をなくしたらこのメソッドがいらなくなる
                 .and("declaration", jigMethod.simpleMethodDeclarationText())
                 .and("graph", buildGraphJson(jigMethod, contextJigTypes, methodRelations));

@@ -2,6 +2,57 @@
  * JIGのJavaScriptテストで使用する、ブラウザのDOM APIをエミュレートするスタブクラス群です。
  * Node.js環境（ブラウザ不在）でDOM操作を伴うスクリプトをテストするために使用します。
  */
+
+// ===== セレクタマッチングヘルパー =====
+
+function matchesPart(el, part) {
+    if (!part || part === '*') return true;
+    // :not() の処理
+    const notMatch = part.match(/^([^:]*):not\(([^)]+)\)$/);
+    if (notMatch) {
+        return matchesPart(el, notMatch[1] || '*') && !matchesPart(el, notMatch[2]);
+    }
+    // タグ.クラス1.クラス2 形式
+    const dotParts = part.split('.');
+    const tag = dotParts[0];
+    const classes = dotParts.slice(1);
+    if (tag && tag !== '*' && el.tagName && el.tagName.toLowerCase() !== tag.toLowerCase()) return false;
+    for (const cls of classes) {
+        if (!el.classList || !el.classList.has(cls)) return false;
+    }
+    return true;
+}
+
+function collectInSubtree(root, part, results) {
+    for (const child of (root.children || [])) {
+        if (matchesPart(child, part)) results.push(child);
+        collectInSubtree(child, part, results);
+    }
+}
+
+function findFirstByParts(root, parts) {
+    if (parts.length === 0) return null;
+    const [first, ...rest] = parts;
+    const candidates = [];
+    collectInSubtree(root, first, candidates);
+    for (const candidate of candidates) {
+        if (rest.length === 0) return candidate;
+        const found = findFirstByParts(candidate, rest);
+        if (found) return found;
+    }
+    return null;
+}
+
+function collectAllByParts(root, parts, results) {
+    if (parts.length === 0) return;
+    const [first, ...rest] = parts;
+    const candidates = [];
+    collectInSubtree(root, first, candidates);
+    for (const candidate of candidates) {
+        if (rest.length === 0) results.push(candidate);
+        else collectAllByParts(candidate, rest, results);
+    }
+}
 class ClassList {
     constructor() {
         this.set = new Set();
@@ -163,13 +214,20 @@ class DocumentStub {
         return this.allElements.filter(el => el.classList.contains(className));
     }
 
-    querySelector(selector) {
-        // 基本的なセレクタの実装
+    querySelector(selector, contextElement = null) {
         if (selector.startsWith('#')) return this.getElementById(selector.substring(1));
-        return null;
+        const root = contextElement || this.body;
+        const parts = selector.trim().split(/\s+/);
+        return findFirstByParts(root, parts);
     }
 
-    querySelectorAll(selector) { return []; }
+    querySelectorAll(selector, contextElement = null) {
+        const root = contextElement || this.body;
+        const parts = selector.trim().split(/\s+/);
+        const results = [];
+        collectAllByParts(root, parts, results);
+        return results;
+    }
 
     addEventListener(type, listener) {
         if (!this.eventListeners.has(type)) this.eventListeners.set(type, []);

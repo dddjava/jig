@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { test, beforeEach } = require('node:test');
-const { JSDOM } = require('jsdom');
 const path = require('path');
+const { DocumentStub, LocalStorageStub, EventStub } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
@@ -48,60 +48,44 @@ const mockUsecaseData = {
 };
 
 test.describe('UsecaseApp', () => {
-    let window;
-    let document;
+    let doc;
     let UsecaseApp;
 
     beforeEach(() => {
-        const dom = new JSDOM(`
-            <!DOCTYPE html>
-            <html>
-            <body class="usecase-summary">
-                <main class="usecase">
-                    <details class="controls">
-                        <summary>表示設定</summary>
-                        <div class="filter-controls">
-                            <label><input type="checkbox" id="show-fields" checked> フィールド</label>
-                            <label><input type="checkbox" id="show-static-methods" checked> staticメソッド</label>
-                            <label><input type="checkbox" id="show-diagrams" checked> ダイアグラム</label>
-                            <label><input type="checkbox" id="show-details" checked> 引数・戻り値</label>
-                            <label><input type="checkbox" id="show-descriptions" checked> 説明</label>
-                            <label><input type="checkbox" id="show-declarations" checked> 完全修飾名・宣言</label>
-                        </div>
-                    </details>
-                    <div id="usecase-sidebar-list"></div>
-                    <div id="usecase-list"></div>
-                </main>
-            </body>
-            </html>
-        `, { runScripts: "dangerously" });
+        doc = new DocumentStub();
+        global.document = doc;
+        global.window = { addEventListener: () => {}, Event: EventStub };
+        global.localStorage = new LocalStorageStub();
+        global.marked = { parse: (text) => text };
+        global.mermaid = { initialize: () => {}, run: () => {} };
+        // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
-        window = dom.window;
-        document = window.document;
-        global.window = window;
-        global.document = document;
-        const storage = {};
-        global.localStorage = {
-            getItem: (key) => storage[key] || null,
-            setItem: (key, value) => storage[key] = String(value),
-        };
-        global.IntersectionObserver = class {
-            constructor(callback) {
-                this.callback = callback;
-            }
-            observe(element) {
-                this.callback([{ isIntersecting: true, target: element }]);
-            }
-            unobserve() {}
-        };
-        global.marked = { parse: (text) => text }; // markedのモック
-        global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
+        // チェックボックス要素を事前登録
+        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations'].forEach(id => {
+            const el = doc.createElement('input');
+            el.id = id;
+            el.checked = true;
+        });
+        // コンテナ要素を事前登録
+        ['usecase-sidebar-list', 'usecase-list'].forEach(id => {
+            const el = doc.createElement('div');
+            el.id = id;
+        });
 
         delete require.cache[jigCommonJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
         require(jigCommonJsPath);
         require(jigJsPath);
+
+        // Mermaid の複雑なDOM操作を回避するためにオーバーライド
+        globalThis.Jig.mermaid.renderWithControls = (container, code) => {
+            const pre = doc.createElement('pre');
+            pre.className = 'mermaid';
+            pre.textContent = code;
+            container.appendChild(pre);
+        };
+
         ({ UsecaseApp } = require(usecaseJsPath));
     });
 

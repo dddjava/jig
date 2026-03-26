@@ -4,6 +4,7 @@
 globalThis.Jig ??= {};
 globalThis.Jig.glossary ??= {};
 globalThis.Jig.mermaid ??= {};
+globalThis.Jig.graph ??= {};
 
 // Estimate Mermaid edge count from source
 function estimateEdgeCount(source) {
@@ -86,6 +87,115 @@ globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
     const hashStr = Math.abs(hash).toString(36); // 36進数で短くする
     const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 10);
     return `${prefix}-${sanitized}-${hashStr}`;
+};
+
+// グラフ関連のユーティリティ
+
+/**
+ * 強連結成分(SCC)を抽出する (Tarjan's algorithm)
+ * @param {Map<string, string[]>} graph 
+ * @returns {string[][]}
+ */
+globalThis.Jig.graph.detectStronglyConnectedComponents = function detectStronglyConnectedComponents(graph) {
+    const indices = new Map();
+    const lowLink = new Map();
+    const stack = [];
+    const onStack = new Set();
+    const result = [];
+    const index = {value: 0};
+
+    function strongConnect(node) {
+        indices.set(node, index.value);
+        lowLink.set(node, index.value);
+        index.value++;
+        stack.push(node);
+        onStack.add(node);
+
+        (graph.get(node) || []).forEach(neighbor => {
+            if (!indices.has(neighbor)) {
+                strongConnect(neighbor);
+                lowLink.set(node, Math.min(lowLink.get(node), lowLink.get(neighbor)));
+            } else if (onStack.has(neighbor)) {
+                lowLink.set(node, Math.min(lowLink.get(node), indices.get(neighbor)));
+            }
+        });
+
+        if (lowLink.get(node) === indices.get(node)) {
+            const scc = [];
+            let current;
+            do {
+                current = stack.pop();
+                onStack.delete(current);
+                scc.push(current);
+            } while (current !== node);
+            result.push(scc);
+        }
+    }
+
+    for (const node of graph.keys()) {
+        if (!indices.has(node)) {
+            strongConnect(node);
+        }
+    }
+    return result;
+};
+
+/**
+ * 推移的簡約(Transitive Reduction)を行う。
+ * 直接の依存関係がある場合、他の経路でも到達可能ならその直接の依存を削除する。
+ * ただし、サイクル（強連結成分内）の関連は削除しない。
+ * @param {{from: string, to: string}[]} relations 
+ * @returns {{from: string, to: string}[]}
+ */
+globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relations) {
+    const graph = new Map();
+    relations.forEach(relation => {
+        if (!graph.has(relation.from)) graph.set(relation.from, []);
+        graph.get(relation.from).push(relation.to);
+    });
+
+    const sccs = globalThis.Jig.graph.detectStronglyConnectedComponents(graph);
+    const cyclicNodes = new Set(sccs.filter(scc => scc.length > 1).flat());
+    const cyclicEdges = new Set(
+        relations
+            .filter(edge => cyclicNodes.has(edge.from) && cyclicNodes.has(edge.to))
+            .map(edge => `${edge.from}::${edge.to}`)
+    );
+
+    const acyclicGraph = new Map();
+    relations.forEach(edge => {
+        if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
+        if (!acyclicGraph.has(edge.from)) acyclicGraph.set(edge.from, []);
+        acyclicGraph.get(edge.from).push(edge.to);
+    });
+
+    function isReachableWithoutDirect(start, end) {
+        const visited = new Set();
+
+        function dfs(current, target, skipDirect) {
+            if (current === target) return true;
+            visited.add(current);
+            const neighbors = acyclicGraph.get(current) || [];
+            for (const neighbor of neighbors) {
+                if (skipDirect && neighbor === target) continue;
+                if (visited.has(neighbor)) continue;
+                if (dfs(neighbor, target, false)) return true;
+            }
+            return false;
+        }
+
+        return dfs(start, end, true);
+    }
+
+    const toRemove = new Set();
+    relations.forEach(edge => {
+        if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
+        if (isReachableWithoutDirect(edge.from, edge.to)) {
+            toRemove.add(`${edge.from}::${edge.to}`);
+        }
+    });
+
+    return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 };
 
 // Mermaid diagram builder
@@ -203,5 +313,7 @@ if (typeof module !== "undefined" && module.exports) {
         getFieldTerm: globalThis.Jig.glossary.getFieldTerm,
         findTerm: globalThis.Jig.glossary.findTerm,
         MermaidBuilder: globalThis.Jig.mermaid.Builder,
+        detectStronglyConnectedComponents: globalThis.Jig.graph.detectStronglyConnectedComponents,
+        transitiveReduction: globalThis.Jig.graph.transitiveReduction,
     };
 }

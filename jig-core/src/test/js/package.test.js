@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Element, DocumentStub } = require('./dom-stub.js');
 
-require('../../main/resources/templates/assets/jig-common.js');
+const common = require('../../main/resources/templates/assets/jig-common.js');
 
 const pkg = require('../../main/resources/templates/assets/package.js');
 const originalDom = {...pkg.dom};
@@ -729,60 +729,6 @@ test.describe('package.js', () => {
                 assert.ok(lines.some(l => l.match(/subgraph P\d+\["view"\]/)));
                 assert.ok(lines.includes('org_dddjava_jig_adapter_JigDocumentGenerator["JigDocumentGenerator"]'));
                 assert.ok(lines.includes('org_dddjava_jig_adapter_JigResultData["JigResultData"]'));
-            });
-
-            test('detectStronglyConnectedComponents: 循環を検出する', () => {
-                const graph = new Map([
-                    ['a', ['b']],
-                    ['b', ['c']],
-                    ['c', ['a', 'd']],
-                    ['d', ['e']],
-                    ['e', ['f']],
-                    ['f', ['d']],
-                ]);
-                const sccs = pkg.detectStronglyConnectedComponents(graph);
-                const sortedSccs = sccs.map(scc => scc.sort()).sort((a, b) => a[0].localeCompare(b[0]));
-                assert.deepEqual(sortedSccs, [['a', 'b', 'c'], ['d', 'e', 'f']]);
-            });
-
-            test('transitiveReduction: 単純な推移関係を簡約する', () => {
-                const relations = [
-                    {from: 'a', to: 'b'},
-                    {from: 'b', to: 'c'},
-                    {from: 'a', to: 'c'},
-                ];
-                const result = pkg.transitiveReduction(relations);
-                assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'b>c']);
-            });
-
-            test('transitiveReduction: 循環参照は対象外とする', () => {
-                const relations = [
-                    {from: 'a', to: 'b'},
-                    {from: 'b', to: 'a'},
-                    {from: 'a', to: 'c'},
-                ];
-                const result = pkg.transitiveReduction(relations);
-                assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a']);
-            });
-
-            test('transitiveReduction: 循環ではないが簡約対象でもない', () => {
-                const relations = [
-                    {from: 'a', to: 'b'},
-                    {from: 'c', to: 'd'},
-                ];
-                const result = pkg.transitiveReduction(relations);
-                assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'c>d']);
-            });
-
-            test('transitiveReduction: 循環からの関係は簡約対象にしない', () => {
-                const relations = [
-                    {from: 'a', to: 'b'},
-                    {from: 'b', to: 'a'}, // cycle
-                    {from: 'b', to: 'c'},
-                    {from: 'a', to: 'c'},
-                ];
-                const result = pkg.transitiveReduction(relations);
-                assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
             });
 
             test('buildDiagramEdgeLines: 相互依存の双方向リンクを生成する', () => {

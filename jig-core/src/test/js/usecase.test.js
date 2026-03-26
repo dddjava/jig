@@ -32,15 +32,16 @@ const mockUsecaseData = {
                     returnTypeRef: { fqn: "void" },
                     declaration: "method1():void",
                     isDeprecated: false,
-                    graph: {
-                        nodes: [
-                            { fqn: "com.example.ServiceA#method1()", type: "usecase" },
-                            { fqn: "com.example.ServiceA#otherMethod()", type: "usecase" }
-                        ],
-                        edges: [
-                            { from: "node-n2", to: "node-n1" }
-                        ]
-                    }
+                    callMethods: ["com.example.ServiceA#otherMethod()"]
+                },
+                {
+                    fqn: "com.example.ServiceA#otherMethod()",
+                    visibility: "PUBLIC",
+                    parameterTypeRefs: [],
+                    returnTypeRef: { fqn: "void" },
+                    declaration: "otherMethod():void",
+                    isDeprecated: false,
+                    callMethods: []
                 }
             ]
         }
@@ -93,7 +94,8 @@ test.describe('UsecaseApp', () => {
         globalThis.glossaryData = {
             "com.example.ServiceA": { title: "ServiceA", description: "Description of ServiceA" },
             "com.example.ServiceA#staticMethod1()": { title: "staticMethod1", description: "Description of staticMethod1" },
-            "com.example.ServiceA#method1()": { title: "method1", description: "Description of method1" }
+            "com.example.ServiceA#method1()": { title: "method1", description: "Description of method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod", description: "" }
         };
         globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();

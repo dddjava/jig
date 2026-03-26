@@ -2,6 +2,36 @@ const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);
 
+function buildGraphFromCallMethods(rootMethod, methodMap) {
+    const nodes = new Map();
+    const edgeSet = new Set();
+    const edges = [];
+    const visited = new Set();
+
+    nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, type: 'usecase'});
+    visited.add(rootMethod.fqn);
+
+    function traverse(callerFqn, callMethods) {
+        if (!callMethods) return;
+        for (const calleeFqn of callMethods) {
+            if (!methodMap.has(calleeFqn)) continue;
+            const edgeKey = callerFqn + '\u2192' + calleeFqn;
+            if (!edgeSet.has(edgeKey)) {
+                edgeSet.add(edgeKey);
+                edges.push({from: callerFqn, to: calleeFqn});
+            }
+            if (!visited.has(calleeFqn)) {
+                visited.add(calleeFqn);
+                nodes.set(calleeFqn, {fqn: calleeFqn, type: 'usecase'});
+                traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
+            }
+        }
+    }
+
+    traverse(rootMethod.fqn, rootMethod.callMethods);
+    return {nodes: [...nodes.values()], edges};
+}
+
 // ===== アプリケーション本体 =====
 
 const UsecaseApp = {
@@ -75,6 +105,12 @@ const UsecaseApp = {
             return;
         }
 
+        const methodMap = new Map();
+        usecases.forEach(usecase => {
+            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, m));
+            (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, m));
+        });
+
         usecases.forEach(usecase => {
             const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
             const section = createElement("section", {
@@ -124,7 +160,8 @@ const UsecaseApp = {
                 });
 
                 // Mermaid Graph
-                if (method.graph && (method.graph.nodes.length > 0 || method.graph.edges.length > 0)) {
+                const graph = buildGraphFromCallMethods(method, methodMap);
+                if (graph.edges.length > 0) {
                     const mmdContainer = createElement("div", {className: "mermaid-diagram"});
                     // Add directly to section before rendering mermaid to ensure layout
                     methodSection.appendChild(mmdContainer);
@@ -132,26 +169,9 @@ const UsecaseApp = {
                     globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                         const builder = new globalThis.Jig.mermaid.Builder();
 
-                        // Add class definitions
-                        builder.addClassDef("others", "fill:#AAA,font-size:90%;");
-                        builder.addClassDef("lambda", "fill:#999,font-size:80%;");
-
-                        method.graph.nodes.forEach(node => {
-                            let shape = '["$LABEL"]';
-                            let nodeLabel;
-                            // usecase, normal, labmda, other
-                            if (node.type === 'usecase') {
-                                shape = '(["$LABEL"])';
-                                nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-                            } else if (node.type === 'normal') {
-                                nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-                            } else if (node.type === 'lambda') {
-                                // lambdaはラベル名固定
-                                nodeLabel = '(lambda)';
-                            } else {
-                                // otherが該当するが、その他全部としておく
-                                nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
-                            }
+                        graph.nodes.forEach(node => {
+                            const shape = '(["$LABEL"])';
+                            const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
 
                             const nodeId = fqnToNodeId(node.fqn);
                             builder.addNode(nodeId, nodeLabel, shape);
@@ -160,19 +180,11 @@ const UsecaseApp = {
                             if (node.fqn === method.fqn) {
                                 builder.addStyle(nodeId, "font-weight:bold");
                             }
-                            // ユースケースはページ内リンク
-                            if (node.type === 'usecase') {
-                                builder.addClick(nodeId, "#" + node.fqn);
-                            }
-                            if (node.type === 'other') {
-                                builder.addClass(nodeId, "others");
-                            }
-                            if (node.type === 'lambda') {
-                                builder.addClass(nodeId, "lambda");
-                            }
+                            // ページ内リンク
+                            builder.addClick(nodeId, "#" + node.fqn);
                         });
 
-                        method.graph.edges.forEach(edge => {
+                        graph.edges.forEach(edge => {
                             builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                         });
 

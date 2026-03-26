@@ -77,7 +77,7 @@ class Element {
         this.ownerDocument = ownerDocument;
         this.children = [];
         this._textContent = "";
-        this.innerHTML = "";
+        this._innerHTML = "";
         this.classList = new ClassList();
         this.style = {};
         this.attributes = new Map();
@@ -120,13 +120,34 @@ class Element {
         this.children = [];
     }
 
+    get innerHTML() { return this._innerHTML; }
+    set innerHTML(value) {
+        this._innerHTML = value ?? "";
+        if (value === "" || value === null || value === undefined) {
+            this.children = [];
+            this._textContent = "";
+        }
+    }
+
     get className() { return this.classList.toString(); }
     set className(value) { this.classList.set = new Set(value.split(" ").filter(c => c)); }
 
     appendChild(child) {
+        if (child && typeof child === "object") child.parentNode = this;
         this.children.push(child);
         return child;
     }
+
+    insertBefore(newNode, referenceNode) {
+        if (newNode && typeof newNode === "object") newNode.parentNode = this;
+        if (!referenceNode) { this.children.push(newNode); return newNode; }
+        const idx = this.children.indexOf(referenceNode);
+        if (idx === -1) this.children.push(newNode);
+        else this.children.splice(idx, 0, newNode);
+        return newNode;
+    }
+
+    removeAttribute(name) { this.attributes.delete(name); }
 
     append(...children) {
         children.forEach(child => {
@@ -173,12 +194,16 @@ class Element {
 
     querySelector(selector) {
         if (this.ownerDocument) return this.ownerDocument.querySelector(selector, this);
-        return null;
+        const parts = selector.trim().split(/\s+/);
+        return findFirstByParts(this, parts);
     }
 
     querySelectorAll(selector) {
         if (this.ownerDocument) return this.ownerDocument.querySelectorAll(selector, this);
-        return [];
+        const parts = selector.trim().split(/\s+/);
+        const results = [];
+        collectAllByParts(this, parts, results);
+        return results;
     }
 }
 
@@ -189,6 +214,9 @@ class DocumentStub {
         this.eventListeners = new Map();
         this.allElements = [];
         this.body = new Element("body", this);
+        // テスト用に querySelector/querySelectorAll の結果を事前登録するMap
+        this.selectors = new Map();
+        this.selectorsAll = new Map();
     }
 
     createElement(tagName) {
@@ -215,6 +243,7 @@ class DocumentStub {
     }
 
     querySelector(selector, contextElement = null) {
+        if (!contextElement && this.selectors.has(selector)) return this.selectors.get(selector);
         if (selector.startsWith('#')) return this.getElementById(selector.substring(1));
         const root = contextElement || this.body;
         const parts = selector.trim().split(/\s+/);
@@ -222,6 +251,7 @@ class DocumentStub {
     }
 
     querySelectorAll(selector, contextElement = null) {
+        if (!contextElement && this.selectorsAll.has(selector)) return this.selectorsAll.get(selector);
         const root = contextElement || this.body;
         const parts = selector.trim().split(/\s+/);
         const results = [];

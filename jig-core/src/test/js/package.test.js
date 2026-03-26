@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { Element, DocumentStub } = require('./dom-stub.js');
 
 require('../../main/resources/templates/assets/jig-common.js');
 
@@ -7,160 +8,6 @@ const pkg = require('../../main/resources/templates/assets/package.js');
 const originalDom = {...pkg.dom};
 
 let testContext;
-
-class ClassList {
-    constructor() {
-        this.values = new Set();
-    }
-
-    toggle(value, force) {
-        if (force === undefined) {
-            if (this.values.has(value)) {
-                this.values.delete(value);
-                return false;
-            }
-            this.values.add(value);
-            return true;
-        }
-        if (force) {
-            this.values.add(value);
-        } else {
-            this.values.delete(value);
-        }
-        return force;
-    }
-
-    contains(value) {
-        return this.values.has(value);
-    }
-}
-
-class Element {
-    constructor(tagName, ownerDocument = null) {
-        this.tagName = tagName;
-        this.children = [];
-        this.textContent = '';
-        this.className = '';
-        this.classList = new ClassList();
-        this.style = {};
-        this.attributes = new Map();
-        this.parentNode = null;
-        this.ownerDocument = ownerDocument;
-        this.value = '';
-        this.eventListeners = new Map();
-        let elementId = '';
-        let inner = '';
-        Object.defineProperty(this, 'innerHTML', {
-            get() {
-                return inner;
-            },
-            set(value) {
-                inner = value;
-                if (value === '') {
-                    this.children = [];
-                }
-            },
-        });
-        Object.defineProperty(this, 'id', {
-            get() {
-                return elementId;
-            },
-            set(value) {
-                elementId = value;
-                if (this.ownerDocument) {
-                    this.ownerDocument.elementsById.set(value, this);
-                }
-            },
-        });
-    }
-
-    appendChild(child) {
-        child.parentNode = this;
-        this.children.push(child);
-        return child;
-    }
-
-    insertBefore(child, referenceNode) {
-        child.parentNode = this;
-        if (!referenceNode) {
-            this.children.push(child);
-            return child;
-        }
-        const index = this.children.indexOf(referenceNode);
-        if (index === -1) {
-            this.children.push(child);
-            return child;
-        }
-        this.children.splice(index, 0, child);
-        return child;
-    }
-
-    setAttribute(name, value) {
-        this.attributes.set(name, String(value));
-    }
-
-    removeAttribute(name) {
-        this.attributes.delete(name);
-    }
-
-    querySelector(selector) {
-        if (selector === 'td.fqn') {
-            return this.children.find(
-                child => child.tagName === 'td' && child.className.split(' ').includes('fqn')
-            ) || null;
-        }
-        if (selector === '.mutual-dependency-diagram') {
-            return this.children.find(child => child.className && child.className.includes('mutual-dependency-diagram')) || null;
-        }
-        if (selector === '.diagram-button') {
-            return this.children.find(child => child.className && child.className.includes('diagram-button')) || null;
-        }
-        if (selector === '.pair span') {
-            const pair = this.children.find(child => child.className === 'pair');
-            return pair ? pair.children.find(child => child.tagName === 'span') : null;
-        }
-        return null;
-    }
-
-    querySelectorAll(selector) {
-        if (selector === 'li') {
-            return this.children.filter(child => child.tagName === 'li');
-        }
-        return [];
-    }
-
-    addEventListener(eventName, handler) {
-        this.eventListeners.set(eventName, handler);
-    }
-}
-
-class DocumentStub {
-    constructor() {
-        this.elementsById = new Map();
-        this.selectors = new Map();
-        this.selectorsAll = new Map();
-    }
-
-    createElement(tagName) {
-        return new Element(tagName, this);
-    }
-
-    getElementById(id) {
-        return this.elementsById.get(id) || null;
-    }
-
-    createTextNode(text) {
-        return { textContent: text, parentNode: null };
-    }
-
-    querySelector(selector) {
-        return this.selectors.get(selector) || null;
-    }
-
-    querySelectorAll(selector) {
-        return this.selectorsAll.get(selector) || [];
-    }
-}
 
 function setupDocument() {
     const doc = new DocumentStub();
@@ -738,10 +585,10 @@ test.describe('package.js', () => {
                 pkg.setupPackageFilterControl(testContext);
 
                 input.value = 'app.domain\napp.other';
-                applyButton.eventListeners.get('click')();
+                applyButton.dispatchEvent({ type: 'click' });
                 assert.deepEqual(testContext.packageFilterFqn, ['app.domain', 'app.other']);
 
-                clearButton.eventListeners.get('click')();
+                clearButton.dispatchEvent({ type: 'click' });
                 assert.deepEqual(testContext.packageFilterFqn, []);
                 assert.equal(input.value, '');
             });
@@ -1090,7 +937,7 @@ test.describe('package.js', () => {
                 assert.equal(lrRadio.checked, true);
 
                 tdRadio.checked = true;
-                tdRadio.eventListeners.get('change')();
+                tdRadio.dispatchEvent({ type: 'change' });
 
                 assert.equal(testContext.mutualDependencyDiagramDirection, 'TD');
             });
@@ -1215,7 +1062,7 @@ test.describe('package.js', () => {
 
                 // changeイベントを発火させる
                 checkbox.checked = false;
-                checkbox.eventListeners.get('change')();
+                checkbox.dispatchEvent({ type: 'change' });
 
                 assert.equal(testContext.transitiveReductionEnabled, false);
             });

@@ -853,6 +853,10 @@ table td.number {
     color: #10253f;
     text-decoration: none;
 }
+.in-page-sidebar__link--sub {
+    padding-left: 20px;
+    font-size: 0.85em;
+}
 
 
 /* サイドバー 表示設定パネル */

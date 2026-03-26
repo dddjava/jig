@@ -103,7 +103,11 @@ test.describe('UsecaseApp', () => {
         const sidebar = document.getElementById('usecase-sidebar-list');
         assert.strictEqual(sidebar.children.length, 1);
         assert.strictEqual(sidebar.querySelector('p').textContent, 'ユースケース');
-        assert.strictEqual(sidebar.querySelector('a').textContent, 'ServiceA');
+        const sidebarLinks = sidebar.querySelectorAll('a');
+        assert.strictEqual(sidebarLinks[0].textContent, 'ServiceA');
+        assert.ok(sidebarLinks[1].classList.contains('in-page-sidebar__link--sub'));
+        assert.strictEqual(sidebarLinks[1].textContent, 'method1');
+        assert.strictEqual(sidebarLinks[2].textContent, 'otherMethod');
 
         const mainList = document.getElementById('usecase-list');
         assert.strictEqual(mainList.children.length, 1);

@@ -89,10 +89,49 @@ const UsecaseApp = {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        const items = usecases.map(c => {
-            return {id: c.fqn, label: globalThis.Jig.glossary.getTypeTerm(c.fqn).title};
+        const section = createElement("section", {
+            className: "in-page-sidebar__section",
+            children: [
+                createElement("p", {
+                    className: "in-page-sidebar__title",
+                    textContent: "ユースケース"
+                }),
+                createElement("ul", {
+                    className: "in-page-sidebar__links",
+                    children: usecases.map(usecase => {
+                        const children = [
+                            createElement("a", {
+                                className: "in-page-sidebar__link",
+                                attributes: {href: "#" + usecase.fqn},
+                                textContent: globalThis.Jig.glossary.getTypeTerm(usecase.fqn).title
+                            })
+                        ];
+                        if (usecase.methods && usecase.methods.length > 0) {
+                            children.push(createElement("ul", {
+                                className: "in-page-sidebar__links",
+                                children: usecase.methods.map(method =>
+                                    createElement("li", {
+                                        className: "in-page-sidebar__item",
+                                        children: [
+                                            createElement("a", {
+                                                className: "in-page-sidebar__link in-page-sidebar__link--sub",
+                                                attributes: {href: "#" + method.fqn},
+                                                textContent: globalThis.Jig.glossary.getMethodTerm(method.fqn).title
+                                            })
+                                        ]
+                                    })
+                                )
+                            }));
+                        }
+                        return createElement("li", {
+                            className: "in-page-sidebar__item",
+                            children
+                        });
+                    })
+                })
+            ]
         });
-        globalThis.Jig.sidebar.renderSection(sidebar, "ユースケース", items);
+        sidebar.appendChild(section);
     },
 
     renderUsecaseList(usecases) {

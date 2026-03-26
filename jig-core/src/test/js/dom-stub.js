@@ -137,6 +137,7 @@ class DocumentStub {
         this.elementsByName = new Map();
         this.eventListeners = new Map();
         this.allElements = [];
+        this.body = new Element("body", this);
     }
 
     createElement(tagName) {
@@ -181,4 +182,15 @@ class DocumentStub {
     }
 }
 
-module.exports = { Element, DocumentStub };
+class LocalStorageStub {
+    constructor() { this.storage = {}; }
+    getItem(key) { return Object.prototype.hasOwnProperty.call(this.storage, key) ? this.storage[key] : null; }
+    setItem(key, value) { this.storage[key] = String(value); }
+    removeItem(key) { delete this.storage[key]; }
+}
+
+class EventStub {
+    constructor(type) { this.type = type; }
+}
+
+module.exports = { Element, DocumentStub, LocalStorageStub, EventStub };

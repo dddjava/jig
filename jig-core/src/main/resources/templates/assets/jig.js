@@ -482,6 +482,104 @@ globalThis.Jig.dom.downloadCsv = function downloadCsv(text, filename) {
     URL.revokeObjectURL(url);
 };
 
+/**
+ * @param {Array} fields
+ * @param {Function} [createTypeRefFn]
+ * @returns {HTMLElement | null}
+ */
+globalThis.Jig.dom.createFieldsList = function createFieldsList(fields, createTypeRefFn) {
+    const fn = createTypeRefFn || globalThis.Jig.dom.createElementForTypeRef;
+    if (fields.length === 0) return null;
+
+    const createElement = globalThis.Jig.dom.createElement;
+    const items = fields.map(field => createElement("div", {
+        className: "method-item",
+        children: [
+            createElement("div", {
+                className: "method-signature",
+                children: [
+                    createElement("span", {
+                        className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                        textContent: field.name
+                    }),
+                    createElement("span", {className: "method-return-sep", textContent: ":"}),
+                    fn(field.typeRef)
+                ]
+            })
+        ]
+    }));
+
+    return createElement("section", {
+        className: "methods-section jig-card jig-card--item",
+        children: [
+            createElement("h4", {textContent: "フィールド"}),
+            ...items
+        ]
+    });
+};
+
+/**
+ * @param {Object} method
+ * @param {Function} [createTypeRefFn]
+ * @returns {HTMLElement}
+ */
+globalThis.Jig.dom.createMethodItem = function createMethodItem(method, createTypeRefFn) {
+    const fn = createTypeRefFn || globalThis.Jig.dom.createElementForTypeRef;
+    const createElement = globalThis.Jig.dom.createElement;
+    const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
+
+    const paramElements = method.parameterTypeRefs
+        .map(param => fn(param))
+        .flatMap((el, i) => i ? [', ', el] : [el]);
+
+    const signatureEl = createElement("div", {
+        className: "method-signature",
+        children: [
+            createElement("span", {
+                className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
+                textContent: methodTerm.title
+            }),
+            '(',
+            ...paramElements,
+            ')',
+            createElement("span", {className: "method-return-sep", textContent: ":"}),
+            fn(method.returnTypeRef)
+        ]
+    });
+
+    const children = [signatureEl];
+    if (methodTerm.description) {
+        children.push(createElement("div", {
+            className: "markdown",
+            innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
+        }));
+    }
+
+    return createElement("div", {
+        className: "method-item",
+        children
+    });
+};
+
+/**
+ * @param {string} kind
+ * @param {Array} methods
+ * @param {Function} [createTypeRefFn]
+ * @returns {HTMLElement | null}
+ */
+globalThis.Jig.dom.createMethodsList = function createMethodsList(kind, methods, createTypeRefFn) {
+    if (methods.length === 0) return null;
+
+    const createElement = globalThis.Jig.dom.createElement;
+    return createElement("section", {
+        className: "methods-section jig-card jig-card--item",
+        children: [
+            createElement("h4", {textContent: kind}),
+            ...methods.map(method => globalThis.Jig.dom.createMethodItem(method, createTypeRefFn))
+        ]
+    });
+};
+
 globalThis.Jig.observe.lazyRender = function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
     if (typeof IntersectionObserver === "undefined") {
         renderFn();

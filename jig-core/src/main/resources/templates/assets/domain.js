@@ -345,94 +345,12 @@ function createChildrenTable(pkg) {
     });
 }
 
-/**
- * @param {DomainField[]} fields
- * @returns {HTMLElement | null}
- */
 function createFieldsList(fields) {
-    if (fields.length === 0) return null;
-
-    const items = fields.map(field => createElement("div", {
-        className: "method-item",
-        children: [
-            createElement("div", {
-                className: "method-signature",
-                children: [
-                    createElement("span", {
-                        className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
-                        textContent: field.name
-                    }),
-                    createElement("span", {className: "method-return-sep", textContent: ":"}),
-                    createTypeRefLink(field.typeRef)
-                ]
-            })
-        ]
-    }));
-
-    return createElement("section", {
-        className: "methods-section jig-card jig-card--item",
-        children: [
-            createElement("h4", {textContent: "フィールド"}),
-            ...items
-        ]
-    });
+    return globalThis.Jig.dom.createFieldsList(fields, createTypeRefLink);
 }
 
-/**
- * @param {DomainMethod} method
- * @returns {HTMLElement}
- */
-function createMethodItem(method) {
-    const methodTerm = getMethodTerm(method.fqn, true);
-
-    const paramElements = method.parameterTypeRefs
-        .map(param => createTypeRefLink(param))
-        .flatMap((el, i) => i ? [', ', el] : [el]);
-
-    const signatureEl = createElement("div", {
-        className: "method-signature",
-        children: [
-            createElement("span", {
-                className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
-                textContent: methodTerm.title
-            }),
-            '(',
-            ...paramElements,
-            ')',
-            createElement("span", {className: "method-return-sep", textContent: ":"}),
-            createTypeRefLink(method.returnTypeRef)
-        ]
-    });
-
-    const children = [signatureEl];
-    if (methodTerm.description) {
-        children.push(createElement("div", {
-            className: "markdown",
-            innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
-        }));
-    }
-
-    return createElement("div", {
-        className: "method-item",
-        children
-    });
-}
-
-/**
- * @param {string} kind
- * @param {DomainMethod[]} methods
- * @returns {HTMLElement | null}
- */
 function createMethodsList(kind, methods) {
-    if (methods.length === 0) return null;
-
-    return createElement("section", {
-        className: "methods-section jig-card jig-card--item",
-        children: [
-            createElement("h4", {textContent: kind}),
-            ...methods.map(method => createMethodItem(method))
-        ]
-    });
+    return globalThis.Jig.dom.createMethodsList(kind, methods, createTypeRefLink);
 }
 
 /**

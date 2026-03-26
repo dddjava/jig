@@ -115,10 +115,10 @@ test.describe('UsecaseApp', () => {
         assert.ok(fieldsSection);
         assert.strictEqual(fieldsSection.querySelector('.method-name').textContent, 'field1');
 
-        const staticMethodsTable = serviceSection.querySelector('table:not(.fields)');
-        assert.ok(staticMethodsTable);
-        assert.strictEqual(staticMethodsTable.querySelector('th').textContent, 'staticメソッド');
-        assert.strictEqual(staticMethodsTable.querySelector('tbody td.method-name').textContent, 'staticMethod1');
+        const staticMethodsSection = serviceSection.querySelector('section.static-methods');
+        assert.ok(staticMethodsSection);
+        assert.strictEqual(staticMethodsSection.querySelector('h4').textContent, 'staticメソッド');
+        assert.strictEqual(staticMethodsSection.querySelector('.method-name').textContent, 'staticMethod1');
 
         const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);

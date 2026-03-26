@@ -170,9 +170,11 @@ const UsecaseApp = {
             if (fieldsList) section.appendChild(fieldsList);
 
             if (usecase.staticMethods && usecase.staticMethods.length > 0) {
-                const staticMethodsTable = createMethodsTable("staticメソッド", usecase.staticMethods);
-                staticMethodsTable.classList.add("static-methods");
-                section.appendChild(staticMethodsTable);
+                const staticList = globalThis.Jig.dom.createMethodsList("staticメソッド", usecase.staticMethods, createElementForTypeRef);
+                if (staticList) {
+                    staticList.classList.add("static-methods");
+                    section.appendChild(staticList);
+                }
             }
 
             usecase.methods.forEach(method => {

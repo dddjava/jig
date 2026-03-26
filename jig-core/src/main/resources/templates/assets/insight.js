@@ -1,213 +1,211 @@
-function parseInsightData() {
-    return globalThis.insightData ?? null;
-}
+const InsightApp = {
+    state: {
+        data: null,
+    },
 
-function setInsightCount(elementId, count) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.textContent = count.toString();
-    }
-}
+    parseInsightData() {
+        return globalThis.insightData ?? null;
+    },
 
-function createCell(text, className) {
-    return globalThis.Jig.dom.createElement("td", {
-        className: className || undefined,
-        textContent: text
-    });
-}
+    setInsightCount(elementId, count) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = count.toString();
+        }
+    },
 
-function createZoomCell() {
-    return globalThis.Jig.dom.createElement("td", {
-        children: [
-            globalThis.Jig.dom.createElement("i", {
-                className: "zoom",
-                textContent: "🔍"
-            })
-        ]
-    });
-}
+    createCell(text, className) {
+        return globalThis.Jig.dom.createElement("td", {
+            className: className || undefined,
+            textContent: text
+        });
+    },
 
-function renderPackageInsights(packages) {
-    const tbody = document.querySelector("#package-insight-list tbody");
-    if (!tbody) {
-        return;
-    }
-    packages.forEach(packageInsight => {
-        const row = document.createElement("tr");
-        row.dataset.fqn = packageInsight.fqn;
-        row.appendChild(createZoomCell());
-        row.appendChild(createCell(packageInsight.fqn, "fqn"));
-        row.appendChild(createCell(packageInsight.label));
-        row.appendChild(createCell(packageInsight.numberOfTypes.toString(), "number"));
-        row.appendChild(createCell(packageInsight.numberOfMethods.toString(), "number"));
-        row.appendChild(createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
-        row.appendChild(createCell(packageInsight.cyclomaticComplexity.toString(), "number"));
-        row.appendChild(createCell(packageInsight.size.toString(), "number"));
-        tbody.appendChild(row);
-    });
-}
+    createZoomCell() {
+        return globalThis.Jig.dom.createElement("td", {
+            children: [
+                globalThis.Jig.dom.createElement("i", {
+                    className: "zoom",
+                    textContent: "🔍"
+                })
+            ]
+        });
+    },
 
-function renderTypeInsights(types) {
-    const tbody = document.querySelector("#type-insight-list tbody");
-    if (!tbody) {
-        return;
-    }
-    types.forEach(typeInsight => {
-        const row = document.createElement("tr");
-        row.dataset.fqn = typeInsight.fqn;
-        row.dataset.packageFqn = typeInsight.packageFqn;
-        row.appendChild(createZoomCell());
-        row.appendChild(createCell(typeInsight.fqn, "fqn"));
-        row.appendChild(createCell(typeInsight.label));
-        row.appendChild(createCell(typeInsight.numberOfMethods.toString(), "number"));
-        row.appendChild(createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
-        row.appendChild(createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
-        row.appendChild(createCell(typeInsight.instability.toFixed(2), "number"));
-        row.appendChild(createCell(typeInsight.lcom.toFixed(2), "number"));
-        row.appendChild(createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
-        row.appendChild(createCell(typeInsight.size.toString(), "number"));
-        tbody.appendChild(row);
-    });
-}
+    renderPackageInsights(packages) {
+        const tbody = document.querySelector("#package-insight-list tbody");
+        if (!tbody) {
+            return;
+        }
+        packages.forEach(packageInsight => {
+            const row = globalThis.Jig.dom.createElement("tr");
+            row.dataset.fqn = packageInsight.fqn;
+            row.appendChild(this.createZoomCell());
+            row.appendChild(this.createCell(packageInsight.fqn, "fqn"));
+            row.appendChild(this.createCell(packageInsight.label));
+            row.appendChild(this.createCell(packageInsight.numberOfTypes.toString(), "number"));
+            row.appendChild(this.createCell(packageInsight.numberOfMethods.toString(), "number"));
+            row.appendChild(this.createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
+            row.appendChild(this.createCell(packageInsight.cyclomaticComplexity.toString(), "number"));
+            row.appendChild(this.createCell(packageInsight.size.toString(), "number"));
+            tbody.appendChild(row);
+        });
+    },
 
-function renderMethodInsights(methods) {
-    const tbody = document.querySelector("#method-insight-list tbody");
-    if (!tbody) {
-        return;
-    }
-    methods.forEach(methodInsight => {
-        const row = document.createElement("tr");
-        row.dataset.fqn = methodInsight.fqn;
-        row.dataset.packageFqn = methodInsight.packageFqn;
-        row.dataset.typeFqn = methodInsight.typeFqn;
-        row.appendChild(createZoomCell());
-        row.appendChild(createCell(methodInsight.fqn, "fqn"));
-        row.appendChild(createCell(methodInsight.label));
-        row.appendChild(createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
-        row.appendChild(createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
-        row.appendChild(createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
-        row.appendChild(createCell(methodInsight.numberOfUsingFields.toString(), "number"));
-        row.appendChild(createCell(methodInsight.numberOfUsingOwnFields.toString(), "number"));
-        row.appendChild(createCell(methodInsight.numberOfUsingOwnMethods.toString(), "number"));
-        row.appendChild(createCell(methodInsight.size.toString(), "number"));
-        tbody.appendChild(row);
-    });
-}
+    renderTypeInsights(types) {
+        const tbody = document.querySelector("#type-insight-list tbody");
+        if (!tbody) {
+            return;
+        }
+        types.forEach(typeInsight => {
+            const row = globalThis.Jig.dom.createElement("tr");
+            row.dataset.fqn = typeInsight.fqn;
+            row.dataset.packageFqn = typeInsight.packageFqn;
+            row.appendChild(this.createZoomCell());
+            row.appendChild(this.createCell(typeInsight.fqn, "fqn"));
+            row.appendChild(this.createCell(typeInsight.label));
+            row.appendChild(this.createCell(typeInsight.numberOfMethods.toString(), "number"));
+            row.appendChild(this.createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
+            row.appendChild(this.createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
+            row.appendChild(this.createCell(typeInsight.instability.toFixed(2), "number"));
+            row.appendChild(this.createCell(typeInsight.lcom.toFixed(2), "number"));
+            row.appendChild(this.createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
+            row.appendChild(this.createCell(typeInsight.size.toString(), "number"));
+            tbody.appendChild(row);
+        });
+    },
 
-// 拡大アイコンをクリックしたときに、その行以外を非表示にする
-function setupZoomIcons() {
-    const zoomIcons = document.querySelectorAll("i.zoom");
+    renderMethodInsights(methods) {
+        const tbody = document.querySelector("#method-insight-list tbody");
+        if (!tbody) {
+            return;
+        }
+        methods.forEach(methodInsight => {
+            const row = globalThis.Jig.dom.createElement("tr");
+            row.dataset.fqn = methodInsight.fqn;
+            row.dataset.packageFqn = methodInsight.packageFqn;
+            row.dataset.typeFqn = methodInsight.typeFqn;
+            row.appendChild(this.createZoomCell());
+            row.appendChild(this.createCell(methodInsight.fqn, "fqn"));
+            row.appendChild(this.createCell(methodInsight.label));
+            row.appendChild(this.createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
+            row.appendChild(this.createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
+            row.appendChild(this.createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
+            row.appendChild(this.createCell(methodInsight.numberOfUsingFields.toString(), "number"));
+            row.appendChild(this.createCell(methodInsight.numberOfUsingOwnFields.toString(), "number"));
+            row.appendChild(this.createCell(methodInsight.numberOfUsingOwnMethods.toString(), "number"));
+            row.appendChild(this.createCell(methodInsight.size.toString(), "number"));
+            tbody.appendChild(row);
+        });
+    },
 
-    zoomIcons.forEach(icon => {
-        icon.style.cursor = "pointer";
+    setupZoomIcons() {
+        const zoomIcons = document.querySelectorAll("i.zoom");
 
-        icon.addEventListener("click", function () {
-            const row = this.closest("tr");
-            const table = this.closest("table");
-            const tbody = table.querySelector("tbody");
-            const allRows = tbody.querySelectorAll("tr");
-            const fqn = row.querySelector("td.fqn").textContent;
+        zoomIcons.forEach(icon => {
+            icon.style.cursor = "pointer";
 
-            // クリックされた行以外を非表示にする
-            allRows.forEach(r => {
-                if (r !== row && !fqnStartsWith(fqn, r)) {
-                    r.classList.add("hidden-by-zoom");
+            icon.addEventListener("click", (event) => {
+                const row = event.target.closest("tr");
+                const table = event.target.closest("table");
+                const tbody = table.querySelector("tbody");
+                const allRows = tbody.querySelectorAll("tr");
+                const fqn = row.querySelector("td.fqn").textContent;
+
+                // クリックされた行以外を非表示にする
+                allRows.forEach(r => {
+                    if (r !== row && !this.fqnStartsWith(fqn, r)) {
+                        r.classList.add("hidden-by-zoom");
+                    }
+                });
+
+                this.zoomFamilyTables(table, row);
+                // ズーム解除ボタンを表示
+                document.getElementById("cancel-zoom").classList.remove("hidden");
+            });
+        });
+    },
+
+    cancelZoom(event) {
+        // すべてのテーブルからhidden-by-zoomクラスを削除
+        document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
+            row.classList.remove("hidden-by-zoom");
+        });
+        event.target.classList.add("hidden");
+    },
+
+    fqnStartsWith(prefix, targetRow) {
+        return targetRow.querySelector("td.fqn").textContent.startsWith(prefix);
+    },
+
+    zoomFamilyTables(baseTable, baseRow) {
+        baseTable.parentElement.querySelectorAll("table").forEach(table => {
+            if (table === baseTable) return;
+
+            const allRows = table.querySelectorAll("tbody tr");
+
+            // zoomされているものがあったら一旦解除して
+            const hiddenRows = table.querySelectorAll("tbody tr.hidden-by-zoom");
+            if (hiddenRows.length > 0) {
+                allRows.forEach(r => {
+                    r.classList.remove("hidden-by-zoom");
+                });
+            }
+
+            // 関係するもの以外を非表示にする
+            // 元テーブルと対象テーブルの組み合わせでprefixが変わる
+            let prefix = baseRow.dataset.fqn;
+            if (baseTable.id.includes("package")) {
+                prefix = prefix + '.';
+            } else if (baseTable.id.includes("type")) {
+                if (table.id.includes("package")) {
+                    prefix = baseRow.dataset.packageFqn;
+                } else if (table.id.includes("method")) {
+                    prefix = prefix + '#';
                 }
-            });
-
-            zoomFamilyTables(table, row);
-            // ズーム解除ボタンを表示
-            document.getElementById("cancel-zoom").classList.remove("hidden");
-        });
-    });
-}
-
-// ズームを解除する
-function cancelZoom(event) {
-    // すべてのテーブルからhidden-by-zoomクラスを削除
-    document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
-        row.classList.remove("hidden-by-zoom");
-    });
-    event.target.classList.add("hidden");
-}
-
-function fqnStartsWith(prefix, targetRow) {
-    return targetRow.querySelector("td.fqn").textContent.startsWith(prefix);
-}
-
-function zoomFamilyTables(baseTable, baseRow) {
-    baseTable.parentElement.querySelectorAll("table").forEach(table => {
-        if (table === baseTable) return;
-
-        const allRows = table.querySelectorAll("tbody tr");
-
-        // zoomされているものがあったら一旦解除して
-        const hiddenRows = table.querySelectorAll("tbody tr.hidden-by-zoom");
-        if (hiddenRows.length > 0) {
+            } else if (baseTable.id.includes("method")) {
+                if (table.id.includes("package")) {
+                    prefix = baseRow.dataset.packageFqn;
+                }
+                if (table.id.includes("type")) {
+                    prefix = baseRow.dataset.typeFqn;
+                }
+            }
             allRows.forEach(r => {
-                r.classList.remove("hidden-by-zoom");
+                if (!this.fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
             });
-        }
+        })
+    },
 
-        // 関係するもの以外を非表示にする
-        // 元テーブルと対象テーブルの組み合わせでprefixが変わる
-        let prefix = baseRow.dataset.fqn;
-        if (baseTable.id.includes("package")) {
-            prefix = prefix + '.';
-        } else if (baseTable.id.includes("type")) {
-            if (table.id.includes("package")) {
-                prefix = baseRow.dataset.packageFqn;
-            } else if (table.id.includes("method")) {
-                prefix = prefix + '#';
-            }
-        } else if (baseTable.id.includes("method")) {
-            if (table.id.includes("package")) {
-                prefix = baseRow.dataset.packageFqn;
-            }
-            if (table.id.includes("type")) {
-                prefix = baseRow.dataset.typeFqn;
-            }
-        }
-        allRows.forEach(r => {
-            if (!fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
-        });
-    })
-}
-
-// ページ読み込み時のイベント
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", function () {
-        if (!document.body.classList.contains("insight")) {
+    init() {
+        if (typeof document === "undefined" || !document.body.classList.contains("insight")) {
             return;
         }
 
-        const insightData = parseInsightData();
+        const insightData = this.parseInsightData();
         if (insightData) {
-            renderPackageInsights(insightData.packages || []);
-            renderTypeInsights(insightData.types || []);
-            renderMethodInsights(insightData.methods || []);
-            setInsightCount("package-count", (insightData.packages || []).length);
-            setInsightCount("type-count", (insightData.types || []).length);
-            setInsightCount("method-count", (insightData.methods || []).length);
+            this.renderPackageInsights(insightData.packages || []);
+            this.renderTypeInsights(insightData.types || []);
+            this.renderMethodInsights(insightData.methods || []);
+            this.setInsightCount("package-count", (insightData.packages || []).length);
+            this.setInsightCount("type-count", (insightData.types || []).length);
+            this.setInsightCount("method-count", (insightData.methods || []).length);
         }
 
-        setupSortableTables();
-        setupZoomIcons();
-        document.getElementById("cancel-zoom").addEventListener("click", cancelZoom);
+        globalThis.setupSortableTables?.();
+        this.setupZoomIcons();
+        document.getElementById("cancel-zoom")?.addEventListener("click", (e) => this.cancelZoom(e));
+    }
+};
+
+// ページ読み込み時のイベント
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+        InsightApp.init();
     });
 }
 
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-        parseInsightData,
-        setInsightCount,
-        createCell,
-        createZoomCell,
-        renderPackageInsights,
-        renderTypeInsights,
-        renderMethodInsights,
-        fqnStartsWith,
-        zoomFamilyTables,
-    };
+    module.exports = InsightApp;
 }

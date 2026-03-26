@@ -1,8 +1,5 @@
 function parseInsightData() {
-    if (typeof insightData !== "undefined") {
-        return insightData;
-    }
-    return null;
+    return globalThis.insightData ?? null;
 }
 
 function setInsightCount(elementId, count) {
@@ -13,21 +10,21 @@ function setInsightCount(elementId, count) {
 }
 
 function createCell(text, className) {
-    const cell = document.createElement("td");
-    if (className) {
-        cell.className = className;
-    }
-    cell.textContent = text;
-    return cell;
+    return globalThis.Jig.dom.createElement("td", {
+        className: className || undefined,
+        textContent: text
+    });
 }
 
 function createZoomCell() {
-    const cell = document.createElement("td");
-    const icon = document.createElement("i");
-    icon.className = "zoom";
-    icon.textContent = "🔍";
-    cell.appendChild(icon);
-    return cell;
+    return globalThis.Jig.dom.createElement("td", {
+        children: [
+            globalThis.Jig.dom.createElement("i", {
+                className: "zoom",
+                textContent: "🔍"
+            })
+        ]
+    });
 }
 
 function renderPackageInsights(packages) {

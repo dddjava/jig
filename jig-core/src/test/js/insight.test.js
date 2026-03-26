@@ -45,6 +45,24 @@ function setupDocument() {
     return doc;
 }
 
+function setupJig() {
+    global.Jig ??= {};
+    global.Jig.dom ??= {};
+
+    // Jig.dom.createElementはdocument.createElementを使用する
+    global.Jig.dom.createElement = function createElement(tagName, options = {}) {
+        const element = document.createElement(tagName);
+        if (options.className) element.className = options.className;
+        if (options.textContent != null) element.textContent = options.textContent;
+        if (options.children) {
+            options.children.forEach(child => {
+                element.appendChild(child);
+            });
+        }
+        return element;
+    };
+}
+
 function buildInsightTables(doc) {
     const packageTbody = new Element('tbody');
     const typeTbody = new Element('tbody');
@@ -106,6 +124,7 @@ test.describe('insight.js', () => {
         test('テーブルセルはテキストとクラス名を設定する', () => {
 
             setupDocument();
+            setupJig();
 
             const cell = insight.createCell('Hello', 'number');
 
@@ -124,6 +143,7 @@ test.describe('insight.js', () => {
         test('ズームセルはアイコンを追加する', () => {
 
             setupDocument();
+            setupJig();
 
             const cell = insight.createZoomCell();
 
@@ -148,6 +168,7 @@ test.describe('insight.js', () => {
         test('パッケージ一覧を描画する', () => {
 
             const doc = setupDocument();
+            setupJig();
 
             const {packageTbody} = buildInsightTables(doc);
 
@@ -194,6 +215,7 @@ test.describe('insight.js', () => {
         test('型一覧を描画する', () => {
 
             const doc = setupDocument();
+            setupJig();
 
             const {typeTbody} = buildInsightTables(doc);
 
@@ -244,6 +266,7 @@ test.describe('insight.js', () => {
         test('メソッド一覧を描画する', () => {
 
             const doc = setupDocument();
+            setupJig();
 
             const {methodTbody} = buildInsightTables(doc);
 

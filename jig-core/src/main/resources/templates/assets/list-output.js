@@ -324,17 +324,6 @@ function buildBusinessSmellCsv(items) {
     return lines.join("\r\n");
 }
 
-function downloadCsv(text, filename) {
-    const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-}
 
 function renderControllerTable(items) {
     const tableBody = document.querySelector("#controller-list tbody");
@@ -697,7 +686,7 @@ if (typeof document !== "undefined") {
         if (businessPackageExportButton) {
             businessPackageExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessPackageCsv(data.businessRules.packages);
-                downloadCsv(csvText, "list-output-business-package.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-package.csv");
             });
         }
 
@@ -705,7 +694,7 @@ if (typeof document !== "undefined") {
         if (businessAllExportButton) {
             businessAllExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessAllCsv(data.businessRules.all);
-                downloadCsv(csvText, "list-output-business-all.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-all.csv");
             });
         }
 
@@ -713,7 +702,7 @@ if (typeof document !== "undefined") {
         if (businessEnumExportButton) {
             businessEnumExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessEnumCsv(data.businessRules.enums);
-                downloadCsv(csvText, "list-output-business-enum.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-enum.csv");
             });
         }
 
@@ -721,7 +710,7 @@ if (typeof document !== "undefined") {
         if (businessCollectionExportButton) {
             businessCollectionExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessCollectionCsv(data.businessRules.collections);
-                downloadCsv(csvText, "list-output-business-collection.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-collection.csv");
             });
         }
 
@@ -729,7 +718,7 @@ if (typeof document !== "undefined") {
         if (businessValidationExportButton) {
             businessValidationExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessValidationCsv(data.businessRules.validations);
-                downloadCsv(csvText, "list-output-business-validation.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-validation.csv");
             });
         }
 
@@ -737,7 +726,7 @@ if (typeof document !== "undefined") {
         if (businessSmellExportButton) {
             businessSmellExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessSmellCsv(data.businessRules.methodSmells);
-                downloadCsv(csvText, "list-output-business-smell.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-smell.csv");
             });
         }
 
@@ -745,7 +734,7 @@ if (typeof document !== "undefined") {
         if (controllerExportButton) {
             controllerExportButton.addEventListener("click", () => {
                 const csvText = buildControllerCsv(data.applications.controllers);
-                downloadCsv(csvText, "list-output-controller.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-controller.csv");
             });
         }
 
@@ -753,7 +742,7 @@ if (typeof document !== "undefined") {
         if (serviceExportButton) {
             serviceExportButton.addEventListener("click", () => {
                 const csvText = buildServiceCsv(data.applications.services);
-                downloadCsv(csvText, "list-output-service.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-service.csv");
             });
         }
 
@@ -761,7 +750,7 @@ if (typeof document !== "undefined") {
         if (repositoryExportButton) {
             repositoryExportButton.addEventListener("click", () => {
                 const csvText = buildRepositoryCsv(data.applications.repositories);
-                downloadCsv(csvText, "list-output-repository.csv");
+                globalThis.Jig.dom.downloadCsv(csvText, "list-output-repository.csv");
             });
         }
     });

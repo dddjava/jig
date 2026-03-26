@@ -301,6 +301,7 @@ main table.fields thead {
     margin-top: 0;
     margin-bottom: 0.5em;
     color: #1b3a66;
+    border-bottom: 1px solid #1b3a66;
 }
 
 .usecase .depends {

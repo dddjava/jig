@@ -343,7 +343,7 @@ function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence
     let uniqueRelations = Array.from(uniqueRelationMap.values());
 
     if (transitiveReductionEnabled) {
-        uniqueRelations = transitiveReduction(uniqueRelations);
+        uniqueRelations = globalThis.Jig.graph.transitiveReduction(uniqueRelations);
     }
 
     return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
@@ -628,101 +628,6 @@ function buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregat
             causes: causes ? Array.from(causes).sort() : [],
         };
     });
-}
-
-function detectStronglyConnectedComponents(graph) {
-    const indices = new Map();
-    const lowLink = new Map();
-    const stack = [];
-    const onStack = new Set();
-    const result = [];
-    const index = {value: 0};
-
-    function strongConnect(node) {
-        indices.set(node, index.value);
-        lowLink.set(node, index.value);
-        index.value++;
-        stack.push(node);
-        onStack.add(node);
-
-        (graph.get(node) || []).forEach(neighbor => {
-            if (!indices.has(neighbor)) {
-                strongConnect(neighbor);
-                lowLink.set(node, Math.min(lowLink.get(node), lowLink.get(neighbor)));
-            } else if (onStack.has(neighbor)) {
-                lowLink.set(node, Math.min(lowLink.get(node), indices.get(neighbor)));
-            }
-        });
-
-        if (lowLink.get(node) === indices.get(node)) {
-            const scc = [];
-            let current;
-            do {
-                current = stack.pop();
-                onStack.delete(current);
-                scc.push(current);
-            } while (current !== node);
-            result.push(scc);
-        }
-    }
-
-    for (const node of graph.keys()) {
-        if (!indices.has(node)) {
-            strongConnect(node);
-        }
-    }
-    return result;
-}
-
-function transitiveReduction(relations) {
-    const graph = new Map();
-    relations.forEach(relation => {
-        if (!graph.has(relation.from)) graph.set(relation.from, []);
-        graph.get(relation.from).push(relation.to);
-    });
-
-    const sccs = detectStronglyConnectedComponents(graph);
-    const cyclicNodes = new Set(sccs.filter(scc => scc.length > 1).flat());
-    const cyclicEdges = new Set(
-        relations
-            .filter(edge => cyclicNodes.has(edge.from) && cyclicNodes.has(edge.to))
-            .map(edge => `${edge.from}::${edge.to}`)
-    );
-
-    const acyclicGraph = new Map();
-    relations.forEach(edge => {
-        if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
-        if (!acyclicGraph.has(edge.from)) acyclicGraph.set(edge.from, []);
-        acyclicGraph.get(edge.from).push(edge.to);
-    });
-
-    function isReachableWithoutDirect(start, end) {
-        const visited = new Set();
-
-        function dfs(current, target, skipDirect) {
-            if (current === target) return true;
-            visited.add(current);
-            const neighbors = acyclicGraph.get(current) || [];
-            for (const neighbor of neighbors) {
-                if (skipDirect && neighbor === target) continue;
-                if (visited.has(neighbor)) continue;
-                if (dfs(neighbor, target, false)) return true;
-            }
-            return false;
-        }
-
-        return dfs(start, end, true);
-    }
-
-    const toRemove = new Set();
-    relations.forEach(edge => {
-        if (cyclicEdges.has(`${edge.from}::${edge.to}`)) return;
-        if (isReachableWithoutDirect(edge.from, edge.to)) {
-            toRemove.add(`${edge.from}::${edge.to}`);
-        }
-    });
-
-    return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 }
 
 // ダイアグラム生成
@@ -1573,8 +1478,6 @@ if (typeof module !== 'undefined' && module.exports) {
         setFocusAndRender,
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
-        detectStronglyConnectedComponents,
-        transitiveReduction,
         buildMutualDependencyPairs,
         buildParentFqns,
         buildMermaidDiagramSource,

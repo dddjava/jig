@@ -126,3 +126,65 @@ test.describe("getMethodTerm", () => {
         delete globalThis.glossaryData;
     });
 });
+
+// ----- detectStronglyConnectedComponents -----
+
+test.describe('detectStronglyConnectedComponents', () => {
+    test('循環を検出する', () => {
+        const graph = new Map([
+            ['a', ['b']],
+            ['b', ['c']],
+            ['c', ['a', 'd']],
+            ['d', ['e']],
+            ['e', ['f']],
+            ['f', ['d']],
+        ]);
+        const sccs = jigCommon.detectStronglyConnectedComponents(graph);
+        const sortedSccs = sccs.map(scc => scc.sort()).sort((a, b) => a[0].localeCompare(b[0]));
+        assert.deepEqual(sortedSccs, [['a', 'b', 'c'], ['d', 'e', 'f']]);
+    });
+});
+
+// ----- transitiveReduction -----
+
+test.describe('transitiveReduction', () => {
+    test('単純な推移関係を簡約する', () => {
+        const relations = [
+            {from: 'a', to: 'b'},
+            {from: 'b', to: 'c'},
+            {from: 'a', to: 'c'},
+        ];
+        const result = jigCommon.transitiveReduction(relations);
+        assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'b>c']);
+    });
+
+    test('循環参照は対象外とする', () => {
+        const relations = [
+            {from: 'a', to: 'b'},
+            {from: 'b', to: 'a'},
+            {from: 'a', to: 'c'},
+        ];
+        const result = jigCommon.transitiveReduction(relations);
+        assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a']);
+    });
+
+    test('循環ではないが簡約対象でもない', () => {
+        const relations = [
+            {from: 'a', to: 'b'},
+            {from: 'c', to: 'd'},
+        ];
+        const result = jigCommon.transitiveReduction(relations);
+        assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'c>d']);
+    });
+
+    test('循環からの関係は簡約対象にしない', () => {
+        const relations = [
+            {from: 'a', to: 'b'},
+            {from: 'b', to: 'a'}, // cycle
+            {from: 'b', to: 'c'},
+            {from: 'a', to: 'c'},
+        ];
+        const result = jigCommon.transitiveReduction(relations);
+        assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
+    });
+});

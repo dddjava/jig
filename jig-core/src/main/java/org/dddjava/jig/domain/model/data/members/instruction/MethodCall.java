@@ -34,15 +34,6 @@ public record MethodCall(TypeId methodOwner, String methodName,
                 returnType.asSimpleText());
     }
 
-    public boolean isNotJSL() {
-        return !methodOwner.isJavaLanguageType();
-    }
-
-    public boolean isConstructor() {
-        // 名前以外の判別方法があればそれにしたい
-        return methodName.equals("<init>");
-    }
-
     @Override
     public Stream<MethodCall> methodCallStream() {
         return Stream.of(this);
@@ -56,7 +47,21 @@ public record MethodCall(TypeId methodOwner, String methodName,
         ).filter(Predicate.not(TypeId::isVoid));
     }
 
+    public boolean isNotJSL() {
+        return !methodOwner.isJavaLanguageType();
+    }
+
+    public boolean isConstructor() {
+        // 名前以外の判別方法があればそれにしたい
+        return methodName.equals("<init>");
+    }
+
     public boolean isLambda() {
         return jigMethodId().isLambda();
+    }
+
+    // FIXME いい名前・・・
+    public boolean isXxx() {
+        return !isLambda() && !isConstructor() && isNotJSL();
     }
 }

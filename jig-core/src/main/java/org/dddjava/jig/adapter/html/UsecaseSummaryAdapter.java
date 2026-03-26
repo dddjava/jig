@@ -82,6 +82,7 @@ public class UsecaseSummaryAdapter {
     private JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return JsonSupport.buildMethodJson(jigMethod)
                 .and("callMethods", Json.array(jigMethod.lambdaInlinedMethodCallStream()
+                        .filter(methodCall -> methodCall.isXxx())
                         .map(MethodCall::fqn)
                         .toList()))
                 // 以下をなくしたらこのメソッドがいらなくなる

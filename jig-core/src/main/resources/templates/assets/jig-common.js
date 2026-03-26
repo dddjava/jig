@@ -135,10 +135,17 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         this.styles.push(`classDef ${className} ${style}`);
     }
 
-    startSubgraph(id, label) {
+    startSubgraph(id, label = id) {
         const subgraph = {id, label, lines: []};
         this.subgraphs.push(subgraph);
         return subgraph;
+    }
+
+    ensureSubgraph(map, key, label) {
+        if (!map.has(key)) {
+            map.set(key, this.startSubgraph(key, label));
+        }
+        return map.get(key);
     }
 
     addNodeToSubgraph(subgraph, id, label, shape = '["$LABEL"]') {

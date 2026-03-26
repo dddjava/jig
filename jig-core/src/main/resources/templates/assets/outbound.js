@@ -1,6 +1,7 @@
 const createElement = globalThis.Jig.dom.createElement;
 const fqnToId = globalThis.Jig.fqnToId;
 const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
+const MermaidBuilder = globalThis.Jig.mermaid.Builder;
 
 // ===== データ取得・変換 =====
 
@@ -210,80 +211,6 @@ function renderNoData(container) {
 
 
 // ===== Mermaid ダイアグラム生成 =====
-
-class MermaidBuilder {
-    constructor() {
-        this.nodes = [];
-        this.edges = [];
-        this.subgraphs = [];
-        this.edgeSet = new Set();
-    }
-
-    sanitize(id) {
-        return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
-    }
-
-    addNode(id, label, shape = '["$LABEL"]') {
-        const nodeLine = `${id}${shape.replace('$LABEL', label)}`;
-        if (!this.nodes.includes(nodeLine)) {
-            this.nodes.push(nodeLine);
-        }
-        return id;
-    }
-
-    addEdge(from, to, label = "") {
-        const edgeKey = `${from}--${label}-->${to}`;
-        if (!this.edgeSet.has(edgeKey)) {
-            this.edgeSet.add(edgeKey);
-            const edgeLine = label ? `  ${from} -- "${label}" --> ${to}` : `  ${from} --> ${to}`;
-            this.edges.push(edgeLine);
-        }
-    }
-
-    startSubgraph(label) {
-        const id = `sg_${this.sanitize(label)}_${this.subgraphs.length}`;
-        const subgraph = {id, label, lines: []};
-        this.subgraphs.push(subgraph);
-        return subgraph;
-    }
-
-    ensureSubgraph(map, key, label) {
-        if (!map.has(key)) {
-            map.set(key, this.startSubgraph(label));
-        }
-        return map.get(key);
-    }
-
-    addNodeToSubgraph(subgraph, id, label) {
-        const nodeLine = `    ${id}["${label}"]`;
-        if (!subgraph.lines.includes(nodeLine)) {
-            subgraph.lines.push(nodeLine);
-        }
-        return id;
-    }
-
-    build(direction = 'LR') {
-        let code = `graph ${direction}\n`;
-        this.subgraphs.forEach(sg => {
-            code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
-            sg.lines.forEach(line => {
-                code += `    ${line.trim()}\n`;
-            });
-            code += `  end\n`;
-        });
-        this.nodes.forEach(node => {
-            code += `  ${node.trim()}\n`;
-        });
-        this.edges.forEach(edge => {
-            code += `${edge}\n`;
-        });
-        return code;
-    }
-
-    isEmpty() {
-        return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
-    }
-}
 
 const DEFAULT_VISIBILITY = {
     port: true, operation: true,

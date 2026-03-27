@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 
 /**
  * ユースケース概要
- *
- * FIXME Mermaidのダイアグラムに対応した出力をほとんどここで記述してしまっている。
  */
 public class UsecaseSummaryAdapter {
 

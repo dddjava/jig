@@ -53,47 +53,47 @@ public class InboundSummaryAdapter {
 
         inputAdapters.groups().forEach(inputAdapter -> {
             var jigType = inputAdapter.jigType();
-            List<JsonObjectBuilder> entrypointList = new ArrayList<>();
 
+            // グラフをコントローラー単位で構築
+            List<JsonObjectBuilder> nodes = new ArrayList<>();
+            List<JsonObjectBuilder> edges = new ArrayList<>();
+            Map<TypeId, List<JsonObjectBuilder>> serviceMethodsByClass = new LinkedHashMap<>();
+            Set<String> addedNodes = new HashSet<>();
+
+            List<JsonObjectBuilder> entrypointList = new ArrayList<>();
             inputAdapter.entrypoints().forEach(entrypoint -> {
                 var entrypointMethodId = entrypoint.jigMethod().jigMethodId();
 
-                List<JsonObjectBuilder> nodes = new ArrayList<>();
-                List<JsonObjectBuilder> edges = new ArrayList<>();
+                // エントリーポイントのノード（コントローラー共有の addedNodes で重複排除）
+                if (addedNodes.add(entrypointMethodId.fqn())) {
+                    nodes.add(Json.object("fqn", entrypointMethodId.fqn()).and("type", "entrypoint"));
+                }
 
-                // エントリーポイントのノード
-                nodes.add(Json.object("fqn", entrypointMethodId.fqn()).and("type", "entrypoint"));
-
-                // 関連メソッドの探索
-                var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethodId,
+                // 関連メソッドの探索（コントローラー共有のコレクションに追加）
+                var declaredMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethodId,
                         jigTypes::isService
                 );
 
-                Map<TypeId, List<JsonObjectBuilder>> serviceMethodsByClass = new LinkedHashMap<>();
-                Set<String> addedNodes = new HashSet<>();
-                addedNodes.add(entrypointMethodId.fqn());
-
-                decraleMethodRelations.list().forEach(relation -> {
+                declaredMethodRelations.list().forEach(relation -> {
                     addEdge(edges, relation);
                     addNode(nodes, relation.from(), jigTypes, addedNodes, serviceMethodsByClass);
                     addNode(nodes, relation.to(), jigTypes, addedNodes, serviceMethodsByClass);
                 });
 
-                // サービスメソッドをクラスごとにまとめる
-                List<JsonObjectBuilder> serviceGroups = new ArrayList<>();
-                serviceMethodsByClass.forEach((typeId, methods) -> {
-                    serviceGroups.add(Json.object("fqn", typeId.fqn())
-                            .and("methods", Json.arrayObjects(methods)));
-                });
-
                 entrypointList.add(JsonSupport.buildMethodJson(entrypoint.jigMethod())
-                        .and("path", entrypoint.pathText())
-                        .and("graph", Json.object("nodes", Json.arrayObjects(nodes))
-                                .and("edges", Json.arrayObjects(edges))
-                                .and("serviceGroups", Json.arrayObjects(serviceGroups))));
+                        .and("path", entrypoint.pathText()));
             });
 
+            // サービスグループの生成（コントローラー単位）
+            List<JsonObjectBuilder> serviceGroups = new ArrayList<>();
+            serviceMethodsByClass.forEach((typeId, methods) ->
+                    serviceGroups.add(Json.object("fqn", typeId.fqn())
+                            .and("methods", Json.arrayObjects(methods))));
+
             controllerList.add(Json.object("fqn", jigType.fqn())
+                    .and("graph", Json.object("nodes", Json.arrayObjects(nodes))
+                            .and("edges", Json.arrayObjects(edges))
+                            .and("serviceGroups", Json.arrayObjects(serviceGroups)))
                     .and("entrypoints", Json.arrayObjects(entrypointList)));
         });
 

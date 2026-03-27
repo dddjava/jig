@@ -12,6 +12,20 @@ const mockInboundData = {
     controllers: [
         {
             fqn: "com.example.ControllerA",
+            graph: {
+                nodes: [
+                    { fqn: "com.example.ControllerA#method1()", type: "entrypoint" }
+                ],
+                edges: [],
+                serviceGroups: [
+                    {
+                        fqn: "com.example.ServiceA",
+                        methods: [
+                            { fqn: "com.example.ServiceA#serviceMethod()" }
+                        ]
+                    }
+                ]
+            },
             entrypoints: [
                 {
                     fqn: "com.example.ControllerA#method1()",
@@ -19,21 +33,7 @@ const mockInboundData = {
                     parameterTypeRefs: [],
                     returnTypeRef: { fqn: "void" },
                     isDeprecated: false,
-                    path: "GET /api/method1",
-                    graph: {
-                        nodes: [
-                            { fqn: "com.example.ControllerA#method1()", type: "entrypoint" }
-                        ],
-                        edges: [],
-                        serviceGroups: [
-                            {
-                                fqn: "com.example.ServiceA",
-                                methods: [
-                                    { fqn: "com.example.ServiceA#serviceMethod()" }
-                                ]
-                            }
-                        ]
-                    }
+                    path: "GET /api/method1"
                 }
             ]
         }
@@ -105,15 +105,21 @@ test.describe('InboundApp', () => {
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
 
-        const inboundSection = controllerSection.querySelector('.jig-card--item');
-        assert.ok(inboundSection);
-        assert.strictEqual(inboundSection.querySelector('h4').textContent, 'method1');
-        assert.strictEqual(inboundSection.querySelector('h4').id, 'com.example.ControllerA#method1()');
-        assert.strictEqual(inboundSection.querySelector('.fully-qualified-name').textContent, 'GET /api/method1');
+        // エントリーポイント一覧（createMethodsList）
+        const methodsSection = controllerSection.querySelector('.methods-section');
+        assert.ok(methodsSection);
+        const methodItems = methodsSection.querySelectorAll('.method-item');
+        assert.strictEqual(methodItems.length, 1);
+        assert.ok(methodItems[0].querySelector('.method-name').textContent.includes('method1'));
 
-        const mermaidPre = inboundSection.querySelector('.mermaid');
+        // 個別カード（jig-card--item）は廃止
+        assert.strictEqual(controllerSection.querySelector('article.jig-card--item'), null);
+
+        // コントローラー単位の統合ダイアグラム
+        const mermaidPre = controllerSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
         assert.ok(mermaidPre.textContent.includes('subgraph')); // Mermaid code generated
+        assert.ok(mermaidPre.textContent.includes('GET /api/method1')); // パスノードが含まれる
     });
 
     test('renderControllerList should handle empty data', () => {

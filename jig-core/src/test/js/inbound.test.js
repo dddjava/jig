@@ -142,7 +142,10 @@ test.describe('InboundApp', () => {
         const mainList = document.getElementById('inbound-list');
         const mermaidPre = mainList.children[0].querySelector('.mermaid');
         assert.ok(mermaidPre);
-        assert.ok(!mermaidPre.textContent.includes('subgraph'));
+        // entrypointおよびmethodのsubgraphが生成される
+        assert.ok(mermaidPre.textContent.includes('subgraph'));
+        // usecase.htmlへのclickリンクは生成されない
+        assert.ok(!mermaidPre.textContent.includes('click'));
         assert.ok(mermaidPre.textContent.includes('GET /api/method1'));
     });
 });

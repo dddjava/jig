@@ -92,11 +92,13 @@ const InboundApp = {
                     allFqns.add(edge.to);
                 });
 
-                // entrypointノード
+                // entrypointノード → クラス単位のsubgraph
+                const entrypointGroups = new Map();
                 controller.entrypoints.forEach(ep => {
-                    const nodeId = fqnToNodeId(ep.fqn);
+                    const typeFqn = ep.fqn.split('#')[0];
+                    const subgraph = builder.ensureSubgraph(entrypointGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                     const label = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true).title;
-                    builder.addNode(nodeId, label, '{{"$LABEL"}}');
+                    builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, '{{"$LABEL"}}');
                 });
 
                 // パスノードとdotted edge
@@ -126,12 +128,14 @@ const InboundApp = {
                     });
                 });
 
-                // methodノード（entrypointでもusecaseでもないFQN）
+                // methodノード（entrypointでもusecaseでもないFQN）→ クラス単位のsubgraph
+                const methodGroups = new Map();
                 allFqns.forEach(fqn => {
                     if (!entrypointFqns.has(fqn) && !usecaseMethodToType.has(fqn)) {
-                        const nodeId = fqnToNodeId(fqn);
+                        const typeFqn = fqn.split('#')[0];
+                        const subgraph = builder.ensureSubgraph(methodGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                         const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
-                        builder.addNode(nodeId, label, '["$LABEL"]');
+                        builder.addNodeToSubgraph(subgraph, fqnToNodeId(fqn), label, '["$LABEL"]');
                     }
                 });
 

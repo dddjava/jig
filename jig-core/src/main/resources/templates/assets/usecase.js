@@ -20,7 +20,7 @@ function buildOutboundOperationSet(outboundData) {
     return set;
 }
 
-function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false) {
+function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false, hideExternalPorts = false) {
     const nodes = new Map();
     const edgeSet = new Set();
     const edges = [];
@@ -54,6 +54,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
                     }
                 }
             } else if (outboundOperationSet.has(calleeFqn)) {
+                if (hideExternalPorts) continue;
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const edgeKey = effectiveCallerFqn + '\u2192' + classFqn;
                 if (!edgeSet.has(edgeKey)) {
@@ -71,7 +72,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
     return {nodes: [...nodes.values()], edges};
 }
 
-function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false) {
+function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false, hideExternalPorts = false) {
     const participantKeys = [];
     const participants = new Map();
     const calls = [];
@@ -122,6 +123,7 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
                     }
                 }
             } else if (outboundOperationSet.has(calleeFqn)) {
+                if (hideExternalPorts) continue;
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const methodName = getMethodSimpleName(calleeFqn);
                 const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, "external");
@@ -202,7 +204,8 @@ const UsecaseApp = {
             { id: 'show-details', class: 'hide-usecase-details' },
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
             { id: 'show-declarations', class: 'hide-usecase-declarations' },
-            { id: 'hide-non-usecases', reRender: true }
+            { id: 'hide-non-usecases', reRender: true },
+            { id: 'hide-external-ports', reRender: true }
         ];
 
         controls.forEach(control => {
@@ -307,6 +310,7 @@ const UsecaseApp = {
 
         const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
         const hideNonUsecases = document.getElementById('hide-non-usecases')?.checked || false;
+        const hideExternalPorts = document.getElementById('hide-external-ports')?.checked || false;
 
         usecases.forEach(usecase => {
             const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
@@ -367,10 +371,10 @@ const UsecaseApp = {
                 });
 
                 // Diagrams
-                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases);
+                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases, hideExternalPorts);
                 const hasGraph = graph.edges.length > 0;
 
-                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases);
+                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases, hideExternalPorts);
                 const seqCode = buildSequenceDiagramCode(sequence);
                 const hasSequence = seqCode !== null;
 

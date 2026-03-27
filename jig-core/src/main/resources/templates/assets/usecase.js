@@ -70,9 +70,9 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
         return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
     }
 
-    function getSimpleClassName(classFqn) {
-        const dotIdx = classFqn.lastIndexOf('.');
-        return dotIdx === -1 ? classFqn : classFqn.slice(dotIdx + 1);
+    function ensureUsecaseParticipant(key) {
+        const label = globalThis.Jig.glossary.getMethodTerm(key, true).title
+        return ensureParticipant(key, label, false);
     }
 
     function ensureParticipant(key, label, isExternal) {
@@ -83,7 +83,7 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
         return participants.get(key);
     }
 
-    ensureParticipant(rootMethod.fqn, getMethodSimpleName(rootMethod.fqn), false);
+    ensureUsecaseParticipant(rootMethod.fqn);
     visited.add(rootMethod.fqn);
 
     function traverse(callerFqn, callMethods) {
@@ -91,7 +91,7 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
         for (const calleeFqn of callMethods) {
             const caller = participants.get(callerFqn);
             if (methodMap.has(calleeFqn)) {
-                const callee = ensureParticipant(calleeFqn, getMethodSimpleName(calleeFqn), false);
+                const callee = ensureUsecaseParticipant(calleeFqn);
                 calls.push({from: caller.id, to: callee.id, label: ''});
                 if (!visited.has(calleeFqn)) {
                     visited.add(calleeFqn);
@@ -100,7 +100,7 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
             } else if (outboundOperationSet.has(calleeFqn)) {
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const methodName = getMethodSimpleName(calleeFqn);
-                const callee = ensureParticipant(classFqn, getSimpleClassName(classFqn), true);
+                const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, true);
                 calls.push({from: caller.id, to: callee.id, label: methodName});
             }
         }

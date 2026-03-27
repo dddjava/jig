@@ -1,12 +1,7 @@
 package org.dddjava.jig.domain.model.data.packages;
 
-import org.dddjava.jig.JigContext;
-import org.jspecify.annotations.Nullable;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * パッケージ識別子
@@ -121,41 +116,6 @@ public class PackageId implements Comparable<PackageId> {
     @Override
     public String toString() {
         return value;
-    }
-
-    /**
-     * 省略表記フィールド
-     * FQNは長くなりすぎるため省略表記が必要な場合がある。
-     * 全てのパッケージで必要なものでもなく、それなりの計算量となるため、生成時にキャッシュする形とするためフィールドで持つ。
-     * このインスタンス自体に持たせない方がいい気はする。
-     */
-    @Nullable
-    private String abbreviationText = null;
-
-    /**
-     * 省略表記
-     */
-    public String abbreviationText() {
-        if (abbreviationText != null) {
-            return abbreviationText;
-        }
-        if (JigContext.packageAbbreviationMode.value().equalsIgnoreCase("numeric")) {
-            // internationalization -> i18n
-            if (value.length() <= 2) {
-                return abbreviationText = value;
-            }
-            char firstChar = value.charAt(0);
-            char lastChar = value.charAt(value.length() - 1);
-            int middleCount = value.length() - 2;
-
-            return abbreviationText = "%c%d%c".formatted(firstChar, middleCount, lastChar);
-        } else {
-            // hoge.fuga.piyo -> h.f.p
-            String[] parts = value.split("\\.");
-            return abbreviationText = Arrays.stream(parts)
-                    .map(value -> String.valueOf(value.charAt(0)))
-                    .collect(joining("."));
-        }
     }
 
     public PackageId subpackageOf(String... packages) {

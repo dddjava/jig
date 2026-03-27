@@ -133,10 +133,6 @@ public record TypeId(String value) implements Comparable<TypeId> {
         return value.endsWith("[]");
     }
 
-    public String packageAbbreviationText() {
-        return packageId().abbreviationText() + "." + asSimpleText();
-    }
-
     public TypeId convertArray() {
         return valueOf(value + "[]");
     }

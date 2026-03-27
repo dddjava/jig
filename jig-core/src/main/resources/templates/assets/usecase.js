@@ -20,7 +20,7 @@ function buildOutboundOperationSet(outboundData) {
     return set;
 }
 
-function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set()) {
+function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false) {
     const nodes = new Map();
     const edgeSet = new Set();
     const edges = [];
@@ -29,27 +29,36 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
     nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
     visited.add(rootMethod.fqn);
 
-    function traverse(callerFqn, callMethods) {
+    function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
             if (methodMap.has(calleeFqn)) {
-                const edgeKey = callerFqn + '\u2192' + calleeFqn;
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: callerFqn, to: calleeFqn});
-                }
-                if (!visited.has(calleeFqn)) {
-                    visited.add(calleeFqn);
-                    const m = methodMap.get(calleeFqn);
-                    nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
-                    traverse(calleeFqn, m.callMethods);
+                const m = methodMap.get(calleeFqn);
+                const isUc = m.kind === "usecase";
+                if (!hideNonUsecases || isUc) {
+                    const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
+                    if (!edgeSet.has(edgeKey)) {
+                        edgeSet.add(edgeKey);
+                        edges.push({from: effectiveCallerFqn, to: calleeFqn});
+                    }
+                    if (!visited.has(calleeFqn)) {
+                        visited.add(calleeFqn);
+                        nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
+                        traverse(calleeFqn, m.callMethods, new Set());
+                    }
+                } else {
+                    if (!inliningPath.has(calleeFqn)) {
+                        const nextPath = new Set(inliningPath);
+                        nextPath.add(calleeFqn);
+                        traverse(effectiveCallerFqn, m.callMethods, nextPath);
+                    }
                 }
             } else if (outboundOperationSet.has(calleeFqn)) {
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
-                const edgeKey = callerFqn + '\u2192' + classFqn;
+                const edgeKey = effectiveCallerFqn + '\u2192' + classFqn;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
-                    edges.push({from: callerFqn, to: classFqn});
+                    edges.push({from: effectiveCallerFqn, to: classFqn});
                 }
                 if (!nodes.has(classFqn)) {
                     nodes.set(classFqn, {fqn: classFqn, kind: "external"});
@@ -62,7 +71,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
     return {nodes: [...nodes.values()], edges};
 }
 
-function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set()) {
+function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false) {
     const participantKeys = [];
     const participants = new Map();
     const calls = [];
@@ -91,16 +100,26 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
     ensureUsecaseParticipant(rootMethod.fqn);
     visited.add(rootMethod.fqn);
 
-    function traverse(callerFqn, callMethods) {
+    function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
-            const caller = participants.get(callerFqn);
+            const caller = participants.get(effectiveCallerFqn);
             if (methodMap.has(calleeFqn)) {
-                const callee = ensureUsecaseParticipant(calleeFqn);
-                calls.push({from: caller.id, to: callee.id, label: ''});
-                if (!visited.has(calleeFqn)) {
-                    visited.add(calleeFqn);
-                    traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
+                const m = methodMap.get(calleeFqn);
+                const isUc = m.kind === "usecase";
+                if (!hideNonUsecases || isUc) {
+                    const callee = ensureUsecaseParticipant(calleeFqn);
+                    calls.push({from: caller.id, to: callee.id, label: ''});
+                    if (!visited.has(calleeFqn)) {
+                        visited.add(calleeFqn);
+                        traverse(calleeFqn, m.callMethods, new Set());
+                    }
+                } else {
+                    if (!inliningPath.has(calleeFqn)) {
+                        const nextPath = new Set(inliningPath);
+                        nextPath.add(calleeFqn);
+                        traverse(effectiveCallerFqn, m.callMethods, nextPath);
+                    }
                 }
             } else if (outboundOperationSet.has(calleeFqn)) {
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
@@ -182,7 +201,8 @@ const UsecaseApp = {
             { id: 'show-diagrams', class: 'hide-usecase-diagrams' },
             { id: 'show-details', class: 'hide-usecase-details' },
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
-            { id: 'show-declarations', class: 'hide-usecase-declarations' }
+            { id: 'show-declarations', class: 'hide-usecase-declarations' },
+            { id: 'hide-non-usecases', reRender: true }
         ];
 
         controls.forEach(control => {
@@ -197,8 +217,13 @@ const UsecaseApp = {
             }
 
             const update = () => {
-                document.body.classList.toggle(control.class, !checkbox.checked);
+                if (control.class) {
+                    document.body.classList.toggle(control.class, !checkbox.checked);
+                }
                 localStorage.setItem(storageKey, checkbox.checked);
+                if (control.reRender) {
+                    this.render();
+                }
             };
 
             checkbox.addEventListener('change', update);
@@ -281,6 +306,7 @@ const UsecaseApp = {
         });
 
         const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
+        const hideNonUsecases = document.getElementById('hide-non-usecases')?.checked || false;
 
         usecases.forEach(usecase => {
             const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
@@ -341,10 +367,10 @@ const UsecaseApp = {
                 });
 
                 // Diagrams
-                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet);
+                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases);
                 const hasGraph = graph.edges.length > 0;
 
-                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet);
+                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases);
                 const seqCode = buildSequenceDiagramCode(sequence);
                 const hasSequence = seqCode !== null;
 

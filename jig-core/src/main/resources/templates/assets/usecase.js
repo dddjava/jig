@@ -235,9 +235,46 @@ const UsecaseApp = {
     },
 
     render() {
+        const scrollInfo = this.getScrollInfo();
         const usecases = this.state.data.usecases;
         this.renderSidebar(usecases);
         this.renderUsecaseList(usecases);
+        this.restoreScroll(scrollInfo);
+    },
+
+    getScrollInfo() {
+        const main = document.querySelector('.split-view > main');
+        if (!main) return null;
+
+        const elements = main.querySelectorAll('.jig-card--type h3 a[id], .jig-card--item h4[id]');
+        const containerRect = main.getBoundingClientRect();
+
+        for (const el of elements) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top >= containerRect.top) {
+                return { id: el.id, offset: rect.top - containerRect.top };
+            }
+        }
+        return { scrollTop: main.scrollTop };
+    },
+
+    restoreScroll(info) {
+        const main = document.querySelector('.split-view > main');
+        if (!main || !info) return;
+
+        if (info.id) {
+            const el = document.getElementById(info.id);
+            if (el) {
+                const containerRect = main.getBoundingClientRect();
+                const newRect = el.getBoundingClientRect();
+                main.scrollTop += (newRect.top - containerRect.top - info.offset);
+                return;
+            }
+        }
+
+        if (info.scrollTop !== undefined) {
+            main.scrollTop = info.scrollTop;
+        }
     },
 
     renderSidebar(usecases) {

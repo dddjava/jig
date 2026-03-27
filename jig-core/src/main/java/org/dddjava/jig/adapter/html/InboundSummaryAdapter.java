@@ -9,6 +9,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -68,7 +69,13 @@ public class InboundSummaryAdapter {
                         .and("path", entrypoint.pathText()));
             });
 
+            var classPath = inputAdapter.entrypoints().stream()
+                    .findFirst()
+                    .map(Entrypoint::classPathText)
+                    .orElse("");
+
             controllerList.add(Json.object("fqn", jigType.fqn())
+                    .and("classPath", classPath)
                     .and("relations", Json.arrayObjects(edges))
                     .and("entrypoints", Json.arrayObjects(entrypointList)));
         });

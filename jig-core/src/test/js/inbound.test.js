@@ -12,6 +12,7 @@ const mockInboundData = {
     controllers: [
         {
             fqn: "com.example.ControllerA",
+            classPath: "/api",
             relations: [
                 { from: "com.example.ControllerA#method1()", to: "com.example.ServiceA#serviceMethod()" }
             ],
@@ -22,7 +23,7 @@ const mockInboundData = {
                     parameterTypeRefs: [],
                     returnTypeRef: { fqn: "void" },
                     isDeprecated: false,
-                    path: "GET /api/method1"
+                    path: "GET /method1"
                 }
             ]
         }
@@ -104,6 +105,7 @@ test.describe('InboundApp', () => {
         assert.strictEqual(controllerSection.id, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
+        assert.strictEqual(controllerSection.querySelector('.class-path').textContent, '/api');
         assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
 
         // エントリーポイント一覧（createMethodsList）
@@ -120,7 +122,7 @@ test.describe('InboundApp', () => {
         const mermaidPre = controllerSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
         assert.ok(mermaidPre.textContent.includes('subgraph')); // Mermaid code generated
-        assert.ok(mermaidPre.textContent.includes('GET /api/method1')); // パスノードが含まれる
+        assert.ok(mermaidPre.textContent.includes('GET /method1')); // パスノードが含まれる
     });
 
     test('renderControllerList should handle empty data', () => {
@@ -144,6 +146,6 @@ test.describe('InboundApp', () => {
         assert.ok(mermaidPre.textContent.includes('subgraph'));
         // usecase.htmlへのclickリンクは生成されない
         assert.ok(!mermaidPre.textContent.includes('click'));
-        assert.ok(mermaidPre.textContent.includes('GET /api/method1'));
+        assert.ok(mermaidPre.textContent.includes('GET /method1'));
     });
 });

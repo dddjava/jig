@@ -45,6 +45,10 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
         return entrypointMapping.fullPathText();
     }
 
+    public String classPathText() {
+        return entrypointMapping.classPathText();
+    }
+
     /**
      * Swagger @Operation(summary) の値を返す
      *

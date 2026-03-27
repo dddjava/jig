@@ -12,4 +12,8 @@ public interface EntrypointMapping {
         // パスを実装していないEntrypointで呼び出されるパターン
         return "???";
     }
+
+    default String classPathText() {
+        return "";
+    }
 }

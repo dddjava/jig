@@ -33,6 +33,11 @@ record HttpEntrypointMapping(String httpMethod, String classPath, String methodP
     }
 
     @Override
+    public String classPathText() {
+        return classPath;
+    }
+
+    @Override
     public String fullPathText() {
         // HTTPメソッドが入らないパターン
         return Arrays.stream((classPath + '/' + methodPath).split("/", -1))

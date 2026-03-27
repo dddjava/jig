@@ -65,6 +65,13 @@ const InboundApp = {
                 }));
             }
 
+            if (controller.classPath) {
+                section.appendChild(createElement("div", {
+                    className: "class-path",
+                    textContent: controller.classPath
+                }));
+            }
+
             const methodsList = globalThis.Jig.dom.createMethodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 

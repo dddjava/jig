@@ -14,9 +14,9 @@ import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * ユースケース概要
@@ -46,30 +46,33 @@ public class UsecaseSummaryAdapter {
     }
 
     private String buildJson(JigTypes contextJigTypes) {
-        List<JsonObjectBuilder> usecaseList = new ArrayList<>();
+        var usecaseList = contextJigTypes.stream()
+                .flatMap(jigType -> {
+                    List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
+                            .map(JsonSupport::buildFieldJson)
+                            .collect(Collectors.toList());
 
-        for (var jigType : contextJigTypes.list()) {
-            List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
-                    .map(JsonSupport::buildFieldJson)
-                    .collect(Collectors.toList());
+                    List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods().stream()
+                            .filter(jigMethod -> jigMethod.isProgrammerDefined())
+                            .map(this::buildMethodJson)
+                            .collect(Collectors.toList());
 
-            List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods().stream()
-                    .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                    .map(this::buildMethodJson)
-                    .collect(Collectors.toList());
+                    List<JsonObjectBuilder> methodList = jigType.instanceJigMethods().stream()
+                            .filter(jigMethod -> jigMethod.isProgrammerDefined())
+                            .map(this::buildMethodJson)
+                            .toList();
 
-            List<JsonObjectBuilder> methodList = jigType.instanceJigMethods().stream()
-                    .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                    .map(this::buildMethodJson)
-                    .toList();
+                    if (methodList.isEmpty() && fields.isEmpty() && staticMethods.isEmpty()) {
+                        return Stream.empty();
+                    }
 
-            if (!methodList.isEmpty() || !fields.isEmpty() || !staticMethods.isEmpty()) {
-                usecaseList.add(Json.object("fqn", jigType.fqn())
-                        .and("fields", Json.arrayObjects(fields))
-                        .and("staticMethods", Json.arrayObjects(staticMethods))
-                        .and("methods", Json.arrayObjects(methodList)));
-            }
-        }
+                    return Stream.of(
+                            Json.object("fqn", jigType.fqn())
+                                    .and("fields", Json.arrayObjects(fields))
+                                    .and("staticMethods", Json.arrayObjects(staticMethods))
+                                    .and("methods", Json.arrayObjects(methodList)));
+                })
+                .toList();
 
         return Json.object("usecases", Json.arrayObjects(usecaseList)).build();
     }
@@ -81,5 +84,4 @@ public class UsecaseSummaryAdapter {
                         .map(MethodCall::fqn)
                         .toList()));
     }
-
 }

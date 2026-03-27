@@ -64,10 +64,10 @@ test.describe('UsecaseApp', () => {
         // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
         // チェックボックス要素を事前登録
-        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'hide-non-usecases'].forEach(id => {
+        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'hide-non-usecases', 'hide-external-ports'].forEach(id => {
             const el = doc.createElement('input');
             el.id = id;
-            el.checked = (id !== 'hide-non-usecases');
+            el.checked = (id !== 'hide-non-usecases' && id !== 'hide-external-ports');
         });
         // コンテナ要素を事前登録
         ['usecase-sidebar-list', 'usecase-list'].forEach(id => {
@@ -477,6 +477,17 @@ test.describe('buildSequenceFromCallMethods', () => {
         assert.ok(result.calls[0].from.includes('_A_'));
         assert.ok(result.calls[0].to.includes('_D_'));
     });
+
+    test('hideExternalPortsがtrueの場合、外部ポートはパーティシパントとして追加されない', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['ext.Cls#method()'], kind: 'usecase' };
+        const methodMap = new Map([['pkg.Cls#A()', {...rootMethod, kind: 'usecase'}]]);
+        const outboundOperationSet = new Set(['ext.Cls#method()']);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet, false, true);
+
+        assert.strictEqual(result.participants.length, 1);
+        assert.strictEqual(result.calls.length, 0);
+    });
 });
 
 test.describe('buildSequenceDiagramCode', () => {
@@ -739,5 +750,17 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.strictEqual(result.edges.length, 1);
         assert.strictEqual(result.edges[0].from, 'A');
         assert.strictEqual(result.edges[0].to, 'D');
+    });
+
+    test('hideExternalPortsがtrueの場合、外部ポートはノードとして追加されない', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['ext.Cls#method()'], kind: 'usecase' };
+        const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
+        const outboundOperationSet = new Set(['ext.Cls#method()']);
+
+        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet, false, true);
+
+        assert.strictEqual(result.nodes.length, 1);
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+        assert.strictEqual(result.edges.length, 0);
     });
 });

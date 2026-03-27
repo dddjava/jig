@@ -907,8 +907,7 @@ table td.number {
 .sidebar-settings {
     flex-shrink: 0;
     margin-bottom: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #d9e1ea;
+    border: 1px solid #d9e1ea;
 }
 .sidebar-settings > summary {
     font-size: 0.85em;

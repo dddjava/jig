@@ -17,14 +17,12 @@
             <summary>
                 <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 表示設定
-                <svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </summary>
             <div class="sidebar-settings-panel">
                 <div class="settings-group">
-                    <div class="settings-row"><label><input type="checkbox" id="show-declarations" checked> 完全修飾名・宣言</label></div>
+                    <div class="settings-row"><label><input type="checkbox" id="show-declarations" checked> 定義名</label></div>
                     <div class="settings-row"><label><input type="checkbox" id="show-descriptions" checked> 説明</label></div>
-                </div>
-                <div class="settings-group">
+                    <div class="settings-row"><label><input type="checkbox" id="show-details" checked> 引数・戻り値</label></div>
                     <div class="settings-row"><label><input type="checkbox" id="show-fields" checked> フィールド</label></div>
                     <div class="settings-row"><label><input type="checkbox" id="show-static-methods" checked> staticメソッド</label></div>
                 </div>
@@ -33,9 +31,6 @@
                     <div class="settings-row"><label><input type="checkbox" id="show-diagrams" checked> ダイアグラムを表示</label></div>
                     <div class="settings-row"><label><input type="checkbox" id="hide-non-usecases"> 非ユースケースを隠す</label></div>
                     <div class="settings-row"><label><input type="checkbox" id="hide-external-ports"> 外部ポートを隠す</label></div>
-                </div>
-                <div class="settings-group">
-                    <div class="settings-row"><label><input type="checkbox" id="show-details" checked> 引数・戻り値</label></div>
                 </div>
             </div>
         </details>

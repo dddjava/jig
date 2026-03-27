@@ -12,27 +12,24 @@ const mockInboundData = {
     controllers: [
         {
             fqn: "com.example.ControllerA",
-            label: "ControllerA",
-            description: "Description of ControllerA",
             entrypoints: [
                 {
-                    methodId: "method1",
-                    label: "method1",
+                    fqn: "com.example.ControllerA#method1()",
+                    visibility: "PUBLIC",
+                    parameterTypeRefs: [],
+                    returnTypeRef: { fqn: "void" },
+                    isDeprecated: false,
                     path: "GET /api/method1",
                     graph: {
                         nodes: [
-                            { id: "n1", label: "method1", type: "entrypoint" },
-                            { id: "n2", label: "GET /api/method1", type: "path" }
+                            { fqn: "com.example.ControllerA#method1()", type: "entrypoint" }
                         ],
-                        edges: [
-                            { from: "n2", to: "n1", label: "", style: "dotted" }
-                        ],
+                        edges: [],
                         serviceGroups: [
                             {
-                                typeId: "com.example.ServiceA",
-                                label: "ServiceA",
+                                fqn: "com.example.ServiceA",
                                 methods: [
-                                    { id: "s1", label: "serviceMethod", link: "serviceMethod" }
+                                    { fqn: "com.example.ServiceA#serviceMethod()" }
                                 ]
                             }
                         ]
@@ -41,6 +38,13 @@ const mockInboundData = {
             ]
         }
     ]
+};
+
+const mockGlossaryData = {
+    "com.example.ControllerA": { title: "ControllerA", description: "Description of ControllerA", kind: "クラス" },
+    "com.example.ControllerA#method1()": { title: "method1", simpleText: "method1", kind: "メソッド", description: "" },
+    "com.example.ServiceA": { title: "ServiceA", description: "", kind: "クラス" },
+    "com.example.ServiceA#serviceMethod()": { title: "serviceMethod", simpleText: "serviceMethod", kind: "メソッド", description: "" }
 };
 
 test.describe('InboundApp', () => {
@@ -85,6 +89,7 @@ test.describe('InboundApp', () => {
 
     test('init should render data from globalThis.inboundData', () => {
         globalThis.inboundData = mockInboundData;
+        globalThis.glossaryData = mockGlossaryData;
         InboundApp.init();
 
         const sidebar = document.getElementById('inbound-sidebar-list');
@@ -99,12 +104,13 @@ test.describe('InboundApp', () => {
         assert.strictEqual(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
-        
+
         const inboundSection = controllerSection.querySelector('.jig-card--item');
         assert.ok(inboundSection);
         assert.strictEqual(inboundSection.querySelector('h4').textContent, 'method1');
+        assert.strictEqual(inboundSection.querySelector('h4').id, 'com.example.ControllerA#method1()');
         assert.strictEqual(inboundSection.querySelector('.fully-qualified-name').textContent, 'GET /api/method1');
-        
+
         const mermaidPre = inboundSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
         assert.ok(mermaidPre.textContent.includes('subgraph')); // Mermaid code generated
@@ -113,7 +119,7 @@ test.describe('InboundApp', () => {
     test('renderControllerList should handle empty data', () => {
         globalThis.inboundData = { controllers: [] };
         InboundApp.init();
-        
+
         const mainList = document.getElementById('inbound-list');
         assert.strictEqual(mainList.textContent, 'データなし');
     });

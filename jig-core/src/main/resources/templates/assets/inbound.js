@@ -25,7 +25,10 @@ const InboundApp = {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        const items = controllers.map(c => ({id: c.fqn, label: c.label}));
+        const items = controllers.map(c => ({
+            id: c.fqn,
+            label: globalThis.Jig.glossary.getTypeTerm(c.fqn).title
+        }));
         globalThis.Jig.sidebar.renderSection(sidebar, "コントローラー", items);
     },
 
@@ -40,12 +43,13 @@ const InboundApp = {
         }
 
         controllers.forEach(controller => {
+            const typeTerm = globalThis.Jig.glossary.getTypeTerm(controller.fqn);
             const section = createElement("section", {
                 className: "jig-card jig-card--type",
                 id: controller.fqn,
                 children: [
                     createElement("h3", {
-                        children: [createElement("a", {textContent: controller.label})]
+                        children: [createElement("a", {textContent: typeTerm.title})]
                     }),
                     createElement("div", {
                         className: "fully-qualified-name",
@@ -54,18 +58,19 @@ const InboundApp = {
                 ]
             });
 
-            if (controller.description) {
+            if (typeTerm.description) {
                 section.appendChild(createElement("section", {
                     className: "markdown",
-                    innerHTML: globalThis.Jig.markdown.parse(controller.description)
+                    innerHTML: globalThis.Jig.markdown.parse(typeTerm.description)
                 }));
             }
 
             controller.entrypoints.forEach(ep => {
+                const methodTerm = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true);
                 const epSection = createElement("article", {
                     className: "jig-card jig-card--item",
                     children: [
-                        createElement("h4", {id: ep.methodId, textContent: ep.label}),
+                        createElement("h4", {id: ep.fqn, textContent: methodTerm.title}),
                         createElement("div", {
                             className: "fully-qualified-name",
                             textContent: ep.path
@@ -77,26 +82,35 @@ const InboundApp = {
                 epSection.appendChild(mmdContainer);
 
                 globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                    const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
                     const builder = new globalThis.Jig.mermaid.Builder();
+
                     ep.graph.nodes.forEach(node => {
+                        const nodeId = fqnToNodeId(node.fqn);
+                        const label = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
                         let shape = '["$LABEL"]';
                         if (node.type === 'entrypoint') shape = '{{"$LABEL"}}';
-                        else if (node.type === 'path') shape = '>"$LABEL"]';
-                        builder.addNode(node.id, node.label, shape);
+                        builder.addNode(nodeId, label, shape);
                     });
 
+                    // パスノードとdotted edgeをJS側で生成
+                    const pathNodeId = globalThis.Jig.fqnToId("path", ep.fqn);
+                    builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
+                    builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
+
                     ep.graph.serviceGroups.forEach(sg => {
-                        const subgraph = builder.startSubgraph(builder.sanitize(sg.typeId), sg.label);
+                        const sgLabel = globalThis.Jig.glossary.getTypeTerm(sg.fqn).title;
+                        const subgraph = builder.startSubgraph(globalThis.Jig.fqnToId("sg", sg.fqn), sgLabel);
                         sg.methods.forEach(m => {
-                            builder.addNodeToSubgraph(subgraph, m.id, m.label, '(["$LABEL"])');
-                            if (m.link) {
-                                builder.addClick(m.id, `./usecase.html#${m.link}`);
-                            }
+                            const mId = fqnToNodeId(m.fqn);
+                            const mLabel = globalThis.Jig.glossary.getMethodTerm(m.fqn, true).title;
+                            builder.addNodeToSubgraph(subgraph, mId, mLabel, '(["$LABEL"])');
+                            builder.addClick(mId, `./usecase.html#${m.fqn}`);
                         });
                     });
 
                     ep.graph.edges.forEach(edge => {
-                        builder.addEdge(edge.from, edge.to, "", edge.style === 'dotted');
+                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                     });
 
                     const code = builder.build('LR');

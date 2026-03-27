@@ -4,7 +4,7 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
-import org.dddjava.jig.adapter.html.view.HtmlSupport;
+import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
@@ -21,8 +21,6 @@ import java.util.*;
 
 /**
  * 入力インタフェース概要
- *
- * FIXME Mermaidのダイアグラムに対応した出力をほとんどここで記述してしまっている。
  */
 public class InboundSummaryAdapter {
     private final JigService jigService;
@@ -59,15 +57,12 @@ public class InboundSummaryAdapter {
 
             inputAdapter.entrypoints().forEach(entrypoint -> {
                 var entrypointMethodId = entrypoint.jigMethod().jigMethodId();
-                var entrypointMmdId = HtmlSupport.htmlMethodIdText(entrypointMethodId);
 
                 List<JsonObjectBuilder> nodes = new ArrayList<>();
                 List<JsonObjectBuilder> edges = new ArrayList<>();
 
-                // エントリーポイントとパスのノード
-                nodes.add(Json.object("id", entrypointMmdId).and("label", entrypoint.methodLabelText()).and("type", "entrypoint"));
-                nodes.add(Json.object("id", "__" + entrypointMmdId).and("label", entrypoint.pathText()).and("type", "path"));
-                edges.add(Json.object("from", "__" + entrypointMmdId).and("to", entrypointMmdId).and("style", "dotted"));
+                // エントリーポイントのノード
+                nodes.add(Json.object("fqn", entrypointMethodId.fqn()).and("type", "entrypoint"));
 
                 // 関連メソッドの探索
                 var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethodId,
@@ -76,25 +71,22 @@ public class InboundSummaryAdapter {
 
                 Map<TypeId, List<JsonObjectBuilder>> serviceMethodsByClass = new LinkedHashMap<>();
                 Set<String> addedNodes = new HashSet<>();
-                addedNodes.add(entrypointMmdId);
-                addedNodes.add("__" + entrypointMmdId);
+                addedNodes.add(entrypointMethodId.fqn());
 
                 decraleMethodRelations.list().forEach(relation -> {
                     addEdge(edges, relation);
-                    addNode(nodes, relation.from(), jigTypes, entrypoint.typeId(), addedNodes, serviceMethodsByClass);
-                    addNode(nodes, relation.to(), jigTypes, entrypoint.typeId(), addedNodes, serviceMethodsByClass);
+                    addNode(nodes, relation.from(), jigTypes, addedNodes, serviceMethodsByClass);
+                    addNode(nodes, relation.to(), jigTypes, addedNodes, serviceMethodsByClass);
                 });
 
                 // サービスメソッドをクラスごとにまとめる
                 List<JsonObjectBuilder> serviceGroups = new ArrayList<>();
                 serviceMethodsByClass.forEach((typeId, methods) -> {
-                    serviceGroups.add(Json.object("typeId", typeId.fqn())
-                            .and("label", typeId.asSimpleText())
+                    serviceGroups.add(Json.object("fqn", typeId.fqn())
                             .and("methods", Json.arrayObjects(methods)));
                 });
 
-                entrypointList.add(Json.object("methodId", entrypointMmdId)
-                        .and("label", entrypoint.jigMethod().name())
+                entrypointList.add(JsonSupport.buildMethodJson(entrypoint.jigMethod())
                         .and("path", entrypoint.pathText())
                         .and("graph", Json.object("nodes", Json.arrayObjects(nodes))
                                 .and("edges", Json.arrayObjects(edges))
@@ -102,40 +94,29 @@ public class InboundSummaryAdapter {
             });
 
             controllerList.add(Json.object("fqn", jigType.fqn())
-                    .and("label", jigType.label())
-                    .and("description", jigType.term().description())
                     .and("entrypoints", Json.arrayObjects(entrypointList)));
         });
 
         return Json.object("controllers", Json.arrayObjects(controllerList)).build();
     }
 
-    private void addNode(List<JsonObjectBuilder> nodes, JigMethodId methodId, JigTypes jigTypes, TypeId controllerTypeId, Set<String> addedNodes, Map<TypeId, List<JsonObjectBuilder>> serviceMethodsByClass) {
-        String mmdId = HtmlSupport.htmlMethodIdText(methodId);
-        if (!addedNodes.add(mmdId)) return;
+    private void addNode(List<JsonObjectBuilder> nodes, JigMethodId methodId, JigTypes jigTypes, Set<String> addedNodes, Map<TypeId, List<JsonObjectBuilder>> serviceMethodsByClass) {
+        String fqn = methodId.fqn();
+        if (!addedNodes.add(fqn)) return;
 
         if (jigTypes.isService(methodId)) {
             jigTypes.resolveJigMethod(methodId).ifPresent(method -> {
                 var typeId = method.declaringType();
                 serviceMethodsByClass.computeIfAbsent(typeId, k -> new ArrayList<>())
-                        .add(Json.object("id", mmdId)
-                                .and("label", method.labelText())
-                                .and("link", HtmlSupport.htmlMethodIdText(methodId)));
+                        .add(Json.object("fqn", fqn));
             });
         } else {
-            String label;
-            var declaringTypeId = methodId.tuple().declaringTypeId();
-            if (controllerTypeId.equals(declaringTypeId)) {
-                label = methodId.name();
-            } else {
-                label = declaringTypeId.asSimpleName() + "." + methodId.name();
-            }
-            nodes.add(Json.object("id", mmdId).and("label", label).and("type", "method"));
+            nodes.add(Json.object("fqn", fqn).and("type", "method"));
         }
     }
 
     private void addEdge(List<JsonObjectBuilder> edges, MethodRelation relation) {
-        edges.add(Json.object("from", HtmlSupport.htmlMethodIdText(relation.from()))
-                .and("to", HtmlSupport.htmlMethodIdText(relation.to())));
+        edges.add(Json.object("from", relation.from().fqn())
+                .and("to", relation.to().fqn()));
     }
 }

@@ -21,7 +21,7 @@ test.describe('estimateEdgeCount', () => {
 test.describe("fqnToId", () => {
     test("プレフィックスを付けてIDを生成する", () => {
         const id = jigCommon.fqnToId("port", "com.example.MyPort");
-        assert.match(id, /^port-com-exampl-[a-z0-9]+$/);
+        assert.match(id, /^port_com_exampl_[a-z0-9]+$/);
     });
 
     test("異なるfqnなら異なるIDを生成する", () => {
@@ -40,7 +40,7 @@ test.describe("fqnToId", () => {
         const id1 = jigCommon.fqnToId("persistence", "テーブル1");
         const id2 = jigCommon.fqnToId("persistence", "テーブル2");
         assert.notEqual(id1, id2);
-        assert.match(id1, /^persistence-[\w-]+-[a-z0-9]+$/);
+        assert.match(id1, /^persistence_[\w-]+_[a-z0-9]+$/);
     });
 });
 

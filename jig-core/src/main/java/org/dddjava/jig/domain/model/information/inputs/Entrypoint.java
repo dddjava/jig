@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
 
+import java.util.Optional;
+
 /**
  * 入力アダプタのエントリーポイント
  *
@@ -43,17 +45,24 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
         return entrypointMapping.fullPathText();
     }
 
+    /**
+     * Swagger @Operation(summary) の値を返す
+     *
+     * summary が設定されていない場合は empty を返す。
+     */
+    public Optional<String> swaggerSummary() {
+        // アノテーションの仕様上、同じアノテーションが複数あることもあるし、要素の文字列も配列で定義可能なのでAnyで取得。実際は0..1になる。
+        return jigMethod.declarationAnnotationStream()
+                .filter(methodAnnotation -> methodAnnotation.id().equals(TypeId.valueOf("io.swagger.v3.oas.annotations.Operation")))
+                .flatMap(methodAnnotation -> methodAnnotation.elementTextOf("summary").stream())
+                .findAny();
+    }
+
     private String entrypointName() {
         if (entrypointType() == EntrypointType.HTTP_API) {
-            return jigMethod
-                    // Swaggerのアノテーションのsummaryが記述されていればそれを採用
-                    .declarationAnnotationStream()
-                    .filter(methodAnnotation -> methodAnnotation.id().equals(TypeId.valueOf("io.swagger.v3.oas.annotations.Operation")))
-                    .flatMap(methodAnnotation -> methodAnnotation.elementTextOf("summary").stream())
-                    // アノテーションの仕様上、同じアノテーションが複数あることもあるし、要素の文字列も配列で定義可能なのでAnyで取得。実際は0..1になる。
-                    .findAny()
-                    // OpenAPIドキュメントの自動生成をしていないなど、解決できない場合は通常のメソッドラベル
-                    .orElseGet(jigMethod::labelText);
+            // Swaggerのアノテーションのsummaryが記述されていればそれを採用
+            // OpenAPIドキュメントの自動生成をしていないなど、解決できない場合は通常のメソッドラベル
+            return swaggerSummary().orElseGet(jigMethod::labelText);
         } else {
             return jigMethod().labelText();
         }

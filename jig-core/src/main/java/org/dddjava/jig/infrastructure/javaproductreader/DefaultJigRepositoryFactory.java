@@ -9,8 +9,12 @@ import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessor;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
+import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermId;
+import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
 import org.dddjava.jig.domain.model.information.outbound.ExternalAccessorRepositories;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.dddjava.jig.domain.model.information.outbound.springdata.SpringDataJdbcStatementsReader;
@@ -26,13 +30,18 @@ import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DefaultJigRepositoryFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultJigRepositoryFactory.class);
 
     private final ClassOrJavaSourceCollector sourceCollector;
 
@@ -110,6 +119,23 @@ public class DefaultJigRepositoryFactory {
                     createPersistenceAccessorRepository(sources, classDeclarations)));
 
             JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
+
+            // Swagger @Operation(summary) 由来の用語を登録する
+            // Javadocに由来する用語が優先のため、TermIdが重複する場合はスキップしてログを出力する
+            var existingTermIds = glossaryRepository.all().terms().stream()
+                    .map(Term::id)
+                    .collect(Collectors.toSet());
+            InputAdapters.from(jigTypes).listEntrypoint().forEach(entrypoint ->
+                    entrypoint.swaggerSummary().ifPresent(summary -> {
+                        var termId = new TermId(entrypoint.jigMethod().fqn());
+                        if (existingTermIds.contains(termId)) {
+                            logger.info("[JIG] {} はJavadocによる用語が登録済みのためSwagger @Operationをスキップします", termId.asText());
+                        } else {
+                            glossaryRepository.register(Term.simple(termId, summary, TermKind.メソッド));
+                        }
+                    })
+            );
+
             Collection<PersistenceAccessor> springDataJdbcStatements = new SpringDataJdbcStatementsReader().readFrom(jigTypes);
             persistenceAccessorRepository.register(springDataJdbcStatements);
 

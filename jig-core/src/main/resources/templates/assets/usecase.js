@@ -7,6 +7,10 @@ function getClassFqnFromMethodFqn(fqn) {
     return hashIdx === -1 ? fqn : fqn.slice(0, hashIdx);
 }
 
+function isUsecase(method) {
+    return method.visibility === "PUBLIC";
+}
+
 function buildOutboundOperationSet(outboundData) {
     if (!outboundData?.outboundPorts) return new Set();
     const set = new Set();
@@ -22,7 +26,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
     const edges = [];
     const visited = new Set();
 
-    nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, external: false});
+    nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
     visited.add(rootMethod.fqn);
 
     function traverse(callerFqn, callMethods) {
@@ -36,8 +40,9 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
                 }
                 if (!visited.has(calleeFqn)) {
                     visited.add(calleeFqn);
-                    nodes.set(calleeFqn, {fqn: calleeFqn, external: false});
-                    traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
+                    const m = methodMap.get(calleeFqn);
+                    nodes.set(calleeFqn, {fqn: calleeFqn, kind: m.kind});
+                    traverse(calleeFqn, m.callMethods);
                 }
             } else if (outboundOperationSet.has(calleeFqn)) {
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
@@ -47,7 +52,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
                     edges.push({from: callerFqn, to: classFqn});
                 }
                 if (!nodes.has(classFqn)) {
-                    nodes.set(classFqn, {fqn: classFqn, external: true});
+                    nodes.set(classFqn, {fqn: classFqn, kind: "external"});
                 }
             }
         }
@@ -72,12 +77,12 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
 
     function ensureUsecaseParticipant(key) {
         const label = globalThis.Jig.glossary.getMethodTerm(key, true).title
-        return ensureParticipant(key, label, false);
+        return ensureParticipant(key, label, "usecase");
     }
 
-    function ensureParticipant(key, label, isExternal) {
+    function ensureParticipant(key, label, kind) {
         if (!participants.has(key)) {
-            participants.set(key, {id: fqnToNodeId(key), label, isExternal});
+            participants.set(key, {id: fqnToNodeId(key), label, kind});
             participantKeys.push(key);
         }
         return participants.get(key);
@@ -100,7 +105,7 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
             } else if (outboundOperationSet.has(calleeFqn)) {
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const methodName = getMethodSimpleName(calleeFqn);
-                const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, true);
+                const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, "external");
                 calls.push({from: caller.id, to: callee.id, label: methodName});
             }
         }
@@ -118,8 +123,8 @@ function buildSequenceDiagramCode(sequence) {
     if (sequence.calls.length === 0) return null;
     let code = 'sequenceDiagram\n';
 
-    const external = sequence.participants.filter(p => p.isExternal);
-    const internal = sequence.participants.filter(p => !p.isExternal);
+    const external = sequence.participants.filter(p => p.kind === "external");
+    const internal = sequence.participants.filter(p => p.kind !== "external");
 
     internal.forEach(p => {
         code += `  participant ${p.id} as ${p.label}\n`;
@@ -212,10 +217,12 @@ const UsecaseApp = {
                                 textContent: globalThis.Jig.glossary.getTypeTerm(usecase.fqn).title
                             })
                         ];
-                        if (usecase.methods && usecase.methods.length > 0) {
+                        if (usecase.methods.length > 0) {
                             children.push(createElement("ul", {
                                 className: "in-page-sidebar__links",
-                                children: usecase.methods.map(method =>
+                                children: usecase.methods
+                                    .filter(isUsecase)
+                                    .map(method =>
                                     createElement("li", {
                                         className: "in-page-sidebar__item",
                                         children: [
@@ -252,8 +259,8 @@ const UsecaseApp = {
 
         const methodMap = new Map();
         usecases.forEach(usecase => {
-            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, m));
-            (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, m));
+            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: isUsecase(m) ? "usecase" : "method"}));
+            (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: "static-method"}));
         });
 
         const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
@@ -283,7 +290,7 @@ const UsecaseApp = {
             const fieldsList = globalThis.Jig.dom.createFieldsList(usecase.fields, createElementForTypeRef);
             if (fieldsList) section.appendChild(fieldsList);
 
-            if (usecase.staticMethods && usecase.staticMethods.length > 0) {
+            if (usecase.staticMethods.length > 0) {
                 const staticList = globalThis.Jig.dom.createMethodsList("staticメソッド", usecase.staticMethods, createElementForTypeRef);
                 if (staticList) {
                     staticList.classList.add("static-methods");
@@ -291,7 +298,17 @@ const UsecaseApp = {
                 }
             }
 
-            usecase.methods.forEach(method => {
+            // usecaseとするのはPUBLICのみ
+            const internalMethods = usecase.methods.filter(method => !isUsecase(method))
+            if (internalMethods.length > 0) {
+                const staticList = globalThis.Jig.dom.createMethodsList("メソッド", internalMethods, createElementForTypeRef);
+                if (staticList) {
+                    staticList.classList.add("methods");
+                    section.appendChild(staticList);
+                }
+            }
+
+            usecase.methods.filter(isUsecase).forEach(method => {
                 const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
                 const methodDescription = methodTerm.description;
 
@@ -363,24 +380,32 @@ const UsecaseApp = {
                             const builder = new globalThis.Jig.mermaid.Builder();
 
                             graph.nodes.forEach(node => {
-                                const shape = '(["$LABEL"])';
-                                const nodeLabel = node.external
-                                    ? globalThis.Jig.glossary.getTypeTerm(node.fqn).title
-                                    : globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-
                                 const nodeId = fqnToNodeId(node.fqn);
-                                builder.addNode(nodeId, nodeLabel, shape);
+                                if (node.kind === "usecase") {
+                                    // ユースケース: 角丸、ページ内リンク
+                                    const shape = '(["$LABEL"])';
+                                    const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
 
-                                if (node.external) {
-                                    // 外部ポートはグレー表示
-                                    builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
-                                } else {
+                                    builder.addNode(nodeId, nodeLabel, shape);
                                     // 自身を強調表示
                                     if (node.fqn === method.fqn) {
                                         builder.addStyle(nodeId, "font-weight:bold");
                                     }
-                                    // ページ内リンク
                                     builder.addClick(nodeId, "#" + node.fqn);
+                                } else if (node.kind === "external") {
+                                    // 外部ポート: 四角、グレー
+                                    const shape = '["$LABEL"]';
+                                    const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title
+
+                                    builder.addNode(nodeId, nodeLabel, shape);
+                                    builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                                } else {
+                                    // その他(method or static-method): 角丸、グレー
+                                    const shape = '(["$LABEL"])';
+                                    const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+
+                                    builder.addNode(nodeId, nodeLabel, shape);
+                                    builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
                                 }
                             });
 

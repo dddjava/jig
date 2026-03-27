@@ -27,7 +27,7 @@ const mockUsecaseData = {
             methods: [
                 {
                     fqn: "com.example.ServiceA#method1()",
-                    visibility: "PRIVATE",
+                    visibility: "PUBLIC",
                     parameterTypeRefs: [],
                     returnTypeRef: { fqn: "void" },
                     declaration: "method1():void",
@@ -116,7 +116,7 @@ test.describe('UsecaseApp', () => {
         const serviceSection = mainList.children[0];
         assert.strictEqual(serviceSection.querySelector('h3 a').id, 'com.example.ServiceA');
         assert.strictEqual(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
-        assert.strictEqual(serviceSection.querySelector('.fully-qualified-name').textContent, 'com.example.ServiceA');
+        assert.strictEqual(serviceSection.querySelector('.declaration').textContent, 'com.example.ServiceA');
         assert.strictEqual(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
 
         const fieldsSection = serviceSection.querySelector('section.methods-section');
@@ -132,7 +132,7 @@ test.describe('UsecaseApp', () => {
         assert.ok(methodSection);
         assert.strictEqual(methodSection.querySelector('h4').id, 'com.example.ServiceA#method1()');
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
-        assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'ServiceA#method1()');
+        assert.strictEqual(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
 
         const diagramContainer = methodSection.querySelector('.diagram-container');
         assert.ok(diagramContainer);
@@ -240,7 +240,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         assert.strictEqual(result.calls.length, 0);
         assert.strictEqual(result.participants.length, 1);
         assert.strictEqual(result.participants[0].label, 'method1');
-        assert.strictEqual(result.participants[0].isExternal, false);
+        assert.strictEqual(result.participants[0].kind, "usecase");
     });
 
     test('ユースケース内メソッドへの呼び出しはメソッド単位のパーティシパント', () => {
@@ -258,9 +258,9 @@ test.describe('buildSequenceFromCallMethods', () => {
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.participants[0].label, 'method1');
-        assert.strictEqual(result.participants[0].isExternal, false);
+        assert.strictEqual(result.participants[0].kind, "usecase");
         assert.strictEqual(result.participants[1].label, 'otherMethod');
-        assert.strictEqual(result.participants[1].isExternal, false);
+        assert.strictEqual(result.participants[1].kind, "usecase");
         assert.strictEqual(result.calls.length, 1);
         assert.strictEqual(result.calls[0].label, '');
     });
@@ -277,7 +277,7 @@ test.describe('buildSequenceFromCallMethods', () => {
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.participants[1].label, 'RepositoryB');
-        assert.strictEqual(result.participants[1].isExternal, true);
+        assert.strictEqual(result.participants[1].kind, "external");
         assert.strictEqual(result.calls.length, 1);
         assert.strictEqual(result.calls[0].label, 'save');
     });
@@ -389,8 +389,8 @@ test.describe('buildSequenceDiagramCode', () => {
     test('外部パーティシパントはbox LightGrayに入り内部はその外に出力される', () => {
         const sequence = {
             participants: [
-                {id: 'node-a', label: 'methodA', isExternal: false},
-                {id: 'node-b', label: 'ClassB', isExternal: true}
+                {id: 'node-a', label: 'methodA', kind: "usecase"},
+                {id: 'node-b', label: 'ClassB', kind: "external"}
             ],
             calls: [
                 {from: 'node-a', to: 'node-b', label: 'save'}
@@ -532,7 +532,7 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.strictEqual(result.edges.length, 1);
         const externalNode = result.nodes.find(n => n.fqn === 'com.example.RepositoryB');
         assert.ok(externalNode);
-        assert.strictEqual(externalNode.external, true);
+        assert.strictEqual(externalNode.kind, "external");
         assert.strictEqual(result.edges[0].to, 'com.example.RepositoryB');
     });
 
@@ -553,10 +553,15 @@ test.describe('buildGraphFromCallMethods', () => {
     });
 
     test('内部ノードはexternal:falseで追加される', () => {
-        const otherMethod = { fqn: 'com.example.ServiceA#otherMethod()', callMethods: [] };
+        const otherMethod = {
+            fqn: 'com.example.ServiceA#otherMethod()',
+            callMethods: [],
+            kind: "usecase"
+        };
         const rootMethod = {
             fqn: 'com.example.ServiceA#method1()',
-            callMethods: ['com.example.ServiceA#otherMethod()']
+            callMethods: ['com.example.ServiceA#otherMethod()'],
+            kind: "usecase"
         };
         const methodMap = new Map([
             ['com.example.ServiceA#method1()', rootMethod],
@@ -566,6 +571,6 @@ test.describe('buildGraphFromCallMethods', () => {
         const result = buildGraphFromCallMethods(rootMethod, methodMap);
 
         assert.strictEqual(result.nodes.length, 2);
-        result.nodes.forEach(n => assert.strictEqual(n.external, false));
+        result.nodes.forEach(n => assert.strictEqual(n.kind, "usecase"));
     });
 });

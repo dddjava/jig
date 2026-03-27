@@ -399,15 +399,15 @@ test.describe('buildSequenceDiagramCode', () => {
         const code = buildSequenceDiagramCode(sequence);
 
         assert.ok(code.startsWith('sequenceDiagram\n'));
-        assert.ok(code.includes('box LightGray'));
+        assert.ok(code.includes('box outbounds'));
         assert.ok(code.includes('participant node-b as ClassB'));
         assert.ok(code.includes('end'));
         assert.ok(code.includes('participant node-a as methodA'));
         assert.ok(code.includes('node-a->>node-b: save'));
-        // 内部パーティシパントはboxの外にある
-        const boxEnd = code.indexOf('end');
+        // 内部パーティシパントはboxの前にある
+        const boxEnd = code.indexOf('box outbounds');
         const internalIdx = code.indexOf('participant node-a as methodA');
-        assert.ok(internalIdx > boxEnd);
+        assert.ok(internalIdx < boxEnd);
     });
 
     test('外部パーティシパントがない場合はboxなしで生成する', () => {

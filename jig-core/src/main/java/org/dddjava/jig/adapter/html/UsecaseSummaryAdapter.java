@@ -53,18 +53,15 @@ public class UsecaseSummaryAdapter {
                     .map(JsonSupport::buildFieldJson)
                     .collect(Collectors.toList());
 
-            List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods()
-                    .filterProgrammerDefined()
-                    .excludeNotNoteworthyObjectMethod()
-                    .listRemarkable()
-                    .stream()
-                    .map(jigMethod -> buildMethodJson(jigMethod))
+            List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods().stream()
+                    .filter(jigMethod -> jigMethod.isProgrammerDefined())
+                    .map(this::buildMethodJson)
                     .collect(Collectors.toList());
 
-            List<JsonObjectBuilder> methodList = new ArrayList<>();
-            for (var jigMethod : jigType.instanceJigMethods().filterProgrammerDefined().excludeNotNoteworthyObjectMethod().listRemarkable()) {
-                methodList.add(buildMethodJson(jigMethod));
-            }
+            List<JsonObjectBuilder> methodList = jigType.instanceJigMethods().stream()
+                    .filter(jigMethod -> jigMethod.isProgrammerDefined())
+                    .map(this::buildMethodJson)
+                    .toList();
 
             if (!methodList.isEmpty() || !fields.isEmpty() || !staticMethods.isEmpty()) {
                 usecaseList.add(Json.object("fqn", jigType.fqn())

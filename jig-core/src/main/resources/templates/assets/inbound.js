@@ -75,34 +75,67 @@ const InboundApp = {
                 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
                 const builder = new globalThis.Jig.mermaid.Builder();
 
-                // ノード（Java側でコントローラー単位に統合済み）
-                controller.graph.nodes.forEach(node => {
-                    const nodeId = fqnToNodeId(node.fqn);
-                    const label = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-                    const shape = node.type === 'entrypoint' ? '{{"$LABEL"}}' : '["$LABEL"]';
-                    builder.addNode(nodeId, label, shape);
+                const entrypointFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
+
+                // usecaseData から methodFqn → typeFqn のインデックスを構築
+                const usecaseMethodToType = new Map();
+                if (globalThis.usecaseData) {
+                    globalThis.usecaseData.usecases.forEach(uc => {
+                        (uc.methods || []).forEach(m => usecaseMethodToType.set(m.fqn, uc.fqn));
+                    });
+                }
+
+                // edges に登場する全 FQN を収集（重複排除）
+                const allFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
+                controller.graph.edges.forEach(edge => {
+                    allFqns.add(edge.from);
+                    allFqns.add(edge.to);
                 });
 
-                // パスノードとdotted edgeをJS側でエントリーポイントごとに生成
+                // entrypointノード
+                controller.entrypoints.forEach(ep => {
+                    const nodeId = fqnToNodeId(ep.fqn);
+                    const label = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true).title;
+                    builder.addNode(nodeId, label, '{{"$LABEL"}}');
+                });
+
+                // パスノードとdotted edge
                 controller.entrypoints.forEach(ep => {
                     const pathNodeId = globalThis.Jig.fqnToId("path", ep.fqn);
                     builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
                     builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
                 });
 
-                // サービスグループ（Java側で統合済み）
-                controller.graph.usecases.forEach(sg => {
-                    const sgLabel = globalThis.Jig.glossary.getTypeTerm(sg.fqn).title;
-                    const subgraph = builder.startSubgraph(globalThis.Jig.fqnToId("sg", sg.fqn), sgLabel);
-                    sg.methods.forEach(m => {
-                        const mId = fqnToNodeId(m.fqn);
-                        const mLabel = globalThis.Jig.glossary.getMethodTerm(m.fqn, true).title;
+                // usecaseサブグラフ（allFqns × usecaseMethodToType の交差）
+                const usecaseGroups = new Map();
+                allFqns.forEach(fqn => {
+                    if (!entrypointFqns.has(fqn) && usecaseMethodToType.has(fqn)) {
+                        const typeFqn = usecaseMethodToType.get(fqn);
+                        if (!usecaseGroups.has(typeFqn)) usecaseGroups.set(typeFqn, []);
+                        usecaseGroups.get(typeFqn).push(fqn);
+                    }
+                });
+                usecaseGroups.forEach((methods, typeFqn) => {
+                    const sgLabel = globalThis.Jig.glossary.getTypeTerm(typeFqn).title;
+                    const subgraph = builder.startSubgraph(globalThis.Jig.fqnToId("sg", typeFqn), sgLabel);
+                    methods.forEach(fqn => {
+                        const mId = fqnToNodeId(fqn);
+                        const mLabel = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
                         builder.addNodeToSubgraph(subgraph, mId, mLabel, '(["$LABEL"])');
-                        builder.addClick(mId, `./usecase.html#${m.fqn}`);
+                        builder.addClick(mId, `./usecase.html#${fqn}`);
                     });
                 });
 
-                // エッジ（Java側で統合済み）
+                // methodノード（entrypointでもusecaseでもないFQN）
+                allFqns.forEach(fqn => {
+                    if (!entrypointFqns.has(fqn) && !usecaseMethodToType.has(fqn)) {
+                        const nodeId = fqnToNodeId(fqn);
+                        const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
+                        builder.addNode(nodeId, label, '["$LABEL"]');
+                    }
+                });
+
+                // エッジ
                 controller.graph.edges.forEach(edge => {
                     builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                 });

@@ -13,17 +13,8 @@ const mockInboundData = {
         {
             fqn: "com.example.ControllerA",
             graph: {
-                nodes: [
-                    { fqn: "com.example.ControllerA#method1()", type: "entrypoint" }
-                ],
-                edges: [],
-                usecases: [
-                    {
-                        fqn: "com.example.ServiceA",
-                        methods: [
-                            { fqn: "com.example.ServiceA#serviceMethod()" }
-                        ]
-                    }
+                edges: [
+                    { from: "com.example.ControllerA#method1()", to: "com.example.ServiceA#serviceMethod()" }
                 ]
             },
             entrypoints: [
@@ -35,6 +26,17 @@ const mockInboundData = {
                     isDeprecated: false,
                     path: "GET /api/method1"
                 }
+            ]
+        }
+    ]
+};
+
+const mockUsecaseData = {
+    usecases: [
+        {
+            fqn: "com.example.ServiceA",
+            methods: [
+                { fqn: "com.example.ServiceA#serviceMethod()" }
             ]
         }
     ]
@@ -90,6 +92,7 @@ test.describe('InboundApp', () => {
     test('init should render data from globalThis.inboundData', () => {
         globalThis.inboundData = mockInboundData;
         globalThis.glossaryData = mockGlossaryData;
+        globalThis.usecaseData = mockUsecaseData;
         InboundApp.init();
 
         const sidebar = document.getElementById('inbound-sidebar-list');
@@ -128,5 +131,18 @@ test.describe('InboundApp', () => {
 
         const mainList = document.getElementById('inbound-list');
         assert.strictEqual(mainList.textContent, 'データなし');
+    });
+
+    test('init should work without usecaseData', () => {
+        globalThis.inboundData = mockInboundData;
+        globalThis.glossaryData = mockGlossaryData;
+        delete globalThis.usecaseData;
+        InboundApp.init();
+
+        const mainList = document.getElementById('inbound-list');
+        const mermaidPre = mainList.children[0].querySelector('.mermaid');
+        assert.ok(mermaidPre);
+        assert.ok(!mermaidPre.textContent.includes('subgraph'));
+        assert.ok(mermaidPre.textContent.includes('GET /api/method1'));
     });
 });

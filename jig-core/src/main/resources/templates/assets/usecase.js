@@ -168,7 +168,8 @@ function buildSequenceDiagramCode(sequence) {
 
 const UsecaseApp = {
     state: {
-        data: null
+        data: null,
+        selectedTabs: new Map() // methodFqn -> 'graph' | 'sequence'
     },
 
     init() {
@@ -423,12 +424,15 @@ const UsecaseApp = {
                     let seqPanel = null;
 
                     if (hasGraph && hasSequence) {
+                        const selectedTab = this.state.selectedTabs.get(method.fqn) || 'graph';
+                        const isGraphActive = selectedTab === 'graph';
+
                         const graphBtn = createElement("button", {
-                            className: "diagram-tab active",
+                            className: "diagram-tab" + (isGraphActive ? " active" : ""),
                             textContent: "ユースケース図"
                         });
                         const seqBtn = createElement("button", {
-                            className: "diagram-tab",
+                            className: "diagram-tab" + (!isGraphActive ? " active" : ""),
                             textContent: "シーケンス図"
                         });
                         diagramContainer.appendChild(createElement("div", {
@@ -436,20 +440,22 @@ const UsecaseApp = {
                             children: [graphBtn, seqBtn]
                         }));
 
-                        graphPanel = createElement("div", {className: "diagram-panel"});
-                        seqPanel = createElement("div", {className: "diagram-panel hidden"});
+                        graphPanel = createElement("div", {className: "diagram-panel" + (isGraphActive ? "" : " hidden")});
+                        seqPanel = createElement("div", {className: "diagram-panel" + (!isGraphActive ? "" : " hidden")});
 
                         graphBtn.addEventListener('click', () => {
                             graphBtn.classList.add('active');
                             seqBtn.classList.remove('active');
                             graphPanel.classList.remove('hidden');
                             seqPanel.classList.add('hidden');
+                            this.state.selectedTabs.set(method.fqn, 'graph');
                         });
                         seqBtn.addEventListener('click', () => {
                             seqBtn.classList.add('active');
                             graphBtn.classList.remove('active');
                             seqPanel.classList.remove('hidden');
                             graphPanel.classList.add('hidden');
+                            this.state.selectedTabs.set(method.fqn, 'sequence');
                         });
 
                         diagramContainer.appendChild(graphPanel);

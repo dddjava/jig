@@ -268,6 +268,40 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(document.body.classList.contains('hide-usecase-declarations'), true);
         assert.strictEqual(global.localStorage.getItem('jig-usecase-show-declarations'), 'false');
     });
+
+    test('シーケンス図タブを選択した状態で再レンダリングしてもシーケンス図が維持される', () => {
+        globalThis.usecaseData = mockUsecaseData;
+        globalThis.glossaryData = {
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
+        };
+        UsecaseApp.init();
+
+        const methodFqn = "com.example.ServiceA#method1()";
+        const methodSection = document.getElementById(methodFqn).parentElement;
+        const seqBtn = methodSection.querySelectorAll('.diagram-tabs button')[1];
+        
+        // シーケンス図タブをクリック
+        seqBtn.dispatchEvent(new window.Event('click'));
+        
+        // 状態が 'sequence' になっていることを確認
+        assert.strictEqual(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
+
+        // 再レンダリング（チェックボックス変更をシミュレート）
+        const hideNonUsecases = document.getElementById('hide-non-usecases');
+        hideNonUsecases.checked = true;
+        hideNonUsecases.dispatchEvent(new window.Event('change'));
+
+        // 再レンダリング後の要素を取得
+        const newMethodSection = document.getElementById(methodFqn).parentElement;
+        const newSeqBtn = newMethodSection.querySelectorAll('.diagram-tabs button')[1];
+        const newSeqPanel = newMethodSection.querySelectorAll('.diagram-panel')[1];
+
+        // シーケンス図タブが active で、パネルが hidden でないことを確認
+        assert.ok(newSeqBtn.classList.contains('active'));
+        assert.ok(!newSeqPanel.classList.contains('hidden'));
+    });
 });
 
 test.describe('buildSequenceFromCallMethods', () => {

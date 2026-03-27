@@ -84,7 +84,10 @@ class Element {
         this.eventListeners = new Map();
         this.value = "";
         this._checked = false;
+        this.parentNode = null;
     }
+
+    get parentElement() { return this.parentNode; }
 
     get id() { return this.getAttribute("id"); }
     set id(value) { this.setAttribute("id", value); }

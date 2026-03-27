@@ -79,9 +79,7 @@ public class UsecaseSummaryAdapter {
                 .and("callMethods", Json.array(jigMethod.lambdaInlinedMethodCallStream()
                         .filter(methodCall -> methodCall.isXxx())
                         .map(MethodCall::fqn)
-                        .toList()))
-                // 以下をなくしたらこのメソッドがいらなくなる
-                .and("declaration", jigMethod.simpleMethodDeclarationText());
+                        .toList()));
     }
 
 }

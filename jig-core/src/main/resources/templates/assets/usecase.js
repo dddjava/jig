@@ -157,7 +157,7 @@ const UsecaseApp = {
             { id: 'show-diagrams', class: 'hide-usecase-diagrams' },
             { id: 'show-details', class: 'hide-usecase-details' },
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
-            { id: 'show-declarations', class: 'hide-usecase-declarations' }
+            { id: 'show-fqn', class: 'hide-usecase-fqn' }
         ];
 
         controls.forEach(control => {
@@ -298,7 +298,7 @@ const UsecaseApp = {
                         createElement("h4", {id: method.fqn, textContent: methodTerm.title}),
                         createElement("div", {
                             className: "fully-qualified-name",
-                            textContent: method.declaration
+                            textContent: method.fqn
                         })
                     ]
                 });

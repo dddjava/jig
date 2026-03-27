@@ -332,7 +332,7 @@ body.hide-usecase-static-methods .static-methods {
 body.hide-usecase-descriptions .markdown {
     display: none;
 }
-body.hide-usecase-declarations .fully-qualified-name {
+body.hide-usecase-fqn .fully-qualified-name {
     display: none;
 }
 body.hide-usecase-diagrams .mermaid-diagram {

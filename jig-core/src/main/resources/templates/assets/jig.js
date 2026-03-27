@@ -365,6 +365,17 @@ function fallbackCopyText(source, button) {
 
 function flashButtonLabel(button, text) {
     if (!button) return;
+    if (button.dataset && button.dataset.iconButton === "true") {
+        const originalTitle = button.getAttribute("title") || "";
+        const originalTooltip = button.dataset.tooltip || "";
+        button.setAttribute("title", text);
+        button.dataset.tooltip = text;
+        window.setTimeout(() => {
+            button.setAttribute("title", originalTitle);
+            button.dataset.tooltip = originalTooltip;
+        }, 1500);
+        return;
+    }
     const original = button.textContent;
     button.textContent = text;
     window.setTimeout(() => {
@@ -668,16 +679,26 @@ function ensureMermaidDiagramContainer(targetEl) {
     return container;
 }
 
-function ensureCopySourceButton(container, source) {
+function ensureMermaidControlButton(container, className, label, icon) {
     if (!container) return null;
-    let button = container.querySelector(":scope > .mermaid-copy-button");
+    let button = container.querySelector(`:scope > .${className}`);
     if (!button) {
         button = document.createElement("button");
         button.type = "button";
-        button.className = "mermaid-copy-button";
-        button.textContent = "Copy Source";
+        button.className = className;
         container.insertBefore(button, container.firstChild);
     }
+    button.textContent = icon != null ? String(icon) : label;
+    button.setAttribute("aria-label", label);
+    button.setAttribute("title", label);
+    button.dataset.tooltip = label;
+    button.dataset.iconButton = icon != null ? "true" : "false";
+    return button;
+}
+
+function ensureCopySourceButton(container, source) {
+    const button = ensureMermaidControlButton(container, "mermaid-copy-button", "Copy Source", "⧉");
+    if (!button) return null;
     button.onclick = () => {
         const text = source != null ? String(source) : "";
         if (!text) return;
@@ -685,6 +706,43 @@ function ensureCopySourceButton(container, source) {
     };
     return button;
 }
+
+function ensureDownloadButton(container, source) {
+    const button = ensureMermaidControlButton(container, "mermaid-download-button", "Download SVG", "⬇");
+    if (!button) return null;
+    button.onclick = () => downloadMermaidSvg(container, button);
+    return button;
+}
+
+function findRenderedMermaidSvg(container) {
+    if (!container) return null;
+    return container.querySelector(":scope > .mermaid svg");
+}
+
+function downloadMermaidSvg(container, button) {
+    const svg = findRenderedMermaidSvg(container);
+    if (!svg) {
+        flashButtonLabel(button, "SVG未生成");
+        return;
+    }
+
+    const serializer = new XMLSerializer();
+    const svgText = serializer.serializeToString(svg);
+    const blob = new Blob([svgText], {type: "image/svg+xml;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const htmlFile = (window.location.pathname.split("/").pop() || "diagram.html");
+    const baseName = htmlFile.replace(/\.html?$/i, "");
+    const safeName = baseName.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+    link.download = `jig-${safeName || "diagram"}.svg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    flashButtonLabel(button, "Downloaded");
+}
+
 
 function ensureEdgeWarningPanel(container) {
     if (!container) return null;
@@ -808,6 +866,7 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
 
     const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
     ensureCopySourceButton(container, text);
+    ensureDownloadButton(container, text);
 
     if (isTooLarge(text)) {
         diagramEl.style.display = "";

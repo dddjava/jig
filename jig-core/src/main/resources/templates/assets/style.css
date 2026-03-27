@@ -1065,23 +1065,58 @@ table td.number {
     padding-left: 18px;
 }
 
-.mermaid-copy-button {
+.mermaid-copy-button,
+.mermaid-download-button {
     position: absolute;
     top: 6px;
-    right: 6px;
-    padding: 4px 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
     border: 1px solid #888;
     border-radius: 6px;
     background-color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 16px;
+    line-height: 1;
     opacity: 0.6;
     transition: opacity 0.15s;
     z-index: 1;
 }
-.mermaid-copy-button:hover {
+.mermaid-copy-button::after,
+.mermaid-download-button::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    background: rgba(17, 24, 39, 0.95);
+    color: #fff;
+    border-radius: 4px;
+    padding: 4px 6px;
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1.2;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-2px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+}
+.mermaid-copy-button:hover,
+.mermaid-download-button:hover {
     background-color: #f0f0f0;
     opacity: 1;
+}
+.mermaid-copy-button:hover::after,
+.mermaid-copy-button:focus-visible::after,
+.mermaid-download-button:hover::after,
+.mermaid-download-button:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+.mermaid-copy-button {
+    right: 6px;
+}
+.mermaid-download-button {
+    right: 40px;
 }
 .outbound .outbound-crud-panel {
     flex: 1;

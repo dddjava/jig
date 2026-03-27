@@ -69,7 +69,7 @@ public class InboundSummaryAdapter {
             });
 
             controllerList.add(Json.object("fqn", jigType.fqn())
-                    .and("graph", Json.object("edges", Json.arrayObjects(edges)))
+                    .and("relations", Json.arrayObjects(edges))
                     .and("entrypoints", Json.arrayObjects(entrypointList)));
         });
 

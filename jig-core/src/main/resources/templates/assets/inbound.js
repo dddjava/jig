@@ -87,7 +87,7 @@ const InboundApp = {
 
                 // edges に登場する全 FQN を収集（重複排除）
                 const allFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
-                controller.graph.edges.forEach(edge => {
+                controller.relations.forEach(edge => {
                     allFqns.add(edge.from);
                     allFqns.add(edge.to);
                 });
@@ -140,7 +140,7 @@ const InboundApp = {
                 });
 
                 // エッジ
-                controller.graph.edges.forEach(edge => {
+                controller.relations.forEach(edge => {
                     builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                 });
 

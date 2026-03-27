@@ -12,11 +12,9 @@ const mockInboundData = {
     controllers: [
         {
             fqn: "com.example.ControllerA",
-            graph: {
-                edges: [
-                    { from: "com.example.ControllerA#method1()", to: "com.example.ServiceA#serviceMethod()" }
-                ]
-            },
+            relations: [
+                { from: "com.example.ControllerA#method1()", to: "com.example.ServiceA#serviceMethod()" }
+            ],
             entrypoints: [
                 {
                     fqn: "com.example.ControllerA#method1()",

@@ -1,6 +1,6 @@
 const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
-const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
+const { getTypeTerm, getMethodTerm, getFieldTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
     diagramDirection: 'TB',

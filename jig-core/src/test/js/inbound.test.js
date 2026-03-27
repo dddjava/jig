@@ -17,7 +17,7 @@ const mockInboundData = {
                     { fqn: "com.example.ControllerA#method1()", type: "entrypoint" }
                 ],
                 edges: [],
-                serviceGroups: [
+                usecases: [
                     {
                         fqn: "com.example.ServiceA",
                         methods: [

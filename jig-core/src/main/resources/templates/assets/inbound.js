@@ -91,7 +91,7 @@ const InboundApp = {
                 });
 
                 // サービスグループ（Java側で統合済み）
-                controller.graph.serviceGroups.forEach(sg => {
+                controller.graph.usecases.forEach(sg => {
                     const sgLabel = globalThis.Jig.glossary.getTypeTerm(sg.fqn).title;
                     const subgraph = builder.startSubgraph(globalThis.Jig.fqnToId("sg", sg.fqn), sgLabel);
                     sg.methods.forEach(m => {

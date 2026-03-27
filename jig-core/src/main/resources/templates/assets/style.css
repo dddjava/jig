@@ -920,13 +920,24 @@ table td.number {
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
 }
 .sidebar-settings > summary:hover {
     background-color: #e8f0fb;
 }
 .sidebar-settings > summary::-webkit-details-marker {
     display: none;
+}
+.sidebar-settings .settings-icon {
+    opacity: 0.7;
+}
+.sidebar-settings .chevron-icon {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+    opacity: 0.5;
+}
+.sidebar-settings[open] .chevron-icon {
+    transform: rotate(180deg);
 }
 .sidebar-settings-panel {
     display: grid;

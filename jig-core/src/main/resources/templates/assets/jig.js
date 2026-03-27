@@ -401,6 +401,7 @@ function renderWithExtendedLimit(diagram, source, button) {
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
 globalThis.Jig.dom ??= {};
+globalThis.Jig.dom.typeLinkResolver = null;
 globalThis.Jig.observe ??= {};
 globalThis.Jig.sidebar ??= {};
 globalThis.Jig.markdown ??= {};
@@ -431,9 +432,8 @@ globalThis.Jig.dom.createElement = function createElement(tagName, options = {})
 
 
 /**
- * TypeRefを `<span>TypeName</span>` で表現する。
- * 型の名前は辞書にあればその言葉、なければなければ単純名。
- * TODO fqnに対して適切な場所へのリンクをつけたい
+ * TypeRefを表現する要素を返す。
+ * typeLinkResolver が設定されている場合はリンク付きの要素を返す。
  *
  * @param {TypeRef} typeRef
  * @param {string | undefined} className
@@ -463,10 +463,19 @@ globalThis.Jig.dom.createElementForTypeRef = function createTypeRefLink(typeRef,
  * @returns {HTMLElement}
  */
 function createTypeLink(fqn, className = undefined) {
-    // とりあえずリンクは無し
+    const resolved = globalThis.Jig.dom.typeLinkResolver?.(fqn);
+    const title = resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(fqn).title;
+    const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
+    if (resolved?.href) {
+        return globalThis.Jig.dom.createElement('a', {
+            className: classes,
+            attributes: {href: resolved.href},
+            textContent: title
+        });
+    }
     return globalThis.Jig.dom.createElement('span', {
-        className: className,
-        textContent: globalThis.Jig.glossary.getTypeTerm(fqn).title
+        className: classes,
+        textContent: title
     });
 }
 

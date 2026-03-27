@@ -1,4 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
+const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
@@ -77,54 +78,6 @@ function getDomainData() {
     return globalThis.domainData;
 }
 
-/**
- * @param {TypeRef} typeRef
- * @param {string | undefined} className
- * @returns {HTMLElement}
- */
-function createTypeRefLink(typeRef, className= undefined) {
-    if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
-        const typeElements= createTypeLink(typeRef.fqn);
-        const argumentElements = typeRef.typeArgumentRefs
-            .map(typeRef => createTypeRefLink(typeRef))
-            // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
-            .flatMap((v, i) => i ? [', ', v] : [v]);
-
-        return createElement("span", {
-            className: className,
-            children: [typeElements, '<', ...argumentElements, '>']
-        })
-    }
-
-    // 型引数なし
-    return createTypeLink(typeRef.fqn, className);
-}
-
-/**
- * @param {string} fqn
- * @param {string | undefined} className
- * @returns {HTMLElement}
- */
-function createTypeLink(fqn, className = undefined) {
-    const domainType = getDomainData()._typesMap.get(fqn);
-    if (!domainType) {
-        // domain型でなければ単純名のspan
-        const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
-        return createElement('span', {
-            className: (className ? className + ' ' : '') + "weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
-            textContent: simpleName
-        });
-    }
-
-    // domainに含まれるのはページ内リンク
-    const deprecatedClass = domainType.isDeprecated ? "deprecated" : undefined;
-    const mergedClass = [className, deprecatedClass].filter(Boolean).join(" ") || undefined;
-    return createElement("a", {
-        className: mergedClass,
-        attributes: {href: `#${fqn}`},
-        textContent: getTypeTerm(fqn).title
-    });
-}
 
 /**
  * パッケージの直下の子パッケージを取得する
@@ -327,7 +280,7 @@ function createChildrenTable(pkg) {
                     attributes: {href: "#" + child.fqn},
                     textContent: child.title
                 })
-                : createTypeLink(child.fqn);
+                : createElementForTypeRef({fqn: child.fqn});
             const cell = createElement("td", {
                 children: [document.createTextNode(prefix), link]
             });
@@ -363,7 +316,7 @@ function createFieldsList(fields) {
                         textContent: field.name
                     }),
                     createElement("span", {className: "method-return-sep", textContent: ":"}),
-                    createTypeRefLink(field.typeRef)
+                    createElementForTypeRef(field.typeRef)
                 ]
             })
         ]
@@ -386,7 +339,7 @@ function createMethodItem(method) {
     const methodTerm = getMethodTerm(method.fqn, true);
 
     const paramElements = method.parameterTypeRefs
-        .map(param => createTypeRefLink(param))
+        .map(param => createElementForTypeRef(param))
         .flatMap((el, i) => i ? [', ', el] : [el]);
 
     const signatureEl = createElement("div", {
@@ -400,7 +353,7 @@ function createMethodItem(method) {
             ...paramElements,
             ')',
             createElement("span", {className: "method-return-sep", textContent: ":"}),
-            createTypeRefLink(method.returnTypeRef)
+            createElementForTypeRef(method.returnTypeRef)
         ]
     });
 
@@ -737,6 +690,21 @@ const DomainApp = {
         });
         globalThis.domainData._childPackagesMap = childrenMap;
 
+        globalThis.Jig.dom.typeLinkResolver = (fqn) => {
+            const domainType = getDomainData()?._typesMap?.get(fqn);
+            if (domainType) {
+                return {
+                    href: '#' + fqn,
+                    className: domainType.isDeprecated ? 'deprecated' : undefined
+                };
+            }
+            // domain型でなければ単純名 + weakクラス
+            return {
+                className: 'weak',
+                text: fqn.substring(fqn.lastIndexOf('.') + 1)
+            };
+        };
+
         renderSidebar(data.packages);
 
         const main = document.getElementById("domain-main");
@@ -773,5 +741,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages };
+    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages };
 }

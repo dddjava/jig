@@ -158,6 +158,64 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(mainList.textContent, 'データなし');
     });
 
+    test('domain-data.jsがある場合にリゾルバーがdomain.html#fqnリンクを設定する', () => {
+        globalThis.domainData = {
+            types: [
+                {fqn: 'com.example.Order', isDeprecated: false}
+            ]
+        };
+        globalThis.usecaseData = { usecases: [] };
+        UsecaseApp.init();
+
+        const resolver = globalThis.Jig.dom.typeLinkResolver;
+        assert.ok(resolver, 'リゾルバーが設定されていること');
+
+        const resolved = resolver('com.example.Order');
+        assert.strictEqual(resolved.href, 'domain.html#com.example.Order');
+        assert.strictEqual(resolved.className, undefined);
+
+        delete globalThis.domainData;
+    });
+
+    test('domain-data.jsがない場合、リゾルバーは設定されない', () => {
+        delete globalThis.domainData;
+        globalThis.usecaseData = { usecases: [] };
+        UsecaseApp.init();
+
+        assert.strictEqual(globalThis.Jig.dom.typeLinkResolver, null);
+    });
+
+    test('deprecatedなdomain型はdeprecatedクラスを返す', () => {
+        globalThis.domainData = {
+            types: [
+                {fqn: 'com.example.OldClass', isDeprecated: true}
+            ]
+        };
+        globalThis.usecaseData = { usecases: [] };
+        UsecaseApp.init();
+
+        const resolved = globalThis.Jig.dom.typeLinkResolver('com.example.OldClass');
+        assert.strictEqual(resolved.href, 'domain.html#com.example.OldClass');
+        assert.strictEqual(resolved.className, 'deprecated');
+
+        delete globalThis.domainData;
+    });
+
+    test('domain型でない場合、リゾルバーはnullを返す', () => {
+        globalThis.domainData = {
+            types: []
+        };
+        globalThis.usecaseData = { usecases: [] };
+        UsecaseApp.init();
+
+        const resolver = globalThis.Jig.dom.typeLinkResolver;
+        assert.ok(resolver);
+        const resolved = resolver('java.lang.String');
+        assert.strictEqual(resolved, null);
+
+        delete globalThis.domainData;
+    });
+
     test('initControls should toggle body classes and save to localStorage', () => {
         globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();

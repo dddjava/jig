@@ -129,4 +129,10 @@ test.describe('jig.js - DOM dependent functions', () => {
     });
 
 });
+
+test.describe('typeLinkResolver', () => {
+    test('デフォルトではnullに設定されている', () => {
+        assert.equal(globalThis.Jig.dom.typeLinkResolver, null);
+    });
+});
 // Pure function tests have been moved to jig-common.test.js

@@ -8,7 +8,7 @@ global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-common.js');
 require('../../main/resources/templates/assets/jig.js');
 
-const { DomainApp, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');
+const { DomainApp, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
@@ -23,122 +23,149 @@ function setupDomainData(packages, types) {
 }
 
 test.describe('domain.js', () => {
-test.describe('createTypeLink', () => {
-        test('domain型が存在する場合、リンク（<a>タグ）を返す', () => {
-            const domainType = {fqn: 'org.example.Account', methods: []};
+    test.describe('typeLinkResolver（DomainApp.init() で登録）', () => {
+        test('domain型に対して、ページ内リンクのhrefを返す', () => {
+            const domainType = {fqn: 'org.example.Account', isDeprecated: false, fields: [], methods: [], staticMethods: []};
             setupDomainData([], [domainType]);
-            globalThis.glossaryData = {
-                'org.example.Account': {title: '口座', description: ''}
-            };
+            globalThis.glossaryData = {'org.example.Account': {title: '口座', description: ''}};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
 
-            const result = createTypeLink('org.example.Account', 'test-class');
+            DomainApp.init();
 
-            assert.equal(result.tagName, 'a');
-            assert.equal(result.className, 'test-class');
-            assert.equal(result.textContent, '口座');
-            assert.equal(result.attributes.get('href'), '#org.example.Account');
+            const resolved = globalThis.Jig.dom.typeLinkResolver('org.example.Account');
+            assert.equal(resolved.href, '#org.example.Account');
+            assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
         });
 
-        test('domain型が存在しない場合、spanを返す（weak クラス付き）', () => {
+        test('deprecatedなdomain型に対して、deprecatedクラスを返す', () => {
+            const domainType = {fqn: 'org.example.OldClass', isDeprecated: true, fields: [], methods: [], staticMethods: []};
+            setupDomainData([], [domainType]);
+            globalThis.glossaryData = {};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
+
+            DomainApp.init();
+
+            const resolved = globalThis.Jig.dom.typeLinkResolver('org.example.OldClass');
+            assert.equal(resolved.href, '#org.example.OldClass');
+            assert.equal(resolved.className, 'deprecated');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
+        });
+
+        test('domain型でない場合、weakクラスと単純名を返す（hrefなし）', () => {
             setupDomainData([], []);
             globalThis.glossaryData = {};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
 
-            const result = createTypeLink('java.lang.String', 'test-class');
+            DomainApp.init();
 
+            const resolved = globalThis.Jig.dom.typeLinkResolver('java.lang.String');
+            assert.equal(resolved.href, undefined);
+            assert.equal(resolved.className, 'weak');
+            assert.equal(resolved.text, 'String');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
+        });
+
+        test('リゾルバー経由でdomain型はリンク付き要素になる', () => {
+            const domainType = {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            setupDomainData([], [domainType]);
+            globalThis.glossaryData = {'org.example.User': {title: 'ユーザー', description: ''}};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
+
+            DomainApp.init();
+
+            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.User'}, 'my-class');
+            assert.equal(result.tagName, 'a');
+            assert.equal(result.className, 'my-class');
+            assert.equal(result.textContent, 'ユーザー');
+            assert.equal(result.attributes.get('href'), '#org.example.User');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
+        });
+
+        test('リゾルバー経由でdomain型でない場合はweak spanになる', () => {
+            setupDomainData([], []);
+            globalThis.glossaryData = {};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
+
+            DomainApp.init();
+
+            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'java.lang.String'}, 'my-class');
             assert.equal(result.tagName, 'span');
             assert.equal(result.textContent, 'String');
             assert.ok(result.className.includes('weak'));
-            assert.ok(result.className.includes('test-class'));
+            assert.ok(result.className.includes('my-class'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
-        });
-
-        test('classNameが指定されない場合、weakクラスのみ', () => {
-            setupDomainData([], []);
-            globalThis.glossaryData = {};
-
-            const result = createTypeLink('java.lang.String');
-
-            assert.equal(result.className, 'weak');
-
-            delete globalThis.domainData;
-            delete globalThis.glossaryData;
-        });
-    });
-
-    test.describe('createTypeRefLink', () => {
-        test('型引数なしの場合、createTypeLinkの結果を返す', () => {
-            const domainType = {fqn: 'org.example.User', methods: []};
-            setupDomainData([], [domainType]);
-            globalThis.glossaryData = {
-                'org.example.User': {title: 'ユーザー', description: ''}
-            };
-
-            const typeRef = {fqn: 'org.example.User'};
-            const result = createTypeRefLink(typeRef, 'arg-class');
-
-            assert.equal(result.tagName, 'a');
-            assert.equal(result.className, 'arg-class');
-            assert.equal(result.textContent, 'ユーザー');
-
-            delete globalThis.domainData;
-            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
         });
 
         test('型引数がある場合、spanで型と型引数を組み立てる', () => {
-            const domainType = {fqn: 'java.util.List', methods: []};
-            setupDomainData([], [domainType]);
-            globalThis.glossaryData = {
-                'java.util.List': {title: 'List', description: ''}
-            };
+            const domainTypes = [
+                {fqn: 'java.util.List', isDeprecated: false, fields: [], methods: [], staticMethods: []},
+                {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []}
+            ];
+            setupDomainData([], domainTypes);
+            globalThis.glossaryData = {'java.util.List': {title: 'List', description: ''}};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
+
+            DomainApp.init();
 
             const typeRef = {
                 fqn: 'java.util.List',
-                typeArgumentRefs: [
-                    {fqn: 'org.example.Item'}
-                ]
+                typeArgumentRefs: [{fqn: 'org.example.Item'}]
             };
-            const result = createTypeRefLink(typeRef, 'generic-type');
+            const result = globalThis.Jig.dom.createElementForTypeRef(typeRef, 'generic-type');
 
             assert.equal(result.tagName, 'span');
             assert.equal(result.className, 'generic-type');
-            // 子要소에 型と型引数が含まれる（最初の要素は createTypeLink の結果）
             assert.ok(result.children.length > 0);
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
-        });
-
-        test('ネストした型引数がある場合、再帰的に処理する', () => {
-            const domainTypes = [
-                {fqn: 'java.util.List', methods: []},
-                {fqn: 'java.util.Map', methods: []}
-            ];
-            setupDomainData([], domainTypes);
-            globalThis.glossaryData = {};
-
-            const typeRef = {
-                fqn: 'java.util.Map',
-                typeArgumentRefs: [
-                    {fqn: 'java.lang.String'},
-                    {
-                        fqn: 'java.util.List',
-                        typeArgumentRefs: [{fqn: 'org.example.Item'}]
-                    }
-                ]
-            };
-            const result = createTypeRefLink(typeRef);
-
-            assert.equal(result.tagName, 'span');
-            // 子要素が複数（型と区切り文字と型引数）
-            assert.ok(result.children.length > 2);
-
-            delete globalThis.domainData;
-            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
         });
     });
 

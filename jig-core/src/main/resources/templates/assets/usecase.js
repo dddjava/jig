@@ -2,6 +2,44 @@ const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);
 
+/**
+ * @typedef {Object} TypeRef
+ * @property {string} fqn
+ * @property {TypeRef[]} [typeArgumentRefs]
+ */
+
+/**
+ * @typedef {Object} JigField
+ * @property {string} name
+ * @property {TypeRef} typeRef
+ * @property {boolean} isDeprecated
+ */
+
+/**
+ * @typedef {Object} UsecaseMethod
+ * @property {string} fqn
+ * @property {TypeRef[]} parameterTypeRefs
+ * @property {TypeRef} returnTypeRef
+ * @property {boolean} isDeprecated
+ * @property {string[]} callMethods 呼び出しているメソッドのFQN
+ */
+
+/**
+ * @typedef {Object} Usecase
+ * @property {string} fqn
+ * @property {JigField[]} fields
+ * @property {UsecaseMethod[]} staticMethods
+ * @property {UsecaseMethod[]} methods
+ */
+
+/**
+ * @return {Object} UsecaseData
+ * @property {Usecase[]} usecases
+ */
+function getUsecaseData() {
+    return globalThis.usecaseData;
+}
+
 function getClassFqnFromMethodFqn(fqn) {
     const hashIdx = fqn.indexOf('#');
     return hashIdx === -1 ? fqn : fqn.slice(0, hashIdx);
@@ -21,8 +59,14 @@ function buildOutboundOperationSet(outboundData) {
 }
 
 function buildGraphFromCallMethods(rootMethod, diagramContext) {
+    /**
+     * @type {Map<string, {fqn: string, kind: string}>}
+     */
     const nodes = new Map();
     const edgeSet = new Set();
+    /**
+     * @type {[from: string, to: string]}
+     */
     const edges = [];
     const visited = new Set();
 
@@ -173,7 +217,7 @@ const UsecaseApp = {
     },
 
     init() {
-        this.state.data = globalThis.usecaseData;
+        this.state.data = getUsecaseData();
         if (!this.state.data) return;
 
         const domainData = globalThis.domainData;

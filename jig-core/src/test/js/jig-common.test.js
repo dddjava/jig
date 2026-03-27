@@ -113,16 +113,19 @@ test.describe("getMethodTerm", () => {
 
     test("複数引数の場合、カンマ区切りで表示", () => {
         globalThis.glossaryData = {};
-        const term = jigCommon.getMethodTerm("hoge.fuga.Class#save(com.example.User, java.lang.Long)");
-        assert.equal(term.title, "save(User, Long)");
+        const term = jigCommon.getMethodTerm("hoge.fuga.Class#save(com.example.User,java.lang.Long)");
+        assert.equal(term.title, "save(User,Long)");
         delete globalThis.glossaryData;
     });
 
     test("空のfqnの場合", () => {
         globalThis.glossaryData = {};
-        const term = jigCommon.getMethodTerm("");
-        assert.equal(term.title, "");
-        assert.equal(term.description, "");
+        assert.throws(
+            () => {
+                jigCommon.getMethodTerm("");
+            },
+            Error
+        );
         delete globalThis.glossaryData;
     });
 });

@@ -86,6 +86,7 @@ aside.notice {
     font-size: 0.9em;
     color: gray;
 }
+.declaration,
 .fully-qualified-name {
     font-size: 0.8em;
     color: silver;
@@ -332,7 +333,7 @@ body.hide-usecase-static-methods .static-methods {
 body.hide-usecase-descriptions .markdown {
     display: none;
 }
-body.hide-usecase-fqn .fully-qualified-name {
+body.hide-usecase-declarations .declaration {
     display: none;
 }
 body.hide-usecase-diagrams .mermaid-diagram {

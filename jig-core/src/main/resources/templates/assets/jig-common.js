@@ -16,16 +16,35 @@ function estimateEdgeCount(source) {
 
 // 用語集ユーティリティ
 
-// FQNから用語を検索。登録がなければ undefined
+/**
+ * @typedef {Object} Term
+ * @property {string} title
+ * @property {string} simpleText TODO いる？？
+ * @property {string} kind
+ * @property {string} description
+ */
+
+/**
+ * @param {string} fqn
+ * @return {Term | undefined}
+ */
 globalThis.Jig.glossary.findTerm = function findTerm(fqn) {
     return globalThis.glossaryData?.[fqn];
 };
+
+/**
+ * @param {string} fqn
+ * @return {string}
+ */
+globalThis.Jig.glossary.typeSimpleName = function typeSimpleName(fqn) {
+    return fqn.substring(fqn.lastIndexOf('.') + 1);
+}
 
 // 型FQNから Term{title, description} を取得。登録がなければフォールバック
 globalThis.Jig.glossary.getTypeTerm = function getTypeTerm(fqn) {
     const term = globalThis.Jig.glossary.findTerm(fqn);
     if (term) return term;
-    return { title: fqn.substring(fqn.lastIndexOf('.') + 1) || fqn, description: "" };
+    return { title: globalThis.Jig.glossary.typeSimpleName(fqn) || fqn, description: "" };
 };
 
 
@@ -35,44 +54,63 @@ globalThis.Jig.glossary.getFieldTerm = function getFieldTerm(fqn) {
     return { title: fqn.substring(fqn.lastIndexOf('#') + 1) || fqn, description: "" };
 }
 
-// メソッドFQN（"pkg.Class#method(args)"形式）から Term{title, description} を取得
+/**
+ * @param {string} fqn `com.example.Foo#bar(java.lang.String)` のような文字列
+ * @param fallbackNameOnly
+ * @return {{title: string, simpleText: string, kind: string, description: string, shortDeclaration: string}}
+ */
 globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn, fallbackNameOnly = false) {
-    if (!fqn) return { title: "", description: "" };
-    const term = globalThis.Jig.glossary.findTerm(fqn);
-    if (term) return term;
+    if (!fqn) throw Error("method fqn is required: " + fqn);
 
     const hashIdx = fqn.lastIndexOf('#');
     const parenIdx = fqn.indexOf('(', hashIdx);
     const closeParenIdx = fqn.lastIndexOf(')');
-    if (hashIdx >= 0 && parenIdx > hashIdx) {
-        const methodName = fqn.substring(hashIdx + 1, parenIdx);
-        const argsStr = closeParenIdx > parenIdx ? fqn.substring(parenIdx + 1, closeParenIdx) : '';
+    if (hashIdx < 0 || parenIdx < 0 || closeParenIdx < 0 || hashIdx >= parenIdx || parenIdx >= closeParenIdx)
+        throw Error("fqn is not a method?: " + fqn);
 
-        // 引数を単純名に変換した FQN で再検索（例: Foo#bar(java.lang.String) → Foo#bar(String)）
-        const simpleArgsFqn = fqn.substring(0, parenIdx + 1)
-            + (argsStr ? argsStr.split(',').map(arg => {
-                const trimmed = arg.trim();
-                return trimmed.substring(trimmed.lastIndexOf('.') + 1);
-            }).join(',') : '')
-            + ')';
-        const term2 = globalThis.Jig.glossary.findTerm(simpleArgsFqn);
-        if (term2) return term2;
+    // shortDeclaration構築
+    const paramsStr = fqn.substring(parenIdx + 1, closeParenIdx);
+    const paramsShortName = paramsStr.split(',').map(arg => globalThis.Jig.glossary.typeSimpleName(arg)).join(',');
+    const typeShortName = globalThis.Jig.glossary.typeSimpleName(fqn.substring(0, hashIdx));
+    const methodName = fqn.substring(hashIdx + 1, parenIdx);
 
-        // フォールバック: methodName 形式
-        if (fallbackNameOnly) {
-            return { title: methodName, description: "" };
-        }
+    const shortDeclaration = `${typeShortName}#${methodName}(${paramsShortName})`;
 
-        // フォールバック: methodName(simpleArgs) 形式
-        const simpleArgs = argsStr
-            ? argsStr.split(',').map(arg => {
-                const trimmed = arg.trim();
-                return trimmed.substring(trimmed.lastIndexOf('.') + 1);
-            }).join(', ')
-            : '';
-        return { title: `${methodName}(${simpleArgs})`, description: "" };
+    const term = globalThis.Jig.glossary.findTerm(fqn);
+    if (term) {
+        return { ...term, shortDeclaration: shortDeclaration };
     }
-    return { title: fqn, description: "" };
+
+    // 引数を単純名に変換した FQN で再検索
+    // 辞書の引数は実装依存なのでFQNの場合と両方ある。
+    // TODO これだと複数引数で入り混じっている場合は対応できない。
+    const mayBeFqn = fqn.substring(0, parenIdx + 1) + paramsShortName + ')';
+    const term2 = globalThis.Jig.glossary.findTerm(mayBeFqn);
+    if (term2) {
+        return {...term2, shortDeclaration: shortDeclaration};
+    }
+
+    // 辞書にない
+
+    // フォールバック: methodName 形式
+    if (fallbackNameOnly) {
+        return {
+            title: methodName,
+            simpleText: methodName,
+            kind: "メソッド",
+            description: "",
+            shortDeclaration: shortDeclaration
+        };
+    }
+
+    // フォールバック: methodName(simpleArgs) 形式
+    return {
+        title: `${methodName}(${paramsShortName})`,
+        simpleText: methodName,
+        kind: "メソッド",
+        description: "",
+        shortDeclaration: shortDeclaration
+    };
 };
 
 // FQNから一意なHTML IDを生成する
@@ -97,7 +135,7 @@ globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
 
 /**
  * 強連結成分(SCC)を抽出する (Tarjan's algorithm)
- * @param {Map<string, string[]>} graph 
+ * @param {Map<string, string[]>} graph
  * @returns {string[][]}
  */
 globalThis.Jig.graph.detectStronglyConnectedComponents = function detectStronglyConnectedComponents(graph) {
@@ -148,7 +186,7 @@ globalThis.Jig.graph.detectStronglyConnectedComponents = function detectStrongly
  * 推移的簡約(Transitive Reduction)を行う。
  * 直接の依存関係がある場合、他の経路でも到達可能ならその直接の依存を削除する。
  * ただし、サイクル（強連結成分内）の関連は削除しない。
- * @param {{from: string, to: string}[]} relations 
+ * @param {{from: string, to: string}[]} relations
  * @returns {{from: string, to: string}[]}
  */
 globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relations) {

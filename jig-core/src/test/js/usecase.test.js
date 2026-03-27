@@ -132,7 +132,7 @@ test.describe('UsecaseApp', () => {
         assert.ok(methodSection);
         assert.strictEqual(methodSection.querySelector('h4').id, 'com.example.ServiceA#method1()');
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
-        assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'method1():void');
+        assert.strictEqual(methodSection.querySelector('.fully-qualified-name').textContent, 'ServiceA#method1()');
 
         const diagramContainer = methodSection.querySelector('.diagram-container');
         assert.ok(diagramContainer);

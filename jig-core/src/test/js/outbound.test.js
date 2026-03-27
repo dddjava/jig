@@ -49,9 +49,9 @@ function setupDom() {
 const simpleGroup = {
     outboundPort: { fqn: "com.example.Port", label: "Port" },
     operations: [{
-        outboundPortOperation: { fqn: "com.example.Port#save", label: "save" },
+        outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
         outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-        outboundAdapterExecution: { fqn: "com.example.Adapter#save", label: "save" },
+        outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
         persistenceAccessors: [],
         externalAccessors: []
     }]
@@ -425,9 +425,9 @@ test.describe("outbound.js", () => {
             const groupWithAccessor = {
                 outboundPort: { fqn: "com.example.Port", label: "Port" },
                 operations: [{
-                    outboundPortOperation: { fqn: "com.example.Port#save", label: "save" },
+                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
                     outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                    outboundAdapterExecution: { fqn: "com.example.Adapter#save", label: "save" },
+                    outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
                     persistenceAccessors: [{
                         id: "com.example.Mapper.save",
                         group: "com.example.Mapper",
@@ -467,9 +467,9 @@ test.describe("outbound.js", () => {
         test("単一操作の mermaid コードを生成する", () => {
             const operation = {
                 outboundPort: { fqn: "com.example.Port", label: "Port" },
-                outboundPortOperation: { fqn: "com.example.Port#save", label: "save" },
+                outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
                 outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                outboundAdapterExecution: { fqn: "com.example.Adapter#save", label: "save" },
+                outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
                 persistenceAccessors: [],
                 externalAccessors: []
             };
@@ -488,9 +488,9 @@ test.describe("outbound.js", () => {
                 persistenceTarget: "orders",
                 operations: [{
                     outboundPort: { fqn: "com.example.Port", label: "Port" },
-                    outboundPortOperation: { fqn: "com.example.Port#save", label: "save" },
+                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
                     outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                    outboundAdapterExecution: { fqn: "com.example.Adapter#save", label: "save" },
+                    outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
                     persistenceAccessors: [{
                         id: "com.example.Mapper.save",
                         group: "com.example.Mapper",
@@ -514,9 +514,9 @@ test.describe("outbound.js", () => {
                 externalType: { fqn: "com.example.ExtService", label: "ExtService" },
                 operations: [{
                     outboundPort: { fqn: "com.example.Port", label: "Port" },
-                    outboundPortOperation: { fqn: "com.example.Port#call", label: "call" },
+                    outboundPortOperation: { fqn: "com.example.Port#call()", label: "call" },
                     outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                    outboundAdapterExecution: { fqn: "com.example.Adapter#call", label: "call" },
+                    outboundAdapterExecution: { fqn: "com.example.Adapter#call()", label: "call" },
                     persistenceAccessors: [],
                     externalAccessors: [{
                         fqn: "com.example.Client",
@@ -581,7 +581,7 @@ test.describe("outbound.js", () => {
             const grouped = [{
                 outboundPort: { fqn: "com.example.Port", label: "Port" },
                 operations: [{
-                    outboundPortOperation: { fqn: "com.example.Port#save", label: "save" },
+                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
                     outboundAdapter: null,
                     outboundAdapterExecution: null,
                     persistenceAccessors: [{
@@ -605,7 +605,7 @@ test.describe("outbound.js", () => {
             const grouped = [{
                 outboundPort: { fqn: "com.example.Port", label: "Port" },
                 operations: [{
-                    outboundPortOperation: { fqn: "com.example.Port#save", label: "save" },
+                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
                     outboundAdapter: null, outboundAdapterExecution: null,
                     persistenceAccessors: [
                         { id: "op1", group: "g", groupLabel: "G", targetOperationTypes: { "orders": "INSERT" } }

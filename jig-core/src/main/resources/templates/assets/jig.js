@@ -510,7 +510,7 @@ globalThis.Jig.dom.createFieldsList = function createFieldsList(fields, createTy
     }));
 
     return createElement("section", {
-        className: "methods-section jig-card jig-card--item",
+        className: "methods-section jig-card jig-card--item fields",
         children: [
             createElement("h4", {textContent: "フィールド"}),
             ...items

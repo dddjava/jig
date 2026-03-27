@@ -121,7 +121,9 @@ function buildSequenceDiagramCode(sequence) {
     const external = sequence.participants.filter(p => p.isExternal);
     const internal = sequence.participants.filter(p => !p.isExternal);
 
-    internal.forEach(p => { code += `  participant ${p.id} as ${p.label}\n`; });
+    internal.forEach(p => {
+        code += `  participant ${p.id} as ${p.label}\n`;
+    });
 
     if (external.length > 0) {
         code += '  box outbounds\n';
@@ -132,6 +134,7 @@ function buildSequenceDiagramCode(sequence) {
     sequence.calls.forEach(call => {
         code += `  ${call.from}->>${call.to}: ${call.label}\n`;
     });
+
     return code;
 }
 
@@ -157,7 +160,7 @@ const UsecaseApp = {
             { id: 'show-diagrams', class: 'hide-usecase-diagrams' },
             { id: 'show-details', class: 'hide-usecase-details' },
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
-            { id: 'show-fqn', class: 'hide-usecase-fqn' }
+            { id: 'show-declarations', class: 'hide-usecase-declarations' }
         ];
 
         controls.forEach(control => {
@@ -264,7 +267,7 @@ const UsecaseApp = {
                         children: [createElement("a", {id: usecase.fqn, textContent: term.title})]
                     }),
                     createElement("div", {
-                        className: "fully-qualified-name",
+                        className: "declaration",
                         textContent: usecase.fqn
                     })
                 ]
@@ -297,8 +300,8 @@ const UsecaseApp = {
                     children: [
                         createElement("h4", {id: method.fqn, textContent: methodTerm.title}),
                         createElement("div", {
-                            className: "fully-qualified-name",
-                            textContent: method.fqn
+                            className: "declaration",
+                            textContent: methodTerm.shortDeclaration
                         })
                     ]
                 });

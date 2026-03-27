@@ -265,20 +265,34 @@ test.describe('buildSequenceFromCallMethods', () => {
         assert.strictEqual(result.calls[0].label, '');
     });
 
-    test('ユースケース外メソッドへの呼び出しはクラス単位のパーティシパントでラベルにメソッド名', () => {
+    test('ユースケース外メソッドへの呼び出しはoutboundOperationSetにある場合だけクラス単位のパーティシパント', () => {
         const rootMethod = {
             fqn: 'com.example.ServiceA#method1()',
             callMethods: ['com.example.RepositoryB#save(com.example.Entity)']
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+        const outboundOperationSet = new Set(['com.example.RepositoryB#save(com.example.Entity)']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet);
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.participants[1].label, 'RepositoryB');
         assert.strictEqual(result.participants[1].isExternal, true);
         assert.strictEqual(result.calls.length, 1);
         assert.strictEqual(result.calls[0].label, 'save');
+    });
+
+    test('outboundOperationSetにない外部呼び出しは無視される', () => {
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.RepositoryB#save()']
+        };
+        const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap);  // outboundOperationSet省略=空
+
+        assert.strictEqual(result.participants.length, 1);
+        assert.strictEqual(result.calls.length, 0);
     });
 
     test('内部と外部への呼び出しが混在する場合も両方適切に処理', () => {
@@ -294,8 +308,9 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#method1()', rootMethod],
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
+        const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet);
 
         assert.strictEqual(result.participants.length, 3);
         assert.strictEqual(result.calls.length, 2);
@@ -371,7 +386,7 @@ test.describe('buildSequenceDiagramCode', () => {
         assert.strictEqual(buildSequenceDiagramCode(sequence), null);
     });
 
-    test('sequenceDiagramコードを生成する', () => {
+    test('外部パーティシパントはbox LightGrayに入り内部はその外に出力される', () => {
         const sequence = {
             participants: [
                 {id: 'node-a', label: 'methodA', isExternal: false},
@@ -384,8 +399,173 @@ test.describe('buildSequenceDiagramCode', () => {
         const code = buildSequenceDiagramCode(sequence);
 
         assert.ok(code.startsWith('sequenceDiagram\n'));
-        assert.ok(code.includes('participant node-a as methodA'));
+        assert.ok(code.includes('box LightGray'));
         assert.ok(code.includes('participant node-b as ClassB'));
+        assert.ok(code.includes('end'));
+        assert.ok(code.includes('participant node-a as methodA'));
         assert.ok(code.includes('node-a->>node-b: save'));
+        // 内部パーティシパントはboxの外にある
+        const boxEnd = code.indexOf('end');
+        const internalIdx = code.indexOf('participant node-a as methodA');
+        assert.ok(internalIdx > boxEnd);
+    });
+
+    test('外部パーティシパントがない場合はboxなしで生成する', () => {
+        const sequence = {
+            participants: [
+                {id: 'node-a', label: 'methodA', isExternal: false},
+                {id: 'node-b', label: 'methodB', isExternal: false}
+            ],
+            calls: [
+                {from: 'node-a', to: 'node-b', label: ''}
+            ]
+        };
+        const code = buildSequenceDiagramCode(sequence);
+
+        assert.ok(code.startsWith('sequenceDiagram\n'));
+        assert.ok(!code.includes('box'));
+        assert.ok(code.includes('participant node-a as methodA'));
+        assert.ok(code.includes('participant node-b as methodB'));
+    });
+});
+
+test.describe('buildOutboundOperationSet', () => {
+    let buildOutboundOperationSet;
+
+    beforeEach(() => {
+        delete require.cache[jigCommonJsPath];
+        delete require.cache[jigJsPath];
+        delete require.cache[usecaseJsPath];
+
+        global.document = new DocumentStub();
+        global.window = { addEventListener: () => {}, Event: EventStub };
+        global.localStorage = new LocalStorageStub();
+        global.marked = { parse: (text) => text };
+        global.mermaid = { initialize: () => {}, run: () => {} };
+
+        require(jigCommonJsPath);
+        require(jigJsPath);
+        ({ buildOutboundOperationSet } = require(usecaseJsPath));
+    });
+
+    test('nullの場合は空Setを返す', () => {
+        assert.strictEqual(buildOutboundOperationSet(null).size, 0);
+    });
+
+    test('undefinedの場合は空Setを返す', () => {
+        assert.strictEqual(buildOutboundOperationSet(undefined).size, 0);
+    });
+
+    test('outboundPortsがない場合は空Setを返す', () => {
+        assert.strictEqual(buildOutboundOperationSet({}).size, 0);
+    });
+
+    test('outboundPortsのoperationsのfqnをSetに収集する', () => {
+        const outboundData = {
+            outboundPorts: [
+                {
+                    fqn: 'com.example.RepositoryB',
+                    operations: [
+                        { fqn: 'com.example.RepositoryB#save()', signature: 'save()' },
+                        { fqn: 'com.example.RepositoryB#find()', signature: 'find()' }
+                    ]
+                },
+                {
+                    fqn: 'com.example.ExternalApi',
+                    operations: [
+                        { fqn: 'com.example.ExternalApi#call()', signature: 'call()' }
+                    ]
+                }
+            ]
+        };
+        const set = buildOutboundOperationSet(outboundData);
+        assert.strictEqual(set.size, 3);
+        assert.ok(set.has('com.example.RepositoryB#save()'));
+        assert.ok(set.has('com.example.RepositoryB#find()'));
+        assert.ok(set.has('com.example.ExternalApi#call()'));
+    });
+});
+
+test.describe('buildGraphFromCallMethods', () => {
+    let buildGraphFromCallMethods;
+
+    beforeEach(() => {
+        delete require.cache[jigCommonJsPath];
+        delete require.cache[jigJsPath];
+        delete require.cache[usecaseJsPath];
+
+        global.document = new DocumentStub();
+        global.window = { addEventListener: () => {}, Event: EventStub };
+        global.localStorage = new LocalStorageStub();
+        global.marked = { parse: (text) => text };
+        global.mermaid = { initialize: () => {}, run: () => {} };
+
+        require(jigCommonJsPath);
+        require(jigJsPath);
+        ({ buildGraphFromCallMethods } = require(usecaseJsPath));
+    });
+
+    test('outboundOperationSetが空の場合、外部ノードは追加されない', () => {
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.RepositoryB#save()']
+        };
+        const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+
+        const result = buildGraphFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.nodes.length, 1);
+        assert.strictEqual(result.edges.length, 0);
+    });
+
+    test('outboundOperationSetに含まれる外部呼び出しはクラスノードとしてexternal:trueで追加される', () => {
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.RepositoryB#save()']
+        };
+        const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+        const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
+
+        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet);
+
+        assert.strictEqual(result.nodes.length, 2);
+        assert.strictEqual(result.edges.length, 1);
+        const externalNode = result.nodes.find(n => n.fqn === 'com.example.RepositoryB');
+        assert.ok(externalNode);
+        assert.strictEqual(externalNode.external, true);
+        assert.strictEqual(result.edges[0].to, 'com.example.RepositoryB');
+    });
+
+    test('outboundOperationSetに含まれない外部呼び出しは追加されない', () => {
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.OtherService#doWork()', 'com.example.RepositoryB#save()']
+        };
+        const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
+        const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
+
+        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet);
+
+        assert.strictEqual(result.nodes.length, 2);
+        const nodes = result.nodes.map(n => n.fqn);
+        assert.ok(nodes.includes('com.example.RepositoryB'));
+        assert.ok(!nodes.includes('com.example.OtherService'));
+    });
+
+    test('内部ノードはexternal:falseで追加される', () => {
+        const otherMethod = { fqn: 'com.example.ServiceA#otherMethod()', callMethods: [] };
+        const rootMethod = {
+            fqn: 'com.example.ServiceA#method1()',
+            callMethods: ['com.example.ServiceA#otherMethod()']
+        };
+        const methodMap = new Map([
+            ['com.example.ServiceA#method1()', rootMethod],
+            ['com.example.ServiceA#otherMethod()', otherMethod]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, methodMap);
+
+        assert.strictEqual(result.nodes.length, 2);
+        result.nodes.forEach(n => assert.strictEqual(n.external, false));
     });
 });

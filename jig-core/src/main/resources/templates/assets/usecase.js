@@ -2,28 +2,53 @@ const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);
 
-function buildGraphFromCallMethods(rootMethod, methodMap) {
+function getClassFqnFromMethodFqn(fqn) {
+    const hashIdx = fqn.indexOf('#');
+    return hashIdx === -1 ? fqn : fqn.slice(0, hashIdx);
+}
+
+function buildOutboundOperationSet(outboundData) {
+    if (!outboundData?.outboundPorts) return new Set();
+    const set = new Set();
+    outboundData.outboundPorts.forEach(port => {
+        (port.operations || []).forEach(op => set.add(op.fqn));
+    });
+    return set;
+}
+
+function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set()) {
     const nodes = new Map();
     const edgeSet = new Set();
     const edges = [];
     const visited = new Set();
 
-    nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, type: 'usecase'});
+    nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, external: false});
     visited.add(rootMethod.fqn);
 
     function traverse(callerFqn, callMethods) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
-            if (!methodMap.has(calleeFqn)) continue;
-            const edgeKey = callerFqn + '\u2192' + calleeFqn;
-            if (!edgeSet.has(edgeKey)) {
-                edgeSet.add(edgeKey);
-                edges.push({from: callerFqn, to: calleeFqn});
-            }
-            if (!visited.has(calleeFqn)) {
-                visited.add(calleeFqn);
-                nodes.set(calleeFqn, {fqn: calleeFqn, type: 'usecase'});
-                traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
+            if (methodMap.has(calleeFqn)) {
+                const edgeKey = callerFqn + '\u2192' + calleeFqn;
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({from: callerFqn, to: calleeFqn});
+                }
+                if (!visited.has(calleeFqn)) {
+                    visited.add(calleeFqn);
+                    nodes.set(calleeFqn, {fqn: calleeFqn, external: false});
+                    traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
+                }
+            } else if (outboundOperationSet.has(calleeFqn)) {
+                const classFqn = getClassFqnFromMethodFqn(calleeFqn);
+                const edgeKey = callerFqn + '\u2192' + classFqn;
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({from: callerFqn, to: classFqn});
+                }
+                if (!nodes.has(classFqn)) {
+                    nodes.set(classFqn, {fqn: classFqn, external: true});
+                }
             }
         }
     }
@@ -32,7 +57,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap) {
     return {nodes: [...nodes.values()], edges};
 }
 
-function buildSequenceFromCallMethods(rootMethod, methodMap) {
+function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set()) {
     const participantKeys = [];
     const participants = new Map();
     const calls = [];
@@ -43,11 +68,6 @@ function buildSequenceFromCallMethods(rootMethod, methodMap) {
         if (hashIdx === -1) return fqn;
         const parenIdx = fqn.indexOf('(', hashIdx);
         return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
-    }
-
-    function getClassFqnFromMethodFqn(fqn) {
-        const hashIdx = fqn.indexOf('#');
-        return hashIdx === -1 ? fqn : fqn.slice(0, hashIdx);
     }
 
     function getSimpleClassName(classFqn) {
@@ -77,7 +97,7 @@ function buildSequenceFromCallMethods(rootMethod, methodMap) {
                     visited.add(calleeFqn);
                     traverse(calleeFqn, methodMap.get(calleeFqn).callMethods);
                 }
-            } else {
+            } else if (outboundOperationSet.has(calleeFqn)) {
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const methodName = getMethodSimpleName(calleeFqn);
                 const callee = ensureParticipant(classFqn, getSimpleClassName(classFqn), true);
@@ -97,9 +117,17 @@ function buildSequenceFromCallMethods(rootMethod, methodMap) {
 function buildSequenceDiagramCode(sequence) {
     if (sequence.calls.length === 0) return null;
     let code = 'sequenceDiagram\n';
-    sequence.participants.forEach(p => {
-        code += `  participant ${p.id} as ${p.label}\n`;
-    });
+
+    const external = sequence.participants.filter(p => p.isExternal);
+    const internal = sequence.participants.filter(p => !p.isExternal);
+
+    if (external.length > 0) {
+        code += '  box LightGray\n';
+        external.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
+        code += '  end\n';
+    }
+    internal.forEach(p => { code += `  participant ${p.id} as ${p.label}\n`; });
+
     sequence.calls.forEach(call => {
         code += `  ${call.from}->>${call.to}: ${call.label}\n`;
     });
@@ -224,6 +252,8 @@ const UsecaseApp = {
             (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, m));
         });
 
+        const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
+
         usecases.forEach(usecase => {
             const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
             const section = createElement("section", {
@@ -273,10 +303,10 @@ const UsecaseApp = {
                 });
 
                 // Diagrams
-                const graph = buildGraphFromCallMethods(method, methodMap);
+                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet);
                 const hasGraph = graph.edges.length > 0;
 
-                const sequence = buildSequenceFromCallMethods(method, methodMap);
+                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet);
                 const seqCode = buildSequenceDiagramCode(sequence);
                 const hasSequence = seqCode !== null;
 
@@ -330,17 +360,24 @@ const UsecaseApp = {
 
                             graph.nodes.forEach(node => {
                                 const shape = '(["$LABEL"])';
-                                const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                const nodeLabel = node.external
+                                    ? globalThis.Jig.glossary.getTypeTerm(node.fqn).title
+                                    : globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
 
                                 const nodeId = fqnToNodeId(node.fqn);
                                 builder.addNode(nodeId, nodeLabel, shape);
 
-                                // 自身を強調表示
-                                if (node.fqn === method.fqn) {
-                                    builder.addStyle(nodeId, "font-weight:bold");
+                                if (node.external) {
+                                    // 外部ポートはグレー表示
+                                    builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                                } else {
+                                    // 自身を強調表示
+                                    if (node.fqn === method.fqn) {
+                                        builder.addStyle(nodeId, "font-weight:bold");
+                                    }
+                                    // ページ内リンク
+                                    builder.addClick(nodeId, "#" + node.fqn);
                                 }
-                                // ページ内リンク
-                                builder.addClick(nodeId, "#" + node.fqn);
                             });
 
                             graph.edges.forEach(edge => {
@@ -405,6 +442,8 @@ if (typeof document !== 'undefined') {
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         UsecaseApp,
+        buildOutboundOperationSet,
+        buildGraphFromCallMethods,
         buildSequenceFromCallMethods,
         buildSequenceDiagramCode
     };

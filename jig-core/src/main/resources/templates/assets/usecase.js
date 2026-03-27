@@ -20,7 +20,7 @@ function buildOutboundOperationSet(outboundData) {
     return set;
 }
 
-function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false, hideExternalPorts = false) {
+function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), showDiagramInternalMethods , hideExternalPorts = false) {
     const nodes = new Map();
     const edgeSet = new Set();
     const edges = [];
@@ -35,7 +35,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
             if (methodMap.has(calleeFqn)) {
                 const m = methodMap.get(calleeFqn);
                 const isUc = m.kind === "usecase";
-                if (!hideNonUsecases || isUc) {
+                if (showDiagramInternalMethods || isUc) {
                     const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
@@ -205,7 +205,7 @@ const UsecaseApp = {
             { id: 'show-details', class: 'hide-usecase-details' },
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
             { id: 'show-declarations', class: 'hide-usecase-declarations' },
-            { id: 'hide-non-usecases', reRender: true },
+            { id: 'show-diagram-internal-methods', reRender: true },
             { id: 'hide-external-ports', reRender: true }
         ];
 
@@ -347,7 +347,7 @@ const UsecaseApp = {
         });
 
         const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
-        const hideNonUsecases = document.getElementById('hide-non-usecases')?.checked || false;
+        const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods')?.checked || false;
         const hideExternalPorts = document.getElementById('hide-external-ports')?.checked || false;
 
         usecases.forEach(usecase => {
@@ -409,10 +409,10 @@ const UsecaseApp = {
                 });
 
                 // Diagrams
-                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases, hideExternalPorts);
+                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet, showDiagramInternalMethods, hideExternalPorts);
                 const hasGraph = graph.edges.length > 0;
 
-                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet, hideNonUsecases, hideExternalPorts);
+                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet, showDiagramInternalMethods, hideExternalPorts);
                 const seqCode = buildSequenceDiagramCode(sequence);
                 const hasSequence = seqCode !== null;
 

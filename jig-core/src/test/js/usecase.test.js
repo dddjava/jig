@@ -64,10 +64,10 @@ test.describe('UsecaseApp', () => {
         // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
         // チェックボックス要素を事前登録
-        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'hide-non-usecases', 'hide-external-ports'].forEach(id => {
+        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-internal-methods', 'hide-external-ports'].forEach(id => {
             const el = doc.createElement('input');
             el.id = id;
-            el.checked = (id !== 'hide-non-usecases' && id !== 'hide-external-ports');
+            el.checked = (id !== 'hide-external-ports');
         });
         // コンテナ要素を事前登録
         ['usecase-sidebar-list', 'usecase-list'].forEach(id => {
@@ -289,9 +289,9 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
 
         // 再レンダリング（チェックボックス変更をシミュレート）
-        const hideNonUsecases = document.getElementById('hide-non-usecases');
-        hideNonUsecases.checked = true;
-        hideNonUsecases.dispatchEvent(new window.Event('change'));
+        const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods');
+        showDiagramInternalMethods.checked = false;
+        showDiagramInternalMethods.dispatchEvent(new window.Event('change'));
 
         // 再レンダリング後の要素を取得
         const newMethodSection = document.getElementById(methodFqn).parentElement;
@@ -736,13 +736,13 @@ test.describe('buildGraphFromCallMethods', () => {
         result.nodes.forEach(n => assert.strictEqual(n.kind, "usecase"));
     });
 
-    test('hideNonUsecasesがtrueの場合、非ユースケースメソッドはノードとして追加されず呼び出しがインライン化される', () => {
+    test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドはノードとして追加されず呼び出しがインライン化される', () => {
         const rootMethod = { fqn: 'A', callMethods: ['B'], kind: 'usecase' };
         const methodB = { fqn: 'B', callMethods: ['C'], kind: 'method' };
         const methodC = { fqn: 'C', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, new Set(), true);
+        const result = buildGraphFromCallMethods(rootMethod, methodMap, new Set(), false);
 
         // A と C だけがノードとして残る
         assert.strictEqual(result.nodes.length, 2);
@@ -754,13 +754,13 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.strictEqual(result.edges[0].to, 'C');
     });
 
-    test('非ユースケースメソッドを介した外部呼び出しもインライン化される', () => {
+    test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドを介した外部呼び出しもインライン化される', () => {
         const rootMethod = { fqn: 'A', callMethods: ['B'], kind: 'usecase' };
         const methodB = { fqn: 'B', callMethods: ['ext#method()'], kind: 'method' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB]]);
         const outboundOperationSet = new Set(['ext#method()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet, true);
+        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet, false);
 
         assert.strictEqual(result.nodes.length, 2);
         assert.ok(result.nodes.find(n => n.fqn === 'ext'));
@@ -769,14 +769,14 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.strictEqual(result.edges[0].to, 'ext');
     });
 
-    test('非ユースケースメソッドの循環参照があっても無限ループしない', () => {
+    test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドの循環参照があっても無限ループしない', () => {
         const rootMethod = { fqn: 'A', callMethods: ['B'], kind: 'usecase' };
         const methodB = { fqn: 'B', callMethods: ['C'], kind: 'method' };
         const methodC = { fqn: 'C', callMethods: ['B', 'D'], kind: 'method' };
         const methodD = { fqn: 'D', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC], ['D', methodD]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, new Set(), true);
+        const result = buildGraphFromCallMethods(rootMethod, methodMap, new Set(), false);
 
         assert.strictEqual(result.nodes.length, 2);
         assert.ok(result.nodes.find(n => n.fqn === 'A'));

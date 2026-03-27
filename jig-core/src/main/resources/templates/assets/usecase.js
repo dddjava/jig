@@ -121,12 +121,13 @@ function buildSequenceDiagramCode(sequence) {
     const external = sequence.participants.filter(p => p.isExternal);
     const internal = sequence.participants.filter(p => !p.isExternal);
 
+    internal.forEach(p => { code += `  participant ${p.id} as ${p.label}\n`; });
+
     if (external.length > 0) {
-        code += '  box LightGray\n';
+        code += '  box outbounds\n';
         external.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
         code += '  end\n';
     }
-    internal.forEach(p => { code += `  participant ${p.id} as ${p.label}\n`; });
 
     sequence.calls.forEach(call => {
         code += `  ${call.from}->>${call.to}: ${call.label}\n`;

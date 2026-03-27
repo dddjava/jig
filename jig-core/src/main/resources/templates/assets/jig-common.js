@@ -76,6 +76,7 @@ globalThis.Jig.glossary.getMethodTerm = function getMethodTerm(fqn, fallbackName
 };
 
 // FQNから一意なHTML IDを生成する
+// HTMLおよびMermaidで使用する
 globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
     // マルチバイト文字をハッシュ化して一意なIDを生成
     let hash = 0;
@@ -85,8 +86,11 @@ globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
         hash = hash & hash; // Convert to 32bit integer
     }
     const hashStr = Math.abs(hash).toString(36); // 36進数で短くする
-    const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '-').substring(0, 10);
-    return `${prefix}-${sanitized}-${hashStr}`;
+
+    // 英数以外を＿に置換し、_で連結する
+    // Mermaidは -x を含む（ hoge-xyz など）とエラーになるため、-ではなく_を使用する
+    const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 10);
+    return `${prefix}_${sanitized}_${hashStr}`;
 };
 
 // グラフ関連のユーティリティ

@@ -1,4 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
+const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
 const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
@@ -298,11 +299,11 @@ function createChildrenTable(pkg) {
 }
 
 function createFieldsList(fields) {
-    return globalThis.Jig.dom.createFieldsList(fields, createTypeRefLink);
+    return globalThis.Jig.dom.createFieldsList(fields, createElementForTypeRef);
 }
 
 function createMethodsList(kind, methods) {
-    return globalThis.Jig.dom.createMethodsList(kind, methods, createTypeRefLink);
+    return globalThis.Jig.dom.createMethodsList(kind, methods, createElementForTypeRef);
 }
 
 /**

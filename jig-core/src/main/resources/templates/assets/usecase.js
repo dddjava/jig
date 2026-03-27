@@ -154,6 +154,23 @@ const UsecaseApp = {
         this.state.data = globalThis.usecaseData;
         if (!this.state.data) return;
 
+        const domainData = globalThis.domainData;
+        if (domainData && domainData.types) {
+            if (!domainData._typesMap) {
+                domainData._typesMap = new Map(domainData.types.map(t => [t.fqn, t]));
+            }
+            globalThis.Jig.dom.typeLinkResolver = (fqn) => {
+                const domainType = domainData._typesMap.get(fqn);
+                if (domainType) {
+                    return {
+                        href: 'domain.html#' + fqn,
+                        className: domainType.isDeprecated ? 'deprecated' : undefined
+                    };
+                }
+                return null;
+            };
+        }
+
         this.initControls();
         this.render();
     },

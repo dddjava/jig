@@ -1,5 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
-const { getTypeTerm, getMethodTerm, getFieldTerm } = globalThis.Jig.glossary;
+const { getTypeTerm, getMethodTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
     diagramDirection: 'TB',
@@ -8,7 +8,6 @@ const domainSettings = {
     showFields: true,
     showMethods: true,
     showStaticMethods: true,
-    transitiveReductionEnabled: true,
 };
 
 const diagramRegistry = []; // [{container, pkg}]
@@ -78,54 +77,6 @@ function getDomainData() {
     return globalThis.domainData;
 }
 
-/**
- * @param {TypeRef} typeRef
- * @param {string | undefined} className
- * @returns {HTMLElement}
- */
-function createTypeRefLink(typeRef, className= undefined) {
-    if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
-        const typeElements= createTypeLink(typeRef.fqn);
-        const argumentElements = typeRef.typeArgumentRefs
-            .map(typeRef => createTypeRefLink(typeRef))
-            // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
-            .flatMap((v, i) => i ? [', ', v] : [v]);
-
-        return createElement("span", {
-            className: className,
-            children: [typeElements, '<', ...argumentElements, '>']
-        })
-    }
-
-    // 型引数なし
-    return createTypeLink(typeRef.fqn, className);
-}
-
-/**
- * @param {string} fqn
- * @param {string | undefined} className
- * @returns {HTMLElement}
- */
-function createTypeLink(fqn, className = undefined) {
-    const domainType = getDomainData()._typesMap.get(fqn);
-    if (!domainType) {
-        // domain型でなければ単純名のspan
-        const simpleName = fqn.substring(fqn.lastIndexOf('.') + 1);
-        return createElement('span', {
-            className: (className ? className + ' ' : '') + "weak", // この文脈ではリンクしないものは弱くする。文脈なので個別じゃなくしたほうがよさそう。
-            textContent: simpleName
-        });
-    }
-
-    // domainに含まれるのはページ内リンク
-    const deprecatedClass = domainType.isDeprecated ? "deprecated" : undefined;
-    const mergedClass = [className, deprecatedClass].filter(Boolean).join(" ") || undefined;
-    return createElement("a", {
-        className: mergedClass,
-        attributes: {href: `#${fqn}`},
-        textContent: getTypeTerm(fqn).title
-    });
-}
 
 /**
  * パッケージの直下の子パッケージを取得する
@@ -238,22 +189,9 @@ function createRelationDiagram(pkg) {
     externalRelations.forEach(r => externalPkgFqns.add(packageOf(r.to)));
 
     // エッジ（重複排除）
-    const allEdges = [
-        ...internalRelations.map(r => ({ from: r.from, to: r.to })),
-        ...externalRelations.map(r => ({ from: r.from, to: packageOf(r.to) }))
-    ];
-    const uniqueEdgesMap = new Map();
-    allEdges.forEach(e => {
-        const key = `${e.from} --> ${e.to}`;
-        uniqueEdgesMap.set(key, e);
-    });
-
-    let edges = Array.from(uniqueEdgesMap.values());
-    if (domainSettings.transitiveReductionEnabled) {
-        edges = globalThis.Jig.graph.transitiveReduction(edges);
-    }
-
-    const edgeSet = new Set(edges.map(e => `${e.from} --> ${e.to}`));
+    const edgeSet = new Set();
+    internalRelations.forEach(r => edgeSet.add(`${r.from} --> ${r.to}`));
+    externalRelations.forEach(r => edgeSet.add(`${r.from} --> ${packageOf(r.to)}`));
 
     function escapeMermaidLabel(label) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -341,7 +279,7 @@ function createChildrenTable(pkg) {
                     attributes: {href: "#" + child.fqn},
                     textContent: child.title
                 })
-                : createTypeLink(child.fqn);
+                : createElementForTypeRef({fqn: child.fqn});
             const cell = createElement("td", {
                 children: [document.createTextNode(prefix), link]
             });
@@ -589,15 +527,6 @@ function initSettings() {
         });
     }
 
-    const reductionCheckbox = document.getElementById('transitive-reduction-toggle');
-    if (reductionCheckbox) {
-        reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
-        reductionCheckbox.addEventListener('change', () => {
-            domainSettings.transitiveReductionEnabled = reductionCheckbox.checked;
-            rerenderDiagrams();
-        });
-    }
-
     const fieldsCheckbox = document.getElementById('show-fields');
     if (fieldsCheckbox) {
         fieldsCheckbox.addEventListener('change', () => {
@@ -679,6 +608,21 @@ const DomainApp = {
         });
         globalThis.domainData._childPackagesMap = childrenMap;
 
+        globalThis.Jig.dom.typeLinkResolver = (fqn) => {
+            const domainType = getDomainData()?._typesMap?.get(fqn);
+            if (domainType) {
+                return {
+                    href: '#' + fqn,
+                    className: domainType.isDeprecated ? 'deprecated' : undefined
+                };
+            }
+            // domain型でなければ単純名 + weakクラス
+            return {
+                className: 'weak',
+                text: fqn.substring(fqn.lastIndexOf('.') + 1)
+            };
+        };
+
         renderSidebar(data.packages);
 
         const main = document.getElementById("domain-main");
@@ -715,5 +659,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, createTypeLink, createTypeRefLink, renderPackageNavItem, getDirectChildPackages };
+    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages };
 }

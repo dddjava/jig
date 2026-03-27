@@ -20,7 +20,7 @@ function buildOutboundOperationSet(outboundData) {
     return set;
 }
 
-function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), showDiagramInternalMethods , hideExternalPorts = false) {
+function buildGraphFromCallMethods(rootMethod, diagramContext) {
     const nodes = new Map();
     const edgeSet = new Set();
     const edges = [];
@@ -32,10 +32,10 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
     function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
-            if (methodMap.has(calleeFqn)) {
-                const m = methodMap.get(calleeFqn);
+            if (diagramContext.methodMap.has(calleeFqn)) {
+                const m = diagramContext.methodMap.get(calleeFqn);
                 const isUc = m.kind === "usecase";
-                if (showDiagramInternalMethods || isUc) {
+                if (diagramContext.showDiagramInternalMethods || isUc) {
                     const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
@@ -53,8 +53,8 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
                         traverse(effectiveCallerFqn, m.callMethods, nextPath);
                     }
                 }
-            } else if (outboundOperationSet.has(calleeFqn)) {
-                if (hideExternalPorts) continue;
+            } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
+                if (!diagramContext.showDiagramOutboundPorts) continue;
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const edgeKey = effectiveCallerFqn + '\u2192' + classFqn;
                 if (!edgeSet.has(edgeKey)) {
@@ -72,7 +72,7 @@ function buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet =
     return {nodes: [...nodes.values()], edges};
 }
 
-function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet = new Set(), hideNonUsecases = false, hideExternalPorts = false) {
+function buildSequenceFromCallMethods(rootMethod, diagramContext) {
     const participantKeys = [];
     const participants = new Map();
     const calls = [];
@@ -105,10 +105,10 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
             const caller = participants.get(effectiveCallerFqn);
-            if (methodMap.has(calleeFqn)) {
-                const m = methodMap.get(calleeFqn);
+            if (diagramContext.methodMap.has(calleeFqn)) {
+                const m = diagramContext.methodMap.get(calleeFqn);
                 const isUc = m.kind === "usecase";
-                if (!hideNonUsecases || isUc) {
+                if (diagramContext.showDiagramInternalMethods || isUc) {
                     const callee = ensureUsecaseParticipant(calleeFqn);
                     calls.push({from: caller.id, to: callee.id, label: ''});
                     if (!visited.has(calleeFqn)) {
@@ -122,8 +122,8 @@ function buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSe
                         traverse(effectiveCallerFqn, m.callMethods, nextPath);
                     }
                 }
-            } else if (outboundOperationSet.has(calleeFqn)) {
-                if (hideExternalPorts) continue;
+            } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
+                if (!diagramContext.showDiagramOutboundPorts) continue;
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const methodName = getMethodSimpleName(calleeFqn);
                 const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, "external");
@@ -206,7 +206,7 @@ const UsecaseApp = {
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
             { id: 'show-declarations', class: 'hide-usecase-declarations' },
             { id: 'show-diagram-internal-methods', reRender: true },
-            { id: 'hide-external-ports', reRender: true }
+            { id: 'show-diagram-outbound-ports', reRender: true }
         ];
 
         controls.forEach(control => {
@@ -347,8 +347,15 @@ const UsecaseApp = {
         });
 
         const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
-        const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods')?.checked || false;
-        const hideExternalPorts = document.getElementById('hide-external-ports')?.checked || false;
+        const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
+        const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
+        
+        const diagramContext = {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods,
+            showDiagramOutboundPorts
+        };
 
         usecases.forEach(usecase => {
             const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
@@ -409,10 +416,10 @@ const UsecaseApp = {
                 });
 
                 // Diagrams
-                const graph = buildGraphFromCallMethods(method, methodMap, outboundOperationSet, showDiagramInternalMethods, hideExternalPorts);
+                const graph = buildGraphFromCallMethods(method, diagramContext);
                 const hasGraph = graph.edges.length > 0;
 
-                const sequence = buildSequenceFromCallMethods(method, methodMap, outboundOperationSet, showDiagramInternalMethods, hideExternalPorts);
+                const sequence = buildSequenceFromCallMethods(method, diagramContext);
                 const seqCode = buildSequenceDiagramCode(sequence);
                 const hasSequence = seqCode !== null;
 

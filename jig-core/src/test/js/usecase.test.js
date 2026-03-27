@@ -64,10 +64,10 @@ test.describe('UsecaseApp', () => {
         // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
         // チェックボックス要素を事前登録
-        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-internal-methods', 'hide-external-ports'].forEach(id => {
+        ['show-fields', 'show-static-methods', 'show-diagrams', 'show-details', 'show-descriptions', 'show-declarations', 'show-diagram-internal-methods', 'show-diagram-outbound-ports'].forEach(id => {
             const el = doc.createElement('input');
             el.id = id;
-            el.checked = (id !== 'hide-external-ports');
+            el.checked = true;
         });
         // コンテナ要素を事前登録
         ['usecase-sidebar-list', 'usecase-list'].forEach(id => {
@@ -346,7 +346,12 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.participants[0].label, 'method1');
@@ -365,7 +370,12 @@ test.describe('buildSequenceFromCallMethods', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save(com.example.Entity)']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.participants[1].label, 'RepositoryB');
@@ -381,7 +391,12 @@ test.describe('buildSequenceFromCallMethods', () => {
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap);  // outboundOperationSet省略=空
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 1);
         assert.strictEqual(result.calls.length, 0);
@@ -402,7 +417,12 @@ test.describe('buildSequenceFromCallMethods', () => {
         ]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 3);
         assert.strictEqual(result.calls.length, 2);
@@ -426,7 +446,12 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#deepMethod()', deepMethod]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 3);
         assert.strictEqual(result.calls.length, 2);
@@ -446,14 +471,19 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#methodB()', methodB]
         ]);
 
-        const result = buildSequenceFromCallMethods(methodA, methodMap);
+        const result = buildSequenceFromCallMethods(methodA, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 2);
         // methodA->methodB と methodB->methodA の2呼び出し
         assert.strictEqual(result.calls.length, 2);
     });
 
-    test('hideNonUsecasesがtrueの場合、非ユースケースメソッドはパーティシパントとして追加されず呼び出しがインライン化される', () => {
+    test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドはパーティシパントとして追加されず呼び出しがインライン化される', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
         const methodB = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#C()'], kind: 'method' };
         const methodC = { fqn: 'pkg.Cls#C()', callMethods: [], kind: 'usecase' };
@@ -463,7 +493,12 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['pkg.Cls#C()', {...methodC, kind: 'usecase'}]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap, new Set(), true);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
 
         // A と C だけがパーティシパントとして残る
         assert.strictEqual(result.participants.length, 2);
@@ -475,7 +510,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         assert.ok(result.calls[0].to.includes('_C_'));
     });
 
-    test('非ユースケースメソッドを介した外部呼び出しもインライン化される(シーケンス図)', () => {
+    test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドを介した外部呼び出しもインライン化される(シーケンス図)', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
         const methodB = { fqn: 'pkg.Cls#B()', callMethods: ['ext.Cls#method()'], kind: 'method' };
         const methodMap = new Map([
@@ -484,7 +519,12 @@ test.describe('buildSequenceFromCallMethods', () => {
         ]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet, true);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 2);
         assert.ok(result.participants.find(p => p.kind === 'external'));
@@ -492,7 +532,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         assert.ok(result.calls[0].from.includes('_A_'));
     });
 
-    test('非ユースケースメソッドの循環参照があっても無限ループしない(シーケンス図)', () => {
+    test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドの循環参照があっても無限ループしない(シーケンス図)', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
         const methodB = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#C()'], kind: 'method' };
         const methodC = { fqn: 'pkg.Cls#C()', callMethods: ['pkg.Cls#B()', 'pkg.Cls#D()'], kind: 'method' };
@@ -504,7 +544,12 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['pkg.Cls#D()', {...methodD, kind: 'usecase'}]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap, new Set(), true);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.calls.length, 1);
@@ -512,12 +557,17 @@ test.describe('buildSequenceFromCallMethods', () => {
         assert.ok(result.calls[0].to.includes('_D_'));
     });
 
-    test('hideExternalPortsがtrueの場合、外部ポートはパーティシパントとして追加されない', () => {
+    test('showDiagramOutboundPortsがfalseの場合、外部ポートはパーティシパントとして追加されない', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['ext.Cls#method()'], kind: 'usecase' };
         const methodMap = new Map([['pkg.Cls#A()', {...rootMethod, kind: 'usecase'}]]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap, outboundOperationSet, false, true);
+        const result = buildSequenceFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: false
+        });
 
         assert.strictEqual(result.participants.length, 1);
         assert.strictEqual(result.calls.length, 0);
@@ -674,7 +724,12 @@ test.describe('buildGraphFromCallMethods', () => {
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.nodes.length, 1);
         assert.strictEqual(result.edges.length, 0);
@@ -688,7 +743,12 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.nodes.length, 2);
         assert.strictEqual(result.edges.length, 1);
@@ -706,7 +766,12 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.nodes.length, 2);
         const nodes = result.nodes.map(n => n.fqn);
@@ -730,7 +795,12 @@ test.describe('buildGraphFromCallMethods', () => {
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.nodes.length, 2);
         result.nodes.forEach(n => assert.strictEqual(n.kind, "usecase"));
@@ -742,7 +812,12 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodC = { fqn: 'C', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, new Set(), false);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
 
         // A と C だけがノードとして残る
         assert.strictEqual(result.nodes.length, 2);
@@ -760,7 +835,12 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['A', rootMethod], ['B', methodB]]);
         const outboundOperationSet = new Set(['ext#method()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet, false);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.nodes.length, 2);
         assert.ok(result.nodes.find(n => n.fqn === 'ext'));
@@ -776,7 +856,12 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodD = { fqn: 'D', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC], ['D', methodD]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, new Set(), false);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
 
         assert.strictEqual(result.nodes.length, 2);
         assert.ok(result.nodes.find(n => n.fqn === 'A'));
@@ -786,12 +871,17 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.strictEqual(result.edges[0].to, 'D');
     });
 
-    test('hideExternalPortsがtrueの場合、外部ポートはノードとして追加されない', () => {
+    test('showDiagramOutboundPortsがfalseの場合、外部ポートはノードとして追加されない', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['ext.Cls#method()'], kind: 'usecase' };
         const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, methodMap, outboundOperationSet, false, true);
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: false
+        });
 
         assert.strictEqual(result.nodes.length, 1);
         assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));

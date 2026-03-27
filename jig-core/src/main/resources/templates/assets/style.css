@@ -103,7 +103,6 @@ aside.notice {
 .deprecated {
     text-decoration: line-through !important;
 }
-
 /* メインコンテンツ */
 /* テーブル */
 main table {
@@ -305,6 +304,12 @@ main table.fields thead {
     border-bottom: 1px solid #1b3a66;
 }
 
+.usecase .jig-card-list {
+    grid-template-columns: minmax(0, 1fr);
+}
+.usecase .jig-card {
+    min-width: 0;
+}
 .usecase .depends {
     background-color: #f0f2f5;
     padding: 8px 12px;
@@ -322,6 +327,14 @@ main table.fields thead {
 }
 .usecase .depends dd:last-child {
     margin-bottom: 0;
+}
+.usecase .declaration {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 body.hide-usecase-fields .fields {

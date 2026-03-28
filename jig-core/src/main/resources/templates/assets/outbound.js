@@ -692,7 +692,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
                     mermaidContainer,
                     createElement("p", {
                         className: "outbound-persistence-detail-title",
-                        textContent: "永続化操作詳細"
+                        textContent: "永続化操作"
                     }),
                     createElement("ul", {
                         className: "outbound-persistence-detail-list",
@@ -704,7 +704,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         const itemListDetails = createElement("details", {});
         const itemListSummary = createElement("summary", {
             className: "outbound-operation-list-summary",
-            textContent: `操作一覧 (${group.operations.length}件)`
+            textContent: `操作別詳細 (${group.operations.length}件)`
         });
         itemListDetails.appendChild(itemListSummary);
         itemListDetails.appendChild(itemList);

@@ -890,4 +890,110 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
         assert.strictEqual(result.edges.length, 0);
     });
+
+    test('直接の呼び出し元(usecase)は caller -> root のエッジで追加される', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const callerMethod = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'usecase' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', callerMethod]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
+        assert.strictEqual(result.edges.length, 1);
+        assert.deepStrictEqual(result.edges[0], {from: 'pkg.Cls#B()', to: 'pkg.Cls#A()'});
+    });
+
+    test('直接の呼び出し元が非ユースケースの場合、showDiagramInternalMethods=falseでは表示しない', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const callerMethod = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'method' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', callerMethod]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.strictEqual(result.nodes.length, 1);
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+        assert.strictEqual(result.edges.length, 0);
+    });
+
+    test('直接の呼び出し元が非ユースケースの場合、showDiagramInternalMethods=trueでは表示する', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const callerMethod = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'method' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', callerMethod]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
+        assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
+    });
+
+    test('呼び出し元は直接のみ表示し、呼び出し元の呼び出し元は表示しない', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const directCaller = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'usecase' };
+        const indirectCaller = { fqn: 'pkg.Cls#C()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', directCaller],
+            ['pkg.Cls#C()', indirectCaller]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
+        assert.ok(!result.nodes.find(n => n.fqn === 'pkg.Cls#C()'));
+        assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
+        assert.ok(!result.edges.find(e => e.from === 'pkg.Cls#C()' && e.to === 'pkg.Cls#B()'));
+    });
+
+    test('直接呼び出し元表示を追加しても既存の外部呼び出し可視化は維持される', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: ['ext.Repo#save()'], kind: 'usecase' };
+        const callerMethod = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'usecase' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', callerMethod]
+        ]);
+        const outboundOperationSet = new Set(['ext.Repo#save()']);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet,
+            showDiagramInternalMethods: true,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
+        assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo'));
+        assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
+        assert.ok(result.edges.find(e => e.from === 'pkg.Cls#A()' && e.to === 'ext.Repo'));
+    });
 });

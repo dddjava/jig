@@ -73,13 +73,31 @@ function buildGraphFromCallMethods(rootMethod, diagramContext) {
     nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
     visited.add(rootMethod.fqn);
 
+    function shouldIncludeMethodNode(kind) {
+        return diagramContext.showDiagramInternalMethods || kind === "usecase";
+    }
+
+    for (const method of diagramContext.methodMap.values()) {
+        if (method.fqn === rootMethod.fqn) continue;
+        if (!shouldIncludeMethodNode(method.kind)) continue;
+        if (!(method.callMethods || []).includes(rootMethod.fqn)) continue;
+
+        const edgeKey = method.fqn + '\u2192' + rootMethod.fqn;
+        if (!edgeSet.has(edgeKey)) {
+            edgeSet.add(edgeKey);
+            edges.push({from: method.fqn, to: rootMethod.fqn});
+        }
+        if (!nodes.has(method.fqn)) {
+            nodes.set(method.fqn, {fqn: method.fqn, kind: method.kind});
+        }
+    }
+
     function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
             if (diagramContext.methodMap.has(calleeFqn)) {
                 const m = diagramContext.methodMap.get(calleeFqn);
-                const isUc = m.kind === "usecase";
-                if (diagramContext.showDiagramInternalMethods || isUc) {
+                if (shouldIncludeMethodNode(m.kind)) {
                     const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);

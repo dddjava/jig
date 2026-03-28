@@ -610,7 +610,8 @@ label {
 
 .glossary-jump-bar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 4px;
     margin-bottom: 1.5rem;
     padding: 10px;

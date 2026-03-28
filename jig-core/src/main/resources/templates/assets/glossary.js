@@ -23,8 +23,16 @@ function sortTerms(terms, sortKey) {
 function normalizeGlossaryData(data) {
     if (!data) return null;
     if (Array.isArray(data)) return data;
-    if (data.terms) return data.terms;
+    if (data.terms) return Object.entries(data.terms).map(([fqn, term]) => ({...term, fqn}));
     return Object.entries(data).map(([fqn, term]) => ({...term, fqn}));
+}
+
+function getDomainPackageRoots() {
+    const glossaryData = globalThis.glossaryData;
+    if (glossaryData && glossaryData.domainPackageRoots) {
+        return glossaryData.domainPackageRoots;
+    }
+    return [];
 }
 
 function getGlossaryData() {
@@ -248,6 +256,9 @@ function getFilteredTerms(terms, controls) {
         kind: controls.searchTargetKind.checked,
     };
 
+    const showOnlyDomain = controls.showOnlyDomain && controls.showOnlyDomain.checked;
+    const domainPackageRoots = getDomainPackageRoots();
+
     return terms.filter(term => {
         // 種類で絞り込む
         const kindText = term.kind || "";
@@ -256,6 +267,15 @@ function getFilteredTerms(terms, controls) {
         // 説明文有無での判定
         const description = (term.description || "");
         if (!showEmptyDescription && !description) return false;
+
+        // ドメインパッケージでの絞り込み
+        if (showOnlyDomain && domainPackageRoots.length > 0) {
+            const fqn = term.fqn || "";
+            const isInDomainPackage = domainPackageRoots.some(root =>
+                fqn === root || fqn.startsWith(root + ".") || fqn.startsWith(root + "#")
+            );
+            if (!isInDomainPackage) return false;
+        }
 
         // キーワード検索
         if (searchKeyword) {
@@ -301,7 +321,16 @@ if (typeof document !== "undefined") {
             searchTargetSimple: document.getElementById('search-target-simple'),
             searchTargetKind: document.getElementById('search-target-kind'),
             displayModeSelect: document.getElementById('display-mode-select'),
+            showOnlyDomain: document.getElementById('show-only-domain'),
         };
+
+        // domainPackageRootsが空の場合、show-only-domainチェックボックスをdisabledにする
+        const domainPackageRoots = getDomainPackageRoots();
+        if (controls.showOnlyDomain) {
+            if (domainPackageRoots.length === 0) {
+                controls.showOnlyDomain.disabled = true;
+            }
+        }
 
         const updateArticles = () => renderFilteredTerms(terms, controls);
 
@@ -318,6 +347,7 @@ if (typeof document !== "undefined") {
             controls.searchTargetFqn,
             controls.searchTargetSimple,
             controls.searchTargetKind,
+            controls.showOnlyDomain,
         ].filter(Boolean);
 
         changeControls.forEach(el => el.addEventListener("change", updateArticles));
@@ -358,6 +388,7 @@ if (typeof module !== "undefined" && module.exports) {
         sortTerms,
         getFilteredTerms,
         getGlossaryData,
+        getDomainPackageRoots,
         normalizeGlossaryData,
         buildTermAnchorId,
         escapeCsvValue,

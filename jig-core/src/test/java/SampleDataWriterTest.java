@@ -48,7 +48,8 @@ class SampleDataWriterTest {
         // glossary-data.js
         {
             var glossary = jigService.glossary(repository);
-            var json = GlossaryAdapter.buildJson(glossary);
+            var domainPackageRoots = jigService.coreDomainJigTypes(repository).packageFilterCandidates();
+            var json = GlossaryAdapter.buildJson(glossary, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/glossary-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +

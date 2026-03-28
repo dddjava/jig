@@ -29,13 +29,15 @@ public class GlossaryAdapter {
         var glossary = jigService.glossary(jigRepository);
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
+        var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).packageFilterCandidates();
+
         jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("glossaryData", buildJson(glossary));
+        jigDocumentWriter.writeJsData("glossaryData", buildJson(glossary, domainPackageRoots));
 
         return jigDocumentWriter.outputFilePaths();
     }
 
-    public static String buildJson(Glossary glossary) {
+    public static String buildJson(Glossary glossary, List<String> domainPackageRoots) {
         var map = new LinkedHashMap<String, String>();
         for (var term : glossary.list()) {
             var value = Json.object("title", term.title())
@@ -45,7 +47,9 @@ public class GlossaryAdapter {
                     .build();
             map.put(term.id().asText(), value);
         }
-        return JsonSupport.mapToJson(map);
+        return Json.object("terms", Json.object(map))
+                .and("domainPackageRoots", Json.array(domainPackageRoots))
+                .build();
     }
 
 }

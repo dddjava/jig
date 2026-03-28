@@ -73,6 +73,7 @@ function setupDocument() {
     createInput('search-method-regex', 'radio', 'search-method', false).value = 'regex';
 
     createInput('display-mode-select', 'select');
+    createInput('show-only-domain', 'checkbox', null, true);
 
     const jumpBar = doc.createElement('div');
     jumpBar.id = 'jump-bar';
@@ -196,6 +197,72 @@ test.describe('glossary.js', () => {
             assert.deepEqual(result, terms);
         });
 
+        test('ドメインパッケージでフィルタする', () => {
+            const doc = setupDocument();
+            const terms = [
+                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'com.example.domain.model.Account', simpleText: 'Account'},
+                {title: 'AccountRepo', description: 'desc', kind: 'クラス', fqn: 'com.example.domain.model.repository.AccountRepo', simpleText: 'AccountRepo'},
+                {title: 'ExternalService', description: 'desc', kind: 'クラス', fqn: 'com.example.external.ExternalService', simpleText: 'ExternalService'},
+                {title: 'AccountMethod', description: 'action', kind: 'メソッド', fqn: 'com.example.domain.model.Account#create', simpleText: 'create'},
+            ];
+            const controls = {
+                searchInput: doc.getElementById('search-input'),
+                showEmptyDescription: doc.getElementById('show-empty-description'),
+                showPackage: doc.getElementById('show-package'),
+                showClass: doc.getElementById('show-class'),
+                showMethod: doc.getElementById('show-method'),
+                showField: doc.getElementById('show-field'),
+                searchTargetName: doc.getElementById('search-target-name'),
+                searchTargetDescription: doc.getElementById('search-target-description'),
+                searchTargetFqn: doc.getElementById('search-target-fqn'),
+                searchTargetSimple: doc.getElementById('search-target-simple'),
+                searchTargetKind: doc.getElementById('search-target-kind'),
+                showOnlyDomain: doc.getElementById('show-only-domain'),
+            };
+
+            globalThis.glossaryData = {
+                domainPackageRoots: ['com.example.domain.model']
+            };
+
+            controls.showOnlyDomain.checked = true;
+
+            const result = glossary.getFilteredTerms(terms, controls);
+            assert.deepEqual(result, [terms[0], terms[1], terms[3]]);
+            delete globalThis.glossaryData;
+        });
+
+        test('ドメインパッケージフィルタがオフの場合は全件返す', () => {
+            const doc = setupDocument();
+            const terms = [
+                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'com.example.domain.model.Account', simpleText: 'Account'},
+                {title: 'ExternalService', description: 'desc', kind: 'クラス', fqn: 'com.example.external.ExternalService', simpleText: 'ExternalService'},
+            ];
+            const controls = {
+                searchInput: doc.getElementById('search-input'),
+                showEmptyDescription: doc.getElementById('show-empty-description'),
+                showPackage: doc.getElementById('show-package'),
+                showClass: doc.getElementById('show-class'),
+                showMethod: doc.getElementById('show-method'),
+                showField: doc.getElementById('show-field'),
+                searchTargetName: doc.getElementById('search-target-name'),
+                searchTargetDescription: doc.getElementById('search-target-description'),
+                searchTargetFqn: doc.getElementById('search-target-fqn'),
+                searchTargetSimple: doc.getElementById('search-target-simple'),
+                searchTargetKind: doc.getElementById('search-target-kind'),
+                showOnlyDomain: doc.getElementById('show-only-domain'),
+            };
+
+            globalThis.glossaryData = {
+                domainPackageRoots: ['com.example.domain.model']
+            };
+
+            controls.showOnlyDomain.checked = false;
+
+            const result = glossary.getFilteredTerms(terms, controls);
+            assert.deepEqual(result, [terms[0], terms[1]]);
+            delete globalThis.glossaryData;
+        });
+
         test('不正な正規表現はマッチしない', () => {
             const doc = setupDocument();
             const terms = [{title: 'Account', kind: 'クラス'}];
@@ -274,6 +341,22 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('データ読み込み', () => {
+        test('ドメインパッケージルートを取得', () => {
+            globalThis.glossaryData = {
+                domainPackageRoots: ['com.example.domain.model', 'com.example.domain.service']
+            };
+            const result = glossary.getDomainPackageRoots();
+            assert.deepEqual(result, ['com.example.domain.model', 'com.example.domain.service']);
+            delete globalThis.glossaryData;
+        });
+
+        test('ドメインパッケージルートがない場合は空配列を返す', () => {
+            globalThis.glossaryData = {};
+            const result = glossary.getDomainPackageRoots();
+            assert.deepEqual(result, []);
+            delete globalThis.glossaryData;
+        });
+
         test('globalThis.glossaryData (fqnキーマップ) から取得', () => {
             globalThis.glossaryData = {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}};
             const result = glossary.getGlossaryData();
@@ -285,6 +368,17 @@ test.describe('glossary.js', () => {
         test('globalThis.glossaryData (配列) から取得', () => {
             globalThis.glossaryData = [{title: 'ArrayData'}];
             assert.equal(glossary.getGlossaryData()[0].title, 'ArrayData');
+            delete globalThis.glossaryData;
+        });
+
+        test('globalThis.glossaryData (wrapper形式: {terms, domainPackageRoots}) から取得', () => {
+            globalThis.glossaryData = {
+                terms: {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}},
+                domainPackageRoots: ['com.example.domain.model']
+            };
+            const result = glossary.getGlossaryData();
+            assert.equal(result[0].title, 'Account');
+            assert.equal(result[0].fqn, 'app.Account');
             delete globalThis.glossaryData;
         });
 

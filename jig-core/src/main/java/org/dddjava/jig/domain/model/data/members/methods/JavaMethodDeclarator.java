@@ -20,7 +20,9 @@ public record JavaMethodDeclarator(
 ) {
 
     /**
-     * "asText()" のような文字列
+     * メソッド定義の文字列表現
+     *
+     * "asText()" とか。
      */
     public String asText() {
         return identifier + "(" + String.join(",", formalParameterList) + ")";

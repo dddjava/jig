@@ -58,6 +58,7 @@ public final class JsonSupport {
     }
 
     /**
+     * フィールドのJSONを組み立てる
      * {@code
      * @typedef {Object} JigField
      * @property {string} name
@@ -72,6 +73,7 @@ public final class JsonSupport {
     }
 
     /**
+     * メソッドのJSONを組み立てる
      * {@code
      * @typedef {Object} JigMethod
      * @property {string} fqn
@@ -91,6 +93,7 @@ public final class JsonSupport {
     }
 
     /**
+     * 型参照のJSONを組み立てる
      * {@code
      * @typedef {Object} TypeRef
      * @property {string} fqn

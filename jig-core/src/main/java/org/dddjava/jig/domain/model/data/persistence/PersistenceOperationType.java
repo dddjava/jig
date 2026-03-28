@@ -83,6 +83,8 @@ public enum PersistenceOperationType {
     }
 
     /**
+     * サブクエリを除去する
+     *
      * (SELECT ...) を () に置換して繰り返すことでネストを除去
      */
     private static String removeSubqueries(String sql) {
@@ -96,6 +98,8 @@ public enum PersistenceOperationType {
     }
 
     /**
+     * 括弧をサブクエリのみにする
+     *
      * word(...) 形式の関数呼び出しを繰り返し除去し、括弧をサブクエリのみにする
      */
     private static String removeFunctionCalls(String sql) {

@@ -281,16 +281,16 @@ function buildSequenceDiagramCode(sequence) {
     if (sequence.calls.length === 0) return null;
     let code = 'sequenceDiagram\n';
 
-    const external = sequence.participants.filter(p => p.kind === "outbound");
+    const outbounds = sequence.participants.filter(p => p.kind === "outbound");
     const internal = sequence.participants.filter(p => p.kind !== "outbound");
 
     internal.forEach(p => {
         code += `  participant ${p.id} as ${p.label}\n`;
     });
 
-    if (external.length > 0) {
+    if (outbounds.length > 0) {
         code += '  box outbounds\n';
-        external.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
+        outbounds.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
         code += '  end\n';
     }
 

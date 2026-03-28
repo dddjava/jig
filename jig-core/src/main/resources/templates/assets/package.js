@@ -81,7 +81,7 @@ function getAggregatedFqn(fqn, depth) {
 }
 
 function getCommonPrefixDepth(fqns) {
-    if (!fqns || fqns.length === 0) return 0;
+    if (!fqns?.length) return 0;
     const firstParts = fqns[0].split('.');
     let depth = firstParts.length;
     for (let i = 1; i < fqns.length; i += 1) {
@@ -182,7 +182,7 @@ function normalizeAggregationDepthValue(value) {
 }
 
 function findDefaultPackageFilterCandidate(domainPackageRoots) {
-    if (domainPackageRoots && domainPackageRoots.length > 0) {
+    if (domainPackageRoots?.length) {
         return domainPackageRoots.join('\n');
     }
     return null;
@@ -571,7 +571,7 @@ function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
 
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
-    if (!input || normalizePackageFilterValue(input.value).length > 0) return false;
+    if (!input || normalizePackageFilterValue(input.value).length) return false;
     const {domainPackageRoots} = getPackageSummaryData(context);
     const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (!candidate) return false;
@@ -805,7 +805,7 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
     const container = dom.getMutualDependencyList();
     if (!container) return;
     const items = buildMutualDependencyItems(mutualPairs, causeRelationEvidence, aggregationDepth);
-    if (items.length === 0) {
+    if (!items?.length) {
         container.style.display = 'none';
         container.innerHTML = '';
         return;
@@ -883,7 +883,7 @@ function renderMutualDependencyList(mutualPairs, causeRelationEvidence, aggregat
 
         itemNode.appendChild(pairDiv);
 
-        if (item.causes.length > 0) {
+        if (item.causes?.length) {
             const detailBody = document.createElement('pre');
             detailBody.className = 'causes';
             detailBody.textContent = item.causes.join('\n');
@@ -933,7 +933,7 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
 }
 
 function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
-    if (causes.length === 0) return {source: null};
+    if (!causes?.length) return {source: null};
 
     const edges = causes.map(cause => {
         const [from, to] = cause.split(' -> ');
@@ -1009,7 +1009,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
         return Number.POSITIVE_INFINITY;
     };
     const chooseOuterRoot = packageFqn => {
-        if (outerRoots.length === 0) return null;
+        if (!outerRoots?.length) return null;
         const directMatches = outerRoots.filter(root => packageFqn === root || packageFqn.startsWith(`${root}.`));
         if (directMatches.length === 1) return directMatches[0];
         if (directMatches.length > 1) {

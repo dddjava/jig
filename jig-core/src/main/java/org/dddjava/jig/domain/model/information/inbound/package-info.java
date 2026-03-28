@@ -7,4 +7,4 @@
  * - ポート: Serviceクラス
  * - ユースケース: メソッド
  */
-package org.dddjava.jig.domain.model.information.inputs;
+package org.dddjava.jig.domain.model.information.inbound;

@@ -3,7 +3,7 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.inputs.InputAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;

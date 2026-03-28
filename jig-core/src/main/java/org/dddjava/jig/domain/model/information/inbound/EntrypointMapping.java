@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.inputs;
+package org.dddjava.jig.domain.model.information.inbound;
 
 public interface EntrypointMapping {
     EntrypointMapping DEFAULT = new EntrypointMapping() {

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.inputs;
+package org.dddjava.jig.domain.model.information.inbound;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;

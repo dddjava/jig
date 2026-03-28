@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.inputs;
+package org.dddjava.jig.domain.model.information.inbound;
 
 public enum EntrypointType {
     HTTP_API,

@@ -8,7 +8,7 @@ global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-common.js');
 require('../../main/resources/templates/assets/jig.js');
 
-const { DomainApp, renderPackageNavItem, getDirectChildPackages } = require('../../main/resources/templates/assets/domain.js');
+const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram } = require('../../main/resources/templates/assets/domain.js');
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
@@ -410,6 +410,35 @@ test.describe('domain.js', () => {
             assert.equal(result.length, 0);
 
             delete globalThis.domainData;
+        });
+    });
+
+    test.describe('createRelationDiagram', () => {
+        test('関係図のMermaidソースを生成する（fqnToMermaidIdが正常に動作すること）', () => {
+            const pkg = { fqn: 'org.example', types: [{ fqn: 'org.example.A' }, { fqn: 'org.example.B' }] };
+            const typeA = { fqn: 'org.example.A', isDeprecated: false };
+            const typeB = { fqn: 'org.example.B', isDeprecated: false };
+            setupDomainData([pkg], [typeA, typeB]);
+            globalThis.typeRelationsData = {
+                relations: [
+                    { from: 'org.example.A', to: 'org.example.B' }
+                ]
+            };
+            globalThis.glossaryData = {
+                'org.example.A': { title: 'A' },
+                'org.example.B': { title: 'B' }
+            };
+
+            const result = createRelationDiagram(pkg);
+
+            assert.ok(result.includes('graph TB'), 'デフォルトの向きが含まれていること');
+            const idA = globalThis.Jig.fqnToId("n", 'org.example.A');
+            const idB = globalThis.Jig.fqnToId("n", 'org.example.B');
+            assert.ok(result.includes(`${idA} --> ${idB}`), '関連が含まれていること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
         });
     });
 

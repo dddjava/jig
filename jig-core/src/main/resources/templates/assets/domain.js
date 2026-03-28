@@ -146,6 +146,9 @@ function renderPackageNavItem(pkg) {
  * @returns {string | null}
  */
 function createRelationDiagram(pkg) {
+    const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
+    const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
+
     const typesMap = getDomainData()._typesMap;
     const relations = (globalThis.typeRelationsData?.relations || [])
         .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
@@ -197,9 +200,6 @@ function createRelationDiagram(pkg) {
     function escapeMermaidLabel(label) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
-
-    const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
-    const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
 
     function mermaidTypeBox(fqn) {
         return `${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`;
@@ -663,5 +663,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages };
+    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram };
 }

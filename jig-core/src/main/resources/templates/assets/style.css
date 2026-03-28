@@ -527,12 +527,6 @@ label {
 .glossary #glossary-main {
     padding-top: 1rem;
 }
-.glossary .search-option,
-.glossary .kind-option,
-.glossary .misc-option {
-    margin-top: 0;
-    box-shadow: none;
-}
 .glossary .search-option label {
     display: flex;
     flex-direction: column;
@@ -553,12 +547,10 @@ label {
     flex-wrap: wrap;
     gap: 8px 16px;
 }
-.glossary .checkbox-options label,
-.glossary .radio-options label,
-.glossary .misc-option label {
+.checkbox-options label,
+.radio-options label {
     display: flex;
     align-items: center;
-    flex-direction: row;
     gap: 8px;
 }
 
@@ -598,10 +590,25 @@ label {
     font-size: 0.9em;
     white-space: nowrap;
 }
-.glossary .sorting-controls select {
-    padding: 6px 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.glossary .display-option {
+    margin-top: 0;
+    box-shadow: none;
+}
+.glossary .display-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.glossary .sorting-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.glossary .sorting-controls label {
+    font-weight: bold;
+    font-size: 0.9em;
+    white-space: nowrap;
 }
 .glossary #export-csv {
     padding: 8px 16px;
@@ -1181,35 +1188,32 @@ table td.number {
     padding: 6px 4px 2px;
     font-size: 0.85em;
 }
-.settings-group {
-    padding-bottom: 8px;
+.sidebar-settings-panel fieldset {
+    border: none;
+    margin: 0;
+    padding: 0 0 8px;
     border-bottom: 1px solid #e8edf5;
 }
-.settings-group:last-child {
+.sidebar-settings-panel fieldset:last-child {
     padding-bottom: 0;
     border-bottom: none;
 }
-.settings-group-title {
+.sidebar-settings-panel legend {
     font-size: 0.75em;
     color: #5a7099;
     font-weight: bold;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    padding: 0;
 }
-.settings-row {
-    display: grid;
-    gap: 4px;
-    color: #1b3a66;
-}
-.settings-row label {
+.sidebar-settings-panel fieldset label {
     display: flex;
     align-items: center;
-    gap: 4px;
-    cursor: pointer;
+    gap: 8px;
+    color: #1b3a66;
 }
-.settings-row input[type="radio"],
-.settings-row input[type="checkbox"] {
+.sidebar-settings-panel fieldset input[type="radio"],
+.sidebar-settings-panel fieldset input[type="checkbox"] {
     cursor: pointer;
 }
 .direction-toggle {

@@ -45,7 +45,7 @@ function estimateEdgeCount(source) {
  * @return {Term | undefined}
  */
 globalThis.Jig.glossary.findTerm = function findTerm(fqn) {
-    return globalThis.glossaryData?.[fqn];
+    return globalThis.glossaryData?.terms?.[fqn];
 };
 
 /**

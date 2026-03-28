@@ -203,7 +203,7 @@ function createRelationDiagram(pkg) {
     }
 
     function mermaidPackageBox(fqn) {
-        return `${fqn}(["${escapeMermaidLabel(getTypeTerm(fqn).title)}"])`;
+        return `${fqn}@{shape: st-rect, label: "${escapeMermaidLabel(getTypeTerm(fqn).title)}"}`;
     }
 
     const i = '    ';

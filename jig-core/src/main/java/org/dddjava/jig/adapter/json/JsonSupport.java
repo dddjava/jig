@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Thymeleafアダプター向けのJSON文字列生成ユーティリティ。
+ * JSON文字列生成ユーティリティ。
  * ドキュメント用のインラインJSONを組み立てる際の共通処理を提供する。
  */
 public final class JsonSupport {

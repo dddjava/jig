@@ -561,6 +561,15 @@ label {
     flex-direction: row;
     gap: 8px;
 }
+
+/* チェックボックス/ラジオボタン選択肢内のバッジサイズ調整 */
+.glossary .checkbox-options .kind-badge,
+.glossary .radio-options .kind-badge {
+    width: 1.1em;
+    height: 1.1em;
+    font-size: 0.6em;
+    margin-right: 0;
+}
 .glossary input[type="text"] {
     width: 100%;
     box-sizing: border-box;

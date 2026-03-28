@@ -614,6 +614,14 @@ const UsecaseApp = {
                     ]
                 });
 
+                // Method Description
+                if (methodDescription) {
+                    methodSection.appendChild(createElement("section", {
+                        className: "description markdown",
+                        innerHTML: globalThis.Jig.markdown.parse(methodDescription)
+                    }));
+                }
+
                 // Diagrams
                 const usecaseDiagram = buildUsecaseDiagram(method, diagramContext);
                 const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
@@ -736,28 +744,17 @@ const UsecaseApp = {
                 }
 
                 const dl = createElement("dl", { className: "depends" });
-                
                 if (method.parameterTypeRefs.length > 0) {
                      dl.appendChild(createElement("dt", { textContent: "要求するもの（引数）" }));
                      method.parameterTypeRefs.forEach(parameterTypeRef => {
                          dl.appendChild(createElement("dd", { children: [createElementForTypeRef(parameterTypeRef)] }));
                      });
                 }
-
                 if (method.returnTypeRef.fqn !== 'void') {
                     dl.appendChild(createElement("dt", { textContent: "得られるもの（戻り値）" }));
                     dl.appendChild(createElement("dd", { children: [createElementForTypeRef(method.returnTypeRef)] }));
                 }
-                
                 methodSection.appendChild(dl);
-
-                // Method Description
-                if (methodDescription) {
-                    methodSection.appendChild(createElement("section", {
-                        className: "description markdown",
-                        innerHTML: globalThis.Jig.markdown.parse(methodDescription)
-                    }));
-                }
 
                 section.appendChild(methodSection);
             });

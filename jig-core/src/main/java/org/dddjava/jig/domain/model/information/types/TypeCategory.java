@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.information.types;
 
-import org.dddjava.jig.domain.model.data.types.TypeId;
-
 public enum TypeCategory {
     /**
      * 入力ポート
@@ -38,21 +36,21 @@ public enum TypeCategory {
 
     public static TypeCategory from(JigType jigType) {
         // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
-        if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Service"))
-                || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.annotation.Service"))) {
+        if (jigType.hasAnnotation(SpringAnnotations.SERVICE)
+                || jigType.hasAnnotation(JigAnnotations.SERVICE)) {
             return InboundPort;
         }
-        if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Controller"))
-                || jigType.hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.RestController"))
-                || jigType.hasAnnotation(TypeId.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
-                || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.adapter.HandleDocument"))) {
+        if (jigType.hasAnnotation(SpringAnnotations.CONTROLLER)
+                || jigType.hasAnnotation(SpringAnnotations.REST_CONTROLLER)
+                || jigType.hasAnnotation(SpringAnnotations.CONTROLLER_ADVICE)
+                || jigType.hasAnnotation(JigAnnotations.HANDLE_DOCUMENT)) {
             return InboundAdapter;
         }
-        if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Repository"))
-                || jigType.hasAnnotation(TypeId.valueOf("org.dddjava.jig.annotation.Repository"))) {
+        if (jigType.hasAnnotation(SpringAnnotations.REPOSITORY)
+                || jigType.hasAnnotation(JigAnnotations.REPOSITORY)) {
             return OutboundAdapter;
         }
-        if (jigType.hasAnnotation(TypeId.valueOf("org.springframework.stereotype.Component"))) {
+        if (jigType.hasAnnotation(SpringAnnotations.COMPONENT)) {
             return OtherApplicationComponent;
         }
 

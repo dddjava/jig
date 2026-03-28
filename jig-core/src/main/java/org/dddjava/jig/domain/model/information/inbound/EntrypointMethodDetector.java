@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.information.inbound;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
+import org.dddjava.jig.domain.model.information.types.JigAnnotations;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.SpringAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,36 +25,36 @@ class EntrypointMethodDetector {
     public EntrypointMethodDetector() {
         entrypointAnnotations = List.of(
                 new EntrypointAnnotation(EntrypointType.HTTP_API,
-                        List.of("org.springframework.stereotype.Controller",
-                                "org.springframework.web.bind.annotation.RestController",
-                                "org.springframework.web.bind.annotation.ControllerAdvice"),
-                        List.of("org.springframework.web.bind.annotation.RequestMapping",
-                                "org.springframework.web.bind.annotation.GetMapping",
-                                "org.springframework.web.bind.annotation.PostMapping",
-                                "org.springframework.web.bind.annotation.PutMapping",
-                                "org.springframework.web.bind.annotation.DeleteMapping",
-                                "org.springframework.web.bind.annotation.PatchMapping")),
+                        List.of(SpringAnnotations.CONTROLLER,
+                                SpringAnnotations.REST_CONTROLLER,
+                                SpringAnnotations.CONTROLLER_ADVICE),
+                        List.of(SpringAnnotations.REQUEST_MAPPING,
+                                SpringAnnotations.GET_MAPPING,
+                                SpringAnnotations.POST_MAPPING,
+                                SpringAnnotations.PUT_MAPPING,
+                                SpringAnnotations.DELETE_MAPPING,
+                                SpringAnnotations.PATCH_MAPPING)),
                 new EntrypointAnnotation(EntrypointType.QUEUE_LISTENER,
-                        List.of("org.springframework.stereotype.Component"),
-                        List.of("org.springframework.amqp.rabbit.annotation.RabbitListener")),
+                        List.of(SpringAnnotations.COMPONENT),
+                        List.of(SpringAnnotations.RABBIT_LISTENER)),
                 // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
                 new EntrypointAnnotation(EntrypointType.OTHER,
-                        List.of("org.dddjava.jig.adapter.HandleDocument"),
-                        List.of("org.dddjava.jig.adapter.HandleDocument"))
+                        List.of(JigAnnotations.HANDLE_DOCUMENT),
+                        List.of(JigAnnotations.HANDLE_DOCUMENT))
         );
     }
 
     record EntrypointAnnotation(EntrypointType entrypointType,
-                                List<String> classAnnotations, List<String> methodAnnotations) {
+                                List<TypeId> classAnnotations, List<TypeId> methodAnnotations) {
     }
 
     Collection<Entrypoint> collectMethod(JigType jigType) {
         return entrypointAnnotations.stream()
                 .flatMap(entrypointAnnotation -> {
-                    if (entrypointAnnotation.classAnnotations().stream().map(TypeId::valueOf)
+                    if (entrypointAnnotation.classAnnotations().stream()
                             .anyMatch(jigType::hasAnnotation)) {
                         return jigType.instanceJigMethodStream()
-                                .filter(jigMethod -> entrypointAnnotation.methodAnnotations().stream().map(TypeId::valueOf)
+                                .filter(jigMethod -> entrypointAnnotation.methodAnnotations().stream()
                                         .anyMatch(jigMethod::hasAnnotation))
                                 .map(jigMethod -> {
                                     var entrypointMapping = getEntrypointMapping(jigType, entrypointAnnotation, jigMethod);
@@ -70,7 +72,6 @@ class EntrypointMethodDetector {
                     .filter(jigAnnotationReference -> {
                         var typeId = jigAnnotationReference.id();
                         return entrypointAnnotation.methodAnnotations().stream()
-                                .map(TypeId::valueOf)
                                 .anyMatch(typeId::equals);
                     })
                     .toList();

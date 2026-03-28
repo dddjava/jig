@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.inbound;
 
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.SpringAnnotations;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -18,7 +18,7 @@ record HttpEntrypointMapping(String httpMethod, String classPath, String methodP
         // org.springframework.core.annotation.AbstractAliasAwareAnnotationAttributeExtractor.getAttributeValue
         // 複数（ @RequestMapping({"a", "b"}) など）への対応は、そのうち。
         String classPath = jigType
-                .annotationValueOf(TypeId.valueOf("org.springframework.web.bind.annotation.RequestMapping"), "value", "path")
+                .annotationValueOf(SpringAnnotations.REQUEST_MAPPING, "value", "path")
                 .filter(value -> !"/".equals(value)).orElse("");
 
         var methodPath = resolveMethodPath(methodMappingAnnotation);

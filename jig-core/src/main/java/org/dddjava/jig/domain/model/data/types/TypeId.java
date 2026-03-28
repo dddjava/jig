@@ -116,8 +116,7 @@ public record TypeId(String value) implements Comparable<TypeId> {
     }
 
     public boolean isJavaLanguageType() {
-        // TODO これだとパッケージ名 javarista などjava&javax以外も含まれてしまうような。。。
-        return isPrimitive() || isVoid() || value.startsWith("java");
+        return isPrimitive() || isVoid() || value.startsWith("java.") || value.startsWith("javax.");
     }
 
     @Override

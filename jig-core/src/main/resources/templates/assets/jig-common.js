@@ -241,6 +241,18 @@ globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relation
 };
 
 // Mermaid diagram builder
+globalThis.Jig.mermaid.escapeId = function escapeId(id) {
+    return (id || "").replace(/\./g, '_');
+};
+
+globalThis.Jig.mermaid.escapeLabel = function escapeLabel(label) {
+    return `"${(label || "").replace(/"/g, '#quot;')}"`;
+};
+
+globalThis.Jig.mermaid.escapeMermaidText = function escapeMermaidText(text) {
+    return (text || "").replace(/"/g, '\\"');
+};
+
 globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     constructor() {
         this.nodes = [];

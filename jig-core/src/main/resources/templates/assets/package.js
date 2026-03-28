@@ -210,6 +210,49 @@ function buildFocusRowVisibility(rowFqns, relations, packageFilterFqn, aggregati
     });
 }
 
+// BFS グラフ走査を実行し、隣接ノードをすべて収集
+function traverseGraph(root, adjacencyMap) {
+    const visited = new Set([root]);
+    const queue = [root];
+    while (queue.length > 0) {
+        const current = queue.shift();
+        const neighbors = adjacencyMap.get(current);
+        if (neighbors) {
+            neighbors.forEach(neighbor => {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    queue.push(neighbor);
+                }
+            });
+        }
+    }
+    return visited;
+}
+
+// 呼び出し元グラフ（逆方向グラフ）を構築
+function buildReverseAdjacency(relations, aggregationDepth, rootValue) {
+    const reverseAdjacency = new Map();
+    relations.forEach(relation => {
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
+        if (!reverseAdjacency.has(to)) reverseAdjacency.set(to, new Set());
+        reverseAdjacency.get(to).add(from);
+    });
+    return reverseAdjacency;
+}
+
+// 呼び出し先グラフを構築
+function buildForwardAdjacency(relations, aggregationDepth) {
+    const forwardAdjacency = new Map();
+    relations.forEach(relation => {
+        const from = getAggregatedFqn(relation.from, aggregationDepth);
+        const to = getAggregatedFqn(relation.to, aggregationDepth);
+        if (!forwardAdjacency.has(from)) forwardAdjacency.set(from, new Set());
+        forwardAdjacency.get(from).add(to);
+    });
+    return forwardAdjacency;
+}
+
 function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, focusCalleeMode) {
     if (!root) return new Set();
 
@@ -224,29 +267,9 @@ function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, foc
                 if (to === root) focusSet.add(from);
             });
         } else { // '-1' ('すべて' - all transitive callers)
-            const reverseAdjacency = new Map();
-            relations.forEach(relation => {
-                const from = getAggregatedFqn(relation.from, aggregationDepth);
-                const to = getAggregatedFqn(relation.to, aggregationDepth);
-                if (!reverseAdjacency.has(to)) reverseAdjacency.set(to, new Set());
-                reverseAdjacency.get(to).add(from);
-            });
-
-            const queue = [root];
-            const visited = new Set([root]);
-            while (queue.length > 0) {
-                const current = queue.shift();
-                const callers = reverseAdjacency.get(current);
-                if (callers) {
-                    callers.forEach(caller => {
-                        if (!visited.has(caller)) {
-                            visited.add(caller);
-                            focusSet.add(caller);
-                            queue.push(caller);
-                        }
-                    });
-                }
-            }
+            const reverseAdjacency = buildReverseAdjacency(relations, aggregationDepth);
+            const callers = traverseGraph(root, reverseAdjacency);
+            callers.forEach(caller => focusSet.add(caller));
         }
     }
 
@@ -259,29 +282,9 @@ function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, foc
                 if (from === root) focusSet.add(to);
             });
         } else { // '-1' ('すべて' - all transitive callees)
-            const forwardAdjacency = new Map();
-            relations.forEach(relation => {
-                const from = getAggregatedFqn(relation.from, aggregationDepth);
-                const to = getAggregatedFqn(relation.to, aggregationDepth);
-                if (!forwardAdjacency.has(from)) forwardAdjacency.set(from, new Set());
-                forwardAdjacency.get(from).add(to);
-            });
-
-            const queue = [root];
-            const visited = new Set([root]);
-            while (queue.length > 0) {
-                const current = queue.shift();
-                const callees = forwardAdjacency.get(current);
-                if (callees) {
-                    callees.forEach(callee => {
-                        if (!visited.has(callee)) {
-                            visited.add(callee);
-                            focusSet.add(callee);
-                            queue.push(callee);
-                        }
-                    });
-                }
-            }
+            const forwardAdjacency = buildForwardAdjacency(relations, aggregationDepth);
+            const callees = traverseGraph(root, forwardAdjacency);
+            callees.forEach(callee => focusSet.add(callee));
         }
     }
 

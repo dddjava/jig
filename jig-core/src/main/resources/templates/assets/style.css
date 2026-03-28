@@ -61,7 +61,16 @@ header a {
 }
 
 .jig-header-nav__trigger {
-    cursor: default;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+}
+
+.jig-header-nav__trigger::after {
+    content: "▾";
+    font-size: 0.75em;
+    opacity: 0.7;
 }
 
 .jig-header-nav:hover .jig-header-nav__trigger {

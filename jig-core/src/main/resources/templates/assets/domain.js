@@ -632,10 +632,10 @@ function applyVisibilitySettings() {
 
     // 「列挙のみ表示」フィルター
     if (domainSettings.showEnumOnly) {
-        // メインのパッケージセクションのフィルター（enum を含まないパッケージは非表示）
+        // メインのパッケージセクションは全て非表示
         const packageSections = main.querySelectorAll('section.jig-card--type[data-has-enum-children]');
         packageSections.forEach(section => {
-            section.style.display = section.dataset.hasEnumChildren === 'true' ? '' : 'none';
+            section.style.display = 'none';
         });
 
         // メインのタイプセクションのフィルター（enum でないタイプは非表示）

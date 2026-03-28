@@ -294,15 +294,16 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         this.styles.push(`classDef ${className} ${style}`);
     }
 
-    startSubgraph(id, label = id) {
+    startSubgraph(id, label = id, direction = null) {
         const subgraph = {id, label, lines: []};
+        if (direction) subgraph.lines.push(`direction ${direction}`);
         this.subgraphs.push(subgraph);
         return subgraph;
     }
 
-    ensureSubgraph(map, key, label) {
+    ensureSubgraph(map, key, label, direction = null) {
         if (!map.has(key)) {
-            map.set(key, this.startSubgraph(key, label));
+            map.set(key, this.startSubgraph(key, label, direction));
         }
         return map.get(key);
     }

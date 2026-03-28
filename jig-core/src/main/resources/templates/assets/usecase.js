@@ -533,7 +533,7 @@ const UsecaseApp = {
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);
                                     const classNodeId = globalThis.Jig.fqnToId("sg", classFqn);
                                     const classLabel = globalThis.Jig.glossary.getTypeTerm(classFqn).title;
-                                    const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel);
+                                    const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel, 'LR');
                                     if (node.kind === "usecase") {
                                         // ユースケース: 角丸、ページ内リンク
                                         const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;

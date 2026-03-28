@@ -147,6 +147,7 @@ test.describe('UsecaseApp', () => {
         assert.ok(mermaidPres[0].textContent.includes('graph LR'));
         assert.ok(mermaidPres[0].textContent.includes('subgraph'), 'ユースケース図にsubgraphが含まれること');
         assert.ok(mermaidPres[0].textContent.includes('ServiceA'), 'subgraphにクラス名が含まれること');
+        assert.ok(mermaidPres[0].textContent.includes('direction LR'), 'subgraphにdirection LRが含まれること');
         assert.ok(mermaidPres[1].textContent.includes('sequenceDiagram'));
 
         const description = methodSection.querySelector('.description');

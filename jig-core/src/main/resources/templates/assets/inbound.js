@@ -105,7 +105,7 @@ const InboundApp = {
                     const typeFqn = ep.fqn.split('#')[0];
                     const subgraph = builder.ensureSubgraph(entrypointGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                     const label = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true).title;
-                    builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, '{{"$LABEL"}}');
+                    builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, '(["$LABEL"])');
                 });
 
                 // パスノードとdotted edge
@@ -142,7 +142,9 @@ const InboundApp = {
                         const typeFqn = fqn.split('#')[0];
                         const subgraph = builder.ensureSubgraph(methodGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                         const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
-                        builder.addNodeToSubgraph(subgraph, fqnToNodeId(fqn), label, '["$LABEL"]');
+                        var nodeId = fqnToNodeId(fqn);
+                        builder.addNodeToSubgraph(subgraph, nodeId, label, '(["$LABEL"])');
+                        builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
                     }
                 });
 

@@ -19,6 +19,24 @@
                 表示設定
             </summary>
             <div class="sidebar-settings-panel">
+                <fieldset class="misc-option">
+                    <legend>表示対象</legend>
+                    <label>
+                        <input id="show-only-domain" type="checkbox" checked>
+                        ドメインのみ
+                    </label>
+                    <label>
+                        <input id="show-empty-description" type="checkbox" checked>
+                        説明のない用語
+                    </label>
+                </fieldset>
+                <fieldset class="kind-option checkbox-options">
+                    <legend class="kind-option-title">種類</legend>
+                    <label><input type="checkbox" id="show-package" checked><span class="kind-badge" data-kind="パッケージ">P</span>パッケージ</label>
+                    <label><input type="checkbox" id="show-class" checked><span class="kind-badge" data-kind="クラス">C</span>クラス</label>
+                    <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span>メソッド</label>
+                    <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span>フィールド</label>
+                </fieldset>
                 <div class="search-option">
                     <div class="keyword-search">
                         <label for="search-input">キーワード</label>
@@ -40,25 +58,6 @@
                             <label><input type="radio" name="search-method" value="regex">正規表現</label>
                         </div>
                     </div>
-                </div>
-                <div class="kind-option">
-                    <p class="kind-option-title">種類</p>
-                    <div class="checkbox-options">
-                        <label><input type="checkbox" id="show-package" checked><span class="kind-badge" data-kind="パッケージ">P</span>パッケージ</label>
-                        <label><input type="checkbox" id="show-class" checked><span class="kind-badge" data-kind="クラス">C</span>クラス</label>
-                        <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span>メソッド</label>
-                        <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span>フィールド</label>
-                    </div>
-                </div>
-                <div class="misc-option">
-                    <label>
-                        <input id="show-empty-description" type="checkbox" checked>
-                        説明のない用語を表示する
-                    </label>
-                    <label>
-                        <input id="show-only-domain" type="checkbox" checked>
-                        ドメインパッケージのみ表示する
-                    </label>
                 </div>
                 <div class="display-option">
                     <div class="display-controls-row">

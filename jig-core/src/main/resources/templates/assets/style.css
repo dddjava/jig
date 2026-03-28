@@ -53,11 +53,15 @@ header a {
     align-items: center;
 }
 
+.jig-page-title,
 .jig-header-nav__trigger {
     font-weight: bold;
-    cursor: default;
     padding: 0 0.3em;
     border-radius: 3px;
+}
+
+.jig-header-nav__trigger {
+    cursor: default;
 }
 
 .jig-header-nav:hover .jig-header-nav__trigger {

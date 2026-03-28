@@ -343,7 +343,7 @@ function copyMermaidText(source, button) {
     if (!source) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(source).then(() => {
-            flashButtonLabel(button, "コピーしました");
+            flashButtonLabel(button, "Copied!");
         }).catch(() => {
             fallbackCopyText(source, button);
         });
@@ -363,9 +363,10 @@ function fallbackCopyText(source, button) {
     textarea.select();
     try {
         document.execCommand("copy");
-        flashButtonLabel(button, "コピーしました");
+        flashButtonLabel(button, "Copied!!");
     } catch (e) {
-        flashButtonLabel(button, "コピーに失敗しました");
+        flashButtonLabel(button, "Copy failed...");
+        console.error("Failed to copy text:", e);
     } finally {
         document.body.removeChild(textarea);
     }

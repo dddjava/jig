@@ -623,6 +623,8 @@ const UsecaseApp = {
                                     builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
                                     if (node.kind === "inbound-class") {
                                         builder.addClick(nodeId, "./inbound.html#" + node.fqn);
+                                    } else if (node.kind === "outbound") {
+                                        builder.addClick(nodeId, "./outbound.html#" + node.fqn);
                                     }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング

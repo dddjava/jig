@@ -89,15 +89,6 @@
         #toolbar span {
             color: #9cdcfe;
         }
-        #search-box {
-            margin-left: auto;
-            background: #3c3c3c;
-            border: 1px solid #555;
-            color: #ccc;
-            padding: 3px 8px;
-            font-size: 12px;
-            width: 200px;
-        }
         #schema-btn {
             background: #3c3c3c;
             border: 1px solid #555;
@@ -150,7 +141,6 @@
         }
         .collapsed > .json-inner { display: none; }
         .collapsed > .json-collapsed-marker { display: inline; }
-        .highlight { background: #613315; }
         .line-number {
             display: inline-block;
             min-width: 3ch;
@@ -195,7 +185,6 @@
         <div id="toolbar">
             <span id="current-file">-</span>
             <button id="schema-btn" disabled>Schema</button>
-            <input id="search-box" type="text" placeholder="キーワード検索 または .path[0].field | .[]">
         </div>
         <div id="json-view">
             <div id="empty-msg">左のリストからファイルを選択してください。</div>
@@ -294,7 +283,6 @@ function showJson(entry) {
     const data = globalThis[entry.varName];
     const view = document.getElementById("json-view");
     document.getElementById("current-file").textContent = entry.file;
-    document.getElementById("search-box").value = "";
 
     const formatted = JSON.stringify(data, null, 2);
     const pre = document.createElement("pre");
@@ -316,7 +304,6 @@ function showText(entry) {
     const text = globalThis[entry.varName];
     const view = document.getElementById("json-view");
     document.getElementById("current-file").textContent = entry.label;
-    document.getElementById("search-box").value = "";
 
     const pre = document.createElement("pre");
     pre.innerHTML = addLineNumbersText(text);
@@ -380,7 +367,6 @@ function showSchema(entry) {
     const schema = inferSchema(data);
     const view = document.getElementById("json-view");
     document.getElementById("current-file").textContent = entry.file + " [schema]";
-    document.getElementById("search-box").value = "";
 
     currentEntry = entry;
     currentEntryType = 'schema';
@@ -397,145 +383,6 @@ function showSchema(entry) {
     document.getElementById("schema-btn").classList.add("active");
 }
 // ---- /スキーマ推測エンジン ----
-
-// ---- jq サブセットエンジン ----
-// サポート: . | .field | .[n] | .[] | パイプ |
-function tokenizeJqPath(path) {
-    const tokens = [];
-    let i = 0;
-    while (i < path.length) {
-        if (path[i] === '.') {
-            i++;
-        } else if (path[i] === '[') {
-            const close = path.indexOf(']', i);
-            if (close === -1) throw new Error("']' が閉じていません");
-            const inner = path.slice(i + 1, close).trim();
-            if (inner === '' || inner === '*') {
-                tokens.push({ type: 'iter' });
-            } else if (/^-?\d+$/.test(inner)) {
-                tokens.push({ type: 'index', n: parseInt(inner, 10) });
-            } else {
-                throw new Error(`不明なインデックス: [${inner}]`);
-            }
-            i = close + 1;
-        } else {
-            let j = i;
-            while (j < path.length && path[j] !== '.' && path[j] !== '[') j++;
-            if (j > i) tokens.push({ type: 'field', name: path.slice(i, j) });
-            i = j;
-        }
-    }
-    return tokens;
-}
-
-function applyToken(token, data) {
-    if (data === null || data === undefined) return [];
-    switch (token.type) {
-        case 'field':
-            if (typeof data === 'object' && !Array.isArray(data)) {
-                return token.name in data ? [data[token.name]] : [];
-            }
-            return [];
-        case 'index': {
-            if (Array.isArray(data)) {
-                const idx = token.n < 0 ? data.length + token.n : token.n;
-                return idx in data ? [data[idx]] : [];
-            }
-            return [];
-        }
-        case 'iter':
-            if (Array.isArray(data)) return [...data];
-            if (typeof data === 'object') return Object.values(data);
-            return [];
-    }
-    return [];
-}
-
-function evalJq(expr, data) {
-    const parts = expr.split('|').map(s => s.trim());
-    let current = [data];
-    for (const part of parts) {
-        if (!part.startsWith('.')) throw new Error(`'.' で始まる式のみサポートします: ${part}`);
-        const path = part.slice(1);
-        const next = [];
-        for (const item of current) {
-            if (path === '') {
-                next.push(item);
-            } else {
-                const tokens = tokenizeJqPath(path);
-                let items = [item];
-                for (const token of tokens) {
-                    items = items.flatMap(i => applyToken(token, i));
-                }
-                next.push(...items);
-            }
-        }
-        current = next;
-    }
-    return current;
-}
-
-function applyJq(expr) {
-    if (!currentEntry) return;
-    const data = globalThis[currentEntry.varName];
-    const view = document.getElementById("json-view");
-    let results;
-    try {
-        results = evalJq(expr, data);
-    } catch (e) {
-        view.innerHTML = `<div style="color:#f44747;padding:8px;font-size:13px">エラー: ${e.message}</div>`;
-        return;
-    }
-    const formatted = results.map(r => JSON.stringify(r, null, 2)).join('\n');
-    const pre = document.createElement("pre");
-    pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
-    view.innerHTML = "";
-    view.scrollTop = 0;
-    view.appendChild(pre);
-}
-// ---- /jq サブセットエンジン ----
-
-function applySearch(keyword) {
-    const re = new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
-    const view = document.getElementById("json-view");
-    const pre = document.createElement("pre");
-
-    if (currentEntryType === 'text') {
-        const text = globalThis[currentEntry.varName];
-        const escaped = text
-            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const highlighted = escaped.replace(re, m => `<mark class="highlight">${m}</mark>`);
-        pre.innerHTML = addLineNumbersText(highlighted);
-    } else {
-        const data = globalThis[currentEntry.varName];
-        const formatted = JSON.stringify(data, null, 2);
-        const html = syntaxHighlight(formatted);
-        const parts = html.split(/(<[^>]*>)/);
-        const highlightedParts = parts.map(part => {
-            if (part.startsWith('<')) return part;
-            return part.replace(re, m => `<mark class="highlight">${m}</mark>`);
-        });
-        pre.innerHTML = addLineNumbers(highlightedParts.join(''));
-    }
-
-    view.innerHTML = "";
-    view.scrollTop = 0;
-    view.appendChild(pre);
-}
-
-function applyFilter(keyword) {
-    if (!currentEntry) return;
-    if (!keyword) {
-        if (currentEntryType === 'json' || currentEntryType === 'schema') showJson(currentEntry);
-        else showText(currentEntry);
-        return;
-    }
-    if (currentEntryType === 'json' && keyword.startsWith('.')) {
-        applyJq(keyword);
-    } else {
-        applySearch(keyword);
-    }
-}
 
 async function init() {
     const sidebarItems = document.getElementById("sidebar-items");
@@ -601,10 +448,6 @@ async function init() {
     } else {
         document.getElementById("empty-msg").textContent = "data/*-data.js が見つかりませんでした。JIGを実行してからアクセスしてください。";
     }
-
-    document.getElementById("search-box").addEventListener("input", e => {
-        applyFilter(e.target.value.trim());
-    });
 
     document.getElementById("schema-btn").addEventListener("click", () => {
         if (currentEntryType === 'schema') {

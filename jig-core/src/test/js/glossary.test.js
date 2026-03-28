@@ -72,7 +72,7 @@ function setupDocument() {
     createInput('search-method-exact', 'radio', 'search-method', false).value = 'exact';
     createInput('search-method-regex', 'radio', 'search-method', false).value = 'regex';
 
-    createInput('display-mode-select', 'select');
+    createInput('show-attributes', 'checkbox', null, false);
     createInput('show-only-domain', 'checkbox', null, true);
 
     const jumpBar = doc.createElement('div');
@@ -435,7 +435,7 @@ test.describe('glossary.js', () => {
             const list = doc.createElement('div');
             doc.elementsById.set('term-list', list);
 
-            glossary.renderGlossaryTerms([{title: 'T', simpleText: 'S', fqn: 'F', kind: 'K', description: 'D'}], 'full');
+            glossary.renderGlossaryTerms([{title: 'T', simpleText: 'S', fqn: 'F', kind: 'K', description: 'D'}], true);
 
             const groupSection = list.children[0];
             assert.equal(groupSection.tagName, 'section');
@@ -448,7 +448,7 @@ test.describe('glossary.js', () => {
             assert.equal(article.tagName, 'article');
             assert.equal(article.id, 'F', 'IDはarticleに付与されているはず');
             const metaCard = article.children.find(c => c.tagName === 'section' && c.classList.contains('jig-card--item'));
-            assert.ok(metaCard, 'fullモードではメタカードがあるはず');
+            assert.ok(metaCard, '属性情報表示（showAttributes=true）ではメタカードがあるはず');
         });
 
         test('用語一覧を描画する (summaryモード)', () => {
@@ -456,12 +456,12 @@ test.describe('glossary.js', () => {
             const list = doc.createElement('div');
             doc.elementsById.set('term-list', list);
 
-            glossary.renderGlossaryTerms([{title: 'T', description: 'D'}], 'summary');
+            glossary.renderGlossaryTerms([{title: 'T', description: 'D'}], false);
 
             const groupSection = list.children[0];
             const article = groupSection.children[1];
-            assert.equal(article.classList.contains('jig-card--compact'), true, 'summaryモードではcompactクラスがあるはず');
-            assert.ok(!article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), 'summaryモードではFQNがないはず');
+            assert.equal(article.classList.contains('jig-card--compact'), true, '属性情報非表示（showAttributes=false）ではcompactクラスがあるはず');
+            assert.ok(!article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), '属性情報非表示ではFQNがないはず');
         });
 
         test('Markdown説明文のレンダリング (markedがある場合)', () => {

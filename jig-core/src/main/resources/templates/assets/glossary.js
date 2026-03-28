@@ -159,7 +159,7 @@ function renderJumpBar(chars) {
     });
 }
 
-function renderGlossaryTerms(terms, displayMode) {
+function renderGlossaryTerms(terms, showAttributes) {
     const list = document.getElementById("term-list");
     if (!list) return;
 
@@ -190,7 +190,7 @@ function renderGlossaryTerms(terms, displayMode) {
 
         groupTerms.forEach((term, index) => {
             const anchorId = buildTermAnchorId(term, index);
-            const isCompact = displayMode === "summary";
+            const isCompact = !showAttributes;
 
             const metaChildren = [];
             if (!isCompact) {
@@ -243,9 +243,9 @@ function renderGlossaryTerms(terms, displayMode) {
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
     const sortedTerms = sortTerms(filteredTerms, "name");
-    // renderGlossaryTerms に表示モードを渡す
+    // renderGlossaryTerms に属性情報表示フラグを渡す
     renderTermSidebar(sortedTerms);
-    renderGlossaryTerms(sortedTerms, controls.displayModeSelect?.value);
+    renderGlossaryTerms(sortedTerms, controls.showAttributesCheckbox?.checked);
 }
 
 function renderMarkdownDescriptions() {
@@ -351,7 +351,7 @@ if (typeof document !== "undefined") {
             searchTargetFqn: document.getElementById('search-target-fqn'),
             searchTargetSimple: document.getElementById('search-target-simple'),
             searchTargetKind: document.getElementById('search-target-kind'),
-            displayModeSelect: document.getElementById('display-mode-select'),
+            showAttributesCheckbox: document.getElementById('show-attributes'),
             showOnlyDomain: document.getElementById('show-only-domain'),
         };
 
@@ -372,7 +372,7 @@ if (typeof document !== "undefined") {
             controls.showClass,
             controls.showMethod,
             controls.showField,
-            controls.displayModeSelect,
+            controls.showAttributesCheckbox,
             controls.searchTargetName,
             controls.searchTargetDescription,
             controls.searchTargetFqn,

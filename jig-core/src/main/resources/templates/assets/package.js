@@ -965,7 +965,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
         const packageFqn = getPackageFqnFromTypeFqn(node);
         const packageName = packageFqn === '(default)'
             ? '(default)'
-            : packageFqn.substring(packageFqn.lastIndexOf('.') + 1);
+            : globalThis.Jig.glossary.typeSimpleName(packageFqn);
         if (!packages.has(packageFqn)) {
             packages.set(packageFqn, {nodes: new Set(), name: packageName});
         }
@@ -1059,7 +1059,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
     const appendClassNodes = (targetLines, classNodes) => {
         classNodes.forEach(classFqn => {
             const nodeId = escapeId(classFqn);
-            const className = classFqn.substring(classFqn.lastIndexOf('.') + 1);
+            const className = globalThis.Jig.glossary.typeSimpleName(classFqn);
             targetLines.push(`${nodeId}[${escapeLabel(className)}]`);
         });
     };
@@ -1092,7 +1092,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
         }
         const subgraphCounter = {value: 0};
         outerRoots.forEach((root, outerIndex) => {
-            const rootLabel = root.substring(root.lastIndexOf('.') + 1);
+            const rootLabel = globalThis.Jig.glossary.typeSimpleName(root);
             lines.push(`subgraph O${outerIndex}[${escapeLabel(rootLabel || root)}]`);
             const groupedPackages = groups.get(root) || [];
             const treeRoot = createTreeNode();

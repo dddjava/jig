@@ -51,7 +51,7 @@ const mockUsecaseData = {
 test.describe('UsecaseApp', () => {
     let doc;
     let UsecaseApp;
-    let buildSequenceFromCallMethods;
+    let buildSequenceDiagram;
     let buildSequenceDiagramCode;
 
     beforeEach(() => {
@@ -90,7 +90,7 @@ test.describe('UsecaseApp', () => {
             container.appendChild(pre);
         };
 
-        ({ UsecaseApp, buildSequenceFromCallMethods, buildSequenceDiagramCode } = require(usecaseJsPath));
+        ({ UsecaseApp, buildSequenceDiagram, buildSequenceDiagramCode } = require(usecaseJsPath));
     });
 
     test('init should render data from globalThis.usecaseData', () => {
@@ -314,10 +314,10 @@ test.describe('UsecaseApp', () => {
 
         const methodFqn = "com.example.ServiceA#method1()";
         const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
-        const seqBtn = methodSection.querySelectorAll('.diagram-tabs button')[1];
+        const sequenceBtn = methodSection.querySelectorAll('.diagram-tabs button')[1];
 
         // シーケンス図タブをクリック
-        seqBtn.dispatchEvent(new window.Event('click'));
+        sequenceBtn.dispatchEvent(new window.Event('click'));
 
         // 状態が 'sequence' になっていることを確認
         assert.strictEqual(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
@@ -329,12 +329,12 @@ test.describe('UsecaseApp', () => {
 
         // 再レンダリング後の要素を取得
         const newMethodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
-        const newSeqBtn = newMethodSection.querySelectorAll('.diagram-tabs button')[1];
-        const newSeqPanel = newMethodSection.querySelectorAll('.diagram-panel')[1];
+        const newSequenceBtn = newMethodSection.querySelectorAll('.diagram-tabs button')[1];
+        const newSequencePanel = newMethodSection.querySelectorAll('.diagram-panel')[1];
 
         // シーケンス図タブが active で、パネルが hidden でないことを確認
-        assert.ok(newSeqBtn.classList.contains('active'));
-        assert.ok(!newSeqPanel.classList.contains('hidden'));
+        assert.ok(newSequenceBtn.classList.contains('active'));
+        assert.ok(!newSequencePanel.classList.contains('hidden'));
     });
 
     test('inbound呼び出し元はクラスノード化されinbound.htmlへのリンクが付与される', () => {
@@ -372,8 +372,8 @@ test.describe('UsecaseApp', () => {
     });
 });
 
-test.describe('buildSequenceFromCallMethods', () => {
-    let buildSequenceFromCallMethods;
+test.describe('buildSequenceDiagram', () => {
+    let buildSequenceDiagram;
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
@@ -389,14 +389,14 @@ test.describe('buildSequenceFromCallMethods', () => {
 
         require(jigCommonJsPath);
         require(jigJsPath);
-        ({ buildSequenceFromCallMethods } = require(usecaseJsPath));
+        ({ buildSequenceDiagram } = require(usecaseJsPath));
     });
 
     test('callMethodsが空の場合はcallsが空', () => {
         const rootMethod = { fqn: 'com.example.ServiceA#method1()', callMethods: [] };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, methodMap);
+        const result = buildSequenceDiagram(rootMethod, methodMap);
 
         assert.strictEqual(result.calls.length, 0);
         assert.strictEqual(result.participants.length, 1);
@@ -415,7 +415,7 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -439,7 +439,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save(com.example.Entity)']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -460,7 +460,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -486,7 +486,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         ]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -515,7 +515,7 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#deepMethod()', deepMethod]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -540,7 +540,7 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['com.example.ServiceA#methodB()', methodB]
         ]);
 
-        const result = buildSequenceFromCallMethods(methodA, {
+        const result = buildSequenceDiagram(methodA, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -562,7 +562,7 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['pkg.Cls#C()', {...methodC, kind: 'usecase'}]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -588,7 +588,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         ]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: false,
@@ -613,7 +613,7 @@ test.describe('buildSequenceFromCallMethods', () => {
             ['pkg.Cls#D()', {...methodD, kind: 'usecase'}]
         ]);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -631,7 +631,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         const methodMap = new Map([['pkg.Cls#A()', {...rootMethod, kind: 'usecase'}]]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildSequenceFromCallMethods(rootMethod, {
+        const result = buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -767,8 +767,8 @@ test.describe('buildOutboundOperationSet', () => {
     });
 });
 
-test.describe('buildGraphFromCallMethods', () => {
-    let buildGraphFromCallMethods;
+test.describe('buildUsecaseDiagram', () => {
+    let buildUsecaseDiagram;
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
@@ -783,7 +783,7 @@ test.describe('buildGraphFromCallMethods', () => {
 
         require(jigCommonJsPath);
         require(jigJsPath);
-        ({ buildGraphFromCallMethods } = require(usecaseJsPath));
+        ({ buildUsecaseDiagram } = require(usecaseJsPath));
     });
 
     test('outboundOperationSetが空の場合、外部ノードは追加されない', () => {
@@ -793,7 +793,7 @@ test.describe('buildGraphFromCallMethods', () => {
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -812,7 +812,7 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -835,7 +835,7 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -864,7 +864,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -881,7 +881,7 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodC = { fqn: 'C', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -904,7 +904,7 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['A', rootMethod], ['B', methodB]]);
         const outboundOperationSet = new Set(['ext#method()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: false,
@@ -925,7 +925,7 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodD = { fqn: 'D', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC], ['D', methodD]]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -945,7 +945,7 @@ test.describe('buildGraphFromCallMethods', () => {
         const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -965,7 +965,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['pkg.Cls#B()', callerMethod]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -988,7 +988,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['pkg.Cls#C()', usecaseCaller]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1010,7 +1010,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['pkg.Cls#B()', callerMethod]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -1031,7 +1031,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['pkg.Cls#C()', indirectCaller]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -1054,7 +1054,7 @@ test.describe('buildGraphFromCallMethods', () => {
         ]);
         const outboundOperationSet = new Set(['ext.Repo#save()']);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -1079,7 +1079,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['pkg.Cls#U()', usecaseCaller]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1102,7 +1102,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ['pkg.Cls#U()', usecaseCaller]
         ]);
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1127,7 +1127,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ]
         };
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1154,7 +1154,7 @@ test.describe('buildGraphFromCallMethods', () => {
             ]
         };
 
-        const result = buildGraphFromCallMethods(rootMethod, {
+        const result = buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,

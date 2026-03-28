@@ -60,7 +60,7 @@ function buildOutboundOperationSet(outboundData) {
     return set;
 }
 
-function buildGraphFromCallMethods(rootMethod, diagramContext) {
+function buildUsecaseDiagram(rootMethod, diagramContext) {
     /**
      * @type {Map<string, {fqn: string, kind: string}>}
      */
@@ -236,7 +236,7 @@ function buildClassGraph(usecase) {
     return { nodes, edges };
 }
 
-function buildSequenceFromCallMethods(rootMethod, diagramContext) {
+function buildSequenceDiagram(rootMethod, diagramContext) {
     const participantKeys = [];
     const participants = new Map();
     const calls = [];
@@ -333,7 +333,7 @@ function buildSequenceDiagramCode(sequence) {
 const UsecaseApp = {
     state: {
         data: null,
-        selectedTabs: new Map() // methodFqn -> 'graph' | 'sequence'
+        selectedTabs: new Map() // methodFqn -> 'usecase' | 'sequence'
     },
 
     init() {
@@ -615,69 +615,69 @@ const UsecaseApp = {
                 });
 
                 // Diagrams
-                const graph = buildGraphFromCallMethods(method, diagramContext);
-                const hasGraph = graph.edges.length > 0;
+                const usecaseDiagram = buildUsecaseDiagram(method, diagramContext);
+                const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-                const sequence = buildSequenceFromCallMethods(method, diagramContext);
-                const seqCode = buildSequenceDiagramCode(sequence);
-                const hasSequence = seqCode !== null;
+                const sequenceDiagram = buildSequenceDiagram(method, diagramContext);
+                const sequenceDiagramCode = buildSequenceDiagramCode(sequenceDiagram);
+                const hasSequence = sequenceDiagramCode !== null;
 
-                if (hasGraph || hasSequence) {
+                if (hasUsecaseDiagram || hasSequence) {
                     const diagramContainer = createElement("div", {className: "diagram-container"});
                     methodSection.appendChild(diagramContainer);
 
-                    let graphPanel = null;
-                    let seqPanel = null;
+                    let usecasePanel = null;
+                    let sequencePanel = null;
 
-                    if (hasGraph && hasSequence) {
-                        const selectedTab = this.state.selectedTabs.get(method.fqn) || 'graph';
-                        const isGraphActive = selectedTab === 'graph';
+                    if (hasUsecaseDiagram && hasSequence) {
+                        const selectedTab = this.state.selectedTabs.get(method.fqn) || 'usecase';
+                        const isUsecaseActive = selectedTab === 'usecase';
 
-                        const graphBtn = createElement("button", {
-                            className: "diagram-tab" + (isGraphActive ? " active" : ""),
+                        const usecaseBtn = createElement("button", {
+                            className: "diagram-tab" + (isUsecaseActive ? " active" : ""),
                             textContent: "ユースケース図"
                         });
-                        const seqBtn = createElement("button", {
-                            className: "diagram-tab" + (!isGraphActive ? " active" : ""),
+                        const sequenceBtn = createElement("button", {
+                            className: "diagram-tab" + (!isUsecaseActive ? " active" : ""),
                             textContent: "シーケンス図"
                         });
                         diagramContainer.appendChild(createElement("div", {
                             className: "diagram-tabs",
-                            children: [graphBtn, seqBtn]
+                            children: [usecaseBtn, sequenceBtn]
                         }));
 
-                        graphPanel = createElement("div", {className: "diagram-panel" + (isGraphActive ? "" : " hidden")});
-                        seqPanel = createElement("div", {className: "diagram-panel" + (!isGraphActive ? "" : " hidden")});
+                        usecasePanel = createElement("div", {className: "diagram-panel" + (isUsecaseActive ? "" : " hidden")});
+                        sequencePanel = createElement("div", {className: "diagram-panel" + (!isUsecaseActive ? "" : " hidden")});
 
-                        graphBtn.addEventListener('click', () => {
-                            graphBtn.classList.add('active');
-                            seqBtn.classList.remove('active');
-                            graphPanel.classList.remove('hidden');
-                            seqPanel.classList.add('hidden');
-                            this.state.selectedTabs.set(method.fqn, 'graph');
+                        usecaseBtn.addEventListener('click', () => {
+                            usecaseBtn.classList.add('active');
+                            sequenceBtn.classList.remove('active');
+                            usecasePanel.classList.remove('hidden');
+                            sequencePanel.classList.add('hidden');
+                            this.state.selectedTabs.set(method.fqn, 'usecase');
                         });
-                        seqBtn.addEventListener('click', () => {
-                            seqBtn.classList.add('active');
-                            graphBtn.classList.remove('active');
-                            seqPanel.classList.remove('hidden');
-                            graphPanel.classList.add('hidden');
+                        sequenceBtn.addEventListener('click', () => {
+                            sequenceBtn.classList.add('active');
+                            usecaseBtn.classList.remove('active');
+                            sequencePanel.classList.remove('hidden');
+                            usecasePanel.classList.add('hidden');
                             this.state.selectedTabs.set(method.fqn, 'sequence');
                         });
 
-                        diagramContainer.appendChild(graphPanel);
-                        diagramContainer.appendChild(seqPanel);
+                        diagramContainer.appendChild(usecasePanel);
+                        diagramContainer.appendChild(sequencePanel);
                     }
 
-                    if (hasGraph) {
+                    if (hasUsecaseDiagram) {
                         const mmdContainer = createElement("div", {className: "mermaid-diagram"});
-                        (graphPanel || diagramContainer).appendChild(mmdContainer);
+                        (usecasePanel || diagramContainer).appendChild(mmdContainer);
 
                         globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                             const builder = new globalThis.Jig.mermaid.Builder();
                             builder.applyThemeClassDefs();
 
                             const classSubgraphs = new Map();
-                            graph.nodes.forEach(node => {
+                            usecaseDiagram.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
                                 if (node.kind === "outbound" || node.kind === "inbound-class") {
                                     // 外部ポート / inboundクラス
@@ -715,7 +715,7 @@ const UsecaseApp = {
                                 }
                             });
 
-                            graph.edges.forEach(edge => {
+                            usecaseDiagram.edges.forEach(edge => {
                                 builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                             });
 
@@ -726,11 +726,11 @@ const UsecaseApp = {
                     }
 
                     if (hasSequence) {
-                        const seqContainer = createElement("div", {className: "mermaid-diagram"});
-                        (seqPanel || diagramContainer).appendChild(seqContainer);
+                        const sequenceContainer = createElement("div", {className: "mermaid-diagram"});
+                        (sequencePanel || diagramContainer).appendChild(sequenceContainer);
 
-                        globalThis.Jig.observe.lazyRender(seqContainer, () => {
-                            globalThis.Jig.mermaid.renderWithControls(seqContainer, seqCode);
+                        globalThis.Jig.observe.lazyRender(sequenceContainer, () => {
+                            globalThis.Jig.mermaid.renderWithControls(sequenceContainer, sequenceDiagramCode);
                         });
                     }
                 }
@@ -778,8 +778,8 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         UsecaseApp,
         buildOutboundOperationSet,
-        buildGraphFromCallMethods,
-        buildSequenceFromCallMethods,
+        buildUsecaseDiagram,
+        buildSequenceDiagram,
         buildSequenceDiagramCode
     };
 }

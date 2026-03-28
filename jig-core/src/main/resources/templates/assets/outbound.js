@@ -237,13 +237,13 @@ function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, port
         const portOpId = globalThis.Jig.fqnToId("portOp", portOpFqn);
         builder.addNodeToSubgraph(
             builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
-            portOpId, portOpName
+            portOpId, portOpName, 'method'
         );
         builder.addClass(portOpId, "outbound");
         return portOpId;
     } else {
         const portNodeId = globalThis.Jig.fqnToId("port", portFqn);
-        builder.addNode(portNodeId, portLabel);
+        builder.addNode(portNodeId, portLabel, 'class');
         builder.addClass(portNodeId, "outbound");
         return portNodeId;
     }
@@ -255,12 +255,12 @@ function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executi
     if (visibility.execution) {
         const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
         const executionId = globalThis.Jig.fqnToId("exec", executionFqn);
-        builder.addNodeToSubgraph(sg, executionId, executionName);
+        builder.addNodeToSubgraph(sg, executionId, executionName, 'method');
         if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
         return executionId;
     } else {
         const adapterNodeId = globalThis.Jig.fqnToId("adapter", adapterFqn);
-        builder.addNode(adapterNodeId, adapterLabel);
+        builder.addNode(adapterNodeId, adapterLabel, 'class');
         if (sourceNodeId) builder.addEdge(sourceNodeId, adapterNodeId);
         return adapterNodeId;
     }
@@ -273,14 +273,14 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
     const groupLabel = getTypeTerm(groupId).title;
     if (visibility.accessorMethod) {
         const opNodeId = globalThis.Jig.fqnToId("op", op.id);
-        builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop());
+        builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
         if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
         return opNodeId;
     } else {
         const accessorNodeId = globalThis.Jig.fqnToId("accessor", groupId);
         if (!accessorNodes.has(groupId)) {
             accessorNodes.set(groupId, accessorNodeId);
-            builder.addNode(accessorNodeId, groupLabel);
+            builder.addNode(accessorNodeId, groupLabel, 'class');
         }
         if (sourceNodeId) builder.addEdge(sourceNodeId, accessorNodes.get(groupId));
         return accessorNodes.get(groupId);
@@ -292,7 +292,7 @@ function addPersistenceTargetEdges(builder, sourceNodeId, op, persistenceTargetN
         if (!isCrudVisible(operationType, visibility)) return;
         if (!persistenceTargetNodes.has(persistenceTarget)) {
             persistenceTargetNodes.set(persistenceTarget, `Target_${persistenceTargetNodes.size}`);
-            builder.addNode(persistenceTargetNodes.get(persistenceTarget), persistenceTarget, '[("$LABEL")]');
+            builder.addNode(persistenceTargetNodes.get(persistenceTarget), persistenceTarget, 'database');
         }
         const edgeLabel = visibility.externalTypeMethod ? operationType : undefined;
         if (sourceNodeId) builder.addEdge(sourceNodeId, persistenceTargetNodes.get(persistenceTarget), edgeLabel);
@@ -305,7 +305,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         if (!visibility.externalType) return;
         if (!extTypeNodes.has(ext.fqn)) {
             extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-            builder.addNode(extTypeNodes.get(ext.fqn), getTypeTerm(ext.fqn).title, '(("$LABEL"))');
+            builder.addNode(extTypeNodes.get(ext.fqn), getTypeTerm(ext.fqn).title, 'external');
         }
         const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
         if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
@@ -329,7 +329,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
         accessor.methods.forEach(accMethod => {
             const accMethodNodeId = globalThis.Jig.fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
-            builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name);
+            builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, 'method');
             if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
             accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
         });
@@ -339,7 +339,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         const nodeId = globalThis.Jig.fqnToId("extAcc", accessor.fqn);
         if (!extAccessorNodes.has(accessor.fqn)) {
             extAccessorNodes.set(accessor.fqn, nodeId);
-            builder.addNode(nodeId, accessorLabel);
+            builder.addNode(nodeId, accessorLabel, 'class');
         }
         if (sourceNodeId) builder.addEdge(sourceNodeId, extAccessorNodes.get(accessor.fqn));
 

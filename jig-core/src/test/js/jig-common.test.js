@@ -212,3 +212,52 @@ test.describe('MermaidBuilder.applyThemeClassDefs', () => {
         assert.equal(jigCommon.nodeStyleDefs.inactive, 'fill:#e0e0e0,stroke:#aaa');
     });
 });
+
+// ----- getNodeDefinition & MermaidBuilder node shapes -----
+
+test.describe('Mermaid node shapes', () => {
+    test('getNodeDefinition: default shape is class (square)', () => {
+        const def = jigCommon.getNodeDefinition('id1', 'label1');
+        assert.equal(def, 'id1["label1"]');
+    });
+
+    test('getNodeDefinition: method shape is rounded', () => {
+        const def = jigCommon.getNodeDefinition('id1', 'label1', 'method');
+        assert.equal(def, 'id1(["label1"])');
+    });
+
+    test('getNodeDefinition: package shape is stacked', () => {
+        const def = jigCommon.getNodeDefinition('id1', 'label1', 'package');
+        assert.equal(def, 'id1@{shape: st-rect, label: "label1"}');
+    });
+
+    test('getNodeDefinition: database shape is cylindrical', () => {
+        const def = jigCommon.getNodeDefinition('id1', 'label1', 'database');
+        assert.equal(def, 'id1[("label1")]');
+    });
+
+    test('getNodeDefinition: external shape is double circle', () => {
+        const def = jigCommon.getNodeDefinition('id1', 'label1', 'external');
+        assert.equal(def, 'id1(("label1"))');
+    });
+
+    test('getNodeDefinition: fallback to raw shape string', () => {
+        const def = jigCommon.getNodeDefinition('id1', 'label1', '>"$LABEL"]');
+        assert.equal(def, 'id1>"label1"]');
+    });
+
+    test('MermaidBuilder.addNode uses default shape', () => {
+        const builder = new jigCommon.MermaidBuilder();
+        builder.addNode('id1', 'label1');
+        const code = builder.build();
+        assert.ok(code.includes('id1["label1"]'));
+    });
+
+    test('MermaidBuilder.addNodeToSubgraph uses specified shape', () => {
+        const builder = new jigCommon.MermaidBuilder();
+        const sg = builder.startSubgraph('sg1');
+        builder.addNodeToSubgraph(sg, 'id1', 'label1', 'method');
+        const code = builder.build();
+        assert.ok(code.includes('id1(["label1"])'));
+    });
+});

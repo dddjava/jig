@@ -84,10 +84,7 @@ function setupDiagramEnvironment(doc, context) {
     transitiveReductionToggle.type = 'checkbox';
     doc.elementsById.set('transitive-reduction-toggle', transitiveReductionToggle);
 
-    globalThis.Jig.mermaid = {
-        renderWithControls() {
-        }
-    };
+    globalThis.Jig.mermaid.renderWithControls = function() {};
     return diagram;
 }
 
@@ -927,7 +924,7 @@ test.describe('package.js', () => {
                 itemNode.appendChild(button);
 
                 const renderWithControls = test.mock.fn(() => {});
-                globalThis.Jig.mermaid = { renderWithControls };
+                globalThis.Jig.mermaid.renderWithControls = renderWithControls;
 
                 const item = { causes: ['a.A -> b.B'] };
                 pkg.renderMutualDependencyDiagram(item, itemNode, testContext);

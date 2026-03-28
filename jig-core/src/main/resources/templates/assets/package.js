@@ -721,7 +721,7 @@ function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelBy
     const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
         const fqn = nodeIdToFqn.get(nodeId);
         const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
-        let nodeDefinition = `${nodeId}["${escapeMermaidText(displayLabel)}"]`;
+        let nodeDefinition = globalThis.Jig.mermaid.getNodeDefinition(nodeId, displayLabel, 'package');
         if (fqn === focusedPackageFqn) {
             nodeDefinition += ':::focused-package-highlight';
         }
@@ -1050,7 +1050,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
         classNodes.forEach(classFqn => {
             const nodeId = escapeId(classFqn);
             const className = globalThis.Jig.glossary.typeSimpleName(classFqn);
-            targetLines.push(`${nodeId}[${escapeLabel(className)}]`);
+            targetLines.push(globalThis.Jig.mermaid.getNodeDefinition(nodeId, className, 'class'));
         });
     };
     const createTreeNode = () => ({classes: new Set(), children: new Map()});

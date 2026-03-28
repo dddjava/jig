@@ -211,6 +211,31 @@ function buildGraphFromCallMethods(rootMethod, diagramContext) {
     return {nodes: [...nodes.values()], edges};
 }
 
+function buildClassGraph(usecase) {
+    const nodes = [];
+    const edges = [];
+    const edgeSet = new Set();
+    const classMethods = [...usecase.methods, ...usecase.staticMethods];
+    const methodFqns = new Set(classMethods.map(m => m.fqn));
+
+    classMethods.forEach(method => {
+        const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
+        nodes.push({ fqn: method.fqn, kind });
+
+        (method.callMethods || []).forEach(calleeFqn => {
+            if (methodFqns.has(calleeFqn)) {
+                const edgeKey = `${method.fqn}->${calleeFqn}`;
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({ from: method.fqn, to: calleeFqn });
+                }
+            }
+        });
+    });
+
+    return { nodes, edges };
+}
+
 function buildSequenceFromCallMethods(rootMethod, diagramContext) {
     const participantKeys = [];
     const participants = new Map();
@@ -518,6 +543,41 @@ const UsecaseApp = {
                 }));
             }
 
+            // Class diagram (internal relations)
+            const classGraph = buildClassGraph(usecase);
+            if (classGraph.edges.length > 0) {
+                const classDiagramContainer = createElement("div", {className: "diagram-container class-diagram"});
+                const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+                classDiagramContainer.appendChild(mmdContainer);
+                section.appendChild(classDiagramContainer);
+
+                globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+                    const builder = new globalThis.Jig.mermaid.Builder();
+                    builder.applyThemeClassDefs();
+
+                    classGraph.nodes.forEach(node => {
+                        const nodeId = fqnToNodeId(node.fqn);
+                        const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                        if (node.kind === "usecase") {
+                            builder.addNode(nodeId, nodeLabel, 'method');
+                            builder.addClass(nodeId, "usecase");
+                            builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                        } else {
+                            builder.addNode(nodeId, nodeLabel, 'method');
+                            builder.addClass(nodeId, "inactive");
+                        }
+                    });
+
+                    classGraph.edges.forEach(edge => {
+                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
+                    });
+
+                    const code = builder.build('LR');
+                    mmdContainer.innerHTML = '';
+                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
+                });
+            }
+
             const fieldsList = globalThis.Jig.dom.createFieldsList(usecase.fields, createElementForTypeRef);
             if (fieldsList) section.appendChild(fieldsList);
 
@@ -622,7 +682,7 @@ const UsecaseApp = {
                                 if (node.kind === "outbound" || node.kind === "inbound-class") {
                                     // 外部ポート / inboundクラス
                                     const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
-                                    builder.addNode(nodeId, nodeLabel, '["$LABEL"]');
+                                    builder.addNode(nodeId, nodeLabel, 'class');
                                     if (node.kind === "inbound-class") {
                                         builder.addClass(nodeId, "inbound");
                                         builder.addClick(nodeId, "./inbound.html#" + globalThis.Jig.fqnToId("adapter", node.fqn));
@@ -639,7 +699,7 @@ const UsecaseApp = {
                                     if (node.kind === "usecase") {
                                         // ユースケース: 角丸、ページ内リンク
                                         const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, '(["$LABEL"])');
+                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
                                         builder.addClass(nodeId, "usecase");
                                         // 自身を強調表示
                                         if (node.fqn === method.fqn) {
@@ -649,7 +709,7 @@ const UsecaseApp = {
                                     } else {
                                         // その他(method or static-method)
                                         const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, '(["$LABEL"])');
+                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
                                         builder.addClass(nodeId, "inactive");
                                     }
                                 }

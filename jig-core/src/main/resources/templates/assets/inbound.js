@@ -106,7 +106,7 @@ const InboundApp = {
                     const typeFqn = ep.fqn.split('#')[0];
                     const subgraph = builder.ensureSubgraph(entrypointGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                     const label = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true).title;
-                    builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, '(["$LABEL"])');
+                    builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, 'method');
                     builder.addClass(fqnToNodeId(ep.fqn), "inbound");
                 });
 
@@ -132,7 +132,7 @@ const InboundApp = {
                     methods.forEach(fqn => {
                         const mId = fqnToNodeId(fqn);
                         const mLabel = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
-                        builder.addNodeToSubgraph(subgraph, mId, mLabel, '(["$LABEL"])');
+                        builder.addNodeToSubgraph(subgraph, mId, mLabel, 'method');
                         builder.addClass(mId, "usecase");
                         builder.addClick(mId, `./usecase.html#${globalThis.Jig.fqnToId("method", fqn)}`);
                     });
@@ -146,7 +146,7 @@ const InboundApp = {
                         const subgraph = builder.ensureSubgraph(methodGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                         const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
                         var nodeId = fqnToNodeId(fqn);
-                        builder.addNodeToSubgraph(subgraph, nodeId, label, '(["$LABEL"])');
+                        builder.addNodeToSubgraph(subgraph, nodeId, label, 'method');
                         builder.addClass(nodeId, "inactive");
                     }
                 });

@@ -14,6 +14,14 @@ globalThis.Jig.mermaid.nodeStyleDefs = {
     inactive: "fill:#e0e0e0,stroke:#aaa"
 };
 
+globalThis.Jig.mermaid.nodeShapes = {
+    method: '(["$LABEL"])',
+    class: '["$LABEL"]',
+    package: '@{shape: st-rect, label: "$LABEL"}',
+    database: '[("$LABEL")]',
+    external: '(("$LABEL"))'
+};
+
 // Estimate Mermaid edge count from source
 function estimateEdgeCount(source) {
     const text = source != null ? String(source) : "";
@@ -262,6 +270,12 @@ globalThis.Jig.mermaid.escapeMermaidText = function escapeMermaidText(text) {
     return (text || "").replace(/"/g, '\\"');
 };
 
+globalThis.Jig.mermaid.getNodeDefinition = function(id, label, shapeKey = 'class') {
+    const shape = globalThis.Jig.mermaid.nodeShapes[shapeKey] || shapeKey;
+    const escapedLabel = globalThis.Jig.mermaid.escapeMermaidText(label);
+    return `${id}${shape.replace('$LABEL', escapedLabel)}`;
+};
+
 globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     constructor() {
         this.nodes = [];
@@ -276,9 +290,8 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
     }
 
-    addNode(id, label, shape = '["$LABEL"]') {
-        const escapedLabel = (label || "").replace(/"/g, '\\"');
-        const nodeLine = `${id}${shape.replace('$LABEL', escapedLabel)}`;
+    addNode(id, label, shape = 'class') {
+        const nodeLine = globalThis.Jig.mermaid.getNodeDefinition(id, label, shape);
         if (!this.nodes.includes(nodeLine)) {
             this.nodes.push(nodeLine);
         }
@@ -335,9 +348,8 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         return map.get(key);
     }
 
-    addNodeToSubgraph(subgraph, id, label, shape = '["$LABEL"]') {
-        const escapedLabel = (label || "").replace(/"/g, '\\"');
-        const nodeLine = `    ${id}${shape.replace('$LABEL', escapedLabel)}`;
+    addNodeToSubgraph(subgraph, id, label, shape = 'class') {
+        const nodeLine = `    ${globalThis.Jig.mermaid.getNodeDefinition(id, label, shape)}`;
         if (!subgraph.lines.includes(nodeLine)) {
             subgraph.lines.push(nodeLine);
         }
@@ -384,6 +396,8 @@ if (typeof module !== "undefined" && module.exports) {
         findTerm: globalThis.Jig.glossary.findTerm,
         MermaidBuilder: globalThis.Jig.mermaid.Builder,
         nodeStyleDefs: globalThis.Jig.mermaid.nodeStyleDefs,
+        nodeShapes: globalThis.Jig.mermaid.nodeShapes,
+        getNodeDefinition: globalThis.Jig.mermaid.getNodeDefinition,
         detectStronglyConnectedComponents: globalThis.Jig.graph.detectStronglyConnectedComponents,
         transitiveReduction: globalThis.Jig.graph.transitiveReduction,
     };

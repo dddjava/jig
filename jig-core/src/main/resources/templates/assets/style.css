@@ -537,6 +537,9 @@ label {
     font-weight: bold;
     font-size: 0.9em;
 }
+.glossary .kind-option.checkbox-options {
+    flex-direction: column;
+}
 .glossary .checkbox-options {
     display: flex;
     flex-wrap: wrap;
@@ -586,7 +589,6 @@ label {
     gap: 8px;
 }
 .glossary .sorting-controls label {
-    font-weight: bold;
     font-size: 0.9em;
     white-space: nowrap;
 }
@@ -599,16 +601,6 @@ label {
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
-}
-.glossary .sorting-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.glossary .sorting-controls label {
-    font-weight: bold;
-    font-size: 0.9em;
-    white-space: nowrap;
 }
 .glossary #export-csv {
     padding: 8px 16px;

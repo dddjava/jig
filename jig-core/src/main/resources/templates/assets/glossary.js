@@ -284,7 +284,7 @@ function getFilteredTerms(terms, controls) {
         description: controls.searchTargetDescription.checked,
         fqn: controls.searchTargetFqn.checked,
         simpleText: controls.searchTargetSimple.checked,
-        kind: controls.searchTargetKind.checked,
+        kind: false,
     };
 
     const showOnlyDomain = controls.showOnlyDomain && controls.showOnlyDomain.checked;
@@ -350,7 +350,6 @@ if (typeof document !== "undefined") {
             searchTargetDescription: document.getElementById('search-target-description'),
             searchTargetFqn: document.getElementById('search-target-fqn'),
             searchTargetSimple: document.getElementById('search-target-simple'),
-            searchTargetKind: document.getElementById('search-target-kind'),
             showAttributesCheckbox: document.getElementById('show-attributes'),
             showOnlyDomain: document.getElementById('show-only-domain'),
         };
@@ -377,7 +376,6 @@ if (typeof document !== "undefined") {
             controls.searchTargetDescription,
             controls.searchTargetFqn,
             controls.searchTargetSimple,
-            controls.searchTargetKind,
             controls.showOnlyDomain,
         ].filter(Boolean);
 

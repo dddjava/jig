@@ -167,6 +167,52 @@ test.describe('domain.js', () => {
             delete globalThis.typeRelationsData;
             globalThis.Jig.dom.typeLinkResolver = null;
         });
+
+        test('配列型（Hoge[]）はベース型のリンクを解決して[]を付け直す', () => {
+            const domainType = {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            setupDomainData([], [domainType]);
+            globalThis.glossaryData = {'org.example.Item': {title: 'アイテム', description: ''}};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
+
+            DomainApp.init();
+
+            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.Item[]'});
+            assert.equal(result.tagName, 'a');
+            assert.equal(result.textContent, 'アイテム[]');
+            assert.equal(result.attributes.get('href'), '#org.example.Item');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
+        });
+
+        test('多次元配列型（Hoge[][]）もベース型のリンクを解決して[][]を付け直す', () => {
+            const domainType = {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            setupDomainData([], [domainType]);
+            globalThis.glossaryData = {'org.example.Item': {title: 'アイテム', description: ''}};
+            const doc = new DocumentStub();
+            global.document = doc;
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            doc.elementsById.set("domain-main", doc.createElement("div"));
+            globalThis.typeRelationsData = { relations: [] };
+
+            DomainApp.init();
+
+            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.Item[][]'});
+            assert.equal(result.tagName, 'a');
+            assert.equal(result.textContent, 'アイテム[][]');
+            assert.equal(result.attributes.get('href'), '#org.example.Item');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+            globalThis.Jig.dom.typeLinkResolver = null;
+        });
     });
 
     test.describe('renderPackageNavItem', () => {

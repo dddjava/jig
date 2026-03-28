@@ -58,9 +58,11 @@ org.dddjava.jig/
 │   ├── data/          # 生データ（types, packages, members 等）
 │   ├── documents/     # ドキュメント定義（JigDocument enum を含む）
 │   ├── information/   # 分析済み情報（applications, types 等）
+│   ├── knowledge/     # 知識モデル（insight, usecases, module, smell 等）
 │   └── sources/       # ソース読み取り（filesystem, javasources, mybatis 等）
+├── annotation/        # アノテーション定義
 ├── application/       # JigService 等のアプリケーションサービス
-├── adapter/           # 出力アダプター（html, graphviz, mermaid, poi, json 等）
+├── adapter/           # 出力アダプター（html, graphviz, poi, json 等）
 └── infrastructure/    # インフラ実装（asm, javaparser, configuration 等）
 ```
 
@@ -81,10 +83,15 @@ org.dddjava.jig/
 
 ### 出力ドキュメント
 
-`JigDocument.java` に enum として定義。主要なもの:
+`JigDocument.java` に enum として定義。アクティブなもの:
 - `BusinessRuleList` — ビジネスルール一覧
 - `ApplicationList` — 機能一覧
 - `ListOutput` — 一覧出力（HTML）
+- `PackageSummary` — パッケージ概要
+- `DomainSummary` — ドメイン概要
+- `UsecaseSummary` — ユースケース概要
+- `EntrypointSummary` — 入力インタフェース概要
+- `OutputsSummary` — 出力インタフェース概要
 - `Insight` — インサイト
 - `Glossary` — 用語集
 

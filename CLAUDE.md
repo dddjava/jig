@@ -94,7 +94,7 @@ org.dddjava.jig/
 - `Insight` — インサイト
 - `Glossary` — 用語集
 
-## コミットルール（AGENTS.md より）
+## コミットルール
 
 Conventional Commits 形式で **日本語** で記述する。
 

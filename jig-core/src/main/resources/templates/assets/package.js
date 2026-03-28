@@ -103,6 +103,15 @@ function getPackageFqnFromTypeFqn(typeFqn) {
     return parts.slice(0, parts.length - 1).join('.');
 }
 
+// パッケージフィルタのマッチ判定
+function isWithinPackageFilters(fqn, packageFilterFqn) {
+    if (!packageFilterFqn?.length) return true;
+    return packageFilterFqn.some(filter => {
+        const prefix = `${filter}.`;
+        return fqn === filter || fqn.startsWith(prefix);
+    });
+}
+
 // 集計
 function buildAggregationStats(packages, relations, maxDepth) {
     const stats = new Map();
@@ -124,16 +133,11 @@ function buildAggregationStats(packages, relations, maxDepth) {
 }
 
 function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, focusedPackageFqn, maxDepth, aggregationDepth, focusCallerMode, focusCalleeMode) {
-    const withinPackageFilter = fqn => {
-        if (packageFilterFqn.length === 0) return true;
-        return packageFilterFqn.some(filter => {
-            const prefix = `${filter}.`;
-            return fqn === filter || fqn.startsWith(prefix);
-        });
-    };
-    let filteredPackages = packageFilterFqn.length > 0 ? packages.filter(item => withinPackageFilter(item.fqn)) : packages;
+    let filteredPackages = packageFilterFqn.length > 0
+        ? packages.filter(item => isWithinPackageFilters(item.fqn, packageFilterFqn))
+        : packages;
     let filteredRelations = packageFilterFqn.length > 0
-        ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
+        ? relations.filter(relation => isWithinPackageFilters(relation.from, packageFilterFqn) && isWithinPackageFilters(relation.to, packageFilterFqn))
         : relations;
 
             if (focusedPackageFqn) {
@@ -185,38 +189,24 @@ function findDefaultPackageFilterCandidate(domainPackageRoots) {
 }
 
 function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
-    return rowFqns.map(fqn => {
-        if (packageFilterFqn.length === 0) return true;
-        return packageFilterFqn.some(filter => {
-            const prefix = `${filter}.`;
-            return fqn === filter || fqn.startsWith(prefix);
-        });
-    });
+    return rowFqns.map(fqn => isWithinPackageFilters(fqn, packageFilterFqn));
 }
 
 function buildFocusRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, focusCallerMode, focusCalleeMode, focusedPackageFqn) {
-    const withinPackageFilter = rowFqn => {
-        if (packageFilterFqn.length === 0) return true;
-        return packageFilterFqn.some(filter => {
-            const prefix = `${filter}.`;
-            return rowFqn === filter || rowFqn.startsWith(prefix);
-        });
-    };
-
     if (!focusedPackageFqn) {
-        return rowFqns.map(rowFqn => withinPackageFilter(rowFqn));
+        return rowFqns.map(rowFqn => isWithinPackageFilters(rowFqn, packageFilterFqn));
     }
 
     const filteredRelations = packageFilterFqn.length > 0
         ? relations.filter(relation =>
-            withinPackageFilter(relation.from) && withinPackageFilter(relation.to)
+            isWithinPackageFilters(relation.from, packageFilterFqn) && isWithinPackageFilters(relation.to, packageFilterFqn)
         )
         : relations;
     const aggregatedRoot = getAggregatedFqn(focusedPackageFqn, aggregationDepth);
     const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
     return rowFqns.map(rowFqn => {
         const aggregatedRow = getAggregatedFqn(rowFqn, aggregationDepth);
-        return withinPackageFilter(rowFqn) && focusSet.has(aggregatedRow);
+        return isWithinPackageFilters(rowFqn, packageFilterFqn) && focusSet.has(aggregatedRow);
     });
 }
 
@@ -299,25 +289,18 @@ function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, foc
 }
 
 function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
-    const withinPackageFilter = fqn => {
-        if (packageFilterFqn.length === 0) return true;
-        return packageFilterFqn.some(filter => {
-            const prefix = `${filter}.`;
-            return fqn === filter || fqn.startsWith(prefix);
-        });
-    };
     const visiblePackages = packageFilterFqn.length > 0
-        ? packages.filter(item => withinPackageFilter(item.fqn))
+        ? packages.filter(item => isWithinPackageFilters(item.fqn, packageFilterFqn))
         : packages;
     const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
     const filteredRelations = packageFilterFqn.length > 0
-        ? relations.filter(relation => withinPackageFilter(relation.from) && withinPackageFilter(relation.to))
+        ? relations.filter(relation => isWithinPackageFilters(relation.from, packageFilterFqn) && isWithinPackageFilters(relation.to, packageFilterFqn))
         : relations;
     const filteredCauseRelationEvidence = packageFilterFqn.length > 0
         ? causeRelationEvidence.filter(relation => {
             const fromPackage = getPackageFqnFromTypeFqn(relation.from);
             const toPackage = getPackageFqnFromTypeFqn(relation.to);
-            return withinPackageFilter(fromPackage) && withinPackageFilter(toPackage);
+            return isWithinPackageFilters(fromPackage, packageFilterFqn) && isWithinPackageFilters(toPackage, packageFilterFqn);
         })
         : causeRelationEvidence;
     const visibleRelations = filteredRelations

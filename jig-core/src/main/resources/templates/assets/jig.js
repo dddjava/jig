@@ -112,7 +112,7 @@ function normalizeNavigationHref(href) {
 function setupHeaderNavigation() {
     if (document.body.classList.contains("index")) return;
 
-    const navigationData = globalThis.jigNavigationData;
+    const navigationData = globalThis.navigationData;
     if (!navigationData || !Array.isArray(navigationData.links) || navigationData.links.length === 0) return;
 
     const header = document.querySelector("header.top") || document.querySelector("header");

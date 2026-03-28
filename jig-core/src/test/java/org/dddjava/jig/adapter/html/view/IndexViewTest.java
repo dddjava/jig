@@ -33,7 +33,7 @@ class IndexViewTest {
         assertFalse(actual.contains("<h2>図: "));
 
         String navigationData = readNavigationData();
-        assertTrue(navigationData.contains("globalThis.jigNavigationData"));
+        assertTrue(navigationData.contains("globalThis.navigationData"));
         assertFalse(navigationData.contains("\"href\":\"package-summary.html\""));
     }
 

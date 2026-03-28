@@ -177,7 +177,7 @@ public class IndexView {
             addNavigationLinkIfPresent(links, JigDocument.ListOutput);
 
             StringBuilder js = new StringBuilder();
-            js.append("globalThis.jigNavigationData = {\"links\": [");
+            js.append("globalThis.navigationData = {\"links\": [");
             for (int i = 0; i < links.size(); i++) {
                 NavigationLink link = links.get(i);
                 if (i > 0) js.append(",");

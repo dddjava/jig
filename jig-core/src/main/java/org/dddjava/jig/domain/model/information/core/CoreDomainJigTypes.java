@@ -34,10 +34,16 @@ public record CoreDomainJigTypes(JigTypes jigTypes) {
                 .collect(Collectors.toSet());
 
         // 各最小パッケージの親パッケージをフィルタ候補とする
-        return minimal.stream()
+        List<String> parentCandidates = minimal.stream()
                 .filter(pkg -> pkg.contains("."))
                 .map(pkg -> pkg.substring(0, pkg.lastIndexOf('.')))
                 .distinct()
+                .toList();
+
+        // 親候補同士でも最小化: 他の候補の子パッケージを除外
+        return parentCandidates.stream()
+                .filter(pkg -> parentCandidates.stream()
+                        .noneMatch(other -> !other.equals(pkg) && pkg.startsWith(other + ".")))
                 .sorted()
                 .toList();
     }

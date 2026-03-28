@@ -9,6 +9,7 @@ const domainSettings = {
     showFields: true,
     showMethods: true,
     showStaticMethods: true,
+    showEnumOnly: false,
     transitiveReductionEnabled: true,
 };
 
@@ -136,7 +137,10 @@ function renderPackageNavItem(pkg) {
             className: domainType?.isDeprecated ? "deprecated" : "",
             textContent: getTypeTerm(child.fqn).title
         });
-        details.appendChild(createElement("div", {children: [link]}));
+        details.appendChild(createElement("div", {
+            attributes: { "data-has-enum": domainType?.enumInfo ? "true" : "false" },
+            children: [link]
+        }));
     });
 
     return details;
@@ -453,6 +457,7 @@ function renderTypes(types, container) {
         const section = createElement("section", {
             className: "jig-card jig-card--type",
             id: globalThis.Jig.fqnToId("domain", type.fqn),
+            attributes: { "data-has-enum": type.enumInfo ? "true" : "false" },
             children: [
                 createElement("h3", {children: [titleLink]}),
                 createElement("div", {className: "fully-qualified-name", textContent: type.fqn})
@@ -577,6 +582,14 @@ function initSettings() {
             applyVisibilitySettings();
         });
     }
+
+    const enumOnlyCheckbox = document.getElementById('show-enum-only');
+    if (enumOnlyCheckbox) {
+        enumOnlyCheckbox.addEventListener('change', () => {
+            domainSettings.showEnumOnly = enumOnlyCheckbox.checked;
+            applyVisibilitySettings();
+        });
+    }
 }
 
 /**
@@ -597,6 +610,29 @@ function applyVisibilitySettings() {
             section.style.display = domainSettings.showStaticMethods ? '' : 'none';
         }
     });
+
+    // 「列挙のみ表示」フィルター
+    const typeSections = main.querySelectorAll('section.jig-card--type[data-has-enum]');
+    typeSections.forEach(section => {
+        if (domainSettings.showEnumOnly) {
+            section.style.display = section.dataset.hasEnum === 'true' ? '' : 'none';
+        } else {
+            section.style.display = '';
+        }
+    });
+
+    // サイドバーの型リンクもフィルター
+    const sidebar = document.getElementById('domain-sidebar');
+    if (sidebar) {
+        const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
+        typeItems.forEach(div => {
+            if (domainSettings.showEnumOnly) {
+                div.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
+            } else {
+                div.style.display = '';
+            }
+        });
+    }
 }
 
 const DomainApp = {

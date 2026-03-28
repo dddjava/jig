@@ -913,12 +913,14 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.deepStrictEqual(result.edges[0], {from: 'pkg.Cls#B()', to: 'pkg.Cls#A()'});
     });
 
-    test('直接の呼び出し元が非ユースケースの場合、showDiagramInternalMethods=falseでは表示しない', () => {
+    test('showDiagramInternalMethods=falseでは非ユースケース呼び出し元を遡ってユースケース呼び出し元を表示する', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
-        const callerMethod = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'method' };
+        const directCaller = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'method' };
+        const usecaseCaller = { fqn: 'pkg.Cls#C()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
         const methodMap = new Map([
             ['pkg.Cls#A()', rootMethod],
-            ['pkg.Cls#B()', callerMethod]
+            ['pkg.Cls#B()', directCaller],
+            ['pkg.Cls#C()', usecaseCaller]
         ]);
 
         const result = buildGraphFromCallMethods(rootMethod, {
@@ -928,9 +930,11 @@ test.describe('buildGraphFromCallMethods', () => {
             showDiagramOutboundPorts: true
         });
 
-        assert.strictEqual(result.nodes.length, 1);
         assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
-        assert.strictEqual(result.edges.length, 0);
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#C()'));
+        assert.ok(!result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
+        assert.strictEqual(result.edges.length, 1);
+        assert.ok(result.edges.find(e => e.from === 'pkg.Cls#C()' && e.to === 'pkg.Cls#A()'));
     });
 
     test('直接の呼び出し元が非ユースケースの場合、showDiagramInternalMethods=trueでは表示する', () => {
@@ -952,7 +956,7 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
     });
 
-    test('呼び出し元は直接のみ表示し、呼び出し元の呼び出し元は表示しない', () => {
+    test('showDiagramInternalMethods=trueでは呼び出し元は直接のみ表示する', () => {
         const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
         const directCaller = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'usecase' };
         const indirectCaller = { fqn: 'pkg.Cls#C()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
@@ -996,6 +1000,52 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo'));
         assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
         assert.ok(result.edges.find(e => e.from === 'pkg.Cls#A()' && e.to === 'ext.Repo'));
+    });
+
+    test('showDiagramInternalMethods=falseで複数経路から同一ユースケース呼び出し元に到達しても重複しない', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const methodB = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()'], kind: 'method' };
+        const methodC = { fqn: 'pkg.Cls#C()', callMethods: ['pkg.Cls#A()'], kind: 'method' };
+        const usecaseCaller = { fqn: 'pkg.Cls#U()', callMethods: ['pkg.Cls#B()', 'pkg.Cls#C()'], kind: 'usecase' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', methodB],
+            ['pkg.Cls#C()', methodC],
+            ['pkg.Cls#U()', usecaseCaller]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
+
+        const callerEdges = result.edges.filter(e => e.from === 'pkg.Cls#U()' && e.to === 'pkg.Cls#A()');
+        assert.strictEqual(callerEdges.length, 1);
+    });
+
+    test('showDiagramInternalMethods=falseで逆方向循環があっても無限ループしない', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const methodB = { fqn: 'pkg.Cls#B()', callMethods: ['pkg.Cls#A()', 'pkg.Cls#C()'], kind: 'method' };
+        const methodC = { fqn: 'pkg.Cls#C()', callMethods: ['pkg.Cls#B()'], kind: 'method' };
+        const usecaseCaller = { fqn: 'pkg.Cls#U()', callMethods: ['pkg.Cls#B()'], kind: 'usecase' };
+        const methodMap = new Map([
+            ['pkg.Cls#A()', rootMethod],
+            ['pkg.Cls#B()', methodB],
+            ['pkg.Cls#C()', methodC],
+            ['pkg.Cls#U()', usecaseCaller]
+        ]);
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#U()'));
+        assert.ok(result.edges.find(e => e.from === 'pkg.Cls#U()' && e.to === 'pkg.Cls#A()'));
     });
 
     test('usecaseDataにないinbound側の直接呼び出し元も表示される', () => {

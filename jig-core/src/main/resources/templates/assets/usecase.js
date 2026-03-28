@@ -77,37 +77,93 @@ function buildGraphFromCallMethods(rootMethod, diagramContext) {
         return diagramContext.showDiagramInternalMethods || kind === "usecase";
     }
 
-    for (const method of diagramContext.methodMap.values()) {
-        if (method.fqn === rootMethod.fqn) continue;
-        if (!shouldIncludeMethodNode(method.kind)) continue;
-        if (!(method.callMethods || []).includes(rootMethod.fqn)) continue;
+    const reverseCallerMap = new Map();
 
-        const edgeKey = method.fqn + '\u2192' + rootMethod.fqn;
-        if (!edgeSet.has(edgeKey)) {
-            edgeSet.add(edgeKey);
-            edges.push({from: method.fqn, to: rootMethod.fqn});
-        }
-        if (!nodes.has(method.fqn)) {
-            nodes.set(method.fqn, {fqn: method.fqn, kind: method.kind});
-        }
+    function addReverseCaller(calleeFqn, callerNode) {
+        if (!calleeFqn || !callerNode?.fqn) return;
+        if (!reverseCallerMap.has(calleeFqn)) reverseCallerMap.set(calleeFqn, []);
+        reverseCallerMap.get(calleeFqn).push(callerNode);
+    }
+
+    for (const method of diagramContext.methodMap.values()) {
+        (method.callMethods || []).forEach(calleeFqn => {
+            addReverseCaller(calleeFqn, {fqn: method.fqn, kind: method.kind});
+        });
     }
 
     (globalThis.inboundData?.controllers || []).forEach(controller => {
         (controller.relations || []).forEach(relation => {
-            if (!relation || relation.to !== rootMethod.fqn) return;
-            const callerFqn = relation.from;
-            if (!callerFqn || callerFqn === rootMethod.fqn) return;
-            if (diagramContext.methodMap.has(callerFqn)) return;
+            if (!relation?.from || !relation?.to) return;
+            if (diagramContext.methodMap.has(relation.from)) return;
+            addReverseCaller(relation.to, {fqn: relation.from, kind: "method"});
+        });
+    });
 
-            const edgeKey = callerFqn + '\u2192' + rootMethod.fqn;
-            if (!edgeSet.has(edgeKey)) {
-                edgeSet.add(edgeKey);
-                edges.push({from: callerFqn, to: rootMethod.fqn});
+    /**
+     * @returns {Map<string, string>} callerFqn -> kind
+     */
+    function collectVisibleCallers(rootFqn) {
+        const callers = reverseCallerMap.get(rootFqn) || [];
+        const visible = new Map();
+
+        if (diagramContext.showDiagramInternalMethods) {
+            callers.forEach(caller => {
+                if (caller.fqn === rootFqn) return;
+                if (!shouldIncludeMethodNode(caller.kind)) return;
+                visible.set(caller.fqn, caller.kind);
+            });
+            return visible;
+        }
+
+        function collectUsecaseAncestors(startCaller) {
+            const queue = [startCaller];
+            const visitedCallerFqns = new Set([rootFqn]);
+            const usecaseAncestors = new Map();
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                if (!current || visitedCallerFqns.has(current.fqn)) continue;
+                visitedCallerFqns.add(current.fqn);
+
+                if (current.kind === "usecase") {
+                    usecaseAncestors.set(current.fqn, current.kind);
+                    continue;
+                }
+
+                const parents = reverseCallerMap.get(current.fqn) || [];
+                parents.forEach(parent => queue.push(parent));
             }
-            if (!nodes.has(callerFqn)) {
-                nodes.set(callerFqn, {fqn: callerFqn, kind: "method"});
+
+            return usecaseAncestors;
+        }
+
+        callers.forEach(caller => {
+            if (caller.fqn === rootFqn) return;
+            if (caller.kind === "usecase") {
+                visible.set(caller.fqn, caller.kind);
+                return;
+            }
+
+            const usecaseAncestors = collectUsecaseAncestors(caller);
+            if (usecaseAncestors.size > 0) {
+                usecaseAncestors.forEach((kind, fqn) => visible.set(fqn, kind));
+            } else {
+                visible.set(caller.fqn, caller.kind);
             }
         });
+
+        return visible;
+    }
+
+    collectVisibleCallers(rootMethod.fqn).forEach((kind, callerFqn) => {
+        const edgeKey = callerFqn + '\u2192' + rootMethod.fqn;
+        if (!edgeSet.has(edgeKey)) {
+            edgeSet.add(edgeKey);
+            edges.push({from: callerFqn, to: rootMethod.fqn});
+        }
+        if (!nodes.has(callerFqn)) {
+            nodes.set(callerFqn, {fqn: callerFqn, kind});
+        }
     });
 
     function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {

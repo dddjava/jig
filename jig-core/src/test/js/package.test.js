@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub } = require('./dom-stub.js');
+const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
 const common = require('../../main/resources/templates/assets/jig-common.js');
 
@@ -622,7 +622,7 @@ test.describe('package.js', () => {
     test.describe('テーブル', () => {
         test.describe('ロジック', () => {
             test('buildPackageTableRowSpecs: 行データを整形する', () => {
-                globalThis.glossaryData = {'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}};
+                setGlossaryData( {'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}});
                 const rows = [
                     {fqn: 'app.a', classCount: 2, incomingCount: 0, outgoingCount: 1},
                 ];
@@ -636,7 +636,7 @@ test.describe('package.js', () => {
                     incomingCount: 0,
                     outgoingCount: 1,
                 }]);
-                globalThis.glossaryData = undefined;
+                delete globalThis.glossaryData;
             });
 
             test('buildPackageTableActionSpecs: ボタン文言を返す', () => {
@@ -651,10 +651,10 @@ test.describe('package.js', () => {
 
         test.describe('UI', () => {
             test('renderPackageTable: 行とカウントを描画する', () => {
-                globalThis.glossaryData = {
+                setGlossaryData( {
                     'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
                     'app.b': {title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
-                };
+                });
                 const doc = setupDocument();
                 setPackageData({
                     packages: [
@@ -676,7 +676,7 @@ test.describe('package.js', () => {
                 assert.equal(tbody.children[0].children[5].textContent, '2');
                 assert.equal(tbody.children[0].children[6].textContent, '0');
                 assert.equal(tbody.children[0].children[7].textContent, '2');
-                globalThis.glossaryData = undefined;
+                delete globalThis.glossaryData;
             });
         });
     });

@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { setGlossaryData } = require('./dom-stub.js');
 
 // Pure functions - no DOM setup needed
 const jigCommon = require('../../main/resources/templates/assets/jig-common.js');
@@ -48,9 +49,9 @@ test.describe("fqnToId", () => {
 
 test.describe("getTypeTerm", () => {
     test("glossaryに登録されている場合はterm全体を返す", () => {
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.MyClass": {title: "マイクラス", description: "説明文"}
-        };
+        });
         const term = jigCommon.getTypeTerm("com.example.MyClass");
         assert.equal(term.title, "マイクラス");
         assert.equal(term.description, "説明文");
@@ -58,7 +59,7 @@ test.describe("getTypeTerm", () => {
     });
 
     test("glossaryに登録されていない場合、単純名をtitleとして返す", () => {
-        globalThis.glossaryData = {};
+        setGlossaryData( {});
         const term = jigCommon.getTypeTerm("java.lang.String");
         assert.equal(term.title, "String");
         assert.equal(term.description, "");
@@ -66,7 +67,7 @@ test.describe("getTypeTerm", () => {
     });
 
     test("単純名がない場合、fqn全体をtitleとして返す", () => {
-        globalThis.glossaryData = {};
+        setGlossaryData( {});
         const term = jigCommon.getTypeTerm("(default)");
         assert.equal(term.title, "(default)");
         assert.equal(term.description, "");
@@ -78,9 +79,9 @@ test.describe("getTypeTerm", () => {
 
 test.describe("getMethodTerm", () => {
     test("glossaryに登録されている場合はterm全体を返す", () => {
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.Foo#bar(java.lang.String)": {title: "文字列で保存", description: "説明"}
-        };
+        });
         const term = jigCommon.getMethodTerm("com.example.Foo#bar(java.lang.String)");
         assert.equal(term.title, "文字列で保存");
         assert.equal(term.description, "説明");
@@ -88,16 +89,16 @@ test.describe("getMethodTerm", () => {
     });
 
     test("引数を単純名に変換して再検索する", () => {
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.Foo#bar(String)": {title: "文字列版", description: ""}
-        };
+        });
         const term = jigCommon.getMethodTerm("com.example.Foo#bar(java.lang.String)");
         assert.equal(term.title, "文字列版");
         delete globalThis.glossaryData;
     });
 
     test("登録なしの場合、メソッド名と引数単純名を返す", () => {
-        globalThis.glossaryData = {};
+        setGlossaryData( {});
         const term = jigCommon.getMethodTerm("hoge.fuga.Class#save(java.lang.String)");
         assert.equal(term.title, "save(String)");
         assert.equal(term.description, "");
@@ -105,21 +106,21 @@ test.describe("getMethodTerm", () => {
     });
 
     test("引数なしメソッドの場合", () => {
-        globalThis.glossaryData = {};
+        setGlossaryData( {});
         const term = jigCommon.getMethodTerm("hoge.fuga.Class#list()");
         assert.equal(term.title, "list()");
         delete globalThis.glossaryData;
     });
 
     test("複数引数の場合、カンマ区切りで表示", () => {
-        globalThis.glossaryData = {};
+        setGlossaryData( {});
         const term = jigCommon.getMethodTerm("hoge.fuga.Class#save(com.example.User,java.lang.Long)");
         assert.equal(term.title, "save(User,Long)");
         delete globalThis.glossaryData;
     });
 
     test("空のfqnの場合", () => {
-        globalThis.glossaryData = {};
+        setGlossaryData( {});
         assert.throws(
             () => {
                 jigCommon.getMethodTerm("");

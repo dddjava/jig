@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub } = require('./dom-stub.js');
+const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
 // jig-common.js と jig.js をロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
@@ -220,9 +220,9 @@ test.describe('glossary.js', () => {
                 showOnlyDomain: doc.getElementById('show-only-domain'),
             };
 
-            globalThis.glossaryData = {
+            setGlossaryData( {
                 domainPackageRoots: ['com.example.domain.model']
-            };
+            });
 
             controls.showOnlyDomain.checked = true;
 
@@ -252,9 +252,9 @@ test.describe('glossary.js', () => {
                 showOnlyDomain: doc.getElementById('show-only-domain'),
             };
 
-            globalThis.glossaryData = {
+            setGlossaryData( {
                 domainPackageRoots: ['com.example.domain.model']
-            };
+            });
 
             controls.showOnlyDomain.checked = false;
 
@@ -342,23 +342,23 @@ test.describe('glossary.js', () => {
 
     test.describe('データ読み込み', () => {
         test('ドメインパッケージルートを取得', () => {
-            globalThis.glossaryData = {
+            setGlossaryData( {
                 domainPackageRoots: ['com.example.domain.model', 'com.example.domain.service']
-            };
+            });
             const result = glossary.getDomainPackageRoots();
             assert.deepEqual(result, ['com.example.domain.model', 'com.example.domain.service']);
             delete globalThis.glossaryData;
         });
 
         test('ドメインパッケージルートがない場合は空配列を返す', () => {
-            globalThis.glossaryData = {};
+            setGlossaryData( {});
             const result = glossary.getDomainPackageRoots();
             assert.deepEqual(result, []);
             delete globalThis.glossaryData;
         });
 
         test('globalThis.glossaryData (fqnキーマップ) から取得', () => {
-            globalThis.glossaryData = {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}};
+            setGlossaryData( {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}});
             const result = glossary.getGlossaryData();
             assert.equal(result[0].title, 'Account');
             assert.equal(result[0].fqn, 'app.Account');
@@ -366,16 +366,16 @@ test.describe('glossary.js', () => {
         });
 
         test('globalThis.glossaryData (配列) から取得', () => {
-            globalThis.glossaryData = [{title: 'ArrayData'}];
+            setGlossaryData([{title: 'ArrayData'}]);
             assert.equal(glossary.getGlossaryData()[0].title, 'ArrayData');
             delete globalThis.glossaryData;
         });
 
         test('globalThis.glossaryData (wrapper形式: {terms, domainPackageRoots}) から取得', () => {
-            globalThis.glossaryData = {
+            setGlossaryData( {
                 terms: {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}},
                 domainPackageRoots: ['com.example.domain.model']
-            };
+            });
             const result = glossary.getGlossaryData();
             assert.equal(result[0].title, 'Account');
             assert.equal(result[0].fqn, 'app.Account');
@@ -519,7 +519,7 @@ test.describe('glossary.js', () => {
             doc.body = body; // DocumentStubにbodyが必要
 
             // getGlossaryData 用のモック
-            globalThis.glossaryData = [{title: 'Initial', kind: 'クラス'}];
+            setGlossaryData([{title: 'Initial', kind: 'クラス'}]);
 
             // DOMContentLoaded イベントの発火をエミュレート
             // 実際には glossary.js が読み込まれた時点でイベントリスナーが登録される

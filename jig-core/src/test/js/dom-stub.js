@@ -284,4 +284,41 @@ class EventStub {
     constructor(type) { this.type = type; }
 }
 
-module.exports = { Element, DocumentStub, LocalStorageStub, EventStub };
+// ----- glossaryData ヘルパー -----
+// 古いフォーマット（fqnキーマップ）と新しいフォーマット（wrapper形式）の両方に対応
+// すべてのglossaryData設定をこれ経由で行い、テストの脆性を減らす
+function setGlossaryData(data) {
+    if (!data) {
+        globalThis.glossaryData = { terms: {} };
+        return;
+    }
+
+    // 空オブジェクトの場合
+    if (!Array.isArray(data) && Object.keys(data).length === 0) {
+        globalThis.glossaryData = { terms: {} };
+        return;
+    }
+
+    // 配列形式（normalizeGlossaryDataの結果）をそのまま使用
+    if (Array.isArray(data)) {
+        globalThis.glossaryData = data;
+        return;
+    }
+
+    // wrapper形式チェック：
+    // - {terms: {...}, domainPackageRoots?: [...]} の形か
+    // - {domainPackageRoots: [...]} のような形か
+    const hasTerms = data.terms !== undefined && typeof data.terms === "object" && !Array.isArray(data.terms);
+    const hasDomainPackageRoots = Array.isArray(data.domainPackageRoots);
+
+    if (hasTerms || hasDomainPackageRoots || Object.keys(data).some(k => !k.includes('.'))) {
+        // wrapper形式の可能性: プロパティ名にドット（FQN）がない場合はwrapper形式
+        globalThis.glossaryData = data;
+        return;
+    }
+
+    // 古いフォーマット（fqnキーマップ）を新しいwrapper形式に変換
+    globalThis.glossaryData = { terms: data };
+}
+
+module.exports = { Element, DocumentStub, LocalStorageStub, EventStub, setGlossaryData };

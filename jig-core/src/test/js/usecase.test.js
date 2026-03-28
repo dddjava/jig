@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { test, beforeEach } = require('node:test');
 const path = require('path');
-const { DocumentStub, LocalStorageStub, EventStub } = require('./dom-stub.js');
+const { DocumentStub, LocalStorageStub, EventStub, setGlossaryData } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
@@ -94,12 +94,12 @@ test.describe('UsecaseApp', () => {
     });
 
     test('init should render data from globalThis.usecaseData', () => {
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.ServiceA": { title: "ServiceA", description: "Description of ServiceA" },
             "com.example.ServiceA#staticMethod1()": { title: "staticMethod1", description: "Description of staticMethod1" },
             "com.example.ServiceA#method1()": { title: "method1", description: "Description of method1" },
             "com.example.ServiceA#otherMethod()": { title: "otherMethod", description: "" }
-        };
+        });
         globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();
 
@@ -158,11 +158,11 @@ test.describe('UsecaseApp', () => {
     });
 
     test('クラス単位の図がクラスヘッダー直下にレンダリングされる', () => {
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.ServiceA": { title: "ServiceA" },
             "com.example.ServiceA#method1()": { title: "method1" },
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
-        };
+        });
         globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();
 
@@ -305,11 +305,11 @@ test.describe('UsecaseApp', () => {
 
     test('シーケンス図タブを選択した状態で再レンダリングしてもシーケンス図が維持される', () => {
         globalThis.usecaseData = mockUsecaseData;
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.ServiceA": { title: "ServiceA" },
             "com.example.ServiceA#method1()": { title: "method1" },
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
-        };
+        });
         UsecaseApp.init();
 
         const methodFqn = "com.example.ServiceA#method1()";
@@ -339,12 +339,12 @@ test.describe('UsecaseApp', () => {
 
     test('inbound呼び出し元はクラスノード化されinbound.htmlへのリンクが付与される', () => {
         globalThis.usecaseData = mockUsecaseData;
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.ServiceA": { title: "ServiceA" },
             "com.example.ServiceA#method1()": { title: "method1", description: "Description of method1" },
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" },
             "web.Ctrl": { title: "Ctrl" }
-        };
+        });
         globalThis.inboundData = {
             controllers: [
                 {

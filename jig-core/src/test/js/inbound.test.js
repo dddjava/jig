@@ -2,6 +2,7 @@ const assert = require('assert');
 const { test, beforeEach } = require('node:test');
 const { JSDOM } = require('jsdom');
 const path = require('path');
+const { setGlossaryData } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
@@ -90,7 +91,7 @@ test.describe('InboundApp', () => {
 
     test('init should render data from globalThis.inboundData', () => {
         globalThis.inboundData = mockInboundData;
-        globalThis.glossaryData = mockGlossaryData;
+        setGlossaryData(mockGlossaryData);
         globalThis.usecaseData = mockUsecaseData;
         InboundApp.init();
 
@@ -153,7 +154,7 @@ test.describe('InboundApp', () => {
                 ]
             }]
         };
-        globalThis.glossaryData = {
+        setGlossaryData( {
             "com.example.ControllerA": { title: "ControllerA", description: "", kind: "クラス" },
             "com.example.ControllerA#method1()": { title: "method1", simpleText: "method1", kind: "メソッド", description: "" },
             "com.example.ControllerA#method2()": { title: "method2", simpleText: "method2", kind: "メソッド", description: "" },
@@ -162,7 +163,7 @@ test.describe('InboundApp', () => {
             "com.example.ServiceA#serviceMethod()": { title: "serviceMethod", simpleText: "serviceMethod", kind: "メソッド", description: "" },
             "com.example.ServiceB": { title: "ServiceB", description: "", kind: "クラス" },
             "com.example.ServiceB#serviceMethod2()": { title: "serviceMethod2", simpleText: "serviceMethod2", kind: "メソッド", description: "" }
-        };
+        });
         globalThis.usecaseData = {
             usecases: [
                 { fqn: "com.example.ServiceA", methods: [{ fqn: "com.example.ServiceA#serviceMethod()" }] },
@@ -180,7 +181,7 @@ test.describe('InboundApp', () => {
 
     test('init should work without usecaseData', () => {
         globalThis.inboundData = mockInboundData;
-        globalThis.glossaryData = mockGlossaryData;
+        setGlossaryData(mockGlossaryData);
         delete globalThis.usecaseData;
         InboundApp.init();
 

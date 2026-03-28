@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub } = require('./dom-stub.js');
+const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
 // jig-common.js と jig.js をロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
@@ -27,7 +27,7 @@ test.describe('domain.js', () => {
         test('domain型に対して、ページ内リンクのhrefを返す', () => {
             const domainType = {fqn: 'org.example.Account', isDeprecated: false, fields: [], methods: [], staticMethods: []};
             setupDomainData([], [domainType]);
-            globalThis.glossaryData = {'org.example.Account': {title: '口座', description: ''}};
+            setGlossaryData({'org.example.Account': {title: '口座', description: ''}});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -49,7 +49,7 @@ test.describe('domain.js', () => {
         test('deprecatedなdomain型に対して、deprecatedクラスを返す', () => {
             const domainType = {fqn: 'org.example.OldClass', isDeprecated: true, fields: [], methods: [], staticMethods: []};
             setupDomainData([], [domainType]);
-            globalThis.glossaryData = {};
+            setGlossaryData({});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -70,7 +70,7 @@ test.describe('domain.js', () => {
 
         test('domain型でない場合、weakクラスと単純名を返す（hrefなし）', () => {
             setupDomainData([], []);
-            globalThis.glossaryData = {};
+            setGlossaryData({});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -93,7 +93,7 @@ test.describe('domain.js', () => {
         test('リゾルバー経由でdomain型はリンク付き要素になる', () => {
             const domainType = {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []};
             setupDomainData([], [domainType]);
-            globalThis.glossaryData = {'org.example.User': {title: 'ユーザー', description: ''}};
+            setGlossaryData({'org.example.User': {title: 'ユーザー', description: ''}});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -116,7 +116,7 @@ test.describe('domain.js', () => {
 
         test('リゾルバー経由でdomain型でない場合はweak spanになる', () => {
             setupDomainData([], []);
-            globalThis.glossaryData = {};
+            setGlossaryData({});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -143,7 +143,7 @@ test.describe('domain.js', () => {
                 {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []}
             ];
             setupDomainData([], domainTypes);
-            globalThis.glossaryData = {'java.util.List': {title: 'List', description: ''}};
+            setGlossaryData({'java.util.List': {title: 'List', description: ''}});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -171,7 +171,7 @@ test.describe('domain.js', () => {
         test('配列型（Hoge[]）はベース型のリンクを解決して[]を付け直す', () => {
             const domainType = {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []};
             setupDomainData([], [domainType]);
-            globalThis.glossaryData = {'org.example.Item': {title: 'アイテム', description: ''}};
+            setGlossaryData({'org.example.Item': {title: 'アイテム', description: ''}});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -194,7 +194,7 @@ test.describe('domain.js', () => {
         test('多次元配列型（Hoge[][]）もベース型のリンクを解決して[][]を付け直す', () => {
             const domainType = {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []};
             setupDomainData([], [domainType]);
-            globalThis.glossaryData = {'org.example.Item': {title: 'アイテム', description: ''}};
+            setGlossaryData({'org.example.Item': {title: 'アイテム', description: ''}});
             const doc = new DocumentStub();
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
@@ -227,10 +227,10 @@ test.describe('domain.js', () => {
             };
 
             setupDomainData([comPkg, examplePkg], []);
-            globalThis.glossaryData = {
+            setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'}
-            };
+            });
 
             const result = renderPackageNavItem(comPkg);
 
@@ -261,12 +261,12 @@ test.describe('domain.js', () => {
             };
 
             setupDomainData([comPkg, examplePkg, deepPkg], [{fqn: 'com.example.deep.MyClass', methods: []}]);
-            globalThis.glossaryData = {
+            setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
                 'com.example.deep': {title: 'deep'},
                 'com.example.deep.MyClass': {title: 'MyClass'}
-            };
+            });
 
             const result = renderPackageNavItem(comPkg);
 
@@ -302,13 +302,13 @@ test.describe('domain.js', () => {
             };
 
             setupDomainData([comPkg, examplePkg, subPkg, deepPkg], [{fqn: 'com.example.sub.deep.MyClass', methods: []}]);
-            globalThis.glossaryData = {
+            setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
                 'com.example.sub': {title: 'sub'},
                 'com.example.sub.deep': {title: 'deep'},
                 'com.example.sub.deep.MyClass': {title: 'MyClass'}
-            };
+            });
 
             const result = renderPackageNavItem(comPkg);
 
@@ -340,12 +340,12 @@ test.describe('domain.js', () => {
             };
 
             setupDomainData([comPkg, examplePkg, sub1Pkg, sub2Pkg], []);
-            globalThis.glossaryData = {
+            setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
                 'com.example.sub1': {title: 'sub1'},
                 'com.example.sub2': {title: 'sub2'}
-            };
+            });
 
             const result = renderPackageNavItem(comPkg);
 
@@ -424,11 +424,11 @@ test.describe('domain.js', () => {
                     { from: 'org.example.A', to: 'org.example.B' }
                 ]
             };
-            globalThis.glossaryData = {
+            setGlossaryData({
                 'org.example.A': { title: 'A' },
                 'org.example.B': { title: 'B' },
                 'org.example': { title: 'example' }
-            };
+            });
 
             const result = createRelationDiagram(pkg);
 
@@ -490,7 +490,7 @@ test.describe('domain.js', () => {
 
         test('typeRelationsData が undefined の場合、警告を表示してレンダリング続行する', () => {
             delete globalThis.typeRelationsData;
-            globalThis.glossaryData = {}; // 他の optional データは設定
+            setGlossaryData({}); // 他の optional データは設定
             const doc = new DocumentStub();
             global.document = doc;
 

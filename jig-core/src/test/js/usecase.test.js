@@ -314,6 +314,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         delete require.cache[jigCommonJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
+        delete globalThis.inboundData;
 
         global.document = new DocumentStub();
         global.window = { addEventListener: () => {}, Event: EventStub };
@@ -995,5 +996,33 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo'));
         assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
         assert.ok(result.edges.find(e => e.from === 'pkg.Cls#A()' && e.to === 'ext.Repo'));
+    });
+
+    test('usecaseDataにないinbound側の直接呼び出し元も表示される', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
+        globalThis.inboundData = {
+            controllers: [
+                {
+                    relations: [
+                        {from: 'web.Ctrl#entry()', to: 'pkg.Cls#A()'},
+                        {from: 'web.Ctrl#indirect()', to: 'web.Ctrl#entry()'}
+                    ]
+                }
+            ]
+        };
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
+
+        assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
+        assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl#entry()'));
+        assert.ok(!result.nodes.find(n => n.fqn === 'web.Ctrl#indirect()'));
+        assert.ok(result.edges.find(e => e.from === 'web.Ctrl#entry()' && e.to === 'pkg.Cls#A()'));
+        assert.ok(!result.edges.find(e => e.from === 'web.Ctrl#indirect()' && e.to === 'web.Ctrl#entry()'));
     });
 });

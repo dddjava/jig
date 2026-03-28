@@ -92,6 +92,24 @@ function buildGraphFromCallMethods(rootMethod, diagramContext) {
         }
     }
 
+    (globalThis.inboundData?.controllers || []).forEach(controller => {
+        (controller.relations || []).forEach(relation => {
+            if (!relation || relation.to !== rootMethod.fqn) return;
+            const callerFqn = relation.from;
+            if (!callerFqn || callerFqn === rootMethod.fqn) return;
+            if (diagramContext.methodMap.has(callerFqn)) return;
+
+            const edgeKey = callerFqn + '\u2192' + rootMethod.fqn;
+            if (!edgeSet.has(edgeKey)) {
+                edgeSet.add(edgeKey);
+                edges.push({from: callerFqn, to: rootMethod.fqn});
+            }
+            if (!nodes.has(callerFqn)) {
+                nodes.set(callerFqn, {fqn: callerFqn, kind: "method"});
+            }
+        });
+    });
+
     function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {

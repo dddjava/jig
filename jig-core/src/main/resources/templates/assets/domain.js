@@ -9,6 +9,7 @@ const domainSettings = {
     showFields: true,
     showMethods: true,
     showStaticMethods: true,
+    transitiveReductionEnabled: true,
 };
 
 const diagramRegistry = []; // [{container, pkg}]
@@ -193,9 +194,22 @@ function createRelationDiagram(pkg) {
     externalRelations.forEach(r => externalPkgFqns.add(packageOf(r.to)));
 
     // エッジ（重複排除）
-    const edgeSet = new Set();
-    internalRelations.forEach(r => edgeSet.add(`${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(r.to)}`));
-    externalRelations.forEach(r => edgeSet.add(`${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(packageOf(r.to))}`));
+    const allEdges = [
+        ...internalRelations.map(r => ({ from: r.from, to: r.to })),
+        ...externalRelations.map(r => ({ from: r.from, to: packageOf(r.to) }))
+    ];
+    const uniqueEdgesMap = new Map();
+    allEdges.forEach(e => {
+        const key = `${e.from} --> ${e.to}`;
+        uniqueEdgesMap.set(key, e);
+    });
+
+    let edges = Array.from(uniqueEdgesMap.values());
+    if (domainSettings.transitiveReductionEnabled) {
+        edges = globalThis.Jig.graph.transitiveReduction(edges);
+    }
+
+    const edgeSet = new Set(edges.map(e => `${fqnToMermaidId(e.from)} --> ${fqnToMermaidId(e.to)}`));
 
     function escapeMermaidLabel(label) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -527,6 +541,15 @@ function initSettings() {
     if (deprecatedCheckbox) {
         deprecatedCheckbox.addEventListener('change', () => {
             domainSettings.showDeprecatedNodes = deprecatedCheckbox.checked;
+            rerenderDiagrams();
+        });
+    }
+
+    const reductionCheckbox = document.getElementById('transitive-reduction-toggle');
+    if (reductionCheckbox) {
+        reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
+        reductionCheckbox.addEventListener('change', () => {
+            domainSettings.transitiveReductionEnabled = reductionCheckbox.checked;
             rerenderDiagrams();
         });
     }

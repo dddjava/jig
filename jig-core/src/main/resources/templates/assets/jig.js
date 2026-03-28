@@ -482,8 +482,12 @@ globalThis.Jig.dom.createElementForTypeRef = function createTypeRefLink(typeRef,
  * @returns {HTMLElement}
  */
 function createTypeLink(fqn, className = undefined) {
-    const resolved = globalThis.Jig.dom.typeLinkResolver?.(fqn);
-    const title = resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(fqn).title;
+    // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
+    const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';
+    const baseFqn = arraySuffix ? fqn.slice(0, -arraySuffix.length) : fqn;
+
+    const resolved = globalThis.Jig.dom.typeLinkResolver?.(baseFqn);
+    const title = (resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(baseFqn).title) + arraySuffix;
     const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
     if (resolved?.href) {
         return globalThis.Jig.dom.createElement('a', {

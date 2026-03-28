@@ -54,6 +54,7 @@ function parsePackageSummaryData(packageData) {
         packages: Array.isArray(packageData) ? packageData : (packageData?.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData?.relations ?? []),
         causeRelationEvidence: globalThis.typeRelationsData?.relations ?? [],
+        domainPackageRoots: Array.isArray(packageData) ? [] : (packageData?.domainPackageRoots ?? []),
     };
 }
 
@@ -176,22 +177,11 @@ function normalizeAggregationDepthValue(value) {
     return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function findDefaultPackageFilterCandidate(packages) {
-    const domainRoots = packages
-        .map(item => item.fqn)
-        .map(fqn => {
-            const parts = fqn.split('.');
-            const domainIndex = parts.indexOf('domain');
-            if (domainIndex === -1) return null;
-            return parts.slice(0, domainIndex + 1).join('.');
-        })
-        .filter(Boolean);
-    if (domainRoots.length === 0) return null;
-    return domainRoots.reduce((best, current) => {
-        const bestDepth = best.split('.').length;
-        const currentDepth = current.split('.').length;
-        return currentDepth < bestDepth ? current : best;
-    });
+function findDefaultPackageFilterCandidate(domainPackageRoots) {
+    if (domainPackageRoots && domainPackageRoots.length > 0) {
+        return domainPackageRoots.join('\n');
+    }
+    return null;
 }
 
 function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
@@ -596,8 +586,8 @@ function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
     if (!input || normalizePackageFilterValue(input.value).length > 0) return false;
-    const {packages} = getPackageSummaryData(context);
-    const candidate = findDefaultPackageFilterCandidate(packages);
+    const {domainPackageRoots} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (!candidate) return false;
     input.value = candidate;
     context.packageFilterFqn = normalizePackageFilterValue(input.value);
@@ -1214,8 +1204,8 @@ function setupPackageFilterControl(context) {
 
     // ページの初期ロード時に適用されるデフォルトフィルタを保持
     let initialDefaultFilterValue = '';
-    const {packages} = getPackageSummaryData(context);
-    const candidate = findDefaultPackageFilterCandidate(packages);
+    const {domainPackageRoots} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (candidate) {
         initialDefaultFilterValue = candidate;
     }

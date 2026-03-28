@@ -4,7 +4,6 @@ package org.dddjava.jig.domain.model.information.core;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-
 import java.util.Optional;
 import java.util.regex.Pattern;
 

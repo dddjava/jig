@@ -53,6 +53,6 @@ class JigTypesTest {
         assertFalse(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeに存在しない");
 
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
-        assertFalse(coreDomainJigTypes.contains(typeIdentifier), "domain coreには存在しない");
+        assertFalse(coreDomainJigTypes.jigTypes().contains(typeIdentifier), "domain coreには存在しない");
     }
 }

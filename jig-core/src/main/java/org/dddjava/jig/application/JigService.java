@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
+import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
@@ -66,7 +67,7 @@ public class JigService {
      *
      * コアドメインは実行時に指定するパターンなどによって識別する。
      */
-    public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
+    public CoreDomainJigTypes coreDomainJigTypes(JigRepository jigRepository) {
         return typesQueryService.coreDomainJigTypes(jigRepository);
     }
 

@@ -34,10 +34,11 @@ public class DomainSummaryAdapter {
 
     @HandleDocument(JigDocument.DomainSummary)
     public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
-        var jigTypes = jigService.coreDomainJigTypes(jigRepository);
-        if (jigTypes.empty()) {
+        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
+        if (coreDomainJigTypes.empty()) {
             return List.of();
         }
+        var jigTypes = coreDomainJigTypes.jigTypes();
 
         var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();

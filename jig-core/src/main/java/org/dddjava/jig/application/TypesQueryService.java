@@ -6,10 +6,10 @@ import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
-import java.util.List;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
+import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -51,26 +51,22 @@ public class TypesQueryService {
         return jigRepository.fetchGlossary();
     }
 
-    public JigTypes coreDomainJigTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("coreDomainJigTypes", key -> {
+    public CoreDomainJigTypes coreDomainJigTypes(JigRepository jigRepository) {
+        return new CoreDomainJigTypes(jigTypesCache.get("coreDomainJigTypes", key -> {
             var jigTypes = jigTypes(jigRepository);
             var coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes.jigTypes();
-        });
-    }
-
-    public List<String> domainPackageFilterCandidates(JigRepository jigRepository) {
-        return coreDomainCondition.coreDomainJigTypes(jigTypes(jigRepository)).packageFilterCandidates();
+        }));
     }
 
     public MethodSmells methodSmells(JigRepository jigRepository) {
-        return MethodSmells.from(coreDomainJigTypes(jigRepository));
+        return MethodSmells.from(coreDomainJigTypes(jigRepository).jigTypes());
     }
 
     public JigTypes categoryTypes(JigRepository jigRepository) {
         return jigTypesCache.get("categoryTypes", key ->
-                coreDomainJigTypes(jigRepository).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
+                coreDomainJigTypes(jigRepository).jigTypes().filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
         );
     }
 
@@ -82,7 +78,7 @@ public class TypesQueryService {
 
     public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {
         return jigTypesWithRelationshipsCache.get("coreTypesAndRelations", key -> {
-            var jigTypes = coreDomainJigTypes(jigRepository);
+            var jigTypes = coreDomainJigTypes(jigRepository).jigTypes();
             var typeRelationships = TypeRelationships.internalRelation(jigTypes);
             return new CoreTypesAndRelations(jigTypes, typeRelationships);
         });

@@ -35,7 +35,7 @@ public class PackageSummaryAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        var domainPackageRoots = jigService.domainPackageFilterCandidates(jigRepository);
+        var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).packageFilterCandidates();
 
         jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations, domainPackageRoots));

@@ -61,7 +61,7 @@ public class TypesQueryService {
     }
 
     public List<String> domainPackageFilterCandidates(JigRepository jigRepository) {
-        return coreDomainCondition.domainPackageFilterCandidates(jigTypes(jigRepository));
+        return coreDomainCondition.coreDomainJigTypes(jigTypes(jigRepository)).packageFilterCandidates();
     }
 
     public MethodSmells methodSmells(JigRepository jigRepository) {

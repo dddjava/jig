@@ -246,12 +246,19 @@ test.describe('package.js', () => {
                 assert.equal(pkg.normalizeAggregationDepthValue('abc'), 0);
             });
 
-            test('findDefaultPackageFilterCandidate: ドメイン候補を返す', () => {
-                const candidate = pkg.findDefaultPackageFilterCandidate([
-                    {fqn: 'app.domain.core'},
-                    {fqn: 'app.domain.sub'},
-                ]);
+            test('findDefaultPackageFilterCandidate: domainPackageRootsがあれば返す', () => {
+                const candidate = pkg.findDefaultPackageFilterCandidate(['app.domain']);
                 assert.equal(candidate, 'app.domain');
+            });
+
+            test('findDefaultPackageFilterCandidate: 複数のdomainPackageRootsを改行結合して返す', () => {
+                const candidate = pkg.findDefaultPackageFilterCandidate(['com.a.domain', 'org.b.domain']);
+                assert.equal(candidate, 'com.a.domain\norg.b.domain');
+            });
+
+            test('findDefaultPackageFilterCandidate: domainPackageRootsが空ならnullを返す', () => {
+                assert.equal(pkg.findDefaultPackageFilterCandidate([]), null);
+                assert.equal(pkg.findDefaultPackageFilterCandidate(null), null);
             });
 
             test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
@@ -549,7 +556,7 @@ test.describe('package.js', () => {
                 assert.deepEqual(setFocusTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
             });
 
-            test('applyDefaultPackageFilterIfPresent: ドメインがあれば適用する', () => {
+            test('applyDefaultPackageFilterIfPresent: domainPackageRootsがあれば適用する', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -558,6 +565,7 @@ test.describe('package.js', () => {
                         {fqn: 'app.domain.sub'},
                     ],
                     relations: [],
+                    domainPackageRoots: ['app.domain'],
                 }, testContext);
                 doc.selectorsAll.set('#package-table tbody tr', []);
                 const {input} = createPackageFilterControls(doc);
@@ -568,6 +576,25 @@ test.describe('package.js', () => {
                 assert.equal(applied, true);
                 assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
                 assert.equal(input.value, 'app.domain');
+            });
+
+            test('applyDefaultPackageFilterIfPresent: domainPackageRootsがなければ適用しない', () => {
+                const doc = setupDocument();
+                setupDiagramEnvironment(doc, testContext);
+                setPackageData({
+                    packages: [
+                        {fqn: 'app.domain.core'},
+                        {fqn: 'app.domain.sub'},
+                    ],
+                    relations: [],
+                }, testContext);
+                doc.selectorsAll.set('#package-table tbody tr', []);
+                createPackageFilterControls(doc);
+                createDepthSelect(doc);
+
+                const applied = pkg.applyDefaultPackageFilterIfPresent(testContext);
+
+                assert.equal(applied, false);
             });
 
             test('setupPackageFilterControl: 適用/解除を扱う', () => {

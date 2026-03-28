@@ -177,26 +177,11 @@ function normalizeAggregationDepthValue(value) {
     return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function findDefaultPackageFilterCandidate(packages, domainPackageRoots) {
+function findDefaultPackageFilterCandidate(domainPackageRoots) {
     if (domainPackageRoots && domainPackageRoots.length > 0) {
         return domainPackageRoots.join('\n');
     }
-    // フォールバック: パッケージ名の "domain" 要素を探すヒューリスティック
-    const domainRoots = packages
-        .map(item => item.fqn)
-        .map(fqn => {
-            const parts = fqn.split('.');
-            const domainIndex = parts.indexOf('domain');
-            if (domainIndex === -1) return null;
-            return parts.slice(0, domainIndex + 1).join('.');
-        })
-        .filter(Boolean);
-    if (domainRoots.length === 0) return null;
-    return domainRoots.reduce((best, current) => {
-        const bestDepth = best.split('.').length;
-        const currentDepth = current.split('.').length;
-        return currentDepth < bestDepth ? current : best;
-    });
+    return null;
 }
 
 function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
@@ -601,8 +586,8 @@ function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
     if (!input || normalizePackageFilterValue(input.value).length > 0) return false;
-    const {packages, domainPackageRoots} = getPackageSummaryData(context);
-    const candidate = findDefaultPackageFilterCandidate(packages, domainPackageRoots);
+    const {domainPackageRoots} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (!candidate) return false;
     input.value = candidate;
     context.packageFilterFqn = normalizePackageFilterValue(input.value);
@@ -1219,8 +1204,8 @@ function setupPackageFilterControl(context) {
 
     // ページの初期ロード時に適用されるデフォルトフィルタを保持
     let initialDefaultFilterValue = '';
-    const {packages, domainPackageRoots} = getPackageSummaryData(context);
-    const candidate = findDefaultPackageFilterCandidate(packages, domainPackageRoots);
+    const {domainPackageRoots} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (candidate) {
         initialDefaultFilterValue = candidate;
     }

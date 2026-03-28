@@ -520,33 +520,35 @@ const UsecaseApp = {
                         globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                             const builder = new globalThis.Jig.mermaid.Builder();
 
+                            const classSubgraphs = new Map();
                             graph.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "usecase") {
-                                    // ユースケース: 角丸、ページ内リンク
-                                    const shape = '(["$LABEL"])';
-                                    const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-
-                                    builder.addNode(nodeId, nodeLabel, shape);
-                                    // 自身を強調表示
-                                    if (node.fqn === method.fqn) {
-                                        builder.addStyle(nodeId, "font-weight:bold");
-                                    }
-                                    builder.addClick(nodeId, "#" + node.fqn);
-                                } else if (node.kind === "external") {
+                                if (node.kind === "external") {
                                     // 外部ポート: 四角、グレー
-                                    const shape = '["$LABEL"]';
-                                    const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title
-
-                                    builder.addNode(nodeId, nodeLabel, shape);
+                                    const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                                    builder.addNode(nodeId, nodeLabel, '["$LABEL"]');
                                     builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
                                 } else {
-                                    // その他(method or static-method): 角丸、グレー
-                                    const shape = '(["$LABEL"])';
-                                    const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-
-                                    builder.addNode(nodeId, nodeLabel, shape);
-                                    builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                                    // usecase / method / static-method: クラス単位でsubgraphにグルーピング
+                                    const classFqn = getClassFqnFromMethodFqn(node.fqn);
+                                    const classNodeId = globalThis.Jig.fqnToId("sg", classFqn);
+                                    const classLabel = globalThis.Jig.glossary.getTypeTerm(classFqn).title;
+                                    const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel);
+                                    if (node.kind === "usecase") {
+                                        // ユースケース: 角丸、ページ内リンク
+                                        const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, '(["$LABEL"])');
+                                        // 自身を強調表示
+                                        if (node.fqn === method.fqn) {
+                                            builder.addStyle(nodeId, "font-weight:bold");
+                                        }
+                                        builder.addClick(nodeId, "#" + node.fqn);
+                                    } else {
+                                        // その他(method or static-method): 角丸、グレー
+                                        const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                        builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, '(["$LABEL"])');
+                                        builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                                    }
                                 }
                             });
 

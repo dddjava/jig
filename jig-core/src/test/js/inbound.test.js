@@ -102,7 +102,7 @@ test.describe('InboundApp', () => {
         const mainList = document.getElementById('inbound-list');
         assert.strictEqual(mainList.children.length, 1);
         const controllerSection = mainList.children[0];
-        assert.strictEqual(controllerSection.id, 'com.example.ControllerA');
+        assert.strictEqual(controllerSection.id, globalThis.Jig.fqnToId("adapter", 'com.example.ControllerA'));
         assert.strictEqual(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
         assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
         assert.strictEqual(controllerSection.querySelector('.class-path').textContent, '/api');

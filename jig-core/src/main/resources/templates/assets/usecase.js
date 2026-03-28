@@ -1,6 +1,8 @@
 const createElement = globalThis.Jig.dom.createElement;
 const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
-const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);
+const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);    // Mermaid内部ノード
+const fqnToTypeId = (fqn) => globalThis.Jig.fqnToId("type", fqn);    // usecaseクラスのHTML id
+const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecaseメソッドのHTML id
 
 /**
  * @typedef {Object} TypeRef
@@ -322,7 +324,7 @@ const UsecaseApp = {
                 const domainType = domainData._typesMap.get(fqn);
                 if (domainType) {
                     return {
-                        href: 'domain.html#' + fqn,
+                        href: 'domain.html#' + globalThis.Jig.fqnToId("domain", fqn),
                         className: domainType.isDeprecated ? 'deprecated' : undefined
                     };
                 }
@@ -433,7 +435,7 @@ const UsecaseApp = {
                         const children = [
                             createElement("a", {
                                 className: "in-page-sidebar__link",
-                                attributes: {href: "#" + usecase.fqn},
+                                attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
                                 textContent: globalThis.Jig.glossary.getTypeTerm(usecase.fqn).title
                             })
                         ];
@@ -448,7 +450,7 @@ const UsecaseApp = {
                                         children: [
                                             createElement("a", {
                                                 className: "in-page-sidebar__link in-page-sidebar__link--sub",
-                                                attributes: {href: "#" + method.fqn},
+                                                attributes: {href: "#" + fqnToMethodId(method.fqn)},
                                                 textContent: globalThis.Jig.glossary.getMethodTerm(method.fqn).title
                                             })
                                         ]
@@ -500,7 +502,7 @@ const UsecaseApp = {
                 className: "jig-card jig-card--type",
                 children: [
                     createElement("h3", {
-                        children: [createElement("a", {id: usecase.fqn, textContent: term.title})]
+                        children: [createElement("a", {id: fqnToTypeId(usecase.fqn), textContent: term.title})]
                     }),
                     createElement("div", {
                         className: "declaration",
@@ -544,7 +546,7 @@ const UsecaseApp = {
                 const methodSection = createElement("article", {
                     className: "jig-card jig-card--item",
                     children: [
-                        createElement("h4", {id: method.fqn, textContent: methodTerm.title}),
+                        createElement("h4", {id: fqnToMethodId(method.fqn), textContent: methodTerm.title}),
                         createElement("div", {
                             className: "declaration",
                             textContent: methodTerm.shortDeclaration
@@ -622,9 +624,9 @@ const UsecaseApp = {
                                     builder.addNode(nodeId, nodeLabel, '["$LABEL"]');
                                     builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
                                     if (node.kind === "inbound-class") {
-                                        builder.addClick(nodeId, "./inbound.html#" + node.fqn);
+                                        builder.addClick(nodeId, "./inbound.html#" + globalThis.Jig.fqnToId("adapter", node.fqn));
                                     } else if (node.kind === "outbound") {
-                                        builder.addClick(nodeId, "./outbound.html#" + node.fqn);
+                                        builder.addClick(nodeId, "./outbound.html#" + globalThis.Jig.fqnToId("port", node.fqn));
                                     }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
@@ -640,7 +642,7 @@ const UsecaseApp = {
                                         if (node.fqn === method.fqn) {
                                             builder.addStyle(nodeId, "font-weight:bold");
                                         }
-                                        builder.addClick(nodeId, "#" + node.fqn);
+                                        builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
                                     } else {
                                         // その他(method or static-method): 角丸、グレー
                                         const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;

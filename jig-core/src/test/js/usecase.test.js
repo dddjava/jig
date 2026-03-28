@@ -115,7 +115,7 @@ test.describe('UsecaseApp', () => {
         const mainList = document.getElementById('usecase-list');
         assert.strictEqual(mainList.children.length, 1);
         const serviceSection = mainList.children[0];
-        assert.strictEqual(serviceSection.querySelector('h3 a').id, 'com.example.ServiceA');
+        assert.strictEqual(serviceSection.querySelector('h3 a').id, globalThis.Jig.fqnToId("type", 'com.example.ServiceA'));
         assert.strictEqual(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
         assert.strictEqual(serviceSection.querySelector('.declaration').textContent, 'com.example.ServiceA');
         assert.strictEqual(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
@@ -131,7 +131,7 @@ test.describe('UsecaseApp', () => {
 
         const methodSection = serviceSection.querySelector('article.jig-card--item');
         assert.ok(methodSection);
-        assert.strictEqual(methodSection.querySelector('h4').id, 'com.example.ServiceA#method1()');
+        assert.strictEqual(methodSection.querySelector('h4').id, globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()'));
         assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
         assert.strictEqual(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
 
@@ -176,7 +176,7 @@ test.describe('UsecaseApp', () => {
         assert.ok(resolver, 'リゾルバーが設定されていること');
 
         const resolved = resolver('com.example.Order');
-        assert.strictEqual(resolved.href, 'domain.html#com.example.Order');
+        assert.strictEqual(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order'));
         assert.strictEqual(resolved.className, undefined);
 
         delete globalThis.domainData;
@@ -200,7 +200,7 @@ test.describe('UsecaseApp', () => {
         UsecaseApp.init();
 
         const resolved = globalThis.Jig.dom.typeLinkResolver('com.example.OldClass');
-        assert.strictEqual(resolved.href, 'domain.html#com.example.OldClass');
+        assert.strictEqual(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.OldClass'));
         assert.strictEqual(resolved.className, 'deprecated');
 
         delete globalThis.domainData;
@@ -283,12 +283,12 @@ test.describe('UsecaseApp', () => {
         UsecaseApp.init();
 
         const methodFqn = "com.example.ServiceA#method1()";
-        const methodSection = document.getElementById(methodFqn).parentElement;
+        const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
         const seqBtn = methodSection.querySelectorAll('.diagram-tabs button')[1];
-        
+
         // シーケンス図タブをクリック
         seqBtn.dispatchEvent(new window.Event('click'));
-        
+
         // 状態が 'sequence' になっていることを確認
         assert.strictEqual(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
 
@@ -298,7 +298,7 @@ test.describe('UsecaseApp', () => {
         showDiagramInternalMethods.dispatchEvent(new window.Event('change'));
 
         // 再レンダリング後の要素を取得
-        const newMethodSection = document.getElementById(methodFqn).parentElement;
+        const newMethodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
         const newSeqBtn = newMethodSection.querySelectorAll('.diagram-tabs button')[1];
         const newSeqPanel = newMethodSection.querySelectorAll('.diagram-panel')[1];
 
@@ -330,15 +330,15 @@ test.describe('UsecaseApp', () => {
 
         UsecaseApp.init();
 
-        const methodSection = document.getElementById('com.example.ServiceA#method1()').parentElement;
+        const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()')).parentElement;
         assert.ok(methodSection);
         const mermaidPre = methodSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
         const code = mermaidPre.textContent;
         assert.ok(code.includes('click'));
-        assert.ok(code.includes('./inbound.html#web.Ctrl'));
+        assert.ok(code.includes('./inbound.html#' + globalThis.Jig.fqnToId("adapter", 'web.Ctrl')));
         assert.ok(code.includes('click'));
-        assert.ok(code.includes('#com.example.ServiceA#method1()'));
+        assert.ok(code.includes('#' + globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()')));
     });
 });
 

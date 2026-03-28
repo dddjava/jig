@@ -26,7 +26,7 @@ const InboundApp = {
         sidebar.innerHTML = "";
 
         const items = controllers.map(c => ({
-            id: c.fqn,
+            id: globalThis.Jig.fqnToId("adapter", c.fqn),
             label: globalThis.Jig.glossary.getTypeTerm(c.fqn).title
         }));
         globalThis.Jig.sidebar.renderSection(sidebar, "コントローラー", items);
@@ -46,7 +46,7 @@ const InboundApp = {
             const typeTerm = globalThis.Jig.glossary.getTypeTerm(controller.fqn);
             const section = createElement("section", {
                 className: "jig-card jig-card--type",
-                id: controller.fqn,
+                id: globalThis.Jig.fqnToId("adapter", controller.fqn),
                 children: [
                     createElement("h3", {
                         children: [createElement("a", {textContent: typeTerm.title})]
@@ -131,7 +131,7 @@ const InboundApp = {
                         const mId = fqnToNodeId(fqn);
                         const mLabel = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
                         builder.addNodeToSubgraph(subgraph, mId, mLabel, '(["$LABEL"])');
-                        builder.addClick(mId, `./usecase.html#${fqn}`);
+                        builder.addClick(mId, `./usecase.html#${globalThis.Jig.fqnToId("method", fqn)}`);
                     });
                 });
 

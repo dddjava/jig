@@ -37,7 +37,7 @@ test.describe('domain.js', () => {
             DomainApp.init();
 
             const resolved = globalThis.Jig.dom.typeLinkResolver('org.example.Account');
-            assert.equal(resolved.href, '#org.example.Account');
+            assert.equal(resolved.href, '#' + globalThis.Jig.fqnToId("domain", 'org.example.Account'));
             assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
@@ -59,7 +59,7 @@ test.describe('domain.js', () => {
             DomainApp.init();
 
             const resolved = globalThis.Jig.dom.typeLinkResolver('org.example.OldClass');
-            assert.equal(resolved.href, '#org.example.OldClass');
+            assert.equal(resolved.href, '#' + globalThis.Jig.fqnToId("domain", 'org.example.OldClass'));
             assert.equal(resolved.className, 'deprecated');
 
             delete globalThis.domainData;
@@ -106,7 +106,7 @@ test.describe('domain.js', () => {
             assert.equal(result.tagName, 'a');
             assert.equal(result.className, 'my-class');
             assert.equal(result.textContent, 'ユーザー');
-            assert.equal(result.attributes.get('href'), '#org.example.User');
+            assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'org.example.User'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -183,7 +183,7 @@ test.describe('domain.js', () => {
             const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.Item[]'});
             assert.equal(result.tagName, 'a');
             assert.equal(result.textContent, 'アイテム[]');
-            assert.equal(result.attributes.get('href'), '#org.example.Item');
+            assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'org.example.Item'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -206,7 +206,7 @@ test.describe('domain.js', () => {
             const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.Item[][]'});
             assert.equal(result.tagName, 'a');
             assert.equal(result.textContent, 'アイテム[][]');
-            assert.equal(result.attributes.get('href'), '#org.example.Item');
+            assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'org.example.Item'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -238,7 +238,7 @@ test.describe('domain.js', () => {
             const summaryLink = result.children[0].children[0];
             assert.equal(summaryLink.tagName, 'a');
             assert.equal(summaryLink.textContent, 'com/example');
-            assert.equal(summaryLink.attributes.get('href'), '#com.example');
+            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'com.example'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -275,7 +275,7 @@ test.describe('domain.js', () => {
             assert.equal(summaryLink.tagName, 'a');
             // com -> example -> deep で、deep がタイプを持つので統合が止まる
             assert.equal(summaryLink.textContent, 'com/example/deep');
-            assert.equal(summaryLink.attributes.get('href'), '#com.example.deep');
+            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'com.example.deep'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -315,7 +315,7 @@ test.describe('domain.js', () => {
             const summaryLink = result.children[0].children[0];
             // com -> example -> sub -> deep と続くので、sub がタイプを持つまで統合
             assert.equal(summaryLink.textContent, 'com/example/sub/deep');
-            assert.equal(summaryLink.attributes.get('href'), '#com.example.sub.deep');
+            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'com.example.sub.deep'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -352,7 +352,7 @@ test.describe('domain.js', () => {
             const summaryLink = result.children[0].children[0];
             // com -> example は統合（example は1つだけの子を持つから）
             assert.equal(summaryLink.textContent, 'com/example');
-            assert.equal(summaryLink.attributes.get('href'), '#com.example');
+            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'com.example'));
 
             // example の直下には sub1 と sub2 があるはず
             const childPackageNames = Array.from(result.children)

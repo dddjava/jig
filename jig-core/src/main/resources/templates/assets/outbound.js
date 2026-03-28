@@ -234,14 +234,14 @@ function renderMermaid(mermaidCode, container) {
 function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
     if (!visibility.port) return null;
     if (visibility.operation) {
-        const portOpId = `PortOp_${builder.sanitize(portOpFqn)}`;
+        const portOpId = globalThis.Jig.fqnToId("portOp", portOpFqn);
         builder.addNodeToSubgraph(
             builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
             portOpId, portOpName
         );
         return portOpId;
     } else {
-        const portNodeId = `Port_${builder.sanitize(portFqn)}`;
+        const portNodeId = globalThis.Jig.fqnToId("port", portFqn);
         builder.addNode(portNodeId, portLabel);
         return portNodeId;
     }
@@ -252,12 +252,12 @@ function addAdapterNode(builder, sourceNodeId, adapterFqn, adapterLabel, executi
 
     if (visibility.execution) {
         const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
-        const executionId = `Exec_${builder.sanitize(executionFqn)}`;
+        const executionId = globalThis.Jig.fqnToId("exec", executionFqn);
         builder.addNodeToSubgraph(sg, executionId, executionName);
         if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
         return executionId;
     } else {
-        const adapterNodeId = `Adapter_${builder.sanitize(adapterFqn)}`;
+        const adapterNodeId = globalThis.Jig.fqnToId("adapter", adapterFqn);
         builder.addNode(adapterNodeId, adapterLabel);
         if (sourceNodeId) builder.addEdge(sourceNodeId, adapterNodeId);
         return adapterNodeId;
@@ -270,12 +270,12 @@ function addAccessorNode(builder, sourceNodeId, op, visibility, accessorSubgraph
 
     const groupLabel = getTypeTerm(groupId).title;
     if (visibility.accessorMethod) {
-        const opNodeId = `POp_${builder.sanitize(op.id)}`;
+        const opNodeId = globalThis.Jig.fqnToId("op", op.id);
         builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop());
         if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
         return opNodeId;
     } else {
-        const accessorNodeId = `Accessor_${builder.sanitize(groupId)}`;
+        const accessorNodeId = globalThis.Jig.fqnToId("accessor", groupId);
         if (!accessorNodes.has(groupId)) {
             accessorNodes.set(groupId, accessorNodeId);
             builder.addNode(accessorNodeId, groupLabel);
@@ -326,7 +326,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         // 外部アクセッサをsubgraphにして各メソッドをノードに
         const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
         accessor.methods.forEach(accMethod => {
-            const accMethodNodeId = `AccMethod_${builder.sanitize(accessor.fqn + '_' + accMethod.name)}`;
+            const accMethodNodeId = globalThis.Jig.fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
             builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name);
             if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
             accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
@@ -334,7 +334,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
         return null;
     } else {
         // クラス単位の単一ノード
-        const nodeId = `ExtAcc_${builder.sanitize(accessor.fqn)}`;
+        const nodeId = globalThis.Jig.fqnToId("extAcc", accessor.fqn);
         if (!extAccessorNodes.has(accessor.fqn)) {
             extAccessorNodes.set(accessor.fqn, nodeId);
             builder.addNode(nodeId, accessorLabel);

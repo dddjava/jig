@@ -108,7 +108,7 @@ function renderPackageNavItem(pkg) {
     }
 
     const summaryLink = createElement("a", {
-        attributes: {href: "#" + currentPkg.fqn},
+        attributes: {href: "#" + globalThis.Jig.fqnToId("domain", currentPkg.fqn)},
         textContent: mergedNames.join("/")
     });
     const details = createElement("details", {
@@ -131,7 +131,7 @@ function renderPackageNavItem(pkg) {
     currentPkg.types.forEach(child => {
         const domainType = getDomainData()._typesMap?.get(child.fqn);
         const link = createElement("a", {
-            attributes: {href: "#" + child.fqn},
+            attributes: {href: "#" + globalThis.Jig.fqnToId("domain", child.fqn)},
             className: domainType?.isDeprecated ? "deprecated" : "",
             textContent: getTypeTerm(child.fqn).title
         });
@@ -191,30 +191,33 @@ function createRelationDiagram(pkg) {
 
     // エッジ（重複排除）
     const edgeSet = new Set();
-    internalRelations.forEach(r => edgeSet.add(`${r.from} --> ${r.to}`));
-    externalRelations.forEach(r => edgeSet.add(`${r.from} --> ${packageOf(r.to)}`));
+    internalRelations.forEach(r => edgeSet.add(`${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(r.to)}`));
+    externalRelations.forEach(r => edgeSet.add(`${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(packageOf(r.to))}`));
 
     function escapeMermaidLabel(label) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
+    const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
+
     function mermaidTypeBox(fqn) {
-        return `${fqn}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`;
+        return `${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`;
     }
 
     function mermaidPackageBox(fqn) {
-        return `${fqn}@{shape: st-rect, label: "${escapeMermaidLabel(getTypeTerm(fqn).title)}"}`;
+        return `${fqnToMermaidId(fqn)}@{shape: st-rect, label: "${escapeMermaidLabel(getTypeTerm(fqn).title)}"}`;
     }
 
     const i = '    ';
     const lines = [`\ngraph ${domainSettings.diagramDirection}`];
-    lines.push(`${i}subgraph ${pkg.fqn}`);
+    lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkg.fqn)}`);
     lines.push(`${i}direction ${domainSettings.diagramDirection}`);
     internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
     lines.push(`${i}end`);
     externalPkgFqns.forEach(fqn => lines.push(`${i}${mermaidPackageBox(fqn)}`));
     [...internalFqns, ...externalPkgFqns].forEach(fqn =>
-        lines.push(`${i}click ${fqn} "#${fqn}"`)
+        lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`)
     );
     edgeSet.forEach(edge => lines.push(`${i}${edge}`));
 
@@ -277,7 +280,7 @@ function createChildrenTable(pkg) {
             // 型の場合は createTypeLink を使用して deprecated 処理を統一
             const link = child.isPackage
                 ? createElement("a", {
-                    attributes: {href: "#" + child.fqn},
+                    attributes: {href: "#" + globalThis.Jig.fqnToId("domain", child.fqn)},
                     textContent: child.title
                 })
                 : createElementForTypeRef({fqn: child.fqn});
@@ -376,7 +379,7 @@ function renderPackages(packages, container) {
     packages.forEach(pkg => {
         const section = createElement("section", {
             className: "jig-card jig-card--type",
-            id: pkg.fqn,
+            id: globalThis.Jig.fqnToId("domain", pkg.fqn),
             children: [
                 createElement("h3", {
                     children: [createElement("a", {textContent: getTypeTerm(pkg.fqn).title})]
@@ -435,7 +438,7 @@ function renderTypes(types, container) {
 
         const section = createElement("section", {
             className: "jig-card jig-card--type",
-            id: type.fqn,
+            id: globalThis.Jig.fqnToId("domain", type.fqn),
             children: [
                 createElement("h3", {children: [titleLink]}),
                 createElement("div", {className: "fully-qualified-name", textContent: type.fqn})
@@ -613,7 +616,7 @@ const DomainApp = {
             const domainType = getDomainData()?._typesMap?.get(fqn);
             if (domainType) {
                 return {
-                    href: '#' + fqn,
+                    href: '#' + globalThis.Jig.fqnToId("domain", fqn),
                     className: domainType.isDeprecated ? 'deprecated' : undefined
                 };
             }

@@ -426,7 +426,8 @@ test.describe('domain.js', () => {
             };
             globalThis.glossaryData = {
                 'org.example.A': { title: 'A' },
-                'org.example.B': { title: 'B' }
+                'org.example.B': { title: 'B' },
+                'org.example': { title: 'example' }
             };
 
             const result = createRelationDiagram(pkg);
@@ -435,6 +436,9 @@ test.describe('domain.js', () => {
             const idA = globalThis.Jig.fqnToId("n", 'org.example.A');
             const idB = globalThis.Jig.fqnToId("n", 'org.example.B');
             assert.ok(result.includes(`${idA} --> ${idB}`), '関連が含まれていること');
+
+            const sgId = globalThis.Jig.fqnToId("sg", 'org.example');
+            assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;

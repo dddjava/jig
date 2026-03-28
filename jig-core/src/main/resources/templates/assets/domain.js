@@ -211,7 +211,7 @@ function createRelationDiagram(pkg) {
 
     const i = '    ';
     const lines = [`\ngraph ${domainSettings.diagramDirection}`];
-    lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkg.fqn)}`);
+    lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkg.fqn)} ["${escapeMermaidLabel(getTypeTerm(pkg.fqn).title)}"]`);
     lines.push(`${i}direction ${domainSettings.diagramDirection}`);
     internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
     lines.push(`${i}end`);

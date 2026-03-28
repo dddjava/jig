@@ -74,7 +74,6 @@ org.dddjava.jig/
 |------|------|
 | バイトコード解析 | ASM |
 | Java ソース解析 | JavaParser |
-| HTML テンプレート | Thymeleaf |
 | Excel 出力 | Apache POI |
 | MyBatis SQL 解析 | MyBatis |
 | CLI 設定・起動 | Spring Boot |

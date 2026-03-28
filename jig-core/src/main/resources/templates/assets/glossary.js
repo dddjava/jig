@@ -78,62 +78,132 @@ function renderTermSidebar(terms) {
     globalThis.Jig.sidebar.renderSection(list, "用語一覧", items);
 }
 
+function getInitialChar(term) {
+    const title = term.title || "";
+    if (!title) return "#";
+    const first = title.charAt(0).toUpperCase();
+
+    // アルファベット
+    if (/^[A-Z]$/.test(first)) return first;
+
+    // ひらがな (3040-309F) / カタカナ (30A0-30FF)
+    if (/^[\u3040-\u309F\u30A0-\u30FF]$/.test(first)) {
+        return first;
+    }
+
+    // 数字
+    if (/^[0-9]$/.test(first)) return first;
+
+    // その他（漢字含む）はそのまま
+    return first;
+}
+
+function renderJumpBar(chars) {
+    const jumpBar = document.getElementById("jump-bar");
+    if (!jumpBar) return;
+
+    jumpBar.textContent = "";
+    chars.forEach(char => {
+        const link = createElement("a", {
+            className: "glossary-jump-link",
+            href: `#group-${char}`,
+            textContent: char
+        });
+        // スムーズなスクロールのためのイベント
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = `group-${char}`;
+            const target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView();
+                history.pushState(null, null, `#${targetId}`);
+            }
+        });
+        jumpBar.appendChild(link);
+    });
+}
+
 function renderGlossaryTerms(terms, displayMode) {
     const list = document.getElementById("term-list");
     if (!list) return;
 
-    const articles = [];
-
-    terms.forEach((term, index) => {
-        const anchorId = buildTermAnchorId(term, index);
-
-        const metaChildren = [];
-        if (displayMode === "full") {
-            const metaItems = [];
-            if (term.fqn) {
-                metaItems.push(createElement("div", {children: [
-                    createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
-                    createElement("span", {className: "meta-value", textContent: term.fqn}),
-                ]}));
-            }
-            if (term.simpleText) {
-                metaItems.push(createElement("div", {children: [
-                    createElement("span", {className: "meta-label", textContent: "単純名"}),
-                    createElement("span", {className: "meta-value", textContent: term.simpleText}),
-                ]}));
-            }
-            if (term.kind) {
-                metaItems.push(createElement("div", {children: [
-                    createElement("span", {className: "meta-label", textContent: "種類"}),
-                    createElement("span", {className: "meta-value", textContent: term.kind}),
-                ]}));
-            }
-            if (metaItems.length > 0) {
-                metaChildren.push(createElement("section", {
-                    className: "jig-card jig-card--item weak",
-                    children: metaItems
-                }));
-            }
-        }
-
-        const article = createElement("article", {
-            className: "jig-card jig-card--type",
-            children: [
-                createElement("h3", {children: [createElement("a", {id: anchorId, textContent: term.title || ""})]}),
-                ...metaChildren,
-                createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
-            ]
-        });
-        articles.push(article);
+    // 頭文字によるグルーピング
+    const groups = {};
+    terms.forEach(term => {
+        const char = getInitialChar(term);
+        if (!groups[char]) groups[char] = [];
+        groups[char].push(term);
     });
 
+    const sortedChars = Object.keys(groups).sort(termCollator.compare);
+
+    // ジャンプバーの更新
+    renderJumpBar(sortedChars);
+
     list.textContent = "";
-    articles.forEach(article => list.appendChild(article));
+
+    sortedChars.forEach(char => {
+        const groupTerms = groups[char];
+        const groupSection = createElement("section", {
+            className: "glossary-group",
+            id: `group-${char}`,
+            children: [
+                createElement("h2", { className: "glossary-group-header", textContent: char })
+            ]
+        });
+
+        groupTerms.forEach((term, index) => {
+            const anchorId = buildTermAnchorId(term, index);
+            const isCompact = displayMode === "summary";
+
+            const metaChildren = [];
+            if (!isCompact) {
+                const metaItems = [];
+                if (term.fqn) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
+                        createElement("span", {className: "meta-value", textContent: term.fqn}),
+                    ]}));
+                }
+                if (term.simpleText) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "単純名"}),
+                        createElement("span", {className: "meta-value", textContent: term.simpleText}),
+                    ]}));
+                }
+                if (term.kind) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "種類"}),
+                        createElement("span", {className: "meta-value", textContent: term.kind}),
+                    ]}));
+                }
+                if (metaItems.length > 0) {
+                    metaChildren.push(createElement("section", {
+                        className: "jig-card jig-card--item weak",
+                        children: metaItems
+                    }));
+                }
+            }
+
+            const article = createElement("article", {
+                id: anchorId,
+                className: `jig-card jig-card--type ${isCompact ? 'jig-card--compact' : ''}`,
+                children: [
+                    createElement("h3", {children: [createElement("a", {textContent: term.title || ""})]}),
+                    ...metaChildren,
+                    createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
+                ]
+            });
+            groupSection.appendChild(article);
+        });
+
+        list.appendChild(groupSection);
+    });
 }
 
 function renderFilteredTerms(terms, controls) {
     const filteredTerms = getFilteredTerms(terms, controls);
-    const sortedTerms = sortTerms(filteredTerms, controls.sortOrder?.value);
+    const sortedTerms = sortTerms(filteredTerms, "name");
     // renderGlossaryTerms に表示モードを渡す
     renderTermSidebar(sortedTerms);
     renderGlossaryTerms(sortedTerms, controls.displayModeSelect?.value);
@@ -225,7 +295,6 @@ if (typeof document !== "undefined") {
             showClass: document.getElementById("show-class"),
             showMethod: document.getElementById("show-method"),
             showField: document.getElementById("show-field"),
-            sortOrder: document.getElementById("sort-order"),
             searchTargetName: document.getElementById('search-target-name'),
             searchTargetDescription: document.getElementById('search-target-description'),
             searchTargetFqn: document.getElementById('search-target-fqn'),
@@ -243,7 +312,6 @@ if (typeof document !== "undefined") {
             controls.showClass,
             controls.showMethod,
             controls.showField,
-            controls.sortOrder,
             controls.displayModeSelect,
             controls.searchTargetName,
             controls.searchTargetDescription,
@@ -268,12 +336,25 @@ if (typeof document !== "undefined") {
         }
 
         updateArticles();
+
+        // ページ内リンクが確実に機能するように hashchange を監視
+        const scrollToHash = () => {
+            const hash = location.hash;
+            if (hash) {
+                const el = document.getElementById(hash.substring(1));
+                if (el) el.scrollIntoView();
+            }
+        };
+        window.addEventListener("hashchange", scrollToHash);
+        // 初期表示時
+        scrollToHash();
     });
 }
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-
+        getInitialChar,
+        renderJumpBar,
         sortTerms,
         getFilteredTerms,
         getGlossaryData,

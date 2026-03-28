@@ -61,7 +61,6 @@ function setupDocument() {
     createInput('show-class', 'checkbox', null, true);
     createInput('show-method', 'checkbox', null, true);
     createInput('show-field', 'checkbox', null, true);
-    createInput('sort-order', 'select');
 
     createInput('search-target-name', 'checkbox', null, true);
     createInput('search-target-description', 'checkbox', null, true);
@@ -75,10 +74,30 @@ function setupDocument() {
 
     createInput('display-mode-select', 'select');
 
+    const jumpBar = doc.createElement('div');
+    jumpBar.id = 'jump-bar';
+    doc.elementsById.set('jump-bar', jumpBar);
+
     return doc;
 }
 
 test.describe('glossary.js', () => {
+    test.describe('頭文字の取得', () => {
+        test('英字は大文字になる', () => {
+            assert.equal(glossary.getInitialChar({title: 'account'}), 'A');
+        });
+        test('ひらがな・カタカナはそのまま', () => {
+            assert.equal(glossary.getInitialChar({title: 'あいう'}), 'あ');
+            assert.equal(glossary.getInitialChar({title: 'カキク'}), 'カ');
+        });
+        test('漢字はそのまま', () => {
+            assert.equal(glossary.getInitialChar({title: '口座'}), '口');
+        });
+        test('タイトルがない場合は #', () => {
+            assert.equal(glossary.getInitialChar({}), '#');
+        });
+    });
+
     test.describe('絞り込み', () => {
         test('種類・説明有無・検索語でフィルタする (デフォルト設定)', () => {
             const doc = setupDocument();
@@ -324,8 +343,16 @@ test.describe('glossary.js', () => {
 
             glossary.renderGlossaryTerms([{title: 'T', simpleText: 'S', fqn: 'F', kind: 'K', description: 'D'}], 'full');
 
-            const article = list.children[0];
+            const groupSection = list.children[0];
+            assert.equal(groupSection.tagName, 'section');
+            assert.equal(groupSection.classList.contains('glossary-group'), true);
+            const header = groupSection.children[0];
+            assert.equal(header.tagName, 'h2');
+            assert.equal(header.textContent, 'T');
+
+            const article = groupSection.children[1];
             assert.equal(article.tagName, 'article');
+            assert.equal(article.id, 'F', 'IDはarticleに付与されているはず');
             const metaCard = article.children.find(c => c.tagName === 'section' && c.classList.contains('jig-card--item'));
             assert.ok(metaCard, 'fullモードではメタカードがあるはず');
         });
@@ -337,7 +364,9 @@ test.describe('glossary.js', () => {
 
             glossary.renderGlossaryTerms([{title: 'T', description: 'D'}], 'summary');
 
-            const article = list.children[0];
+            const groupSection = list.children[0];
+            const article = groupSection.children[1];
+            assert.equal(article.classList.contains('jig-card--compact'), true, 'summaryモードではcompactクラスがあるはず');
             assert.ok(!article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), 'summaryモードではFQNがないはず');
         });
 

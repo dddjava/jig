@@ -524,6 +524,9 @@ label {
 }
 
 /* 用語集 */
+.glossary #glossary-main {
+    padding-top: 1rem;
+}
 .glossary .search-option,
 .glossary .kind-option,
 .glossary .misc-option {
@@ -603,6 +606,92 @@ label {
 }
 .glossary #export-csv:hover {
     background-color: #2980b9;
+}
+
+.glossary-jump-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 1.5rem;
+    padding: 10px;
+    background-color: #f0f4f8;
+    border-radius: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.glossary-jump-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2em;
+    height: 2em;
+    padding: 0 0.4em;
+    background-color: #fff;
+    border: 1px solid #d1d9e6;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #1b3a66;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.glossary-jump-link:hover {
+    background-color: #1b3a66;
+    color: #fff;
+    border-color: #1b3a66;
+    text-decoration: none;
+}
+
+.glossary-group {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 4em; /* jump-bar の高さ分 */
+}
+
+.glossary-group-header {
+    position: sticky;
+    top: 3.5em; /* jump-bar の下に来るように調整 */
+    background: linear-gradient(90deg, #1b3a66, #31455f);
+    color: #fff;
+    padding: 0.4rem 1rem;
+    margin: 0 0 1rem 0;
+    border-radius: 4px;
+    z-index: 15;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 概要表示用のコンパクトカード */
+.jig-card.jig-card--compact {
+    padding: 8px 12px;
+    border-left: 4px solid #1b3a66;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
+}
+
+.jig-card.jig-card--type {
+    scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
+}
+
+.jig-card.jig-card--compact h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.jig-card.jig-card--compact .markdown {
+    margin: 0;
+    font-size: 0.9em;
+    color: #444;
+}
+
+.jig-card.jig-card--compact .markdown p {
+    margin: 0;
 }
 
 /* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */

@@ -483,6 +483,34 @@ test.describe('glossary.js', () => {
         });
     });
 
+    test.describe('種類バッジ', () => {
+        test('kindBadgeElement は data-kind 属性を付与した span を返す', () => {
+            const badge = glossary.kindBadgeElement('クラス');
+            assert.equal(badge.className, 'kind-badge');
+            assert.equal(badge.getAttribute('data-kind'), 'クラス');
+            assert.equal(badge.textContent, 'C');
+        });
+
+        test('kindBadgeElement は既知の kind に対応するバッジを返す', () => {
+            assert.equal(glossary.kindBadgeElement('パッケージ').textContent, 'P');
+            assert.equal(glossary.kindBadgeElement('メソッド').textContent, 'M');
+            assert.equal(glossary.kindBadgeElement('フィールド').textContent, 'F');
+        });
+
+        test('kindBadgeElement は未知の kind でも例外を投げない', () => {
+            const badge = glossary.kindBadgeElement('Unknown');
+            assert.equal(badge.className, 'kind-badge');
+            assert.equal(badge.getAttribute('data-kind'), 'Unknown');
+            assert.equal(badge.textContent, 'U');
+        });
+
+        test('kindBadgeElement は空文字列でも例外を投げない', () => {
+            const badge = glossary.kindBadgeElement('');
+            assert.equal(badge.className, 'kind-badge');
+            assert.equal(badge.textContent, '?');
+        });
+    });
+
     test.describe('初期化', () => {
         test('DOMContentLoaded で初期描画が行われる', () => {
             const doc = setupDocument();

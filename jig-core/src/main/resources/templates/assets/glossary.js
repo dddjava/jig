@@ -4,6 +4,14 @@ const createElement = globalThis.Jig.dom.createElement;
 // 文字列の比較は日本語を優先しつつ大小を無視する
 const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
 
+// 種類をバッジ表示するためのマッピング
+const KIND_BADGE = {
+    "パッケージ": "P",
+    "クラス":     "C",
+    "メソッド":   "M",
+    "フィールド": "F",
+};
+
 function sortTerms(terms, sortKey) {
     const keyMap = {
         name: "title",
@@ -56,6 +64,14 @@ function buildTermAnchorId(term, index) {
     return term.fqn || `term-${index}`;
 }
 
+function kindBadgeElement(kind) {
+    return createElement("span", {
+        className: "kind-badge",
+        attributes: { "data-kind": kind },
+        textContent: KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?"),
+    });
+}
+
 function escapeCsvValue(value) {
     const text = String(value ?? "")
         .replace(/\r\n/g, "\n")
@@ -83,7 +99,19 @@ function renderTermSidebar(terms) {
 
     list.innerHTML = "";
     const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
-    globalThis.Jig.sidebar.renderSection(list, "用語一覧", items);
+    const section = globalThis.Jig.sidebar.createSection("用語一覧", items);
+    if (!section) return;
+
+    const links = section.querySelectorAll(".in-page-sidebar__link");
+    links.forEach((link, i) => {
+        const kind = terms[i]?.kind;
+        if (kind) {
+            link.setAttribute("data-kind", kind);
+            link.setAttribute("data-kind-char", KIND_BADGE[kind] ?? kind.charAt(0));
+        }
+    });
+
+    list.appendChild(section);
 }
 
 function getInitialChar(term) {
@@ -197,7 +225,10 @@ function renderGlossaryTerms(terms, displayMode) {
                 id: anchorId,
                 className: `jig-card jig-card--type ${isCompact ? 'jig-card--compact' : ''}`,
                 children: [
-                    createElement("h3", {children: [createElement("a", {textContent: term.title || ""})]}),
+                    createElement("h3", {children: [
+                        kindBadgeElement(term.kind || ""),
+                        createElement("a", {textContent: term.title || ""}),
+                    ]}),
                     ...metaChildren,
                     createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
                 ]
@@ -397,5 +428,6 @@ if (typeof module !== "undefined" && module.exports) {
         renderGlossaryTerms,
         renderFilteredTerms,
         renderMarkdownDescriptions,
+        kindBadgeElement,
     };
 }

@@ -652,6 +652,48 @@ label {
     scroll-margin-top: 4em; /* jump-bar の高さ分 */
 }
 
+/* 種類バッジ */
+.kind-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4em;
+    height: 1.4em;
+    border-radius: 3px;
+    font-size: 0.7em;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    vertical-align: middle;
+    flex-shrink: 0;
+    background-color: #888;
+    margin-right: 0.4em;
+}
+
+.kind-badge[data-kind="パッケージ"] {
+    background-color: #5a7a3a;
+}
+
+.kind-badge[data-kind="クラス"] {
+    background-color: #1b3a66;
+}
+
+.kind-badge[data-kind="メソッド"] {
+    background-color: #6b3a8a;
+}
+
+.kind-badge[data-kind="フィールド"] {
+    background-color: #a05a20;
+}
+
+.jig-card--type h3 .kind-badge {
+    font-size: 0.65em;
+}
+
+.jig-card--compact h3 .kind-badge {
+    font-size: 0.65em;
+}
+
 .glossary-group-header {
     position: sticky;
     top: 3.5em; /* jump-bar の下に来るように調整 */
@@ -1030,7 +1072,8 @@ table td.number {
     margin: 0;
 }
 .in-page-sidebar__link {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 6px 8px;
     border-radius: 6px;
     color: #1b3a66;
@@ -1047,6 +1090,41 @@ table td.number {
     color: #10253f;
     text-decoration: none;
 }
+
+/* サイドバーリンクのバッジ（疑似要素） */
+.in-page-sidebar__link[data-kind-char]::before {
+    content: attr(data-kind-char);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.3em;
+    height: 1.3em;
+    border-radius: 3px;
+    font-size: 0.7em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #888;
+    margin-right: 0.4em;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.in-page-sidebar__link[data-kind="パッケージ"]::before {
+    background-color: #5a7a3a;
+}
+
+.in-page-sidebar__link[data-kind="クラス"]::before {
+    background-color: #1b3a66;
+}
+
+.in-page-sidebar__link[data-kind="メソッド"]::before {
+    background-color: #6b3a8a;
+}
+
+.in-page-sidebar__link[data-kind="フィールド"]::before {
+    background-color: #a05a20;
+}
+
 .in-page-sidebar__link--sub {
     padding-left: 20px;
     font-size: 0.85em;

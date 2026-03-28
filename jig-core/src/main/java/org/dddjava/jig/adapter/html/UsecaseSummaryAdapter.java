@@ -45,7 +45,7 @@ public class UsecaseSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String buildJson(JigTypes contextJigTypes) {
+    public static String buildJson(JigTypes contextJigTypes) {
         var usecaseList = contextJigTypes.stream()
                 .flatMap(jigType -> {
                     List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
@@ -54,12 +54,12 @@ public class UsecaseSummaryAdapter {
 
                     List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods().stream()
                             .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                            .map(this::buildMethodJson)
+                            .map(UsecaseSummaryAdapter::buildMethodJson)
                             .collect(Collectors.toList());
 
                     List<JsonObjectBuilder> methodList = jigType.instanceJigMethods().stream()
                             .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                            .map(this::buildMethodJson)
+                            .map(UsecaseSummaryAdapter::buildMethodJson)
                             .toList();
 
                     if (methodList.isEmpty() && fields.isEmpty() && staticMethods.isEmpty()) {
@@ -77,7 +77,7 @@ public class UsecaseSummaryAdapter {
         return Json.object("usecases", Json.arrayObjects(usecaseList)).build();
     }
 
-    private JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
+    private static JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return JsonSupport.buildMethodJson(jigMethod)
                 .and("callMethods", Json.array(jigMethod.lambdaInlinedMethodCallStream()
                         .filter(methodCall -> methodCall.isXxx())

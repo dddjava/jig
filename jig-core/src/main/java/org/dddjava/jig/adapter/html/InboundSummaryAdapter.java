@@ -45,7 +45,7 @@ public class InboundSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String buildJson(InputAdapters inputAdapters, JigTypes jigTypes) {
+    public static String buildJson(InputAdapters inputAdapters, JigTypes jigTypes) {
         List<JsonObjectBuilder> controllerList = new ArrayList<>();
 
         MethodRelations springComponentMethodRelations = inputAdapters.methodRelations().filterApplicationComponent(jigTypes).inlineLambda();

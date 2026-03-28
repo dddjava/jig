@@ -59,15 +59,15 @@ public class DomainSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private String buildJson(List<JigPackageWithJigTypes> jigPackages,
+    public static String buildJson(List<JigPackageWithJigTypes> jigPackages,
                              JigTypes jigTypes,
                              EnumModels enumModels) {
         List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(this::buildPackageJson)
+                .map(DomainSummaryAdapter::buildPackageJson)
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
-                .map(jigType -> buildTypeJson(jigType, enumModels))
+                .map(jigType -> DomainSummaryAdapter.buildTypeJson(jigType, enumModels))
                 .toList();
 
         return Json.object("packages", Json.arrayObjects(packages))
@@ -75,7 +75,7 @@ public class DomainSummaryAdapter {
                 .build();
     }
 
-    private JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage) {
+    private static JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage) {
         List<JsonObjectBuilder> types = jigPackage.jigTypes().stream()
                 .map(JigType::id)
                 .sorted(Comparable::compareTo)
@@ -86,7 +86,7 @@ public class DomainSummaryAdapter {
                 .and("types", Json.arrayObjects(types));
     }
 
-    private JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
+    private static JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
         List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
                 .map(JsonSupport::buildFieldJson)
                 .toList();
@@ -120,11 +120,11 @@ public class DomainSummaryAdapter {
         return builder;
     }
 
-    private boolean isEnum(JigType jigType) {
+    private static boolean isEnum(JigType jigType) {
         return jigType.toValueKind() == JigTypeValueKind.区分;
     }
 
-    private JsonObjectBuilder buildEnumInfoJson(JigType jigType, EnumModels enumModels) {
+    private static JsonObjectBuilder buildEnumInfoJson(JigType jigType, EnumModels enumModels) {
         EnumModel enumModel = enumModels.find(jigType.id())
                 .orElseGet(() -> new EnumModel(jigType.id(), List.of(), List.of()));
         List<String> parameterNames = enumModel.constructorParameterNames();

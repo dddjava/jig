@@ -1,6 +1,9 @@
 import org.dddjava.jig.adapter.html.*;
+import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
+import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
+import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -89,6 +92,56 @@ class SampleDataWriterTest {
                 "// 表示確認用のサンプルデータ\n" +
                 "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
                 "globalThis.listData = " + json + "\n");
+        }
+
+        // inbound-data.js
+        {
+            var inputAdapters = jigService.inputAdapters(repository);
+            var json = InboundSummaryAdapter.buildJson(inputAdapters, jigTypes);
+            Path sampleFile = Path.of("src/main/resources/templates/data/inbound-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.inboundData = " + json + "\n");
+        }
+
+        // usecase-data.js
+        {
+            var serviceTypes = jigService.serviceTypes(repository);
+            var json = UsecaseSummaryAdapter.buildJson(serviceTypes);
+            Path sampleFile = Path.of("src/main/resources/templates/data/usecase-data.js");
+            Files.writeString(sampleFile,
+                "// 表示確認用のサンプルデータ\n" +
+                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                "globalThis.usecaseData = " + json + "\n");
+        }
+
+        // domain-data.js and type-relations-data.js
+        {
+            var coreDomainJigTypes = jigService.coreDomainJigTypes(repository);
+            if (!coreDomainJigTypes.empty()) {
+                var domainJigTypes = coreDomainJigTypes.jigTypes();
+                var packageList = JigPackageWithJigTypes.listWithParent(domainJigTypes);
+                var enumModels = repository.jigDataProvider().fetchEnumModels();
+
+                var json = DomainSummaryAdapter.buildJson(packageList, domainJigTypes, enumModels);
+                Path sampleFile = Path.of("src/main/resources/templates/data/domain-data.js");
+                Files.writeString(sampleFile,
+                    "// 表示確認用のサンプルデータ\n" +
+                    "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                    "globalThis.domainData = " + json + "\n");
+
+                var typeRelationships = jigService.typeRelationships(repository);
+                var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
+                        .map(relation -> Json.object("from", relation.from().fqn())
+                                .and("to", relation.to().fqn()))
+                        .toList())).build();
+                Path typeRelationsFile = Path.of("src/main/resources/templates/data/type-relations-data.js");
+                Files.writeString(typeRelationsFile,
+                    "// 表示確認用のサンプルデータ\n" +
+                    "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                    "globalThis.typeRelationsData = " + typeRelationsJson + "\n");
+            }
         }
     }
 }

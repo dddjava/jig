@@ -35,8 +35,10 @@ public class PackageSummaryAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
+        var domainPackageRoots = jigService.domainPackageFilterCandidates(jigRepository);
+
         jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations));
+        jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations, domainPackageRoots));
 
         var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
                 .map(relation -> Json.object("from", relation.from().fqn())
@@ -47,7 +49,7 @@ public class PackageSummaryAdapter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations) {
+    public static String buildJson(JigPackages jigPackages, PackageRelations packageRelations, List<String> domainPackageRoots) {
         return Json.object("packages", Json.arrayObjects(jigPackages.listPackage().stream()
                         .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
                                 .and("classCount", packageInfo.numberOfClasses()))
@@ -56,6 +58,7 @@ public class PackageSummaryAdapter {
                         .map(relation -> Json.object("from", relation.from().asText())
                                 .and("to", relation.to().asText()))
                         .toList()))
+                .and("domainPackageRoots", Json.array(domainPackageRoots))
                 .build();
     }
 }

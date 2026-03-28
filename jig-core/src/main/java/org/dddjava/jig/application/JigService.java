@@ -70,6 +70,10 @@ public class JigService {
         return typesQueryService.coreDomainJigTypes(jigRepository);
     }
 
+    public List<String> domainPackageFilterCandidates(JigRepository jigRepository) {
+        return typesQueryService.domainPackageFilterCandidates(jigRepository);
+    }
+
     public MethodSmells methodSmells(JigRepository jigRepository) {
         return typesQueryService.methodSmells(jigRepository);
     }

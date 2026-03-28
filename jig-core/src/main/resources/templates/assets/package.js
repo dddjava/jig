@@ -54,6 +54,7 @@ function parsePackageSummaryData(packageData) {
         packages: Array.isArray(packageData) ? packageData : (packageData?.packages ?? []),
         relations: Array.isArray(packageData) ? [] : (packageData?.relations ?? []),
         causeRelationEvidence: globalThis.typeRelationsData?.relations ?? [],
+        domainPackageRoots: Array.isArray(packageData) ? [] : (packageData?.domainPackageRoots ?? []),
     };
 }
 
@@ -176,7 +177,11 @@ function normalizeAggregationDepthValue(value) {
     return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function findDefaultPackageFilterCandidate(packages) {
+function findDefaultPackageFilterCandidate(packages, domainPackageRoots) {
+    if (domainPackageRoots && domainPackageRoots.length > 0) {
+        return domainPackageRoots.join('\n');
+    }
+    // フォールバック: パッケージ名の "domain" 要素を探すヒューリスティック
     const domainRoots = packages
         .map(item => item.fqn)
         .map(fqn => {
@@ -596,8 +601,8 @@ function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
     if (!input || normalizePackageFilterValue(input.value).length > 0) return false;
-    const {packages} = getPackageSummaryData(context);
-    const candidate = findDefaultPackageFilterCandidate(packages);
+    const {packages, domainPackageRoots} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(packages, domainPackageRoots);
     if (!candidate) return false;
     input.value = candidate;
     context.packageFilterFqn = normalizePackageFilterValue(input.value);
@@ -1214,8 +1219,8 @@ function setupPackageFilterControl(context) {
 
     // ページの初期ロード時に適用されるデフォルトフィルタを保持
     let initialDefaultFilterValue = '';
-    const {packages} = getPackageSummaryData(context);
-    const candidate = findDefaultPackageFilterCandidate(packages);
+    const {packages, domainPackageRoots} = getPackageSummaryData(context);
+    const candidate = findDefaultPackageFilterCandidate(packages, domainPackageRoots);
     if (candidate) {
         initialDefaultFilterValue = candidate;
     }

@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
+import java.util.List;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
@@ -57,6 +58,10 @@ public class TypesQueryService {
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
             return coreDomainJigTypes.jigTypes();
         });
+    }
+
+    public List<String> domainPackageFilterCandidates(JigRepository jigRepository) {
+        return coreDomainCondition.domainPackageFilterCandidates(jigTypes(jigRepository));
     }
 
     public MethodSmells methodSmells(JigRepository jigRepository) {

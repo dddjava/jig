@@ -1,5 +1,6 @@
 package sample.data.application.order;
 
+import org.springframework.stereotype.Service;
 import sample.data.domain.customer.Customer;
 import sample.data.domain.order.Order;
 import sample.data.domain.order.OrderId;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * 受注サービス
  */
+@Service
 public class OrderService {
     OrderRepository orderRepository;
     ProductRepository productRepository;

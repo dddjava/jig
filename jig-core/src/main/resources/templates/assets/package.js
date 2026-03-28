@@ -44,17 +44,21 @@ const dom = {
 // データ取得/整形
 function getPackageSummaryData(context) {
     if (context.packageSummaryCache) return context.packageSummaryCache;
-    context.packageSummaryCache = parsePackageSummaryData(globalThis.packageData);
+    // Defensive: packageData が存在しない場合でも安全に処理
+    const data = globalThis.packageData ?? {};
+    context.packageSummaryCache = parsePackageSummaryData(data);
     return context.packageSummaryCache;
 }
 
 function parsePackageSummaryData(packageData) {
     // packageData はオブジェクト（JSON文字列ではない）
+    // 配列形式と オブジェクト形式の両方に対応
+    const isArrayFormat = Array.isArray(packageData);
     return {
-        packages: Array.isArray(packageData) ? packageData : (packageData?.packages ?? []),
-        relations: Array.isArray(packageData) ? [] : (packageData?.relations ?? []),
+        packages: isArrayFormat ? packageData : (packageData?.packages ?? []),
+        relations: isArrayFormat ? [] : (packageData?.relations ?? []),
         causeRelationEvidence: globalThis.typeRelationsData?.relations ?? [],
-        domainPackageRoots: Array.isArray(packageData) ? [] : (packageData?.domainPackageRoots ?? []),
+        domainPackageRoots: isArrayFormat ? [] : (packageData?.domainPackageRoots ?? []),
     };
 }
 

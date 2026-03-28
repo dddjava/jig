@@ -157,6 +157,34 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(description.innerHTML, 'Description of method1');
     });
 
+    test('クラス単位の図がクラスヘッダー直下にレンダリングされる', () => {
+        globalThis.glossaryData = {
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
+        };
+        globalThis.usecaseData = mockUsecaseData;
+        UsecaseApp.init();
+
+        const mainList = document.getElementById('usecase-list');
+        const serviceSection = mainList.children[0];
+        
+        // クラス単位のダイアグラムコンテナがあること
+        const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+        assert.ok(classDiagram);
+        
+        // Mermaidのプレ要素があること
+        const mermaidPre = classDiagram.querySelector('.mermaid');
+        assert.ok(mermaidPre);
+        
+        const code = mermaidPre.textContent;
+        assert.ok(code.includes('graph LR'));
+        // 内部メソッド間の関連があること
+        assert.ok(code.includes('->'));
+        // クラス単位の図にはsubgraphが含まれない（単純なグラフ）
+        assert.ok(!code.includes('subgraph'));
+    });
+
     test('renderUsecaseList should handle empty data', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();

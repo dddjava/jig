@@ -300,6 +300,7 @@ function showJson(entry) {
     const pre = document.createElement("pre");
     pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
     view.innerHTML = "";
+    view.scrollTop = 0;
     view.appendChild(pre);
 
     document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
@@ -320,6 +321,7 @@ function showText(entry) {
     const pre = document.createElement("pre");
     pre.innerHTML = addLineNumbersText(text);
     view.innerHTML = "";
+    view.scrollTop = 0;
     view.appendChild(pre);
 
     document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
@@ -387,6 +389,7 @@ function showSchema(entry) {
     const pre = document.createElement("pre");
     pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
     view.innerHTML = "";
+    view.scrollTop = 0;
     view.appendChild(pre);
 
     document.querySelectorAll(".sidebar-item").forEach(el => el.classList.remove("active"));
@@ -487,6 +490,7 @@ function applyJq(expr) {
     const pre = document.createElement("pre");
     pre.innerHTML = addLineNumbers(syntaxHighlight(formatted));
     view.innerHTML = "";
+    view.scrollTop = 0;
     view.appendChild(pre);
 }
 // ---- /jq サブセットエンジン ----
@@ -515,6 +519,7 @@ function applySearch(keyword) {
     }
 
     view.innerHTML = "";
+    view.scrollTop = 0;
     view.appendChild(pre);
 }
 

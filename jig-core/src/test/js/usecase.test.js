@@ -61,6 +61,7 @@ test.describe('UsecaseApp', () => {
         global.localStorage = new LocalStorageStub();
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
+        delete globalThis.inboundData;
         // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
         // チェックボックス要素を事前登録
@@ -304,6 +305,40 @@ test.describe('UsecaseApp', () => {
         // シーケンス図タブが active で、パネルが hidden でないことを確認
         assert.ok(newSeqBtn.classList.contains('active'));
         assert.ok(!newSeqPanel.classList.contains('hidden'));
+    });
+
+    test('inbound呼び出し元はクラスノード化されinbound.htmlへのリンクが付与される', () => {
+        globalThis.usecaseData = mockUsecaseData;
+        globalThis.glossaryData = {
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1", description: "Description of method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" },
+            "web.Ctrl": { title: "Ctrl" }
+        };
+        globalThis.inboundData = {
+            controllers: [
+                {
+                    relations: [
+                        {from: 'web.Ctrl#entry()', to: 'com.example.ServiceA#method1()'}
+                    ]
+                }
+            ]
+        };
+
+        const internalCheckbox = document.getElementById('show-diagram-internal-methods');
+        internalCheckbox.checked = false;
+
+        UsecaseApp.init();
+
+        const methodSection = document.getElementById('com.example.ServiceA#method1()').parentElement;
+        assert.ok(methodSection);
+        const mermaidPre = methodSection.querySelector('.mermaid');
+        assert.ok(mermaidPre);
+        const code = mermaidPre.textContent;
+        assert.ok(code.includes('click'));
+        assert.ok(code.includes('./inbound.html#web.Ctrl'));
+        assert.ok(code.includes('click'));
+        assert.ok(code.includes('#com.example.ServiceA#method1()'));
     });
 });
 
@@ -1070,9 +1105,35 @@ test.describe('buildGraphFromCallMethods', () => {
         });
 
         assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
-        assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl#entry()'));
-        assert.ok(!result.nodes.find(n => n.fqn === 'web.Ctrl#indirect()'));
-        assert.ok(result.edges.find(e => e.from === 'web.Ctrl#entry()' && e.to === 'pkg.Cls#A()'));
-        assert.ok(!result.edges.find(e => e.from === 'web.Ctrl#indirect()' && e.to === 'web.Ctrl#entry()'));
+        assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl'));
+        assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl').kind === 'inbound-class');
+        assert.ok(result.edges.find(e => e.from === 'web.Ctrl' && e.to === 'pkg.Cls#A()'));
+    });
+
+    test('同一inboundクラスの複数メソッド呼び出しはクラスノード1つに集約される', () => {
+        const rootMethod = { fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase' };
+        const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
+        globalThis.inboundData = {
+            controllers: [
+                {
+                    relations: [
+                        {from: 'web.Ctrl#entry()', to: 'pkg.Cls#A()'},
+                        {from: 'web.Ctrl#entry2()', to: 'pkg.Cls#A()'}
+                    ]
+                }
+            ]
+        };
+
+        const result = buildGraphFromCallMethods(rootMethod, {
+            methodMap,
+            outboundOperationSet: new Set(),
+            showDiagramInternalMethods: false,
+            showDiagramOutboundPorts: true
+        });
+
+        const inboundNodes = result.nodes.filter(n => n.fqn === 'web.Ctrl');
+        const inboundEdges = result.edges.filter(e => e.from === 'web.Ctrl' && e.to === 'pkg.Cls#A()');
+        assert.strictEqual(inboundNodes.length, 1);
+        assert.strictEqual(inboundEdges.length, 1);
     });
 });

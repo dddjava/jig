@@ -94,8 +94,9 @@ function buildGraphFromCallMethods(rootMethod, diagramContext) {
     (globalThis.inboundData?.controllers || []).forEach(controller => {
         (controller.relations || []).forEach(relation => {
             if (!relation?.from || !relation?.to) return;
-            if (diagramContext.methodMap.has(relation.from)) return;
-            addReverseCaller(relation.to, {fqn: relation.from, kind: "method"});
+            const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
+            if (diagramContext.methodMap.has(callerClassFqn)) return;
+            addReverseCaller(relation.to, {fqn: callerClassFqn, kind: "inbound-class"});
         });
     });
 
@@ -615,11 +616,14 @@ const UsecaseApp = {
                             const classSubgraphs = new Map();
                             graph.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "external") {
-                                    // 外部ポート: 四角、グレー
+                                if (node.kind === "external" || node.kind === "inbound-class") {
+                                    // 外部ポート / inboundクラス: 四角、グレー
                                     const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, '["$LABEL"]');
                                     builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                                    if (node.kind === "inbound-class") {
+                                        builder.addClick(nodeId, "./inbound.html#" + node.fqn);
+                                    }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);

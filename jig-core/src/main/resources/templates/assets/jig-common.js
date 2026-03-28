@@ -127,7 +127,8 @@ globalThis.Jig.fqnToId = function fqnToId(prefix, fqn) {
 
     // 英数以外を＿に置換し、_で連結する
     // Mermaidは -x を含む（ hoge-xyz など）とエラーになるため、-ではなく_を使用する
-    const sanitized = fqn.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 10);
+    const reversed = fqn.split('.').reverse().join('_');
+    const sanitized = reversed.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 10);
     return `${prefix}_${sanitized}_${hashStr}`;
 };
 

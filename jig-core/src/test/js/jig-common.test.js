@@ -21,7 +21,7 @@ test.describe('estimateEdgeCount', () => {
 test.describe("fqnToId", () => {
     test("プレフィックスを付けてIDを生成する", () => {
         const id = jigCommon.fqnToId("port", "com.example.MyPort");
-        assert.match(id, /^port_com_exampl_[a-z0-9]+$/);
+        assert.match(id, /^port_MyPort_exa_[a-z0-9]+$/);
     });
 
     test("異なるfqnなら異なるIDを生成する", () => {

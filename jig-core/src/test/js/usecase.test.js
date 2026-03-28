@@ -418,7 +418,7 @@ test.describe('buildSequenceFromCallMethods', () => {
 
         assert.strictEqual(result.participants.length, 2);
         assert.strictEqual(result.participants[1].label, 'RepositoryB');
-        assert.strictEqual(result.participants[1].kind, "external");
+        assert.strictEqual(result.participants[1].kind, 'outbound');
         assert.strictEqual(result.calls.length, 1);
         assert.strictEqual(result.calls[0].label, 'save');
     });
@@ -566,7 +566,7 @@ test.describe('buildSequenceFromCallMethods', () => {
         });
 
         assert.strictEqual(result.participants.length, 2);
-        assert.ok(result.participants.find(p => p.kind === 'external'));
+        assert.ok(result.participants.find(p => p.kind === 'outbound'));
         assert.strictEqual(result.calls.length, 1);
         assert.ok(result.calls[0].from.includes('_A_'));
     });
@@ -641,7 +641,7 @@ test.describe('buildSequenceDiagramCode', () => {
         const sequence = {
             participants: [
                 {id: 'node-a', label: 'methodA', kind: "usecase"},
-                {id: 'node-b', label: 'ClassB', kind: "external"}
+                {id: 'node-b', label: 'ClassB', kind: 'outbound'}
             ],
             calls: [
                 {from: 'node-a', to: 'node-b', label: 'save'}
@@ -793,7 +793,7 @@ test.describe('buildGraphFromCallMethods', () => {
         assert.strictEqual(result.edges.length, 1);
         const externalNode = result.nodes.find(n => n.fqn === 'com.example.RepositoryB');
         assert.ok(externalNode);
-        assert.strictEqual(externalNode.kind, "external");
+        assert.strictEqual(externalNode.kind, 'outbound');
         assert.strictEqual(result.edges[0].to, 'com.example.RepositoryB');
     });
 

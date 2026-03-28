@@ -199,7 +199,7 @@ function buildGraphFromCallMethods(rootMethod, diagramContext) {
                     edges.push({from: effectiveCallerFqn, to: classFqn});
                 }
                 if (!nodes.has(classFqn)) {
-                    nodes.set(classFqn, {fqn: classFqn, kind: "external"});
+                    nodes.set(classFqn, {fqn: classFqn, kind: "outbound"});
                 }
             }
         }
@@ -263,7 +263,7 @@ function buildSequenceFromCallMethods(rootMethod, diagramContext) {
                 if (!diagramContext.showDiagramOutboundPorts) continue;
                 const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                 const methodName = getMethodSimpleName(calleeFqn);
-                const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, "external");
+                const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, "outbound");
                 calls.push({from: caller.id, to: callee.id, label: methodName});
             }
         }
@@ -281,8 +281,8 @@ function buildSequenceDiagramCode(sequence) {
     if (sequence.calls.length === 0) return null;
     let code = 'sequenceDiagram\n';
 
-    const external = sequence.participants.filter(p => p.kind === "external");
-    const internal = sequence.participants.filter(p => p.kind !== "external");
+    const external = sequence.participants.filter(p => p.kind === "outbound");
+    const internal = sequence.participants.filter(p => p.kind !== "outbound");
 
     internal.forEach(p => {
         code += `  participant ${p.id} as ${p.label}\n`;
@@ -616,7 +616,7 @@ const UsecaseApp = {
                             const classSubgraphs = new Map();
                             graph.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "external" || node.kind === "inbound-class") {
+                                if (node.kind === "outbound" || node.kind === "inbound-class") {
                                     // 外部ポート / inboundクラス: 四角、グレー
                                     const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, '["$LABEL"]');

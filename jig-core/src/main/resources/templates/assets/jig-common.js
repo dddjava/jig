@@ -264,8 +264,8 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         return id;
     }
 
-    addEdge(from, to, label = "", dotted = false) {
-        const edgeType = dotted ? "-.->" : "-->";
+    addEdge(from, to, label = "", dotted = false, length = 1) {
+        const edgeType = dotted ? "-.->" : "--" + "-".repeat(length - 1) + ">";
         const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
         if (!this.edgeSet.has(edgeKey)) {
             this.edgeSet.add(edgeKey);

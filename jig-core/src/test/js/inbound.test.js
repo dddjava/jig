@@ -133,6 +133,49 @@ test.describe('InboundApp', () => {
         assert.strictEqual(mainList.textContent, 'データなし');
     });
 
+    test('adapter chain: 浅いノードから外部へのエッジは長くなる', () => {
+        // method1 → internalMethod → serviceMethod (depth=2)
+        // method2 → serviceMethod2 (depth=1, maxDepth=2 なので ---> になる)
+        globalThis.inboundData = {
+            controllers: [{
+                fqn: "com.example.ControllerA",
+                classPath: "/api",
+                relations: [
+                    { from: "com.example.ControllerA#method1()", to: "com.example.ControllerA#internalMethod()" },
+                    { from: "com.example.ControllerA#internalMethod()", to: "com.example.ServiceA#serviceMethod()" },
+                    { from: "com.example.ControllerA#method2()", to: "com.example.ServiceB#serviceMethod2()" }
+                ],
+                entrypoints: [
+                    { fqn: "com.example.ControllerA#method1()", visibility: "PUBLIC", parameterTypeRefs: [], returnTypeRef: { fqn: "void" }, isDeprecated: false, path: "GET /method1" },
+                    { fqn: "com.example.ControllerA#method2()", visibility: "PUBLIC", parameterTypeRefs: [], returnTypeRef: { fqn: "void" }, isDeprecated: false, path: "GET /method2" }
+                ]
+            }]
+        };
+        globalThis.glossaryData = {
+            "com.example.ControllerA": { title: "ControllerA", description: "", kind: "クラス" },
+            "com.example.ControllerA#method1()": { title: "method1", simpleText: "method1", kind: "メソッド", description: "" },
+            "com.example.ControllerA#method2()": { title: "method2", simpleText: "method2", kind: "メソッド", description: "" },
+            "com.example.ControllerA#internalMethod()": { title: "internalMethod", simpleText: "internalMethod", kind: "メソッド", description: "" },
+            "com.example.ServiceA": { title: "ServiceA", description: "", kind: "クラス" },
+            "com.example.ServiceA#serviceMethod()": { title: "serviceMethod", simpleText: "serviceMethod", kind: "メソッド", description: "" },
+            "com.example.ServiceB": { title: "ServiceB", description: "", kind: "クラス" },
+            "com.example.ServiceB#serviceMethod2()": { title: "serviceMethod2", simpleText: "serviceMethod2", kind: "メソッド", description: "" }
+        };
+        globalThis.usecaseData = {
+            usecases: [
+                { fqn: "com.example.ServiceA", methods: [{ fqn: "com.example.ServiceA#serviceMethod()" }] },
+                { fqn: "com.example.ServiceB", methods: [{ fqn: "com.example.ServiceB#serviceMethod2()" }] }
+            ]
+        };
+        InboundApp.init();
+
+        const mermaidPre = document.getElementById('inbound-list').children[0].querySelector('.mermaid');
+        assert.ok(mermaidPre);
+        const mermaidCode = mermaidPre.textContent;
+        // method2 (depth=1, maxDepth=2) からのエッジは ---> になる
+        assert.ok(mermaidCode.includes('--->'), `Expected ---> in: ${mermaidCode}`);
+    });
+
     test('init should work without usecaseData', () => {
         globalThis.inboundData = mockInboundData;
         globalThis.glossaryData = mockGlossaryData;

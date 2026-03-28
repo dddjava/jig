@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public record TypeId(String value) implements Comparable<TypeId> {
 
+    private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
+
     // 判定に使用する型
     public static final TypeId DEPRECATED_ANNOTATION = TypeId.valueOf("java.lang.Deprecated");
     public static final TypeId OBJECT = TypeId.valueOf("java.lang.Object");
@@ -22,16 +24,10 @@ public record TypeId(String value) implements Comparable<TypeId> {
     // 日付
     public static final TypeId LOCAL_DATE = TypeId.valueOf("java.time.LocalDate");
 
-    private static final Map<String, TypeId> cache = new ConcurrentHashMap<>();
-
     /**
      * 与えられた文字列のままのTypeIdを生成するファクトリ。
      */
     public static TypeId valueOf(String value) {
-        // FIXME 定数の初期化時点でcacheが初期化されていないためNPEが起こる。回避するためにnullチェック。
-        if (cache == null) {
-            return new TypeId(value);
-        }
         if (cache.containsKey(value)) {
             Metrics.counter("cache.gets", "cache", "typeId", "result", "hit").increment();
             return cache.get(value);

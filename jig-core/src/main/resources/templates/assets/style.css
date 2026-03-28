@@ -48,17 +48,65 @@ header a {
 }
 
 .jig-header-nav {
-    margin-left: auto;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     align-items: center;
 }
-.jig-header-nav__select {
-    font-size: 0.8em;
-    height: 1.6em;
+
+.jig-header-nav__trigger {
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: default;
+    padding: 0 0.3em;
+    border-radius: 3px;
+}
+
+.jig-header-nav:hover .jig-header-nav__trigger {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.jig-header-nav__dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0.2em 0;
     background-color: #243D1E;
-    color: #FFF;
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 4px;
+    min-width: 12em;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
+}
+
+.jig-header-nav:hover .jig-header-nav__dropdown {
+    display: block;
+}
+
+.jig-header-nav__item {
+    padding: 0;
+}
+
+.jig-header-nav__item a,
+.jig-header-nav__item span {
+    display: block;
+    padding: 0.35em 0.8em;
+    font-size: 0.85em;
+    color: #FFF;
+    text-decoration: none;
+}
+
+.jig-header-nav__item a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.jig-header-nav__item--current span {
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: default;
 }
 
 aside.notice {

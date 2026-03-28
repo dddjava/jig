@@ -119,15 +119,22 @@ function setupHeaderNavigation() {
     if (!header) return;
     if (header.querySelector(".jig-header-nav")) return;
 
-    const container = document.createElement("div");
-    container.className = "jig-header-nav";
-
-    const select = document.createElement("select");
-    select.className = "jig-header-nav__select";
-    select.setAttribute("aria-label", "ページ移動");
+    const pageTitleEl = header.querySelector(".jig-page-title");
+    if (!pageTitleEl) return;
 
     const currentFileName = (location.pathname.split("/").pop() || "");
     const normalizedCurrent = normalizeNavigationHref(currentFileName);
+
+    const container = document.createElement("div");
+    container.className = "jig-header-nav";
+
+    const trigger = document.createElement("span");
+    trigger.className = "jig-header-nav__trigger";
+    trigger.textContent = pageTitleEl.textContent;
+
+    const dropdown = document.createElement("ul");
+    dropdown.className = "jig-header-nav__dropdown";
+    dropdown.setAttribute("role", "list");
 
     navigationData.links.forEach(link => {
         if (!link) return;
@@ -135,25 +142,26 @@ function setupHeaderNavigation() {
         const label = link.label != null ? String(link.label) : href;
         if (!href) return;
 
-        const option = document.createElement("option");
-        option.value = href;
-        option.textContent = label;
-        select.appendChild(option);
+        const isCurrent = (href === normalizedCurrent);
+        const li = document.createElement("li");
+        li.className = "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : "");
+
+        if (isCurrent) {
+            const span = document.createElement("span");
+            span.textContent = label;
+            li.appendChild(span);
+        } else {
+            const a = document.createElement("a");
+            a.href = href;
+            a.textContent = label;
+            li.appendChild(a);
+        }
+        dropdown.appendChild(li);
     });
 
-    const options = Array.from(select.options);
-    const selected = options.find(o => normalizeNavigationHref(o.value) === normalizedCurrent);
-    if (selected) {
-        select.value = selected.value;
-    }
-
-    select.addEventListener("change", () => {
-        if (!select.value) return;
-        window.location.href = select.value;
-    });
-
-    container.appendChild(select);
-    header.appendChild(container);
+    container.appendChild(trigger);
+    container.appendChild(dropdown);
+    pageTitleEl.replaceWith(container);
 }
 
 // ページ読み込み時のイベント

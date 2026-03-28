@@ -239,10 +239,12 @@ function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, port
             builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
             portOpId, portOpName
         );
+        builder.addClass(portOpId, "outbound");
         return portOpId;
     } else {
         const portNodeId = globalThis.Jig.fqnToId("port", portFqn);
         builder.addNode(portNodeId, portLabel);
+        builder.addClass(portNodeId, "outbound");
         return portNodeId;
     }
 }
@@ -362,6 +364,7 @@ function addExternalAccessorNode(builder, sourceNodeId, accessor, visibility, ex
 
 function generatePortMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
+    builder.applyThemeClassDefs();
     const portFqn = group.outboundPort.fqn;
     const portLabel = getTypeTerm(portFqn).title;
 
@@ -426,6 +429,7 @@ function extractOperationProps(operation) {
 
 function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
+    builder.applyThemeClassDefs();
     const persistenceTarget = group.persistenceTarget;
 
     const portSubgraphs = new Map();
@@ -462,6 +466,7 @@ function generatePersistenceMermaidCode(group, visibility = DEFAULT_VISIBILITY) 
 
 function generateExternalTypeMermaidCode(group, visibility = DEFAULT_VISIBILITY) {
     const builder = new MermaidBuilder();
+    builder.applyThemeClassDefs();
     const externalType = group.externalType;
 
     const portSubgraphs = new Map();

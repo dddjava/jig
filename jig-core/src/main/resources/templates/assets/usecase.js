@@ -614,18 +614,20 @@ const UsecaseApp = {
 
                         globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                             const builder = new globalThis.Jig.mermaid.Builder();
+                            builder.applyThemeClassDefs();
 
                             const classSubgraphs = new Map();
                             graph.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
                                 if (node.kind === "outbound" || node.kind === "inbound-class") {
-                                    // 外部ポート / inboundクラス: 四角、グレー
+                                    // 外部ポート / inboundクラス
                                     const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, '["$LABEL"]');
-                                    builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
                                     if (node.kind === "inbound-class") {
+                                        builder.addClass(nodeId, "inbound");
                                         builder.addClick(nodeId, "./inbound.html#" + globalThis.Jig.fqnToId("adapter", node.fqn));
                                     } else if (node.kind === "outbound") {
+                                        builder.addClass(nodeId, "outbound");
                                         builder.addClick(nodeId, "./outbound.html#" + globalThis.Jig.fqnToId("port", node.fqn));
                                     }
                                 } else {
@@ -638,16 +640,17 @@ const UsecaseApp = {
                                         // ユースケース: 角丸、ページ内リンク
                                         const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
                                         builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, '(["$LABEL"])');
+                                        builder.addClass(nodeId, "usecase");
                                         // 自身を強調表示
                                         if (node.fqn === method.fqn) {
                                             builder.addStyle(nodeId, "font-weight:bold");
                                         }
                                         builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
                                     } else {
-                                        // その他(method or static-method): 角丸、グレー
+                                        // その他(method or static-method)
                                         const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
                                         builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, '(["$LABEL"])');
-                                        builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                                        builder.addClass(nodeId, "inactive");
                                     }
                                 }
                             });

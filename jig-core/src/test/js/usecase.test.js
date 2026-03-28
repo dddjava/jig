@@ -145,10 +145,12 @@ test.describe('UsecaseApp', () => {
 
         const mermaidPres = methodSection.querySelectorAll('.mermaid');
         assert.strictEqual(mermaidPres.length, 2);
-        assert.ok(mermaidPres[0].textContent.includes('graph LR'));
-        assert.ok(mermaidPres[0].textContent.includes('subgraph'), 'ユースケース図にsubgraphが含まれること');
-        assert.ok(mermaidPres[0].textContent.includes('ServiceA'), 'subgraphにクラス名が含まれること');
-        assert.ok(mermaidPres[0].textContent.includes('direction LR'), 'subgraphにdirection LRが含まれること');
+        const graphCode = mermaidPres[0].textContent;
+        assert.ok(graphCode.includes('graph LR'));
+        assert.ok(graphCode.includes('subgraph'), 'ユースケース図にsubgraphが含まれること');
+        assert.ok(graphCode.includes('ServiceA'), 'subgraphにクラス名が含まれること');
+        assert.ok(graphCode.includes('direction LR'), 'subgraphにdirection LRが含まれること');
+        assert.ok(graphCode.includes('classDef'), 'Theme classDefが含まれるべき');
         assert.ok(mermaidPres[1].textContent.includes('sequenceDiagram'));
 
         const description = methodSection.querySelector('.description');

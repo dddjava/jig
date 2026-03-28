@@ -6,6 +6,14 @@ globalThis.Jig.glossary ??= {};
 globalThis.Jig.mermaid ??= {};
 globalThis.Jig.graph ??= {};
 
+// Mermaid theme colors
+globalThis.Jig.mermaid.nodeStyleDefs = {
+    inbound:  "fill:#E8F0FE,stroke:#2E5C8A",
+    usecase:  "fill:#E6F8F0,stroke:#2D7A4A",
+    outbound: "fill:#FFF0E6,stroke:#CC6600",
+    inactive: "fill:#e0e0e0,stroke:#aaa"
+};
+
 // Estimate Mermaid edge count from source
 function estimateEdgeCount(source) {
     const text = source != null ? String(source) : "";
@@ -306,6 +314,12 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         this.styles.push(`classDef ${className} ${style}`);
     }
 
+    applyThemeClassDefs() {
+        Object.entries(globalThis.Jig.mermaid.nodeStyleDefs).forEach(([name, style]) => {
+            this.addClassDef(name, style);
+        });
+    }
+
     startSubgraph(id, label = id, direction = null) {
         const subgraph = {id, label, lines: []};
         if (direction) subgraph.lines.push(`direction ${direction}`);
@@ -368,6 +382,7 @@ if (typeof module !== "undefined" && module.exports) {
         getFieldTerm: globalThis.Jig.glossary.getFieldTerm,
         findTerm: globalThis.Jig.glossary.findTerm,
         MermaidBuilder: globalThis.Jig.mermaid.Builder,
+        nodeStyleDefs: globalThis.Jig.mermaid.nodeStyleDefs,
         detectStronglyConnectedComponents: globalThis.Jig.graph.detectStronglyConnectedComponents,
         transitiveReduction: globalThis.Jig.graph.transitiveReduction,
     };

@@ -191,3 +191,24 @@ test.describe('transitiveReduction', () => {
         assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
     });
 });
+
+// ----- MermaidBuilder.applyThemeClassDefs -----
+
+test.describe('MermaidBuilder.applyThemeClassDefs', () => {
+    test('全テーマのclassDefを追加する', () => {
+        const builder = new jigCommon.MermaidBuilder();
+        builder.applyThemeClassDefs();
+        const code = builder.build();
+        assert.ok(code.includes('classDef inbound'), 'inbound classDef should be present');
+        assert.ok(code.includes('classDef usecase'), 'usecase classDef should be present');
+        assert.ok(code.includes('classDef outbound'), 'outbound classDef should be present');
+        assert.ok(code.includes('classDef inactive'), 'inactive classDef should be present');
+    });
+
+    test('nodeStyleDefsから色コードが正しく取得される', () => {
+        assert.equal(jigCommon.nodeStyleDefs.inbound, 'fill:#E8F0FE,stroke:#2E5C8A');
+        assert.equal(jigCommon.nodeStyleDefs.usecase, 'fill:#E6F8F0,stroke:#2D7A4A');
+        assert.equal(jigCommon.nodeStyleDefs.outbound, 'fill:#FFF0E6,stroke:#CC6600');
+        assert.equal(jigCommon.nodeStyleDefs.inactive, 'fill:#e0e0e0,stroke:#aaa');
+    });
+});

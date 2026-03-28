@@ -121,8 +121,10 @@ test.describe('InboundApp', () => {
         // コントローラー単位の統合ダイアグラム
         const mermaidPre = controllerSection.querySelector('.mermaid');
         assert.ok(mermaidPre);
-        assert.ok(mermaidPre.textContent.includes('subgraph')); // Mermaid code generated
-        assert.ok(mermaidPre.textContent.includes('GET /method1')); // パスノードが含まれる
+        const mermaidCode = mermaidPre.textContent;
+        assert.ok(mermaidCode.includes('subgraph')); // Mermaid code generated
+        assert.ok(mermaidCode.includes('GET /method1')); // パスノードが含まれる
+        assert.ok(mermaidCode.includes('classDef'), 'Theme classDefが含まれるべき');
     });
 
     test('renderControllerList should handle empty data', () => {

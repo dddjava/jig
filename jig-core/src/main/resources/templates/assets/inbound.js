@@ -81,6 +81,7 @@ const InboundApp = {
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
                 const builder = new globalThis.Jig.mermaid.Builder();
+                builder.applyThemeClassDefs();
 
                 const entrypointFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
 
@@ -106,6 +107,7 @@ const InboundApp = {
                     const subgraph = builder.ensureSubgraph(entrypointGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                     const label = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true).title;
                     builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, '(["$LABEL"])');
+                    builder.addClass(fqnToNodeId(ep.fqn), "inbound");
                 });
 
                 // パスノードとdotted edge
@@ -131,6 +133,7 @@ const InboundApp = {
                         const mId = fqnToNodeId(fqn);
                         const mLabel = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
                         builder.addNodeToSubgraph(subgraph, mId, mLabel, '(["$LABEL"])');
+                        builder.addClass(mId, "usecase");
                         builder.addClick(mId, `./usecase.html#${globalThis.Jig.fqnToId("method", fqn)}`);
                     });
                 });
@@ -144,7 +147,7 @@ const InboundApp = {
                         const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
                         var nodeId = fqnToNodeId(fqn);
                         builder.addNodeToSubgraph(subgraph, nodeId, label, '(["$LABEL"])');
-                        builder.addStyle(nodeId, "fill:#e0e0e0,stroke:#aaa");
+                        builder.addClass(nodeId, "inactive");
                     }
                 });
 

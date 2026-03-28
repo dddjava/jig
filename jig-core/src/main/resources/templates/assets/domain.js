@@ -91,6 +91,21 @@ function getDirectChildPackages(pkg) {
 }
 
 /**
+ * パッケージが enum 型を含むかを判定する（再帰的）
+ * @param {PackageType} pkg
+ * @returns {boolean}
+ */
+function pkgHasEnum(pkg) {
+    // このパッケージのタイプに enum があるか
+    if (pkg.types.some(type => getDomainData()._typesMap?.get(type.fqn)?.enumInfo)) {
+        return true;
+    }
+    // 子パッケージに enum があるか
+    const childPackages = getDirectChildPackages(pkg);
+    return childPackages.some(childPkg => pkgHasEnum(childPkg));
+}
+
+/**
  * @param {PackageType} pkg
  * @returns {HTMLElement}
  */
@@ -114,7 +129,10 @@ function renderPackageNavItem(pkg) {
         textContent: mergedNames.join("/")
     });
     const details = createElement("details", {
-        attributes: {open: ""},
+        attributes: {
+            open: "",
+            "data-has-enum-children": pkgHasEnum(currentPkg) ? "true" : "false"
+        },
         children: [
             createElement("summary", {
                 className: "package",
@@ -398,6 +416,7 @@ function renderPackages(packages, container) {
         const section = createElement("section", {
             className: "jig-card jig-card--type",
             id: globalThis.Jig.fqnToId("domain", pkg.fqn),
+            attributes: { "data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false" },
             children: [
                 createElement("h3", {
                     children: [createElement("a", {textContent: getTypeTerm(pkg.fqn).title})]
@@ -612,26 +631,52 @@ function applyVisibilitySettings() {
     });
 
     // 「列挙のみ表示」フィルター
-    const typeSections = main.querySelectorAll('section.jig-card--type[data-has-enum]');
-    typeSections.forEach(section => {
-        if (domainSettings.showEnumOnly) {
-            section.style.display = section.dataset.hasEnum === 'true' ? '' : 'none';
-        } else {
-            section.style.display = '';
-        }
-    });
-
-    // サイドバーの型リンクもフィルター
-    const sidebar = document.getElementById('domain-sidebar');
-    if (sidebar) {
-        const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
-        typeItems.forEach(div => {
-            if (domainSettings.showEnumOnly) {
-                div.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
-            } else {
-                div.style.display = '';
-            }
+    if (domainSettings.showEnumOnly) {
+        // メインのパッケージセクションのフィルター（enum を含まないパッケージは非表示）
+        const packageSections = main.querySelectorAll('section.jig-card--type[data-has-enum-children]');
+        packageSections.forEach(section => {
+            section.style.display = section.dataset.hasEnumChildren === 'true' ? '' : 'none';
         });
+
+        // メインのタイプセクションのフィルター（enum でないタイプは非表示）
+        const typeSections = main.querySelectorAll('section.jig-card--type[data-has-enum]');
+        typeSections.forEach(section => {
+            section.style.display = section.dataset.hasEnum === 'true' ? '' : 'none';
+        });
+
+        // サイドバーのパッケージのフィルター（enum を含まないパッケージは非表示）
+        const sidebar = document.getElementById('domain-sidebar');
+        if (sidebar) {
+            const packageDetails = sidebar.querySelectorAll('details[data-has-enum-children]');
+            packageDetails.forEach(details => {
+                details.style.display = details.dataset.hasEnumChildren === 'true' ? '' : 'none';
+            });
+
+            // サイドバーの型リンクのフィルター（enum でない型は非表示）
+            const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
+            typeItems.forEach(div => {
+                div.style.display = div.dataset.hasEnum === 'true' ? '' : 'none';
+            });
+        }
+    } else {
+        // 全て表示
+        const allSections = main.querySelectorAll('section.jig-card--type');
+        allSections.forEach(section => {
+            section.style.display = '';
+        });
+
+        const sidebar = document.getElementById('domain-sidebar');
+        if (sidebar) {
+            const packageDetails = sidebar.querySelectorAll('details[data-has-enum-children]');
+            packageDetails.forEach(details => {
+                details.style.display = '';
+            });
+
+            const typeItems = sidebar.querySelectorAll('div[data-has-enum]');
+            typeItems.forEach(div => {
+                div.style.display = '';
+            });
+        }
     }
 }
 

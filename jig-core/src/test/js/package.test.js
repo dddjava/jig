@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
 const common = require('../../main/resources/templates/assets/jig-common.js');
+const pkgDiagram = require('../../main/resources/templates/assets/package-diagram.js');
 
 const pkg = require('../../main/resources/templates/assets/package.js');
 const originalDom = {...pkg.dom};
@@ -154,9 +155,9 @@ test.describe('package.js', () => {
             });
 
             test('getCommonPrefixDepth: 共通プレフィックス深さを返す', () => {
-                assert.equal(pkg.getCommonPrefixDepth([]), 0);
-                assert.equal(pkg.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
-                assert.equal(pkg.getCommonPrefixDepth(['app', 'lib.tool']), 0);
+                assert.equal(pkgDiagram.getCommonPrefixDepth([]), 0);
+                assert.equal(pkgDiagram.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
+                assert.equal(pkgDiagram.getCommonPrefixDepth(['app', 'lib.tool']), 0);
             });
         });
     });
@@ -756,8 +757,8 @@ test.describe('package.js', () => {
             });
 
             test('buildDiagramEdgeLines: 相互依存の双方向リンクを生成する', () => {
-                const {ensureNodeId} = pkg.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
-                const result = pkg.buildDiagramEdgeLines(
+                const {ensureNodeId} = pkgDiagram.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
+                const result = pkgDiagram.buildDiagramEdgeLines(
                     [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
                     ensureNodeId
                 );
@@ -766,7 +767,7 @@ test.describe('package.js', () => {
             });
 
             test('buildDiagramNodeLabel: サブグラフ配下のラベルを短縮する', () => {
-                const label = pkg.buildDiagramNodeLabel(
+                const label = pkgDiagram.buildDiagramNodeLabel(
                     'com.example.domain.model',
                     'com.example.domain.model',
                     'com.example.domain'
@@ -775,13 +776,13 @@ test.describe('package.js', () => {
             });
 
             test('buildDiagramSubgraphLabel: 親サブグラフ配下ならプレフィックスを省略する', () => {
-                const label = pkg.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
+                const label = pkgDiagram.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
                 assert.equal(label, 'domain');
             });
 
             test('buildDiagramNodeTooltip: FQNを返す', () => {
-                assert.equal(pkg.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
-                assert.equal(pkg.buildDiagramNodeTooltip(null), '');
+                assert.equal(pkgDiagram.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
+                assert.equal(pkgDiagram.buildDiagramNodeTooltip(null), '');
             });
 
             test('buildDiagramGroupTree: 共通プレフィックスでグループ化する', () => {
@@ -791,7 +792,7 @@ test.describe('package.js', () => {
                     ['com.example.b', 'P1'],
                 ]);
 
-                const rootGroup = pkg.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+                const rootGroup = pkgDiagram.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
 
                 assert.equal(rootGroup.children.has('com.example'), true);
             });
@@ -814,7 +815,7 @@ test.describe('package.js', () => {
                     lines.push(`node ${nodeId}`);
                 };
 
-                const lines = pkg.buildSubgraphLines(rootGroup, addNodeLines, text => text);
+                const lines = pkgDiagram.buildSubgraphLines(rootGroup, addNodeLines, text => text);
 
                 assert.equal(lines.some(line => line.includes('node ROOT')), true);
                 assert.equal(lines.some(line => line.includes('node P0')), true);
@@ -839,13 +840,15 @@ test.describe('package.js', () => {
 
             test('buildDiagramNodeLines: クリックハンドラ名を埋め込む', () => {
                 const visibleSet = new Set(['app.a']);
-                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkg.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
-                const nodeLines = pkg.buildDiagramNodeLines(
+                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkgDiagram.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
+                const nodeLines = pkgDiagram.buildDiagramNodeLines(
                     visibleSet,
                     nodeIdByFqn,
                     nodeIdToFqn,
                     nodeLabelById,
-                    text => text
+                    text => text,
+                    undefined,
+                    pkg.DIAGRAM_CLICK_HANDLER_NAME
                 );
                 const clickLine = nodeLines.find(line => line.startsWith('click '));
                 assert.ok(clickLine);

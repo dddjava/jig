@@ -13,7 +13,7 @@ const domainSettings = {
     transitiveReductionEnabled: true,
 };
 
-const diagramRegistry = []; // [{container, pkg}]
+const diagramRegistry = []; // [{container, pkg, diagramType}] diagramType: 'package' | 'type'
 const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
 
 /**
@@ -405,12 +405,57 @@ function createEnumSection(type) {
 }
 
 /**
+ * 型間の関連からパッケージ間の関連を導出する（重複排除）
+ * @returns {Array<{from: string, to: string}>}
+ */
+function derivePackageRelations() {
+    const typesMap = getDomainData()._typesMap;
+    const typeRelations = (globalThis.typeRelationsData?.relations || [])
+        .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+    const relMap = new Map();
+    typeRelations.forEach(({from, to}) => {
+        const fromPkg = globalThis.Jig.packageDiagram.getPackageFqnFromTypeFqn(from);
+        const toPkg = globalThis.Jig.packageDiagram.getPackageFqnFromTypeFqn(to);
+        if (fromPkg !== toPkg) relMap.set(`${fromPkg}::${toPkg}`, {from: fromPkg, to: toPkg});
+    });
+    return Array.from(relMap.values());
+}
+
+/**
+ * パッケージカード用のパッケージ関連図ソースを生成する
+ * @param {PackageType} pkg
+ * @param {PackageType[]} allPackages
+ * @param {Array<{from: string, to: string}>} allPackageRelations
+ * @returns {string|null}
+ */
+function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
+    const { uniqueRelations, visibleSet } = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(
+        allPackages,
+        allPackageRelations,
+        [],
+        [pkg.fqn],
+        0,
+        domainSettings.transitiveReductionEnabled
+    );
+    if (visibleSet.size <= 1 && uniqueRelations.length === 0) return null;
+    const nameByFqn = new Map(allPackages.map(p => [p.fqn, getTypeTerm(p.fqn).title]));
+    const { source } = globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
+        visibleSet, uniqueRelations, nameByFqn,
+        domainSettings.diagramDirection, null
+    );
+    return source;
+}
+
+/**
  * @param {PackageType[]} packages
  * @param {HTMLElement} container
  * @returns {void}
  */
 function renderPackages(packages, container) {
     if (packages.length === 0) return;
+
+    const allPackages = getDomainData().packages;
+    const allPackageRelations = derivePackageRelations();
 
     packages.forEach(pkg => {
         const section = createElement("section", {
@@ -441,10 +486,20 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
+        const pkgRelDiagramContainer = createElement("div", {className: "mermaid-diagram"});
+        section.appendChild(pkgRelDiagramContainer);
+        diagramRegistry.push({container: pkgRelDiagramContainer, pkg, diagramType: 'package'});
+        globalThis.Jig.observe.lazyRender(pkgRelDiagramContainer, () => {
+            renderedContainers.add(pkgRelDiagramContainer);
+            pkgRelDiagramContainer.innerHTML = "";
+            const pkgDiagram = createPackageLevelDiagram(pkg, allPackages, allPackageRelations);
+            if (pkgDiagram) globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
+        });
+
         if (pkg.types.length > 0) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
-            diagramRegistry.push({container: mmdContainer, pkg});
+            diagramRegistry.push({container: mmdContainer, pkg, diagramType: 'type'});
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
                 renderedContainers.add(mmdContainer);
                 mmdContainer.innerHTML = "";
@@ -529,13 +584,18 @@ function updateDirectionIcon() {
  * @returns {void}
  */
 function rerenderDiagrams() {
+    const allPackages = getDomainData().packages;
+    const allPackageRelations = derivePackageRelations();
     diagramRegistry
         .filter(({container}) => renderedContainers.has(container))
-        .forEach(({container, pkg}) => {
+        .forEach(({container, pkg, diagramType}) => {
             container.innerHTML = "";
-            const diagram = createRelationDiagram(pkg);
-            if (diagram) {
-                globalThis.Jig.mermaid.renderWithControls(container, diagram);
+            if (diagramType === 'package') {
+                const diagram = createPackageLevelDiagram(pkg, allPackages, allPackageRelations);
+                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+            } else {
+                const diagram = createRelationDiagram(pkg);
+                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             }
         });
 }
@@ -767,5 +827,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram };
+    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, derivePackageRelations, createPackageLevelDiagram };
 }

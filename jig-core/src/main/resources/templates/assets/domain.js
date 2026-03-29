@@ -165,6 +165,24 @@ function renderPackageNavItem(pkg) {
 }
 
 /**
+ * パッケージカードに表示するパッケージ内パッケージ関連図
+ * @param pkg
+ * @param allPackages
+ * @param allPackageRelations
+ * @return {string|null}
+ */
+function createPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
+    return globalThis.Jig.packageDiagram.createPackageLevelDiagram(
+        pkg, allPackages, allPackageRelations,
+        {
+            transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
+            diagramDirection: domainSettings.diagramDirection
+        }
+    );
+}
+
+/**
+ * パッケージカードに表示するパッケージ内クラス関連図
  * @param {PackageType} pkg
  * @returns {string | null}
  */
@@ -421,7 +439,6 @@ function derivePackageRelations() {
     return Array.from(relMap.values());
 }
 
-
 /**
  * @param {PackageType[]} packages
  * @param {HTMLElement} container
@@ -469,13 +486,7 @@ function renderPackages(packages, container) {
         globalThis.Jig.observe.lazyRender(pkgRelDiagramContainer, () => {
             renderedContainers.add(pkgRelDiagramContainer);
             pkgRelDiagramContainer.innerHTML = "";
-            const pkgDiagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
-                pkg, allPackages, allPackageRelations,
-                {
-                    transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
-                    diagramDirection: domainSettings.diagramDirection
-                }
-            );
+            const pkgDiagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
             if (pkgDiagram) globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
         });
 
@@ -588,13 +599,7 @@ function rerenderDiagrams() {
         .forEach(({container, pkg, diagramType}) => {
             container.innerHTML = "";
             if (diagramType === 'package') {
-                const diagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
-                    pkg, allPackages, allPackageRelations,
-                    {
-                        transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
-                        diagramDirection: domainSettings.diagramDirection
-                    }
-                );
+                const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
                 if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             } else {
                 const diagram = createRelationDiagram(pkg);

@@ -184,7 +184,6 @@ const PackageDiagramModule = (() => {
             nodeIdToFqn,
             nodeLabelById,
             escapeMermaidText,
-            focusedPackageFqn,
             options.clickHandlerName ?? null
         );
 
@@ -196,7 +195,7 @@ const PackageDiagramModule = (() => {
         // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
         lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
         // 選択されたものを強調表示する
-        lines.push('classDef focused-package-highlight stroke-width:3px,font-weight:bold');
+        lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
 
         return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
     }
@@ -245,7 +244,7 @@ const PackageDiagramModule = (() => {
         return {edgeLines, linkStyles, mutualPairs};
     }
 
-    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, focusedPackageFqn, clickHandlerName) {
+    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName) {
         const visibleFqns = Array.from(visibleSet).sort();
         const parentFqns = buildParentFqns(visibleSet);
         const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
@@ -253,9 +252,6 @@ const PackageDiagramModule = (() => {
             const fqn = nodeIdToFqn.get(nodeId);
             const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
             let nodeDefinition = globalThis.Jig.mermaid.getNodeDefinition(nodeId, displayLabel, 'package');
-            if (fqn === focusedPackageFqn) {
-                nodeDefinition += ':::focused-package-highlight';
-            }
             lines.push(nodeDefinition);
             if (clickHandlerName) {
                 const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));

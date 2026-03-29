@@ -421,34 +421,6 @@ function derivePackageRelations() {
     return Array.from(relMap.values());
 }
 
-/**
- * パッケージカード用のパッケージ関連図ソースを生成する
- * @param {PackageType} pkg
- * @param {PackageType[]} allPackages
- * @param {Array<{from: string, to: string}>} allPackageRelations
- * @returns {string|null}
- */
-function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
-    const { uniqueRelations, packageFqns } = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(
-        allPackages,
-        allPackageRelations,
-        [],
-        {
-            packageFilterFqn: [pkg.fqn],
-            aggregationDepth: pkg.fqn.split('.').length + 1, // 自身の一つ下でグルーピング
-            transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
-        }
-    );
-    if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
-    const nameByFqn = new Map(allPackages.map(p => [p.fqn, getTypeTerm(p.fqn).title]));
-    const { source } = globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
-        packageFqns, uniqueRelations, nameByFqn,
-        {
-            diagramDirection: domainSettings.diagramDirection
-        }
-    );
-    return source;
-}
 
 /**
  * @param {PackageType[]} packages
@@ -496,7 +468,14 @@ function renderPackages(packages, container) {
         globalThis.Jig.observe.lazyRender(pkgRelDiagramContainer, () => {
             renderedContainers.add(pkgRelDiagramContainer);
             pkgRelDiagramContainer.innerHTML = "";
-            const pkgDiagram = createPackageLevelDiagram(pkg, allPackages, allPackageRelations);
+            const pkgDiagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
+                pkg, allPackages, allPackageRelations,
+                {
+                    nameResolver: fqn => getTypeTerm(fqn).title,
+                    transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
+                    diagramDirection: domainSettings.diagramDirection
+                }
+            );
             if (pkgDiagram) globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
         });
 
@@ -595,7 +574,14 @@ function rerenderDiagrams() {
         .forEach(({container, pkg, diagramType}) => {
             container.innerHTML = "";
             if (diagramType === 'package') {
-                const diagram = createPackageLevelDiagram(pkg, allPackages, allPackageRelations);
+                const diagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
+                    pkg, allPackages, allPackageRelations,
+                    {
+                        nameResolver: fqn => getTypeTerm(fqn).title,
+                        transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
+                        diagramDirection: domainSettings.diagramDirection
+                    }
+                );
                 if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             } else {
                 const diagram = createRelationDiagram(pkg);
@@ -831,5 +817,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, derivePackageRelations, createPackageLevelDiagram };
+    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, derivePackageRelations };
 }

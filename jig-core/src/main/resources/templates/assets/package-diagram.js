@@ -186,6 +186,42 @@ const PackageDiagramModule = (() => {
     }
 
     /**
+     * パッケージカード用のパッケージ関連図ソースを生成する（domain.js での使用を想定）
+     *
+     * @typedef {Object} CreatePackageLevelDiagramOptions
+     * @property {Function} nameResolver - (fqn: string) => string。パッケージFQNを表示名に解決する関数
+     * @property {number} [transitiveReductionEnabled] - 推移的縮約を行うかどうか
+     * @property {string} diagramDirection - 図の向き ('TB' または 'LR')
+     */
+    /**
+     * @param {Package} pkg - 対象パッケージ
+     * @param {Package[]} allPackages - 全パッケージの一覧
+     * @param {Relation[]} allPackageRelations - パッケージ間の全関連
+     * @param {CreatePackageLevelDiagramOptions} options
+     * @returns {string|null}
+     */
+    function createPackageLevelDiagram(pkg, allPackages, allPackageRelations, options) {
+        const {nameResolver, transitiveReductionEnabled, diagramDirection} = options;
+        const { uniqueRelations, packageFqns } = buildVisibleDiagramRelations(
+            allPackages,
+            allPackageRelations,
+            [],
+            {
+                packageFilterFqn: [pkg.fqn],
+                aggregationDepth: pkg.fqn.split('.').length + 1, // 自身の一つ下でグルーピング
+                transitiveReductionEnabled: transitiveReductionEnabled
+            }
+        );
+        if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
+        const nameByFqn = new Map(allPackages.map(p => [p.fqn, nameResolver(p.fqn)]));
+        const { source } = buildMermaidDiagramSource(
+            packageFqns, uniqueRelations, nameByFqn,
+            { diagramDirection }
+        );
+        return source;
+    }
+
+    /**
      * @typedef {Object} MermaidDiagramSourceOptions
      * @property {string} diagramDirection - 図の向き ('TD' または 'LR')
      * @property {string|null} [focusedPackageFqn] - フォーカスされたパッケージ
@@ -406,6 +442,7 @@ const PackageDiagramModule = (() => {
         buildMutualDependencyPairs,
         buildParentFqns,
         filterParentFqnsWithRelations,
+        createPackageLevelDiagram,
         buildMermaidDiagramSource,
         buildDiagramNodeMaps,
         buildDiagramEdgeLines,
@@ -425,11 +462,15 @@ globalThis.Jig.packageDiagram = {
     getPackageFqnFromTypeFqn: PackageDiagramModule.getPackageFqnFromTypeFqn,
     isWithinPackageFilters: PackageDiagramModule.isWithinPackageFilters,
     buildVisibleDiagramRelations: PackageDiagramModule.buildVisibleDiagramRelations,
+    createPackageLevelDiagram: PackageDiagramModule.createPackageLevelDiagram,
     buildMermaidDiagramSource: PackageDiagramModule.buildMermaidDiagramSource,
 };
 
 // Test-only exports for Node; no-op in browsers.
 // テスト用エクスポート
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PackageDiagramModule;
+    module.exports = {
+        ...PackageDiagramModule,
+        createPackageLevelDiagram: PackageDiagramModule.createPackageLevelDiagram,
+    };
 }

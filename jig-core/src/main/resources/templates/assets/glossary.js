@@ -211,7 +211,7 @@ function renderGlossaryTerms(terms, showAttributes) {
                 children: [
                     createElement("h3", {children: [
                         globalThis.Jig.dom.kindBadgeElement(term.kind || ""),
-                        createElement("a", {textContent: term.title || ""}),
+                        createElement("span", {textContent: term.title || ""}),
                     ]}),
                     ...metaChildren,
                     createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),

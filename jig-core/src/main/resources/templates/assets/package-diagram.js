@@ -4,6 +4,18 @@
 
 const PackageDiagramModule = (() => {
     // FQN ユーティリティ
+    /**
+     * FQNを指定された深さのセグメントに切り詰めて返す。
+     * depthが0以下、fqnが空や"(default)"、セグメント数がdepth以下の場合はそのまま返す。
+     *
+     * @param {string} fqn
+     * @param {number} depth
+     * @returns {string}
+     *
+     * @example
+     * getAggregatedFqn("com.example.foo.Bar", 2); // => "com.example"
+     * getAggregatedFqn("com.example.foo.Bar", 9); // => "com.example.foo.Bar"
+     */
     function getAggregatedFqn(fqn, depth) {
         if (!depth || depth <= 0) return fqn;
         if (!fqn || fqn === '(default)') return fqn;
@@ -13,7 +25,7 @@ const PackageDiagramModule = (() => {
     }
 
     /**
-     * 完全修飾名（FQN）のリストから、共通プレフィックスの深さを返す。
+     * FQNのリストから、共通プレフィックスの深さを返す。
      *
      * @param {string[]} fqns - ドット区切りのFQNの配列（例: ["com.example.foo.Bar", "com.example.foo.Baz"]）
      * @returns {number} 共通プレフィックスのセグメント数。配列が空またはnull/undefinedの場合は0。

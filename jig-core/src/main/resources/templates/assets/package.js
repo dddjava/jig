@@ -81,6 +81,10 @@ function getGlossaryTitle(fqn) {
     return globalThis.Jig.glossary.getTypeTerm(fqn).title
 }
 
+/**
+ * @param {string} fqn
+ * @return {number} 深さ
+ */
 function getPackageDepth(fqn) {
     if (!fqn || fqn === '(default)') return 0;
     return fqn.split('.').length;

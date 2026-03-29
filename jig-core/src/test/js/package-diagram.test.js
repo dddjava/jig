@@ -40,13 +40,13 @@ test.describe('package-diagram', () => {
         ];
 
         test('フィルタなしで全パッケージを含む', () => {
-            const result = pkgDiagram.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+            const result = pkgDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
             assert.equal(result.packageFqns.size, 4);
             assert.equal(result.uniqueRelations.length, 3);
         });
 
         test('パッケージフィルタを適用する', () => {
-            const result = pkgDiagram.buildVisibleDiagramRelations(packages, relations, [], ['app'], 0, false);
+            const result = pkgDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: ['app'], aggregationDepth: 0, transitiveReductionEnabled: false});
             assert.deepEqual(Array.from(result.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
             assert.equal(result.uniqueRelations.length, 2);
         });
@@ -58,7 +58,7 @@ test.describe('package-diagram', () => {
                 {from: 'a', to: 'c'}, // 推移的
             ];
             const pkgs = [{fqn: 'a'}, {fqn: 'b'}, {fqn: 'c'}];
-            const result = pkgDiagram.buildVisibleDiagramRelations(pkgs, directRelations, [], [], 0, true);
+            const result = pkgDiagram.buildVisibleDiagramRelations(pkgs, directRelations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: true});
             assert.equal(result.uniqueRelations.length, 2);
             assert.ok(!result.uniqueRelations.some(r => r.from === 'a' && r.to === 'c'));
         });

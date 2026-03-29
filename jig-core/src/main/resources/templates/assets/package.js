@@ -21,7 +21,8 @@ const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
 const getAggregatedFqn = (fqn, depth) => globalThis.Jig.packageDiagram.getAggregatedFqn(fqn, depth);
 const getPackageFqnFromTypeFqn = (typeFqn) => globalThis.Jig.packageDiagram.getPackageFqnFromTypeFqn(typeFqn);
 const isWithinPackageFilters = (fqn, packageFilterFqn) => globalThis.Jig.packageDiagram.isWithinPackageFilters(fqn, packageFilterFqn);
-const buildVisibleDiagramRelations = (...args) => globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(...args);
+const buildVisibleDiagramRelations = (packages, relations, causeRelationEvidence, options) => 
+    globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, options);
 
 // package.js でのパッケージ図生成: clickHandlerName を固定して呼び出す
 const buildMermaidDiagramSource = (packageFqns, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn) =>
@@ -318,9 +319,7 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
         packages,
         relations,
         causeRelationEvidence,
-        packageFilterFqn,
-        aggregationDepth,
-        transitiveReductionEnabled
+        {packageFilterFqn, aggregationDepth, transitiveReductionEnabled}
     );
     const aggregatedRoot = focusedPackageFqn ? getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
     const {uniqueRelations, packageFqns} = filterFocusDiagramRelations(

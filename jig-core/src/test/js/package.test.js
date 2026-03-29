@@ -365,13 +365,13 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], ['app'], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: ['app'], aggregationDepth: 0, transitiveReductionEnabled: false});
                 assert.deepEqual(Array.from(base.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
             test('filterFocusDiagramRelations: relatedSetで絞り込む', () => {
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -392,7 +392,7 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -413,7 +413,7 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -434,7 +434,7 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -456,7 +456,7 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.d', to: 'app.b'},
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -478,7 +478,7 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.c', to: 'app.d'},
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
+                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
                 const filtered = pkg.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,

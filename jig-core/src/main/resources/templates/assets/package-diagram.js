@@ -108,7 +108,9 @@ const PackageDiagramModule = (() => {
      * @param {boolean} transitiveReductionEnabled - 推移的縮約を行うかどうか
      * @returns {{ uniqueRelations: Relation[], packageFqns: Set<string>, filteredCauseRelationEvidence: Relation[] }}
      */
-    function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
+    function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, options) {
+        const {packageFilterFqn, aggregationDepth, transitiveReductionEnabled} = options;
+        
         const visiblePackages = packageFilterFqn.length > 0
             ? packages.filter(item => isWithinPackageFilters(item.fqn, packageFilterFqn))
             : packages;

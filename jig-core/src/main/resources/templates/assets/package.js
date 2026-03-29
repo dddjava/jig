@@ -24,9 +24,9 @@ const isWithinPackageFilters = (fqn, packageFilterFqn) => globalThis.Jig.package
 const buildVisibleDiagramRelations = (...args) => globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(...args);
 
 // package.js でのパッケージ図生成: clickHandlerName を固定して呼び出す
-const buildMermaidDiagramSource = (visibleSet, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn) =>
+const buildMermaidDiagramSource = (packageFqns, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn) =>
     globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
-        visibleSet, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn,
+        packageFqns, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn,
         { clickHandlerName: DIAGRAM_CLICK_HANDLER_NAME }
     );
 
@@ -269,8 +269,8 @@ function collectFocusSet(root, relations, aggregationDepth, focusCallerMode, foc
     return focusSet;
 }
 
-function filterFocusDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot, aggregationDepth, focusCallerMode, focusCalleeMode) {
-    const nextVisibleSet = new Set(visibleSet);
+function filterFocusDiagramRelations(uniqueRelations, packageFqns, aggregatedRoot, aggregationDepth, focusCallerMode, focusCalleeMode) {
+    const nextVisibleSet = new Set(packageFqns);
     let nextRelations = uniqueRelations;
     if (aggregatedRoot) {
         const focusSet = collectFocusSet(aggregatedRoot, uniqueRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
@@ -310,7 +310,7 @@ function filterFocusDiagramRelations(uniqueRelations, visibleSet, aggregatedRoot
         nextVisibleSet.add(relation.from);
         nextVisibleSet.add(relation.to);
     });
-    return {uniqueRelations: nextRelations, visibleSet: nextVisibleSet};
+    return {uniqueRelations: nextRelations, packageFqns: nextVisibleSet};
 }
 
 function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, focusedPackageFqn, aggregationDepth, focusCallerMode, focusCalleeMode, transitiveReductionEnabled) {
@@ -323,9 +323,9 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
         transitiveReductionEnabled
     );
     const aggregatedRoot = focusedPackageFqn ? getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
-    const {uniqueRelations, visibleSet} = filterFocusDiagramRelations(
+    const {uniqueRelations, packageFqns} = filterFocusDiagramRelations(
         base.uniqueRelations,
-        base.visibleSet,
+        base.packageFqns,
         aggregatedRoot,
         aggregationDepth,
         focusCallerMode,
@@ -333,7 +333,7 @@ function buildVisibleDiagramElements(packages, relations, causeRelationEvidence,
     );
     return {
         uniqueRelations,
-        visibleSet,
+        packageFqns,
         filteredCauseRelationEvidence: base.filteredCauseRelationEvidence,
     };
 }
@@ -885,7 +885,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
     const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
     const {
         uniqueRelations,
-        visibleSet,
+        packageFqns,
         filteredCauseRelationEvidence
     } = buildVisibleDiagramElements(
         packages,
@@ -900,7 +900,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
     );
     const nameByFqn = new Map(packages.map(item => [item.fqn, getGlossaryTitle(item.fqn)]));
     const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
-        visibleSet,
+        packageFqns,
         uniqueRelations,
         nameByFqn,
         context.diagramDirection,

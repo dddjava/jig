@@ -429,7 +429,7 @@ function derivePackageRelations() {
  * @returns {string|null}
  */
 function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
-    const { uniqueRelations, visibleSet } = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(
+    const { uniqueRelations, packageFqns } = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(
         allPackages,
         allPackageRelations,
         [],
@@ -437,10 +437,10 @@ function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
         pkg.fqn.split('.').length + 1, // 自身の一つ下でグルーピング
         domainSettings.transitiveReductionEnabled
     );
-    if (visibleSet.size <= 1 && uniqueRelations.length === 0) return null;
+    if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
     const nameByFqn = new Map(allPackages.map(p => [p.fqn, getTypeTerm(p.fqn).title]));
     const { source } = globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
-        visibleSet, uniqueRelations, nameByFqn,
+        packageFqns, uniqueRelations, nameByFqn,
         domainSettings.diagramDirection, null
     );
     return source;

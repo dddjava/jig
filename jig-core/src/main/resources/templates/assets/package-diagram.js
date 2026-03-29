@@ -191,8 +191,7 @@ const PackageDiagramModule = (() => {
      */
     function filterParentFqnsWithRelations(parentFqns, uniqueRelations) {
         const parentFqnsWithRelations = new Set();
-        const relationSet = new Set(uniqueRelations.map(relation => `${relation.from}::${relation.to}`));
-        
+
         parentFqns.forEach(parentFqn => {
             // 親パッケージが from または to として現れる関連を検索
             for (const relation of uniqueRelations) {
@@ -202,7 +201,6 @@ const PackageDiagramModule = (() => {
                 }
             }
         });
-        
         return parentFqnsWithRelations;
     }
 

@@ -20,10 +20,12 @@ const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecase
 /**
  * @typedef {Object} UsecaseMethod
  * @property {string} fqn
+ * @property {string} visibility
  * @property {TypeRef[]} parameterTypeRefs
  * @property {TypeRef} returnTypeRef
  * @property {boolean} isDeprecated
  * @property {string[]} callMethods 呼び出しているメソッドのFQN
+ * @property {string} [kind] 内部で使用する種別 ("usecase" | "method" | "static-method" | "inbound-class" | "outbound")
  */
 
 /**
@@ -35,22 +37,116 @@ const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecase
  */
 
 /**
- * @return {Object} UsecaseData
+ * @typedef {Object} UsecaseData
  * @property {Usecase[]} usecases
+ */
+
+/**
+ * @typedef {Object} OutboundOperation
+ * @property {string} fqn
+ */
+
+/**
+ * @typedef {Object} OutboundPort
+ * @property {OutboundOperation[]} [operations]
+ */
+
+/**
+ * @typedef {Object} OutboundData
+ * @property {OutboundPort[]} [outboundPorts]
+ */
+
+/**
+ * @typedef {Object} Relation
+ * @property {string} from
+ * @property {string} to
+ */
+
+/**
+ * @typedef {Object} Controller
+ * @property {Relation[]} [relations]
+ */
+
+/**
+ * @typedef {Object} InboundData
+ * @property {Controller[]} [controllers]
+ */
+
+/**
+ * @typedef {Object} DiagramContext
+ * @property {Map<string, UsecaseMethod>} methodMap
+ * @property {Set<string>} outboundOperationSet
+ * @property {boolean} showDiagramInternalMethods
+ * @property {boolean} showDiagramOutboundPorts
+ */
+
+/**
+ * @typedef {Object} DiagramNode
+ * @property {string} fqn
+ * @property {string} kind
+ */
+
+/**
+ * @typedef {Object} DiagramEdge
+ * @property {string} from
+ * @property {string} to
+ */
+
+/**
+ * @typedef {Object} SequenceParticipant
+ * @property {string} id
+ * @property {string} label
+ * @property {string} kind
+ */
+
+/**
+ * @typedef {Object} SequenceCall
+ * @property {string} from
+ * @property {string} to
+ * @property {string} label
+ */
+
+/**
+ * @typedef {Object} SequenceDiagram
+ * @property {SequenceParticipant[]} participants
+ * @property {SequenceCall[]} calls
+ */
+
+/**
+ * @typedef {Object} ScrollInfo
+ * @property {string} [id]
+ * @property {number} [offset]
+ * @property {number} [scrollTop]
+ */
+
+/**
+ * @return {UsecaseData}
  */
 function getUsecaseData() {
     return globalThis.usecaseData;
 }
 
+/**
+ * @param {string} fqn
+ * @returns {string}
+ */
 function getClassFqnFromMethodFqn(fqn) {
     const hashIdx = fqn.indexOf('#');
     return hashIdx === -1 ? fqn : fqn.slice(0, hashIdx);
 }
 
+/**
+ * @param {UsecaseMethod} method
+ * @returns {boolean}
+ */
 function isUsecase(method) {
     return method.visibility === "PUBLIC";
 }
 
+/**
+ * @param {OutboundData} outboundData
+ * @returns {Set<string>}
+ */
 function buildOutboundOperationSet(outboundData) {
     if (!outboundData?.outboundPorts) return new Set();
     const set = new Set();
@@ -60,14 +156,19 @@ function buildOutboundOperationSet(outboundData) {
     return set;
 }
 
+/**
+ * @param {UsecaseMethod} rootMethod
+ * @param {DiagramContext} diagramContext
+ * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+ */
 function buildUsecaseDiagram(rootMethod, diagramContext) {
     /**
-     * @type {Map<string, {fqn: string, kind: string}>}
+     * @type {Map<string, DiagramNode>}
      */
     const nodes = new Map();
     const edgeSet = new Set();
     /**
-     * @type {[from: string, to: string]}
+     * @type {DiagramEdge[]}
      */
     const edges = [];
     const visited = new Set();
@@ -75,12 +176,23 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
     nodes.set(rootMethod.fqn, {fqn: rootMethod.fqn, kind: "usecase"});
     visited.add(rootMethod.fqn);
 
+    /**
+     * @param {string} kind
+     * @returns {boolean}
+     */
     function shouldIncludeMethodNode(kind) {
         return diagramContext.showDiagramInternalMethods || kind === "usecase";
     }
 
+    /**
+     * @type {Map<string, DiagramNode[]>}
+     */
     const reverseCallerMap = new Map();
 
+    /**
+     * @param {string} calleeFqn
+     * @param {DiagramNode} callerNode
+     */
     function addReverseCaller(calleeFqn, callerNode) {
         if (!calleeFqn || !callerNode?.fqn) return;
         if (!reverseCallerMap.has(calleeFqn)) reverseCallerMap.set(calleeFqn, []);
@@ -103,10 +215,12 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
     });
 
     /**
+     * @param {string} rootFqn
      * @returns {Map<string, string>} callerFqn -> kind
      */
     function collectVisibleCallers(rootFqn) {
         const callers = reverseCallerMap.get(rootFqn) || [];
+        /** @type {Map<string, string>} */
         const visible = new Map();
 
         if (diagramContext.showDiagramInternalMethods) {
@@ -118,9 +232,14 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
             return visible;
         }
 
+        /**
+         * @param {DiagramNode} startCaller
+         * @returns {Map<string, string>}
+         */
         function collectUsecaseAncestors(startCaller) {
             const queue = [startCaller];
             const visitedCallerFqns = new Set([rootFqn]);
+            /** @type {Map<string, string>} */
             const usecaseAncestors = new Map();
 
             while (queue.length > 0) {
@@ -169,6 +288,11 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
         }
     });
 
+    /**
+     * @param {string} effectiveCallerFqn
+     * @param {string[]} callMethods
+     * @param {Set<string>} inliningPath
+     */
     function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
@@ -211,8 +335,14 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
     return {nodes: [...nodes.values()], edges};
 }
 
+/**
+ * @param {Usecase} usecase
+ * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
+ */
 function buildClassGraph(usecase) {
+    /** @type {DiagramNode[]} */
     const nodes = [];
+    /** @type {DiagramEdge[]} */
     const edges = [];
     const edgeSet = new Set();
     const classMethods = [...usecase.methods, ...usecase.staticMethods];
@@ -236,12 +366,24 @@ function buildClassGraph(usecase) {
     return { nodes, edges };
 }
 
+/**
+ * @param {UsecaseMethod} rootMethod
+ * @param {DiagramContext} diagramContext
+ * @returns {SequenceDiagram}
+ */
 function buildSequenceDiagram(rootMethod, diagramContext) {
+    /** @type {string[]} */
     const participantKeys = [];
+    /** @type {Map<string, SequenceParticipant>} */
     const participants = new Map();
+    /** @type {SequenceCall[]} */
     const calls = [];
     const visited = new Set();
 
+    /**
+     * @param {string} fqn
+     * @returns {string}
+     */
     function getMethodSimpleName(fqn) {
         const hashIdx = fqn.indexOf('#');
         if (hashIdx === -1) return fqn;
@@ -249,11 +391,21 @@ function buildSequenceDiagram(rootMethod, diagramContext) {
         return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
     }
 
+    /**
+     * @param {string} key
+     * @returns {SequenceParticipant}
+     */
     function ensureUsecaseParticipant(key) {
         const label = globalThis.Jig.glossary.getMethodTerm(key, true).title
         return ensureParticipant(key, label, "usecase");
     }
 
+    /**
+     * @param {string} key
+     * @param {string} label
+     * @param {string} kind
+     * @returns {SequenceParticipant}
+     */
     function ensureParticipant(key, label, kind) {
         if (!participants.has(key)) {
             participants.set(key, {id: fqnToNodeId(key), label, kind});
@@ -265,6 +417,11 @@ function buildSequenceDiagram(rootMethod, diagramContext) {
     ensureUsecaseParticipant(rootMethod.fqn);
     visited.add(rootMethod.fqn);
 
+    /**
+     * @param {string} effectiveCallerFqn
+     * @param {string[]} callMethods
+     * @param {Set<string>} inliningPath
+     */
     function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
         if (!callMethods) return;
         for (const calleeFqn of callMethods) {
@@ -304,6 +461,10 @@ function buildSequenceDiagram(rootMethod, diagramContext) {
     };
 }
 
+/**
+ * @param {SequenceDiagram} sequence
+ * @returns {string|null}
+ */
 function buildSequenceDiagramCode(sequence) {
     if (sequence.calls.length === 0) return null;
     let code = 'sequenceDiagram\n';
@@ -330,12 +491,30 @@ function buildSequenceDiagramCode(sequence) {
 
 // ===== アプリケーション本体 =====
 
+/**
+ * @type {{
+ *   state: {
+ *     data: UsecaseData|null,
+ *     selectedTabs: Map<string, string>
+ *   },
+ *   init: function(): void,
+ *   initControls: function(): void,
+ *   render: function(): void,
+ *   getScrollInfo: function(): ScrollInfo|null,
+ *   restoreScroll: function(ScrollInfo|null): void,
+ *   renderSidebar: function(Usecase[]): void,
+ *   renderUsecaseList: function(Usecase[]): void
+ * }}
+ */
 const UsecaseApp = {
     state: {
         data: null,
         selectedTabs: new Map() // methodFqn -> 'usecase' | 'sequence'
     },
 
+    /**
+     * アプリケーションの初期化
+     */
     init() {
         this.state.data = getUsecaseData();
         if (!this.state.data) return;
@@ -361,6 +540,9 @@ const UsecaseApp = {
         this.render();
     },
 
+    /**
+     * 表示オプションの初期化
+     */
     initControls() {
         const controls = [
             { id: 'show-fields', class: 'hide-usecase-fields' },
@@ -399,6 +581,9 @@ const UsecaseApp = {
         });
     },
 
+    /**
+     * 画面の描画
+     */
     render() {
         const scrollInfo = this.getScrollInfo();
         const usecases = this.state.data.usecases;
@@ -407,6 +592,10 @@ const UsecaseApp = {
         this.restoreScroll(scrollInfo);
     },
 
+    /**
+     * 現在のスクロール位置を取得
+     * @returns {ScrollInfo|null}
+     */
     getScrollInfo() {
         const main = document.querySelector('.split-view > main');
         if (!main) return null;
@@ -423,6 +612,10 @@ const UsecaseApp = {
         return { scrollTop: main.scrollTop };
     },
 
+    /**
+     * スクロール位置を復元
+     * @param {ScrollInfo|null} info
+     */
     restoreScroll(info) {
         const main = document.querySelector('.split-view > main');
         if (!main || !info) return;
@@ -442,6 +635,10 @@ const UsecaseApp = {
         }
     },
 
+    /**
+     * サイドバーの描画
+     * @param {Usecase[]} usecases
+     */
     renderSidebar(usecases) {
         const sidebar = document.getElementById("usecase-sidebar-list");
         if (!sidebar) return;
@@ -494,6 +691,10 @@ const UsecaseApp = {
         sidebar.appendChild(section);
     },
 
+    /**
+     * ユースケース一覧の描画
+     * @param {Usecase[]} usecases
+     */
     renderUsecaseList(usecases) {
         const container = document.getElementById("usecase-list");
         if (!container) return;
@@ -504,6 +705,7 @@ const UsecaseApp = {
             return;
         }
 
+        /** @type {Map<string, UsecaseMethod>} */
         const methodMap = new Map();
         usecases.forEach(usecase => {
             (usecase.methods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: isUsecase(m) ? "usecase" : "method"}));
@@ -514,6 +716,7 @@ const UsecaseApp = {
         const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
         const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
         
+        /** @type {DiagramContext} */
         const diagramContext = {
             methodMap,
             outboundOperationSet,

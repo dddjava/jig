@@ -67,6 +67,26 @@ const PackageDiagramModule = (() => {
     }
 
     // パッケージフィルタを適用して表示対象の関連とパッケージセットを構築
+    /**
+     * @typedef {Object} Package
+     * @property {string} fqn - パッケージの完全修飾名
+     */
+    /**
+     * @typedef {Object} Relation
+     * @property {string} from - 依存元のFQN
+     * @property {string} to - 依存先のFQN
+     */
+    /**
+     * 表示対象のパッケージ・関係・因果関係エビデンスを絞り込んで返す。
+     *
+     * @param {Package[]} packages - 全パッケージの一覧
+     * @param {Relation[]} relations - 全関係の一覧 ({from, to})
+     * @param {Relation[]} causeRelationEvidence - 全因果関係エビデンスの一覧 ({from, to})
+     * @param {string[]} packageFilterFqn - 表示対象に絞り込むパッケージFQNのリスト（空の場合は全件）
+     * @param {number} aggregationDepth - FQNを集約するセグメント深さ
+     * @param {boolean} transitiveReductionEnabled - 推移的縮約を行うかどうか
+     * @returns {{ uniqueRelations: Relation[], visibleSet: Set<string>, filteredCauseRelationEvidence: Relation[] }}
+     */
     function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
         const visiblePackages = packageFilterFqn.length > 0
             ? packages.filter(item => isWithinPackageFilters(item.fqn, packageFilterFqn))

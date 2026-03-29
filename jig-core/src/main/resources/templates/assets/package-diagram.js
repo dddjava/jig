@@ -309,6 +309,11 @@ const PackageDiagramModule = (() => {
         return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
     }
 
+    /**
+     * ダイアグラムで使用する各種Mapを構築する
+     * @param {Set<string>} packageFqns - 対象パッケージFQNセット
+     * @returns {{nodeIdByFqn: Map<string, string>, nodeIdToFqn: Map<string, string>, nodeLabelById: Map<string, string>, ensureNodeId: function(string): string}} - ノードマップとノードID生成関数
+     */
     function buildDiagramNodeMaps(packageFqns) {
         const nodeIdByFqn = new Map();
         const nodeIdToFqn = new Map();
@@ -319,7 +324,7 @@ const PackageDiagramModule = (() => {
             const nodeId = `P${nodeIndex++}`;
             nodeIdByFqn.set(fqn, nodeId);
             nodeIdToFqn.set(nodeId, fqn);
-            const label = globalThis.Jig.glossary.getTypeTerm(fqn).title;
+            const label = globalThis.Jig.glossary.getPackageTerm(fqn).title;
             nodeLabelById.set(nodeId, label);
             return nodeId;
         };

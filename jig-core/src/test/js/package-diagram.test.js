@@ -41,13 +41,13 @@ test.describe('package-diagram', () => {
 
         test('フィルタなしで全パッケージを含む', () => {
             const result = pkgDiagram.buildVisibleDiagramRelations(packages, relations, [], [], 0, false);
-            assert.equal(result.visibleSet.size, 4);
+            assert.equal(result.packageFqns.size, 4);
             assert.equal(result.uniqueRelations.length, 3);
         });
 
         test('パッケージフィルタを適用する', () => {
             const result = pkgDiagram.buildVisibleDiagramRelations(packages, relations, [], ['app'], 0, false);
-            assert.deepEqual(Array.from(result.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
+            assert.deepEqual(Array.from(result.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
             assert.equal(result.uniqueRelations.length, 2);
         });
 

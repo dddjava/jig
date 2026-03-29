@@ -366,7 +366,7 @@ test.describe('package.js', () => {
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
                 const base = pkg.buildVisibleDiagramRelations(packages, relations, [], ['app'], 0, false);
-                assert.deepEqual(Array.from(base.visibleSet).sort(), ['app.a', 'app.b', 'app.c']);
+                assert.deepEqual(Array.from(base.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(base.uniqueRelations.length, 2);
             });
 

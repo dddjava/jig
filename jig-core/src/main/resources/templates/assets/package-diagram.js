@@ -106,13 +106,13 @@ const PackageDiagramModule = (() => {
      * @param {string[]} packageFilterFqn - 表示対象に絞り込むパッケージFQNのリスト（空の場合は全件）
      * @param {number} aggregationDepth - FQNを集約するセグメント深さ
      * @param {boolean} transitiveReductionEnabled - 推移的縮約を行うかどうか
-     * @returns {{ uniqueRelations: Relation[], visibleSet: Set<string>, filteredCauseRelationEvidence: Relation[] }}
+     * @returns {{ uniqueRelations: Relation[], packageFqns: Set<string>, filteredCauseRelationEvidence: Relation[] }}
      */
     function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
         const visiblePackages = packageFilterFqn.length > 0
             ? packages.filter(item => isWithinPackageFilters(item.fqn, packageFilterFqn))
             : packages;
-        const visibleSet = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
+        const packageFqns = new Set(visiblePackages.map(item => getAggregatedFqn(item.fqn, aggregationDepth)));
         const filteredRelations = packageFilterFqn.length > 0
             ? relations.filter(relation => isWithinPackageFilters(relation.from, packageFilterFqn) && isWithinPackageFilters(relation.to, packageFilterFqn))
             : relations;
@@ -129,7 +129,7 @@ const PackageDiagramModule = (() => {
             uniqueRelations = globalThis.Jig.graph.transitiveReduction(uniqueRelations);
         }
 
-        return {uniqueRelations, visibleSet, filteredCauseRelationEvidence};
+        return {uniqueRelations, packageFqns, filteredCauseRelationEvidence};
     }
 
     // Mermaid 図生成
@@ -146,13 +146,13 @@ const PackageDiagramModule = (() => {
         return mutualPairs;
     }
 
-    function buildParentFqns(visibleSet) {
+    function buildParentFqns(packageFqns) {
         const parentFqns = new Set();
-        Array.from(visibleSet).sort().forEach(fqn => {
+        Array.from(packageFqns).sort().forEach(fqn => {
             const parts = fqn.split('.');
             for (let i = 1; i < parts.length; i += 1) {
                 const prefix = parts.slice(0, i).join('.');
-                if (visibleSet.has(prefix)) parentFqns.add(prefix);
+                if (packageFqns.has(prefix)) parentFqns.add(prefix);
             }
         });
         return parentFqns;
@@ -183,22 +183,22 @@ const PackageDiagramModule = (() => {
     }
 
     /**
-     * @param {Set<string>} visibleSet
+     * @param {Set<string>} packageFqns
      * @param {Array<{from: string, to: string}>} uniqueRelations
      * @param {Map<string, string>} nameByFqn
      * @param {string} diagramDirection
      * @param {string|null} focusedPackageFqn
      * @param {{clickHandlerName?: string|null}} options
      */
-    function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn, options = {}) {
+    function buildMermaidDiagramSource(packageFqns, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn, options = {}) {
         const escapeMermaidText = text => text.replace(/"/g, '\\"');
         
         // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
-        const allParentFqns = buildParentFqns(visibleSet);
+        const allParentFqns = buildParentFqns(packageFqns);
         const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
         
-        // 関連のない親パッケージを visibleSet から除外
-        const filteredVisibleSet = new Set(Array.from(visibleSet).filter(fqn => {
+        // 関連のない親パッケージを packageFqns から除外
+        const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
             // 親パッケージの場合、関連を持つものだけを含める
             if (allParentFqns.has(fqn)) {
                 return parentFqnsWithRelations.has(fqn);
@@ -215,11 +215,11 @@ const PackageDiagramModule = (() => {
             "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
             "---",
             `graph ${diagramDirection}`];
-        const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(filteredVisibleSet, nameByFqn);
+        const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, nameByFqn);
         const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
         
         const nodeLines = buildDiagramNodeLines(
-            filteredVisibleSet,
+            packageFqnsToDisplay,
             nodeIdByFqn,
             nodeIdToFqn,
             nodeLabelById,
@@ -243,7 +243,7 @@ const PackageDiagramModule = (() => {
         return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
     }
 
-    function buildDiagramNodeMaps(visibleSet, nameByFqn) {
+    function buildDiagramNodeMaps(packageFqns, nameByFqn) {
         const nodeIdByFqn = new Map();
         const nodeIdToFqn = new Map();
         const nodeLabelById = new Map();
@@ -257,7 +257,7 @@ const PackageDiagramModule = (() => {
             nodeLabelById.set(nodeId, label);
             return nodeId;
         };
-        Array.from(visibleSet).sort().forEach(ensureNodeId);
+        Array.from(packageFqns).sort().forEach(ensureNodeId);
         return {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId};
     }
 
@@ -287,10 +287,10 @@ const PackageDiagramModule = (() => {
         return {edgeLines, linkStyles, mutualPairs};
     }
 
-    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName) {
-        const visibleFqns = Array.from(visibleSet).sort();
-        const parentFqns = buildParentFqns(visibleSet);
-        const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+    function buildDiagramNodeLines(packageFqns, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName) {
+        const packageFqnList = Array.from(packageFqns).sort();
+        const parentFqns = buildParentFqns(packageFqns);
+        const rootGroup = buildDiagramGroupTree(packageFqnList, nodeIdByFqn);
         const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
             const fqn = nodeIdToFqn.get(nodeId);
             const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
@@ -328,12 +328,12 @@ const PackageDiagramModule = (() => {
         return fqn ?? '';
     }
 
-    function buildDiagramGroupTree(visibleFqns, nodeIdByFqn) {
-        const prefixDepth = getCommonPrefixDepth(visibleFqns);
+    function buildDiagramGroupTree(packageFqnList, nodeIdByFqn) {
+        const prefixDepth = getCommonPrefixDepth(packageFqnList);
         const baseDepth = Math.max(prefixDepth - 1, 0);
         const createGroupNode = key => ({key, children: new Map(), nodes: []});
         const rootGroup = createGroupNode('');
-        visibleFqns.forEach(fqn => {
+        packageFqnList.forEach(fqn => {
             const parts = fqn.split('.');
             const maxDepth = parts.length;
             let current = rootGroup;

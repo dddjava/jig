@@ -233,7 +233,9 @@ const PackageDiagramModule = (() => {
                 transitiveReductionEnabled: transitiveReductionEnabled
             }
         );
+        // パッケージ数が1つだったり関連が0なら表示しない
         if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
+
         const nameByFqn = new Map(allPackages.map(p => [p.fqn, nameResolver(p.fqn)]));
         const { source } = buildMermaidDiagramSource(
             packageFqns, uniqueRelations, nameByFqn,

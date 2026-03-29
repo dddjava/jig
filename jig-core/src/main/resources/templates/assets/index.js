@@ -22,7 +22,6 @@ function getPackageData() {
 function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
     const createElement = globalThis.Jig.dom.createElement;
     const domainPackageDiagram = createElement("div", {className: "mermaid-diagram"});
-    packageDiagramContainer.appendChild(createElement("h3", {textContent: titleLabel}));
     packageDiagramContainer.appendChild(domainPackageDiagram);
     globalThis.Jig.observe.lazyRender(domainPackageDiagram, () => {
         domainPackageDiagram.innerHTML = "";
@@ -36,7 +35,11 @@ function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRe
                 diagramDirection: "TB"
             }
         );
-        if (pkgDiagram) globalThis.Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
+        if (pkgDiagram) {
+            // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
+            packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
+            globalThis.Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
+        }
     });
 }
 

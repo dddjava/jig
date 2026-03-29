@@ -93,7 +93,7 @@ test.describe('package-diagram', () => {
             const visibleSet = new Set(['app.a', 'app.b']);
             const nameByFqn = new Map([['app.a', 'A'], ['app.b', 'B']]);
             const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], nameByFqn, 'TD', 'app.a');
-            assert.ok(source.includes('focused-package-highlight'));
+            assert.ok(source.includes('style') && source.includes('font-weight:bold'));
         });
     });
 });

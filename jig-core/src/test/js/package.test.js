@@ -847,7 +847,6 @@ test.describe('package.js', () => {
                     nodeIdToFqn,
                     nodeLabelById,
                     text => text,
-                    undefined,
                     pkg.DIAGRAM_CLICK_HANDLER_NAME
                 );
                 const clickLine = nodeLines.find(line => line.startsWith('click '));

@@ -26,6 +26,7 @@ public class TypesQueryService {
     private final JigEventRepository jigEventRepository;
 
     private final Cache<String, JigTypes> jigTypesCache;
+    private final Cache<String, CoreDomainJigTypes> coreDomainJigTypesCache;
     private final Cache<String, CoreTypesAndRelations> jigTypesWithRelationshipsCache;
 
     public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
@@ -34,11 +35,14 @@ public class TypesQueryService {
 
         if (System.getProperty("jig.debug", "false").equals("true")) {
             this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
+            this.coreDomainJigTypesCache = Caffeine.newBuilder().recordStats().build();
             this.jigTypesWithRelationshipsCache = Caffeine.newBuilder().recordStats().build();
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
+            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, coreDomainJigTypesCache, "coreDomainJigTypesCache");
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesWithRelationshipsCache, "jigTypesWithRelationshipsCache");
         } else {
             this.jigTypesCache = Caffeine.newBuilder().build();
+            this.coreDomainJigTypesCache = Caffeine.newBuilder().build();
             this.jigTypesWithRelationshipsCache = Caffeine.newBuilder().build();
         }
     }
@@ -52,12 +56,12 @@ public class TypesQueryService {
     }
 
     public CoreDomainJigTypes coreDomainJigTypes(JigRepository jigRepository) {
-        return new CoreDomainJigTypes(jigTypesCache.get("coreDomainJigTypes", key -> {
+        return coreDomainJigTypesCache.get("coreDomainJigTypes", key -> {
             var jigTypes = jigTypes(jigRepository);
             var coreDomainJigTypes = coreDomainCondition.coreDomainJigTypes(jigTypes);
             if (coreDomainJigTypes.empty()) jigEventRepository.registerコアドメインが見つからない();
-            return coreDomainJigTypes.jigTypes();
-        }));
+            return coreDomainJigTypes;
+        });
     }
 
     public MethodSmells methodSmells(JigRepository jigRepository) {

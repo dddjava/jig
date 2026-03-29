@@ -844,10 +844,13 @@ test.describe('package.js', () => {
                 const nodeLines = pkgDiagram.buildDiagramNodeLines(
                     visibleSet,
                     nodeIdByFqn,
-                    nodeIdToFqn,
-                    nodeLabelById,
-                    text => text,
-                    pkg.DIAGRAM_CLICK_HANDLER_NAME
+                    {
+                        nodeIdToFqn,
+                        nodeLabelById,
+                        escapeMermaidText: text => text,
+                        clickHandlerName: pkg.DIAGRAM_CLICK_HANDLER_NAME,
+                        parentFqnsWithRelations: new Set()
+                    }
                 );
                 const clickLine = nodeLines.find(line => line.startsWith('click '));
                 assert.ok(clickLine);

@@ -228,11 +228,13 @@ const PackageDiagramModule = (() => {
         const nodeLines = buildDiagramNodeLines(
             packageFqnsToDisplay,
             nodeIdByFqn,
-            nodeIdToFqn,
-            nodeLabelById,
-            escapeMermaidText,
-            clickHandlerName,
-            parentFqnsWithRelations
+            {
+                nodeIdToFqn,
+                nodeLabelById,
+                escapeMermaidText,
+                clickHandlerName,
+                parentFqnsWithRelations
+            }
         );
 
         nodeLines.forEach(line => lines.push(line));
@@ -294,20 +296,29 @@ const PackageDiagramModule = (() => {
         return {edgeLines, linkStyles, mutualPairs};
     }
 
-    function buildDiagramNodeLines(packageFqns, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName) {
+    /**
+     * @typedef {Object} DiagramNodeLinesOptions
+     * @property {Map<string, string>} nodeIdToFqn
+     * @property {Map<string, string>} nodeLabelById
+     * @property {Function} escapeMermaidText
+     * @property {string|null} [clickHandlerName]
+     * @property {Set<string>} parentFqnsWithRelations
+     */
+    function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
+        const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, parentFqnsWithRelations} = options;
+        
         const packageFqnList = Array.from(packageFqns).sort();
         const parentFqns = buildParentFqns(packageFqns);
         const rootGroup = buildDiagramGroupTree(packageFqnList, nodeIdByFqn);
         const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
             const fqn = nodeIdToFqn.get(nodeId);
             const displayLabel = buildDiagramNodeLabel(nodeLabelById.get(nodeId), fqn, parentSubgraphFqn);
-            let nodeDefinition = globalThis.Jig.mermaid.getNodeDefinition(nodeId, displayLabel, 'package');
+            const nodeDefinition = globalThis.Jig.mermaid.getNodeDefinition(nodeId, displayLabel, 'package');
             lines.push(nodeDefinition);
             if (clickHandlerName) {
                 const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
                 lines.push(`click ${nodeId} ${clickHandlerName} "${tooltip}"`);
             }
-            // 親パッケージにはスタイルを適用する
             if (fqn && parentFqns.has(fqn)) {
                 lines.push(`class ${nodeId} parentPackage`);
             }

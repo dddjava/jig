@@ -213,7 +213,7 @@ function traverseGraph(root, adjacencyMap) {
 }
 
 // 呼び出し元グラフ（逆方向グラフ）を構築
-function buildReverseAdjacency(relations, aggregationDepth, rootValue) {
+function buildReverseAdjacency(relations, aggregationDepth) {
     const reverseAdjacency = new Map();
     relations.forEach(relation => {
         const from = getAggregatedFqn(relation.from, aggregationDepth);

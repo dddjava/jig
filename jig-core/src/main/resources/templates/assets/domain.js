@@ -433,9 +433,11 @@ function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
         allPackages,
         allPackageRelations,
         [],
-        [pkg.fqn],
-        pkg.fqn.split('.').length + 1, // 自身の一つ下でグルーピング
-        domainSettings.transitiveReductionEnabled
+        {
+            packageFilterFqn: [pkg.fqn],
+            aggregationDepth: pkg.fqn.split('.').length + 1, // 自身の一つ下でグルーピング
+            transitiveReductionEnabled: domainSettings.transitiveReductionEnabled
+        }
     );
     if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
     const nameByFqn = new Map(allPackages.map(p => [p.fqn, getTypeTerm(p.fqn).title]));

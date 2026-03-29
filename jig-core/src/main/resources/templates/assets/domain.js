@@ -511,13 +511,26 @@ function renderTypes(types, container) {
             className: type.isDeprecated ? "deprecated" : ""
         });
 
+        const lastDot = type.fqn.lastIndexOf('.');
+        const packageFqn = lastDot > 0 ? type.fqn.substring(0, lastDot) : null;
+        const fqnDiv = createElement("div", {className: "fully-qualified-name"});
+        if (packageFqn) {
+            fqnDiv.appendChild(createElement("a", {
+                textContent: packageFqn,
+                attributes: { href: "#" + globalThis.Jig.fqnToId("domain", packageFqn) }
+            }));
+            fqnDiv.appendChild(document.createTextNode("." + type.fqn.substring(lastDot + 1)));
+        } else {
+            fqnDiv.textContent = type.fqn;
+        }
+
         const section = createElement("section", {
             className: "jig-card jig-card--type",
             id: globalThis.Jig.fqnToId("domain", type.fqn),
             attributes: { "data-has-enum": type.enumInfo ? "true" : "false" },
             children: [
                 createElement("h3", {children: [globalThis.Jig.dom.kindBadgeElement("クラス"), titleSpan]}),
-                createElement("div", {className: "fully-qualified-name", textContent: type.fqn})
+                fqnDiv
             ]
         });
 

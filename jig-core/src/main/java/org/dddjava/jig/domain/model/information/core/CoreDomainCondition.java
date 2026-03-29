@@ -20,8 +20,6 @@ public class CoreDomainCondition {
         this.businessRulePattern = Pattern.compile(domainPattern.orElse(DEFAULT_DOMAIN_PATTERN));
     }
 
-
-
     private boolean isCoreDomain(JigType jigType) {
         if (jigType.isCompilerGenerated()) return false;
 

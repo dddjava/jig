@@ -443,7 +443,9 @@ function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
     const nameByFqn = new Map(allPackages.map(p => [p.fqn, getTypeTerm(p.fqn).title]));
     const { source } = globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
         packageFqns, uniqueRelations, nameByFqn,
-        domainSettings.diagramDirection, null
+        {
+            diagramDirection: domainSettings.diagramDirection
+        }
     );
     return source;
 }

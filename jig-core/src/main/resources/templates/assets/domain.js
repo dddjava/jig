@@ -462,6 +462,7 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
+        // パッケージ内パッケージ関連図
         const pkgRelDiagramContainer = createElement("div", {className: "mermaid-diagram"});
         section.appendChild(pkgRelDiagramContainer);
         diagramRegistry.push({container: pkgRelDiagramContainer, pkg, diagramType: 'package'});
@@ -479,6 +480,7 @@ function renderPackages(packages, container) {
             if (pkgDiagram) globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
         });
 
+        // パッケージ内クラス関連図
         if (pkg.types.length > 0) {
             const mmdContainer = createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);

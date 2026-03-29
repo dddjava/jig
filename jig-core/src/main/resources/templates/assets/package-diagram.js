@@ -194,8 +194,10 @@ const PackageDiagramModule = (() => {
         // ノードのスタイルを指定。どちらも存在しない場合もあるが、classDefに害はないので出力する。
         // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
         lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
-        // 選択されたものを強調表示する
-        lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
+        if (focusedPackageFqn) {
+            // 選択されたものがあれば強調表示する
+            lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
+        }
 
         return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
     }

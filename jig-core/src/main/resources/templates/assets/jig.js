@@ -515,6 +515,16 @@ globalThis.Jig.dom.downloadCsv = function downloadCsv(text, filename) {
     URL.revokeObjectURL(url);
 };
 
+const KIND_BADGE = { "パッケージ": "P", "クラス": "C", "メソッド": "M", "フィールド": "F" };
+
+globalThis.Jig.dom.kindBadgeElement = function kindBadgeElement(kind) {
+    return globalThis.Jig.dom.createElement("span", {
+        className: "kind-badge",
+        attributes: { "data-kind": kind },
+        textContent: KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?"),
+    });
+};
+
 /**
  * @param {Array} fields
  * @param {Function} [createTypeRefFn]
@@ -921,5 +931,6 @@ if (typeof module !== "undefined" && module.exports) {
         fqnToId: globalThis.Jig?.fqnToId,
         getTypeTerm: globalThis.Jig?.glossary?.getTypeTerm,
         getMethodTerm: globalThis.Jig?.glossary?.getMethodTerm,
+        kindBadgeElement: globalThis.Jig?.dom?.kindBadgeElement,
     };
 }

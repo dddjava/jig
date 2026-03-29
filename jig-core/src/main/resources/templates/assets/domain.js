@@ -440,7 +440,7 @@ function renderPackages(packages, container) {
             attributes: { "data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false" },
             children: [
                 createElement("h3", {
-                    children: [createElement("a", {textContent: getTypeTerm(pkg.fqn).title})]
+                    children: [globalThis.Jig.dom.kindBadgeElement("パッケージ"), document.createTextNode(getTypeTerm(pkg.fqn).title)]
                 }),
                 createElement("div", {
                     className: "fully-qualified-name",
@@ -506,7 +506,7 @@ function renderTypes(types, container) {
     if (types.length === 0) return;
 
     types.forEach(type => {
-        const titleLink = createElement("a", {
+        const titleSpan = createElement("span", {
             textContent: getTypeTerm(type.fqn).title,
             className: type.isDeprecated ? "deprecated" : ""
         });
@@ -516,7 +516,7 @@ function renderTypes(types, container) {
             id: globalThis.Jig.fqnToId("domain", type.fqn),
             attributes: { "data-has-enum": type.enumInfo ? "true" : "false" },
             children: [
-                createElement("h3", {children: [titleLink]}),
+                createElement("h3", {children: [globalThis.Jig.dom.kindBadgeElement("クラス"), titleSpan]}),
                 createElement("div", {className: "fully-qualified-name", textContent: type.fqn})
             ]
         });

@@ -485,27 +485,27 @@ test.describe('glossary.js', () => {
 
     test.describe('種類バッジ', () => {
         test('kindBadgeElement は data-kind 属性を付与した span を返す', () => {
-            const badge = glossary.kindBadgeElement('クラス');
+            const badge = globalThis.Jig.dom.kindBadgeElement('クラス');
             assert.equal(badge.className, 'kind-badge');
             assert.equal(badge.getAttribute('data-kind'), 'クラス');
             assert.equal(badge.textContent, 'C');
         });
 
         test('kindBadgeElement は既知の kind に対応するバッジを返す', () => {
-            assert.equal(glossary.kindBadgeElement('パッケージ').textContent, 'P');
-            assert.equal(glossary.kindBadgeElement('メソッド').textContent, 'M');
-            assert.equal(glossary.kindBadgeElement('フィールド').textContent, 'F');
+            assert.equal(globalThis.Jig.dom.kindBadgeElement('パッケージ').textContent, 'P');
+            assert.equal(globalThis.Jig.dom.kindBadgeElement('メソッド').textContent, 'M');
+            assert.equal(globalThis.Jig.dom.kindBadgeElement('フィールド').textContent, 'F');
         });
 
         test('kindBadgeElement は未知の kind でも例外を投げない', () => {
-            const badge = glossary.kindBadgeElement('Unknown');
+            const badge = globalThis.Jig.dom.kindBadgeElement('Unknown');
             assert.equal(badge.className, 'kind-badge');
             assert.equal(badge.getAttribute('data-kind'), 'Unknown');
             assert.equal(badge.textContent, 'U');
         });
 
         test('kindBadgeElement は空文字列でも例外を投げない', () => {
-            const badge = glossary.kindBadgeElement('');
+            const badge = globalThis.Jig.dom.kindBadgeElement('');
             assert.equal(badge.className, 'kind-badge');
             assert.equal(badge.textContent, '?');
         });

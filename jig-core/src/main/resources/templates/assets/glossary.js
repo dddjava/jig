@@ -4,14 +4,6 @@ const createElement = globalThis.Jig.dom.createElement;
 // 文字列の比較は日本語を優先しつつ大小を無視する
 const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
 
-// 種類をバッジ表示するためのマッピング
-const KIND_BADGE = {
-    "パッケージ": "P",
-    "クラス":     "C",
-    "メソッド":   "M",
-    "フィールド": "F",
-};
-
 function sortTerms(terms, sortKey) {
     const keyMap = {
         name: "title",
@@ -62,14 +54,6 @@ function getGlossaryData() {
 
 function buildTermAnchorId(term, index) {
     return term.fqn || `term-${index}`;
-}
-
-function kindBadgeElement(kind) {
-    return createElement("span", {
-        className: "kind-badge",
-        attributes: { "data-kind": kind },
-        textContent: KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?"),
-    });
 }
 
 function escapeCsvValue(value) {
@@ -226,7 +210,7 @@ function renderGlossaryTerms(terms, showAttributes) {
                 className: `jig-card jig-card--type ${isCompact ? 'jig-card--compact' : ''}`,
                 children: [
                     createElement("h3", {children: [
-                        kindBadgeElement(term.kind || ""),
+                        globalThis.Jig.dom.kindBadgeElement(term.kind || ""),
                         createElement("a", {textContent: term.title || ""}),
                     ]}),
                     ...metaChildren,
@@ -426,6 +410,5 @@ if (typeof module !== "undefined" && module.exports) {
         renderGlossaryTerms,
         renderFilteredTerms,
         renderMarkdownDescriptions,
-        kindBadgeElement,
     };
 }

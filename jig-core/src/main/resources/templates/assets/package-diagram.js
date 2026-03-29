@@ -103,9 +103,10 @@ const PackageDiagramModule = (() => {
      * @param {Package[]} packages - 全パッケージの一覧
      * @param {Relation[]} relations - 全関係の一覧 ({from, to})
      * @param {Relation[]} causeRelationEvidence - 全因果関係エビデンスの一覧 ({from, to})
-     * @param {string[]} packageFilterFqn - 表示対象に絞り込むパッケージFQNのリスト（空の場合は全件）
-     * @param {number} aggregationDepth - FQNを集約するセグメント深さ
-     * @param {boolean} transitiveReductionEnabled - 推移的縮約を行うかどうか
+     * @param {{packageFilterFqn: string[], aggregationDepth: number, transitiveReductionEnabled: boolean}} options
+     *      packageFilterFqn - 表示対象に絞り込むパッケージFQNのリスト（空の場合は全件）
+     *      aggregationDepth - FQNを集約するセグメント深さ
+     *      transitiveReductionEnabled - 推移的縮約を行うかどうか
      * @returns {{ uniqueRelations: Relation[], packageFqns: Set<string>, filteredCauseRelationEvidence: Relation[] }}
      */
     function buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, options) {

@@ -165,7 +165,7 @@ const PackageDiagramModule = (() => {
      * 親パッケージセットから、実際に関連を持つ親パッケージのみを抽出
      *
      * @param {Set<string>} parentFqns - 親パッケージFQNのセット
-     * @param {Array<{from: string, to: string}>} uniqueRelations - 関連の配列
+     * @param {Relation[]} uniqueRelations - 関連の配列
      * @returns {Set<string>} 関連を持つ親パッケージのセット
      */
     function filterParentFqnsWithRelations(parentFqns, uniqueRelations) {
@@ -193,7 +193,7 @@ const PackageDiagramModule = (() => {
      */
     /**
      * @param {Set<string>} packageFqns
-     * @param {Array<{from: string, to: string}>} uniqueRelations
+     * @param {Relation[]} uniqueRelations
      * @param {Map<string, string>} nameByFqn
      * @param {MermaidDiagramSourceOptions} options
      */

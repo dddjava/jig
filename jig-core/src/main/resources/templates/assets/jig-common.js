@@ -56,6 +56,12 @@ globalThis.Jig.glossary.typeSimpleName = function typeSimpleName(fqn) {
     return fqn.substring(fqn.lastIndexOf('.') + 1);
 }
 
+globalThis.Jig.glossary.getPackageTerm = (fqn) => {
+    const term = globalThis.Jig.glossary.findTerm(fqn);
+    if (term) return term;
+    return { title: globalThis.Jig.glossary.typeSimpleName(fqn) || fqn, description: "" };
+}
+
 // 型FQNから Term{title, description} を取得。登録がなければフォールバック
 globalThis.Jig.glossary.getTypeTerm = function getTypeTerm(fqn) {
     const term = globalThis.Jig.glossary.findTerm(fqn);
@@ -390,6 +396,7 @@ if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         estimateEdgeCount,
         fqnToId: globalThis.Jig.fqnToId,
+        getPackageTerm: globalThis.Jig.glossary.getPackageTerm,
         getTypeTerm: globalThis.Jig.glossary.getTypeTerm,
         getMethodTerm: globalThis.Jig.glossary.getMethodTerm,
         getFieldTerm: globalThis.Jig.glossary.getFieldTerm,

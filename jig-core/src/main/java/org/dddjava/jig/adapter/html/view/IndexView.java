@@ -102,6 +102,13 @@ public class IndexView {
             html.append("    </section>\n");
         }
 
+        if (documentLinks.containsKey(JigDocument.PackageSummary)) {
+            html.append("    <section id=\"diagrams\">\n");
+            html.append("        <h2>主要パッケージ関連図</h2>\n");
+            html.append("        <div id=\"package-diagram\"></div>\n");
+            html.append("    </section>\n");
+        }
+
         // Excel一覧
         if (documentLinks.containsKey(JigDocument.BusinessRuleList) || documentLinks.containsKey(JigDocument.ApplicationList)) {
             html.append("    <section>\n");
@@ -148,6 +155,11 @@ public class IndexView {
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js\"></script>\n");
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js\"></script>\n");
         html.append("    <script src=\"./assets/jig.js\"></script>\n");
+        html.append("    <script src=\"./assets/jig-common.js\"></script>\n");
+        html.append("    <script src=\"./assets/package-diagram.js\"></script>\n");
+        html.append("    <script src=\"./data/package-data.js\"></script>\n");
+        html.append("    <script src=\"./data/glossary-data.js\"></script>\n");
+        html.append("    <script src=\"./assets/index.js\"></script>\n");
         html.append("\n");
         html.append("</body>\n");
         html.append("</html>\n");

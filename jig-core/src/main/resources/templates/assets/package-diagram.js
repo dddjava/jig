@@ -36,6 +36,7 @@ const PackageDiagramModule = (() => {
      */
     function getCommonPrefixDepth(fqns) {
         if (!fqns?.length) return 0;
+        // 共通の抜き出しなので、最初に "com" とか入ってたら役に立たない系
         const firstParts = fqns[0].split('.');
         let depth = firstParts.length;
         for (let i = 1; i < fqns.length; i += 1) {
@@ -49,6 +50,26 @@ const PackageDiagramModule = (() => {
             }
         }
         return depth;
+    }
+
+    /**
+     * FQNのリストから、共通プレフィックスを返す。
+     *
+     * 先に共通プレフィックスを作ってからgetCommonPrefixDepthはそのdepthを返すほうが自然に思うが、
+     * ドット区切りを意識する限りdepthが先に出る。そのためこの関数がDepthに依存する形のほうが実装上は自然。
+     *
+     * @param {string[]} fqns - ドット区切りのFQNの配列（例: ["com.example.foo.Bar", "com.example.foo.Baz"]）
+     * @returns {string} 共通プレフィックス。なければ空文字列。
+     *
+     * @example
+     * getCommonPrefix(["com.example.foo.Bar", "com.example.foo.Baz", "com.example.qux.Quux"]);
+     * // => "com.example"
+     */
+    function getCommonPrefix(fqns) {
+        if (!fqns?.length) return '';
+        const depth = getCommonPrefixDepth(fqns);
+        if (!depth) return '';
+        return fqns[0].split('.').slice(0, depth).join('.');
     }
 
     function getPackageFqnFromTypeFqn(typeFqn) {
@@ -435,6 +456,7 @@ const PackageDiagramModule = (() => {
     // IIFE から関数オブジェクトを return
     return {
         getAggregatedFqn,
+        getCommonPrefix,
         getCommonPrefixDepth,
         getPackageFqnFromTypeFqn,
         isWithinPackageFilters,
@@ -464,6 +486,8 @@ globalThis.Jig.packageDiagram = {
     buildVisibleDiagramRelations: PackageDiagramModule.buildVisibleDiagramRelations,
     createPackageLevelDiagram: PackageDiagramModule.createPackageLevelDiagram,
     buildMermaidDiagramSource: PackageDiagramModule.buildMermaidDiagramSource,
+    getCommonPrefix: PackageDiagramModule.getCommonPrefix,
+    getCommonPrefixDepth: PackageDiagramModule.getCommonPrefixDepth,
 };
 
 // Test-only exports for Node; no-op in browsers.

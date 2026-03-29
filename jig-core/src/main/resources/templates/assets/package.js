@@ -780,6 +780,7 @@ function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) 
         let bestDepth = -1;
         let tiedRoots = [];
         outerRoots.forEach(root => {
+            // FIXME うごかなくなってるような・・・
             const depth = getCommonPrefixDepth([packageFqn, root]);
             if (depth > bestDepth) {
                 bestDepth = depth;

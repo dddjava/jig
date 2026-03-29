@@ -21,7 +21,7 @@ class CoreDomainJigTypesTest {
                 // coreDomainで弾かれる
                 TestSupport.stubJigType("com.example.infrastructure.MyInfra")
         ));
-        var actual = condition.coreDomainJigTypes(jigTypes).packageFilterCandidates();
+        var actual = condition.coreDomainJigTypes(jigTypes).domainPackageRoots();
 
         assertEquals(List.of("com.example.domain.model"), actual);
     }
@@ -32,11 +32,11 @@ class CoreDomainJigTypesTest {
         JigTypes jigTypes = new JigTypes(List.of(
                 TestSupport.stubJigType("com.example.domain.model.MyHoge")
         ));
-        var actual = condition.coreDomainJigTypes(jigTypes).packageFilterCandidates();
+        var actual = condition.coreDomainJigTypes(jigTypes).domainPackageRoots();
 
         // FIXME
         // assertEquals(List.of("com.example.domain.model"), actual);
-        assertEquals(List.of("com.example.domain"), actual);
+        assertEquals(List.of("com.example.domain.model"), actual);
     }
 
     @Test
@@ -48,7 +48,7 @@ class CoreDomainJigTypesTest {
                 TestSupport.stubJigType("com.example.domain.model.piyo.piyo.MyPiyo"),
                 TestSupport.stubJigType("com.example.other.domain.model.foo.OtherFoo")
         ));
-        var actual = condition.coreDomainJigTypes(jigTypes).packageFilterCandidates();
+        var actual = condition.coreDomainJigTypes(jigTypes).domainPackageRoots();
 
         assertEquals(List.of("com.example.domain.model", "com.example.other.domain.model"), actual);
     }

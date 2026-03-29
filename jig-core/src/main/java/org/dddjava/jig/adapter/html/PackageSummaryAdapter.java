@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 
 import java.nio.file.Path;
@@ -35,7 +34,7 @@ public class PackageSummaryAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).packageFilterCandidates();
+        var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
 
         jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations, domainPackageRoots));

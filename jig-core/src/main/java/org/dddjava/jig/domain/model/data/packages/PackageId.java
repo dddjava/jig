@@ -43,8 +43,8 @@ public class PackageId implements Comparable<PackageId> {
         return valueOf("(default)");
     }
 
-    public boolean contains(PackageId packageId) {
-        return this.equals(packageId) || packageId.value.startsWith(this.value + ".");
+    public boolean isSubpackageOf(PackageId otherPackageId) {
+        return this.value.startsWith(otherPackageId.value + ".");
     }
 
     @Override

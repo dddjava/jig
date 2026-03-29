@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.information.core;
 
 
+import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -28,8 +29,14 @@ public class CoreDomainCondition {
         return businessRulePattern.matcher(fqn).matches();
     }
 
+    boolean isCoreDomainPackage(PackageId packageId) {
+        String fqn = packageId.asText();
+        // dummyがダサいが今の指定はクラス名に対する正規表現なのでパッケージにマッチさせようとしたら何かつける必要がある
+        return businessRulePattern.matcher(fqn + ".Dummy").matches();
+    }
+
     public CoreDomainJigTypes coreDomainJigTypes(JigTypes jigTypes) {
         var coreJigTypes = jigTypes.filter(this::isCoreDomain);
-        return new CoreDomainJigTypes(coreJigTypes);
+        return new CoreDomainJigTypes(coreJigTypes, this);
     }
 }

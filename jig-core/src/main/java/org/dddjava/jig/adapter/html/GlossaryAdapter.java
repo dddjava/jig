@@ -3,7 +3,6 @@ package org.dddjava.jig.adapter.html;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
-import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -29,7 +28,7 @@ public class GlossaryAdapter {
         var glossary = jigService.glossary(jigRepository);
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).packageFilterCandidates();
+        var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
 
         jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("glossaryData", buildJson(glossary, domainPackageRoots));

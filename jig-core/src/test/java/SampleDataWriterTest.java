@@ -2,7 +2,6 @@ import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
-import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
@@ -51,7 +50,7 @@ class SampleDataWriterTest {
         // glossary-data.js
         {
             var glossary = jigService.glossary(repository);
-            var domainPackageRoots = jigService.coreDomainJigTypes(repository).packageFilterCandidates();
+            var domainPackageRoots = jigService.coreDomainJigTypes(repository).domainPackageRoots();
             var json = GlossaryAdapter.buildJson(glossary, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/glossary-data.js");
             Files.writeString(sampleFile,
@@ -64,7 +63,7 @@ class SampleDataWriterTest {
         {
             var jigPackages = jigService.packages(repository);
             var packageRelations = jigService.packageRelations(repository);
-            var domainPackageRoots = jigService.coreDomainJigTypes(repository).packageFilterCandidates();
+            var domainPackageRoots = jigService.coreDomainJigTypes(repository).domainPackageRoots();
             var json = PackageSummaryAdapter.buildJson(jigPackages, packageRelations, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
             Files.writeString(sampleFile,

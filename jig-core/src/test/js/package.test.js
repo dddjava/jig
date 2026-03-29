@@ -259,6 +259,16 @@ test.describe('package.js', () => {
                 assert.equal(pkg.findDefaultPackageFilterCandidate(null), null);
             });
 
+            test('getInitialAggregationDepth: domainPackageRootsが空ならば0を返す', () => {
+                assert.equal(pkg.getInitialAggregationDepth([]), 0);
+                assert.equal(pkg.getInitialAggregationDepth(null), 0);
+            });
+
+            test('getInitialAggregationDepth: 最も浅いパッケージの深さ+1を返す', () => {
+                assert.equal(pkg.getInitialAggregationDepth(['com.example.domain']), 4); // 深さ3 → 4
+                assert.equal(pkg.getInitialAggregationDepth(['com.example', 'com.example.domain']), 3); // 深さ2 → 3
+            });
+
             test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
                 const visibility = pkg.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],

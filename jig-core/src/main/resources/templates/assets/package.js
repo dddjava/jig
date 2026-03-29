@@ -171,6 +171,12 @@ function findDefaultPackageFilterCandidate(domainPackageRoots) {
     return null;
 }
 
+function getInitialAggregationDepth(domainPackageRoots) {
+    if (!domainPackageRoots?.length) return 0;
+    const minDepth = Math.min(...domainPackageRoots.map(fqn => getPackageDepth(fqn)));
+    return minDepth + 1;
+}
+
 function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
     return rowFqns.map(fqn => isWithinPackageFilters(fqn, packageFilterFqn));
 }
@@ -1156,6 +1162,9 @@ if (typeof document !== 'undefined') {
         setupSortableTables();
         renderPackageTable(packageContext);
         setupPackageFilterControl(packageContext);
+        // domainPackageRootsに基づく初期aggregationDepth設定
+        const {domainPackageRoots} = getPackageSummaryData(packageContext);
+        packageContext.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
         setupAggregationDepthControl(packageContext);
         setupFocusControl(packageContext);
         setupDiagramDirectionControl(packageContext);
@@ -1189,6 +1198,7 @@ if (typeof module !== 'undefined' && module.exports) {
         normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,
+        getInitialAggregationDepth,
         buildPackageRowVisibility,
         buildFocusRowVisibility,
         collectFocusSet,

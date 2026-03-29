@@ -16,13 +16,12 @@ const packageContext = {
 
 const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
 
-// package-diagram.js で定義された共通関数
-const {
-    getAggregatedFqn,
-    getPackageFqnFromTypeFqn,
-    isWithinPackageFilters,
-    buildVisibleDiagramRelations,
-} = globalThis.Jig.packageDiagram;
+// package-diagram.js で定義された共通関数への参照
+// （globalThis.Jig.packageDiagram 経由でアクセス）
+const getAggregatedFqn = (fqn, depth) => globalThis.Jig.packageDiagram.getAggregatedFqn(fqn, depth);
+const getPackageFqnFromTypeFqn = (typeFqn) => globalThis.Jig.packageDiagram.getPackageFqnFromTypeFqn(typeFqn);
+const isWithinPackageFilters = (fqn, packageFilterFqn) => globalThis.Jig.packageDiagram.isWithinPackageFilters(fqn, packageFilterFqn);
+const buildVisibleDiagramRelations = (...args) => globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(...args);
 
 // package.js でのパッケージ図生成: clickHandlerName を固定して呼び出す
 const buildMermaidDiagramSource = (visibleSet, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn) =>

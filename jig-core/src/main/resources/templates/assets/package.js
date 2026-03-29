@@ -998,8 +998,7 @@ function updateDepthButtonStates(select, upButton, downButton) {
 function setupAggregationDepthControl(context) {
     const select = dom.getDepthSelect();
     if (!select) return;
-    const {packages} = getPackageSummaryData(context);
-    const maxDepth = packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
+    const maxDepth = getMaxPackageDepth(context);
     renderAggregationDepthSelectOptions(maxDepth, context);
     select.value = String(context.aggregationDepth);
 

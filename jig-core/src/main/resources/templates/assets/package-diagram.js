@@ -159,6 +159,30 @@ const PackageDiagramModule = (() => {
     }
 
     /**
+     * 親パッケージセットから、実際に関連を持つ親パッケージのみを抽出
+     *
+     * @param {Set<string>} parentFqns - 親パッケージFQNのセット
+     * @param {Array<{from: string, to: string}>} uniqueRelations - 関連の配列
+     * @returns {Set<string>} 関連を持つ親パッケージのセット
+     */
+    function filterParentFqnsWithRelations(parentFqns, uniqueRelations) {
+        const parentFqnsWithRelations = new Set();
+        const relationSet = new Set(uniqueRelations.map(relation => `${relation.from}::${relation.to}`));
+        
+        parentFqns.forEach(parentFqn => {
+            // 親パッケージが from または to として現れる関連を検索
+            for (const relation of uniqueRelations) {
+                if (relation.from === parentFqn || relation.to === parentFqn) {
+                    parentFqnsWithRelations.add(parentFqn);
+                    break;
+                }
+            }
+        });
+        
+        return parentFqnsWithRelations;
+    }
+
+    /**
      * @param {Set<string>} visibleSet
      * @param {Array<{from: string, to: string}>} uniqueRelations
      * @param {Map<string, string>} nameByFqn
@@ -178,13 +202,19 @@ const PackageDiagramModule = (() => {
             `graph ${diagramDirection}`];
         const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
         const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
+        
+        // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
+        const allParentFqns = buildParentFqns(visibleSet);
+        const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
+        
         const nodeLines = buildDiagramNodeLines(
             visibleSet,
             nodeIdByFqn,
             nodeIdToFqn,
             nodeLabelById,
             escapeMermaidText,
-            options.clickHandlerName ?? null
+            options.clickHandlerName ?? null,
+            parentFqnsWithRelations
         );
 
         nodeLines.forEach(line => lines.push(line));
@@ -246,9 +276,8 @@ const PackageDiagramModule = (() => {
         return {edgeLines, linkStyles, mutualPairs};
     }
 
-    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName) {
+    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, parentFqnsWithRelations) {
         const visibleFqns = Array.from(visibleSet).sort();
-        const parentFqns = buildParentFqns(visibleSet);
         const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
         const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
             const fqn = nodeIdToFqn.get(nodeId);
@@ -259,7 +288,8 @@ const PackageDiagramModule = (() => {
                 const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
                 lines.push(`click ${nodeId} ${clickHandlerName} "${tooltip}"`);
             }
-            if (fqn && parentFqns.has(fqn)) {
+            // 親パッケージで、かつ関連を持つ場合のみ parentPackage クラスを適用
+            if (fqn && parentFqnsWithRelations.has(fqn)) {
                 lines.push(`class ${nodeId} parentPackage`);
             }
         };
@@ -344,6 +374,7 @@ const PackageDiagramModule = (() => {
         buildVisibleDiagramRelations,
         buildMutualDependencyPairs,
         buildParentFqns,
+        filterParentFqnsWithRelations,
         buildMermaidDiagramSource,
         buildDiagramNodeMaps,
         buildDiagramEdgeLines,

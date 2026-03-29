@@ -841,13 +841,15 @@ test.describe('package.js', () => {
             test('buildDiagramNodeLines: クリックハンドラ名を埋め込む', () => {
                 const visibleSet = new Set(['app.a']);
                 const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkgDiagram.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
+                const parentFqnsWithRelations = new Set(); // テスト用に空のセットを用意
                 const nodeLines = pkgDiagram.buildDiagramNodeLines(
                     visibleSet,
                     nodeIdByFqn,
                     nodeIdToFqn,
                     nodeLabelById,
                     text => text,
-                    pkg.DIAGRAM_CLICK_HANDLER_NAME
+                    pkg.DIAGRAM_CLICK_HANDLER_NAME,
+                    parentFqnsWithRelations
                 );
                 const clickLine = nodeLines.find(line => line.startsWith('click '));
                 assert.ok(clickLine);

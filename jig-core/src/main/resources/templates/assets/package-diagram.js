@@ -192,6 +192,21 @@ const PackageDiagramModule = (() => {
      */
     function buildMermaidDiagramSource(visibleSet, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn, options = {}) {
         const escapeMermaidText = text => text.replace(/"/g, '\\"');
+        
+        // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
+        const allParentFqns = buildParentFqns(visibleSet);
+        const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
+        
+        // 関連のない親パッケージを visibleSet から除外
+        const filteredVisibleSet = new Set(Array.from(visibleSet).filter(fqn => {
+            // 親パッケージの場合、関連を持つものだけを含める
+            if (allParentFqns.has(fqn)) {
+                return parentFqnsWithRelations.has(fqn);
+            }
+            // 親パッケージでない場合は常に含める
+            return true;
+        }));
+        
         const lines = [
             "---",
             "config:",
@@ -200,15 +215,11 @@ const PackageDiagramModule = (() => {
             "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
             "---",
             `graph ${diagramDirection}`];
-        const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(visibleSet, nameByFqn);
+        const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(filteredVisibleSet, nameByFqn);
         const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
         
-        // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
-        const allParentFqns = buildParentFqns(visibleSet);
-        const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
-        
         const nodeLines = buildDiagramNodeLines(
-            visibleSet,
+            filteredVisibleSet,
             nodeIdByFqn,
             nodeIdToFqn,
             nodeLabelById,
@@ -276,8 +287,9 @@ const PackageDiagramModule = (() => {
         return {edgeLines, linkStyles, mutualPairs};
     }
 
-    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, parentFqnsWithRelations) {
+    function buildDiagramNodeLines(visibleSet, nodeIdByFqn, nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName) {
         const visibleFqns = Array.from(visibleSet).sort();
+        const parentFqns = buildParentFqns(visibleSet);
         const rootGroup = buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
         const addNodeLines = (lines, nodeId, parentSubgraphFqn) => {
             const fqn = nodeIdToFqn.get(nodeId);
@@ -288,8 +300,8 @@ const PackageDiagramModule = (() => {
                 const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
                 lines.push(`click ${nodeId} ${clickHandlerName} "${tooltip}"`);
             }
-            // 親パッケージで、かつ関連を持つ場合のみ parentPackage クラスを適用
-            if (fqn && parentFqnsWithRelations.has(fqn)) {
+            // 親パッケージにはスタイルを適用する
+            if (fqn && parentFqns.has(fqn)) {
                 lines.push(`class ${nodeId} parentPackage`);
             }
         };

@@ -434,7 +434,7 @@ function createPackageLevelDiagram(pkg, allPackages, allPackageRelations) {
         allPackageRelations,
         [],
         [pkg.fqn],
-        0,
+        pkg.fqn.split('.').length + 1, // 自身の一つ下でグルーピング
         domainSettings.transitiveReductionEnabled
     );
     if (visibleSet.size <= 1 && uniqueRelations.length === 0) return null;

@@ -190,7 +190,7 @@ const PackageDiagramModule = (() => {
      *
      * @typedef {Object} CreatePackageLevelDiagramOptions
      * @property {Function} nameResolver - (fqn: string) => string。パッケージFQNを表示名に解決する関数
-     * @property {number} [transitiveReductionEnabled] - 推移的縮約を行うかどうか
+     * @property {boolean} [transitiveReductionEnabled] - 推移的縮約を行うかどうか
      * @property {string} diagramDirection - 図の向き ('TB' または 'LR')
      */
     /**

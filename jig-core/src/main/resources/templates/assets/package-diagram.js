@@ -12,6 +12,16 @@ const PackageDiagramModule = (() => {
         return parts.slice(0, depth).join('.');
     }
 
+    /**
+     * 完全修飾名（FQN）のリストから、共通プレフィックスの深さを返す。
+     *
+     * @param {string[]} fqns - ドット区切りのFQNの配列（例: ["com.example.foo.Bar", "com.example.foo.Baz"]）
+     * @returns {number} 共通プレフィックスのセグメント数。配列が空またはnull/undefinedの場合は0。
+     *
+     * @example
+     * getCommonPrefixDepth(["com.example.foo.Bar", "com.example.foo.Baz", "com.example.qux.Quux"]);
+     * // => 2  ("com.example" が共通)
+     */
     function getCommonPrefixDepth(fqns) {
         if (!fqns?.length) return 0;
         const firstParts = fqns[0].split('.');

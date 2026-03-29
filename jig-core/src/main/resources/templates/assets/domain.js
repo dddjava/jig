@@ -487,7 +487,11 @@ function renderPackages(packages, container) {
             renderedContainers.add(pkgRelDiagramContainer);
             pkgRelDiagramContainer.innerHTML = "";
             const pkgDiagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
-            if (pkgDiagram) globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
+            if (pkgDiagram) {
+                globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
+                // タイトルヘッダ
+                section.insertBefore(createElement("h4", { textContent: "パッケージ内パッケージ関連図" }), pkgRelDiagramContainer);
+            }
         });
 
         // パッケージ内クラス関連図
@@ -501,6 +505,8 @@ function renderPackages(packages, container) {
                 const diagram = createRelationDiagram(pkg);
                 if (diagram) {
                     globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
+                    // タイトルヘッダ
+                    section.insertBefore(createElement("h4", { textContent: "パッケージ内クラス関連図" }), mmdContainer);
                 }
             });
         }

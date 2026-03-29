@@ -365,7 +365,7 @@ const PackageDiagramModule = (() => {
      * @property {Set<string>} parentFqnsWithRelations
      */
     function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
-        const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, parentFqnsWithRelations} = options;
+        const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName} = options;
         
         const packageFqnList = Array.from(packageFqns).sort();
         const parentFqns = buildParentFqns(packageFqns);

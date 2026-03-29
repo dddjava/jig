@@ -66,17 +66,38 @@ const PackageDiagramModule = (() => {
         });
     }
 
-    // パッケージフィルタを適用して表示対象の関連とパッケージセットを構築
-    /**
-     * @typedef {Object} Package
-     * @property {string} fqn - パッケージの完全修飾名
-     */
     /**
      * @typedef {Object} Relation
      * @property {string} from - 依存元のFQN
      * @property {string} to - 依存先のFQN
      */
     /**
+     * 関連を深さで切り詰めてユニークにする
+     *
+     * @param {Relation[]} relations
+     * @param {number} aggregationDepth 切り詰める深さ
+     * @return {Relation[]}
+     */
+    function aggregationRelations(relations, aggregationDepth) {
+        const uniqueRelationMap = new Map();
+        relations
+            .map(relation => ({
+                from: getAggregatedFqn(relation.from, aggregationDepth),
+                to: getAggregatedFqn(relation.to, aggregationDepth),
+            }))
+            .filter(relation => relation.from !== relation.to)
+            .forEach(relation => {
+                uniqueRelationMap.set(`${relation.from}::${relation.to}`, relation);
+            });
+        return Array.from(uniqueRelationMap.values());
+    }
+
+    /**
+     * @typedef {Object} Package
+     * @property {string} fqn - パッケージの完全修飾名
+     */
+    /**
+     * パッケージフィルタを適用して表示対象の関連とパッケージセットを構築
      * 表示対象のパッケージ・関係・因果関係エビデンスを絞り込んで返す。
      *
      * @param {Package[]} packages - 全パッケージの一覧
@@ -102,18 +123,8 @@ const PackageDiagramModule = (() => {
                 return isWithinPackageFilters(fromPackage, packageFilterFqn) && isWithinPackageFilters(toPackage, packageFilterFqn);
             })
             : causeRelationEvidence;
-        const visibleRelations = filteredRelations
-            .map(relation => ({
-                from: getAggregatedFqn(relation.from, aggregationDepth),
-                to: getAggregatedFqn(relation.to, aggregationDepth),
-            }))
-            .filter(relation => relation.from !== relation.to);
-        const uniqueRelationMap = new Map();
-        visibleRelations.forEach(relation => {
-            uniqueRelationMap.set(`${relation.from}::${relation.to}`, relation);
-        });
-        let uniqueRelations = Array.from(uniqueRelationMap.values());
 
+        let uniqueRelations = aggregationRelations(filteredRelations, aggregationDepth);
         if (transitiveReductionEnabled) {
             uniqueRelations = globalThis.Jig.graph.transitiveReduction(uniqueRelations);
         }

@@ -185,14 +185,19 @@ const PackageDiagramModule = (() => {
     }
 
     /**
+     * @typedef {Object} MermaidDiagramSourceOptions
+     * @property {string} diagramDirection - 図の向き ('TD' または 'LR')
+     * @property {string|null} [focusedPackageFqn] - フォーカスされたパッケージ
+     * @property {string|null} [clickHandlerName] - クリックハンドラ関数名
+     */
+    /**
      * @param {Set<string>} packageFqns
      * @param {Array<{from: string, to: string}>} uniqueRelations
      * @param {Map<string, string>} nameByFqn
-     * @param {string} diagramDirection
-     * @param {string|null} focusedPackageFqn
-     * @param {{clickHandlerName?: string|null}} options
+     * @param {MermaidDiagramSourceOptions} options
      */
-    function buildMermaidDiagramSource(packageFqns, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn, options = {}) {
+    function buildMermaidDiagramSource(packageFqns, uniqueRelations, nameByFqn, options) {
+        const {diagramDirection, focusedPackageFqn, clickHandlerName} = options;
         const escapeMermaidText = text => text.replace(/"/g, '\\"');
         
         // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
@@ -226,7 +231,7 @@ const PackageDiagramModule = (() => {
             nodeIdToFqn,
             nodeLabelById,
             escapeMermaidText,
-            options.clickHandlerName ?? null,
+            clickHandlerName,
             parentFqnsWithRelations
         );
 

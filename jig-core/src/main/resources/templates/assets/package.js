@@ -25,9 +25,9 @@ const buildVisibleDiagramRelations = (packages, relations, causeRelationEvidence
     globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, causeRelationEvidence, options);
 
 // package.js でのパッケージ図生成: clickHandlerName を固定して呼び出す
-const buildMermaidDiagramSource = (packageFqns, uniqueRelations, nameByFqn, diagramDirection, focusedPackageFqn) =>
+const buildMermaidDiagramSource = (packageFqns, uniqueRelations, diagramDirection, focusedPackageFqn) =>
     globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
-        packageFqns, uniqueRelations, nameByFqn,
+        packageFqns, uniqueRelations,
         {diagramDirection, focusedPackageFqn, clickHandlerName: DIAGRAM_CLICK_HANDLER_NAME}
     );
 
@@ -908,11 +908,9 @@ function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
         context.focusCalleeMode,
         context.transitiveReductionEnabled
     );
-    const nameByFqn = new Map(packages.map(item => [item.fqn, getGlossaryTitle(item.fqn)]));
     const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
         packageFqns,
         uniqueRelations,
-        nameByFqn,
         context.diagramDirection,
         focusedPackageFqn // Pass focusedPackageFqn here
     );

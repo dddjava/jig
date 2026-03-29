@@ -210,7 +210,6 @@ const PackageDiagramModule = (() => {
      * パッケージカード用のパッケージ関連図ソースを生成する（domain.js での使用を想定）
      *
      * @typedef {Object} CreatePackageLevelDiagramOptions
-     * @property {Function} nameResolver - (fqn: string) => string。パッケージFQNを表示名に解決する関数
      * @property {boolean} [transitiveReductionEnabled] - 推移的縮約を行うかどうか
      * @property {string} diagramDirection - 図の向き ('TB' または 'LR')
      */
@@ -222,7 +221,7 @@ const PackageDiagramModule = (() => {
      * @returns {string|null}
      */
     function createPackageLevelDiagram(pkg, allPackages, allPackageRelations, options) {
-        const {nameResolver, transitiveReductionEnabled, diagramDirection} = options;
+        const {transitiveReductionEnabled, diagramDirection} = options;
         const { uniqueRelations, packageFqns } = buildVisibleDiagramRelations(
             allPackages,
             allPackageRelations,
@@ -236,9 +235,8 @@ const PackageDiagramModule = (() => {
         // パッケージ数が1つだったり関連が0なら表示しない
         if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
 
-        const nameByFqn = new Map(allPackages.map(p => [p.fqn, nameResolver(p.fqn)]));
         const { source } = buildMermaidDiagramSource(
-            packageFqns, uniqueRelations, nameByFqn,
+            packageFqns, uniqueRelations,
             { diagramDirection }
         );
         return source;
@@ -253,10 +251,9 @@ const PackageDiagramModule = (() => {
     /**
      * @param {Set<string>} packageFqns
      * @param {Relation[]} uniqueRelations
-     * @param {Map<string, string>} nameByFqn
      * @param {MermaidDiagramSourceOptions} options
      */
-    function buildMermaidDiagramSource(packageFqns, uniqueRelations, nameByFqn, options) {
+    function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
         const {diagramDirection, focusedPackageFqn, clickHandlerName} = options;
         const escapeMermaidText = text => text.replace(/"/g, '\\"');
         
@@ -282,7 +279,7 @@ const PackageDiagramModule = (() => {
             "    clusterBkg: '#ffffde'", // デフォルトと同じ色だがルートノードの色と合わせるために明示
             "---",
             `graph ${diagramDirection}`];
-        const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay, nameByFqn);
+        const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
         const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
         
         const nodeLines = buildDiagramNodeLines(
@@ -312,7 +309,7 @@ const PackageDiagramModule = (() => {
         return {source: lines.join('\n'), nodeIdToFqn, mutualPairs};
     }
 
-    function buildDiagramNodeMaps(packageFqns, nameByFqn) {
+    function buildDiagramNodeMaps(packageFqns) {
         const nodeIdByFqn = new Map();
         const nodeIdToFqn = new Map();
         const nodeLabelById = new Map();
@@ -322,7 +319,7 @@ const PackageDiagramModule = (() => {
             const nodeId = `P${nodeIndex++}`;
             nodeIdByFqn.set(fqn, nodeId);
             nodeIdToFqn.set(nodeId, fqn);
-            const label = nameByFqn.get(fqn) || fqn;
+            const label = globalThis.Jig.glossary.getTypeTerm(fqn).title;
             nodeLabelById.set(nodeId, label);
             return nodeId;
         };

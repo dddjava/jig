@@ -472,7 +472,6 @@ function renderPackages(packages, container) {
             const pkgDiagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
                 pkg, allPackages, allPackageRelations,
                 {
-                    nameResolver: fqn => getTypeTerm(fqn).title,
                     transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
                     diagramDirection: domainSettings.diagramDirection
                 }
@@ -592,7 +591,6 @@ function rerenderDiagrams() {
                 const diagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
                     pkg, allPackages, allPackageRelations,
                     {
-                        nameResolver: fqn => getTypeTerm(fqn).title,
                         transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
                         diagramDirection: domainSettings.diagramDirection
                     }

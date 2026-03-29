@@ -68,31 +68,27 @@ test.describe('package-diagram', () => {
         test('図ソースを生成する', () => {
             const visibleSet = new Set(['app.a', 'app.b']);
             const relations = [{from: 'app.a', to: 'app.b'}];
-            const nameByFqn = new Map([['app.a', 'A'], ['app.b', 'B']]);
-            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, relations, nameByFqn, {diagramDirection: 'TD', focusedPackageFqn: null});
+            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, relations, {diagramDirection: 'TD', focusedPackageFqn: null});
             assert.ok(source.includes('graph TD'));
             assert.ok(source.includes('-->'));
         });
 
         test('clickHandlerName を指定するとクリック行を含む', () => {
             const visibleSet = new Set(['app.a']);
-            const nameByFqn = new Map([['app.a', 'A']]);
-            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], nameByFqn, {diagramDirection: 'TD', focusedPackageFqn: null, clickHandlerName: 'myHandler'});
+            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], {diagramDirection: 'TD', focusedPackageFqn: null, clickHandlerName: 'myHandler'});
             assert.ok(source.includes('click'));
             assert.ok(source.includes('myHandler'));
         });
 
         test('clickHandlerName を省略するとクリック行を含まない', () => {
             const visibleSet = new Set(['app.a']);
-            const nameByFqn = new Map([['app.a', 'A']]);
-            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], nameByFqn, {diagramDirection: 'TD', focusedPackageFqn: null});
+            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], {diagramDirection: 'TD', focusedPackageFqn: null});
             assert.ok(!source.includes('click'));
         });
 
         test('focusedPackageFqn のノードを強調する', () => {
             const visibleSet = new Set(['app.a', 'app.b']);
-            const nameByFqn = new Map([['app.a', 'A'], ['app.b', 'B']]);
-            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], nameByFqn, {diagramDirection: 'TD', focusedPackageFqn: 'app.a'});
+            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], {diagramDirection: 'TD', focusedPackageFqn: 'app.a'});
             assert.ok(source.includes('style') && source.includes('font-weight:bold'));
         });
     });

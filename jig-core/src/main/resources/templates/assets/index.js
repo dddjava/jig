@@ -30,7 +30,6 @@ function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRe
             {fqn: packageRoot},
             allPackages, allPackageRelations,
             {
-                nameResolver: fqn => globalThis.Jig.glossary.getPackageTerm(fqn).title,
                 transitiveReductionEnabled: true,
                 diagramDirection: "TB"
             }

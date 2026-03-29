@@ -1,10 +1,13 @@
 package testing;
 
 import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.data.types.JigTypeHeader;
-import org.dddjava.jig.domain.model.data.types.TypeId;
+import org.dddjava.jig.domain.model.data.terms.Term;
+import org.dddjava.jig.domain.model.data.terms.TermId;
+import org.dddjava.jig.domain.model.data.terms.TermKind;
+import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
@@ -20,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class TestSupport {
 
@@ -100,5 +104,24 @@ public class TestSupport {
      */
     public static TypeId getTypeIdFromClass(Class<?> clz) {
         return TypeId.valueOf(clz.getName());
+    }
+
+    public static JigType stubJigType(String fullyQualifiedName) {
+        return stubJigType(TypeId.valueOf(fullyQualifiedName));
+    }
+
+    public static JigType stubJigType(TypeId typeId) {
+        JigTypeHeader header = new JigTypeHeader(
+                typeId,
+                JavaTypeDeclarationKind.CLASS,
+                new JigTypeAttributes(JigTypeVisibility.PUBLIC, List.of(), List.of(), List.of()),
+                new JigBaseTypeDataBundle(Optional.of(JigTypeReference.fromId(TypeId.OBJECT)), List.of())
+        );
+        JigTypeMembers members = new JigTypeMembers(List.of(), List.of(), List.of(), List.of(), List.of());
+        JigTypeGlossary glossary = new JigTypeGlossary(
+                Term.simple(new TermId(typeId.fqn()), typeId.asSimpleName(), TermKind.クラス),
+                List.of()
+        );
+        return new JigType(header, members, glossary);
     }
 }

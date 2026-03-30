@@ -83,8 +83,6 @@ org.dddjava.jig/
 ### 出力ドキュメント
 
 `JigDocument.java` に enum として定義。アクティブなもの:
-- `BusinessRuleList` — ビジネスルール一覧
-- `ApplicationList` — 機能一覧
 - `ListOutput` — 一覧出力（HTML）
 - `PackageSummary` — パッケージ概要
 - `DomainSummary` — ドメイン概要

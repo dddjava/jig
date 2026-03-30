@@ -54,7 +54,7 @@ class JigPropertyLoaderTest {
     void 指定あり_設定ファイルなし__指定() {
         // given
         JigProperties primaryProperties = new JigProperties(
-                List.of(JigDocument.ApplicationList, JigDocument.ListOutput),
+                List.of(JigDocument.DomainSummary, JigDocument.ListOutput),
                 Optional.of("com.example.primary.+"),
                 tempDir.resolve("primary_output")
         );
@@ -65,7 +65,7 @@ class JigPropertyLoaderTest {
 
         // then
         assertEquals("com.example.primary.+", loadedProperties.getDomainPattern().orElseThrow());
-        assertEquals(List.of(JigDocument.ApplicationList, JigDocument.ListOutput), loadedProperties.jigDocuments);
+        assertEquals(List.of(JigDocument.DomainSummary, JigDocument.ListOutput), loadedProperties.jigDocuments);
         assertEquals(tempDir.resolve("primary_output"), loadedProperties.outputDirectory);
     }
 
@@ -77,11 +77,11 @@ class JigPropertyLoaderTest {
 
         Files.writeString(homeConfigDir.resolve("jig.properties"), """
                 jig.pattern.domain=com.example.home.+
-                jig.document.types=BusinessRuleList
+                jig.document.types=ListOutput
                 """);
 
         JigProperties primaryProperties = new JigProperties(
-                List.of(JigDocument.ApplicationList, JigDocument.ListOutput),
+                List.of(JigDocument.DomainSummary, JigDocument.ListOutput),
                 Optional.of("com.example.primary.+"),
                 tempDir.resolve("primary_output")
         );
@@ -92,7 +92,7 @@ class JigPropertyLoaderTest {
 
         // then
         assertEquals("com.example.primary.+", loadedProperties.getDomainPattern().orElseThrow());
-        assertEquals(List.of(JigDocument.ApplicationList, JigDocument.ListOutput), loadedProperties.jigDocuments);
+        assertEquals(List.of(JigDocument.DomainSummary, JigDocument.ListOutput), loadedProperties.jigDocuments);
         assertEquals(tempDir.resolve("primary_output"), loadedProperties.outputDirectory);
     }
 
@@ -120,7 +120,7 @@ class JigPropertyLoaderTest {
 
         Files.writeString(homeConfigDir.resolve("jig.properties"), """
                 jig.pattern.domain=com.example.home.+
-                jig.document.types=BusinessRuleList
+                jig.document.types=ListOutput
                 jig.output.directory=/hoge/fuga
                 """);
 
@@ -132,7 +132,7 @@ class JigPropertyLoaderTest {
 
         // then
         assertEquals("com.example.home.+", loadedProperties.getDomainPattern().orElseThrow());
-        assertEquals(List.of(JigDocument.BusinessRuleList), loadedProperties.jigDocuments);
+        assertEquals(List.of(JigDocument.ListOutput), loadedProperties.jigDocuments);
         assertEquals(Path.of("/hoge/fuga"), loadedProperties.outputDirectory);
     }
 

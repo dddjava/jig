@@ -37,8 +37,8 @@ $ gradle clean build jig
 jig {
     // パッケージにかかわらず全ての要素を出力する
     modelPattern = '.+'
-    // パッケージ概要とビジネスルール一覧のみ出力する
-    documentTypes = ['PackageSummary', 'BusinessRuleList']
+    // パッケージ概要と一覧出力のみ出力する
+    documentTypes = ['PackageSummary', 'ListOutput']
     // 図のリンクのprefix: ダイアグラムのクラスなどからソースコードにリンクする（SVG限定）
     linkPrefix = "https://github.com/dddjava/jig/tree/master/jig-core/src/main/java"
 }

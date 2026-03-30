@@ -70,7 +70,6 @@ dependencies {
     api libs.asm
     api libs.mybatis
     api libs.javaparser
-    api libs.bundles.poi
     api "com.github.ben-manes.caffeine:caffeine"
     api "io.micrometer:micrometer-core"
     api "io.micrometer:micrometer-registry-prometheus"

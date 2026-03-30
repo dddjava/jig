@@ -69,4 +69,4 @@ Conventional Commits 形式を用い、**日本語**で記述します。
 
 生成されるドキュメントの種類は `org.dddjava.jig.domain.model.documents.documentformat.JigDocument` で定義されています。新しいドキュメントを追加する場合は、このenumへの追加と、対応するテンプレートファイルの作成が必要です。
 
-アクティブなドキュメント（一部抜粋）: `ListOutput`, `PackageSummary`, `DomainSummary`, `UsecaseSummary`, `EntrypointSummary`, `OutputsSummary`, `Insight`, `Glossary`
+アクティブなドキュメント（一部抜粋）: `ListOutput`, `PackageRelation`, `DomainModel`, `UsecaseProcess`, `InboundEndpoint`, `OutboundCall`, `Insight`, `Glossary`

@@ -31,7 +31,7 @@ function buildPackageRows(doc, fqns) {
 
 function setPackageData(data, context) {
     globalThis.packageData = data;
-    context.packageSummaryCache = null; // Reset cache
+    context.packageRelationCache = null; // Reset cache
 }
 
 function setupDomMocks() {
@@ -93,7 +93,7 @@ test.describe('package.js', () => {
     test.beforeEach(() => {
         // Reset the context for each test to ensure isolation
         testContext = {
-            packageSummaryCache: null,
+            packageRelationCache: null,
             diagramNodeIdToFqn: new Map(),
             aggregationDepth: 0,
             packageFilterFqn: [],
@@ -109,14 +109,14 @@ test.describe('package.js', () => {
 
     test.describe('データ取得/整形', () => {
         test.describe('ロジック', () => {
-            test('parsePackageSummaryData: 配列/オブジェクトに対応する', () => {
-                const arrayData = pkg.parsePackageSummaryData([
+            test('parsePackageRelationData: 配列/オブジェクトに対応する', () => {
+                const arrayData = pkg.parsePackageRelationData([
                     {fqn: 'app.a', classCount: 1},
                 ]);
                 assert.equal(arrayData.packages.length, 1);
                 assert.equal(arrayData.relations.length, 0);
 
-                const objectData = pkg.parsePackageSummaryData({
+                const objectData = pkg.parsePackageRelationData({
                     packages: [{fqn: 'app.b', classCount: 2}],
                     relations: [{from: 'app.b', to: 'app.c'}],
                 });
@@ -124,11 +124,11 @@ test.describe('package.js', () => {
                 assert.equal(objectData.relations.length, 1);
             });
 
-            test('getPackageSummaryData: 配列/オブジェクトに対応する', () => {
+            test('getPackageRelationData: 配列/オブジェクトに対応する', () => {
                 setupDocument();
                 setPackageData([{fqn: 'app.a', classCount: 1}], testContext);
 
-                const data = pkg.getPackageSummaryData(testContext);
+                const data = pkg.getPackageRelationData(testContext);
 
                 assert.equal(data.packages.length, 1);
                 assert.equal(data.relations.length, 0);

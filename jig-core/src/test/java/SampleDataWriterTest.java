@@ -39,7 +39,7 @@ class SampleDataWriterTest {
 
         // outbound-data.js
         {
-            var json = OutboundSummaryAdapter.buildJson(outboundAdapters);
+            var json = OutboundCallAdapter.buildJson(outboundAdapters);
             Path sampleFile = Path.of("src/main/resources/templates/data/outbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -64,7 +64,7 @@ class SampleDataWriterTest {
             var jigPackages = jigService.packages(repository);
             var packageRelations = jigService.packageRelations(repository);
             var domainPackageRoots = jigService.coreDomainJigTypes(repository).domainPackageRoots();
-            var json = PackageSummaryAdapter.buildJson(jigPackages, packageRelations, domainPackageRoots);
+            var json = PackageRelationAdapter.buildJson(jigPackages, packageRelations, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -96,7 +96,7 @@ class SampleDataWriterTest {
         // inbound-data.js
         {
             var inputAdapters = jigService.inputAdapters(repository);
-            var json = InboundSummaryAdapter.buildJson(inputAdapters, jigTypes);
+            var json = InboundEndpointAdapter.buildJson(inputAdapters, jigTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/inbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -107,7 +107,7 @@ class SampleDataWriterTest {
         // usecase-data.js
         {
             var serviceTypes = jigService.serviceTypes(repository);
-            var json = UsecaseSummaryAdapter.buildJson(serviceTypes);
+            var json = UsecaseProcessAdapter.buildJson(serviceTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/usecase-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -123,7 +123,7 @@ class SampleDataWriterTest {
                 var packageList = JigPackageWithJigTypes.listWithParent(domainJigTypes);
                 var enumModels = repository.jigDataProvider().fetchEnumModels();
 
-                var json = DomainSummaryAdapter.buildJson(packageList, domainJigTypes, enumModels);
+                var json = DomainModelAdapter.buildJson(packageList, domainJigTypes, enumModels);
                 Path sampleFile = Path.of("src/main/resources/templates/data/domain-data.js");
                 Files.writeString(sampleFile,
                     "// 表示確認用のサンプルデータ\n" +

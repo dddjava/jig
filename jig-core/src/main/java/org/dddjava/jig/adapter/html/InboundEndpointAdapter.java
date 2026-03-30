@@ -19,18 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 入力インタフェース概要
+ * 入力インタフェース
  */
-public class InboundSummaryAdapter {
+public class InboundEndpointAdapter {
+
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public InboundSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public InboundEndpointAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.InboundSummary)
+    @HandleDocument(JigDocument.InboundEndpoint)
+
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var contextJigTypes = jigService.jigTypes(repository);
         var inputAdapters = jigService.inputAdapters(repository);

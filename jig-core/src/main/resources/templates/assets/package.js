@@ -2,7 +2,7 @@
 // contextは「UI状態・設定値など長期的に保持する値」に限定する。
 // 一時的な中間データはcontextに保存せず、関数内のローカル変数で扱う。
 const packageContext = {
-    packageSummaryCache: null,
+    packageRelationCache: null,
     diagramNodeIdToFqn: new Map(),
     aggregationDepth: 0,
     packageFilterFqn: [],
@@ -57,15 +57,15 @@ const dom = {
 };
 
 // データ取得/整形
-function getPackageSummaryData(context) {
-    if (context.packageSummaryCache) return context.packageSummaryCache;
+function getPackageRelationData(context) {
+    if (context.packageRelationCache) return context.packageRelationCache;
     // Defensive: packageData が存在しない場合でも安全に処理
     const data = globalThis.packageData ?? {};
-    context.packageSummaryCache = parsePackageSummaryData(data);
-    return context.packageSummaryCache;
+    context.packageRelationCache = parsePackageRelationData(data);
+    return context.packageRelationCache;
 }
 
-function parsePackageSummaryData(packageData) {
+function parsePackageRelationData(packageData) {
     // packageData はオブジェクト（JSON文字列ではない）
     // 配列形式と オブジェクト形式の両方に対応
     const isArrayFormat = Array.isArray(packageData);
@@ -91,7 +91,7 @@ function getPackageDepth(fqn) {
 }
 
 function getMaxPackageDepth(context) {
-    const {packages} = getPackageSummaryData(context);
+    const {packages} = getPackageRelationData(context);
     return packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
 }
 
@@ -456,7 +456,7 @@ function buildPackageTableRowElement(spec, applyFilter, applyFocusForRow) {
 }
 
 function renderPackageTable(context) {
-    const {packages, relations} = getPackageSummaryData(context);
+    const {packages, relations} = getPackageRelationData(context);
     const rows = buildPackageTableRowData(packages, relations);
     const rowSpecs = buildPackageTableRowSpecs(rows);
 
@@ -483,7 +483,7 @@ function renderPackageTable(context) {
 
 function filterFocusTableRows(fqn, context) {
     const rows = dom.getPackageTableRows();
-    const {relations} = getPackageSummaryData(context);
+    const {relations} = getPackageRelationData(context);
     const rowFqns = Array.from(rows, row => {
         const fqnCell = row.querySelector('td.fqn');
         return fqnCell ? fqnCell.textContent : '';
@@ -525,7 +525,7 @@ function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
 function applyDefaultPackageFilterIfPresent(context) {
     const input = dom.getPackageFilterInput();
     if (!input || normalizePackageFilterValue(input.value).length) return false;
-    const {domainPackageRoots} = getPackageSummaryData(context);
+    const {domainPackageRoots} = getPackageRelationData(context);
     const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (!candidate) return false;
     input.value = candidate;
@@ -892,7 +892,7 @@ function renderPackageDiagram(context, packageFilterFqn, focusedPackageFqn) {
 }
 
 function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
-    const {packages, relations, causeRelationEvidence} = getPackageSummaryData(context);
+    const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
     const {
         uniqueRelations,
         packageFqns,
@@ -949,7 +949,7 @@ function setupPackageFilterControl(context) {
 
     // ページの初期ロード時に適用されるデフォルトフィルタを保持
     let initialDefaultFilterValue = '';
-    const {domainPackageRoots} = getPackageSummaryData(context);
+    const {domainPackageRoots} = getPackageRelationData(context);
     const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
     if (candidate) {
         initialDefaultFilterValue = candidate;
@@ -1042,7 +1042,7 @@ function setupAggregationDepthControl(context) {
 function renderAggregationDepthSelectOptions(maxDepth, context) {
     const select = dom.getDepthSelect();
     if (!select) return;
-    const {packages, relations} = getPackageSummaryData(context);
+    const {packages, relations} = getPackageRelationData(context);
     const aggregationStats = buildAggregationStatsForFilters(
         packages,
         relations,
@@ -1156,12 +1156,12 @@ function setupTransitiveReductionControl(context) {
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
         const body = dom.getDocumentBody();
-        if (!body || !body.classList.contains("package-summary")) return;
+        if (!body || !body.classList.contains("package-relation")) return;
         setupSortableTables();
         renderPackageTable(packageContext);
         setupPackageFilterControl(packageContext);
         // domainPackageRootsに基づく初期aggregationDepth設定
-        const {domainPackageRoots} = getPackageSummaryData(packageContext);
+        const {domainPackageRoots} = getPackageRelationData(packageContext);
         packageContext.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
         setupAggregationDepthControl(packageContext);
         setupFocusControl(packageContext);
@@ -1186,8 +1186,8 @@ if (typeof module !== 'undefined' && module.exports) {
         dom,
 
         // private
-        getPackageSummaryData,
-        parsePackageSummaryData,
+        getPackageRelationData,
+        parsePackageRelationData,
         getGlossaryTitle,
         getPackageDepth,
         getMaxPackageDepth,

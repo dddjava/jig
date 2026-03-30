@@ -26,30 +26,30 @@ class IndexViewTest {
         sut.render(List.of(), tempDir);
 
         String actual = readIndex();
-        assertFalse(actual.contains("<h2>概要: HTML</h2>"));
+        assertFalse(actual.contains("<h2>設計情報: HTML</h2>"));
         assertFalse(actual.contains("<h2>一覧: HTML</h2>"));
 
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("globalThis.navigationData"));
-        assertFalse(navigationData.contains("\"href\":\"package-summary.html\""));
+        assertFalse(navigationData.contains("\"href\":\"package.html\""));
     }
 
     @Test
     void 出力対象がある場合は対応する一覧セクションを出力する() throws IOException {
         var sut = new IndexView();
         var results = List.of(
-                HandleResult.withOutput(JigDocument.PackageSummary, List.of(Path.of("package-summary.html"))),
+                HandleResult.withOutput(JigDocument.PackageRelation, List.of(Path.of("package.html"))),
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html")))
         );
 
         sut.render(results, tempDir);
 
         String actual = readIndex();
-        assertTrue(actual.contains("<h2>概要: HTML</h2>"));
+        assertTrue(actual.contains("<h2>設計情報: HTML</h2>"));
         assertTrue(actual.contains("<h2>一覧: HTML</h2>"));
 
         String navigationData = readNavigationData();
-        assertTrue(navigationData.contains("\"href\":\"package-summary.html\""));
+        assertTrue(navigationData.contains("\"href\":\"package.html\""));
         assertTrue(navigationData.contains("\"href\":\"list-output.html\""));
     }
 

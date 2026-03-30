@@ -6,7 +6,7 @@ logging:
 jig:
   # Output targets (multiple specifications with commas)
   #document:
-  #  types: PackageSummary,ListOutput
+  #  types: PackageRelation,ListOutput
   output:
     directory: ./build/jig
   # Domain class pattern (regular expression)

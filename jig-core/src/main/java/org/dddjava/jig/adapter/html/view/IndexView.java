@@ -19,12 +19,12 @@ public class IndexView {
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
 
     private static final List<JigDocument> HTML_SUMMARY_DOCUMENTS = List.of(
-            JigDocument.PackageSummary,
+            JigDocument.PackageRelation,
             JigDocument.Glossary,
-            JigDocument.DomainSummary,
-            JigDocument.UsecaseSummary,
-            JigDocument.InboundSummary,
-            JigDocument.OutboundSummary,
+            JigDocument.DomainModel,
+            JigDocument.UsecaseProcess,
+            JigDocument.InboundEndpoint,
+            JigDocument.OutboundCall,
             JigDocument.Insight
     );
 
@@ -73,7 +73,7 @@ public class IndexView {
         // HTML概要
         if (HTML_SUMMARY_DOCUMENTS.stream().anyMatch(documentLinks::containsKey)) {
             html.append("    <section>\n");
-            html.append("        <h2>概要: HTML</h2>\n");
+            html.append("        <h2>設計情報: HTML</h2>\n");
             html.append("        <ul>\n");
             for (JigDocument doc : HTML_SUMMARY_DOCUMENTS) {
                 appendLinkIfPresent(html, documentLinks, doc);
@@ -92,7 +92,7 @@ public class IndexView {
             html.append("    </section>\n");
         }
 
-        if (documentLinks.containsKey(JigDocument.PackageSummary)) {
+        if (documentLinks.containsKey(JigDocument.PackageRelation)) {
             html.append("    <section id=\"diagrams\">\n");
             html.append("        <h2>主要パッケージ関連図</h2>\n");
             html.append("        <div id=\"package-diagram\"></div>\n");

@@ -20,19 +20,19 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * ドメイン概要
+ * ドメインモデル
  */
-public class DomainSummaryAdapter {
+public class DomainModelAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public DomainSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public DomainModelAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.DomainSummary)
+    @HandleDocument(JigDocument.DomainModel)
     public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         if (coreDomainJigTypes.empty()) {
@@ -63,11 +63,11 @@ public class DomainSummaryAdapter {
                              JigTypes jigTypes,
                              EnumModels enumModels) {
         List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(DomainSummaryAdapter::buildPackageJson)
+                .map(DomainModelAdapter::buildPackageJson)
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
-                .map(jigType -> DomainSummaryAdapter.buildTypeJson(jigType, enumModels))
+                .map(jigType -> DomainModelAdapter.buildTypeJson(jigType, enumModels))
                 .toList();
 
         return Json.object("packages", Json.arrayObjects(packages))

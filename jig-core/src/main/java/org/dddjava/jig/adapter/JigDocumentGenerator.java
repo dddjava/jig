@@ -39,14 +39,14 @@ public class JigDocumentGenerator {
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
         compositeAdapter = new CompositeAdapter();
-        compositeAdapter.register(new DomainSummaryAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new DomainModelAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new OutboundSummaryAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new InboundSummaryAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new UsecaseSummaryAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new OutboundCallAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new InboundEndpointAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new UsecaseProcessAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new ListOutputAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new GlossaryAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new PackageSummaryAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new PackageRelationAdapter(jigService, jigDocumentContext));
     }
 
     public JigResult generate(JigRepository jigRepository) {
@@ -99,9 +99,9 @@ public class JigDocumentGenerator {
                 long startTime = System.currentTimeMillis();
 
                 var outputFilePaths = switch (jigDocument) {
-                    case DomainSummary, UsecaseSummary, InboundSummary,
+                    case DomainModel, UsecaseProcess, InboundEndpoint,
                          ListOutput,
-                         OutboundSummary, Insight, Glossary, PackageSummary -> compositeAdapter.invoke(jigDocument, jigRepository);
+                         OutboundCall, Insight, Glossary, PackageRelation -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
                 long takenTime = System.currentTimeMillis() - startTime;

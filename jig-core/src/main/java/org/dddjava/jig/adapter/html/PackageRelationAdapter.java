@@ -14,19 +14,19 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * パッケージ概要
+ * パッケージ関連
  */
-public class PackageSummaryAdapter {
+public class PackageRelationAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public PackageSummaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public PackageRelationAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.PackageSummary)
+    @HandleDocument(JigDocument.PackageRelation)
     public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
         var jigPackages = jigService.packages(jigRepository);
         var packageRelations = jigService.packageRelations(jigRepository);

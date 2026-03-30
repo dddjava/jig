@@ -69,7 +69,7 @@ class CliConfig {
     Configuration configuration() {
         // modeを適用
         if (mode.contains(Mode.LIGHT)) {
-            documentTypeText = "PackageSummary";
+            documentTypeText = "PackageRelation";
             modelPattern = ".*";
         }
 

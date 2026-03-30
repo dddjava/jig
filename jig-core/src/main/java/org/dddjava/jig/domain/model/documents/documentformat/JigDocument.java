@@ -16,29 +16,29 @@ public enum JigDocument {
     Glossary(JigDocumentLabel.of("用語集", "glossary"), "glossary"),
 
     /**
-     * パッケージ概要
+     * パッケージ関連
      */
-    PackageSummary(JigDocumentLabel.of("パッケージ概要", "PackageSummary"), "package"),
+    PackageRelation(JigDocumentLabel.of("パッケージ関連", "PackageRelation"), "package"),
 
     /**
-     * ドメイン概要
+     * ドメインモデル
      */
-    DomainSummary(JigDocumentLabel.of("ドメイン概要", "domain"), "domain"),
+    DomainModel(JigDocumentLabel.of("ドメインモデル", "DomainModel"), "domain"),
 
     /**
-     * ユースケース概要
+     * ユースケース
      */
-    UsecaseSummary(JigDocumentLabel.of("ユースケース概要", "usecase"), "usecase"),
+    UsecaseProcess(JigDocumentLabel.of("ユースケース", "UsecaseProcess"), "usecase"),
 
     /**
-     * 入力インタフェース概要
+     * 入力インタフェース
      */
-    InboundSummary(JigDocumentLabel.of("入力インタフェース概要", "inbound"), "inbound"),
+    InboundEndpoint(JigDocumentLabel.of("入力インタフェース", "InboundEndpoint"), "inbound"),
 
     /**
-     * 出力インタフェース概要
+     * 出力インタフェース
      */
-    OutboundSummary(JigDocumentLabel.of("出力インタフェース概要", "outbound"), "outbound"),
+    OutboundCall(JigDocumentLabel.of("出力インタフェース", "OutboundCall"), "outbound"),
 
     /**
      * インサイト

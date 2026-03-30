@@ -84,11 +84,11 @@ org.dddjava.jig/
 
 `JigDocument.java` に enum として定義。アクティブなもの:
 - `ListOutput` — 一覧出力（HTML）
-- `PackageSummary` — パッケージ概要
-- `DomainSummary` — ドメイン概要
-- `UsecaseSummary` — ユースケース概要
-- `EntrypointSummary` — 入力インタフェース概要
-- `OutputsSummary` — 出力インタフェース概要
+- `PackageRelation` — パッケージ関連
+- `DomainModel` — ドメインモデル
+- `UsecaseProcess` — ユースケース
+- `InboundEndpoint` — 入力インタフェース
+- `OutboundCall` — 出力インタフェース
 - `Insight` — インサイト
 - `Glossary` — 用語集
 

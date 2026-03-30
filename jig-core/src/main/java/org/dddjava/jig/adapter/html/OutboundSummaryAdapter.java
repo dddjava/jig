@@ -28,7 +28,7 @@ public class OutboundSummaryAdapter {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.OutputsSummary)
+    @HandleDocument(JigDocument.OutboundSummary)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var outboundAdapters = jigService.outboundAdapters(repository);
 

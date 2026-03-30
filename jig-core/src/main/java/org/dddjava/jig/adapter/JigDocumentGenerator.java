@@ -99,9 +99,9 @@ public class JigDocumentGenerator {
                 long startTime = System.currentTimeMillis();
 
                 var outputFilePaths = switch (jigDocument) {
-                    case DomainSummary, UsecaseSummary, EntrypointSummary,
+                    case DomainSummary, UsecaseSummary, InboundSummary,
                          ListOutput,
-                         OutputsSummary, Insight, Glossary, PackageSummary -> compositeAdapter.invoke(jigDocument, jigRepository);
+                         OutboundSummary, Insight, Glossary, PackageSummary -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
                 long takenTime = System.currentTimeMillis() - startTime;

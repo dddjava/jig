@@ -30,7 +30,7 @@ public class InboundSummaryAdapter {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.EntrypointSummary)
+    @HandleDocument(JigDocument.InboundSummary)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var contextJigTypes = jigService.jigTypes(repository);
         var inputAdapters = jigService.inputAdapters(repository);

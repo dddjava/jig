@@ -10,57 +10,45 @@ import java.util.Locale;
  */
 public enum JigDocument {
 
-    PackageSummary(
-            JigDocumentLabel.of("パッケージ概要", "PackageSummary"),
-            "package"),
+    /**
+     * 用語集
+     */
+    Glossary(JigDocumentLabel.of("用語集", "glossary"), "glossary"),
 
     /**
-     * 一覧出力
-     *
-     * 一覧をHTMLで出力する。
+     * パッケージ概要
      */
-    ListOutput(
-            JigDocumentLabel.of("一覧出力", "ListOutput"),
-            "list-output"),
+    PackageSummary(JigDocumentLabel.of("パッケージ概要", "PackageSummary"), "package"),
 
     /**
      * ドメイン概要
      */
-    DomainSummary(
-            JigDocumentLabel.of("ドメイン概要", "domain"),
-            "domain"),
+    DomainSummary(JigDocumentLabel.of("ドメイン概要", "domain"), "domain"),
 
     /**
      * ユースケース概要
      */
-    UsecaseSummary(
-            JigDocumentLabel.of("ユースケース概要", "usecase"),
-            "usecase"),
+    UsecaseSummary(JigDocumentLabel.of("ユースケース概要", "usecase"), "usecase"),
 
-    EntrypointSummary(
-            JigDocumentLabel.of("入力インタフェース概要", "inbound"),
-            "inbound"),
+    /**
+     * 入力インタフェース概要
+     */
+    InboundSummary(JigDocumentLabel.of("入力インタフェース概要", "inbound"), "inbound"),
 
     /**
      * 出力インタフェース概要
      */
-    OutputsSummary(
-            JigDocumentLabel.of("出力インタフェース概要", "outbound"),
-            "outbound"),
+    OutboundSummary(JigDocumentLabel.of("出力インタフェース概要", "outbound"), "outbound"),
 
     /**
      * インサイト
      */
-    Insight(JigDocumentLabel.of("インサイト", "insight"),
-            "insight"
-    ),
+    Insight(JigDocumentLabel.of("インサイト", "insight"), "insight"),
 
     /**
-     * 用語集
+     * 一覧出力
      */
-    Glossary(
-            JigDocumentLabel.of("用語集", "glossary"),
-            "glossary");
+    ListOutput(JigDocumentLabel.of("一覧出力", "ListOutput"), "list-output");
 
     private final JigDocumentLabel label;
     private final String documentFileName;

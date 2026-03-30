@@ -23,8 +23,8 @@ public class IndexView {
             JigDocument.Glossary,
             JigDocument.DomainSummary,
             JigDocument.UsecaseSummary,
-            JigDocument.EntrypointSummary,
-            JigDocument.OutputsSummary,
+            JigDocument.InboundSummary,
+            JigDocument.OutboundSummary,
             JigDocument.Insight
     );
 

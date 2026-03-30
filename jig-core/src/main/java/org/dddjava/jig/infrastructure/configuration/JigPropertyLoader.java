@@ -53,10 +53,7 @@ public class JigPropertyLoader {
             Path currentDirectoryPath = Paths.get(System.getProperty("user.dir"));
             loadConfigFromPath(currentDirectoryPath);
         } catch (Exception e) {
-            // 2020.10.2 設定の読み込みを変更
-            // 失敗した場合は既存を維持しておく
             logger.error("設定ファイルの読み込みに失敗しました。例外情報を添えて不具合を報告してください。処理は続行します。", e);
-            // 初期値に戻す
             jigProperties = JigProperties.defaultInstance();
         }
     }

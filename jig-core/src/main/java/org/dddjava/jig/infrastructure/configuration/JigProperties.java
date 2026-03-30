@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -46,40 +45,30 @@ public class JigProperties {
     }
 
     public void override(JigProperties overrideProperties) {
-        try {
-            for (Field field : this.getClass().getDeclaredFields()) {
-                Object overriddenValue = field.get(overrideProperties);
-
-                if (overriddenValue != null) {
-                    if (field.getType().equals(String.class) && ((String) overriddenValue).isEmpty()) {
-                        continue;
-                    }
-                    if (field.getType().equals(List.class) && ((List<?>) overriddenValue).isEmpty()) {
-                        continue;
-                    }
-                    if (field.getType().equals(Path.class) && ((Path) overriddenValue).toString().isEmpty()) {
-                        continue;
-                    }
-                    if (field.getType().equals(Optional.class) && ((Optional<?>) overriddenValue).isEmpty()) {
-                        continue;
-                    }
-
-                    Object currentValue = field.get(this);
-                    if (!overriddenValue.equals(currentValue)) {
-                        field.set(this, overriddenValue);
-                        logger.info("configure {} from {} to {}", field.getName(), currentValue, overriddenValue);
-                    }
-                }
-            }
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
+        if (overrideProperties.outputDirectory != null
+                && !overrideProperties.outputDirectory.toString().isEmpty()
+                && !overrideProperties.outputDirectory.equals(this.outputDirectory)) {
+            logger.info("configure outputDirectory from {} to {}", this.outputDirectory, overrideProperties.outputDirectory);
+            this.outputDirectory = overrideProperties.outputDirectory;
+        }
+        if (overrideProperties.domainPattern != null
+                && overrideProperties.domainPattern.isPresent()
+                && !overrideProperties.domainPattern.equals(this.domainPattern)) {
+            logger.info("configure domainPattern from {} to {}", this.domainPattern, overrideProperties.domainPattern);
+            this.domainPattern = overrideProperties.domainPattern;
+        }
+        if (overrideProperties.jigDocuments != null
+                && !overrideProperties.jigDocuments.isEmpty()
+                && !overrideProperties.jigDocuments.equals(this.jigDocuments)) {
+            logger.info("configure jigDocuments from {} to {}", this.jigDocuments, overrideProperties.jigDocuments);
+            this.jigDocuments = overrideProperties.jigDocuments;
         }
     }
 
     @Override
     public String toString() {
         return "JigProperties{" +
-                "businessRulePattern='" + domainPattern + '\'' +
+                "domainPattern='" + domainPattern + '\'' +
                 ", outputDirectory=" + outputDirectory +
                 '}';
     }

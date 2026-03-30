@@ -74,7 +74,6 @@ public class HandleResultImpl implements HandleResult {
             return String.format("%s: %s", jigDocument(), outputFileNames());
         }
 
-        // 失敗メッセージがある
         if (failureMessage != null) {
             return String.format("%s: %s", jigDocument(), failureMessage);
         }

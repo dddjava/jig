@@ -71,16 +71,13 @@ public class JigDocumentGenerator {
     private void createOutputDirectory(Path outputDirectory) {
         File file = outputDirectory.toFile();
         if (file.exists()) {
-            if (file.isDirectory() && file.canWrite()) {
-                // ディレクトリかつ書き込み可能なので対応不要
-                return;
-            }
             if (!file.isDirectory()) {
                 throw new IllegalStateException(file.getAbsolutePath() + " is not Directory. Please review your settings.");
             }
-            if (file.isDirectory() && !file.canWrite()) {
+            if (!file.canWrite()) {
                 throw new IllegalStateException(file.getAbsolutePath() + " can not writable. Please specify another directory.");
             }
+            return;
         }
 
         try {
@@ -141,7 +138,6 @@ public class JigDocumentGenerator {
     private void generateAssets() {
         try {
             Path assetsPath = this.outputDirectory.resolve("assets");
-            Files.createDirectories(assetsPath);
             for (String assetRelativePath : listAssetRelativePaths()) {
                 copyAsset(assetRelativePath, assetsPath);
             }

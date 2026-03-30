@@ -18,21 +18,25 @@ public class IndexView {
     static final String INDEX_FILE_NAME = "index.html";
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
 
-    private final Map<JigDocument, String> documentLinks;
-
-    public IndexView() {
-        this.documentLinks = new HashMap<>();
-    }
+    private static final List<JigDocument> HTML_SUMMARY_DOCUMENTS = List.of(
+            JigDocument.PackageSummary,
+            JigDocument.Glossary,
+            JigDocument.DomainSummary,
+            JigDocument.UsecaseSummary,
+            JigDocument.EntrypointSummary,
+            JigDocument.OutputsSummary,
+            JigDocument.Insight
+    );
 
     public void render(List<HandleResult> handleResultList, Path outputDirectory) {
+        Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
-                List<String> list = handleResult.outputFileNames();
-                documentLinks.put(handleResult.jigDocument(), list.get(0));
+                documentLinks.put(handleResult.jigDocument(), handleResult.outputFileNames().get(0));
             }
         }
-        write(outputDirectory);
-        writeNavigationData(outputDirectory);
+        write(documentLinks, outputDirectory);
+        writeNavigationData(documentLinks, outputDirectory);
     }
 
     private String resolveJigVersion() {
@@ -40,7 +44,7 @@ public class IndexView {
         return Objects.requireNonNullElse(implementationVersion, "unknown");
     }
 
-    private void write(Path outputDirectory) {
+    private void write(Map<JigDocument, String> documentLinks, Path outputDirectory) {
         String title = "JIG";
         String jigVersion = resolveJigVersion();
         ZonedDateTime now = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -67,17 +71,13 @@ public class IndexView {
         html.append("<main>\n");
 
         // HTML概要
-        if (hasAnyHtmlSummary()) {
+        if (HTML_SUMMARY_DOCUMENTS.stream().anyMatch(documentLinks::containsKey)) {
             html.append("    <section>\n");
             html.append("        <h2>概要: HTML</h2>\n");
             html.append("        <ul>\n");
-            appendLinkIfPresent(html, JigDocument.PackageSummary);
-            appendLinkIfPresent(html, JigDocument.Glossary);
-            appendLinkIfPresent(html, JigDocument.DomainSummary);
-            appendLinkIfPresent(html, JigDocument.UsecaseSummary);
-            appendLinkIfPresent(html, JigDocument.EntrypointSummary);
-            appendLinkIfPresent(html, JigDocument.OutputsSummary);
-            appendLinkIfPresent(html, JigDocument.Insight);
+            for (JigDocument doc : HTML_SUMMARY_DOCUMENTS) {
+                appendLinkIfPresent(html, documentLinks, doc);
+            }
             html.append("        </ul>\n");
             html.append("    </section>\n");
         }
@@ -87,7 +87,7 @@ public class IndexView {
             html.append("    <section>\n");
             html.append("        <h2>一覧: HTML</h2>\n");
             html.append("        <ul>\n");
-            appendLinkIfPresent(html, JigDocument.ListOutput);
+            appendLinkIfPresent(html, documentLinks, JigDocument.ListOutput);
             html.append("        </ul>\n");
             html.append("    </section>\n");
         }
@@ -107,8 +107,8 @@ public class IndexView {
             html.append("            <p>2026.4.1 のリリースで廃止予定です。<a style=\"text-decoration: underline\" href=\"https://github.com/dddjava/jig/wiki/2026.4.1-%E7%94%BB%E5%83%8F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8A%E3%82%88%E3%81%B3Exce%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%BB%83%E6%AD%A2\">詳細はこちら</a>。</p>\n");
             html.append("        </aside>\n");
             html.append("        <ul>\n");
-            appendLinkIfPresent(html, JigDocument.BusinessRuleList);
-            appendLinkIfPresent(html, JigDocument.ApplicationList);
+            appendLinkIfPresent(html, documentLinks, JigDocument.BusinessRuleList);
+            appendLinkIfPresent(html, documentLinks, JigDocument.ApplicationList);
             html.append("        </ul>\n");
             html.append("    </section>\n");
         }
@@ -135,21 +135,16 @@ public class IndexView {
         }
     }
 
-    private void writeNavigationData(Path outputDirectory) {
+    private void writeNavigationData(Map<JigDocument, String> documentLinks, Path outputDirectory) {
         try {
             Path dataDirectory = outputDirectory.resolve("data");
             Files.createDirectories(dataDirectory);
 
             List<NavigationLink> links = new ArrayList<>();
-            // 「概要: HTML」「一覧: HTML」の順序に揃える（主要HTMLのみ）
-            addNavigationLinkIfPresent(links, JigDocument.PackageSummary);
-            addNavigationLinkIfPresent(links, JigDocument.Glossary);
-            addNavigationLinkIfPresent(links, JigDocument.DomainSummary);
-            addNavigationLinkIfPresent(links, JigDocument.UsecaseSummary);
-            addNavigationLinkIfPresent(links, JigDocument.EntrypointSummary);
-            addNavigationLinkIfPresent(links, JigDocument.OutputsSummary);
-            addNavigationLinkIfPresent(links, JigDocument.Insight);
-            addNavigationLinkIfPresent(links, JigDocument.ListOutput);
+            for (JigDocument doc : HTML_SUMMARY_DOCUMENTS) {
+                addNavigationLinkIfPresent(links, documentLinks, doc);
+            }
+            addNavigationLinkIfPresent(links, documentLinks, JigDocument.ListOutput);
 
             StringBuilder js = new StringBuilder();
             js.append("globalThis.navigationData = {\"links\": [");
@@ -170,9 +165,10 @@ public class IndexView {
         }
     }
 
-    private void addNavigationLinkIfPresent(List<NavigationLink> links, JigDocument key) {
-        if (documentLinks.containsKey(key)) {
-            links.add(new NavigationLink(documentLinks.get(key), key.label()));
+    private void addNavigationLinkIfPresent(List<NavigationLink> links, Map<JigDocument, String> documentLinks, JigDocument key) {
+        String href = documentLinks.get(key);
+        if (href != null) {
+            links.add(new NavigationLink(href, key.label()));
         }
     }
 
@@ -187,19 +183,10 @@ public class IndexView {
     record NavigationLink(String href, String label) {
     }
 
-    private boolean hasAnyHtmlSummary() {
-        return documentLinks.containsKey(JigDocument.PackageSummary) ||
-                documentLinks.containsKey(JigDocument.Glossary) ||
-                documentLinks.containsKey(JigDocument.DomainSummary) ||
-                documentLinks.containsKey(JigDocument.UsecaseSummary) ||
-                documentLinks.containsKey(JigDocument.EntrypointSummary) ||
-                documentLinks.containsKey(JigDocument.OutputsSummary) ||
-                documentLinks.containsKey(JigDocument.Insight);
-    }
-
-    private void appendLinkIfPresent(StringBuilder html, JigDocument key) {
-        if (documentLinks.containsKey(key)) {
-            html.append("            <li><a href=\"").append(documentLinks.get(key)).append("\">").append(key.label()).append("</a></li>\n");
+    private void appendLinkIfPresent(StringBuilder html, Map<JigDocument, String> documentLinks, JigDocument key) {
+        String href = documentLinks.get(key);
+        if (href != null) {
+            html.append("            <li><a href=\"").append(href).append("\">").append(key.label()).append("</a></li>\n");
         }
     }
 

@@ -146,6 +146,7 @@ test.describe('list-output.js', () => {
             test('SERVICEのCSVにヘッダーと行を出力する', () => {
                 globalThis.glossaryData = { terms: {
                     "com.example.ExampleService": { title: "例" },
+                    "com.example.ExampleService#handle()": { title: "取得" },
                     "com.example.Example": { title: "例" },
                     "com.example.Param": { title: "Param" },
                 } };
@@ -156,7 +157,7 @@ test.describe('list-output.js', () => {
                         methodSignature: 'handle()',
                         returnType: 'Example',
                         eventHandler: true,
-                        methodLabel: '取得',
+                        methodFqn: 'com.example.ExampleService#handle()',
                         returnTypeFqn: 'com.example.Example',
                         parameterTypeFqns: ['com.example.Param'],
                         usingFieldTypes: ['ExampleRepository'],

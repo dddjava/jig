@@ -154,7 +154,7 @@ public class ListOutputAdapter {
                 .and("methodSignature", usecase.serviceMethod().method().simpleMethodSignatureText())
                 .and("returnType", usecase.serviceMethod().method().returnType().simpleName())
                 .and("eventHandler", usecase.usingFromController())
-                .and("methodLabel", usecase.serviceMethod().method().aliasTextOrBlank())
+                .and("methodFqn", usecase.serviceMethod().method().fqn())
                 .and("returnTypeFqn", usecase.serviceMethod().method().returnType().id().fqn())
                 .and("parameterTypeFqns", Json.array(parameterTypeFqns))
                 .and("usingFieldTypes", Json.array(usingFieldTypes))

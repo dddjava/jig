@@ -14,6 +14,17 @@ function getParameterTypeLabels(item) {
     return (item.parameterTypeFqns ?? []).map(fqn => globalThis.Jig.glossary.getTypeTerm(fqn).title);
 }
 
+function getMethodLabel(item) {
+    const fqn = item.methodFqn ?? "";
+    if (!fqn) return "";
+    const term = globalThis.Jig.glossary.findTerm(fqn);
+    if (!term) return "";
+    const hashIdx = fqn.lastIndexOf('#');
+    const parenIdx = fqn.indexOf('(', hashIdx);
+    const methodName = fqn.substring(hashIdx + 1, parenIdx);
+    return term.title !== methodName ? term.title : "";
+}
+
 function getListData() {
     const listData = globalThis.listData || {};
     const emptyBusinessRules = {
@@ -207,7 +218,7 @@ function buildServiceCsv(items) {
         item.returnType ?? "",
         markIfTrue(item.eventHandler),
         getTypeLabel(item),
-        item.methodLabel ?? "",
+        getMethodLabel(item),
         getReturnTypeLabel(item),
         formatFieldTypes(getParameterTypeLabels(item)),
         formatFieldTypes(item.usingFieldTypes),
@@ -388,7 +399,7 @@ function renderServiceTable(items) {
             item.returnType,
             markIfTrue(item.eventHandler),
             getTypeLabel(item),
-            item.methodLabel,
+            getMethodLabel(item),
             getReturnTypeLabel(item),
             formatFieldTypes(getParameterTypeLabels(item)),
             formatFieldTypes(item.usingFieldTypes),
@@ -782,6 +793,7 @@ if (typeof module !== "undefined" && module.exports) {
         getPackageLabel,
         getReturnTypeLabel,
         getParameterTypeLabels,
+        getMethodLabel,
         buildControllerCsv,
         buildServiceCsv,
         buildRepositoryCsv,

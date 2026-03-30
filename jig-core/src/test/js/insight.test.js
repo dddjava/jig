@@ -77,6 +77,7 @@ function buildInsightTables(doc) {
 
 test.describe('insight.js', () => {
 
+    // データ読み込みの処理をテスト
     test.describe('JSON読み込み', () => {
 
         test('データがない場合はnull', () => {
@@ -99,6 +100,7 @@ test.describe('insight.js', () => {
 
 
 
+    // UI要素の構築をテスト（表示フォーマット、セルのレンダリングなど）
     test.describe('表示部品', () => {
 
         test('件数表示は対象要素に文字列で書き込む', () => {
@@ -163,6 +165,7 @@ test.describe('insight.js', () => {
 
 
 
+    // テーブルへのデータレンダリングをテスト（行・セルの追加など）
     test.describe('テーブル描画', () => {
 
         test('パッケージ一覧を描画する', () => {
@@ -318,45 +321,30 @@ test.describe('insight.js', () => {
 
     });
 
-    test.describe('テーブル操作 - renderで無い場合', () => {
+    // 不正な入力や不足している要素でも例外が発生しないことを確認
+    test.describe('エッジケース - 必要な要素がない場合', () => {
 
-        test('renderPackageInsights: tbodyがない場合は早期リターン', () => {
+        test('テーブルの tbody が存在しない場合、各 render メソッドは安全に実行される（例外が発生しない）', () => {
 
             const doc = setupDocument();
             setupJig();
+
+            // 各テーブルの tbody を null に設定
             doc.selectors.set('#package-insight-list tbody', null);
-
-            const packages = [{fqn: 'app', label: 'App', numberOfTypes: 1, numberOfMethods: 1, numberOfUsingTypes: 0, cyclomaticComplexity: 1, size: 1}];
-            insight.renderPackageInsights(packages);
-
-            // 例外が発生しないことを確認
-            assert.ok(true);
-        });
-
-        test('renderTypeInsights: tbodyがない場合は早期リターン', () => {
-
-            const doc = setupDocument();
-            setupJig();
             doc.selectors.set('#type-insight-list tbody', null);
-
-            const types = [{fqn: 'app.Type', packageFqn: 'app', label: 'Type', numberOfMethods: 1, numberOfUsingTypes: 0, numberOfUsedByTypes: 0, instability: 0, lcom: 0, cyclomaticComplexity: 1, size: 1}];
-            insight.renderTypeInsights(types);
-
-            // 例外が発生しないことを確認
-            assert.ok(true);
-        });
-
-        test('renderMethodInsights: tbodyがない場合は早期リターン', () => {
-
-            const doc = setupDocument();
-            setupJig();
             doc.selectors.set('#method-insight-list tbody', null);
 
-            const methods = [{fqn: 'app.Type#method', packageFqn: 'app', typeFqn: 'app.Type', label: 'method', cyclomaticComplexity: 1, numberOfUsingTypes: 0, numberOfUsingMethods: 0, numberOfUsingFields: 0, numberOfUsingOwnFields: 0, numberOfUsingOwnMethods: 0, size: 1}];
-            insight.renderMethodInsights(methods);
-
             // 例外が発生しないことを確認
-            assert.ok(true);
+            const testData = {
+                packages: [{fqn: 'app', label: 'App', numberOfTypes: 1, numberOfMethods: 1, numberOfUsingTypes: 0, cyclomaticComplexity: 1, size: 1}],
+                types: [{fqn: 'app.Type', packageFqn: 'app', label: 'Type', numberOfMethods: 1, numberOfUsingTypes: 0, numberOfUsedByTypes: 0, instability: 0, lcom: 0, cyclomaticComplexity: 1, size: 1}],
+                methods: [{fqn: 'app.Type#method', packageFqn: 'app', typeFqn: 'app.Type', label: 'method', cyclomaticComplexity: 1, numberOfUsingTypes: 0, numberOfUsingMethods: 0, numberOfUsingFields: 0, numberOfUsingOwnFields: 0, numberOfUsingOwnMethods: 0, size: 1}]
+            };
+
+            // 全てのrenderメソッドは安全に実行される
+            assert.doesNotThrow(() => insight.renderPackageInsights(testData.packages));
+            assert.doesNotThrow(() => insight.renderTypeInsights(testData.types));
+            assert.doesNotThrow(() => insight.renderMethodInsights(testData.methods));
         });
 
     });

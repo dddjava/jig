@@ -83,6 +83,7 @@ function setupDocument() {
 }
 
 test.describe('glossary.js', () => {
+    // 用語の見出し文字を抽出するロジック（言語別に異なる処理）
     test.describe('頭文字の取得', () => {
         test('英字は大文字になる', () => {
             assert.equal(glossary.getInitialChar({title: 'account'}), 'A');

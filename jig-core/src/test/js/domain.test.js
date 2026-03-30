@@ -23,6 +23,7 @@ function setupDomainData(packages, types) {
 }
 
 test.describe('domain.js', () => {
+    // ドメイン型のリンク解決をテスト（型から HTML リンクへの変換）
     test.describe('typeLinkResolver（DomainApp.init() で登録）', () => {
         test('domain型に対して、ページ内リンクのhrefを返す', () => {
             const domainType = {fqn: 'org.example.Account', isDeprecated: false, fields: [], methods: [], staticMethods: []};
@@ -215,6 +216,7 @@ test.describe('domain.js', () => {
         });
     });
 
+    // パッケージナビゲーション要素のレンダリングをテスト（パッケージツリーの表示形式）
     test.describe('renderPackageNavItem', () => {
         test('子が1つだけでタイプを持たないパッケージの場合、統合して表示する', () => {
             const examplePkg = {
@@ -367,6 +369,7 @@ test.describe('domain.js', () => {
 
     });
 
+    // パッケージツリー操作をテスト（親パッケージから直下の子パッケージのフィルタリング）
     test.describe('getDirectChildPackages', () => {
         test('直下の子パッケージのみを返す', () => {
             const comPkg = {fqn: 'com'};
@@ -413,6 +416,7 @@ test.describe('domain.js', () => {
         });
     });
 
+    // パッケージ関連図の Mermaid ソース生成をテスト
     test.describe('createRelationDiagram', () => {
         test('関係図のMermaidソースを生成する（fqnToMermaidIdが正常に動作すること）', () => {
             const pkg = { fqn: 'org.example', types: [{ fqn: 'org.example.A' }, { fqn: 'org.example.B' }] };
@@ -511,43 +515,7 @@ test.describe('domain.js', () => {
         });
     });
 
-    test.describe('条件付きレンダリング', () => {
-        test('複数パッケージのgetDirectChildPackagesは直下の子のみを返す', () => {
-            const packages = [
-                {fqn: 'app', types: []},
-                {fqn: 'app.service', types: []},
-                {fqn: 'app.service.impl', types: []},
-                {fqn: 'app.domain', types: []},
-                {fqn: 'other', types: []}
-            ];
-
-            setupDomainData(packages, []);
-
-            const appService = packages[1];
-            const childPackages = getDirectChildPackages(appService);
-
-            assert.equal(childPackages.length, 1);
-            assert.equal(childPackages[0].fqn, 'app.service.impl');
-
-            delete globalThis.domainData;
-        });
-
-        test('パッケージのgetDirectChildPackagesで子がない場合は空配列を返す', () => {
-            const packages = [
-                {fqn: 'app', types: []},
-                {fqn: 'other', types: []}
-            ];
-
-            setupDomainData(packages, []);
-
-            const leafPackage = packages[0];
-            const childPackages = getDirectChildPackages(leafPackage);
-
-            assert.equal(childPackages.length, 0);
-
-            delete globalThis.domainData;
-        });
-
+    test.describe('パッケージ関連図の処理', () => {
         test('createRelationDiagramは空パッケージでnullを返す', () => {
             const packages = [{fqn: 'app', types: []}];
             const types = [];
@@ -562,7 +530,5 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;
         });
-
-
     });
 });

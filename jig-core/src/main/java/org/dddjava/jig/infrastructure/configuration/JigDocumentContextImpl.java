@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
 import java.nio.file.Path;
@@ -39,15 +38,5 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     @Override
     public List<JigDocument> jigDocuments() {
         return properties.jigDocuments;
-    }
-
-    @Deprecated(since = "2026.3.1")
-    @Override
-    public JigDiagramOption diagramOption() {
-        return new JigDiagramOption(
-                properties.outputDiagramFormat,
-                properties.outputDotTimeout,
-                properties.diagramTransitiveReduction
-        );
     }
 }

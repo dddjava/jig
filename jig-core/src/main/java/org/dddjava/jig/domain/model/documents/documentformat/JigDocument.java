@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+
 /**
  * 取り扱うドキュメントの種類
  */
@@ -21,53 +22,9 @@ public enum JigDocument {
             JigDocumentLabel.of("ビジネスルール一覧", "BusinessRuleList"),
             "business-rule"),
 
-    /**
-     * パッケージ関連図
-     *
-     * ビジネスルールのパッケージ関連を可視化する。
-     * トップレベルからの階層(depth)で丸めて複数出力される。
-     * パッケージの関連有無や方向からドメインを語れるかのウォークスルーに使用する。
-     */
-    @Deprecated(since = "2026.3.1")
-    PackageRelationDiagram(
-            JigDocumentLabel.of("パッケージ関連図", "PackageRelationDiagram"),
-            "package-relation"),
     PackageSummary(
             JigDocumentLabel.of("パッケージ概要", "PackageSummary"),
             "package"),
-
-    /**
-     * ビジネスルール関連図
-     *
-     * ビジネスルール間の関連を可視化する。
-     * クラス名と依存線のみのクラス図。ある程度以上の規模になると大きくなりすぎて使いづらくなる。
-     * パッケージ関連図で把握できない場合の補助に使用する。
-     */
-    @Deprecated(since = "2026.3.1")
-    BusinessRuleRelationDiagram(
-            JigDocumentLabel.of("ビジネスルール関連図", "BusinessRuleRelationDiagram"),
-            "business-rule-relation"),
-
-    /**
-     * 区分図
-     *
-     * 区分と区分値を可視化する。
-     * 区分の充実はドメインの把握具合と密接に関わる。
-     */
-    @Deprecated(since = "2026.3.1")
-    CategoryDiagram(
-            JigDocumentLabel.of("区分図", "CategoryDiagram"),
-            "category"),
-
-    /**
-     * 区分使用図
-     *
-     * 区分を使用しているクラスを可視化する。
-     */
-    @Deprecated(since = "2026.3.1")
-    CategoryUsageDiagram(
-            JigDocumentLabel.of("区分使用図", "CategoryUsageDiagram"),
-            "category-usage"),
 
     /**
      * 機能一覧
@@ -89,16 +46,6 @@ public enum JigDocument {
     ListOutput(
             JigDocumentLabel.of("一覧出力", "ListOutput"),
             "list-output"),
-
-    /**
-     * サービスメソッド呼び出し図
-     *
-     * サービスクラスのメソッド呼び出しを可視化する。
-     */
-    @Deprecated(since = "2026.3.1")
-    ServiceMethodCallHierarchyDiagram(
-            JigDocumentLabel.of("サービスメソッド呼び出し図", "ServiceMethodCallHierarchyDiagram"),
-            "service-method-call-hierarchy"),
 
     /**
      * ドメイン概要

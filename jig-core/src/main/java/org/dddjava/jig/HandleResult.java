@@ -20,11 +20,6 @@ public interface HandleResult {
     JigDocument jigDocument();
 
     /**
-     * 出力されたものがダイアグラムか否か
-     */
-    boolean isOutputDiagram();
-
-    /**
      * 成否
      */
     boolean success();

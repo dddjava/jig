@@ -34,29 +34,6 @@ public class HandleResultImpl implements HandleResult {
         this.failureMessage = e.getMessage();
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean isOutputDiagram() {
-        // TODO JigDocumentによって固定になっているが、実際の出力結果によって制御する
-        return switch (jigDocument()) {
-            case PackageRelationDiagram,
-                 BusinessRuleRelationDiagram,
-                 CategoryDiagram,
-                 CategoryUsageDiagram,
-                 ServiceMethodCallHierarchyDiagram -> true;
-            case ApplicationList,
-                 BusinessRuleList,
-                 DomainSummary,
-                 UsecaseSummary,
-                 EntrypointSummary,
-                 OutputsSummary,
-                 Insight,
-                 Glossary,
-                 PackageSummary,
-                 ListOutput -> false;
-        };
-    }
-
     public boolean failure() {
         // 何かしらのエラーがある
         // 出力対象なしは失敗ではないので、!success() ではない

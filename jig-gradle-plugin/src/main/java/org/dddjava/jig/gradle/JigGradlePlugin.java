@@ -23,9 +23,6 @@ public class JigGradlePlugin implements Plugin<Project> {
             task.getModelPattern().convention(project.provider(config::getModelPattern));
             task.getDocumentTypes().convention(project.provider(config::getDocumentTypes));
             task.getDocumentTypesExclude().convention(project.provider(config::getDocumentTypesExclude));
-            task.getDiagramFormat().convention(project.provider(() -> config.getDiagramFormat().name()));
-            task.getDiagramTransitiveReduction().convention(project.provider(config::isDiagramTransitiveReduction));
-            task.getDotTimeout().convention(project.provider(config::getDotTimeout));
 
             // 出力ディレクトリ（project をキャプチャしないよう configuration phase で解決）
             String outputDir = config.getOutputDirectory();

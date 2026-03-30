@@ -1,6 +1,5 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -15,7 +14,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.Optional;
 import java.util.List;
 
@@ -29,12 +27,6 @@ class CliConfig {
     String modelPattern;
     @Value("${jig.output.directory}")
     String outputDirectory;
-    @Value("${jig.output.diagram.format:svg}")
-    JigDiagramFormat diagramFormat;
-    @Value("${jig.output.diagram.timeout:10s}")
-    Duration dotTimeout;
-    @Value("${jig.output.diagram.transitiveReduction:true}")
-    boolean diagramTransitiveReduction;
 
     @Value("${project.path}")
     String projectPath;
@@ -54,9 +46,6 @@ class CliConfig {
                 jig.document.types=%s
                 jig.pattern.domain=%s
                 jig.output.directory=%s
-                jig.output.diagram.format=%s
-                jig.output.diagram.timeout=%s
-                jig.output.diagram.transitiveReduction=%s
                 project.path=%s
                 directory.classes=%s
                 directory.resources=%s
@@ -65,9 +54,6 @@ class CliConfig {
                 documentTypeText,
                 modelPattern,
                 outputDirectory,
-                diagramFormat,
-                dotTimeout,
-                diagramTransitiveReduction,
                 projectPath,
                 directoryClasses,
                 directoryResources,
@@ -83,17 +69,15 @@ class CliConfig {
     Configuration configuration() {
         // modeを適用
         if (mode.contains(Mode.LIGHT)) {
-            documentTypeText = "PackageRelationDiagram";
+            documentTypeText = "PackageSummary";
             modelPattern = ".*";
         }
 
         return Configuration.from(
                 new JigProperties(
                         jigDocuments(),
-                        Optional.ofNullable(modelPattern).filter(s -> !s.isEmpty()), Paths.get(this.outputDirectory),
-                        diagramFormat,
-                        diagramTransitiveReduction,
-                        dotTimeout
+                        Optional.ofNullable(modelPattern).filter(s -> !s.isEmpty()),
+                        Paths.get(this.outputDirectory)
                 ));
     }
 

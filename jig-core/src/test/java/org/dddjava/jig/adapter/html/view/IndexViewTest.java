@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.html.view;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -22,7 +21,7 @@ class IndexViewTest {
 
     @Test
     void 出力対象がない場合は一覧セクションを出力しない() throws IOException {
-        var sut = new IndexView(JigDiagramFormat.SVG);
+        var sut = new IndexView();
 
         sut.render(List.of(), tempDir);
 
@@ -30,7 +29,6 @@ class IndexViewTest {
         assertFalse(actual.contains("<h2>概要: HTML</h2>"));
         assertFalse(actual.contains("<h2>一覧: HTML</h2>"));
         assertFalse(actual.contains("<h2>一覧: Excel</h2>"));
-        assertFalse(actual.contains("<h2>図: "));
 
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("globalThis.navigationData"));
@@ -39,7 +37,7 @@ class IndexViewTest {
 
     @Test
     void 出力対象がある場合は対応する一覧セクションを出力する() throws IOException {
-        var sut = new IndexView(JigDiagramFormat.SVG);
+        var sut = new IndexView();
         var results = List.of(
                 HandleResult.withOutput(JigDocument.PackageSummary, List.of(Path.of("package-summary.html"))),
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html"))),

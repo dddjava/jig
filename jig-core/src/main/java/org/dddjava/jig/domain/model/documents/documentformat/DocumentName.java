@@ -13,8 +13,4 @@ public record DocumentName(JigDocument jigDocument, String fileName, String labe
     public DocumentName withSuffix(String suffix) {
         return of(this.jigDocument, this.fileName + suffix);
     }
-
-    public String withExtension(JigDiagramFormat jigDiagramFormat) {
-        return fileName + jigDiagramFormat.extension();
-    }
 }

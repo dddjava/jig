@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,59 +26,15 @@ public class JigProperties {
     Path outputDirectory;
 
     /**
-     * 図の出力形式
-     */
-    JigDiagramFormat outputDiagramFormat;
-
-    /**
-     * dotコマンドのタイムアウト
-     */
-    Duration outputDotTimeout;
-
-    /**
      * 出力対象となるJigDocumentのリスト。
      * 全部出ると邪魔／時間がかかる時に指定。
      */
     List<JigDocument> jigDocuments;
 
-    /**
-     * ダイアグラムで関係を簡略化して出力する
-     *
-     * パッケージ関連図とビジネスルール関連図が対象です。
-     */
-    public boolean diagramTransitiveReduction;
-
-    /**
-     * 最小のコンストラクタ。あまり変更しない。
-     */
     public JigProperties(List<JigDocument> jigDocuments, Optional<String> domainPattern, Path outputDirectory) {
-        this(
-                jigDocuments,
-                domainPattern,
-                outputDirectory,
-                JigDiagramFormat.valueOf(JigProperty.defaultOutputDiagramFormat()),
-                true,
-                Duration.ofSeconds(10)
-        );
-    }
-
-    /**
-     * 実験的な項目も含むコンストラクタ。よく変わる。
-     */
-    public JigProperties(List<JigDocument> jigDocuments,
-                         Optional<String> domainPattern,
-                         Path outputDirectory,
-                         JigDiagramFormat outputDiagramFormat,
-                         boolean diagramTransitiveReduction,
-                         Duration outputDotTimeout) {
         this.jigDocuments = jigDocuments;
-
         this.domainPattern = domainPattern;
-
         this.outputDirectory = outputDirectory;
-        this.outputDiagramFormat = outputDiagramFormat;
-        this.outputDotTimeout = outputDotTimeout;
-        this.diagramTransitiveReduction = diagramTransitiveReduction;
     }
 
     static JigProperties defaultInstance() {
@@ -127,7 +81,6 @@ public class JigProperties {
         return "JigProperties{" +
                 "businessRulePattern='" + domainPattern + '\'' +
                 ", outputDirectory=" + outputDirectory +
-                ", outputDiagramFormat=" + outputDiagramFormat +
                 '}';
     }
 }

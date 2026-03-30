@@ -3,7 +3,6 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
 import org.dddjava.jig.JigResult;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
@@ -25,7 +24,6 @@ import org.gradle.work.DisableCachingByDefault;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,15 +42,6 @@ public abstract class JigReportsTask extends DefaultTask {
 
     @Input
     public abstract ListProperty<String> getDocumentTypesExclude();
-
-    @Input
-    public abstract Property<String> getDiagramFormat();
-
-    @Input
-    public abstract Property<Boolean> getDiagramTransitiveReduction();
-
-    @Input
-    public abstract Property<String> getDotTimeout();
 
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
@@ -80,10 +69,7 @@ public abstract class JigReportsTask extends DefaultTask {
         JigProperties jigProperties = new JigProperties(
                 documentTypes,
                 Optional.ofNullable(getModelPattern().getOrNull()).filter(s -> !s.isEmpty()),
-                outputDirectory,
-                JigDiagramFormat.valueOf(getDiagramFormat().get()),
-                getDiagramTransitiveReduction().get(),
-                parseDotTimeout(getDotTimeout().get())
+                outputDirectory
         );
 
         Configuration configuration = Configuration.from(jigProperties);
@@ -132,15 +118,5 @@ public abstract class JigReportsTask extends DefaultTask {
         return toInclude.stream()
                 .filter(each -> !toExclude.contains(each))
                 .toList();
-    }
-
-    private Duration parseDotTimeout(String dotTimeout) {
-        if (dotTimeout.endsWith("ms")) {
-            return Duration.ofMillis(Long.parseLong(dotTimeout.substring(0, dotTimeout.length() - 2)));
-        }
-        if (dotTimeout.endsWith("s")) {
-            return Duration.ofSeconds(Long.parseLong(dotTimeout.substring(0, dotTimeout.length() - 1)));
-        }
-        throw new IllegalArgumentException("dotTimeout must be end with ms or s. " + dotTimeout + " is invalid.");
     }
 }

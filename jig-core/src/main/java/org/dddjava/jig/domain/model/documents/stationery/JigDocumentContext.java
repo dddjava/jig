@@ -35,9 +35,4 @@ public interface JigDocumentContext {
      */
     List<JigDocument> jigDocuments();
 
-    /**
-     * ドキュメント内容にかかわるオプション
-     */
-    @Deprecated(since = "2026.3.1")
-    JigDiagramOption diagramOption();
 }

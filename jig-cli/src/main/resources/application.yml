@@ -6,11 +6,9 @@ logging:
 jig:
   # Output targets (multiple specifications with commas)
   #document:
-  #  types: ServiceMethodCallHierarchyDiagram,PackageRelationDiagram,BusinessRuleList
+  #  types: PackageSummary,BusinessRuleList
   output:
     directory: ./build/jig
-    diagram:
-      format: svg
   # Domain class pattern (regular expression)
   #pattern:
   #  domain: .+\.domain\.(model|type)\..+

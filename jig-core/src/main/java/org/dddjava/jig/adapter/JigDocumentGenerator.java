@@ -3,14 +3,11 @@ package org.dddjava.jig.adapter;
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
-import org.dddjava.jig.adapter.graphviz.DiagramAdapter;
-import org.dddjava.jig.adapter.graphviz.GraphvizDiagramWriter;
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.html.view.IndexView;
 import org.dddjava.jig.adapter.poi.ListAdapter;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDiagramOption;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.slf4j.Logger;
@@ -29,24 +26,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-@SuppressWarnings("deprecation")
 public class JigDocumentGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
 
-    private final JigDiagramOption diagramOption;
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
     private final CompositeAdapter compositeAdapter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
-        this.diagramOption = jigDocumentContext.diagramOption();
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
         compositeAdapter = new CompositeAdapter();
-        compositeAdapter.register(new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext)));
         compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
         compositeAdapter.register(new DomainSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
@@ -112,8 +105,6 @@ public class JigDocumentGenerator {
 
                 var outputFilePaths = switch (jigDocument) {
                     case DomainSummary, UsecaseSummary, EntrypointSummary,
-                         PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
-                         ServiceMethodCallHierarchyDiagram,
                          BusinessRuleList, ApplicationList, ListOutput,
                          OutputsSummary, Insight, Glossary, PackageSummary -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
@@ -142,7 +133,7 @@ public class JigDocumentGenerator {
 
     private void generateIndex(List<HandleResult> results) {
         Metrics.timer("jig.document.time", "phase", "index").record(() -> {
-            IndexView indexView = new IndexView(diagramOption.graphvizOutputFormat());
+            IndexView indexView = new IndexView();
             indexView.render(results, outputDirectory);
         });
     }

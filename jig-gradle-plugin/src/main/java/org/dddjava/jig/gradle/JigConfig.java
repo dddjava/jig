@@ -1,7 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
-
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +12,6 @@ public class JigConfig {
     List<String> documentTypesExclude = new ArrayList<>();
 
     String outputDirectory = "";
-
-    JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
-    String dotTimeout = "10s";
-
-    boolean diagramTransitiveReduction = true;
 
     public List<String> getDocumentTypesExclude() {
         return documentTypesExclude;
@@ -54,29 +47,4 @@ public class JigConfig {
         }
         this.outputDirectory = outputDirectory;
     }
-
-    public JigDiagramFormat getDiagramFormat() {
-        return diagramFormat;
-    }
-
-    public void setDiagramFormat(JigDiagramFormat diagramFormat) {
-        this.diagramFormat = diagramFormat;
-    }
-
-    public String getDotTimeout() {
-        return dotTimeout;
-    }
-
-    public void setDotTimeout(String dotTimeout) {
-        this.dotTimeout = dotTimeout;
-    }
-
-    public boolean isDiagramTransitiveReduction() {
-        return diagramTransitiveReduction;
-    }
-
-    public void setDiagramTransitiveReduction(boolean diagramTransitiveReduction) {
-        this.diagramTransitiveReduction = diagramTransitiveReduction;
-    }
-
 }

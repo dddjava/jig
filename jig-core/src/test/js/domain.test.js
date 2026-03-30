@@ -8,7 +8,7 @@ global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-common.js');
 require('../../main/resources/templates/assets/jig.js');
 
-const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram } = require('../../main/resources/templates/assets/domain.js');
+const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, derivePackageRelations } = require('../../main/resources/templates/assets/domain.js');
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
@@ -509,5 +509,60 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
         });
+    });
+
+    test.describe('条件付きレンダリング', () => {
+        test('複数パッケージのgetDirectChildPackagesは直下の子のみを返す', () => {
+            const packages = [
+                {fqn: 'app', types: []},
+                {fqn: 'app.service', types: []},
+                {fqn: 'app.service.impl', types: []},
+                {fqn: 'app.domain', types: []},
+                {fqn: 'other', types: []}
+            ];
+
+            setupDomainData(packages, []);
+
+            const appService = packages[1];
+            const childPackages = getDirectChildPackages(appService);
+
+            assert.equal(childPackages.length, 1);
+            assert.equal(childPackages[0].fqn, 'app.service.impl');
+
+            delete globalThis.domainData;
+        });
+
+        test('パッケージのgetDirectChildPackagesで子がない場合は空配列を返す', () => {
+            const packages = [
+                {fqn: 'app', types: []},
+                {fqn: 'other', types: []}
+            ];
+
+            setupDomainData(packages, []);
+
+            const leafPackage = packages[0];
+            const childPackages = getDirectChildPackages(leafPackage);
+
+            assert.equal(childPackages.length, 0);
+
+            delete globalThis.domainData;
+        });
+
+        test('createRelationDiagramは空パッケージでnullを返す', () => {
+            const packages = [{fqn: 'app', types: []}];
+            const types = [];
+
+            setupDomainData(packages, types);
+            globalThis.typeRelationsData = { relations: [] };
+
+            const result = createRelationDiagram(packages[0]);
+
+            assert.equal(result, null);
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+        });
+
+
     });
 });

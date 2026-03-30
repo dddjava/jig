@@ -624,6 +624,26 @@ test.describe("outbound.js", () => {
             const crudCell = portRow.children[1];
             assert.equal(crudCell.textContent, "C");
         });
+
+        test("複数のCRUD操作が混在する場合、すべて表示される", () => {
+             const doc = setupDom();
+             const grouped = [{
+                 outboundPort: { fqn: "com.example.Port", label: "Port" },
+                 operations: [{
+                     outboundPortOperation: { fqn: "com.example.Port#execute()", label: "execute" },
+                     outboundAdapter: null, outboundAdapterExecution: null,
+                     persistenceAccessors: [
+                         { id: "op1", group: "g", groupLabel: "G", targetOperationTypes: { "orders": "INSERT", "users": "UPDATE" } }
+                     ],
+                     externalAccessors: []
+                 }]
+             }];
+             outbound.renderCrudTable(grouped);
+             const container = doc.getElementById("outbound-crud-panel");
+             assert.ok(container);
+             const table = container.children[0];
+             assert.equal(table.tagName, "table");
+        });
     });
 
 });

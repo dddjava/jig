@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.html.view;
+package org.dddjava.jig.adapter.html;
 
-import org.dddjava.jig.adapter.html.GlossaryAdapter;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;

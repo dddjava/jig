@@ -273,13 +273,6 @@ class DocumentStub {
     }
 }
 
-class LocalStorageStub {
-    constructor() { this.storage = {}; }
-    getItem(key) { return Object.prototype.hasOwnProperty.call(this.storage, key) ? this.storage[key] : null; }
-    setItem(key, value) { this.storage[key] = String(value); }
-    removeItem(key) { delete this.storage[key]; }
-}
-
 class EventStub {
     constructor(type) { this.type = type; }
 }
@@ -321,4 +314,4 @@ function setGlossaryData(data) {
     globalThis.glossaryData = { terms: data };
 }
 
-module.exports = { Element, DocumentStub, LocalStorageStub, EventStub, setGlossaryData };
+module.exports = { Element, DocumentStub, EventStub, setGlossaryData };

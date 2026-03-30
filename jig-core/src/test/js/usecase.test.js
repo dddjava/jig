@@ -1,7 +1,7 @@
 const assert = require('assert');
 const { test, beforeEach } = require('node:test');
 const path = require('path');
-const { DocumentStub, LocalStorageStub, EventStub, setGlossaryData } = require('./dom-stub.js');
+const { DocumentStub, EventStub, setGlossaryData } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
@@ -58,7 +58,6 @@ test.describe('UsecaseApp', () => {
         doc = new DocumentStub();
         global.document = doc;
         global.window = { addEventListener: () => {}, Event: EventStub };
-        global.localStorage = new LocalStorageStub();
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
         delete globalThis.inboundData;
@@ -251,7 +250,7 @@ test.describe('UsecaseApp', () => {
         delete globalThis.domainData;
     });
 
-    test('initControls should toggle body classes and save to localStorage', () => {
+    test('initControls should toggle body classes', () => {
         globalThis.usecaseData = mockUsecaseData;
         UsecaseApp.init();
 
@@ -270,37 +269,31 @@ test.describe('UsecaseApp', () => {
         showFields.checked = false;
         showFields.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-fields'), true);
-        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-fields'), 'false');
 
         // Toggle static methods
         showStaticMethods.checked = false;
         showStaticMethods.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-static-methods'), true);
-        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-static-methods'), 'false');
 
         // Toggle diagrams
         showDiagrams.checked = false;
         showDiagrams.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-diagrams'), true);
-        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-diagrams'), 'false');
 
         // Toggle details
         showDetails.checked = false;
         showDetails.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-details'), true);
-        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-details'), 'false');
 
         // Toggle descriptions
         showDescriptions.checked = false;
         showDescriptions.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-descriptions'), true);
-        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-descriptions'), 'false');
 
         // Toggle declarations
         showDeclarations.checked = false;
         showDeclarations.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-declarations'), true);
-        assert.strictEqual(global.localStorage.getItem('jig-usecase-show-declarations'), 'false');
     });
 
     test('シーケンス図タブを選択した状態で再レンダリングしてもシーケンス図が維持される', () => {
@@ -383,7 +376,6 @@ test.describe('buildSequenceDiagram', () => {
 
         global.document = new DocumentStub();
         global.window = { addEventListener: () => {}, Event: EventStub };
-        global.localStorage = new LocalStorageStub();
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
 
@@ -653,7 +645,6 @@ test.describe('buildSequenceDiagramCode', () => {
 
         global.document = new DocumentStub();
         global.window = { addEventListener: () => {}, Event: EventStub };
-        global.localStorage = new LocalStorageStub();
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
 
@@ -720,7 +711,6 @@ test.describe('buildOutboundOperationSet', () => {
 
         global.document = new DocumentStub();
         global.window = { addEventListener: () => {}, Event: EventStub };
-        global.localStorage = new LocalStorageStub();
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
 
@@ -777,7 +767,6 @@ test.describe('buildUsecaseDiagram', () => {
 
         global.document = new DocumentStub();
         global.window = { addEventListener: () => {}, Event: EventStub };
-        global.localStorage = new LocalStorageStub();
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
 

@@ -559,18 +559,10 @@ const UsecaseApp = {
             const checkbox = document.getElementById(control.id);
             if (!checkbox) return;
 
-            const storageKey = `jig-usecase-${control.id}`;
-            const savedValue = localStorage.getItem(storageKey);
-            
-            if (savedValue !== null) {
-                checkbox.checked = savedValue === 'true';
-            }
-
             const update = () => {
                 if (control.class) {
                     document.body.classList.toggle(control.class, !checkbox.checked);
                 }
-                localStorage.setItem(storageKey, checkbox.checked);
                 if (control.reRender) {
                     this.render();
                 }

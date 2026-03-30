@@ -5,7 +5,6 @@ import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.html.*;
 import org.dddjava.jig.adapter.html.view.IndexView;
-import org.dddjava.jig.adapter.poi.ListAdapter;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -40,7 +39,6 @@ public class JigDocumentGenerator {
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
         compositeAdapter = new CompositeAdapter();
-        compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
         compositeAdapter.register(new DomainSummaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new OutboundSummaryAdapter(jigService, jigDocumentContext));
@@ -102,7 +100,7 @@ public class JigDocumentGenerator {
 
                 var outputFilePaths = switch (jigDocument) {
                     case DomainSummary, UsecaseSummary, EntrypointSummary,
-                         BusinessRuleList, ApplicationList, ListOutput,
+                         ListOutput,
                          OutputsSummary, Insight, Glossary, PackageSummary -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 

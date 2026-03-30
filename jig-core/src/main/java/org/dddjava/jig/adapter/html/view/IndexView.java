@@ -99,20 +99,6 @@ public class IndexView {
             html.append("    </section>\n");
         }
 
-        // Excel一覧
-        if (documentLinks.containsKey(JigDocument.BusinessRuleList) || documentLinks.containsKey(JigDocument.ApplicationList)) {
-            html.append("    <section>\n");
-            html.append("        <h2>一覧: Excel</h2>\n");
-            html.append("        <aside class=\"notice\">\n");
-            html.append("            <p>2026.4.1 のリリースで廃止予定です。<a style=\"text-decoration: underline\" href=\"https://github.com/dddjava/jig/wiki/2026.4.1-%E7%94%BB%E5%83%8F%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%8A%E3%82%88%E3%81%B3Exce%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%83%88%E3%82%92%E5%BB%83%E6%AD%A2\">詳細はこちら</a>。</p>\n");
-            html.append("        </aside>\n");
-            html.append("        <ul>\n");
-            appendLinkIfPresent(html, documentLinks, JigDocument.BusinessRuleList);
-            appendLinkIfPresent(html, documentLinks, JigDocument.ApplicationList);
-            html.append("        </ul>\n");
-            html.append("    </section>\n");
-        }
-
         html.append("</main>\n");
         html.append("\n");
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js\"></script>\n");

@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.documents.documentformat;
 
-import org.dddjava.jig.infrastructure.mybatis.MyBatisStatementsReader;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -12,32 +10,10 @@ import java.util.Locale;
  */
 public enum JigDocument {
 
-    /**
-     * ビジネスルール一覧
-     *
-     * ビジネスルールを表すクラスの一覧。
-     * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
-     */
-    BusinessRuleList(
-            JigDocumentLabel.of("ビジネスルール一覧", "BusinessRuleList"),
-            "business-rule"),
-
     PackageSummary(
             JigDocumentLabel.of("パッケージ概要", "PackageSummary"),
             "package"),
 
-    /**
-     * 機能一覧
-     *
-     * 機能を提供するメソッドの一覧。
-     * 三層（プレゼンテーション層、アプリケーション層、データソース層）の情報を提供する。
-     * アプリケーションの状況把握に使用できる。
-     *
-     * 制限事項: {@link MyBatisStatementsReader}
-     */
-    ApplicationList(
-            JigDocumentLabel.of("機能一覧", "ApplicationList"),
-            "application"),
     /**
      * 一覧出力
      *

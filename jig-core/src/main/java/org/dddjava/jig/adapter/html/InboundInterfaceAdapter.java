@@ -21,17 +21,17 @@ import java.util.List;
 /**
  * 入力インタフェース
  */
-public class InboundEndpointAdapter {
+public class InboundInterfaceAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public InboundEndpointAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public InboundInterfaceAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.InboundEndpoint)
+    @HandleDocument(JigDocument.InboundInterface)
 
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var contextJigTypes = jigService.jigTypes(repository);

@@ -83,14 +83,14 @@ org.dddjava.jig/
 ### 出力ドキュメント
 
 `JigDocument.java` に enum として定義。アクティブなもの:
-- `ListOutput` — 一覧出力（HTML）
+- `Glossary` — 用語集
 - `PackageRelation` — パッケージ関連
 - `DomainModel` — ドメインモデル
-- `UsecaseProcess` — ユースケース
-- `InboundEndpoint` — 入力インタフェース
-- `OutboundCall` — 出力インタフェース
+- `UsecaseModel` — ユースケース
+- `InboundInterface` — 入力インタフェース
+- `OutboundInterface` — 出力インタフェース
 - `Insight` — インサイト
-- `Glossary` — 用語集
+- `ListOutput` — 一覧出力（HTML）
 
 ## コミットルール
 

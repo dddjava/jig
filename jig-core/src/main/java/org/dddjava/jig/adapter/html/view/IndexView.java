@@ -22,9 +22,9 @@ public class IndexView {
             JigDocument.PackageRelation,
             JigDocument.Glossary,
             JigDocument.DomainModel,
-            JigDocument.UsecaseProcess,
-            JigDocument.InboundEndpoint,
-            JigDocument.OutboundCall,
+            JigDocument.UsecaseModel,
+            JigDocument.InboundInterface,
+            JigDocument.OutboundInterface,
             JigDocument.Insight
     );
 

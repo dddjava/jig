@@ -6,7 +6,7 @@ const MermaidBuilder = globalThis.Jig.mermaid.Builder;
 // ===== データ取得・変換 =====
 
 /**
- * Java側（OutboundCallAdapter）が生成する出力ポートデータのスキーマ。
+ * Java側（OutboundInterfaceAdapter）が生成する出力ポートデータのスキーマ。
  * outboundPortOperation の fqn は必ず設定される（Java側保証）。
  * outboundAdapter・outboundAdapterExecution は対応する実装が見つからない場合 null になる。
  *

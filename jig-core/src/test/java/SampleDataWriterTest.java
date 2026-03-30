@@ -39,7 +39,7 @@ class SampleDataWriterTest {
 
         // outbound-data.js
         {
-            var json = OutboundCallAdapter.buildJson(outboundAdapters);
+            var json = OutboundInterfaceAdapter.buildJson(outboundAdapters);
             Path sampleFile = Path.of("src/main/resources/templates/data/outbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -96,7 +96,7 @@ class SampleDataWriterTest {
         // inbound-data.js
         {
             var inputAdapters = jigService.inputAdapters(repository);
-            var json = InboundEndpointAdapter.buildJson(inputAdapters, jigTypes);
+            var json = InboundInterfaceAdapter.buildJson(inputAdapters, jigTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/inbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -107,7 +107,7 @@ class SampleDataWriterTest {
         // usecase-data.js
         {
             var serviceTypes = jigService.serviceTypes(repository);
-            var json = UsecaseProcessAdapter.buildJson(serviceTypes);
+            var json = UsecaseModelAdapter.buildJson(serviceTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/usecase-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +

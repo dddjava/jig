@@ -21,17 +21,17 @@ import java.util.stream.Stream;
 /**
  * ユースケース
  */
-public class UsecaseProcessAdapter {
+public class UsecaseModelAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public UsecaseProcessAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public UsecaseModelAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.UsecaseProcess)
+    @HandleDocument(JigDocument.UsecaseModel)
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var contextJigTypes = jigService.serviceTypes(repository);
 
@@ -54,12 +54,12 @@ public class UsecaseProcessAdapter {
 
                     List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods().stream()
                             .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                            .map(UsecaseProcessAdapter::buildMethodJson)
+                            .map(UsecaseModelAdapter::buildMethodJson)
                             .collect(Collectors.toList());
 
                     List<JsonObjectBuilder> methodList = jigType.instanceJigMethods().stream()
                             .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                            .map(UsecaseProcessAdapter::buildMethodJson)
+                            .map(UsecaseModelAdapter::buildMethodJson)
                             .toList();
 
                     if (methodList.isEmpty() && fields.isEmpty() && staticMethods.isEmpty()) {

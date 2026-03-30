@@ -19,17 +19,17 @@ import java.util.List;
 /**
  * 出力インタフェース
  */
-public class OutboundCallAdapter {
+public class OutboundInterfaceAdapter {
 
     private final JigService jigService;
     private final JigDocumentContext jigDocumentContext;
 
-    public OutboundCallAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public OutboundInterfaceAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @HandleDocument(JigDocument.OutboundCall)
+    @HandleDocument(JigDocument.OutboundInterface)
 
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var outboundAdapters = jigService.outboundAdapters(repository);

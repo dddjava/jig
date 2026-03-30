@@ -28,17 +28,17 @@ public enum JigDocument {
     /**
      * ユースケース
      */
-    UsecaseProcess(JigDocumentLabel.of("ユースケース", "UsecaseProcess"), "usecase"),
+    UsecaseModel(JigDocumentLabel.of("ユースケース", "UsecaseModel"), "usecase"),
 
     /**
      * 入力インタフェース
      */
-    InboundEndpoint(JigDocumentLabel.of("入力インタフェース", "InboundEndpoint"), "inbound"),
+    InboundInterface(JigDocumentLabel.of("入力インタフェース", "InboundInterface"), "inbound"),
 
     /**
      * 出力インタフェース
      */
-    OutboundCall(JigDocumentLabel.of("出力インタフェース", "OutboundCall"), "outbound"),
+    OutboundInterface(JigDocumentLabel.of("出力インタフェース", "OutboundInterface"), "outbound"),
 
     /**
      * インサイト

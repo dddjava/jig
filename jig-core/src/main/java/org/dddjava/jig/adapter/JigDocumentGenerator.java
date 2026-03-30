@@ -41,9 +41,9 @@ public class JigDocumentGenerator {
         compositeAdapter = new CompositeAdapter();
         compositeAdapter.register(new DomainModelAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new OutboundCallAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new InboundEndpointAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new UsecaseProcessAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new OutboundInterfaceAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new InboundInterfaceAdapter(jigService, jigDocumentContext));
+        compositeAdapter.register(new UsecaseModelAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new ListOutputAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new GlossaryAdapter(jigService, jigDocumentContext));
         compositeAdapter.register(new PackageRelationAdapter(jigService, jigDocumentContext));
@@ -99,9 +99,9 @@ public class JigDocumentGenerator {
                 long startTime = System.currentTimeMillis();
 
                 var outputFilePaths = switch (jigDocument) {
-                    case DomainModel, UsecaseProcess, InboundEndpoint,
+                    case DomainModel, UsecaseModel, InboundInterface,
                          ListOutput,
-                         OutboundCall, Insight, Glossary, PackageRelation -> compositeAdapter.invoke(jigDocument, jigRepository);
+                         OutboundInterface, Insight, Glossary, PackageRelation -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
                 long takenTime = System.currentTimeMillis() - startTime;

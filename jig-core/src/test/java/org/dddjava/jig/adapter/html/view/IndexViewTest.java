@@ -1,6 +1,7 @@
 package org.dddjava.jig.adapter.html.view;
 
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.adapter.html.IndexView;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

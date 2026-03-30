@@ -44,10 +44,6 @@ class IndexViewTest {
 
         sut.render(results, tempDir);
 
-        String actual = readIndex();
-        assertTrue(actual.contains("<h2>設計情報: HTML</h2>"));
-        assertTrue(actual.contains("<h2>一覧: HTML</h2>"));
-
         String navigationData = readNavigationData();
         assertTrue(navigationData.contains("\"href\":\"package.html\""));
         assertTrue(navigationData.contains("\"href\":\"list-output.html\""));

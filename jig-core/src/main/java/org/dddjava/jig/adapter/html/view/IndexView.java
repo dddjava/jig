@@ -70,27 +70,13 @@ public class IndexView {
         html.append("\n");
         html.append("<main>\n");
 
-        // HTML概要
-        if (HTML_SUMMARY_DOCUMENTS.stream().anyMatch(documentLinks::containsKey)) {
-            html.append("    <section>\n");
-            html.append("        <h2>設計情報: HTML</h2>\n");
-            html.append("        <ul>\n");
-            for (JigDocument doc : HTML_SUMMARY_DOCUMENTS) {
-                appendLinkIfPresent(html, documentLinks, doc);
-            }
-            html.append("        </ul>\n");
-            html.append("    </section>\n");
+        html.append("    <section>\n");
+        html.append("        <ul>\n");
+        for (JigDocument doc : JigDocument.values()) {
+            appendLinkIfPresent(html, documentLinks, doc);
         }
-
-        // HTML一覧
-        if (documentLinks.containsKey(JigDocument.ListOutput)) {
-            html.append("    <section>\n");
-            html.append("        <h2>一覧: HTML</h2>\n");
-            html.append("        <ul>\n");
-            appendLinkIfPresent(html, documentLinks, JigDocument.ListOutput);
-            html.append("        </ul>\n");
-            html.append("    </section>\n");
-        }
+        html.append("        </ul>\n");
+        html.append("    </section>\n");
 
         if (documentLinks.containsKey(JigDocument.PackageRelation)) {
             html.append("    <section id=\"diagrams\">\n");

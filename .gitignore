@@ -4,5 +4,7 @@ build/
 out/
 *.iml
 
+buildSrc/.kotlin/
+
 node_modules/
 

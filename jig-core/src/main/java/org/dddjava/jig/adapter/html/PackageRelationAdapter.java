@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * パッケージ関連
  */
+@HandleDocument
 public class PackageRelationAdapter {
 
     private final JigService jigService;

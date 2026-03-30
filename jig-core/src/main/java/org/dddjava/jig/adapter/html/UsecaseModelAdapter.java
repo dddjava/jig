@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 /**
  * ユースケース
  */
+@HandleDocument
 public class UsecaseModelAdapter {
 
     private final JigService jigService;

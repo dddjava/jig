@@ -19,6 +19,7 @@ import java.util.List;
 /**
  * 出力インタフェース
  */
+@HandleDocument
 public class OutboundInterfaceAdapter {
 
     private final JigService jigService;
@@ -30,7 +31,6 @@ public class OutboundInterfaceAdapter {
     }
 
     @HandleDocument(JigDocument.OutboundInterface)
-
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var outboundAdapters = jigService.outboundAdapters(repository);
 

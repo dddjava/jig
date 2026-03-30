@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * ドメインモデル
  */
+@HandleDocument
 public class DomainModelAdapter {
 
     private final JigService jigService;

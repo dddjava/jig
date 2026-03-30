@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@HandleDocument
 public class GlossaryAdapter {
 
     private final JigService jigService;

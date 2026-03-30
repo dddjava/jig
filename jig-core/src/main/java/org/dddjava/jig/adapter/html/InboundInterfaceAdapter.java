@@ -21,6 +21,7 @@ import java.util.List;
 /**
  * 入力インタフェース
  */
+@HandleDocument
 public class InboundInterfaceAdapter {
 
     private final JigService jigService;
@@ -32,7 +33,6 @@ public class InboundInterfaceAdapter {
     }
 
     @HandleDocument(JigDocument.InboundInterface)
-
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         var contextJigTypes = jigService.jigTypes(repository);
         var inputAdapters = jigService.inputAdapters(repository);

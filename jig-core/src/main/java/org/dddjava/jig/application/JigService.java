@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
@@ -24,7 +23,6 @@ import org.dddjava.jig.domain.model.knowledge.module.JigPackage;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackages;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList;
 
 import java.util.List;
 import java.util.Map;
@@ -83,10 +81,6 @@ public class JigService {
         return typesQueryService.serviceTypes(jigRepository);
     }
 
-    public ServiceMethods serviceMethods(JigRepository jigRepository) {
-        return usecaseQueryService.serviceMethods(jigRepository);
-    }
-
     public InputAdapters inputAdapters(JigRepository jigRepository) {
         return usecaseQueryService.inputAdapters(jigRepository);
     }
@@ -101,10 +95,6 @@ public class JigService {
 
     public OutboundAdapters outboundAdapters(JigRepository jigRepository) {
         return infrastructureQueryService.outboundAdapters(jigRepository);
-    }
-
-    public StringComparingMethodList stringComparing(JigRepository jigRepository) {
-        return usecaseQueryService.stringComparing(jigRepository);
     }
 
     public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {

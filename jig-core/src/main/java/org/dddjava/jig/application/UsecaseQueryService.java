@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
 import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.usecases.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.usecases.StringComparingMethodList;
 
 @Service
 public class UsecaseQueryService {
@@ -43,9 +42,4 @@ public class UsecaseQueryService {
         return ServiceAngles.from(serviceMethods, inputAdapters(jigRepository), outboundAdapters);
     }
 
-    public StringComparingMethodList stringComparing(JigRepository jigRepository) {
-        var inputAdapters = inputAdapters(jigRepository);
-        var serviceMethods = serviceMethods(jigRepository);
-        return StringComparingMethodList.from(inputAdapters, serviceMethods);
-    }
 }

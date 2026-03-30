@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
+require('../../main/resources/templates/assets/jig-common.js');
 const listOutput = require('../../main/resources/templates/assets/list-output.js');
 
 class Element {
@@ -118,13 +119,13 @@ test.describe('list-output.js', () => {
 
         test.describe('buildControllerCsv', () => {
             test('CSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.ExampleController": { title: "例" } } };
                 const items = [
                     {
                         packageName: 'com.example',
                         typeName: 'ExampleController',
                         methodSignature: 'getExample()',
                         returnType: 'Example',
-                        typeLabel: '例',
                         usingFieldTypes: ['ExampleRepository', 'AnotherType'],
                         cyclomaticComplexity: 2,
                         path: 'GET /example',
@@ -143,6 +144,11 @@ test.describe('list-output.js', () => {
 
         test.describe('buildServiceCsv', () => {
             test('SERVICEのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: {
+                    "com.example.ExampleService": { title: "例" },
+                    "com.example.Example": { title: "例" },
+                    "com.example.Param": { title: "Param" },
+                } };
                 const items = [
                     {
                         packageName: 'com.example',
@@ -150,10 +156,9 @@ test.describe('list-output.js', () => {
                         methodSignature: 'handle()',
                         returnType: 'Example',
                         eventHandler: true,
-                        typeLabel: '例',
                         methodLabel: '取得',
-                        returnTypeLabel: '例',
-                        parameterTypeLabels: ['Param'],
+                        returnTypeFqn: 'com.example.Example',
+                        parameterTypeFqns: ['com.example.Param'],
                         usingFieldTypes: ['ExampleRepository'],
                         cyclomaticComplexity: 3,
                         usingServiceMethods: ['other():Example'],
@@ -175,15 +180,18 @@ test.describe('list-output.js', () => {
 
         test.describe('buildRepositoryCsv', () => {
             test('REPOSITORYのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: {
+                    "com.example.ExampleRepository": { title: "例" },
+                    "com.example.Example": { title: "例" },
+                } };
                 const items = [
                     {
                         packageName: 'com.example',
                         typeName: 'ExampleRepository',
                         methodSignature: 'find()',
                         returnType: 'Example',
-                        typeLabel: '例',
-                        returnTypeLabel: '例',
-                        parameterTypeLabels: [],
+                        returnTypeFqn: 'com.example.Example',
+                        parameterTypeFqns: [],
                         cyclomaticComplexity: 1,
                         insertTables: ['EXAMPLE'],
                         selectTables: ['EXAMPLE'],
@@ -206,10 +214,10 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessPackageCsv', () => {
             test('BUSINESS_PACKAGEのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.business": { title: "業務パッケージ" } } };
                 const items = [
                     {
                         packageName: "com.example.business",
-                        packageLabel: "業務パッケージ",
                         classCount: 10,
                     },
                 ];
@@ -226,11 +234,11 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessAllCsv', () => {
             test('BUSINESS_ALLのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.business.BusinessRule": { title: "ビジネスルール" } } };
                 const items = [
                     {
                         packageName: "com.example.business",
                         typeName: "BusinessRule",
-                        typeLabel: "ビジネスルール",
                         businessRuleKind: "ENTITY",
                         incomingBusinessRuleCount: 1,
                         outgoingBusinessRuleCount: 2,
@@ -253,11 +261,11 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessEnumCsv', () => {
             test('BUSINESS_ENUMのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.business.Status": { title: "状態" } } };
                 const items = [
                     {
                         packageName: "com.example.business",
                         typeName: "Status",
-                        typeLabel: "状態",
                         constants: "OK, NG",
                         fields: "code",
                         usageCount: 5,
@@ -280,11 +288,11 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessCollectionCsv', () => {
             test('BUSINESS_COLLECTIONのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.business.Users": { title: "利用者一覧" } } };
                 const items = [
                     {
                         packageName: "com.example.business",
                         typeName: "Users",
-                        typeLabel: "利用者一覧",
                         fieldTypes: "User",
                         usageCount: 1,
                         usagePlaces: "com.example.Service",
@@ -305,11 +313,11 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessValidationCsv', () => {
             test('BUSINESS_VALIDATIONのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.business.User": { title: "利用者" } } };
                 const items = [
                     {
                         packageName: "com.example.business",
                         typeName: "User",
-                        typeLabel: "利用者",
                         memberName: "name",
                         memberType: "String",
                         annotationType: "NotNull",
@@ -329,13 +337,13 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessSmellCsv', () => {
             test('BUSINESS_SMELLのCSVにヘッダーと行を出力する', () => {
+                globalThis.glossaryData = { terms: { "com.example.business.Smell": { title: "におい" } } };
                 const items = [
                     {
                         packageName: "com.example.business",
                         typeName: "Smell",
                         methodSignature: "doSomething()",
                         returnType: "void",
-                        typeLabel: "におい",
                         notUseMember: true,
                         primitiveInterface: false,
                         referenceNull: true,
@@ -416,6 +424,7 @@ test.describe('list-output.js', () => {
             test('CONTROLLERのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
+                globalThis.glossaryData = { terms: {} };
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -427,7 +436,6 @@ test.describe('list-output.js', () => {
                         typeName: 'ExampleController',
                         methodSignature: 'getExample()',
                         returnType: 'Example',
-                        typeLabel: '例',
                         usingFieldTypes: ['ExampleRepository'],
                         cyclomaticComplexity: 2,
                         path: 'GET /example',
@@ -450,6 +458,7 @@ test.describe('list-output.js', () => {
             test('SERVICEのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
+                globalThis.glossaryData = { terms: {} };
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -479,6 +488,7 @@ test.describe('list-output.js', () => {
             test('REPOSITORYのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
+                globalThis.glossaryData = { terms: {} };
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -513,14 +523,14 @@ test.describe('list-output.js', () => {
                 test.describe('renderBusinessPackageTable', () => {
                     test('BUSINESS_PACKAGEのテーブルを描画する', () => {
                         const doc = setupDocument();
+                        globalThis.glossaryData = { terms: {} };
                         const table = doc.createElement('table');
                         const tbody = doc.createElement('tbody');
                         table.appendChild(tbody);
                         doc.elementsById.set('business-package-list', table);
-        
+
                         const items = [{
                             packageName: "com.example.business",
-                            packageLabel: "業務パッケージ",
                             classCount: 10,
                         }];
         
@@ -538,6 +548,7 @@ test.describe('list-output.js', () => {
                 test.describe('renderBusinessAllTable', () => {
                     test('BUSINESS_ALLのテーブルを描画する', () => {
                         const doc = setupDocument();
+                        globalThis.glossaryData = { terms: {} };
                         const table = doc.createElement('table');
                         const tbody = doc.createElement('tbody');
                         table.appendChild(tbody);
@@ -569,6 +580,7 @@ test.describe('list-output.js', () => {
                 test.describe('renderBusinessEnumTable', () => {
                     test('BUSINESS_ENUMのテーブルを描画する', () => {
                         const doc = setupDocument();
+                        globalThis.glossaryData = { terms: {} };
                         const table = doc.createElement('table');
                         const tbody = doc.createElement('tbody');
                         table.appendChild(tbody);
@@ -594,6 +606,7 @@ test.describe('list-output.js', () => {
                 test.describe('renderBusinessCollectionTable', () => {
                     test('BUSINESS_COLLECTIONのテーブルを描画する', () => {
                         const doc = setupDocument();
+                        globalThis.glossaryData = { terms: {} };
                         const table = doc.createElement('table');
                         const tbody = doc.createElement('tbody');
                         table.appendChild(tbody);
@@ -622,6 +635,7 @@ test.describe('list-output.js', () => {
                 test.describe('renderBusinessValidationTable', () => {
                     test('BUSINESS_VALIDATIONのテーブルを描画する', () => {
                         const doc = setupDocument();
+                        globalThis.glossaryData = { terms: {} };
                         const table = doc.createElement('table');
                         const tbody = doc.createElement('tbody');
                         table.appendChild(tbody);
@@ -646,6 +660,7 @@ test.describe('list-output.js', () => {
                 test.describe('renderBusinessSmellTable', () => {
                     test('BUSINESS_SMELLのテーブルを描画する', () => {
                         const doc = setupDocument();
+                        globalThis.glossaryData = { terms: {} };
                         const table = doc.createElement('table');
                         const tbody = doc.createElement('tbody');
                         table.appendChild(tbody);

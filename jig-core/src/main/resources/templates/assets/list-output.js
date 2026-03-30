@@ -1,3 +1,19 @@
+function getTypeLabel(item) {
+    return globalThis.Jig.glossary.getTypeTerm(item.packageName + "." + item.typeName).title;
+}
+
+function getPackageLabel(item) {
+    return globalThis.Jig.glossary.getPackageTerm(item.packageName).title;
+}
+
+function getReturnTypeLabel(item) {
+    return globalThis.Jig.glossary.getTypeTerm(item.returnTypeFqn ?? "").title;
+}
+
+function getParameterTypeLabels(item) {
+    return (item.parameterTypeFqns ?? []).map(fqn => globalThis.Jig.glossary.getTypeTerm(fqn).title);
+}
+
 function getListData() {
     const listData = globalThis.listData || {};
     const emptyBusinessRules = {
@@ -173,7 +189,7 @@ function buildControllerCsv(items) {
         item.typeName ?? "",
         item.methodSignature ?? "",
         item.returnType ?? "",
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         formatFieldTypes(item.usingFieldTypes),
         item.cyclomaticComplexity ?? "",
         item.path ?? "",
@@ -190,10 +206,10 @@ function buildServiceCsv(items) {
         item.methodSignature ?? "",
         item.returnType ?? "",
         markIfTrue(item.eventHandler),
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         item.methodLabel ?? "",
-        item.returnTypeLabel ?? "",
-        formatFieldTypes(item.parameterTypeLabels),
+        getReturnTypeLabel(item),
+        formatFieldTypes(getParameterTypeLabels(item)),
         formatFieldTypes(item.usingFieldTypes),
         item.cyclomaticComplexity ?? "",
         formatFieldTypes(item.usingServiceMethods),
@@ -212,9 +228,9 @@ function buildRepositoryCsv(items) {
         item.typeName ?? "",
         item.methodSignature ?? "",
         item.returnType ?? "",
-        item.typeLabel ?? "",
-        item.returnTypeLabel ?? "",
-        formatFieldTypes(item.parameterTypeLabels),
+        getTypeLabel(item),
+        getReturnTypeLabel(item),
+        formatFieldTypes(getParameterTypeLabels(item)),
         item.cyclomaticComplexity ?? "",
         formatFieldTypes(item.insertTables),
         formatFieldTypes(item.selectTables),
@@ -231,7 +247,7 @@ function buildBusinessPackageCsv(items) {
     const header = headerDefinitions.businessPackage;
     const rows = items.map(item => [
         item.packageName ?? "",
-        item.packageLabel ?? "",
+        getPackageLabel(item),
         item.classCount ?? "",
     ]);
     const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
@@ -243,7 +259,7 @@ function buildBusinessAllCsv(items) {
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         item.businessRuleKind ?? "",
         item.incomingBusinessRuleCount ?? "",
         item.outgoingBusinessRuleCount ?? "",
@@ -261,7 +277,7 @@ function buildBusinessEnumCsv(items) {
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         item.constants ?? "",
         item.fields ?? "",
         item.usageCount ?? "",
@@ -279,7 +295,7 @@ function buildBusinessCollectionCsv(items) {
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         item.fieldTypes ?? "",
         item.usageCount ?? "",
         item.usagePlaces ?? "",
@@ -295,7 +311,7 @@ function buildBusinessValidationCsv(items) {
     const rows = items.map(item => [
         item.packageName ?? "",
         item.typeName ?? "",
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         item.memberName ?? "",
         item.memberType ?? "",
         item.annotationType ?? "",
@@ -312,7 +328,7 @@ function buildBusinessSmellCsv(items) {
         item.typeName ?? "",
         item.methodSignature ?? "",
         item.returnType ?? "",
-        item.typeLabel ?? "",
+        getTypeLabel(item),
         markIfTrue(item.notUseMember),
         markIfTrue(item.primitiveInterface),
         markIfTrue(item.referenceNull),
@@ -338,7 +354,7 @@ function renderControllerTable(items) {
             item.typeName,
             item.methodSignature,
             item.returnType,
-            item.typeLabel,
+            getTypeLabel(item),
             formatFieldTypes(item.usingFieldTypes),
             item.cyclomaticComplexity,
             item.path,
@@ -371,10 +387,10 @@ function renderServiceTable(items) {
             item.methodSignature,
             item.returnType,
             markIfTrue(item.eventHandler),
-            item.typeLabel,
+            getTypeLabel(item),
             item.methodLabel,
-            item.returnTypeLabel,
-            formatFieldTypes(item.parameterTypeLabels),
+            getReturnTypeLabel(item),
+            formatFieldTypes(getParameterTypeLabels(item)),
             formatFieldTypes(item.usingFieldTypes),
             item.cyclomaticComplexity,
             formatFieldTypes(item.usingServiceMethods),
@@ -409,9 +425,9 @@ function renderRepositoryTable(items) {
             item.typeName,
             item.methodSignature,
             item.returnType,
-            item.typeLabel,
-            item.returnTypeLabel,
-            formatFieldTypes(item.parameterTypeLabels),
+            getTypeLabel(item),
+            getReturnTypeLabel(item),
+            formatFieldTypes(getParameterTypeLabels(item)),
             item.cyclomaticComplexity,
             formatFieldTypes(item.insertTables),
             formatFieldTypes(item.selectTables),
@@ -444,7 +460,7 @@ function renderBusinessPackageTable(items) {
         const row = globalThis.Jig.dom.createElement("tr");
         const values = [
             item.packageName,
-            item.packageLabel,
+            getPackageLabel(item),
             item.classCount,
         ];
         values.forEach((value, index) => {
@@ -472,7 +488,7 @@ function renderBusinessAllTable(items) {
         const values = [
             item.packageName,
             item.typeName,
-            item.typeLabel,
+            getTypeLabel(item),
             item.businessRuleKind,
             item.incomingBusinessRuleCount,
             item.outgoingBusinessRuleCount,
@@ -506,7 +522,7 @@ function renderBusinessEnumTable(items) {
         const values = [
             item.packageName,
             item.typeName,
-            item.typeLabel,
+            getTypeLabel(item),
             item.constants,
             item.fields,
             item.usageCount,
@@ -540,7 +556,7 @@ function renderBusinessCollectionTable(items) {
         const values = [
             item.packageName,
             item.typeName,
-            item.typeLabel,
+            getTypeLabel(item),
             item.fieldTypes,
             item.usageCount,
             item.usagePlaces,
@@ -572,7 +588,7 @@ function renderBusinessValidationTable(items) {
         const values = [
             item.packageName,
             item.typeName,
-            item.typeLabel,
+            getTypeLabel(item),
             item.memberName,
             item.memberType,
             item.annotationType,
@@ -602,7 +618,7 @@ function renderBusinessSmellTable(items) {
             item.typeName,
             item.methodSignature,
             item.returnType,
-            item.typeLabel,
+            getTypeLabel(item),
             markIfTrue(item.notUseMember),
             markIfTrue(item.primitiveInterface),
             markIfTrue(item.referenceNull),
@@ -762,6 +778,10 @@ if (typeof module !== "undefined" && module.exports) {
         getListData,
         escapeCsvValue,
         formatFieldTypes,
+        getTypeLabel,
+        getPackageLabel,
+        getReturnTypeLabel,
+        getParameterTypeLabels,
         buildControllerCsv,
         buildServiceCsv,
         buildRepositoryCsv,

@@ -58,14 +58,14 @@ public class ListOutputAdapter {
     public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        String listJson = buildJson(repository, jigService, jigDocumentContext);
+        String listJson = buildJson(repository, jigService);
 
         jigDocumentWriter.writeHtmlTemplate();
         jigDocumentWriter.writeJsData("listData", listJson);
         return jigDocumentWriter.outputFilePaths();
     }
 
-    public static String buildJson(JigRepository repository, JigService jigService, JigDocumentContext jigDocumentContext) {
+    public static String buildJson(JigRepository repository, JigService jigService) {
         InputAdapters inputAdapters = jigService.inputAdapters(repository);
         ServiceAngles serviceAngles = jigService.serviceAngles(repository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(repository);
@@ -88,10 +88,10 @@ public class ListOutputAdapter {
                 .map(ListOutputAdapter::formatControllerJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String serviceJson = serviceAngles.list().stream()
-                .map(usecase -> formatServiceJson(usecase, jigDocumentContext))
+                .map(ListOutputAdapter::formatServiceJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String repositoryJson = datasourceAngles.list().stream()
-                .map(datasourceAngle -> formatRepositoryJson(datasourceAngle, jigDocumentContext))
+                .map(ListOutputAdapter::formatRepositoryJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String packageJson = jigTypePackages.stream()
                 .map(ListOutputAdapter::formatBusinessPackageJson)
@@ -106,7 +106,7 @@ public class ListOutputAdapter {
                 .map(jigType -> formatBusinessCollectionJson(jigType, allClassRelations))
                 .collect(Collectors.joining(",", "[", "]"));
         String validationJson = Validations.from(jigTypes).list().stream()
-                .map(validation -> formatBusinessValidationJson(validation, jigDocumentContext))
+                .map(ListOutputAdapter::formatBusinessValidationJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String methodSmellJson = methodSmells.list().stream()
                 .map(ListOutputAdapter::formatBusinessMethodSmellJson)
@@ -127,23 +127,21 @@ public class ListOutputAdapter {
                 .and("typeName", entrypoint.typeId().asSimpleText())
                 .and("methodSignature", entrypoint.jigMethod().simpleMethodSignatureText())
                 .and("returnType", entrypoint.jigMethod().returnType().simpleName())
-                .and("typeLabel", entrypoint.jigType().label())
                 .and("usingFieldTypes", Json.array(usingFieldTypes))
                 .and("cyclomaticComplexity", entrypoint.jigMethod().instructions().cyclomaticComplexity())
                 .and("path", entrypoint.fullPathText())
                 .build();
     }
 
-    private static String formatServiceJson(Usecase usecase, JigDocumentContext jigDocumentContext) {
+    private static String formatServiceJson(Usecase usecase) {
         List<String> usingFieldTypes = usecase.usingFields().jigFieldIds().stream()
                 .map(JigFieldId::declaringTypeId)
                 .map(TypeId::asSimpleText)
                 .sorted()
                 .toList();
-        List<String> parameterTypeLabels = usecase.serviceMethod().method().parameterTypeStream()
+        List<String> parameterTypeFqns = usecase.serviceMethod().method().parameterTypeStream()
                 .map(JigTypeReference::id)
-                .map(jigDocumentContext::typeTerm)
-                .map(term -> term.title())
+                .map(TypeId::fqn)
                 .toList();
         List<String> usingServiceMethods = usecase.usingServiceMethods().stream()
                 .map(methodCall -> methodCall.asSignatureAndReturnTypeSimpleText())
@@ -156,10 +154,9 @@ public class ListOutputAdapter {
                 .and("methodSignature", usecase.serviceMethod().method().simpleMethodSignatureText())
                 .and("returnType", usecase.serviceMethod().method().returnType().simpleName())
                 .and("eventHandler", usecase.usingFromController())
-                .and("typeLabel", jigDocumentContext.typeTerm(usecase.serviceMethod().declaringType()).title())
                 .and("methodLabel", usecase.serviceMethod().method().aliasTextOrBlank())
-                .and("returnTypeLabel", jigDocumentContext.typeTerm(usecase.serviceMethod().method().returnType().id()).title())
-                .and("parameterTypeLabels", Json.array(parameterTypeLabels))
+                .and("returnTypeFqn", usecase.serviceMethod().method().returnType().id().fqn())
+                .and("parameterTypeFqns", Json.array(parameterTypeFqns))
                 .and("usingFieldTypes", Json.array(usingFieldTypes))
                 .and("cyclomaticComplexity", usecase.serviceMethod().method().instructions().cyclomaticComplexity())
                 .and("usingServiceMethods", Json.array(usingServiceMethods))
@@ -169,19 +166,17 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private static String formatRepositoryJson(DatasourceAngle datasourceAngle, JigDocumentContext jigDocumentContext) {
-        List<String> parameterTypeLabels = datasourceAngle.methodParameterTypeStream()
+    private static String formatRepositoryJson(DatasourceAngle datasourceAngle) {
+        List<String> parameterTypeFqns = datasourceAngle.methodParameterTypeStream()
                 .map(JigTypeReference::id)
-                .map(jigDocumentContext::typeTerm)
-                .map(term -> term.title())
+                .map(TypeId::fqn)
                 .toList();
         return Json.object("packageName", datasourceAngle.packageText())
                 .and("typeName", datasourceAngle.typeSimpleName())
                 .and("methodSignature", datasourceAngle.simpleMethodSignatureText())
                 .and("returnType", datasourceAngle.methodReturnType().simpleNameWithGenerics())
-                .and("typeLabel", datasourceAngle.typeLabel())
-                .and("returnTypeLabel", jigDocumentContext.typeTerm(datasourceAngle.methodReturnType().id()).title())
-                .and("parameterTypeLabels", Json.array(parameterTypeLabels))
+                .and("returnTypeFqn", datasourceAngle.methodReturnType().id().fqn())
+                .and("parameterTypeFqns", Json.array(parameterTypeFqns))
                 .and("cyclomaticComplexity", datasourceAngle.cyclomaticComplexity())
                 .and("insertTables", Json.array(datasourceAngle.insertTableNames()))
                 .and("selectTables", Json.array(datasourceAngle.selectTableNames()))
@@ -194,7 +189,6 @@ public class ListOutputAdapter {
 
     private static String formatBusinessPackageJson(JigPackage jigPackage) {
         return Json.object("packageName", jigPackage.packageId().asText())
-                .and("packageLabel", jigPackage.term().title())
                 .and("classCount", jigPackage.jigTypes().size())
                 .build();
     }
@@ -204,7 +198,6 @@ public class ListOutputAdapter {
                 .equals(Set.of(jigType.packageId()));
         return Json.object("packageName", jigType.packageId().asText())
                 .and("typeName", jigType.id().asSimpleText())
-                .and("typeLabel", jigType.label())
                 .and("businessRuleKind", jigType.toValueKind().toString())
                 .and("incomingBusinessRuleCount", coreTypesAndRelations.internalTypeRelationships().filterTo(jigType.id()).size())
                 .and("outgoingBusinessRuleCount", coreTypesAndRelations.internalTypeRelationships().filterFrom(jigType.id()).size())
@@ -224,7 +217,6 @@ public class ListOutputAdapter {
                 .collect(STREAM_COLLECTOR);
         return Json.object("packageName", jigType.packageId().asText())
                 .and("typeName", jigType.id().asSimpleText())
-                .and("typeLabel", jigType.label())
                 .and("constants", constants)
                 .and("fields", fields)
                 .and("usageCount", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).list().size())
@@ -244,7 +236,6 @@ public class ListOutputAdapter {
                 : fieldTypeList.stream().collect(STREAM_COLLECTOR);
         return Json.object("packageName", jigType.packageId().asText())
                 .and("typeName", jigType.id().asSimpleText())
-                .and("typeLabel", jigType.label())
                 .and("fieldTypes", fieldTypes)
                 .and("usageCount", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).size())
                 .and("usagePlaces", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).asSimpleText())
@@ -256,10 +247,9 @@ public class ListOutputAdapter {
                 .build();
     }
 
-    private static String formatBusinessValidationJson(Validation validation, JigDocumentContext jigDocumentContext) {
+    private static String formatBusinessValidationJson(Validation validation) {
         return Json.object("packageName", validation.typeId().packageId().asText())
                 .and("typeName", validation.typeId().asSimpleText())
-                .and("typeLabel", jigDocumentContext.typeTerm(validation.typeId()).title())
                 .and("memberName", validation.memberName())
                 .and("memberType", validation.memberType().asSimpleText())
                 .and("annotationType", validation.annotationType().asSimpleText())
@@ -272,7 +262,6 @@ public class ListOutputAdapter {
                 .and("typeName", methodSmell.method().declaringType().asSimpleText())
                 .and("methodSignature", methodSmell.method().simpleMethodSignatureText())
                 .and("returnType", methodSmell.methodReturnType().asSimpleText())
-                .and("typeLabel", methodSmell.declaringJigType().label())
                 .and("notUseMember", methodSmell.notUseMember())
                 .and("primitiveInterface", methodSmell.primitiveInterface())
                 .and("referenceNull", methodSmell.referenceNull())

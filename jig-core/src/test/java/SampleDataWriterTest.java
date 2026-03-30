@@ -85,7 +85,7 @@ class SampleDataWriterTest {
 
         // list-output-data.js
         {
-            var json = ListOutputAdapter.buildJson(repository, jigService, configuration.jigDocumentContext());
+            var json = ListOutputAdapter.buildJson(repository, jigService);
             Path sampleFile = Path.of("src/main/resources/templates/data/list-output-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +

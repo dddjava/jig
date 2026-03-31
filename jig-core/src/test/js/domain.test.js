@@ -480,6 +480,8 @@ test.describe('domain.js', () => {
             const domainIdA = globalThis.Jig.fqnToId("domain", 'org.example.A');
             assert.ok(result.includes(`click ${idA} "#${domainIdA}"`), 'Aへのクリックリンクが含まれること');
             assert.ok(result.includes(`style ${idA} font-weight:bold`), '自身（A）が強調表示されること');
+            const sgId = globalThis.Jig.fqnToId("sg", 'org.example');
+            assert.ok(result.includes(`subgraph ${sgId}`), 'パッケージのサブグラフが含まれること');
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;

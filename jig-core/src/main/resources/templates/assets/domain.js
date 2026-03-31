@@ -222,11 +222,30 @@ function createTypeRelationDiagram(type) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    function packageOf(fqn) {
+        const idx = fqn.lastIndexOf('.');
+        return idx < 0 ? null : fqn.substring(0, idx);
+    }
+
+    // パッケージごとにノードをグループ化
+    const byPackage = new Map();
+    involvedFqns.forEach(fqn => {
+        const pkg = packageOf(fqn);
+        if (!byPackage.has(pkg)) byPackage.set(pkg, []);
+        byPackage.get(pkg).push(fqn);
+    });
+
     const selfId = fqnToMermaidId(type.fqn);
     const i = '    ';
     const lines = [`\ngraph ${domainSettings.diagramDirection}`];
-    involvedFqns.forEach(fqn => {
-        lines.push(`${i}${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`);
+    byPackage.forEach((fqns, pkgFqn) => {
+        if (pkgFqn) {
+            lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkgFqn)} ["${escapeMermaidLabel(getTypeTerm(pkgFqn).title)}"]`);
+            fqns.forEach(fqn => lines.push(`${i}${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`));
+            lines.push(`${i}end`);
+        } else {
+            fqns.forEach(fqn => lines.push(`${i}${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`));
+        }
     });
     involvedFqns.forEach(fqn => lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`));
     edges.forEach(r => lines.push(`${i}${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(r.to)}`));

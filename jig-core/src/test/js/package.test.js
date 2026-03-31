@@ -866,6 +866,25 @@ test.describe('package.js', () => {
                 assert.ok(clickLine);
                 assert.equal(clickLine.includes(pkg.DIAGRAM_CLICK_HANDLER_NAME), true);
             });
+
+            test('buildDiagramNodeLines: nodeClickUrlCallbackでhrefクリックを埋め込む', () => {
+                const visibleSet = new Set(['app.a']);
+                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkgDiagram.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
+                const nodeLines = pkgDiagram.buildDiagramNodeLines(
+                    visibleSet,
+                    nodeIdByFqn,
+                    {
+                        nodeIdToFqn,
+                        nodeLabelById,
+                        escapeMermaidText: text => text,
+                        nodeClickUrlCallback: (fqn) => `#anchor-${fqn}`,
+                        parentFqnsWithRelations: new Set()
+                    }
+                );
+                const clickLine = nodeLines.find(line => line.startsWith('click ') && line.includes('href'));
+                assert.ok(clickLine, 'href クリック行があるはず');
+                assert.ok(clickLine.includes('href "#anchor-app.a"'), `click ... href "..." の形式のはず: ${clickLine}`);
+            });
         });
 
         test.describe('UI', () => {

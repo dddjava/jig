@@ -176,7 +176,8 @@ function createPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
         pkg, allPackages, allPackageRelations,
         {
             transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
-            diagramDirection: domainSettings.diagramDirection
+            diagramDirection: domainSettings.diagramDirection,
+            nodeClickUrlCallback: (fqn) => "#" + globalThis.Jig.fqnToId("domain", fqn),
         }
     );
 }

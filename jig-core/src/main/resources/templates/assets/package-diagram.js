@@ -219,7 +219,7 @@ const PackageDiagramModule = (() => {
      * @returns {string|null}
      */
     function createPackageLevelDiagram(pkg, allPackages, allPackageRelations, options) {
-        const {transitiveReductionEnabled, diagramDirection} = options;
+        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback} = options;
         const { uniqueRelations, packageFqns } = buildVisibleDiagramRelations(
             allPackages,
             allPackageRelations,
@@ -235,7 +235,7 @@ const PackageDiagramModule = (() => {
 
         const { source } = buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            { diagramDirection }
+            { diagramDirection, nodeClickUrlCallback }
         );
         return source;
     }
@@ -252,7 +252,7 @@ const PackageDiagramModule = (() => {
      * @param {MermaidDiagramSourceOptions} options
      */
     function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
-        const {diagramDirection, focusedPackageFqn, clickHandlerName} = options;
+        const {diagramDirection, focusedPackageFqn, clickHandlerName, nodeClickUrlCallback} = options;
         const escapeMermaidText = text => text.replace(/"/g, '\\"');
         
         // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
@@ -288,6 +288,7 @@ const PackageDiagramModule = (() => {
                 nodeLabelById,
                 escapeMermaidText,
                 clickHandlerName,
+                nodeClickUrlCallback,
                 parentFqnsWithRelations
             }
         );
@@ -365,8 +366,8 @@ const PackageDiagramModule = (() => {
      * @property {Set<string>} parentFqnsWithRelations
      */
     function buildDiagramNodeLines(packageFqns, nodeIdByFqn, options) {
-        const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName} = options;
-        
+        const {nodeIdToFqn, nodeLabelById, escapeMermaidText, clickHandlerName, nodeClickUrlCallback} = options;
+
         const packageFqnList = Array.from(packageFqns).sort();
         const parentFqns = buildParentFqns(packageFqns);
         const rootGroup = buildDiagramGroupTree(packageFqnList, nodeIdByFqn);
@@ -378,6 +379,10 @@ const PackageDiagramModule = (() => {
             if (clickHandlerName) {
                 const tooltip = escapeMermaidText(buildDiagramNodeTooltip(fqn));
                 lines.push(`click ${nodeId} ${clickHandlerName} "${tooltip}"`);
+            }
+            if (nodeClickUrlCallback && fqn) {
+                const url = escapeMermaidText(nodeClickUrlCallback(fqn));
+                lines.push(`click ${nodeId} href "${url}"`);
             }
             if (fqn && parentFqns.has(fqn)) {
                 lines.push(`class ${nodeId} parentPackage`);

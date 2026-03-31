@@ -443,6 +443,7 @@ test.describe('domain.js', () => {
 
             const sgId = globalThis.Jig.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
+            assert.ok(result.includes(`style ${sgId} stroke-width:3px`), 'パッケージのサブグラフが強調表示されること');
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;
@@ -479,6 +480,7 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idC} --> ${idA}`), 'C→A の関連が含まれること');
             const domainIdA = globalThis.Jig.fqnToId("domain", 'org.example.A');
             assert.ok(result.includes(`click ${idA} "#${domainIdA}"`), 'Aへのクリックリンクが含まれること');
+            assert.ok(result.includes(`style ${idA} font-weight:bold`), '自身（A）が強調表示されること');
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;

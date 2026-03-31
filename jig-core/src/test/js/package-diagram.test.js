@@ -91,5 +91,11 @@ test.describe('package-diagram', () => {
             const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], {diagramDirection: 'TD', focusedPackageFqn: 'app.a'});
             assert.ok(source.includes('style') && source.includes('font-weight:bold'));
         });
+
+        test('focusedPackageFqn がノードに存在しない場合は強調スタイルを出力しない', () => {
+            const visibleSet = new Set(['app.a', 'app.b']);
+            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], {diagramDirection: 'TD', focusedPackageFqn: 'app.not-in-diagram'});
+            assert.ok(!source.includes('undefined'), '"undefined" がMermaidソースに含まれないこと');
+        });
     });
 });

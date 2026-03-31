@@ -219,7 +219,7 @@ const PackageDiagramModule = (() => {
      * @returns {string|null}
      */
     function createPackageLevelDiagram(pkg, allPackages, allPackageRelations, options) {
-        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback} = options;
+        const {transitiveReductionEnabled, diagramDirection, nodeClickUrlCallback, focusedPackageFqn} = options;
         const { uniqueRelations, packageFqns } = buildVisibleDiagramRelations(
             allPackages,
             allPackageRelations,
@@ -235,7 +235,7 @@ const PackageDiagramModule = (() => {
 
         const { source } = buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            { diagramDirection, nodeClickUrlCallback }
+            { diagramDirection, nodeClickUrlCallback, focusedPackageFqn }
         );
         return source;
     }
@@ -300,7 +300,7 @@ const PackageDiagramModule = (() => {
         // ノードのスタイルを指定。どちらも存在しない場合もあるが、classDefに害はないので出力する。
         // ルートパッケージの色はサブグラフに合わせて少し濃くし、境界線を破線にする
         lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
-        if (focusedPackageFqn) {
+        if (focusedPackageFqn && nodeIdByFqn.has(focusedPackageFqn)) {
             // 選択されたものがあれば強調表示する
             lines.push(`style ${nodeIdByFqn.get(focusedPackageFqn)} fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold`);
         }

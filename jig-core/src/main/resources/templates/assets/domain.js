@@ -178,6 +178,7 @@ function createPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
             transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
             diagramDirection: domainSettings.diagramDirection,
             nodeClickUrlCallback: (fqn) => "#" + globalThis.Jig.fqnToId("domain", fqn),
+            focusedPackageFqn: pkg.fqn,
         }
     );
 }
@@ -222,6 +223,7 @@ function createTypeRelationDiagram(type) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    const selfId = fqnToMermaidId(type.fqn);
     const i = '    ';
     const lines = [`\ngraph ${domainSettings.diagramDirection}`];
     involvedFqns.forEach(fqn => {
@@ -229,6 +231,7 @@ function createTypeRelationDiagram(type) {
     });
     involvedFqns.forEach(fqn => lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`));
     edges.forEach(r => lines.push(`${i}${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(r.to)}`));
+    lines.push(`${i}style ${selfId} font-weight:bold`);
 
     return lines.join('\n');
 }
@@ -315,9 +318,10 @@ function createRelationDiagram(pkg) {
         return `${fqnToMermaidId(fqn)}@{shape: st-rect, label: "${escapeMermaidLabel(getTypeTerm(fqn).title)}"}`;
     }
 
+    const selfSgId = globalThis.Jig.fqnToId("sg", pkg.fqn);
     const i = '    ';
     const lines = [`\ngraph ${domainSettings.diagramDirection}`];
-    lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkg.fqn)} ["${escapeMermaidLabel(getTypeTerm(pkg.fqn).title)}"]`);
+    lines.push(`${i}subgraph ${selfSgId} ["${escapeMermaidLabel(getTypeTerm(pkg.fqn).title)}"]`);
     lines.push(`${i}direction ${domainSettings.diagramDirection}`);
     internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
     lines.push(`${i}end`);
@@ -326,6 +330,7 @@ function createRelationDiagram(pkg) {
         lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`)
     );
     edgeSet.forEach(edge => lines.push(`${i}${edge}`));
+    lines.push(`${i}style ${selfSgId} stroke-width:3px`);
 
     return lines.join('\n');
 }

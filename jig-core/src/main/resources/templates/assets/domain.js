@@ -183,6 +183,48 @@ function createPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
 }
 
 /**
+ * クラスカードに表示する関連クラス一覧
+ * @param {DomainType} type
+ * @returns {HTMLElement | null}
+ */
+function createRelatedClassesList(type) {
+    const typesMap = getDomainData()._typesMap;
+    const allRelations = (globalThis.typeRelationsData?.relations || [])
+        .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+
+    const outgoingFqns = allRelations
+        .filter(r => r.from === type.fqn)
+        .map(r => r.to);
+    const incomingFqns = allRelations
+        .filter(r => r.to === type.fqn)
+        .map(r => r.from);
+
+    if (outgoingFqns.length === 0 && incomingFqns.length === 0) return null;
+
+    const section = createElement("section", {className: "methods-section jig-card--item"});
+
+    if (outgoingFqns.length > 0) {
+        section.appendChild(createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
+        section.appendChild(createElement("ul", {
+            children: outgoingFqns.map(fqn =>
+                createElement("li", {children: [createElementForTypeRef({fqn})]})
+            )
+        }));
+    }
+
+    if (incomingFqns.length > 0) {
+        section.appendChild(createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
+        section.appendChild(createElement("ul", {
+            children: incomingFqns.map(fqn =>
+                createElement("li", {children: [createElementForTypeRef({fqn})]})
+            )
+        }));
+    }
+
+    return section;
+}
+
+/**
  * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
  * @param {DomainType} type
  * @returns {string | null}
@@ -645,6 +687,9 @@ function renderTypes(types, container) {
 
         const staticList = createMethodsList("staticメソッド", type.staticMethods);
         if (staticList) section.appendChild(staticList);
+
+        const relatedList = createRelatedClassesList(type);
+        if (relatedList) section.appendChild(relatedList);
 
         const mmdContainer = createElement("div", {className: "mermaid-diagram"});
         section.appendChild(mmdContainer);

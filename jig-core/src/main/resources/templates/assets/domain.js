@@ -166,6 +166,30 @@ function renderPackageNavItem(pkg) {
 }
 
 /**
+ * パッケージカードに表示するパッケージ関連図（同階層の直接関連）
+ * @param {{fqn: string}} pkg
+ * @param {{from: string, to: string}[]} allPackageRelations
+ * @returns {string|null}
+ */
+function createPackageDirectRelationDiagram(pkg, allPackageRelations) {
+    const directRelations = allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
+    if (directRelations.length === 0) return null;
+
+    const packageFqns = new Set([pkg.fqn]);
+    directRelations.forEach(r => { packageFqns.add(r.from); packageFqns.add(r.to); });
+
+    const { source } = globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
+        packageFqns, directRelations,
+        {
+            diagramDirection: domainSettings.diagramDirection,
+            nodeClickUrlCallback: (fqn) => "#" + globalThis.Jig.fqnToId("domain", fqn),
+            focusedPackageFqn: pkg.fqn,
+        }
+    );
+    return source;
+}
+
+/**
  * パッケージカードに表示するパッケージ内パッケージ関連図
  * @param pkg
  * @param allPackages
@@ -603,6 +627,20 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
+        // パッケージ関連図（同階層の直接関連）
+        const pkgDirectRelDiagramContainer = createElement("div", {className: "mermaid-diagram"});
+        section.appendChild(pkgDirectRelDiagramContainer);
+        diagramRegistry.push({container: pkgDirectRelDiagramContainer, pkg, diagramType: 'packageDirect'});
+        globalThis.Jig.observe.lazyRender(pkgDirectRelDiagramContainer, () => {
+            renderedContainers.add(pkgDirectRelDiagramContainer);
+            pkgDirectRelDiagramContainer.innerHTML = "";
+            const directDiagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
+            if (directDiagram) {
+                globalThis.Jig.mermaid.renderWithControls(pkgDirectRelDiagramContainer, directDiagram);
+                section.insertBefore(createElement("h4", { textContent: "パッケージ関連図", className: "diagram-heading" }), pkgDirectRelDiagramContainer);
+            }
+        });
+
         // パッケージ内パッケージ関連図
         const pkgRelDiagramContainer = createElement("div", {className: "mermaid-diagram"});
         section.appendChild(pkgRelDiagramContainer);
@@ -744,7 +782,10 @@ function rerenderDiagrams() {
         .filter(({container}) => renderedContainers.has(container))
         .forEach(({container, pkg, type, diagramType}) => {
             container.innerHTML = "";
-            if (diagramType === 'package') {
+            if (diagramType === 'packageDirect') {
+                const diagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
+                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+            } else if (diagramType === 'package') {
                 const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
                 if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             } else if (diagramType === 'classDirect') {

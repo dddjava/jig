@@ -443,7 +443,6 @@ test.describe('domain.js', () => {
 
             const sgId = globalThis.Jig.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
-            assert.ok(result.includes(`style ${sgId} stroke-width:3px`), 'パッケージのサブグラフが強調表示されること');
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;

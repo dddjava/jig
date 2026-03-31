@@ -183,6 +183,57 @@ function createPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
 }
 
 /**
+ * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
+ * @param {DomainType} type
+ * @returns {string | null}
+ */
+function createTypeRelationDiagram(type) {
+    const typesMap = getDomainData()._typesMap;
+    const allRelations = (globalThis.typeRelationsData?.relations || [])
+        .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+
+    const outgoing = allRelations.filter(r => r.from === type.fqn);
+    const incoming = allRelations.filter(r => r.to === type.fqn);
+
+    if (outgoing.length === 0 && incoming.length === 0) return null;
+
+    // Deprecated ノード非表示の場合、deprecated 型を除外
+    const filteredOut = domainSettings.showDeprecatedNodes
+        ? outgoing
+        : outgoing.filter(r => !typesMap?.get(r.to)?.isDeprecated);
+    const filteredIn = domainSettings.showDeprecatedNodes
+        ? incoming
+        : incoming.filter(r => !typesMap?.get(r.from)?.isDeprecated);
+
+    if (filteredOut.length === 0 && filteredIn.length === 0) return null;
+
+    // エッジの重複排除（A→B と B→A が両方ある場合も含む）
+    const edgeMap = new Map();
+    [...filteredOut, ...filteredIn].forEach(r => edgeMap.set(`${r.from}::${r.to}`, r));
+    const edges = Array.from(edgeMap.values());
+
+    const involvedFqns = new Set([type.fqn]);
+    edges.forEach(r => { involvedFqns.add(r.from); involvedFqns.add(r.to); });
+
+    const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
+    const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
+
+    function escapeMermaidLabel(label) {
+        return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    const i = '    ';
+    const lines = [`\ngraph ${domainSettings.diagramDirection}`];
+    involvedFqns.forEach(fqn => {
+        lines.push(`${i}${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`);
+    });
+    involvedFqns.forEach(fqn => lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`));
+    edges.forEach(r => lines.push(`${i}${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(r.to)}`));
+
+    return lines.join('\n');
+}
+
+/**
  * パッケージカードに表示するパッケージ内クラス関連図
  * @param {PackageType} pkg
  * @returns {string | null}
@@ -574,6 +625,19 @@ function renderTypes(types, container) {
         const staticList = createMethodsList("staticメソッド", type.staticMethods);
         if (staticList) section.appendChild(staticList);
 
+        const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+        section.appendChild(mmdContainer);
+        diagramRegistry.push({container: mmdContainer, type, diagramType: 'classDirect'});
+        globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+            renderedContainers.add(mmdContainer);
+            mmdContainer.innerHTML = "";
+            const diagram = createTypeRelationDiagram(type);
+            if (diagram) {
+                globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
+                section.insertBefore(createElement("h4", {textContent: "クラス関連図"}), mmdContainer);
+            }
+        });
+
         container.appendChild(section);
     });
 }
@@ -603,10 +667,13 @@ function rerenderDiagrams() {
     const allPackageRelations = derivePackageRelations();
     diagramRegistry
         .filter(({container}) => renderedContainers.has(container))
-        .forEach(({container, pkg, diagramType}) => {
+        .forEach(({container, pkg, type, diagramType}) => {
             container.innerHTML = "";
             if (diagramType === 'package') {
                 const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
+                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+            } else if (diagramType === 'classDirect') {
+                const diagram = createTypeRelationDiagram(type);
                 if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             } else {
                 const diagram = createRelationDiagram(pkg);
@@ -842,5 +909,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, derivePackageRelations };
+    module.exports = { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, derivePackageRelations };
 }

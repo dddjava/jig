@@ -8,7 +8,7 @@ global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-common.js');
 require('../../main/resources/templates/assets/jig.js');
 
-const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, derivePackageRelations } = require('../../main/resources/templates/assets/domain.js');
+const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, derivePackageRelations } = require('../../main/resources/templates/assets/domain.js');
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
@@ -443,6 +443,57 @@ test.describe('domain.js', () => {
 
             const sgId = globalThis.Jig.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+    });
+
+    test.describe('createTypeRelationDiagram', () => {
+        test('クラスの関連図を生成する（出力・入力両方）', () => {
+            const typeA = { fqn: 'org.example.A', isDeprecated: false };
+            const typeB = { fqn: 'org.example.B', isDeprecated: false };
+            const typeC = { fqn: 'org.example.C', isDeprecated: false };
+            setupDomainData([], [typeA, typeB, typeC]);
+            globalThis.typeRelationsData = {
+                relations: [
+                    { from: 'org.example.A', to: 'org.example.B' },
+                    { from: 'org.example.C', to: 'org.example.A' },
+                ]
+            };
+            setGlossaryData({
+                'org.example.A': { title: 'A' },
+                'org.example.B': { title: 'B' },
+                'org.example.C': { title: 'C' },
+            });
+
+            const result = createTypeRelationDiagram(typeA);
+
+            assert.ok(result, '図が生成されること');
+            assert.ok(result.includes('graph TB'), '方向が含まれること');
+            const idA = globalThis.Jig.fqnToId("n", 'org.example.A');
+            const idB = globalThis.Jig.fqnToId("n", 'org.example.B');
+            const idC = globalThis.Jig.fqnToId("n", 'org.example.C');
+            assert.ok(result.includes(`${idA} --> ${idB}`), 'A→B の関連が含まれること');
+            assert.ok(result.includes(`${idC} --> ${idA}`), 'C→A の関連が含まれること');
+            const domainIdA = globalThis.Jig.fqnToId("domain", 'org.example.A');
+            assert.ok(result.includes(`click ${idA} "#${domainIdA}"`), 'Aへのクリックリンクが含まれること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+
+        test('関連がない場合は null を返す', () => {
+            const typeA = { fqn: 'org.example.A', isDeprecated: false };
+            setupDomainData([], [typeA]);
+            globalThis.typeRelationsData = { relations: [] };
+            setGlossaryData({ 'org.example.A': { title: 'A' } });
+
+            const result = createTypeRelationDiagram(typeA);
+
+            assert.equal(result, null);
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;

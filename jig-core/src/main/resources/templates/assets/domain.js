@@ -201,11 +201,11 @@ function createRelatedClassesList(type) {
 
     if (outgoingFqns.length === 0 && incomingFqns.length === 0) return null;
 
-    const section = createElement("section", {className: "methods-section jig-card--item"});
+    const detailsContent = [];
 
     if (outgoingFqns.length > 0) {
-        section.appendChild(createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
-        section.appendChild(createElement("ul", {
+        detailsContent.push(createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
+        detailsContent.push(createElement("ul", {
             children: outgoingFqns.map(fqn =>
                 createElement("li", {children: [createElementForTypeRef({fqn})]})
             )
@@ -213,15 +213,23 @@ function createRelatedClassesList(type) {
     }
 
     if (incomingFqns.length > 0) {
-        section.appendChild(createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
-        section.appendChild(createElement("ul", {
+        detailsContent.push(createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
+        detailsContent.push(createElement("ul", {
             children: incomingFqns.map(fqn =>
                 createElement("li", {children: [createElementForTypeRef({fqn})]})
             )
         }));
     }
 
-    return section;
+    return createElement("section", {
+        className: "jig-card--item",
+        children: [createElement("details", {
+            children: [
+                createElement("summary", {textContent: "関連情報"}),
+                ...detailsContent
+            ]
+        })]
+    });
 }
 
 /**
@@ -688,9 +696,6 @@ function renderTypes(types, container) {
         const staticList = createMethodsList("staticメソッド", type.staticMethods);
         if (staticList) section.appendChild(staticList);
 
-        const relatedList = createRelatedClassesList(type);
-        if (relatedList) section.appendChild(relatedList);
-
         const mmdContainer = createElement("div", {className: "mermaid-diagram"});
         section.appendChild(mmdContainer);
         diagramRegistry.push({container: mmdContainer, type, diagramType: 'classDirect'});
@@ -703,6 +708,9 @@ function renderTypes(types, container) {
                 section.insertBefore(createElement("h4", {textContent: "クラス関連図"}), mmdContainer);
             }
         });
+
+        const relatedList = createRelatedClassesList(type);
+        if (relatedList) section.appendChild(relatedList);
 
         container.appendChild(section);
     });

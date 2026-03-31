@@ -448,7 +448,10 @@ test.describe('glossary.js', () => {
             const article = groupSection.children[1];
             assert.equal(article.tagName, 'article');
             assert.equal(article.id, 'F', 'IDはarticleに付与されているはず');
-            const metaCard = article.children.find(c => c.tagName === 'section' && c.classList.contains('jig-card--item'));
+            const details = article.children.find(c => c.tagName === 'details');
+            assert.ok(details, '属性情報表示（showAttributes=true）ではdetails要素があるはず');
+            assert.ok(details.open, 'fullモードではdetailsはopen状態のはず');
+            const metaCard = details.children.find(c => c.tagName === 'section' && c.classList.contains('jig-card--item'));
             assert.ok(metaCard, '属性情報表示（showAttributes=true）ではメタカードがあるはず');
         });
 

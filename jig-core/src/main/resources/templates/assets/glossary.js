@@ -177,32 +177,37 @@ function renderGlossaryTerms(terms, showAttributes) {
             const isCompact = !showAttributes;
 
             const metaChildren = [];
-            if (!isCompact) {
-                const metaItems = [];
-                if (term.fqn) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
-                        createElement("span", {className: "meta-value", textContent: term.fqn}),
-                    ]}));
-                }
-                if (term.simpleText) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "単純名"}),
-                        createElement("span", {className: "meta-value", textContent: term.simpleText}),
-                    ]}));
-                }
-                if (term.kind) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "種類"}),
-                        createElement("span", {className: "meta-value", textContent: term.kind}),
-                    ]}));
-                }
-                if (metaItems.length > 0) {
-                    metaChildren.push(createElement("section", {
-                        className: "jig-card jig-card--item weak",
-                        children: metaItems
-                    }));
-                }
+            const metaItems = [];
+            if (term.fqn) {
+                metaItems.push(createElement("div", {children: [
+                    createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
+                    createElement("span", {className: "meta-value", textContent: term.fqn}),
+                ]}));
+            }
+            if (term.simpleText) {
+                metaItems.push(createElement("div", {children: [
+                    createElement("span", {className: "meta-label", textContent: "単純名"}),
+                    createElement("span", {className: "meta-value", textContent: term.simpleText}),
+                ]}));
+            }
+            if (term.kind) {
+                metaItems.push(createElement("div", {children: [
+                    createElement("span", {className: "meta-label", textContent: "種類"}),
+                    createElement("span", {className: "meta-value", textContent: term.kind}),
+                ]}));
+            }
+            if (metaItems.length > 0) {
+                const details = createElement("details", {
+                    children: [
+                        createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報"}),
+                        createElement("section", {
+                            className: "jig-card jig-card--item weak",
+                            children: metaItems
+                        })
+                    ]
+                });
+                if (!isCompact) details.open = true;
+                metaChildren.push(details);
             }
 
             const article = createElement("article", {

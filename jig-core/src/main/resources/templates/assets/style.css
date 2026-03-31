@@ -160,6 +160,20 @@ aside.notice {
     font-size: 0.9em;
     color: gray;
 }
+.term-attributes-toggle {
+    display: inline-block;
+    font-size: 0.75em;
+    color: #aaa;
+    cursor: pointer;
+    user-select: none;
+    padding: 2px 6px;
+    margin-top: 4px;
+    border-radius: 3px;
+    list-style: none;
+}
+.term-attributes-toggle::-webkit-details-marker { display: none; }
+.term-attributes-toggle::before { content: "▸ "; }
+details[open] .term-attributes-toggle::before { content: "▾ "; }
 .deprecated {
     text-decoration: line-through !important;
 }

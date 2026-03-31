@@ -627,49 +627,69 @@ function renderPackages(packages, container) {
             section.appendChild(childrenTable);
         }
 
+        // 3つのパッケージダイアグラムをタブで表示
+        const tabDefs = [
+            { id: 'direct',    label: 'パッケージ関連図',           diagramType: 'packageDirect' },
+            { id: 'inner-pkg', label: 'パッケージ内パッケージ関連図', diagramType: 'package' },
+            ...(pkg.types.length > 0 ? [{ id: 'inner-class', label: 'パッケージ内クラス関連図', diagramType: 'type' }] : []),
+        ];
+
+        const tabsBar = createElement("div", {className: "diagram-tabs"});
+        const panels = {};
+        tabDefs.forEach((tab, i) => {
+            panels[tab.id] = createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
+        });
+        tabDefs.forEach((tab, i) => {
+            const btn = createElement("button", {
+                className: "diagram-tab" + (i === 0 ? " active" : ""),
+                textContent: tab.label,
+            });
+            btn.addEventListener('click', () => {
+                tabsBar.querySelectorAll('.diagram-tab').forEach(b => b.classList.remove('active'));
+                Object.values(panels).forEach(p => p.classList.add('hidden'));
+                btn.classList.add('active');
+                panels[tab.id].classList.remove('hidden');
+            });
+            tabsBar.appendChild(btn);
+        });
+
+        section.appendChild(createElement("section", {
+            className: "jig-card--item domain-diagrams-section",
+            children: [tabsBar, ...Object.values(panels)],
+        }));
+
         // パッケージ関連図（同階層の直接関連）
-        const pkgDirectRelDiagramContainer = createElement("div", {className: "mermaid-diagram"});
-        section.appendChild(pkgDirectRelDiagramContainer);
-        diagramRegistry.push({container: pkgDirectRelDiagramContainer, pkg, diagramType: 'packageDirect'});
-        globalThis.Jig.observe.lazyRender(pkgDirectRelDiagramContainer, () => {
-            renderedContainers.add(pkgDirectRelDiagramContainer);
-            pkgDirectRelDiagramContainer.innerHTML = "";
-            const directDiagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
-            if (directDiagram) {
-                globalThis.Jig.mermaid.renderWithControls(pkgDirectRelDiagramContainer, directDiagram);
-                section.insertBefore(createElement("h4", { textContent: "パッケージ関連図", className: "diagram-heading" }), pkgDirectRelDiagramContainer);
-            }
+        const pkgDirectRelContainer = createElement("div", {className: "mermaid-diagram"});
+        panels['direct'].appendChild(pkgDirectRelContainer);
+        diagramRegistry.push({container: pkgDirectRelContainer, pkg, diagramType: 'packageDirect'});
+        globalThis.Jig.observe.lazyRender(pkgDirectRelContainer, () => {
+            renderedContainers.add(pkgDirectRelContainer);
+            pkgDirectRelContainer.innerHTML = "";
+            const diagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
+            if (diagram) globalThis.Jig.mermaid.renderWithControls(pkgDirectRelContainer, diagram);
         });
 
         // パッケージ内パッケージ関連図
-        const pkgRelDiagramContainer = createElement("div", {className: "mermaid-diagram"});
-        section.appendChild(pkgRelDiagramContainer);
-        diagramRegistry.push({container: pkgRelDiagramContainer, pkg, diagramType: 'package'});
-        globalThis.Jig.observe.lazyRender(pkgRelDiagramContainer, () => {
-            renderedContainers.add(pkgRelDiagramContainer);
-            pkgRelDiagramContainer.innerHTML = "";
-            const pkgDiagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
-            if (pkgDiagram) {
-                globalThis.Jig.mermaid.renderWithControls(pkgRelDiagramContainer, pkgDiagram);
-                // タイトルヘッダ
-                section.insertBefore(createElement("h4", { textContent: "パッケージ内パッケージ関連図" }), pkgRelDiagramContainer);
-            }
+        const pkgRelContainer = createElement("div", {className: "mermaid-diagram"});
+        panels['inner-pkg'].appendChild(pkgRelContainer);
+        diagramRegistry.push({container: pkgRelContainer, pkg, diagramType: 'package'});
+        globalThis.Jig.observe.lazyRender(pkgRelContainer, () => {
+            renderedContainers.add(pkgRelContainer);
+            pkgRelContainer.innerHTML = "";
+            const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
+            if (diagram) globalThis.Jig.mermaid.renderWithControls(pkgRelContainer, diagram);
         });
 
         // パッケージ内クラス関連図
         if (pkg.types.length > 0) {
-            const mmdContainer = createElement("div", {className: "mermaid-diagram"});
-            section.appendChild(mmdContainer);
-            diagramRegistry.push({container: mmdContainer, pkg, diagramType: 'type'});
-            globalThis.Jig.observe.lazyRender(mmdContainer, () => {
-                renderedContainers.add(mmdContainer);
-                mmdContainer.innerHTML = "";
+            const classRelContainer = createElement("div", {className: "mermaid-diagram"});
+            panels['inner-class'].appendChild(classRelContainer);
+            diagramRegistry.push({container: classRelContainer, pkg, diagramType: 'type'});
+            globalThis.Jig.observe.lazyRender(classRelContainer, () => {
+                renderedContainers.add(classRelContainer);
+                classRelContainer.innerHTML = "";
                 const diagram = createRelationDiagram(pkg);
-                if (diagram) {
-                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
-                    // タイトルヘッダ
-                    section.insertBefore(createElement("h4", { textContent: "パッケージ内クラス関連図", className: "diagram-heading" }), mmdContainer);
-                }
+                if (diagram) globalThis.Jig.mermaid.renderWithControls(classRelContainer, diagram);
             });
         }
 

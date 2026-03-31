@@ -424,7 +424,8 @@ body.hide-usecase-declarations .declaration {
     display: none;
 }
 body.hide-domain-diagrams .mermaid-diagram,
-body.hide-domain-diagrams .diagram-heading {
+body.hide-domain-diagrams .diagram-heading,
+body.hide-domain-diagrams .domain-diagrams-section {
     display: none;
 }
 body.hide-usecase-diagrams .mermaid-diagram {

@@ -423,6 +423,10 @@ body.hide-usecase-descriptions .markdown {
 body.hide-usecase-declarations .declaration {
     display: none;
 }
+body.hide-domain-diagrams .mermaid-diagram,
+body.hide-domain-diagrams .diagram-heading {
+    display: none;
+}
 body.hide-usecase-diagrams .mermaid-diagram {
     display: none;
 }

@@ -4,6 +4,7 @@ const { getTypeTerm, getMethodTerm, getFieldTerm } = globalThis.Jig.glossary;
 
 const domainSettings = {
     diagramDirection: 'TB',
+    showDiagrams: true,
     showExternalRelations: true,
     showDeprecatedNodes: true,
     showFields: true,
@@ -629,7 +630,7 @@ function renderPackages(packages, container) {
                 if (diagram) {
                     globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
                     // タイトルヘッダ
-                    section.insertBefore(createElement("h4", { textContent: "パッケージ内クラス関連図" }), mmdContainer);
+                    section.insertBefore(createElement("h4", { textContent: "パッケージ内クラス関連図", className: "diagram-heading" }), mmdContainer);
                 }
             });
         }
@@ -705,7 +706,7 @@ function renderTypes(types, container) {
             const diagram = createTypeRelationDiagram(type);
             if (diagram) {
                 globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
-                section.insertBefore(createElement("h4", {textContent: "クラス関連図"}), mmdContainer);
+                section.insertBefore(createElement("h4", {textContent: "クラス関連図", className: "diagram-heading"}), mmdContainer);
             }
         });
 
@@ -791,6 +792,14 @@ function initSettings() {
         reductionCheckbox.addEventListener('change', () => {
             domainSettings.transitiveReductionEnabled = reductionCheckbox.checked;
             rerenderDiagrams();
+        });
+    }
+
+    const diagramsCheckbox = document.getElementById('show-diagrams');
+    if (diagramsCheckbox) {
+        diagramsCheckbox.addEventListener('change', () => {
+            domainSettings.showDiagrams = diagramsCheckbox.checked;
+            document.body.classList.toggle('hide-domain-diagrams', !domainSettings.showDiagrams);
         });
     }
 

@@ -196,6 +196,23 @@ function renderGlossaryTerms(terms, showAttributes) {
                     createElement("span", {className: "meta-value", textContent: term.kind}),
                 ]}));
             }
+            if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
+                const domainRoots = getDomainPackageRoots();
+                const fqn = term.fqn;
+                const isInDomain = domainRoots.length > 0 && domainRoots.some(root =>
+                    fqn === root || fqn.startsWith(root + ".")
+                );
+                if (isInDomain) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
+                        createElement("a", {
+                            className: "meta-value",
+                            attributes: {href: "domain.html#" + globalThis.Jig.fqnToId("domain", fqn)},
+                            textContent: "ドメインモデル",
+                        }),
+                    ]}));
+                }
+            }
             if (metaItems.length > 0) {
                 const details = createElement("details", {
                     children: [

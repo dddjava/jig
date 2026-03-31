@@ -468,6 +468,56 @@ test.describe('glossary.js', () => {
             assert.ok(!article.children.some(c => c.tagName === 'div' && c.classList.contains('fully-qualified-name')), '属性情報非表示ではFQNがないはず');
         });
 
+        test('ドメインモデルに属するクラスには関連ドキュメントリンクが生成される', () => {
+            const doc = setupDocument();
+            const list = doc.createElement('div');
+            doc.elementsById.set('term-list', list);
+
+            setGlossaryData({domainPackageRoots: ['com.example.domain']});
+            glossary.renderGlossaryTerms([{title: 'Foo', fqn: 'com.example.domain.Foo', kind: 'クラス', description: 'D'}], true);
+            delete globalThis.glossaryData;
+
+            const article = list.children[0].children[1];
+            const details = article.children.find(c => c.tagName === 'details');
+            const metaCard = details.children.find(c => c.tagName === 'section');
+            const link = metaCard.children.flatMap(c => c.children || []).find(c => c.tagName === 'a');
+            assert.ok(link, '関連ドキュメントリンクがあるはず');
+            assert.equal(link.textContent, 'ドメインモデル');
+            assert.ok(link.href.includes('domain.html#'), 'リンク先はdomain.html#...のはず');
+        });
+
+        test('ドメインモデルに属さないクラスには関連ドキュメントリンクが生成されない', () => {
+            const doc = setupDocument();
+            const list = doc.createElement('div');
+            doc.elementsById.set('term-list', list);
+
+            setGlossaryData({domainPackageRoots: ['com.example.domain']});
+            glossary.renderGlossaryTerms([{title: 'Bar', fqn: 'com.other.Bar', kind: 'クラス', description: 'D'}], true);
+            delete globalThis.glossaryData;
+
+            const article = list.children[0].children[1];
+            const details = article.children.find(c => c.tagName === 'details');
+            const metaCard = details.children.find(c => c.tagName === 'section');
+            const link = metaCard?.children.flatMap(c => c.children || []).find(c => c.tagName === 'a');
+            assert.ok(!link, '関連ドキュメントリンクがないはず');
+        });
+
+        test('メソッドには関連ドキュメントリンクが生成されない', () => {
+            const doc = setupDocument();
+            const list = doc.createElement('div');
+            doc.elementsById.set('term-list', list);
+
+            setGlossaryData({domainPackageRoots: ['com.example.domain']});
+            glossary.renderGlossaryTerms([{title: 'foo()', fqn: 'com.example.domain.Foo#foo()', kind: 'メソッド', description: 'D'}], true);
+            delete globalThis.glossaryData;
+
+            const article = list.children[0].children[1];
+            const details = article.children.find(c => c.tagName === 'details');
+            const metaCard = details?.children.find(c => c.tagName === 'section');
+            const link = metaCard?.children.flatMap(c => c.children || []).find(c => c.tagName === 'a');
+            assert.ok(!link, 'メソッドには関連ドキュメントリンクがないはず');
+        });
+
         test('Markdown説明文のレンダリング (markedがある場合)', () => {
             const doc = setupDocument();
             const el = doc.createElement('div');

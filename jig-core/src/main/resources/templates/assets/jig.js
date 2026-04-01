@@ -902,20 +902,17 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
     const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
     const render = (newDirection) => {
-        let text;
-        if (typeof source === "function") {
-            text = source(newDirection);
-        } else {
-            // 文字列の場合は置換でフォールバック
-            text = String(source).replace(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m, `$1${newDirection}`);
-        }
-
+        const text = (typeof source === "function") ? source(newDirection) : source;
         const currentSource = text != null ? String(text) : "";
+
         ensureCopySourceButton(container, currentSource);
         ensureDownloadButton(container, currentSource);
-        ensureDirectionButton(container, newDirection, render);
+        if (typeof source === "function") {
+            ensureDirectionButton(container, newDirection, render);
+        }
 
         if (isTooLarge(currentSource)) {
+
             diagramEl.style.display = "";
             setEdgeWarning(container, {visible: false});
             renderTooLargeDiagram(diagramEl, currentSource);

@@ -4,6 +4,8 @@ const { setGlossaryData } = require('./dom-stub.js');
 
 // Pure functions - no DOM setup needed
 const jigCommon = require('../../main/resources/templates/assets/jig-common.js');
+// Mermaid utilities (moved from jig-common.js to jig-mermaid-diagram.js)
+const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
 
 // ----- estimateEdgeCount -----
 
@@ -247,7 +249,7 @@ test.describe('computeOutboundEdgeLengths', () => {
 
 test.describe('MermaidBuilder.applyThemeClassDefs', () => {
     test('全テーマのclassDefを追加する', () => {
-        const builder = new jigCommon.MermaidBuilder();
+        const builder = new jigMermaid.MermaidBuilder();
         builder.applyThemeClassDefs();
         const code = builder.build();
         assert.ok(code.includes('classDef inbound'), 'inbound classDef should be present');
@@ -257,10 +259,10 @@ test.describe('MermaidBuilder.applyThemeClassDefs', () => {
     });
 
     test('nodeStyleDefsから色コードが正しく取得される', () => {
-        assert.equal(jigCommon.nodeStyleDefs.inbound, 'fill:#E8F0FE,stroke:#2E5C8A');
-        assert.equal(jigCommon.nodeStyleDefs.usecase, 'fill:#E6F8F0,stroke:#2D7A4A');
-        assert.equal(jigCommon.nodeStyleDefs.outbound, 'fill:#FFF0E6,stroke:#CC6600');
-        assert.equal(jigCommon.nodeStyleDefs.inactive, 'fill:#e0e0e0,stroke:#aaa');
+        assert.equal(jigMermaid.nodeStyleDefs.inbound, 'fill:#E8F0FE,stroke:#2E5C8A');
+        assert.equal(jigMermaid.nodeStyleDefs.usecase, 'fill:#E6F8F0,stroke:#2D7A4A');
+        assert.equal(jigMermaid.nodeStyleDefs.outbound, 'fill:#FFF0E6,stroke:#CC6600');
+        assert.equal(jigMermaid.nodeStyleDefs.inactive, 'fill:#e0e0e0,stroke:#aaa');
     });
 });
 
@@ -268,44 +270,44 @@ test.describe('MermaidBuilder.applyThemeClassDefs', () => {
 
 test.describe('Mermaid node shapes', () => {
     test('getNodeDefinition: default shape is class (square)', () => {
-        const def = jigCommon.getNodeDefinition('id1', 'label1');
+        const def = jigMermaid.getNodeDefinition('id1', 'label1');
         assert.equal(def, 'id1["label1"]');
     });
 
     test('getNodeDefinition: method shape is rounded', () => {
-        const def = jigCommon.getNodeDefinition('id1', 'label1', 'method');
+        const def = jigMermaid.getNodeDefinition('id1', 'label1', 'method');
         assert.equal(def, 'id1(["label1"])');
     });
 
     test('getNodeDefinition: package shape is stacked', () => {
-        const def = jigCommon.getNodeDefinition('id1', 'label1', 'package');
+        const def = jigMermaid.getNodeDefinition('id1', 'label1', 'package');
         assert.equal(def, 'id1@{shape: st-rect, label: "label1"}');
     });
 
     test('getNodeDefinition: database shape is cylindrical', () => {
-        const def = jigCommon.getNodeDefinition('id1', 'label1', 'database');
+        const def = jigMermaid.getNodeDefinition('id1', 'label1', 'database');
         assert.equal(def, 'id1[("label1")]');
     });
 
     test('getNodeDefinition: external shape is double circle', () => {
-        const def = jigCommon.getNodeDefinition('id1', 'label1', 'external');
+        const def = jigMermaid.getNodeDefinition('id1', 'label1', 'external');
         assert.equal(def, 'id1(("label1"))');
     });
 
     test('getNodeDefinition: fallback to raw shape string', () => {
-        const def = jigCommon.getNodeDefinition('id1', 'label1', '>"$LABEL"]');
+        const def = jigMermaid.getNodeDefinition('id1', 'label1', '>"$LABEL"]');
         assert.equal(def, 'id1>"label1"]');
     });
 
     test('MermaidBuilder.addNode uses default shape', () => {
-        const builder = new jigCommon.MermaidBuilder();
+        const builder = new jigMermaid.MermaidBuilder();
         builder.addNode('id1', 'label1');
         const code = builder.build();
         assert.ok(code.includes('id1["label1"]'));
     });
 
     test('MermaidBuilder.addNodeToSubgraph uses specified shape', () => {
-        const builder = new jigCommon.MermaidBuilder();
+        const builder = new jigMermaid.MermaidBuilder();
         const sg = builder.startSubgraph('sg1');
         builder.addNodeToSubgraph(sg, 'id1', 'label1', 'method');
         const code = builder.build();

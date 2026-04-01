@@ -294,10 +294,6 @@ function createTypeRelationDiagram(type, direction = domainSettings.diagramDirec
     const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
     const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
 
-    function escapeMermaidLabel(label) {
-        return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
     function packageOf(fqn) {
         const idx = fqn.lastIndexOf('.');
         return idx < 0 ? null : fqn.substring(0, idx);
@@ -323,26 +319,23 @@ function createTypeRelationDiagram(type, direction = domainSettings.diagramDirec
     });
 
     const selfId = fqnToMermaidId(type.fqn);
-    const i = '    ';
-    const lines = [`\ngraph ${direction}`];
+    const builder = new globalThis.Jig.mermaid.Builder();
     byPackage.forEach((fqns, pkgFqn) => {
         if (pkgFqn) {
-            lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkgFqn)} ["${escapeMermaidLabel(getTypeTerm(pkgFqn).title)}"]`);
-            fqns.forEach(fqn => lines.push(`${i}${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`));
-            lines.push(`${i}end`);
+            const sg = builder.startSubgraph(globalThis.Jig.fqnToId("sg", pkgFqn), getTypeTerm(pkgFqn).title);
+            fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), getTypeTerm(fqn).title));
         } else {
-            fqns.forEach(fqn => lines.push(`${i}${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`));
+            fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), getTypeTerm(fqn).title));
         }
     });
-    involvedFqns.forEach(fqn => lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`));
+    involvedFqns.forEach(fqn => builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`));
     edges.forEach(r => {
         const edgeLength = edgeLengthByKey.get(`${r.from}::${r.to}`) || 1;
-        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(false, edgeLength);
-        lines.push(`${i}${fqnToMermaidId(r.from)} ${edgeType} ${fqnToMermaidId(r.to)}`);
+        builder.addEdge(fqnToMermaidId(r.from), fqnToMermaidId(r.to), "", false, edgeLength);
     });
-    lines.push(`${i}style ${selfId} font-weight:bold`);
+    builder.addStyle(selfId, "font-weight:bold");
 
-    return lines.join('\n');
+    return builder.build(direction);
 }
 
 /**
@@ -424,35 +417,19 @@ function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showE
         edges: edges
     });
 
-    function escapeMermaidLabel(label) {
-        return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-
-    function mermaidTypeBox(fqn) {
-        return `${fqnToMermaidId(fqn)}["${escapeMermaidLabel(getTypeTerm(fqn).title)}"]`;
-    }
-
-    function mermaidPackageBox(fqn) {
-        return `${fqnToMermaidId(fqn)}@{shape: st-rect, label: "${escapeMermaidLabel(getTypeTerm(fqn).title)}"}`;
-    }
-
-    const i = '    ';
-    const lines = [`\ngraph ${direction}`];
-    lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkg.fqn)} ["${escapeMermaidLabel(getTypeTerm(pkg.fqn).title)}"]`);
-    lines.push(`${i}direction ${direction}`);
-    internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
-    lines.push(`${i}end`);
-    externalPkgFqns.forEach(fqn => lines.push(`${i}${mermaidPackageBox(fqn)}`));
+    const builder = new globalThis.Jig.mermaid.Builder();
+    const sg = builder.startSubgraph(globalThis.Jig.fqnToId("sg", pkg.fqn), getTypeTerm(pkg.fqn).title, direction);
+    internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), getTypeTerm(fqn).title));
+    externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), getTypeTerm(fqn).title, 'package'));
     [...internalFqns, ...externalPkgFqns].forEach(fqn =>
-        lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`)
+        builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)
     );
     edges.forEach(edge => {
         const edgeLength = edgeLengthByKey.get(`${edge.from}::${edge.to}`) || 1;
-        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(false, edgeLength);
-        lines.push(`${i}${fqnToMermaidId(edge.from)} ${edgeType} ${fqnToMermaidId(edge.to)}`);
+        builder.addEdge(fqnToMermaidId(edge.from), fqnToMermaidId(edge.to), "", false, edgeLength);
     });
 
-    return lines.join('\n');
+    return builder.build(direction);
 }
 
 /**

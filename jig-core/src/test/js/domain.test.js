@@ -6,6 +6,7 @@ const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 global.window = global.window || { addEventListener: () => {} };
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-common.js');
+require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
 require('../../main/resources/templates/assets/jig.js');
 
 const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, derivePackageRelations } = require('../../main/resources/templates/assets/domain.js');

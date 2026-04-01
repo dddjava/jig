@@ -1,7 +1,6 @@
 // 先に読んでおく
 // jig.js : globalThis.Jig.dom
-// jig-common.js : globalThis.Jig.mermaid
-// package-diagram.js : globalThis.Jig.packageDiagram
+// jig-mermaid-diagram.js : globalThis.Jig.mermaid, globalThis.Jig.packageDiagram
 // package-data.js : globalThis.packageData
 // glossary-data.js : globalThis.glossaryData
 

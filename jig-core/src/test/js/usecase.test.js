@@ -4,6 +4,7 @@ const path = require('path');
 const { DocumentStub, EventStub, setGlossaryData } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
+const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid-diagram.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const usecaseJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/usecase.js');
 
@@ -76,9 +77,11 @@ test.describe('UsecaseApp', () => {
         });
 
         delete require.cache[jigCommonJsPath];
+        delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
         require(jigCommonJsPath);
+        require(jigMermaidDiagramJsPath);
         require(jigJsPath);
 
         // Mermaid の複雑なDOM操作を回避するためにオーバーライド
@@ -371,6 +374,7 @@ test.describe('buildSequenceDiagram', () => {
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
+        delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
         delete globalThis.inboundData;
@@ -381,6 +385,7 @@ test.describe('buildSequenceDiagram', () => {
         global.mermaid = { initialize: () => {}, run: () => {} };
 
         require(jigCommonJsPath);
+        require(jigMermaidDiagramJsPath);
         require(jigJsPath);
         ({ buildSequenceDiagram } = require(usecaseJsPath));
     });
@@ -641,6 +646,7 @@ test.describe('buildSequenceDiagramCode', () => {
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
+        delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
 
@@ -650,6 +656,7 @@ test.describe('buildSequenceDiagramCode', () => {
         global.mermaid = { initialize: () => {}, run: () => {} };
 
         require(jigCommonJsPath);
+        require(jigMermaidDiagramJsPath);
         require(jigJsPath);
         ({ buildSequenceDiagramCode } = require(usecaseJsPath));
     });
@@ -707,6 +714,7 @@ test.describe('buildOutboundOperationSet', () => {
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
+        delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
 
@@ -716,6 +724,7 @@ test.describe('buildOutboundOperationSet', () => {
         global.mermaid = { initialize: () => {}, run: () => {} };
 
         require(jigCommonJsPath);
+        require(jigMermaidDiagramJsPath);
         require(jigJsPath);
         ({ buildOutboundOperationSet } = require(usecaseJsPath));
     });
@@ -763,6 +772,7 @@ test.describe('buildUsecaseDiagram', () => {
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
+        delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
 
@@ -772,6 +782,7 @@ test.describe('buildUsecaseDiagram', () => {
         global.mermaid = { initialize: () => {}, run: () => {} };
 
         require(jigCommonJsPath);
+        require(jigMermaidDiagramJsPath);
         require(jigJsPath);
         ({ buildUsecaseDiagram } = require(usecaseJsPath));
     });

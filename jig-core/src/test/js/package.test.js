@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
 const common = require('../../main/resources/templates/assets/jig-common.js');
-const pkgDiagram = require('../../main/resources/templates/assets/package-diagram.js');
+const pkgDiagram = require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
 
 const pkg = require('../../main/resources/templates/assets/package.js');
 const originalDom = {...pkg.dom};

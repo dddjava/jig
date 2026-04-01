@@ -91,7 +91,7 @@ public class IndexView {
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js\"></script>\n");
         html.append("    <script src=\"./assets/jig.js\"></script>\n");
         html.append("    <script src=\"./assets/jig-common.js\"></script>\n");
-        html.append("    <script src=\"./assets/package-diagram.js\"></script>\n");
+        html.append("    <script src=\"./assets/jig-mermaid-diagram.js\"></script>\n");
         html.append("    <script src=\"./data/package-data.js\"></script>\n");
         html.append("    <script src=\"./data/glossary-data.js\"></script>\n");
         html.append("    <script src=\"./assets/index.js\"></script>\n");

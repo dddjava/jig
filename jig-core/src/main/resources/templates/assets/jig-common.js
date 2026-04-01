@@ -3,24 +3,7 @@
 // Namespace
 globalThis.Jig ??= {};
 globalThis.Jig.glossary ??= {};
-globalThis.Jig.mermaid ??= {};
 globalThis.Jig.graph ??= {};
-
-// Mermaid theme colors
-globalThis.Jig.mermaid.nodeStyleDefs = {
-    inbound:  "fill:#E8F0FE,stroke:#2E5C8A",
-    usecase:  "fill:#E6F8F0,stroke:#2D7A4A",
-    outbound: "fill:#FFF0E6,stroke:#CC6600",
-    inactive: "fill:#e0e0e0,stroke:#aaa"
-};
-
-globalThis.Jig.mermaid.nodeShapes = {
-    method: '(["$LABEL"])',
-    class: '["$LABEL"]',
-    package: '@{shape: st-rect, label: "$LABEL"}',
-    database: '[("$LABEL")]',
-    external: '(("$LABEL"))'
-};
 
 // Estimate Mermaid edge count from source
 function estimateEdgeCount(source) {
@@ -263,30 +246,6 @@ globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relation
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
 };
 
-// Mermaid diagram builder
-globalThis.Jig.mermaid.escapeId = function escapeId(id) {
-    return (id || "").replace(/\./g, '_');
-};
-
-globalThis.Jig.mermaid.escapeLabel = function escapeLabel(label) {
-    return `"${(label || "").replace(/"/g, '#quot;')}"`;
-};
-
-globalThis.Jig.mermaid.escapeMermaidText = function escapeMermaidText(text) {
-    return (text || "").replace(/"/g, '\\"');
-};
-
-globalThis.Jig.mermaid.getNodeDefinition = function(id, label, shapeKey = 'class') {
-    const shape = globalThis.Jig.mermaid.nodeShapes[shapeKey] || shapeKey;
-    const escapedLabel = globalThis.Jig.mermaid.escapeMermaidText(label);
-    return `${id}${shape.replace('$LABEL', escapedLabel)}`;
-};
-
-globalThis.Jig.mermaid.edgeTypeForLength = function edgeTypeForLength(dotted = false, length = 1) {
-    if (dotted) return "-.->";
-    const safeLength = Math.max(1, Number(length) || 1);
-    return "--" + "-".repeat(safeLength - 1) + ">";
-};
 
 /**
  * subgraph 内部のエッジのみを使ってノード深さを計算する。
@@ -373,115 +332,6 @@ globalThis.Jig.graph.computeOutboundEdgeLengths = function computeOutboundEdgeLe
     return {edgeLengthByKey, depthMap, maxDepth};
 };
 
-globalThis.Jig.mermaid.Builder = class MermaidBuilder {
-    constructor() {
-        this.nodes = [];
-        this.edges = [];
-        this.subgraphs = [];
-        this.styles = [];
-        this.clicks = [];
-        this.edgeSet = new Set();
-    }
-
-    sanitize(id) {
-        return (id || "").replace(/[^a-zA-Z0-9]/g, '_');
-    }
-
-    addNode(id, label, shape = 'class') {
-        const nodeLine = globalThis.Jig.mermaid.getNodeDefinition(id, label, shape);
-        if (!this.nodes.includes(nodeLine)) {
-            this.nodes.push(nodeLine);
-        }
-        return id;
-    }
-
-    addEdge(from, to, label = "", dotted = false, length = 1) {
-        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(dotted, length);
-        const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
-        if (!this.edgeSet.has(edgeKey)) {
-            this.edgeSet.add(edgeKey);
-            const edgeLine = label ? `  ${from} -- "${label}" ${edgeType} ${to}` : `  ${from} ${edgeType} ${to}`;
-            this.edges.push(edgeLine);
-        }
-    }
-
-    addStyle(id, style) {
-        if (!id || !style) return;
-        this.styles.push(`style ${id} ${style}`);
-    }
-
-    addClick(id, url) {
-        if (!id || !url) return;
-        this.clicks.push(`click ${id} "${url}"`);
-    }
-
-    addClass(id, className) {
-        if (!id || !className) return;
-        this.styles.push(`class ${id} ${className}`);
-    }
-
-    addClassDef(className, style) {
-        if (!className || !style) return;
-        this.styles.push(`classDef ${className} ${style}`);
-    }
-
-    applyThemeClassDefs() {
-        Object.entries(globalThis.Jig.mermaid.nodeStyleDefs).forEach(([name, style]) => {
-            this.addClassDef(name, style);
-        });
-    }
-
-    startSubgraph(id, label = id, direction = null) {
-        const subgraph = {id, label, lines: []};
-        if (direction) subgraph.lines.push(`direction ${direction}`);
-        this.subgraphs.push(subgraph);
-        return subgraph;
-    }
-
-    ensureSubgraph(map, key, label, direction = null) {
-        if (!map.has(key)) {
-            map.set(key, this.startSubgraph(key, label, direction));
-        }
-        return map.get(key);
-    }
-
-    addNodeToSubgraph(subgraph, id, label, shape = 'class') {
-        const nodeLine = `    ${globalThis.Jig.mermaid.getNodeDefinition(id, label, shape)}`;
-        if (!subgraph.lines.includes(nodeLine)) {
-            subgraph.lines.push(nodeLine);
-        }
-        return id;
-    }
-
-    build(direction = "LR") {
-        let code = `graph ${direction}\n`;
-        this.subgraphs.forEach(sg => {
-            code += `  subgraph ${sg.id} ["${sg.label}"]\n`;
-            sg.lines.forEach(line => {
-                code += `    ${line.trim()}\n`;
-            });
-            code += `  end\n`;
-        });
-        this.nodes.forEach(node => {
-            code += `  ${node.trim()}\n`;
-        });
-        this.edges.forEach(edge => {
-            code += `${edge}\n`;
-        });
-        this.styles.forEach(styleLine => {
-            code += `${styleLine}\n`;
-        });
-        this.clicks.forEach(clickLine => {
-            code += `${clickLine}\n`;
-        });
-        return code;
-    }
-
-    isEmpty() {
-        return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
-    }
-};
-
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
@@ -492,11 +342,6 @@ if (typeof module !== "undefined" && module.exports) {
         getMethodTerm: globalThis.Jig.glossary.getMethodTerm,
         getFieldTerm: globalThis.Jig.glossary.getFieldTerm,
         findTerm: globalThis.Jig.glossary.findTerm,
-        MermaidBuilder: globalThis.Jig.mermaid.Builder,
-        nodeStyleDefs: globalThis.Jig.mermaid.nodeStyleDefs,
-        nodeShapes: globalThis.Jig.mermaid.nodeShapes,
-        getNodeDefinition: globalThis.Jig.mermaid.getNodeDefinition,
-        edgeTypeForLength: globalThis.Jig.mermaid.edgeTypeForLength,
         detectStronglyConnectedComponents: globalThis.Jig.graph.detectStronglyConnectedComponents,
         transitiveReduction: globalThis.Jig.graph.transitiveReduction,
         computeSubgraphDepthMap: globalThis.Jig.graph.computeSubgraphDepthMap,

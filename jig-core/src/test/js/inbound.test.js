@@ -5,6 +5,7 @@ const path = require('path');
 const { setGlossaryData } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
+const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid-diagram.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const inboundJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/inbound.js');
 
@@ -82,9 +83,11 @@ test.describe('InboundApp', () => {
         global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
 
         delete require.cache[jigCommonJsPath];
+        delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
         delete require.cache[inboundJsPath];
         require(jigCommonJsPath);
+        require(jigMermaidDiagramJsPath);
         require(jigJsPath);
         ({ InboundApp } = require(inboundJsPath));
     });

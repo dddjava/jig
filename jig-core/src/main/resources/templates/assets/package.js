@@ -16,7 +16,7 @@ const packageContext = {
 
 const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
 
-// package-diagram.js で定義された共通関数への参照
+// jig-mermaid-diagram.js で定義された共通関数への参照
 // （globalThis.Jig.packageDiagram 経由でアクセス）
 const getAggregatedFqn = (fqn, depth) => globalThis.Jig.packageDiagram.getAggregatedFqn(fqn, depth);
 const getPackageFqnFromTypeFqn = (typeFqn) => globalThis.Jig.packageDiagram.getPackageFqnFromTypeFqn(typeFqn);

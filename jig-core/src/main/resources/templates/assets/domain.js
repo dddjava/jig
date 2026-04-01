@@ -352,14 +352,18 @@ function createRelationDiagram(pkg) {
         if (pkgTypeFqns.size === 0) return null;
     }
 
-    // このパッケージの型から出る関連
+    // このパッケージの型から出る関連・入る関連
     const fromPkgRelations = relations.filter(r => pkgTypeFqns.has(r.from));
+    const toPkgRelations = relations.filter(r => pkgTypeFqns.has(r.to) && !pkgTypeFqns.has(r.from));
 
     // 内部関連と外部関連に分類
     const internalRelations = fromPkgRelations.filter(r => pkgTypeFqns.has(r.to));
 
-    const externalRelations = domainSettings.showExternalRelations
+    const externalOutgoing = domainSettings.showExternalRelations
         ? fromPkgRelations.filter(r => !pkgTypeFqns.has(r.to))
+        : [];
+    const externalIncoming = domainSettings.showExternalRelations
+        ? toPkgRelations
         : [];
 
     function packageOf(fqn) {
@@ -368,23 +372,25 @@ function createRelationDiagram(pkg) {
     }
 
     // 型が関連を持つ場合は関連から、ない場合はパッケージ内全型をノードにする
-    const internalFqns = (fromPkgRelations.length > 0 || internalRelations.length > 0)
-        ? new Set()
-        : pkgTypeFqns;
+    const hasAnyRelation = fromPkgRelations.length > 0 || toPkgRelations.length > 0;
+    const internalFqns = hasAnyRelation ? new Set() : pkgTypeFqns;
 
-    if (fromPkgRelations.length > 0 || internalRelations.length > 0) {
+    if (hasAnyRelation) {
         fromPkgRelations.forEach(r => internalFqns.add(r.from));
         internalRelations.forEach(r => internalFqns.add(r.to));
+        externalIncoming.forEach(r => internalFqns.add(r.to));
     }
 
     // 外部パッケージノード
     const externalPkgFqns = new Set();
-    externalRelations.forEach(r => externalPkgFqns.add(packageOf(r.to)));
+    externalOutgoing.forEach(r => externalPkgFqns.add(packageOf(r.to)));
+    externalIncoming.forEach(r => externalPkgFqns.add(packageOf(r.from)));
 
     // エッジ（重複排除）
     const allEdges = [
         ...internalRelations.map(r => ({ from: r.from, to: r.to })),
-        ...externalRelations.map(r => ({ from: r.from, to: packageOf(r.to) }))
+        ...externalOutgoing.map(r => ({ from: r.from, to: packageOf(r.to) })),
+        ...externalIncoming.map(r => ({ from: packageOf(r.from), to: r.to })),
     ];
     const uniqueEdgesMap = new Map();
     allEdges.forEach(e => {

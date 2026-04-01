@@ -334,7 +334,7 @@ function createTypeRelationDiagram(type) {
  * @param {PackageType} pkg
  * @returns {string | null}
  */
-function createRelationDiagram(pkg) {
+function createRelationDiagram(pkg, {showExternalRelations = domainSettings.showExternalRelations} = {}) {
     const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
     const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
 
@@ -359,10 +359,10 @@ function createRelationDiagram(pkg) {
     // 内部関連と外部関連に分類
     const internalRelations = fromPkgRelations.filter(r => pkgTypeFqns.has(r.to));
 
-    const externalOutgoing = domainSettings.showExternalRelations
+    const externalOutgoing = showExternalRelations
         ? fromPkgRelations.filter(r => !pkgTypeFqns.has(r.to))
         : [];
-    const externalIncoming = domainSettings.showExternalRelations
+    const externalIncoming = showExternalRelations
         ? toPkgRelations
         : [];
 
@@ -691,14 +691,30 @@ function renderPackages(packages, container) {
                 });
             }
             if (panels['inner-class']) {
+                const extCheckbox = createElement("input", {
+                    attributes: {type: "checkbox", class: "class-relation-external-toggle"}
+                });
+                extCheckbox.checked = true;
+                panels['inner-class'].appendChild(createElement("label", {
+                    className: "diagram-panel-option",
+                    children: [extCheckbox, document.createTextNode("パッケージ外との関連")]
+                }));
+
                 const c = createElement("div", {className: "mermaid-diagram"});
                 panels['inner-class'].appendChild(c);
                 diagramRegistry.push({container: c, pkg, diagramType: 'type'});
+
+                const render = () => {
+                    c.innerHTML = "";
+                    const diagram = createRelationDiagram(pkg, {showExternalRelations: extCheckbox.checked});
+                    if (diagram) globalThis.Jig.mermaid.renderWithControls(c, diagram);
+                };
+                extCheckbox.addEventListener('change', () => {
+                    if (renderedContainers.has(c)) render();
+                });
                 globalThis.Jig.observe.lazyRender(c, () => {
                     renderedContainers.add(c);
-                    c.innerHTML = "";
-                    const diagram = createRelationDiagram(pkg);
-                    if (diagram) globalThis.Jig.mermaid.renderWithControls(c, diagram);
+                    render();
                 });
             }
         }
@@ -822,7 +838,9 @@ function rerenderDiagrams() {
                 const diagram = createTypeRelationDiagram(type);
                 if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             } else {
-                const diagram = createRelationDiagram(pkg);
+                const extCheckbox = container.closest('.diagram-panel')?.querySelector('.class-relation-external-toggle');
+                const showExternalRelations = extCheckbox ? extCheckbox.checked : domainSettings.showExternalRelations;
+                const diagram = createRelationDiagram(pkg, {showExternalRelations});
                 if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
             }
         });

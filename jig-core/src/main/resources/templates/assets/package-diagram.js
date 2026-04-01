@@ -231,7 +231,7 @@ const PackageDiagramModule = (() => {
             }
         );
         // パッケージ数が1つだったり関連が0なら表示しない
-        if (packageFqns.size <= 1 && uniqueRelations.length === 0) return null;
+        if (packageFqns.size <= 1 || uniqueRelations.length === 0) return null;
 
         const { source } = buildMermaidDiagramSource(
             packageFqns, uniqueRelations,

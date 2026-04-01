@@ -82,7 +82,8 @@ test.describe('UsecaseApp', () => {
         require(jigJsPath);
 
         // Mermaid の複雑なDOM操作を回避するためにオーバーライド
-        globalThis.Jig.mermaid.renderWithControls = (container, code) => {
+        globalThis.Jig.mermaid.renderWithControls = (container, source, {direction = 'LR'} = {}) => {
+            const code = (typeof source === 'function') ? source(direction) : source;
             const pre = doc.createElement('pre');
             pre.className = 'mermaid';
             pre.textContent = code;

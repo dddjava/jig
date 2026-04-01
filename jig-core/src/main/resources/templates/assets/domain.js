@@ -171,7 +171,7 @@ function renderPackageNavItem(pkg) {
  * @param {{from: string, to: string}[]} allPackageRelations
  * @returns {string|null}
  */
-function createPackageDirectRelationDiagram(pkg, allPackageRelations) {
+function createPackageDirectRelationDiagram(pkg, allPackageRelations, direction = domainSettings.diagramDirection) {
     const directRelations = allPackageRelations.filter(r => r.from === pkg.fqn || r.to === pkg.fqn);
     if (directRelations.length === 0) return null;
 
@@ -181,7 +181,7 @@ function createPackageDirectRelationDiagram(pkg, allPackageRelations) {
     const { source } = globalThis.Jig.packageDiagram.buildMermaidDiagramSource(
         packageFqns, directRelations,
         {
-            diagramDirection: domainSettings.diagramDirection,
+            diagramDirection: direction,
             nodeClickUrlCallback: (fqn) => "#" + globalThis.Jig.fqnToId("domain", fqn),
             focusedPackageFqn: pkg.fqn,
         }
@@ -194,14 +194,15 @@ function createPackageDirectRelationDiagram(pkg, allPackageRelations) {
  * @param pkg
  * @param allPackages
  * @param allPackageRelations
+ * @param {string} direction
  * @return {string|null}
  */
-function createPackageRelationDiagram(pkg, allPackages, allPackageRelations) {
+function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection) {
     return globalThis.Jig.packageDiagram.createPackageLevelDiagram(
         pkg, allPackages, allPackageRelations,
         {
             transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
-            diagramDirection: domainSettings.diagramDirection,
+            diagramDirection: direction,
             nodeClickUrlCallback: (fqn) => "#" + globalThis.Jig.fqnToId("domain", fqn),
         }
     );
@@ -262,7 +263,7 @@ function createRelatedClassesList(type) {
  * @param {DomainType} type
  * @returns {string | null}
  */
-function createTypeRelationDiagram(type) {
+function createTypeRelationDiagram(type, direction = domainSettings.diagramDirection) {
     const typesMap = getDomainData()._typesMap;
     const allRelations = (globalThis.typeRelationsData?.relations || [])
         .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
@@ -323,7 +324,7 @@ function createTypeRelationDiagram(type) {
 
     const selfId = fqnToMermaidId(type.fqn);
     const i = '    ';
-    const lines = [`\ngraph ${domainSettings.diagramDirection}`];
+    const lines = [`\ngraph ${direction}`];
     byPackage.forEach((fqns, pkgFqn) => {
         if (pkgFqn) {
             lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkgFqn)} ["${escapeMermaidLabel(getTypeTerm(pkgFqn).title)}"]`);
@@ -349,7 +350,7 @@ function createTypeRelationDiagram(type) {
  * @param {PackageType} pkg
  * @returns {string | null}
  */
-function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showExternalRelations, showExternalIncoming = domainSettings.showExternalRelations} = {}) {
+function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showExternalRelations, showExternalIncoming = domainSettings.showExternalRelations, direction = domainSettings.diagramDirection} = {}) {
     const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
     const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
 
@@ -436,9 +437,9 @@ function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showE
     }
 
     const i = '    ';
-    const lines = [`\ngraph ${domainSettings.diagramDirection}`];
+    const lines = [`\ngraph ${direction}`];
     lines.push(`${i}subgraph ${globalThis.Jig.fqnToId("sg", pkg.fqn)} ["${escapeMermaidLabel(getTypeTerm(pkg.fqn).title)}"]`);
-    lines.push(`${i}direction ${domainSettings.diagramDirection}`);
+    lines.push(`${i}direction ${direction}`);
     internalFqns.forEach(fqn => lines.push(`${i}${mermaidTypeBox(fqn)}`));
     lines.push(`${i}end`);
     externalPkgFqns.forEach(fqn => lines.push(`${i}${mermaidPackageBox(fqn)}`));
@@ -819,9 +820,9 @@ function renderTypes(types, container) {
         globalThis.Jig.observe.lazyRender(mmdContainer, () => {
             renderedContainers.add(mmdContainer);
             mmdContainer.innerHTML = "";
-            const diagram = createTypeRelationDiagram(type);
-            if (diagram) {
-                globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagram);
+            const diagramGenerator = (dir) => createTypeRelationDiagram(type, dir);
+            if (diagramGenerator(domainSettings.diagramDirection)) {
+                globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagramGenerator, {direction: domainSettings.diagramDirection});
                 section.insertBefore(createElement("h4", {textContent: "クラス関連図", className: "diagram-heading"}), mmdContainer);
             }
         });
@@ -861,22 +862,30 @@ function rerenderDiagrams() {
         .forEach(({container, pkg, type, diagramType}) => {
             container.innerHTML = "";
             if (diagramType === 'packageDirect') {
-                const diagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
-                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+                const generator = (dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir);
+                if (generator(domainSettings.diagramDirection)) {
+                    globalThis.Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                }
             } else if (diagramType === 'package') {
-                const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
-                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+                const generator = (dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir);
+                if (generator(domainSettings.diagramDirection)) {
+                    globalThis.Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                }
             } else if (diagramType === 'classDirect') {
-                const diagram = createTypeRelationDiagram(type);
-                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+                const generator = (dir) => createTypeRelationDiagram(type, dir);
+                if (generator(domainSettings.diagramDirection)) {
+                    globalThis.Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                }
             } else {
                 const panel = container.closest('.diagram-panel');
                 const outgoing = panel?.querySelector('.class-relation-external-outgoing');
                 const incoming = panel?.querySelector('.class-relation-external-incoming');
                 const showExternalOutgoing = outgoing ? outgoing.checked : domainSettings.showExternalRelations;
                 const showExternalIncoming = incoming ? incoming.checked : domainSettings.showExternalRelations;
-                const diagram = createRelationDiagram(pkg, {showExternalOutgoing, showExternalIncoming});
-                if (diagram) globalThis.Jig.mermaid.renderWithControls(container, diagram);
+                const generator = (dir) => createRelationDiagram(pkg, {showExternalOutgoing, showExternalIncoming, direction: dir});
+                if (generator(domainSettings.diagramDirection)) {
+                    globalThis.Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                }
             }
         });
 }

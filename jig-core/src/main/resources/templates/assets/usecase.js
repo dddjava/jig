@@ -767,9 +767,8 @@ const UsecaseApp = {
                         builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                     });
 
-                    const code = builder.build('LR');
-                    mmdContainer.innerHTML = '';
-                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
+                    const generator = (dir) => builder.build(dir);
+                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                 });
             }
 
@@ -922,9 +921,8 @@ const UsecaseApp = {
                                 builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
                             });
 
-                            const code = builder.build('LR');
-                            mmdContainer.innerHTML = ''; // clear loading state if any
-                            globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
+                            const generator = (dir) => builder.build(dir);
+                            globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                         });
                     }
 

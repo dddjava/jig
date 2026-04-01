@@ -675,8 +675,8 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
     const diagram = itemNode.querySelector('.mutual-dependency-diagram');
     if (!diagram) return;
 
-    const {source} = buildMutualDependencyDiagramSource(item.causes, context.mutualDependencyDiagramDirection, item.pairLabel);
-    if (!source) {
+    const generator = (dir) => buildMutualDependencyDiagramSource(item.causes, dir, item.pairLabel).source;
+    if (!generator(context.mutualDependencyDiagramDirection)) {
         diagram.innerHTML = ''; // Clear previous diagram
         diagram.style.display = 'none';
         return;
@@ -689,7 +689,7 @@ function renderMutualDependencyDiagram(item, itemNode, context) {
 
     diagram.style.display = 'block';
     if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== 'function') return;
-    globalThis.Jig.mermaid.renderWithControls(diagram, source);
+    globalThis.Jig.mermaid.renderWithControls(diagram, generator, {direction: context.mutualDependencyDiagramDirection});
 }
 
 function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
@@ -887,11 +887,16 @@ function renderPackageDiagram(context, packageFilterFqn, focusedPackageFqn) {
     const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn);
     applyDiagramRenderPlan(context, renderPlan);
     setDiagramSource(diagram, renderPlan.source);
+
     if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== 'function') return;
-    globalThis.Jig.mermaid.renderWithControls(diagram, renderPlan.source, {edgeCount: renderPlan.uniqueRelations.length});
+    const generator = (dir) => buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, dir).source;
+    globalThis.Jig.mermaid.renderWithControls(diagram, generator, {
+        edgeCount: renderPlan.uniqueRelations.length,
+        direction: context.diagramDirection
+    });
 }
 
-function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
+function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, direction = context.diagramDirection) {
     const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
     const {
         uniqueRelations,
@@ -911,7 +916,7 @@ function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn) {
     const {source, nodeIdToFqn, mutualPairs} = buildMermaidDiagramSource(
         packageFqns,
         uniqueRelations,
-        context.diagramDirection,
+        direction,
         focusedPackageFqn // Pass focusedPackageFqn here
     );
     return {

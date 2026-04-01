@@ -170,10 +170,10 @@ const InboundApp = {
                     builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", false, edgeLength);
                 });
 
-                const code = builder.build('LR');
-                if (code) {
+                const generator = (dir) => builder.build(dir);
+                if (generator('LR')) {
                     mmdContainer.innerHTML = "";
-                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, code);
+                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                 }
             });
 

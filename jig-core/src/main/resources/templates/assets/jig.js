@@ -737,20 +737,15 @@ function ensureDownloadButton(container, source) {
     return button;
 }
 
-function ensureDirectionButton(container, source, onUpdate) {
-    if (!container || !source) return null;
-    // graph/flowchart TD, TB, LR のいずれかを含む場合のみ表示
-    const match = source.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
-    if (!match) return null;
+function ensureDirectionButton(container, currentDirection, onUpdate) {
+    if (!container || !currentDirection) return null;
 
     const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
     if (!button) return null;
 
     button.onclick = () => {
-        const currentDirection = match[2];
         const newDirection = (currentDirection === "LR") ? "TD" : "LR";
-        const newSource = source.replace(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m, `$1${newDirection}`);
-        onUpdate(newSource);
+        onUpdate(newDirection);
     };
     return button;
 }
@@ -886,7 +881,7 @@ function renderMermaidNode(diagramEl, source, maxEdges, container) {
 }
 
 
-globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl, source, {edgeCount} = {}) {
+globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl, source, {edgeCount, direction} = {}) {
     if (!targetEl) return;
 
     let diagramEl = null;
@@ -906,20 +901,28 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
 
     const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
-    const render = (currentSource) => {
-        const text = currentSource != null ? String(currentSource) : "";
-        ensureCopySourceButton(container, text);
-        ensureDownloadButton(container, text);
-        ensureDirectionButton(container, text, render);
+    const render = (newDirection) => {
+        let text;
+        if (typeof source === "function") {
+            text = source(newDirection);
+        } else {
+            // 文字列の場合は置換でフォールバック
+            text = String(source).replace(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m, `$1${newDirection}`);
+        }
 
-        if (isTooLarge(text)) {
+        const currentSource = text != null ? String(text) : "";
+        ensureCopySourceButton(container, currentSource);
+        ensureDownloadButton(container, currentSource);
+        ensureDirectionButton(container, newDirection, render);
+
+        if (isTooLarge(currentSource)) {
             diagramEl.style.display = "";
             setEdgeWarning(container, {visible: false});
-            renderTooLargeDiagram(diagramEl, text);
+            renderTooLargeDiagram(diagramEl, currentSource);
             return;
         }
 
-        const resolvedEdgeCount = edgeCount != null ? edgeCount : estimateEdgeCount(text);
+        const resolvedEdgeCount = edgeCount != null ? edgeCount : estimateEdgeCount(currentSource);
         if (resolvedEdgeCount > DEFAULT_MAX_EDGES) {
             diagramEl.style.display = "none";
             setEdgeWarning(container, {
@@ -929,15 +932,23 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
                     `エッジ数: ${resolvedEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
                     "描画する場合はボタンを押してください。"
                 ].join("\n"),
-                onAction: () => renderMermaidNode(diagramEl, text, resolvedEdgeCount, container)
+                onAction: () => renderMermaidNode(diagramEl, currentSource, resolvedEdgeCount, container)
             });
             return;
         }
 
-        renderMermaidNode(diagramEl, text, DEFAULT_MAX_EDGES, container);
+        renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
     };
 
-    render(source);
+    // 初期向きの決定
+    let initialDirection = direction;
+    if (!initialDirection) {
+        const text = (typeof source === "function") ? source("LR") : String(source);
+        const match = text.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
+        initialDirection = match ? match[2] : "LR";
+    }
+
+    render(initialDirection);
 };
 
 // 用語集ユーティリティは jig-common.js に移動

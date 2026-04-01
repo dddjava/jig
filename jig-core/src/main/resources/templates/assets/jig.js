@@ -737,6 +737,24 @@ function ensureDownloadButton(container, source) {
     return button;
 }
 
+function ensureDirectionButton(container, source, onUpdate) {
+    if (!container || !source) return null;
+    // graph/flowchart TD, TB, LR のいずれかを含む場合のみ表示
+    const match = source.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
+    if (!match) return null;
+
+    const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
+    if (!button) return null;
+
+    button.onclick = () => {
+        const currentDirection = match[2];
+        const newDirection = (currentDirection === "LR") ? "TD" : "LR";
+        const newSource = source.replace(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m, `$1${newDirection}`);
+        onUpdate(newSource);
+    };
+    return button;
+}
+
 function findRenderedMermaidSvg(container) {
     if (!container) return null;
     return container.querySelector(":scope > .mermaid svg");
@@ -870,7 +888,6 @@ function renderMermaidNode(diagramEl, source, maxEdges, container) {
 
 globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl, source, {edgeCount} = {}) {
     if (!targetEl) return;
-    const text = source != null ? String(source) : "";
 
     let diagramEl = null;
     if (targetEl.classList && targetEl.classList.contains("mermaid")) {
@@ -888,32 +905,39 @@ globalThis.Jig.mermaid.renderWithControls = function renderWithControls(targetEl
     }
 
     const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
-    ensureCopySourceButton(container, text);
-    ensureDownloadButton(container, text);
 
-    if (isTooLarge(text)) {
-        diagramEl.style.display = "";
-        setEdgeWarning(container, {visible: false});
-        renderTooLargeDiagram(diagramEl, text);
-        return;
-    }
+    const render = (currentSource) => {
+        const text = currentSource != null ? String(currentSource) : "";
+        ensureCopySourceButton(container, text);
+        ensureDownloadButton(container, text);
+        ensureDirectionButton(container, text, render);
 
-    const resolvedEdgeCount = edgeCount != null ? edgeCount : estimateEdgeCount(text);
-    if (resolvedEdgeCount > DEFAULT_MAX_EDGES) {
-        diagramEl.style.display = "none";
-        setEdgeWarning(container, {
-            visible: true,
-            message: [
-                "関連数が多すぎるため描画を省略しました。",
-                `エッジ数: ${resolvedEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
-                "描画する場合はボタンを押してください。"
-            ].join("\n"),
-            onAction: () => renderMermaidNode(diagramEl, text, resolvedEdgeCount, container)
-        });
-        return;
-    }
+        if (isTooLarge(text)) {
+            diagramEl.style.display = "";
+            setEdgeWarning(container, {visible: false});
+            renderTooLargeDiagram(diagramEl, text);
+            return;
+        }
 
-    renderMermaidNode(diagramEl, text, DEFAULT_MAX_EDGES, container);
+        const resolvedEdgeCount = edgeCount != null ? edgeCount : estimateEdgeCount(text);
+        if (resolvedEdgeCount > DEFAULT_MAX_EDGES) {
+            diagramEl.style.display = "none";
+            setEdgeWarning(container, {
+                visible: true,
+                message: [
+                    "関連数が多すぎるため描画を省略しました。",
+                    `エッジ数: ${resolvedEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+                    "描画する場合はボタンを押してください。"
+                ].join("\n"),
+                onAction: () => renderMermaidNode(diagramEl, text, resolvedEdgeCount, container)
+            });
+            return;
+        }
+
+        renderMermaidNode(diagramEl, text, DEFAULT_MAX_EDGES, container);
+    };
+
+    render(source);
 };
 
 // 用語集ユーティリティは jig-common.js に移動

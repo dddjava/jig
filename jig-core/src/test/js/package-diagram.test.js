@@ -97,5 +97,17 @@ test.describe('package-diagram', () => {
             const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, [], {diagramDirection: 'TD', focusedPackageFqn: 'app.not-in-diagram'});
             assert.ok(!source.includes('undefined'), '"undefined" がMermaidソースに含まれないこと');
         });
+
+        test('subgraph外向きエッジは長さを調整する', () => {
+            const visibleSet = new Set(['app.a', 'app.b', 'lib.x']);
+            const relations = [
+                {from: 'app.a', to: 'app.b'},
+                {from: 'app.a', to: 'lib.x'},
+                {from: 'app.b', to: 'lib.x'},
+            ];
+            const {source} = pkgDiagram.buildMermaidDiagramSource(visibleSet, relations, {diagramDirection: 'TD', focusedPackageFqn: null});
+            assert.ok(source.includes('--->'), '浅いノードから外部へのエッジは長くなること');
+            assert.ok(source.includes('-->'), '標準長のエッジも含まれること');
+        });
     });
 });

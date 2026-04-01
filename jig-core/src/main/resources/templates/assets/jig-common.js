@@ -282,6 +282,97 @@ globalThis.Jig.mermaid.getNodeDefinition = function(id, label, shapeKey = 'class
     return `${id}${shape.replace('$LABEL', escapedLabel)}`;
 };
 
+globalThis.Jig.mermaid.edgeTypeForLength = function edgeTypeForLength(dotted = false, length = 1) {
+    if (dotted) return "-.->";
+    const safeLength = Math.max(1, Number(length) || 1);
+    return "--" + "-".repeat(safeLength - 1) + ">";
+};
+
+/**
+ * subgraph 内部のエッジのみを使ってノード深さを計算する。
+ * 深さの起点は内部入次数0ノード（なければ全ノード）を 1 とする。
+ * @param {{nodesInSubgraph: Iterable<string>, edges: {from: string, to: string}[]}} params
+ * @returns {{depthMap: Map<string, number>, maxDepth: number}}
+ */
+globalThis.Jig.graph.computeSubgraphDepthMap = function computeSubgraphDepthMap(params) {
+    const nodes = new Set(params?.nodesInSubgraph || []);
+    const edges = Array.isArray(params?.edges) ? params.edges : [];
+    const depthMap = new Map();
+    if (nodes.size === 0) return {depthMap, maxDepth: 1};
+
+    const inDegree = new Map();
+    nodes.forEach(node => inDegree.set(node, 0));
+
+    const internalEdges = [];
+    edges.forEach(edge => {
+        if (!edge) return;
+        if (!nodes.has(edge.from) || !nodes.has(edge.to)) return;
+        internalEdges.push(edge);
+        inDegree.set(edge.to, (inDegree.get(edge.to) || 0) + 1);
+    });
+
+    const roots = [];
+    nodes.forEach(node => {
+        if ((inDegree.get(node) || 0) === 0) roots.push(node);
+    });
+
+    if (roots.length === 0) {
+        nodes.forEach(node => depthMap.set(node, 1));
+    } else {
+        roots.forEach(node => depthMap.set(node, 1));
+    }
+
+    let changed = true;
+    let iteration = 0;
+    const maxIterations = Math.max(internalEdges.length * Math.max(nodes.size, 1), nodes.size);
+    while (changed && iteration < maxIterations) {
+        changed = false;
+        iteration += 1;
+        internalEdges.forEach(edge => {
+            const fromDepth = depthMap.get(edge.from) || 0;
+            const toDepth = depthMap.get(edge.to) || 0;
+            if (fromDepth > 0 && fromDepth + 1 > toDepth) {
+                depthMap.set(edge.to, fromDepth + 1);
+                changed = true;
+            }
+        });
+    }
+
+    nodes.forEach(node => {
+        if (!depthMap.has(node)) depthMap.set(node, 1);
+    });
+    const maxDepth = depthMap.size > 0 ? Math.max(...depthMap.values()) : 1;
+    return {depthMap, maxDepth};
+};
+
+/**
+ * subgraph 内部ノードから外部ノードへのエッジ長を計算する。
+ * @param {{nodesInSubgraph: Iterable<string>, edges: {from: string, to: string}[], minLength?: number}} params
+ * @returns {{edgeLengthByKey: Map<string, number>, depthMap: Map<string, number>, maxDepth: number}}
+ */
+globalThis.Jig.graph.computeOutboundEdgeLengths = function computeOutboundEdgeLengths(params) {
+    const nodes = new Set(params?.nodesInSubgraph || []);
+    const edges = Array.isArray(params?.edges) ? params.edges : [];
+    const minLength = Math.max(1, Number(params?.minLength) || 1);
+    const {depthMap, maxDepth} = globalThis.Jig.graph.computeSubgraphDepthMap({
+        nodesInSubgraph: nodes,
+        edges: edges
+    });
+    const edgeLengthByKey = new Map();
+
+    edges.forEach(edge => {
+        if (!edge) return;
+        const key = `${edge.from}::${edge.to}`;
+        let length = minLength;
+        if (nodes.has(edge.from) && !nodes.has(edge.to)) {
+            const fromDepth = depthMap.get(edge.from) || 1;
+            length = Math.max(minLength, maxDepth - fromDepth + 1);
+        }
+        edgeLengthByKey.set(key, length);
+    });
+    return {edgeLengthByKey, depthMap, maxDepth};
+};
+
 globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     constructor() {
         this.nodes = [];
@@ -305,7 +396,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     }
 
     addEdge(from, to, label = "", dotted = false, length = 1) {
-        const edgeType = dotted ? "-.->" : "--" + "-".repeat(length - 1) + ">";
+        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(dotted, length);
         const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
         if (!this.edgeSet.has(edgeKey)) {
             this.edgeSet.add(edgeKey);
@@ -405,7 +496,10 @@ if (typeof module !== "undefined" && module.exports) {
         nodeStyleDefs: globalThis.Jig.mermaid.nodeStyleDefs,
         nodeShapes: globalThis.Jig.mermaid.nodeShapes,
         getNodeDefinition: globalThis.Jig.mermaid.getNodeDefinition,
+        edgeTypeForLength: globalThis.Jig.mermaid.edgeTypeForLength,
         detectStronglyConnectedComponents: globalThis.Jig.graph.detectStronglyConnectedComponents,
         transitiveReduction: globalThis.Jig.graph.transitiveReduction,
+        computeSubgraphDepthMap: globalThis.Jig.graph.computeSubgraphDepthMap,
+        computeOutboundEdgeLengths: globalThis.Jig.graph.computeOutboundEdgeLengths,
     };
 }

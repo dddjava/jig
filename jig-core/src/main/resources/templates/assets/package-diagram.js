@@ -278,7 +278,7 @@ const PackageDiagramModule = (() => {
             "---",
             `graph ${diagramDirection}`];
         const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
-        const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId);
+        const subgraphNodeIds = new Map();
         
         const nodeLines = buildDiagramNodeLines(
             packageFqnsToDisplay,
@@ -289,9 +289,11 @@ const PackageDiagramModule = (() => {
                 escapeMermaidText,
                 clickHandlerName,
                 nodeClickUrlCallback,
-                parentFqnsWithRelations
+                parentFqnsWithRelations,
+                subgraphNodeIds
             }
         );
+        const {edgeLines, linkStyles, mutualPairs} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
 
         nodeLines.forEach(line => lines.push(line));
         edgeLines.forEach(line => lines.push(line));
@@ -331,11 +333,12 @@ const PackageDiagramModule = (() => {
         return {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId};
     }
 
-    function buildDiagramEdgeLines(uniqueRelations, ensureNodeId) {
+    function buildDiagramEdgeLines(uniqueRelations, ensureNodeId, options = {}) {
+        const subgraphNodeIds = options.subgraphNodeIds;
         const mutualPairs = buildMutualDependencyPairs(uniqueRelations);
         const linkStyles = [];
         let linkIndex = 0;
-        const edgeLines = [];
+        const edgeDefs = [];
         uniqueRelations.forEach(relation => {
             const fromId = ensureNodeId(relation.from);
             const toId = ensureNodeId(relation.to);
@@ -346,13 +349,35 @@ const PackageDiagramModule = (() => {
                 if (relation.from > relation.to) {
                     return;
                 }
-                edgeLines.push(`${fromId} <--> ${toId}`);
+                edgeDefs.push({fromId, toId, isMutual: true});
                 linkStyles.push(`linkStyle ${linkIndex} stroke:red,stroke-width:2px`);
                 linkIndex += 1;
                 return;
             }
-            edgeLines.push(`${fromId} --> ${toId}`);
+            edgeDefs.push({fromId, toId, isMutual: false, key: `${fromId}::${toId}`});
             linkIndex += 1;
+        });
+        const edgeLengthByKey = new Map();
+        if (subgraphNodeIds && subgraphNodeIds.size > 0) {
+            const singleEdges = edgeDefs
+                .filter(edge => !edge.isMutual)
+                .map(edge => ({from: edge.fromId, to: edge.toId}));
+            subgraphNodeIds.forEach(nodesInSubgraph => {
+                const { edgeLengthByKey: lengths } = globalThis.Jig.graph.computeOutboundEdgeLengths({
+                    nodesInSubgraph,
+                    edges: singleEdges
+                });
+                lengths.forEach((length, key) => {
+                    const current = edgeLengthByKey.get(key) || 1;
+                    if (length > current) edgeLengthByKey.set(key, length);
+                });
+            });
+        }
+        const edgeLines = edgeDefs.map(edge => {
+            if (edge.isMutual) return `${edge.fromId} <--> ${edge.toId}`;
+            const length = edgeLengthByKey.get(edge.key) || 1;
+            const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(false, length);
+            return `${edge.fromId} ${edgeType} ${edge.toId}`;
         });
         return {edgeLines, linkStyles, mutualPairs};
     }
@@ -388,7 +413,7 @@ const PackageDiagramModule = (() => {
                 lines.push(`class ${nodeId} parentPackage`);
             }
         };
-        return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText);
+        return buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, options.subgraphNodeIds);
     }
 
     function buildDiagramNodeLabel(displayLabel, fqn, parentSubgraphFqn) {
@@ -432,9 +457,16 @@ const PackageDiagramModule = (() => {
         return rootGroup;
     }
 
-    function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText) {
+    function buildSubgraphLines(rootGroup, addNodeLines, escapeMermaidText, subgraphNodeIds = null) {
         const lines = [];
         let groupIndex = 0;
+        const collectNodeIds = group => {
+            const ids = [...group.nodes];
+            group.children.forEach(child => {
+                ids.push(...collectNodeIds(child));
+            });
+            return ids;
+        };
         const renderGroup = (group, isRoot, parentSubgraphFqnForNodes) => {
             group.nodes.forEach(nodeId => addNodeLines(lines, nodeId, parentSubgraphFqnForNodes));
             const childKeys = Array.from(group.children.keys()).sort();
@@ -451,6 +483,9 @@ const PackageDiagramModule = (() => {
                 }
                 const groupId = `G${groupIndex++}`;
                 const label = buildDiagramSubgraphLabel(child.key, parentSubgraphFqnForNodes);
+                if (subgraphNodeIds) {
+                    subgraphNodeIds.set(groupId, new Set(collectNodeIds(child)));
+                }
                 lines.push(`subgraph ${groupId}["${escapeMermaidText(label)}"]`);
                 renderGroup(child, false, child.key);
                 lines.push('end');

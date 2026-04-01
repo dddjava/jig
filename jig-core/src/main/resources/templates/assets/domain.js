@@ -309,6 +309,17 @@ function createTypeRelationDiagram(type) {
         if (!byPackage.has(pkg)) byPackage.set(pkg, []);
         byPackage.get(pkg).push(fqn);
     });
+    const edgeLengthByKey = new Map();
+    byPackage.forEach(fqns => {
+        const { edgeLengthByKey: lengths } = globalThis.Jig.graph.computeOutboundEdgeLengths({
+            nodesInSubgraph: fqns,
+            edges: edges
+        });
+        lengths.forEach((length, key) => {
+            const current = edgeLengthByKey.get(key) || 1;
+            if (length > current) edgeLengthByKey.set(key, length);
+        });
+    });
 
     const selfId = fqnToMermaidId(type.fqn);
     const i = '    ';
@@ -323,7 +334,11 @@ function createTypeRelationDiagram(type) {
         }
     });
     involvedFqns.forEach(fqn => lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`));
-    edges.forEach(r => lines.push(`${i}${fqnToMermaidId(r.from)} --> ${fqnToMermaidId(r.to)}`));
+    edges.forEach(r => {
+        const edgeLength = edgeLengthByKey.get(`${r.from}::${r.to}`) || 1;
+        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(false, edgeLength);
+        lines.push(`${i}${fqnToMermaidId(r.from)} ${edgeType} ${fqnToMermaidId(r.to)}`);
+    });
     lines.push(`${i}style ${selfId} font-weight:bold`);
 
     return lines.join('\n');
@@ -403,7 +418,10 @@ function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showE
         edges = globalThis.Jig.graph.transitiveReduction(edges);
     }
 
-    const edgeSet = new Set(edges.map(e => `${fqnToMermaidId(e.from)} --> ${fqnToMermaidId(e.to)}`));
+    const { edgeLengthByKey } = globalThis.Jig.graph.computeOutboundEdgeLengths({
+        nodesInSubgraph: internalFqns,
+        edges: edges
+    });
 
     function escapeMermaidLabel(label) {
         return label.replace(/"/g, '#quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -427,7 +445,11 @@ function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showE
     [...internalFqns, ...externalPkgFqns].forEach(fqn =>
         lines.push(`${i}click ${fqnToMermaidId(fqn)} "#${fqnToHtmlId(fqn)}"`)
     );
-    edgeSet.forEach(edge => lines.push(`${i}${edge}`));
+    edges.forEach(edge => {
+        const edgeLength = edgeLengthByKey.get(`${edge.from}::${edge.to}`) || 1;
+        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(false, edgeLength);
+        lines.push(`${i}${fqnToMermaidId(edge.from)} ${edgeType} ${fqnToMermaidId(edge.to)}`);
+    });
 
     return lines.join('\n');
 }

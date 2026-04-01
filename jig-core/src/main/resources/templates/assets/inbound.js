@@ -159,34 +159,15 @@ const InboundApp = {
                     }
                 });
 
-                // アダプター内部の各ノードの深さ（entrypointからの最長パス）を計算
-                const depthMap = new Map();
-                entrypointFqns.forEach(fqn => depthMap.set(fqn, 1));
-                let changed = true;
-                while (changed) {
-                    changed = false;
-                    controller.relations.forEach(e => {
-                        if (!adapterFqns.has(e.from) || !adapterFqns.has(e.to)) return;
-                        const fromDepth = depthMap.get(e.from) || 0;
-                        const toDepth = depthMap.get(e.to) || 0;
-                        if (fromDepth > 0 && fromDepth + 1 > toDepth) {
-                            depthMap.set(e.to, fromDepth + 1);
-                            changed = true;
-                        }
-                    });
-                }
-                const maxDepth = depthMap.size > 0 ? Math.max(...depthMap.values()) : 1;
+                const { edgeLengthByKey } = globalThis.Jig.graph.computeOutboundEdgeLengths({
+                    nodesInSubgraph: adapterFqns,
+                    edges: controller.relations
+                });
 
                 // エッジ
                 controller.relations.forEach(edge => {
-                    if (adapterFqns.has(edge.from) && !adapterFqns.has(edge.to)) {
-                        // adapter → 非adapter: 深さに応じてエッジ長を調整
-                        const fromDepth = depthMap.get(edge.from) || 1;
-                        const edgeLength = maxDepth - fromDepth + 1;
-                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", false, edgeLength);
-                    } else {
-                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
-                    }
+                    const edgeLength = edgeLengthByKey.get(`${edge.from}::${edge.to}`) || 1;
+                    builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", false, edgeLength);
                 });
 
                 const code = builder.build('LR');

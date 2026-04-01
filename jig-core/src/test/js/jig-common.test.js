@@ -193,6 +193,56 @@ test.describe('transitiveReduction', () => {
     });
 });
 
+// ----- computeSubgraphDepthMap / computeOutboundEdgeLengths -----
+
+test.describe('computeSubgraphDepthMap', () => {
+    test('DAGの最長パスで深さを計算する', () => {
+        const { depthMap, maxDepth } = jigCommon.computeSubgraphDepthMap({
+            nodesInSubgraph: ['A', 'B', 'C', 'D'],
+            edges: [
+                {from: 'A', to: 'B'},
+                {from: 'B', to: 'C'},
+                {from: 'A', to: 'D'},
+            ],
+        });
+        assert.equal(depthMap.get('A'), 1);
+        assert.equal(depthMap.get('B'), 2);
+        assert.equal(depthMap.get('C'), 3);
+        assert.equal(depthMap.get('D'), 2);
+        assert.equal(maxDepth, 3);
+    });
+
+    test('循環のみの場合は全ノードをdepth=1で開始する', () => {
+        const { depthMap, maxDepth } = jigCommon.computeSubgraphDepthMap({
+            nodesInSubgraph: ['A', 'B'],
+            edges: [
+                {from: 'A', to: 'B'},
+                {from: 'B', to: 'A'},
+            ],
+        });
+        assert.ok(depthMap.get('A') >= 1);
+        assert.ok(depthMap.get('B') >= 1);
+        assert.ok(maxDepth >= 1);
+    });
+});
+
+test.describe('computeOutboundEdgeLengths', () => {
+    test('浅いノードから外部へのエッジが長くなる', () => {
+        const { edgeLengthByKey } = jigCommon.computeOutboundEdgeLengths({
+            nodesInSubgraph: ['A', 'B', 'C'],
+            edges: [
+                {from: 'A', to: 'B'},
+                {from: 'B', to: 'C'},
+                {from: 'A', to: 'X'},
+                {from: 'C', to: 'Y'},
+            ],
+        });
+        assert.equal(edgeLengthByKey.get('A::X'), 3);
+        assert.equal(edgeLengthByKey.get('C::Y'), 1);
+        assert.equal(edgeLengthByKey.get('A::B'), 1);
+    });
+});
+
 // ----- MermaidBuilder.applyThemeClassDefs -----
 
 test.describe('MermaidBuilder.applyThemeClassDefs', () => {

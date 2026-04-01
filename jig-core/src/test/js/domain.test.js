@@ -502,6 +502,35 @@ test.describe('domain.js', () => {
             delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
+
+        test('subgraph外向きエッジは深さに応じて長さが変わる', () => {
+            const typeA = { fqn: 'org.example.A', isDeprecated: false };
+            const typeB = { fqn: 'org.example.B', isDeprecated: false };
+            const typeX = { fqn: 'org.other.X', isDeprecated: false };
+            setupDomainData([], [typeA, typeB, typeX]);
+            globalThis.typeRelationsData = {
+                relations: [
+                    { from: 'org.example.A', to: 'org.example.B' },
+                    { from: 'org.example.A', to: 'org.other.X' },
+                ]
+            };
+            setGlossaryData({
+                'org.example.A': { title: 'A' },
+                'org.example.B': { title: 'B' },
+                'org.other.X': { title: 'X' },
+            });
+
+            const result = createTypeRelationDiagram(typeA);
+            const idA = globalThis.Jig.fqnToId("n", 'org.example.A');
+            const idB = globalThis.Jig.fqnToId("n", 'org.example.B');
+            const idX = globalThis.Jig.fqnToId("n", 'org.other.X');
+            assert.ok(result.includes(`${idA} ---> ${idX}`), '浅いノードから外部へのエッジは長くなること');
+            assert.ok(result.includes(`${idA} --> ${idB}`), 'subgraph内エッジは通常長であること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
     });
 
     test.describe('DomainApp', () => {
@@ -583,6 +612,44 @@ test.describe('domain.js', () => {
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;
+        });
+
+        test('createRelationDiagram: 外部向きエッジ長を調整する', () => {
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
+            const packages = [pkg];
+            const types = [
+                {fqn: 'org.example.A', isDeprecated: false},
+                {fqn: 'org.example.B', isDeprecated: false},
+                {fqn: 'org.other.X', isDeprecated: false},
+                {fqn: 'org.third.Y', isDeprecated: false},
+            ];
+            setupDomainData(packages, types);
+            globalThis.typeRelationsData = {
+                relations: [
+                    {from: 'org.example.A', to: 'org.example.B'},
+                    {from: 'org.example.A', to: 'org.other.X'},
+                    {from: 'org.example.B', to: 'org.third.Y'},
+                ]
+            };
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.A': {title: 'A'},
+                'org.example.B': {title: 'B'},
+                'org.other': {title: 'other'},
+                'org.third': {title: 'third'},
+            });
+
+            const result = createRelationDiagram(pkg);
+            const idA = globalThis.Jig.fqnToId("n", 'org.example.A');
+            const idB = globalThis.Jig.fqnToId("n", 'org.example.B');
+            const idOther = globalThis.Jig.fqnToId("n", 'org.other');
+            const idThird = globalThis.Jig.fqnToId("n", 'org.third');
+            assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
+            assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
         });
     });
 });

@@ -11,7 +11,8 @@ globalThis.Jig.mermaid.nodeStyleDefs = {
     inbound:  "fill:#E8F0FE,stroke:#2E5C8A",
     usecase:  "fill:#E6F8F0,stroke:#2D7A4A",
     outbound: "fill:#FFF0E6,stroke:#CC6600",
-    inactive: "fill:#e0e0e0,stroke:#aaa"
+    inactive: "fill:#e0e0e0,stroke:#aaa",
+    domain:   "fill:#FEF9E7,stroke:#B7950B"
 };
 
 globalThis.Jig.mermaid.nodeShapes = {

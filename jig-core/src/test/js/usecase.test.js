@@ -367,6 +367,110 @@ test.describe('UsecaseApp', () => {
         assert.ok(code.includes('click'));
         assert.ok(code.includes('#' + globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()')));
     });
+
+    test('引数にドメインモデル型を持つメソッドの図にドメインモデルノードと引数→メソッドエッジが追加される', () => {
+        globalThis.domainData = {
+            types: [{ fqn: 'com.example.Order', isDeprecated: false }]
+        };
+        const usecaseDataWithDomainParam = {
+            usecases: [{
+                fqn: "com.example.ServiceA",
+                fields: [],
+                staticMethods: [],
+                methods: [{
+                    fqn: "com.example.ServiceA#method1(Order)",
+                    visibility: "PUBLIC",
+                    parameterTypeRefs: [{ fqn: "com.example.Order" }],
+                    returnTypeRef: { fqn: "void" },
+                    declaration: "method1(Order):void",
+                    isDeprecated: false,
+                    callMethods: []
+                }]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1(Order)": { title: "method1" },
+            "com.example.Order": { title: "Order" }
+        });
+        globalThis.usecaseData = usecaseDataWithDomainParam;
+        UsecaseApp.init();
+
+        const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1(Order)');
+        const methodSection = document.getElementById(methodId).parentElement;
+        const mermaidPre = methodSection.querySelector('.mermaid');
+        assert.ok(mermaidPre, 'Mermaid図が生成されること');
+        const code = mermaidPre.textContent;
+
+        const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
+        const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1(Order)');
+        assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
+        assert.ok(code.includes(`${orderNodeId} --> ${methodNodeId}`), '引数→メソッドのエッジが含まれること');
+        assert.ok(code.includes('./domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
+
+        delete globalThis.domainData;
+    });
+
+    test('戻り値にドメインモデル型を持つメソッドの図にドメインモデルノードとメソッド→戻り値エッジが追加される', () => {
+        globalThis.domainData = {
+            types: [{ fqn: 'com.example.Order', isDeprecated: false }]
+        };
+        const usecaseDataWithDomainReturn = {
+            usecases: [{
+                fqn: "com.example.ServiceA",
+                fields: [],
+                staticMethods: [],
+                methods: [{
+                    fqn: "com.example.ServiceA#findOrder()",
+                    visibility: "PUBLIC",
+                    parameterTypeRefs: [],
+                    returnTypeRef: { fqn: "com.example.Order" },
+                    declaration: "findOrder():Order",
+                    isDeprecated: false,
+                    callMethods: []
+                }]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#findOrder()": { title: "findOrder" },
+            "com.example.Order": { title: "Order" }
+        });
+        globalThis.usecaseData = usecaseDataWithDomainReturn;
+        UsecaseApp.init();
+
+        const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#findOrder()');
+        const methodSection = document.getElementById(methodId).parentElement;
+        const mermaidPre = methodSection.querySelector('.mermaid');
+        assert.ok(mermaidPre, 'Mermaid図が生成されること');
+        const code = mermaidPre.textContent;
+
+        const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
+        const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
+        assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
+        assert.ok(code.includes(`${methodNodeId} --> ${orderNodeId}`), 'メソッド→戻り値のエッジが含まれること');
+
+        delete globalThis.domainData;
+    });
+
+    test('domainDataがない場合でもドメインモデルノードが追加されず正常動作する', () => {
+        delete globalThis.domainData;
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
+        });
+        globalThis.usecaseData = mockUsecaseData;
+        UsecaseApp.init();
+
+        const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
+        const methodSection = document.getElementById(methodId).parentElement;
+        const mermaidPres = methodSection.querySelectorAll('.mermaid');
+        assert.ok(mermaidPres.length > 0, 'Mermaid図は生成されること');
+        // ドメインモデルノードは含まれない（エラーなし）
+        const graphCode = mermaidPres[0].textContent;
+        assert.ok(graphCode.includes('graph LR'), '正常なグラフが生成されること');
+    });
 });
 
 test.describe('buildSequenceDiagram', () => {

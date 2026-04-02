@@ -25,7 +25,7 @@ const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecase
  * @property {TypeRef} returnTypeRef
  * @property {boolean} isDeprecated
  * @property {string[]} callMethods 呼び出しているメソッドのFQN
- * @property {string} [kind] 内部で使用する種別 ("usecase" | "method" | "static-method" | "inbound-class" | "outbound")
+ * @property {string} [kind] 内部で使用する種別 ("usecase" | "method" | "static-method" | "inbound-class" | "outbound" | "domain-type")
  */
 
 /**
@@ -332,6 +332,42 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
     }
 
     traverse(rootMethod.fqn, rootMethod.callMethods);
+
+    // ドメインモデルノードを追加（引数・戻り値）
+    const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
+    if (domainFqnSet.size > 0) {
+        [...nodes.keys()].forEach(fqn => {
+            const method = diagramContext.methodMap.get(fqn);
+            if (!method) return; // outbound / inbound-class はスキップ
+
+            // 引数の型 → メソッド
+            (method.parameterTypeRefs || []).forEach(typeRef => {
+                if (!domainFqnSet.has(typeRef.fqn)) return;
+                if (!nodes.has(typeRef.fqn)) {
+                    nodes.set(typeRef.fqn, {fqn: typeRef.fqn, kind: "domain-type"});
+                }
+                const edgeKey = typeRef.fqn + '\u2192' + fqn;
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({from: typeRef.fqn, to: fqn});
+                }
+            });
+
+            // メソッド → 戻り値の型
+            const returnFqn = method.returnTypeRef?.fqn;
+            if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
+                if (!nodes.has(returnFqn)) {
+                    nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
+                }
+                const edgeKey = fqn + '\u2192' + returnFqn;
+                if (!edgeSet.has(edgeKey)) {
+                    edgeSet.add(edgeKey);
+                    edges.push({from: fqn, to: returnFqn});
+                }
+            }
+        });
+    }
+
     return {nodes: [...nodes.values()], edges};
 }
 
@@ -881,8 +917,8 @@ const UsecaseApp = {
                             const classSubgraphs = new Map();
                             usecaseDiagram.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "outbound" || node.kind === "inbound-class") {
-                                    // 外部ポート / inboundクラス
+                                if (node.kind === "outbound" || node.kind === "inbound-class" || node.kind === "domain-type") {
+                                    // 外部ポート / inboundクラス / ドメインモデル
                                     const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, 'class');
                                     if (node.kind === "inbound-class") {
@@ -891,6 +927,9 @@ const UsecaseApp = {
                                     } else if (node.kind === "outbound") {
                                         builder.addClass(nodeId, "outbound");
                                         builder.addClick(nodeId, "./outbound.html#" + globalThis.Jig.fqnToId("port", node.fqn));
+                                    } else if (node.kind === "domain-type") {
+                                        builder.addClass(nodeId, "domain");
+                                        builder.addClick(nodeId, "./domain.html#" + globalThis.Jig.fqnToId("domain", node.fqn));
                                     }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング

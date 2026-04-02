@@ -55,7 +55,7 @@ test.describe('InboundApp', () => {
     let document;
     let InboundApp;
 
-    beforeEach(() => {
+    function setupDom() {
         const dom = new JSDOM(`
             <!DOCTYPE html>
             <html>
@@ -81,7 +81,9 @@ test.describe('InboundApp', () => {
         };
         global.marked = { parse: (text) => text }; // markedのモック
         global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
+    }
 
+    function loadInboundApp() {
         delete require.cache[jigCommonJsPath];
         delete require.cache[jigMermaidDiagramJsPath];
         delete require.cache[jigJsPath];
@@ -89,7 +91,12 @@ test.describe('InboundApp', () => {
         require(jigCommonJsPath);
         require(jigMermaidDiagramJsPath);
         require(jigJsPath);
-        ({ InboundApp } = require(inboundJsPath));
+        InboundApp = require(inboundJsPath);
+    }
+
+    beforeEach(() => {
+        setupDom();
+        loadInboundApp();
     });
 
     test('init should render data from globalThis.inboundData', () => {

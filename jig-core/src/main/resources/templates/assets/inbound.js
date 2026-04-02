@@ -203,5 +203,4 @@ if (typeof document !== 'undefined') {
 
 if (typeof module !== "undefined" && module.exports) {
     module.exports = InboundApp;
-    module.exports.InboundApp = InboundApp;
 }

@@ -717,7 +717,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
     });
 
-    globalThis.Jig.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => {
+    globalThis.Jig.dom.renderSection(sidebar, "出力ポート", grouped.map(group => {
         return {
             id: fqnToId("port", group.outboundPort.fqn),
             label: getTypeTerm(group.outboundPort.fqn).title
@@ -754,7 +754,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
     });
 
-    globalThis.Jig.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
+    globalThis.Jig.dom.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
         id: fqnToId("persistence", group.persistenceTarget),
         label: group.persistenceTarget
     })));
@@ -792,7 +792,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
     });
 
-    globalThis.Jig.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
+    globalThis.Jig.dom.renderSection(sidebar, "外部型", grouped.map(group => ({
         id: fqnToId("external", group.externalType.fqn),
         label: getTypeTerm(group.externalType.fqn).title
     })));

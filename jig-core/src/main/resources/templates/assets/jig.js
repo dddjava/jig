@@ -87,7 +87,6 @@ Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML
 
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
-globalThis.Jig.sidebar ??= {};
 globalThis.Jig.markdown ??= {};
 globalThis.Jig.mermaid ??= {};
 
@@ -387,6 +386,41 @@ globalThis.Jig.dom = (() => {
         observer.observe(container);
     }
 
+    function createSection(title, items) {
+        if (!items || items.length === 0) return null;
+
+        return createElement("section", {
+            className: "in-page-sidebar__section",
+            children: [
+                createElement("p", {
+                    className: "in-page-sidebar__title",
+                    textContent: title
+                }),
+                createElement("ul", {
+                    className: "in-page-sidebar__links",
+                    children: items.map(({id, label}) => createElement("li", {
+                        className: "in-page-sidebar__item",
+                        children: [
+                            createElement("a", {
+                                className: "in-page-sidebar__link",
+                                attributes: {href: "#" + id},
+                                textContent: label
+                            })
+                        ]
+                    }))
+                })
+            ]
+        });
+    }
+
+    function renderSection(container, title, items) {
+        if (!container) return;
+        const section = createSection(title, items);
+        if (section) {
+            container.appendChild(section);
+        }
+    }
+
     return {
         setTypeLinkResolver,
         clearTypeLinkResolver,
@@ -402,44 +436,10 @@ globalThis.Jig.dom = (() => {
         createMethodsList,
         setupSortableTables,
         lazyRender,
+        createSection,
+        renderSection,
     };
 })();
-
-globalThis.Jig.sidebar.createSection = function createSidebarSection(title, items) {
-    if (!items || items.length === 0) return null;
-
-    const createElement = globalThis.Jig.dom.createElement;
-    return createElement("section", {
-        className: "in-page-sidebar__section",
-        children: [
-            createElement("p", {
-                className: "in-page-sidebar__title",
-                textContent: title
-            }),
-            createElement("ul", {
-                className: "in-page-sidebar__links",
-                children: items.map(({id, label}) => createElement("li", {
-                    className: "in-page-sidebar__item",
-                    children: [
-                        createElement("a", {
-                            className: "in-page-sidebar__link",
-                            attributes: {href: "#" + id},
-                            textContent: label
-                        })
-                    ]
-                }))
-            })
-        ]
-    });
-};
-
-globalThis.Jig.sidebar.renderSection = function renderSidebarSection(container, title, items) {
-    if (!container) return;
-    const section = globalThis.Jig.sidebar.createSection(title, items);
-    if (section) {
-        container.appendChild(section);
-    }
-};
 
 globalThis.Jig.markdown.parse = function parseMarkdown(markdown) {
     const source = markdown != null ? String(markdown) : "";

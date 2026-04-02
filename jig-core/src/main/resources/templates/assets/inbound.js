@@ -34,7 +34,7 @@ const InboundApp = (() => {
             id: Jig.fqnToId("adapter", c.fqn),
             label: Jig.glossary.getTypeTerm(c.fqn).title
         }));
-        Jig.sidebar.renderSection(sidebar, "コントローラー", items);
+        Jig.dom.renderSection(sidebar, "コントローラー", items);
     }
 
     function renderControllerList(controllers) {

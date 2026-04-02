@@ -66,7 +66,7 @@ const InboundApp = (() => {
             if (typeTerm.description) {
                 section.appendChild(Jig.dom.createElement("section", {
                     className: "markdown",
-                    innerHTML: Jig.markdown.parse(typeTerm.description)
+                    innerHTML: Jig.dom.parseMarkdown(typeTerm.description)
                 }));
             }
 

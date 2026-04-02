@@ -858,7 +858,7 @@ const UsecaseApp = {
             if (term.description) {
                 section.appendChild(createElement("section", {
                     className: "markdown",
-                    innerHTML: globalThis.Jig.markdown.parse(term.description)
+                    innerHTML: globalThis.Jig.dom.parseMarkdown(term.description)
                 }));
             }
 
@@ -948,7 +948,7 @@ const UsecaseApp = {
                 if (methodDescription) {
                     methodSection.appendChild(createElement("section", {
                         className: "description markdown",
-                        innerHTML: globalThis.Jig.markdown.parse(methodDescription)
+                        innerHTML: globalThis.Jig.dom.parseMarkdown(methodDescription)
                     }));
                 }
 

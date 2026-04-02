@@ -83,11 +83,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* ===== marked ===== */
-Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = globalThis.Jig.markdown.parse(x.innerHTML))
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = globalThis.Jig.dom.parseMarkdown(x.innerHTML))
 
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
-globalThis.Jig.markdown ??= {};
 globalThis.Jig.mermaid ??= {};
 
 globalThis.Jig.dom = (() => {
@@ -114,6 +113,14 @@ globalThis.Jig.dom = (() => {
             });
         }
         return element;
+    }
+
+    function parseMarkdown(markdown) {
+        const source = markdown != null ? String(markdown) : "";
+        if (globalThis.marked && typeof globalThis.marked.parse === "function") {
+            return globalThis.marked.parse(source);
+        }
+        return source;
     }
 
     /**
@@ -274,7 +281,7 @@ globalThis.Jig.dom = (() => {
         if (methodTerm.description) {
             children.push(createElement("div", {
                 className: "markdown",
-                innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
+                innerHTML: parseMarkdown(methodTerm.description)
             }));
         }
 
@@ -426,6 +433,7 @@ globalThis.Jig.dom = (() => {
         clearTypeLinkResolver,
         getTypeLinkResolver,
         createElement,
+        parseMarkdown,
         createCell,
         createElementForTypeRef,
         downloadCsv,
@@ -440,14 +448,6 @@ globalThis.Jig.dom = (() => {
         renderSection,
     };
 })();
-
-globalThis.Jig.markdown.parse = function parseMarkdown(markdown) {
-    const source = markdown != null ? String(markdown) : "";
-    if (globalThis.marked && typeof globalThis.marked.parse === "function") {
-        return globalThis.marked.parse(source);
-    }
-    return source;
-};
 
 // 用語集ユーティリティは jig-common.js に移動
 globalThis.Jig.glossary ??= {};

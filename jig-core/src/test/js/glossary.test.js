@@ -605,8 +605,7 @@ test.describe('glossary.js', () => {
         test('renderMarkdownDescriptions: markdown要素を処理する', () => {
             setupDocument();
             globalThis.Jig ??= {};
-            globalThis.Jig.markdown ??= {};
-            globalThis.Jig.markdown.parse = (text) => text.replace(/\*(.+?)\*/g, '<strong>$1</strong>');
+            globalThis.Jig.dom.parseMarkdown = (text) => text.replace(/\*(.+?)\*/g, '<strong>$1</strong>');
 
             const doc = global.document;
             const elem = doc.createElement('div');
@@ -618,7 +617,7 @@ test.describe('glossary.js', () => {
             const elements = global.document.getElementsByClassName('markdown');
             if (elements && elements.length > 0) {
                 elements.forEach(node => {
-                    node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
+                    node.innerHTML = globalThis.Jig.dom.parseMarkdown(node.innerHTML);
                 });
             }
 

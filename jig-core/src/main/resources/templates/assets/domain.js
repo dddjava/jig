@@ -623,7 +623,7 @@ function renderPackages(packages, container) {
         if (pkgDescription) {
             section.appendChild(createElement("section", {
                 className: "markdown",
-                innerHTML: globalThis.Jig.markdown.parse(pkgDescription)
+                innerHTML: globalThis.Jig.dom.parseMarkdown(pkgDescription)
             }));
         }
 
@@ -773,7 +773,7 @@ function renderTypes(types, container) {
         if (typeDescription) {
             section.appendChild(createElement("section", {
                 className: "markdown",
-                innerHTML: globalThis.Jig.markdown.parse(typeDescription)
+                innerHTML: globalThis.Jig.dom.parseMarkdown(typeDescription)
             }));
         }
 

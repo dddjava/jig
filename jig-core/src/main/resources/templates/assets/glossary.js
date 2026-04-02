@@ -239,7 +239,7 @@ const GlossaryApp = (() => {
                             createElement("span", {textContent: term.title || ""}),
                         ]}),
                         ...metaChildren,
-                        createElement("div", {className: "markdown", innerHTML: Jig.markdown.parse(term.description || "")}),
+                        createElement("div", {className: "markdown", innerHTML: Jig.dom.parseMarkdown(term.description || "")}),
                     ]
                 });
                 groupSection.appendChild(article);
@@ -260,7 +260,7 @@ const GlossaryApp = (() => {
     function renderMarkdownDescriptions() {
         Array.from(document.getElementsByClassName("markdown"))
             .forEach(node => {
-                node.innerHTML = Jig.markdown.parse(node.innerHTML);
+                node.innerHTML = Jig.dom.parseMarkdown(node.innerHTML);
             });
     }
 

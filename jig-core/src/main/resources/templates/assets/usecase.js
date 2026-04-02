@@ -78,6 +78,7 @@ const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecase
  * @property {Set<string>} outboundOperationSet
  * @property {boolean} showDiagramInternalMethods
  * @property {boolean} showDiagramOutboundPorts
+ * @property {boolean} showDiagramDomainTypes
  */
 
 /**
@@ -335,7 +336,7 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
 
     // ドメインモデルノードを追加（引数・戻り値）
     const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
-    if (domainFqnSet.size > 0) {
+    if (diagramContext.showDiagramDomainTypes && domainFqnSet.size > 0) {
         [...nodes.keys()].forEach(fqn => {
             const method = diagramContext.methodMap.get(fqn);
             if (!method) return; // outbound / inbound-class はスキップ
@@ -588,7 +589,8 @@ const UsecaseApp = {
             { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
             { id: 'show-declarations', class: 'hide-usecase-declarations' },
             { id: 'show-diagram-internal-methods', reRender: true },
-            { id: 'show-diagram-outbound-ports', reRender: true }
+            { id: 'show-diagram-outbound-ports', reRender: true },
+            { id: 'show-diagram-domain-types', reRender: true }
         ];
 
         controls.forEach(control => {
@@ -743,13 +745,15 @@ const UsecaseApp = {
         const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
         const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
         const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
-        
+        const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
+
         /** @type {DiagramContext} */
         const diagramContext = {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods,
-            showDiagramOutboundPorts
+            showDiagramOutboundPorts,
+            showDiagramDomainTypes
         };
 
         usecases.forEach(usecase => {

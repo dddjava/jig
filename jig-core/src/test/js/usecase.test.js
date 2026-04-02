@@ -70,6 +70,10 @@ test.describe('UsecaseApp', () => {
             el.id = id;
             el.checked = true;
         });
+        // show-diagram-domain-types はデフォルト未チェック
+        const domainTypesCheckbox = doc.createElement('input');
+        domainTypesCheckbox.id = 'show-diagram-domain-types';
+        domainTypesCheckbox.checked = false;
         // コンテナ要素を事前登録
         ['usecase-sidebar-list', 'usecase-list'].forEach(id => {
             const el = doc.createElement('div');
@@ -369,6 +373,7 @@ test.describe('UsecaseApp', () => {
     });
 
     test('引数にドメインモデル型を持つメソッドの図にドメインモデルノードと引数→メソッドエッジが追加される', () => {
+        document.getElementById('show-diagram-domain-types').checked = true;
         globalThis.domainData = {
             types: [{ fqn: 'com.example.Order', isDeprecated: false }]
         };
@@ -412,6 +417,7 @@ test.describe('UsecaseApp', () => {
     });
 
     test('戻り値にドメインモデル型を持つメソッドの図にドメインモデルノードとメソッド→戻り値エッジが追加される', () => {
+        document.getElementById('show-diagram-domain-types').checked = true;
         globalThis.domainData = {
             types: [{ fqn: 'com.example.Order', isDeprecated: false }]
         };
@@ -449,6 +455,47 @@ test.describe('UsecaseApp', () => {
         const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
         assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
         assert.ok(code.includes(`${methodNodeId} --> ${orderNodeId}`), 'メソッド→戻り値のエッジが含まれること');
+
+        delete globalThis.domainData;
+    });
+
+    test('show-diagram-domain-typesがOFFの場合、ドメインモデルノードは表示されない', () => {
+        // デフォルトは unchecked
+        globalThis.domainData = {
+            types: [{ fqn: 'com.example.Order', isDeprecated: false }]
+        };
+        const usecaseDataWithDomain = {
+            usecases: [{
+                fqn: "com.example.ServiceA",
+                fields: [],
+                staticMethods: [],
+                methods: [{
+                    fqn: "com.example.ServiceA#findOrder()",
+                    visibility: "PUBLIC",
+                    parameterTypeRefs: [],
+                    returnTypeRef: { fqn: "com.example.Order" },
+                    declaration: "findOrder():Order",
+                    isDeprecated: false,
+                    callMethods: []
+                }]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#findOrder()": { title: "findOrder" },
+            "com.example.Order": { title: "Order" }
+        });
+        globalThis.usecaseData = usecaseDataWithDomain;
+        UsecaseApp.init();
+
+        const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#findOrder()');
+        const methodSection = document.getElementById(methodId)?.parentElement;
+        // ドメインノードのみでエッジがなければ図自体が生成されないか、生成されてもドメインノードを含まない
+        const mermaidPre = methodSection?.querySelector('.mermaid');
+        if (mermaidPre) {
+            const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
+            assert.ok(!mermaidPre.textContent.includes(orderNodeId), 'チェックOFFではドメインノードが含まれないこと');
+        }
 
         delete globalThis.domainData;
     });

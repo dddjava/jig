@@ -91,6 +91,7 @@ const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecase
  * @typedef {Object} DiagramEdge
  * @property {string} from
  * @property {string} to
+ * @property {boolean} [dotted]
  */
 
 /**
@@ -364,7 +365,7 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
                 const edgeKey = typeRef.fqn + '\u2192' + fqn;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
-                    edges.push({from: typeRef.fqn, to: fqn});
+                    edges.push({from: typeRef.fqn, to: fqn, dotted: true});
                 }
             });
 
@@ -377,7 +378,7 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
                 const edgeKey = fqn + '\u2192' + returnFqn;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
-                    edges.push({from: fqn, to: returnFqn});
+                    edges.push({from: fqn, to: returnFqn, dotted: true});
                 }
             }
         });
@@ -426,7 +427,7 @@ function buildClassGraph(usecase, handlerFqns = null) {
             const edgeKey = `${typeRef.fqn}->${method.fqn}`;
             if (!edgeSet.has(edgeKey)) {
                 edgeSet.add(edgeKey);
-                edges.push({ from: typeRef.fqn, to: method.fqn });
+                edges.push({ from: typeRef.fqn, to: method.fqn, dotted: true });
             }
         });
 
@@ -439,7 +440,7 @@ function buildClassGraph(usecase, handlerFqns = null) {
             const edgeKey = `${method.fqn}->${returnFqn}`;
             if (!edgeSet.has(edgeKey)) {
                 edgeSet.add(edgeKey);
-                edges.push({ from: method.fqn, to: returnFqn });
+                edges.push({ from: method.fqn, to: returnFqn, dotted: true });
             }
         }
     });
@@ -897,7 +898,7 @@ const UsecaseApp = {
                     });
 
                     classGraph.edges.forEach(edge => {
-                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
+                        builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
                     });
 
                     const generator = (dir) => builder.build(dir);
@@ -1054,7 +1055,7 @@ const UsecaseApp = {
                             });
 
                             usecaseDiagram.edges.forEach(edge => {
-                                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to));
+                                builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
                             });
 
                             const generator = (dir) => builder.build(dir);

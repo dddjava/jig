@@ -296,8 +296,8 @@ test.describe('UsecaseApp', () => {
         const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1(Order)');
         const findOrderNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
         assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
-        assert.ok(code.includes(`${orderNodeId} --> ${method1NodeId}`), '引数→メソッドのエッジが含まれること');
-        assert.ok(code.includes(`${findOrderNodeId} --> ${orderNodeId}`), 'メソッド→戻り値のエッジが含まれること');
+        assert.ok(code.includes(`${orderNodeId} -.-> ${method1NodeId}`), '引数→メソッドのエッジが破線で含まれること');
+        assert.ok(code.includes(`${findOrderNodeId} -.-> ${orderNodeId}`), 'メソッド→戻り値のエッジが破線で含まれること');
         assert.ok(code.includes('./domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
 
         delete globalThis.domainData;
@@ -644,7 +644,7 @@ test.describe('UsecaseApp', () => {
         const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
         const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1(Order)');
         assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
-        assert.ok(code.includes(`${orderNodeId} --> ${methodNodeId}`), '引数→メソッドのエッジが含まれること');
+        assert.ok(code.includes(`${orderNodeId} -.-> ${methodNodeId}`), '引数→メソッドのエッジが破線で含まれること');
         assert.ok(code.includes('./domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
 
         delete globalThis.domainData;
@@ -688,7 +688,7 @@ test.describe('UsecaseApp', () => {
         const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
         const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
         assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
-        assert.ok(code.includes(`${methodNodeId} --> ${orderNodeId}`), 'メソッド→戻り値のエッジが含まれること');
+        assert.ok(code.includes(`${methodNodeId} -.-> ${orderNodeId}`), 'メソッド→戻り値のエッジが破線で含まれること');
 
         delete globalThis.domainData;
     });

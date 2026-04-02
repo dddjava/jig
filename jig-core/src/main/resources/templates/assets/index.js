@@ -1,8 +1,8 @@
-// 先に読んでおく
-// jig.js : globalThis.Jig.dom
-// jig-mermaid-diagram.js : globalThis.Jig.mermaid, globalThis.Jig.packageDiagram
-// package-data.js : globalThis.packageData
-// glossary-data.js : globalThis.glossaryData
+globalThis.Jig ??= {};
+globalThis.Jig.dom ??= {};
+globalThis.Jig.packageDiagram ??= {};
+globalThis.Jig.observe ??= {};
+globalThis.Jig.mermaid ??= {};
 
 /**
  * @typedef {Object} PackageData
@@ -20,13 +20,13 @@ const IndexApp = (() => {
     }
 
     function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
-        const createElement = globalThis.Jig.dom.createElement;
+        const createElement = Jig.dom.createElement;
         const domainPackageDiagram = createElement("div", { className: "mermaid-diagram" });
         packageDiagramContainer.appendChild(domainPackageDiagram);
-        globalThis.Jig.observe.lazyRender(domainPackageDiagram, () => {
+        Jig.observe.lazyRender(domainPackageDiagram, () => {
             domainPackageDiagram.innerHTML = "";
             console.log("Rendering package diagram for " + packageRoot);
-            const pkgDiagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
+            const pkgDiagram = Jig.packageDiagram.createPackageLevelDiagram(
                 { fqn: packageRoot },
                 allPackages, allPackageRelations,
                 {
@@ -37,7 +37,7 @@ const IndexApp = (() => {
             if (pkgDiagram) {
                 // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
                 packageDiagramContainer.insertBefore(createElement("h3", { textContent: titleLabel }), domainPackageDiagram);
-                globalThis.Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
+                Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
             }
         });
     }
@@ -59,19 +59,53 @@ const IndexApp = (() => {
             );
         });
 
-        const commonRoot = globalThis.Jig.packageDiagram.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
+        const commonRoot = Jig.packageDiagram.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
         renderPackageDiagram(
             packageDiagramContainer,
             allPackages, allPackageRelations,
             commonRoot,
             "最上位パッケージ: " + commonRoot
         );
+
+        updateRelativeTime();
+    }
+
+    function updateRelativeTime() {
+        const element = document.getElementById("jig-timestamp");
+        if (!element) return;
+
+        const timestampStr = element.getAttribute("data-jig-timestamp");
+        if (!timestampStr) return;
+
+        const timestamp = new Date(timestampStr);
+        if (isNaN(timestamp.getTime())) return;
+
+        const now = new Date();
+        const diffMs = now - timestamp;
+        const diffSec = Math.floor(diffMs / 1000);
+        const diffMin = Math.floor(diffSec / 60);
+        const diffHour = Math.floor(diffMin / 60);
+        const diffDay = Math.floor(diffHour / 24);
+
+        let relativeTime = "";
+        if (diffDay > 0) {
+            relativeTime = `${diffDay}日前`;
+        } else if (diffHour > 0) {
+            relativeTime = `${diffHour}時間前`;
+        } else if (diffMin > 0) {
+            relativeTime = `${diffMin}分前`;
+        } else {
+            relativeTime = "たった今";
+        }
+
+        element.textContent = `${element.textContent.split(' (')[0]} (${relativeTime})`;
     }
 
     return {
         init,
         getPackageData,
         renderPackageDiagram,
+        updateRelativeTime
     };
 })();
 

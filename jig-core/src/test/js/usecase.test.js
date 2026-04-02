@@ -192,6 +192,65 @@ test.describe('UsecaseApp', () => {
         assert.ok(!code.includes('subgraph'));
     });
 
+    test('クラス単位の図にドメインモデルノードがデフォルトで表示される', () => {
+        globalThis.domainData = {
+            types: [{ fqn: 'com.example.Order', isDeprecated: false }]
+        };
+        const usecaseDataWithDomain = {
+            usecases: [{
+                fqn: "com.example.ServiceA",
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {
+                        fqn: "com.example.ServiceA#method1(Order)",
+                        visibility: "PUBLIC",
+                        parameterTypeRefs: [{ fqn: "com.example.Order" }],
+                        returnTypeRef: { fqn: "void" },
+                        declaration: "method1(Order):void",
+                        isDeprecated: false,
+                        callMethods: []
+                    },
+                    {
+                        fqn: "com.example.ServiceA#findOrder()",
+                        visibility: "PUBLIC",
+                        parameterTypeRefs: [],
+                        returnTypeRef: { fqn: "com.example.Order" },
+                        declaration: "findOrder():Order",
+                        isDeprecated: false,
+                        callMethods: []
+                    }
+                ]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1(Order)": { title: "method1" },
+            "com.example.ServiceA#findOrder()": { title: "findOrder" },
+            "com.example.Order": { title: "Order" }
+        });
+        globalThis.usecaseData = usecaseDataWithDomain;
+        UsecaseApp.init();
+
+        const serviceSection = document.getElementById('usecase-list').children[0];
+        const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+        assert.ok(classDiagram, 'クラス図が生成されること');
+
+        const mermaidPre = classDiagram.querySelector('.mermaid');
+        assert.ok(mermaidPre);
+        const code = mermaidPre.textContent;
+
+        const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
+        const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1(Order)');
+        const findOrderNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
+        assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
+        assert.ok(code.includes(`${orderNodeId} --> ${method1NodeId}`), '引数→メソッドのエッジが含まれること');
+        assert.ok(code.includes(`${findOrderNodeId} --> ${orderNodeId}`), 'メソッド→戻り値のエッジが含まれること');
+        assert.ok(code.includes('./domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
+
+        delete globalThis.domainData;
+    });
+
     test('renderUsecaseList should handle empty data', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();

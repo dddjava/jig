@@ -382,8 +382,10 @@ function buildClassGraph(usecase) {
     /** @type {DiagramEdge[]} */
     const edges = [];
     const edgeSet = new Set();
+    const domainNodeSet = new Set();
     const classMethods = [...usecase.methods, ...usecase.staticMethods];
     const methodFqns = new Set(classMethods.map(m => m.fqn));
+    const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
 
     classMethods.forEach(method => {
         const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
@@ -398,6 +400,33 @@ function buildClassGraph(usecase) {
                 }
             }
         });
+
+        // ドメインモデルノード（引数・戻り値）
+        (method.parameterTypeRefs || []).forEach(typeRef => {
+            if (!domainFqnSet.has(typeRef.fqn)) return;
+            if (!domainNodeSet.has(typeRef.fqn)) {
+                domainNodeSet.add(typeRef.fqn);
+                nodes.push({ fqn: typeRef.fqn, kind: "domain-type" });
+            }
+            const edgeKey = `${typeRef.fqn}->${method.fqn}`;
+            if (!edgeSet.has(edgeKey)) {
+                edgeSet.add(edgeKey);
+                edges.push({ from: typeRef.fqn, to: method.fqn });
+            }
+        });
+
+        const returnFqn = method.returnTypeRef?.fqn;
+        if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
+            if (!domainNodeSet.has(returnFqn)) {
+                domainNodeSet.add(returnFqn);
+                nodes.push({ fqn: returnFqn, kind: "domain-type" });
+            }
+            const edgeKey = `${method.fqn}->${returnFqn}`;
+            if (!edgeSet.has(edgeKey)) {
+                edgeSet.add(edgeKey);
+                edges.push({ from: method.fqn, to: returnFqn });
+            }
+        }
     });
 
     return { nodes, edges };
@@ -792,14 +821,21 @@ const UsecaseApp = {
 
                     classGraph.nodes.forEach(node => {
                         const nodeId = fqnToNodeId(node.fqn);
-                        const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
-                        if (node.kind === "usecase") {
-                            builder.addNode(nodeId, nodeLabel, 'method');
-                            builder.addClass(nodeId, "usecase");
-                            builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                        if (node.kind === "domain-type") {
+                            const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                            builder.addNode(nodeId, nodeLabel, 'class');
+                            builder.addClass(nodeId, "domain");
+                            builder.addClick(nodeId, "./domain.html#" + globalThis.Jig.fqnToId("domain", node.fqn));
                         } else {
-                            builder.addNode(nodeId, nodeLabel, 'method');
-                            builder.addClass(nodeId, "inactive");
+                            const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                            if (node.kind === "usecase") {
+                                builder.addNode(nodeId, nodeLabel, 'method');
+                                builder.addClass(nodeId, "usecase");
+                                builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
+                            } else {
+                                builder.addNode(nodeId, nodeLabel, 'method');
+                                builder.addClass(nodeId, "inactive");
+                            }
                         }
                     });
 

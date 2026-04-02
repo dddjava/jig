@@ -251,6 +251,41 @@ test.describe('UsecaseApp', () => {
         delete globalThis.domainData;
     });
 
+    test('クラス単位の図にinboundクラスのノードとエッジが追加される', () => {
+        globalThis.inboundData = {
+            controllers: [{
+                relations: [
+                    { from: 'web.OrderCtrl#create()', to: 'com.example.ServiceA#method1()' },
+                    { from: 'web.OrderCtrl#list()', to: 'com.example.ServiceA#otherMethod()' }
+                ]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" },
+            "web.OrderCtrl": { title: "OrderCtrl" }
+        });
+        globalThis.usecaseData = mockUsecaseData;
+        UsecaseApp.init();
+
+        const serviceSection = document.getElementById('usecase-list').children[0];
+        const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+        assert.ok(classDiagram, 'クラス図が生成されること');
+
+        const mermaidPre = classDiagram.querySelector('.mermaid');
+        assert.ok(mermaidPre);
+        const code = mermaidPre.textContent;
+
+        const ctrlNodeId = globalThis.Jig.fqnToId("node", 'web.OrderCtrl');
+        const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1()');
+        const otherMethodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#otherMethod()');
+        assert.ok(code.includes(ctrlNodeId), 'inboundクラスのノードが含まれること');
+        assert.ok(code.includes(`${ctrlNodeId} --> ${method1NodeId}`), 'inbound→method1のエッジが含まれること');
+        assert.ok(code.includes(`${ctrlNodeId} --> ${otherMethodNodeId}`), 'inbound→otherMethodのエッジが含まれること');
+        assert.ok(code.includes('./inbound.html#' + globalThis.Jig.fqnToId("adapter", 'web.OrderCtrl')), 'inbound.htmlへのリンクが含まれること');
+    });
+
     test('renderUsecaseList should handle empty data', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();

@@ -429,6 +429,25 @@ function buildClassGraph(usecase) {
         }
     });
 
+    // inboundクラスノード（このクラスのメソッドを呼び出すコントローラー）
+    const inboundNodeSet = new Set();
+    (globalThis.inboundData?.controllers || []).forEach(controller => {
+        (controller.relations || []).forEach(relation => {
+            if (!relation?.from || !relation?.to) return;
+            if (!methodFqns.has(relation.to)) return;
+            const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
+            if (!inboundNodeSet.has(callerClassFqn)) {
+                inboundNodeSet.add(callerClassFqn);
+                nodes.push({ fqn: callerClassFqn, kind: "inbound-class" });
+            }
+            const edgeKey = `${callerClassFqn}->${relation.to}`;
+            if (!edgeSet.has(edgeKey)) {
+                edgeSet.add(edgeKey);
+                edges.push({ from: callerClassFqn, to: relation.to });
+            }
+        });
+    });
+
     return { nodes, edges };
 }
 
@@ -821,7 +840,12 @@ const UsecaseApp = {
 
                     classGraph.nodes.forEach(node => {
                         const nodeId = fqnToNodeId(node.fqn);
-                        if (node.kind === "domain-type") {
+                        if (node.kind === "inbound-class") {
+                            const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                            builder.addNode(nodeId, nodeLabel, 'class');
+                            builder.addClass(nodeId, "inbound");
+                            builder.addClick(nodeId, "./inbound.html#" + globalThis.Jig.fqnToId("adapter", node.fqn));
+                        } else if (node.kind === "domain-type") {
                             const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "domain");

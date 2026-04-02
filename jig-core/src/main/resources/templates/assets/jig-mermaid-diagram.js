@@ -2,13 +2,9 @@
 // MermaidBuilderおよびすべてのMermaidダイアグラム記述をカプセル化する
 // レンダリング制御もこのファイルで扱う
 
-// Mermaid名前空間の初期化
-globalThis.Jig ??= {};
-globalThis.Jig.mermaid ??= {};
-globalThis.Jig.graph ??= {};
-
+const MermaidDiagramModule = (() => {
 // Mermaid theme colors
-globalThis.Jig.mermaid.nodeStyleDefs = {
+const nodeStyleDefs = {
     inbound:  "fill:#E8F0FE,stroke:#2E5C8A",
     usecase:  "fill:#E6F8F0,stroke:#2D7A4A",
     outbound: "fill:#FFF0E6,stroke:#CC6600",
@@ -16,7 +12,7 @@ globalThis.Jig.mermaid.nodeStyleDefs = {
     domain:   "fill:#FEF9E7,stroke:#B7950B"
 };
 
-globalThis.Jig.mermaid.nodeShapes = {
+const nodeShapes = {
     method: '(["$LABEL"])',
     class: '["$LABEL"]',
     package: '@{shape: st-rect, label: "$LABEL"}',
@@ -24,32 +20,32 @@ globalThis.Jig.mermaid.nodeShapes = {
     external: '(("$LABEL"))'
 };
 
-globalThis.Jig.mermaid.escapeId = function escapeId(id) {
+function escapeId(id) {
     return (id || "").replace(/\./g, '_');
-};
+}
 
-globalThis.Jig.mermaid.escapeLabel = function escapeLabel(label) {
+function escapeLabel(label) {
     return `"${(label || "").replace(/"/g, '#quot;')}"`;
-};
+}
 
-globalThis.Jig.mermaid.escapeMermaidText = function escapeMermaidText(text) {
+function escapeMermaidText(text) {
     return (text || "").replace(/"/g, '\\"');
-};
+}
 
-globalThis.Jig.mermaid.getNodeDefinition = function(id, label, shapeKey = 'class') {
-    const shape = globalThis.Jig.mermaid.nodeShapes[shapeKey] || shapeKey;
-    const escapedLabel = globalThis.Jig.mermaid.escapeMermaidText(label);
+function getNodeDefinition(id, label, shapeKey = 'class') {
+    const shape = nodeShapes[shapeKey] || shapeKey;
+    const escapedLabel = escapeMermaidText(label);
     return `${id}${shape.replace('$LABEL', escapedLabel)}`;
-};
+}
 
-globalThis.Jig.mermaid.edgeTypeForLength = function edgeTypeForLength(dotted = false, length = 1) {
+function edgeTypeForLength(dotted = false, length = 1) {
     if (dotted) return "-.->";
     const safeLength = Math.max(1, Number(length) || 1);
     return "--" + "-".repeat(safeLength - 1) + ">";
-};
+}
 
 // Mermaid diagram builder
-globalThis.Jig.mermaid.Builder = class MermaidBuilder {
+class MermaidBuilder {
     constructor() {
         this.nodes = [];
         this.edges = [];
@@ -64,7 +60,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     }
 
     addNode(id, label, shape = 'class') {
-        const nodeLine = globalThis.Jig.mermaid.getNodeDefinition(id, label, shape);
+        const nodeLine = getNodeDefinition(id, label, shape);
         if (!this.nodes.includes(nodeLine)) {
             this.nodes.push(nodeLine);
         }
@@ -72,7 +68,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     }
 
     addEdge(from, to, label = "", dotted = false, length = 1) {
-        const edgeType = globalThis.Jig.mermaid.edgeTypeForLength(dotted, length);
+        const edgeType = edgeTypeForLength(dotted, length);
         const edgeKey = `${from}--${label}--${edgeType}-->${to}`;
         if (!this.edgeSet.has(edgeKey)) {
             this.edgeSet.add(edgeKey);
@@ -102,7 +98,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     }
 
     applyThemeClassDefs() {
-        Object.entries(globalThis.Jig.mermaid.nodeStyleDefs).forEach(([name, style]) => {
+        Object.entries(nodeStyleDefs).forEach(([name, style]) => {
             this.addClassDef(name, style);
         });
     }
@@ -122,7 +118,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     }
 
     addNodeToSubgraph(subgraph, id, label, shape = 'class') {
-        const nodeLine = `    ${globalThis.Jig.mermaid.getNodeDefinition(id, label, shape)}`;
+        const nodeLine = `    ${getNodeDefinition(id, label, shape)}`;
         if (!subgraph.lines.includes(nodeLine)) {
             subgraph.lines.push(nodeLine);
         }
@@ -156,7 +152,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
     isEmpty() {
         return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
     }
-};
+}
 
 // グラフ関連のユーティリティ
 /**
@@ -164,7 +160,7 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
  * @param {Map<string, string[]>} graph
  * @returns {string[][]}
  */
-globalThis.Jig.graph.detectStronglyConnectedComponents = function detectStronglyConnectedComponents(graph) {
+function detectStronglyConnectedComponents(graph) {
     const indices = new Map();
     const lowLink = new Map();
     const stack = [];
@@ -206,7 +202,7 @@ globalThis.Jig.graph.detectStronglyConnectedComponents = function detectStrongly
         }
     }
     return result;
-};
+}
 
 /**
  * 推移的簡約(Transitive Reduction)を行う。
@@ -215,14 +211,14 @@ globalThis.Jig.graph.detectStronglyConnectedComponents = function detectStrongly
  * @param {{from: string, to: string}[]} relations
  * @returns {{from: string, to: string}[]}
  */
-globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relations) {
+function transitiveReduction(relations) {
     const graph = new Map();
     relations.forEach(relation => {
         if (!graph.has(relation.from)) graph.set(relation.from, []);
         graph.get(relation.from).push(relation.to);
     });
 
-    const sccs = globalThis.Jig.graph.detectStronglyConnectedComponents(graph);
+    const sccs = detectStronglyConnectedComponents(graph);
     const cyclicNodes = new Set(sccs.filter(scc => scc.length > 1).flat());
     const cyclicEdges = new Set(
         relations
@@ -264,7 +260,7 @@ globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relation
     });
 
     return relations.filter(edge => !toRemove.has(`${edge.from}::${edge.to}`));
-};
+}
 
 /**
  * subgraph 内部のエッジのみを使ってノード深さを計算する。
@@ -272,7 +268,7 @@ globalThis.Jig.graph.transitiveReduction = function transitiveReduction(relation
  * @param {{nodesInSubgraph: Iterable<string>, edges: {from: string, to: string}[]}} params
  * @returns {{depthMap: Map<string, number>, maxDepth: number}}
  */
-globalThis.Jig.graph.computeSubgraphDepthMap = function computeSubgraphDepthMap(params) {
+function computeSubgraphDepthMap(params) {
     const nodes = new Set(params?.nodesInSubgraph || []);
     const edges = Array.isArray(params?.edges) ? params.edges : [];
     const depthMap = new Map();
@@ -321,18 +317,18 @@ globalThis.Jig.graph.computeSubgraphDepthMap = function computeSubgraphDepthMap(
     });
     const maxDepth = depthMap.size > 0 ? Math.max(...depthMap.values()) : 1;
     return {depthMap, maxDepth};
-};
+}
 
 /**
  * subgraph 内部ノードから外部ノードへのエッジ長を計算する。
  * @param {{nodesInSubgraph: Iterable<string>, edges: {from: string, to: string}[], minLength?: number}} params
  * @returns {{edgeLengthByKey: Map<string, number>, depthMap: Map<string, number>, maxDepth: number}}
  */
-globalThis.Jig.graph.computeOutboundEdgeLengths = function computeOutboundEdgeLengths(params) {
+function computeOutboundEdgeLengths(params) {
     const nodes = new Set(params?.nodesInSubgraph || []);
     const edges = Array.isArray(params?.edges) ? params.edges : [];
     const minLength = Math.max(1, Number(params?.minLength) || 1);
-    const {depthMap, maxDepth} = globalThis.Jig.graph.computeSubgraphDepthMap({
+    const {depthMap, maxDepth} = computeSubgraphDepthMap({
         nodesInSubgraph: nodes,
         edges: edges
     });
@@ -349,7 +345,7 @@ globalThis.Jig.graph.computeOutboundEdgeLengths = function computeOutboundEdgeLe
         edgeLengthByKey.set(key, length);
     });
     return {edgeLengthByKey, depthMap, maxDepth};
-};
+}
 
 const DEFAULT_MAX_TEXT_SIZE = 50000;
 const EXTENDED_MAX_TEXT_SIZE = 200000;
@@ -842,15 +838,39 @@ function setupLazyMermaidRender() {
     diagrams.forEach(diagram => observer.observe(diagram));
 }
 
-globalThis.Jig.mermaid.isTooLarge = isTooLarge;
-globalThis.Jig.mermaid.estimateEdgeCount = estimateEdgeCount;
-globalThis.Jig.mermaid.flashButtonLabel = flashButtonLabel;
-globalThis.Jig.mermaid.renderTooLargeDiagram = renderTooLargeDiagram;
-globalThis.Jig.mermaid.renderWithControls = renderWithControls;
+    return {
+        mermaid: {
+            nodeStyleDefs,
+            nodeShapes,
+            escapeId,
+            escapeLabel,
+            escapeMermaidText,
+            getNodeDefinition,
+            edgeTypeForLength,
+            Builder: MermaidBuilder,
+            isTooLarge,
+            estimateEdgeCount,
+            flashButtonLabel,
+            renderTooLargeDiagram,
+            renderWithControls,
+            setupLazyMermaidRender
+        },
+        graph: {
+            detectStronglyConnectedComponents,
+            transitiveReduction,
+            computeSubgraphDepthMap,
+            computeOutboundEdgeLengths
+        }
+    };
+})();
+
+globalThis.Jig ??= {};
+Object.assign(globalThis.Jig.mermaid ??= {}, MermaidDiagramModule.mermaid);
+Object.assign(globalThis.Jig.graph ??= {}, MermaidDiagramModule.graph);
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", function () {
-        setupLazyMermaidRender();
+        MermaidDiagramModule.mermaid.setupLazyMermaidRender();
     });
 }
 
@@ -1392,20 +1412,20 @@ globalThis.Jig.packageDiagram = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ...PackageDiagramModule,
-        isTooLarge,
-        estimateEdgeCount,
-        detectStronglyConnectedComponents: globalThis.Jig.graph.detectStronglyConnectedComponents,
-        transitiveReduction: globalThis.Jig.graph.transitiveReduction,
-        computeSubgraphDepthMap: globalThis.Jig.graph.computeSubgraphDepthMap,
-        computeOutboundEdgeLengths: globalThis.Jig.graph.computeOutboundEdgeLengths,
-        flashButtonLabel,
-        renderTooLargeDiagram,
-        renderWithControls,
+        isTooLarge: MermaidDiagramModule.mermaid.isTooLarge,
+        estimateEdgeCount: MermaidDiagramModule.mermaid.estimateEdgeCount,
+        detectStronglyConnectedComponents: MermaidDiagramModule.graph.detectStronglyConnectedComponents,
+        transitiveReduction: MermaidDiagramModule.graph.transitiveReduction,
+        computeSubgraphDepthMap: MermaidDiagramModule.graph.computeSubgraphDepthMap,
+        computeOutboundEdgeLengths: MermaidDiagramModule.graph.computeOutboundEdgeLengths,
+        flashButtonLabel: MermaidDiagramModule.mermaid.flashButtonLabel,
+        renderTooLargeDiagram: MermaidDiagramModule.mermaid.renderTooLargeDiagram,
+        renderWithControls: MermaidDiagramModule.mermaid.renderWithControls,
         // Mermaid utilities (moved from jig-common.js)
-        MermaidBuilder: globalThis.Jig.mermaid.Builder,
-        nodeStyleDefs: globalThis.Jig.mermaid.nodeStyleDefs,
-        nodeShapes: globalThis.Jig.mermaid.nodeShapes,
-        getNodeDefinition: globalThis.Jig.mermaid.getNodeDefinition,
-        edgeTypeForLength: globalThis.Jig.mermaid.edgeTypeForLength,
+        MermaidBuilder: MermaidDiagramModule.mermaid.Builder,
+        nodeStyleDefs: MermaidDiagramModule.mermaid.nodeStyleDefs,
+        nodeShapes: MermaidDiagramModule.mermaid.nodeShapes,
+        getNodeDefinition: MermaidDiagramModule.mermaid.getNodeDefinition,
+        edgeTypeForLength: MermaidDiagramModule.mermaid.edgeTypeForLength,
     };
 }

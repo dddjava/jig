@@ -1,6 +1,6 @@
 // Mermaidダイアグラムのソース組み立てモジュール
 // MermaidBuilderおよびすべてのMermaidダイアグラム記述をカプセル化する
-// レンダリング自体はjig.jsのrenderWithControlsが担当する
+// レンダリング制御もこのファイルで扱う
 
 // Mermaid名前空間の初期化
 globalThis.Jig ??= {};
@@ -156,6 +156,509 @@ globalThis.Jig.mermaid.Builder = class MermaidBuilder {
         return this.nodes.length === 0 && this.edges.length === 0 && this.subgraphs.length === 0;
     }
 };
+
+const DEFAULT_MAX_TEXT_SIZE = 50000;
+const EXTENDED_MAX_TEXT_SIZE = 200000;
+const DEFAULT_MAX_EDGES = 500;
+
+function isTooLarge(source) {
+    const text = source != null ? String(source) : "";
+    return text.length > DEFAULT_MAX_TEXT_SIZE;
+}
+
+function estimateEdgeCount(source) {
+    const text = source != null ? String(source) : "";
+    if (!text) return 0;
+    const matches = text.match(/<-->|<-\.-?>|-\.-?>|--?>|==?>|---/g);
+    return matches ? matches.length : 0;
+}
+
+if (typeof window !== "undefined" && window.mermaid) {
+    globalThis.mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: "loose",
+        maxTextSize: DEFAULT_MAX_TEXT_SIZE,
+        maxEdges: DEFAULT_MAX_EDGES
+    });
+}
+
+function fallbackCopyText(source, button) {
+    const textarea = document.createElement("textarea");
+    textarea.value = source;
+    textarea.style.position = "fixed";
+    textarea.style.top = "-1000px";
+    textarea.style.left = "-1000px";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand("copy");
+        flashButtonLabel(button, "Copied!!");
+    } catch (e) {
+        flashButtonLabel(button, "Copy failed...");
+        console.error("Failed to copy text:", e);
+    } finally {
+        document.body.removeChild(textarea);
+    }
+}
+
+function copyMermaidText(source, button) {
+    if (!source) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(source).then(() => {
+            flashButtonLabel(button, "Copied!");
+        }).catch(() => {
+            fallbackCopyText(source, button);
+        });
+        return;
+    }
+    fallbackCopyText(source, button);
+}
+
+function flashButtonLabel(button, text) {
+    if (!button) return;
+    if (button.dataset && button.dataset.iconButton === "true") {
+        const originalTitle = button.getAttribute("title") || "";
+        const originalTooltip = button.dataset.tooltip || "";
+        button.setAttribute("title", text);
+        button.dataset.tooltip = text;
+        window.setTimeout(() => {
+            button.setAttribute("title", originalTitle);
+            button.dataset.tooltip = originalTooltip;
+        }, 1500);
+        return;
+    }
+    const original = button.textContent;
+    button.textContent = text;
+    window.setTimeout(() => {
+        button.textContent = original;
+    }, 1500);
+}
+
+function renderWithExtendedLimit(diagram, source, button) {
+    if (!diagram || !source) return;
+    if (source.length > EXTENDED_MAX_TEXT_SIZE) {
+        flashButtonLabel(button, "さらに大きいため描画できません");
+        return;
+    }
+
+    if (globalThis.mermaid && typeof globalThis.mermaid.initialize === "function") {
+        globalThis.mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: "loose",
+            maxTextSize: EXTENDED_MAX_TEXT_SIZE,
+            maxEdges: DEFAULT_MAX_EDGES
+        });
+    }
+    diagram.classList.remove("too-large");
+    diagram.innerHTML = source;
+
+    const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+    if (renderResult && typeof renderResult.catch === "function") {
+        renderResult.catch(() => {
+            flashButtonLabel(button, "描画に失敗しました");
+        });
+    }
+}
+
+function renderTooLargeDiagram(diagram, source) {
+    if (!diagram) return;
+    diagram.classList.add("too-large");
+    diagram.textContent = "";
+
+    const container = document.createElement("div");
+    container.className = "mermaid-too-large";
+
+    const message = document.createElement("p");
+    message.className = "mermaid-too-large__message";
+    message.textContent = "図の内容が大きすぎるため描画を省略しました。";
+    container.appendChild(message);
+
+    const actions = document.createElement("div");
+    actions.className = "mermaid-too-large__actions";
+
+    const renderButton = document.createElement("button");
+    renderButton.type = "button";
+    renderButton.textContent = "上限を上げて描画する";
+    renderButton.addEventListener("click", () => {
+        renderWithExtendedLimit(diagram, source, renderButton);
+    });
+    actions.appendChild(renderButton);
+
+    const copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.textContent = "図の内容をコピー";
+    copyButton.addEventListener("click", () => {
+        copyMermaidText(source, copyButton);
+    });
+    actions.appendChild(copyButton);
+
+    container.appendChild(actions);
+    diagram.appendChild(container);
+}
+
+function ensureMermaidDiagramContainer(targetEl) {
+    if (!targetEl) return null;
+    if (targetEl.classList && targetEl.classList.contains("mermaid-diagram")) return targetEl;
+
+    const existing = targetEl.closest ? targetEl.closest(".mermaid-diagram") : null;
+    if (existing) return existing;
+
+    const container = document.createElement("div");
+    container.className = "mermaid-diagram";
+
+    const parent = targetEl.parentNode;
+    if (!parent) return null;
+    parent.insertBefore(container, targetEl);
+    container.appendChild(targetEl);
+    return container;
+}
+
+function ensureMermaidControlButton(container, className, label, icon) {
+    if (!container) return null;
+    let button = container.querySelector(`:scope > .${className}`);
+    if (!button) {
+        button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        container.insertBefore(button, container.firstChild);
+    }
+    button.textContent = icon != null ? String(icon) : label;
+    button.setAttribute("aria-label", label);
+    button.setAttribute("title", label);
+    button.dataset.tooltip = label;
+    button.dataset.iconButton = icon != null ? "true" : "false";
+    return button;
+}
+
+function ensureCopySourceButton(container, source) {
+    const button = ensureMermaidControlButton(container, "mermaid-copy-button", "Copy Source", "⧉");
+    if (!button) return null;
+    button.onclick = () => {
+        const text = source != null ? String(source) : "";
+        if (!text) return;
+        copyMermaidText(text, button);
+    };
+    return button;
+}
+
+function findRenderedMermaidSvg(container) {
+    if (!container) return null;
+    return container.querySelector(":scope > .mermaid svg");
+}
+
+function downloadMermaidSvg(container, button) {
+    const svg = findRenderedMermaidSvg(container);
+    if (!svg) {
+        flashButtonLabel(button, "SVG未生成");
+        return;
+    }
+
+    const serializer = new XMLSerializer();
+    const svgText = serializer.serializeToString(svg);
+    const blob = new Blob([svgText], {type: "image/svg+xml;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const htmlFile = (window.location.pathname.split("/").pop() || "diagram.html");
+    const baseName = htmlFile.replace(/\.html?$/i, "");
+    const safeName = baseName.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");
+    link.download = `jig-${safeName || "diagram"}.svg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    flashButtonLabel(button, "Downloaded");
+}
+
+function ensureDownloadButton(container) {
+    const button = ensureMermaidControlButton(container, "mermaid-download-button", "Download SVG", "⬇");
+    if (!button) return null;
+    button.onclick = () => downloadMermaidSvg(container, button);
+    return button;
+}
+
+function ensureDirectionButton(container, currentDirection, onUpdate) {
+    if (!container || !currentDirection) return null;
+    const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
+    if (!button) return null;
+    button.onclick = () => {
+        const newDirection = (currentDirection === "LR") ? "TD" : "LR";
+        onUpdate(newDirection);
+    };
+    return button;
+}
+
+function ensureEdgeWarningPanel(container) {
+    if (!container) return null;
+    let panel = container.querySelector(":scope > .mermaid-edge-warning");
+    if (!panel) {
+        panel = document.createElement("div");
+        panel.className = "mermaid-edge-warning";
+        panel.setAttribute("role", "alert");
+        panel.style.display = "none";
+
+        const message = document.createElement("pre");
+        message.className = "mermaid-edge-warning__message";
+        message.style.whiteSpace = "pre-wrap";
+        message.style.margin = "0 0 8px 0";
+
+        const action = document.createElement("button");
+        action.type = "button";
+        action.className = "mermaid-edge-warning__action";
+        action.textContent = "描画する";
+        action.style.display = "none";
+
+        panel.appendChild(message);
+        panel.appendChild(action);
+        container.insertBefore(panel, container.firstChild);
+    }
+    return panel;
+}
+
+function setEdgeWarning(container, {visible, message, onAction} = {}) {
+    const panel = ensureEdgeWarningPanel(container);
+    if (!panel) return;
+    const messageEl = panel.querySelector(".mermaid-edge-warning__message");
+    const actionEl = panel.querySelector(".mermaid-edge-warning__action");
+    if (messageEl) messageEl.textContent = message || "";
+
+    const hasAction = typeof onAction === "function";
+    if (actionEl) {
+        actionEl.style.display = hasAction ? "" : "none";
+        actionEl.onclick = hasAction ? onAction : null;
+    }
+    panel.style.display = visible ? "" : "none";
+}
+
+function baseMermaidConfig(maxEdges) {
+    return {
+        startOnLoad: false,
+        securityLevel: "loose",
+        maxTextSize: DEFAULT_MAX_TEXT_SIZE,
+        maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES
+    };
+}
+
+function renderMermaidNode(diagramEl, source, maxEdges, container) {
+    if (!diagramEl || !globalThis.mermaid || typeof globalThis.mermaid.run !== "function") return;
+
+    const text = source != null ? String(source) : "";
+    diagramEl.removeAttribute("data-processed");
+    diagramEl.style.display = "";
+    setEdgeWarning(container, {visible: false});
+
+    if (isTooLarge(text)) {
+        renderTooLargeDiagram(diagramEl, text);
+        return;
+    }
+
+    diagramEl.textContent = text;
+    if (typeof globalThis.mermaid.initialize === "function") {
+        globalThis.mermaid.initialize(baseMermaidConfig(maxEdges));
+    }
+
+    try {
+        const result = globalThis.mermaid.run({nodes: [diagramEl]});
+        if (result && typeof result.catch === "function") {
+            result.catch((err) => {
+                const message = err && err.message ? err.message : String(err);
+                if (message.includes("Edge limit exceeded")) {
+                    const edgeCount = estimateEdgeCount(text);
+                    const actionEdges = Math.max(edgeCount, DEFAULT_MAX_EDGES * 2);
+                    diagramEl.style.display = "none";
+                    setEdgeWarning(container, {
+                        visible: true,
+                        message: [
+                            "関連数が多すぎるため描画を省略しました。",
+                            `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+                            "描画する場合はボタンを押してください。"
+                        ].join("\n"),
+                        onAction: () => renderMermaidNode(diagramEl, text, actionEdges, container)
+                    });
+                } else {
+                    diagramEl.style.display = "none";
+                    setEdgeWarning(container, {visible: true, message: `Mermaid error: ${message}`});
+                }
+            });
+        }
+    } catch (err) {
+        const message = err && err.message ? err.message : String(err);
+        diagramEl.style.display = "none";
+        setEdgeWarning(container, {visible: true, message: `Mermaid error: ${message}`});
+    }
+}
+
+function renderWithControls(targetEl, source, {edgeCount, direction} = {}) {
+    if (!targetEl) return;
+
+    let diagramEl = null;
+    if (targetEl.classList && targetEl.classList.contains("mermaid")) {
+        diagramEl = targetEl;
+    } else {
+        if (targetEl.classList && !targetEl.classList.contains("mermaid-diagram")) {
+            targetEl.classList.add("mermaid-diagram");
+        }
+        diagramEl = targetEl.querySelector(":scope > .mermaid");
+        if (!diagramEl) {
+            diagramEl = document.createElement("pre");
+            diagramEl.className = "mermaid";
+            targetEl.appendChild(diagramEl);
+        }
+    }
+
+    const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
+
+    const render = (newDirection) => {
+        const text = (typeof source === "function") ? source(newDirection) : source;
+        const currentSource = text != null ? String(text) : "";
+
+        ensureCopySourceButton(container, currentSource);
+        ensureDownloadButton(container);
+        if (typeof source === "function") {
+            ensureDirectionButton(container, newDirection, render);
+        }
+
+        if (isTooLarge(currentSource)) {
+            diagramEl.style.display = "";
+            setEdgeWarning(container, {visible: false});
+            renderTooLargeDiagram(diagramEl, currentSource);
+            return;
+        }
+
+        const resolvedEdgeCount = edgeCount != null ? edgeCount : estimateEdgeCount(currentSource);
+        if (resolvedEdgeCount > DEFAULT_MAX_EDGES) {
+            diagramEl.style.display = "none";
+            setEdgeWarning(container, {
+                visible: true,
+                message: [
+                    "関連数が多すぎるため描画を省略しました。",
+                    `エッジ数: ${resolvedEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+                    "描画する場合はボタンを押してください。"
+                ].join("\n"),
+                onAction: () => renderMermaidNode(diagramEl, currentSource, resolvedEdgeCount, container)
+            });
+            return;
+        }
+
+        renderMermaidNode(diagramEl, currentSource, DEFAULT_MAX_EDGES, container);
+    };
+
+    let initialDirection = direction;
+    if (!initialDirection) {
+        const text = (typeof source === "function") ? source("LR") : String(source);
+        const match = text.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
+        initialDirection = match ? match[2] : "LR";
+    }
+
+    render(initialDirection);
+}
+
+function setupLazyMermaidRender() {
+    if (typeof window === "undefined" || !window.mermaid) return;
+    if (document.body.classList.contains("package-summary")) return;
+
+    const diagrams = Array.from(document.querySelectorAll(".mermaid"));
+    if (diagrams.length === 0) return;
+
+    const sourceMap = new WeakMap();
+    const rendered = new WeakSet();
+    const queued = new WeakSet();
+    const renderQueue = [];
+    let isRendering = false;
+
+    const processRenderQueue = () => {
+        if (isRendering) return;
+        const diagram = renderQueue.shift();
+        if (!diagram) return;
+        isRendering = true;
+
+        if (rendered.has(diagram)) {
+            isRendering = false;
+            processRenderQueue();
+            return;
+        }
+
+        const source = sourceMap.get(diagram) || diagram.textContent;
+        if (!source) {
+            isRendering = false;
+            processRenderQueue();
+            return;
+        }
+
+        sourceMap.set(diagram, source);
+        if (isTooLarge(source)) {
+            renderTooLargeDiagram(diagram, source);
+            rendered.add(diagram);
+            queued.delete(diagram);
+            isRendering = false;
+            processRenderQueue();
+            return;
+        }
+
+        diagram.innerHTML = source;
+        const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+        const handleFinish = () => {
+            rendered.add(diagram);
+            queued.delete(diagram);
+            isRendering = false;
+            processRenderQueue();
+        };
+        if (renderResult && typeof renderResult.then === "function") {
+            renderResult.then(handleFinish).catch(handleFinish);
+        } else {
+            handleFinish();
+        }
+    };
+
+    const enqueueRender = (diagram) => {
+        if (!diagram) return;
+        if (diagram.getAttribute("data-processed") === "true") {
+            rendered.add(diagram);
+            return;
+        }
+        if (rendered.has(diagram)) return;
+        if (queued.has(diagram)) return;
+        const source = sourceMap.get(diagram) || diagram.textContent;
+        if (!source) return;
+        if (isTooLarge(source)) {
+            renderTooLargeDiagram(diagram, source);
+            rendered.add(diagram);
+            return;
+        }
+        sourceMap.set(diagram, source);
+        queued.add(diagram);
+        renderQueue.push(diagram);
+        processRenderQueue();
+    };
+
+    if (!("IntersectionObserver" in window)) {
+        diagrams.forEach(enqueueRender);
+        return;
+    }
+
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            enqueueRender(entry.target);
+            currentObserver.unobserve(entry.target);
+        });
+    }, {rootMargin: "200px 0px"});
+
+    diagrams.forEach(diagram => observer.observe(diagram));
+}
+
+globalThis.Jig.mermaid.isTooLarge = isTooLarge;
+globalThis.Jig.mermaid.estimateEdgeCount = estimateEdgeCount;
+globalThis.Jig.mermaid.flashButtonLabel = flashButtonLabel;
+globalThis.Jig.mermaid.renderTooLargeDiagram = renderTooLargeDiagram;
+globalThis.Jig.mermaid.renderWithControls = renderWithControls;
+
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", function () {
+        setupLazyMermaidRender();
+    });
+}
 
 // パッケージ関連図生成の共通モジュール
 // package.js と domain.js の両方で使用する純粋関数を提供する
@@ -695,6 +1198,11 @@ globalThis.Jig.packageDiagram = {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ...PackageDiagramModule,
+        isTooLarge,
+        estimateEdgeCount,
+        flashButtonLabel,
+        renderTooLargeDiagram,
+        renderWithControls,
         // Mermaid utilities (moved from jig-common.js)
         MermaidBuilder: globalThis.Jig.mermaid.Builder,
         nodeStyleDefs: globalThis.Jig.mermaid.nodeStyleDefs,

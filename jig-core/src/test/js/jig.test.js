@@ -61,19 +61,20 @@ function setupGlobals() {
 // DOM setup needed for DOM-dependent tests (renderTooLargeDiagram, flashButtonLabel)
 setupGlobals();
 const jig = require('../../main/resources/templates/assets/jig.js');
+const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
 
 function resetDocument() {
     global.document = createDocument();
 }
 
-test.describe('jig.js - DOM dependent functions', () => {
+test.describe('jig-mermaid-diagram.js - DOM dependent functions', () => {
     test('renderTooLargeDiagramは案内表示を追加する', () => {
         resetDocument();
 
         const diagram = new Element('div');
         diagram.textContent = 'graph TD; A-->B;';
 
-        jig.renderTooLargeDiagram(diagram, diagram.textContent);
+        jigMermaid.renderTooLargeDiagram(diagram, diagram.textContent);
 
         assert.equal(diagram.classList.contains('too-large'), true);
         assert.equal(diagram.textContent, '');
@@ -108,7 +109,7 @@ test.describe('jig.js - DOM dependent functions', () => {
         };
 
         try {
-            jig.flashButtonLabel(button, '更新');
+            jigMermaid.flashButtonLabel(button, '更新');
             assert.equal(button.textContent, '更新');
             assert.equal(typeof timerCallback, 'function');
             timerCallback();
@@ -123,8 +124,8 @@ test.describe('jig.js - DOM dependent functions', () => {
             const max = 'a'.repeat(50000);
             const over = 'a'.repeat(50001);
 
-            assert.equal(jig.isTooLarge(max), false);
-            assert.equal(jig.isTooLarge(over), true);
+            assert.equal(jigMermaid.isTooLarge(max), false);
+            assert.equal(jigMermaid.isTooLarge(over), true);
         });
     });
 

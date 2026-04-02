@@ -1,26 +1,32 @@
+globalThis.Jig ??= {};
+globalThis.Jig.dom ??= {};
+
 const createElement = globalThis.Jig.dom.createElement;
 
-// ===== アプリケーション本体 =====
-
-const InboundApp = {
-    state: {
+const InboundApp = (() => {
+    const state = {
         data: null
-    },
+    };
 
-    init() {
-        this.state.data = globalThis.inboundData;
-        if (!this.state.data) return;
+    function parseInboundData() {
+        return globalThis.inboundData ?? null;
+    }
 
-        this.render();
-    },
+    function init() {
+        state.data = parseInboundData();
+        if (!state.data) {
+            return;
+        }
+        render();
+    }
 
-    render() {
-        const controllers = this.state.data.controllers;
-        this.renderSidebar(controllers);
-        this.renderControllerList(controllers);
-    },
+    function render() {
+        const controllers = state.data.controllers || [];
+        renderSidebar(controllers);
+        renderControllerList(controllers);
+    }
 
-    renderSidebar(controllers) {
+    function renderSidebar(controllers) {
         const sidebar = document.getElementById("inbound-sidebar-list");
         if (!sidebar) return;
         sidebar.innerHTML = "";
@@ -30,9 +36,9 @@ const InboundApp = {
             label: globalThis.Jig.glossary.getTypeTerm(c.fqn).title
         }));
         globalThis.Jig.sidebar.renderSection(sidebar, "コントローラー", items);
-    },
+    }
 
-    renderControllerList(controllers) {
+    function renderControllerList(controllers) {
         const container = document.getElementById("inbound-list");
         if (!container) return;
         container.innerHTML = "";
@@ -49,7 +55,7 @@ const InboundApp = {
                 id: globalThis.Jig.fqnToId("adapter", controller.fqn),
                 children: [
                     createElement("h3", {
-                        children: [createElement("a", {textContent: typeTerm.title})]
+                        children: [createElement("a", { textContent: typeTerm.title })]
                     }),
                     createElement("div", {
                         className: "fully-qualified-name",
@@ -75,7 +81,7 @@ const InboundApp = {
             const methodsList = globalThis.Jig.dom.createMethodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 
-            const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+            const mmdContainer = createElement("div", { className: "mermaid-diagram" });
             section.appendChild(mmdContainer);
 
             globalThis.Jig.observe.lazyRender(mmdContainer, () => {
@@ -145,7 +151,7 @@ const InboundApp = {
                         const typeFqn = fqn.split('#')[0];
                         const subgraph = builder.ensureSubgraph(methodGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
                         const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
-                        var nodeId = fqnToNodeId(fqn);
+                        const nodeId = fqnToNodeId(fqn);
                         builder.addNodeToSubgraph(subgraph, nodeId, label, 'method');
                         builder.addClass(nodeId, "inactive");
                     }
@@ -173,14 +179,22 @@ const InboundApp = {
                 const generator = (dir) => builder.build(dir);
                 if (generator('LR')) {
                     mmdContainer.innerHTML = "";
-                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, { direction: 'LR' });
                 }
             });
 
             container.appendChild(section);
         });
     }
-};
+
+    return {
+        init,
+        parseInboundData,
+        render,
+        renderSidebar,
+        renderControllerList,
+    };
+})();
 
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", () => {
@@ -188,9 +202,7 @@ if (typeof document !== 'undefined') {
     });
 }
 
-// Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-        InboundApp
-    };
+    module.exports = InboundApp;
+    module.exports.InboundApp = InboundApp;
 }

@@ -2,9 +2,6 @@ globalThis.Jig ??= {};
 globalThis.Jig.dom ??= {};
 
 const InsightApp = (() => {
-    const state = {
-        data: null,
-    };
 
     function parseInsightData() {
         return globalThis.insightData ?? null;

@@ -175,6 +175,47 @@ test.describe('UsecaseApp', () => {
         assert.strictEqual(description.innerHTML, 'Description of method1');
     });
 
+    test('クラス単位の図では内部メソッド（非PUBLIC）は表示されない', () => {
+        const usecaseDataWithInternal = {
+            usecases: [{
+                fqn: "com.example.ServiceA",
+                fields: [],
+                staticMethods: [],
+                methods: [
+                    {
+                        fqn: "com.example.ServiceA#publicMethod()",
+                        visibility: "PUBLIC",
+                        parameterTypeRefs: [],
+                        returnTypeRef: { fqn: "void" },
+                        declaration: "publicMethod():void",
+                        isDeprecated: false,
+                        callMethods: ["com.example.ServiceA#internalHelper()"]
+                    },
+                    {
+                        fqn: "com.example.ServiceA#internalHelper()",
+                        visibility: "PRIVATE",
+                        parameterTypeRefs: [],
+                        returnTypeRef: { fqn: "void" },
+                        declaration: "internalHelper():void",
+                        isDeprecated: false,
+                        callMethods: []
+                    }
+                ]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#publicMethod()": { title: "publicMethod" },
+            "com.example.ServiceA#internalHelper()": { title: "internalHelper" }
+        });
+        globalThis.usecaseData = usecaseDataWithInternal;
+        UsecaseApp.init();
+
+        const classDiagram = document.getElementById('usecase-list').children[0].querySelector('.diagram-container.class-diagram');
+        // publicMethod のみなのでエッジがなく、クラス図は生成されない
+        assert.ok(!classDiagram, '内部メソッドのみへのエッジがある場合、クラス図は生成されない');
+    });
+
     test('クラス単位の図がクラスヘッダー直下にレンダリングされる', () => {
         setGlossaryData( {
             "com.example.ServiceA": { title: "ServiceA" },

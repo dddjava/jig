@@ -397,7 +397,7 @@ function buildClassGraph(usecase) {
     const edges = [];
     const edgeSet = new Set();
     const domainNodeSet = new Set();
-    const classMethods = [...usecase.methods, ...usecase.staticMethods];
+    const classMethods = [...usecase.methods.filter(isUsecase), ...usecase.staticMethods];
     const methodFqns = new Set(classMethods.map(m => m.fqn));
     const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
 

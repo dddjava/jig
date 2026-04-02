@@ -1,5 +1,5 @@
 const createElement = globalThis.Jig.dom.createElement;
-const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
+const createElementForTypeRef = globalThis.Jig.dom.type.elementForRef;
 const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);    // Mermaid内部ノード
 const fqnToTypeId = (fqn) => globalThis.Jig.fqnToId("type", fqn);    // usecaseクラスのHTML id
 const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecaseメソッドのHTML id
@@ -626,7 +626,7 @@ const UsecaseApp = {
             if (!domainData._typesMap) {
                 domainData._typesMap = new Map(domainData.types.map(t => [t.fqn, t]));
             }
-            globalThis.Jig.dom.setTypeLinkResolver((fqn) => {
+            globalThis.Jig.dom.type.setResolver((fqn) => {
                 const domainType = domainData._typesMap.get(fqn);
                 if (domainType) {
                     return {
@@ -637,7 +637,7 @@ const UsecaseApp = {
                 return null;
             });
         } else {
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         }
 
         this.initControls();
@@ -908,11 +908,11 @@ const UsecaseApp = {
                 });
             }
 
-            const fieldsList = globalThis.Jig.dom.createFieldsList(usecase.fields, createElementForTypeRef);
+            const fieldsList = globalThis.Jig.dom.type.fieldsList(usecase.fields, createElementForTypeRef);
             if (fieldsList) section.appendChild(fieldsList);
 
             if (usecase.staticMethods.length > 0) {
-                const staticList = globalThis.Jig.dom.createMethodsList("staticメソッド", usecase.staticMethods, createElementForTypeRef);
+                const staticList = globalThis.Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, createElementForTypeRef);
                 if (staticList) {
                     staticList.classList.add("static-methods");
                     section.appendChild(staticList);
@@ -922,7 +922,7 @@ const UsecaseApp = {
             // usecaseとするのはPUBLICのみ
             const internalMethods = usecase.methods.filter(method => !isUsecase(method))
             if (internalMethods.length > 0) {
-                const staticList = globalThis.Jig.dom.createMethodsList("メソッド", internalMethods, createElementForTypeRef);
+                const staticList = globalThis.Jig.dom.type.methodsList("メソッド", internalMethods, createElementForTypeRef);
                 if (staticList) {
                     staticList.classList.add("methods");
                     section.appendChild(staticList);

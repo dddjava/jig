@@ -34,7 +34,7 @@ const InboundApp = (() => {
             id: Jig.fqnToId("adapter", c.fqn),
             label: Jig.glossary.getTypeTerm(c.fqn).title
         }));
-        Jig.dom.renderSection(sidebar, "コントローラー", items);
+        Jig.dom.sidebar.renderSection(sidebar, "コントローラー", items);
     }
 
     function renderControllerList(controllers) {
@@ -77,7 +77,7 @@ const InboundApp = (() => {
                 }));
             }
 
-            const methodsList = Jig.dom.createMethodsList("エントリーポイント", controller.entrypoints);
+            const methodsList = Jig.dom.type.methodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 
             const mmdContainer = Jig.dom.createElement("div", { className: "mermaid-diagram" });

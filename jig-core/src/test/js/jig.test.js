@@ -133,7 +133,7 @@ test.describe('jig-mermaid-diagram.js - DOM dependent functions', () => {
 
 test.describe('typeLinkResolver', () => {
     test('デフォルトではnullに設定されている', () => {
-        assert.equal(globalThis.Jig.dom.getTypeLinkResolver(), null);
+        assert.equal(globalThis.Jig.dom.type.getResolver(), null);
     });
 });
 // Pure function tests have been moved to jig-common.test.js

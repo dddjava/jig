@@ -86,7 +86,7 @@ const GlossaryApp = (() => {
 
         list.innerHTML = "";
         const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
-        const section = Jig.dom.createSection("用語一覧", items);
+        const section = Jig.dom.sidebar.createSection("用語一覧", items);
         if (!section) return;
 
         const links = section.querySelectorAll(".in-page-sidebar__link");
@@ -94,7 +94,7 @@ const GlossaryApp = (() => {
             const kind = terms[i]?.kind;
             if (kind) {
                 link.setAttribute("data-kind", kind);
-                link.setAttribute("data-kind-char", Jig.dom.kindBadgeChar(kind));
+                link.setAttribute("data-kind-char", Jig.dom.kind.badgeChar(kind));
             }
         });
 
@@ -235,7 +235,7 @@ const GlossaryApp = (() => {
                     className: `jig-card jig-card--type ${isCompact ? "jig-card--compact" : ""}`,
                     children: [
                         createElement("h3", {children: [
-                            Jig.dom.kindBadgeElement(term.kind || ""),
+                            Jig.dom.kind.badgeElement(term.kind || ""),
                             createElement("span", {textContent: term.title || ""}),
                         ]}),
                         ...metaChildren,

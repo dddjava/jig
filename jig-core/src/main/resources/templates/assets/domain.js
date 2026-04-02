@@ -232,7 +232,7 @@ function createRelatedClassesList(type) {
         detailsContent.push(Jig.dom.createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
         detailsContent.push(Jig.dom.createElement("ul", {
             children: outgoingFqns.map(fqn =>
-                Jig.dom.createElement("li", {children: [Jig.dom.createElementForTypeRef({fqn})]})
+                Jig.dom.createElement("li", {children: [Jig.dom.type.elementForRef({fqn})]})
             )
         }));
     }
@@ -241,7 +241,7 @@ function createRelatedClassesList(type) {
         detailsContent.push(Jig.dom.createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
         detailsContent.push(Jig.dom.createElement("ul", {
             children: incomingFqns.map(fqn =>
-                Jig.dom.createElement("li", {children: [Jig.dom.createElementForTypeRef({fqn})]})
+                Jig.dom.createElement("li", {children: [Jig.dom.type.elementForRef({fqn})]})
             )
         }));
     }
@@ -490,7 +490,7 @@ function createChildrenTable(pkg) {
                     attributes: {href: "#" + globalThis.Jig.fqnToId("domain", child.fqn)},
                     textContent: child.title
                 })
-                : Jig.dom.createElementForTypeRef({fqn: child.fqn});
+                : Jig.dom.type.elementForRef({fqn: child.fqn});
             const cell = Jig.dom.createElement("td", {
                 children: [document.createTextNode(prefix), link]
             });
@@ -509,11 +509,11 @@ function createChildrenTable(pkg) {
 }
 
 function createFieldsList(fields) {
-    return globalThis.Jig.dom.createFieldsList(fields, Jig.dom.createElementForTypeRef);
+    return globalThis.Jig.dom.type.fieldsList(fields, Jig.dom.type.elementForRef);
 }
 
 function createMethodsList(kind, methods) {
-    return globalThis.Jig.dom.createMethodsList(kind, methods, Jig.dom.createElementForTypeRef);
+    return globalThis.Jig.dom.type.methodsList(kind, methods, Jig.dom.type.elementForRef);
 }
 
 /**
@@ -610,7 +610,7 @@ function renderPackages(packages, container) {
             attributes: { "data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false" },
             children: [
                 Jig.dom.createElement("h3", {
-                    children: [globalThis.Jig.dom.kindBadgeElement("パッケージ"), document.createTextNode(Jig.glossary.getTypeTerm(pkg.fqn).title)]
+                    children: [globalThis.Jig.dom.kind.badgeElement("パッケージ"), document.createTextNode(Jig.glossary.getTypeTerm(pkg.fqn).title)]
                 }),
                 Jig.dom.createElement("div", {
                     className: "fully-qualified-name",
@@ -764,7 +764,7 @@ function renderTypes(types, container) {
             id: globalThis.Jig.fqnToId("domain", type.fqn),
             attributes: { "data-has-enum": type.enumInfo ? "true" : "false" },
             children: [
-                Jig.dom.createElement("h3", {children: [globalThis.Jig.dom.kindBadgeElement("クラス"), titleSpan]}),
+                Jig.dom.createElement("h3", {children: [globalThis.Jig.dom.kind.badgeElement("クラス"), titleSpan]}),
                 fqnDiv
             ]
         });
@@ -1042,7 +1042,7 @@ const DomainApp = {
         });
         globalThis.domainData._childPackagesMap = childrenMap;
 
-        globalThis.Jig.dom.setTypeLinkResolver((fqn) => {
+        globalThis.Jig.dom.type.setResolver((fqn) => {
             const domainType = getDomainData()?._typesMap?.get(fqn);
             if (domainType) {
                 return {

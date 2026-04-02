@@ -428,26 +428,31 @@ globalThis.Jig.dom = (() => {
     }
 
     return {
-        setTypeLinkResolver,
-        clearTypeLinkResolver,
-        getTypeLinkResolver,
         createElement,
         parseMarkdown,
-        setupHeaderNavigation,
-        renderMarkdownDescriptions,
         initCommonUi,
         createCell,
-        createElementForTypeRef,
         downloadCsv,
-        kindBadgeChar,
-        kindBadgeElement,
-        createFieldsList,
-        createMethodItem,
-        createMethodsList,
         setupSortableTables,
         lazyRender,
-        createSection,
-        renderSection,
+
+        type: {
+            setResolver: setTypeLinkResolver,
+            clearResolver: clearTypeLinkResolver,
+            getResolver: getTypeLinkResolver,
+            elementForRef: createElementForTypeRef,
+            fieldsList: createFieldsList,
+            methodItem: createMethodItem,
+            methodsList: createMethodsList,
+        },
+        kind: {
+            badgeChar: kindBadgeChar,
+            badgeElement: kindBadgeElement,
+        },
+        sidebar: {
+            createSection,
+            renderSection,
+        },
     };
 })();
 

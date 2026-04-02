@@ -38,14 +38,14 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.getTypeLinkResolver()('org.example.Account');
+            const resolved = globalThis.Jig.dom.type.getResolver()('org.example.Account');
             assert.equal(resolved.href, '#' + globalThis.Jig.fqnToId("domain", 'org.example.Account'));
             assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('deprecatedなdomain型に対して、deprecatedクラスを返す', () => {
@@ -60,14 +60,14 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.getTypeLinkResolver()('org.example.OldClass');
+            const resolved = globalThis.Jig.dom.type.getResolver()('org.example.OldClass');
             assert.equal(resolved.href, '#' + globalThis.Jig.fqnToId("domain", 'org.example.OldClass'));
             assert.equal(resolved.className, 'deprecated');
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('domain型でない場合、weakクラスと単純名を返す（hrefなし）', () => {
@@ -81,7 +81,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.getTypeLinkResolver()('java.lang.String');
+            const resolved = globalThis.Jig.dom.type.getResolver()('java.lang.String');
             assert.equal(resolved.href, undefined);
             assert.equal(resolved.className, 'weak');
             assert.equal(resolved.text, 'String');
@@ -89,7 +89,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('リゾルバー経由でdomain型はリンク付き要素になる', () => {
@@ -104,7 +104,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.User'}, 'my-class');
+            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'org.example.User'}, 'my-class');
             assert.equal(result.tagName, 'a');
             assert.equal(result.className, 'my-class');
             assert.equal(result.textContent, 'ユーザー');
@@ -113,7 +113,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('リゾルバー経由でdomain型でない場合はweak spanになる', () => {
@@ -127,7 +127,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'java.lang.String'}, 'my-class');
+            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'java.lang.String'}, 'my-class');
             assert.equal(result.tagName, 'span');
             assert.equal(result.textContent, 'String');
             assert.ok(result.className.includes('weak'));
@@ -136,7 +136,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('型引数がある場合、spanで型と型引数を組み立てる', () => {
@@ -158,7 +158,7 @@ test.describe('domain.js', () => {
                 fqn: 'java.util.List',
                 typeArgumentRefs: [{fqn: 'org.example.Item'}]
             };
-            const result = globalThis.Jig.dom.createElementForTypeRef(typeRef, 'generic-type');
+            const result = globalThis.Jig.dom.type.elementForRef(typeRef, 'generic-type');
 
             assert.equal(result.tagName, 'span');
             assert.equal(result.className, 'generic-type');
@@ -167,7 +167,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('配列型（Hoge[]）はベース型のリンクを解決して[]を付け直す', () => {
@@ -182,7 +182,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.Item[]'});
+            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'org.example.Item[]'});
             assert.equal(result.tagName, 'a');
             assert.equal(result.textContent, 'アイテム[]');
             assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'org.example.Item'));
@@ -190,7 +190,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
 
         test('多次元配列型（Hoge[][]）もベース型のリンクを解決して[][]を付け直す', () => {
@@ -205,7 +205,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.createElementForTypeRef({fqn: 'org.example.Item[][]'});
+            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'org.example.Item[][]'});
             assert.equal(result.tagName, 'a');
             assert.equal(result.textContent, 'アイテム[][]');
             assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.fqnToId("domain", 'org.example.Item'));
@@ -213,7 +213,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.clearTypeLinkResolver();
+            globalThis.Jig.dom.type.clearResolver();
         });
     });
 

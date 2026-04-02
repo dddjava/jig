@@ -553,34 +553,34 @@ test.describe('glossary.js', () => {
 
     test.describe('種類バッジ', () => {
         test('kindBadgeChar は既知/未知の種類文字を返す', () => {
-            assert.equal(globalThis.Jig.dom.kindBadgeChar('パッケージ'), 'P');
-            assert.equal(globalThis.Jig.dom.kindBadgeChar('クラス'), 'C');
-            assert.equal(globalThis.Jig.dom.kindBadgeChar('unknown'), 'U');
-            assert.equal(globalThis.Jig.dom.kindBadgeChar(''), '?');
+            assert.equal(globalThis.Jig.dom.kind.badgeChar('パッケージ'), 'P');
+            assert.equal(globalThis.Jig.dom.kind.badgeChar('クラス'), 'C');
+            assert.equal(globalThis.Jig.dom.kind.badgeChar('unknown'), 'U');
+            assert.equal(globalThis.Jig.dom.kind.badgeChar(''), '?');
         });
 
         test('kindBadgeElement は data-kind 属性を付与した span を返す', () => {
-            const badge = globalThis.Jig.dom.kindBadgeElement('クラス');
+            const badge = globalThis.Jig.dom.kind.badgeElement('クラス');
             assert.equal(badge.className, 'kind-badge');
             assert.equal(badge.getAttribute('data-kind'), 'クラス');
             assert.equal(badge.textContent, 'C');
         });
 
         test('kindBadgeElement は既知の kind に対応するバッジを返す', () => {
-            assert.equal(globalThis.Jig.dom.kindBadgeElement('パッケージ').textContent, 'P');
-            assert.equal(globalThis.Jig.dom.kindBadgeElement('メソッド').textContent, 'M');
-            assert.equal(globalThis.Jig.dom.kindBadgeElement('フィールド').textContent, 'F');
+            assert.equal(globalThis.Jig.dom.kind.badgeElement('パッケージ').textContent, 'P');
+            assert.equal(globalThis.Jig.dom.kind.badgeElement('メソッド').textContent, 'M');
+            assert.equal(globalThis.Jig.dom.kind.badgeElement('フィールド').textContent, 'F');
         });
 
         test('kindBadgeElement は未知の kind でも例外を投げない', () => {
-            const badge = globalThis.Jig.dom.kindBadgeElement('Unknown');
+            const badge = globalThis.Jig.dom.kind.badgeElement('Unknown');
             assert.equal(badge.className, 'kind-badge');
             assert.equal(badge.getAttribute('data-kind'), 'Unknown');
             assert.equal(badge.textContent, 'U');
         });
 
         test('kindBadgeElement は空文字列でも例外を投げない', () => {
-            const badge = globalThis.Jig.dom.kindBadgeElement('');
+            const badge = globalThis.Jig.dom.kind.badgeElement('');
             assert.equal(badge.className, 'kind-badge');
             assert.equal(badge.textContent, '?');
         });

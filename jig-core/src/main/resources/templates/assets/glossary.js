@@ -1,347 +1,351 @@
+globalThis.Jig ??= {};
+globalThis.Jig.dom ??= {};
 
-const createElement = globalThis.Jig.dom.createElement;
+const GlossaryApp = (() => {
+    const createElement = globalThis.Jig.dom.createElement;
 
-// 文字列の比較は日本語を優先しつつ大小を無視する
-const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
+    // 文字列の比較は日本語を優先しつつ大小を無視する
+    const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
 
-function sortTerms(terms, sortKey) {
-    const keyMap = {
-        name: "title",
-        fqn: "fqn",
-        simple: "simpleText",
-    };
-    const key = keyMap[sortKey] ?? "title";
-    return [...terms].sort((left, right) => {
-        const leftValue = left?.[key] ?? "";
-        const rightValue = right?.[key] ?? "";
-        const primary = termCollator.compare(leftValue, rightValue);
-        if (primary !== 0) return primary;
-        return termCollator.compare(left?.fqn ?? "", right?.fqn ?? "");
-    });
-}
-
-function normalizeGlossaryData(data) {
-    if (!data) return null;
-    if (Array.isArray(data)) return data;
-    if (data.terms) return Object.entries(data.terms).map(([fqn, term]) => ({...term, fqn}));
-    return Object.entries(data).map(([fqn, term]) => ({...term, fqn}));
-}
-
-function getDomainPackageRoots() {
-    const glossaryData = globalThis.glossaryData;
-    if (glossaryData && glossaryData.domainPackageRoots) {
-        return glossaryData.domainPackageRoots;
+    function sortTerms(terms, sortKey) {
+        const keyMap = {
+            name: "title",
+            fqn: "fqn",
+            simple: "simpleText",
+        };
+        const key = keyMap[sortKey] ?? "title";
+        return [...terms].sort((left, right) => {
+            const leftValue = left?.[key] ?? "";
+            const rightValue = right?.[key] ?? "";
+            const primary = termCollator.compare(leftValue, rightValue);
+            if (primary !== 0) return primary;
+            return termCollator.compare(left?.fqn ?? "", right?.fqn ?? "");
+        });
     }
-    return [];
-}
 
-function getGlossaryData() {
-    const glossaryData = globalThis.glossaryData;
-    const normalized = normalizeGlossaryData(glossaryData);
-    if (normalized) return normalized;
+    function normalizeGlossaryData(data) {
+        if (!data) return null;
+        if (Array.isArray(data)) return data;
+        if (data.terms) return Object.entries(data.terms).map(([fqn, term]) => ({...term, fqn}));
+        return Object.entries(data).map(([fqn, term]) => ({...term, fqn}));
+    }
 
-    const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
-    if (!script) return [];
-
-    const jsonText = script.textContent || "{}";
-    try {
-        const parsed = JSON.parse(jsonText);
-        return normalizeGlossaryData(parsed) ?? [];
-    } catch (e) {
+    function getDomainPackageRoots() {
+        const glossaryData = globalThis.glossaryData;
+        if (glossaryData && glossaryData.domainPackageRoots) {
+            return glossaryData.domainPackageRoots;
+        }
         return [];
     }
-}
 
-function buildTermAnchorId(term, index) {
-    return term.fqn || `term-${index}`;
-}
+    function getGlossaryData() {
+        const glossaryData = globalThis.glossaryData;
+        const normalized = normalizeGlossaryData(glossaryData);
+        if (normalized) return normalized;
 
-function escapeCsvValue(value) {
-    const text = String(value ?? "")
-        .replace(/\r\n/g, "\n")
-        .replace(/\r/g, "\n");
-    return `"${text.replace(/"/g, "\"\"")}"`;
-}
+        const script = typeof document !== "undefined" ? document.getElementById("glossary-data") : null;
+        if (!script) return [];
 
-function buildGlossaryCsv(terms) {
-    const header = ["用語（英名）", "用語", "説明", "種類", "識別子"];
-    const rows = terms.map(term => [
-        term.simpleText ?? "",
-        term.title ?? "",
-        term.description ?? "",
-        term.kind ?? "",
-        term.fqn ?? "",
-    ]);
-
-    const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
-    return lines.join("\r\n");
-}
-
-function renderTermSidebar(terms) {
-    const list = document.getElementById("term-sidebar-list");
-    if (!list) return;
-
-    list.innerHTML = "";
-    const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
-    const section = globalThis.Jig.sidebar.createSection("用語一覧", items);
-    if (!section) return;
-
-    const links = section.querySelectorAll(".in-page-sidebar__link");
-    links.forEach((link, i) => {
-        const kind = terms[i]?.kind;
-        if (kind) {
-            link.setAttribute("data-kind", kind);
-            link.setAttribute("data-kind-char", globalThis.Jig.dom.kindBadgeChar(kind));
-        }
-    });
-
-    list.appendChild(section);
-}
-
-function getInitialChar(term) {
-    const title = term.title || "";
-    if (!title) return "#";
-    const first = title.charAt(0).toUpperCase();
-
-    // アルファベット
-    if (/^[A-Z]$/.test(first)) return first;
-
-    // ひらがな (3040-309F) / カタカナ (30A0-30FF)
-    if (/^[\u3040-\u309F\u30A0-\u30FF]$/.test(first)) {
-        return first;
-    }
-
-    // 数字
-    if (/^[0-9]$/.test(first)) return first;
-
-    // その他（漢字含む）はそのまま
-    return first;
-}
-
-function renderJumpBar(chars) {
-    const jumpBar = document.getElementById("jump-bar");
-    if (!jumpBar) return;
-
-    jumpBar.textContent = "";
-    chars.forEach(char => {
-        const link = createElement("a", {
-            className: "glossary-jump-link",
-            href: `#group-${char}`,
-            textContent: char
-        });
-        // スムーズなスクロールのためのイベント
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            const targetId = `group-${char}`;
-            const target = document.getElementById(targetId);
-            if (target) {
-                target.scrollIntoView();
-                history.pushState(null, null, `#${targetId}`);
-            }
-        });
-        jumpBar.appendChild(link);
-    });
-}
-
-function renderGlossaryTerms(terms, showAttributes) {
-    const list = document.getElementById("term-list");
-    if (!list) return;
-
-    // 頭文字によるグルーピング
-    const groups = {};
-    terms.forEach(term => {
-        const char = getInitialChar(term);
-        if (!groups[char]) groups[char] = [];
-        groups[char].push(term);
-    });
-
-    const sortedChars = Object.keys(groups).sort(termCollator.compare);
-
-    // ジャンプバーの更新
-    renderJumpBar(sortedChars);
-
-    list.textContent = "";
-
-    sortedChars.forEach(char => {
-        const groupTerms = groups[char];
-        const groupSection = createElement("section", {
-            className: "glossary-group",
-            id: `group-${char}`,
-            children: [
-                createElement("h2", { className: "glossary-group-header", textContent: char })
-            ]
-        });
-
-        groupTerms.forEach((term, index) => {
-            const anchorId = buildTermAnchorId(term, index);
-            const isCompact = !showAttributes;
-
-            const metaChildren = [];
-            const metaItems = [];
-            if (term.fqn) {
-                metaItems.push(createElement("div", {children: [
-                    createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
-                    createElement("span", {className: "meta-value", textContent: term.fqn}),
-                ]}));
-            }
-            if (term.simpleText) {
-                metaItems.push(createElement("div", {children: [
-                    createElement("span", {className: "meta-label", textContent: "単純名"}),
-                    createElement("span", {className: "meta-value", textContent: term.simpleText}),
-                ]}));
-            }
-            if (term.kind) {
-                metaItems.push(createElement("div", {children: [
-                    createElement("span", {className: "meta-label", textContent: "種類"}),
-                    createElement("span", {className: "meta-value", textContent: term.kind}),
-                ]}));
-            }
-            if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
-                const domainRoots = getDomainPackageRoots();
-                const fqn = term.fqn;
-                const isInDomain = domainRoots.length > 0 && domainRoots.some(root =>
-                    fqn === root || fqn.startsWith(root + ".")
-                );
-                if (isInDomain) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
-                        createElement("a", {
-                            className: "meta-value",
-                            attributes: {href: "domain.html#" + globalThis.Jig.fqnToId("domain", fqn)},
-                            textContent: "ドメインモデル",
-                        }),
-                    ]}));
-                }
-            }
-            if (metaItems.length > 0) {
-                const details = createElement("details", {
-                    children: [
-                        createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報"}),
-                        createElement("section", {
-                            className: "jig-card jig-card--item weak",
-                            children: metaItems
-                        })
-                    ]
-                });
-                if (!isCompact) details.open = true;
-                metaChildren.push(details);
-            }
-
-            const article = createElement("article", {
-                id: anchorId,
-                className: `jig-card jig-card--type ${isCompact ? 'jig-card--compact' : ''}`,
-                children: [
-                    createElement("h3", {children: [
-                        globalThis.Jig.dom.kindBadgeElement(term.kind || ""),
-                        createElement("span", {textContent: term.title || ""}),
-                    ]}),
-                    ...metaChildren,
-                    createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
-                ]
-            });
-            groupSection.appendChild(article);
-        });
-
-        list.appendChild(groupSection);
-    });
-}
-
-function renderFilteredTerms(terms, controls) {
-    const filteredTerms = getFilteredTerms(terms, controls);
-    const sortedTerms = sortTerms(filteredTerms, "name");
-    // renderGlossaryTerms に属性情報表示フラグを渡す
-    renderTermSidebar(sortedTerms);
-    renderGlossaryTerms(sortedTerms, controls.showAttributesCheckbox?.checked);
-}
-
-function renderMarkdownDescriptions() {
-    Array.from(document.getElementsByClassName("markdown"))
-        .forEach(node => {
-            node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
-        });
-}
-
-function getFilteredTerms(terms, controls) {
-    if (!controls) return terms;
-    const showEmptyDescription = controls.showEmptyDescription.checked;
-    const kindVisibilityMap = {
-        "パッケージ": controls.showPackage.checked,
-        "クラス": controls.showClass.checked,
-        "メソッド": controls.showMethod.checked,
-        "フィールド": controls.showField.checked,
-    };
-    const searchKeyword = controls.searchInput.value;
-
-    const searchMethod = document.querySelector('input[name="search-method"]:checked')?.value || 'partial';
-
-    // 正規表現を関数の先頭で一度だけコンパイル
-    let compiledRegex = null;
-    if (searchMethod === "regex" && searchKeyword.trim() !== '') {
+        const jsonText = script.textContent || "{}";
         try {
-            compiledRegex = new RegExp(searchKeyword, 'i');
+            const parsed = JSON.parse(jsonText);
+            return normalizeGlossaryData(parsed) ?? [];
         } catch (e) {
-            // 不正な正規表現: 全件不一致とする
             return [];
         }
     }
 
-    const targetsToSearch = {
-        title: controls.searchTargetName.checked,
-        description: controls.searchTargetDescription.checked,
-        fqn: controls.searchTargetFqn.checked,
-        simpleText: controls.searchTargetSimple.checked,
-        kind: false,
-    };
+    function buildTermAnchorId(term, index) {
+        return term.fqn || `term-${index}`;
+    }
 
-    const showOnlyDomain = controls.showOnlyDomain && controls.showOnlyDomain.checked;
-    const domainPackageRoots = getDomainPackageRoots();
+    function escapeCsvValue(value) {
+        const text = String(value ?? "")
+            .replace(/\r\n/g, "\n")
+            .replace(/\r/g, "\n");
+        return `"${text.replace(/"/g, "\"\"")}"`;
+    }
 
-    return terms.filter(term => {
-        // 種類で絞り込む
-        const kindText = term.kind || "";
-        if (!kindVisibilityMap[kindText]) return false;
+    function buildGlossaryCsv(terms) {
+        const header = ["用語（英名）", "用語", "説明", "種類", "識別子"];
+        const rows = terms.map(term => [
+            term.simpleText ?? "",
+            term.title ?? "",
+            term.description ?? "",
+            term.kind ?? "",
+            term.fqn ?? "",
+        ]);
 
-        // 説明文有無での判定
-        const description = (term.description || "");
-        if (!showEmptyDescription && !description) return false;
+        const lines = [header, ...rows].map(row => row.map(escapeCsvValue).join(","));
+        return lines.join("\r\n");
+    }
 
-        // ドメインパッケージでの絞り込み
-        if (showOnlyDomain && domainPackageRoots.length > 0) {
-            const fqn = term.fqn || "";
-            const isInDomainPackage = domainPackageRoots.some(root =>
-                fqn === root || fqn.startsWith(root + ".") || fqn.startsWith(root + "#")
-            );
-            if (!isInDomainPackage) return false;
+    function renderTermSidebar(terms) {
+        const list = document.getElementById("term-sidebar-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+        const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
+        const section = globalThis.Jig.sidebar.createSection("用語一覧", items);
+        if (!section) return;
+
+        const links = section.querySelectorAll(".in-page-sidebar__link");
+        links.forEach((link, i) => {
+            const kind = terms[i]?.kind;
+            if (kind) {
+                link.setAttribute("data-kind", kind);
+                link.setAttribute("data-kind-char", globalThis.Jig.dom.kindBadgeChar(kind));
+            }
+        });
+
+        list.appendChild(section);
+    }
+
+    function getInitialChar(term) {
+        const title = term.title || "";
+        if (!title) return "#";
+        const first = title.charAt(0).toUpperCase();
+
+        // アルファベット
+        if (/^[A-Z]$/.test(first)) return first;
+
+        // ひらがな (3040-309F) / カタカナ (30A0-30FF)
+        if (/^[\u3040-\u309F\u30A0-\u30FF]$/.test(first)) {
+            return first;
         }
 
-        // キーワード検索
-        if (searchKeyword) {
-            const isMatch = Object.keys(targetsToSearch).some(prop => {
-                if (!targetsToSearch[prop]) return false;
+        // 数字
+        if (/^[0-9]$/.test(first)) return first;
 
-                const targetText = term[prop] || "";
+        // その他（漢字含む）はそのまま
+        return first;
+    }
 
-                switch (searchMethod) {
-                    case "exact":
-                        return targetText.toLowerCase() === searchKeyword.toLowerCase();
-                    case "regex":
-                        return compiledRegex ? compiledRegex.test(targetText) : false;
-                    case "partial":
-                    default:
-                        return targetText.toLowerCase().includes(searchKeyword.toLowerCase());
+    function renderJumpBar(chars) {
+        const jumpBar = document.getElementById("jump-bar");
+        if (!jumpBar) return;
+
+        jumpBar.textContent = "";
+        chars.forEach(char => {
+            const link = createElement("a", {
+                className: "glossary-jump-link",
+                href: `#group-${char}`,
+                textContent: char
+            });
+            // スムーズなスクロールのためのイベント
+            link.addEventListener("click", (e) => {
+                e.preventDefault();
+                const targetId = `group-${char}`;
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView();
+                    history.pushState(null, null, `#${targetId}`);
                 }
             });
+            jumpBar.appendChild(link);
+        });
+    }
 
-            if (!isMatch) return false;
+    function renderGlossaryTerms(terms, showAttributes) {
+        const list = document.getElementById("term-list");
+        if (!list) return;
+
+        // 頭文字によるグルーピング
+        const groups = {};
+        terms.forEach(term => {
+            const char = getInitialChar(term);
+            if (!groups[char]) groups[char] = [];
+            groups[char].push(term);
+        });
+
+        const sortedChars = Object.keys(groups).sort(termCollator.compare);
+
+        // ジャンプバーの更新
+        renderJumpBar(sortedChars);
+
+        list.textContent = "";
+
+        sortedChars.forEach(char => {
+            const groupTerms = groups[char];
+            const groupSection = createElement("section", {
+                className: "glossary-group",
+                id: `group-${char}`,
+                children: [
+                    createElement("h2", {className: "glossary-group-header", textContent: char})
+                ]
+            });
+
+            groupTerms.forEach((term, index) => {
+                const anchorId = buildTermAnchorId(term, index);
+                const isCompact = !showAttributes;
+
+                const metaChildren = [];
+                const metaItems = [];
+                if (term.fqn) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
+                        createElement("span", {className: "meta-value", textContent: term.fqn}),
+                    ]}));
+                }
+                if (term.simpleText) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "単純名"}),
+                        createElement("span", {className: "meta-value", textContent: term.simpleText}),
+                    ]}));
+                }
+                if (term.kind) {
+                    metaItems.push(createElement("div", {children: [
+                        createElement("span", {className: "meta-label", textContent: "種類"}),
+                        createElement("span", {className: "meta-value", textContent: term.kind}),
+                    ]}));
+                }
+                if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
+                    const domainRoots = getDomainPackageRoots();
+                    const fqn = term.fqn;
+                    const isInDomain = domainRoots.length > 0 && domainRoots.some(root =>
+                        fqn === root || fqn.startsWith(root + ".")
+                    );
+                    if (isInDomain) {
+                        metaItems.push(createElement("div", {children: [
+                            createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
+                            createElement("a", {
+                                className: "meta-value",
+                                attributes: {href: "domain.html#" + globalThis.Jig.fqnToId("domain", fqn)},
+                                textContent: "ドメインモデル",
+                            }),
+                        ]}));
+                    }
+                }
+                if (metaItems.length > 0) {
+                    const details = createElement("details", {
+                        children: [
+                            createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報"}),
+                            createElement("section", {
+                                className: "jig-card jig-card--item weak",
+                                children: metaItems
+                            })
+                        ]
+                    });
+                    if (!isCompact) details.open = true;
+                    metaChildren.push(details);
+                }
+
+                const article = createElement("article", {
+                    id: anchorId,
+                    className: `jig-card jig-card--type ${isCompact ? "jig-card--compact" : ""}`,
+                    children: [
+                        createElement("h3", {children: [
+                            globalThis.Jig.dom.kindBadgeElement(term.kind || ""),
+                            createElement("span", {textContent: term.title || ""}),
+                        ]}),
+                        ...metaChildren,
+                        createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
+                    ]
+                });
+                groupSection.appendChild(article);
+            });
+
+            list.appendChild(groupSection);
+        });
+    }
+
+    function renderFilteredTerms(terms, controls) {
+        const filteredTerms = getFilteredTerms(terms, controls);
+        const sortedTerms = sortTerms(filteredTerms, "name");
+        // renderGlossaryTerms に属性情報表示フラグを渡す
+        renderTermSidebar(sortedTerms);
+        renderGlossaryTerms(sortedTerms, controls.showAttributesCheckbox?.checked);
+    }
+
+    function renderMarkdownDescriptions() {
+        Array.from(document.getElementsByClassName("markdown"))
+            .forEach(node => {
+                node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
+            });
+    }
+
+    function getFilteredTerms(terms, controls) {
+        if (!controls) return terms;
+        const showEmptyDescription = controls.showEmptyDescription.checked;
+        const kindVisibilityMap = {
+            "パッケージ": controls.showPackage.checked,
+            "クラス": controls.showClass.checked,
+            "メソッド": controls.showMethod.checked,
+            "フィールド": controls.showField.checked,
+        };
+        const searchKeyword = controls.searchInput.value;
+
+        const searchMethod = document.querySelector('input[name="search-method"]:checked')?.value || "partial";
+
+        // 正規表現を関数の先頭で一度だけコンパイル
+        let compiledRegex = null;
+        if (searchMethod === "regex" && searchKeyword.trim() !== "") {
+            try {
+                compiledRegex = new RegExp(searchKeyword, "i");
+            } catch (e) {
+                // 不正な正規表現: 全件不一致とする
+                return [];
+            }
         }
 
-        return true;
-    });
-}
+        const targetsToSearch = {
+            title: controls.searchTargetName.checked,
+            description: controls.searchTargetDescription.checked,
+            fqn: controls.searchTargetFqn.checked,
+            simpleText: controls.searchTargetSimple.checked,
+            kind: false,
+        };
 
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", function () {
-        if (!document.body.classList.contains("glossary")) return;
+        const showOnlyDomain = controls.showOnlyDomain && controls.showOnlyDomain.checked;
+        const domainPackageRoots = getDomainPackageRoots();
+
+        return terms.filter(term => {
+            // 種類で絞り込む
+            const kindText = term.kind || "";
+            if (!kindVisibilityMap[kindText]) return false;
+
+            // 説明文有無での判定
+            const description = term.description || "";
+            if (!showEmptyDescription && !description) return false;
+
+            // ドメインパッケージでの絞り込み
+            if (showOnlyDomain && domainPackageRoots.length > 0) {
+                const fqn = term.fqn || "";
+                const isInDomainPackage = domainPackageRoots.some(root =>
+                    fqn === root || fqn.startsWith(root + ".") || fqn.startsWith(root + "#")
+                );
+                if (!isInDomainPackage) return false;
+            }
+
+            // キーワード検索
+            if (searchKeyword) {
+                const isMatch = Object.keys(targetsToSearch).some(prop => {
+                    if (!targetsToSearch[prop]) return false;
+
+                    const targetText = term[prop] || "";
+
+                    switch (searchMethod) {
+                        case "exact":
+                            return targetText.toLowerCase() === searchKeyword.toLowerCase();
+                        case "regex":
+                            return compiledRegex ? compiledRegex.test(targetText) : false;
+                        case "partial":
+                        default:
+                            return targetText.toLowerCase().includes(searchKeyword.toLowerCase());
+                    }
+                });
+
+                if (!isMatch) return false;
+            }
+
+            return true;
+        });
+    }
+
+    function init() {
+        if (typeof document === "undefined" || !document.body.classList.contains("glossary")) {
+            return;
+        }
 
         const terms = getGlossaryData();
 
@@ -352,12 +356,12 @@ if (typeof document !== "undefined") {
             showClass: document.getElementById("show-class"),
             showMethod: document.getElementById("show-method"),
             showField: document.getElementById("show-field"),
-            searchTargetName: document.getElementById('search-target-name'),
-            searchTargetDescription: document.getElementById('search-target-description'),
-            searchTargetFqn: document.getElementById('search-target-fqn'),
-            searchTargetSimple: document.getElementById('search-target-simple'),
-            showAttributesCheckbox: document.getElementById('show-attributes'),
-            showOnlyDomain: document.getElementById('show-only-domain'),
+            searchTargetName: document.getElementById("search-target-name"),
+            searchTargetDescription: document.getElementById("search-target-description"),
+            searchTargetFqn: document.getElementById("search-target-fqn"),
+            searchTargetSimple: document.getElementById("search-target-simple"),
+            showAttributesCheckbox: document.getElementById("show-attributes"),
+            showOnlyDomain: document.getElementById("show-only-domain"),
         };
 
         // domainPackageRootsが空の場合、show-only-domainチェックボックスをdisabledにする
@@ -389,7 +393,7 @@ if (typeof document !== "undefined") {
 
         controls.searchInput.addEventListener("input", updateArticles);
         document.querySelectorAll('input[name="search-method"]')
-            .forEach(radio => radio.addEventListener('change', updateArticles));
+            .forEach(radio => radio.addEventListener("change", updateArticles));
 
         const exportButton = document.getElementById("export-csv");
         if (exportButton) {
@@ -413,11 +417,10 @@ if (typeof document !== "undefined") {
         window.addEventListener("hashchange", scrollToHash);
         // 初期表示時
         scrollToHash();
-    });
-}
-// Test-only exports for Node; no-op in browsers.
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
+    }
+
+    return {
+        init,
         getInitialChar,
         renderJumpBar,
         sortTerms,
@@ -433,4 +436,14 @@ if (typeof module !== "undefined" && module.exports) {
         renderFilteredTerms,
         renderMarkdownDescriptions,
     };
+})();
+
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", () => {
+        GlossaryApp.init();
+    });
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = GlossaryApp;
 }

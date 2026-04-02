@@ -2,7 +2,7 @@ globalThis.Jig ??= {};
 globalThis.Jig.dom ??= {};
 
 const GlossaryApp = (() => {
-    const createElement = globalThis.Jig.dom.createElement;
+    const createElement = Jig.dom.createElement;
 
     // 文字列の比較は日本語を優先しつつ大小を無視する
     const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
@@ -86,7 +86,7 @@ const GlossaryApp = (() => {
 
         list.innerHTML = "";
         const items = terms.map((term, index) => ({id: buildTermAnchorId(term, index), label: term.title || ""}));
-        const section = globalThis.Jig.sidebar.createSection("用語一覧", items);
+        const section = Jig.sidebar.createSection("用語一覧", items);
         if (!section) return;
 
         const links = section.querySelectorAll(".in-page-sidebar__link");
@@ -94,7 +94,7 @@ const GlossaryApp = (() => {
             const kind = terms[i]?.kind;
             if (kind) {
                 link.setAttribute("data-kind", kind);
-                link.setAttribute("data-kind-char", globalThis.Jig.dom.kindBadgeChar(kind));
+                link.setAttribute("data-kind-char", Jig.dom.kindBadgeChar(kind));
             }
         });
 
@@ -210,7 +210,7 @@ const GlossaryApp = (() => {
                             createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
                             createElement("a", {
                                 className: "meta-value",
-                                attributes: {href: "domain.html#" + globalThis.Jig.fqnToId("domain", fqn)},
+                                attributes: {href: "domain.html#" + Jig.fqnToId("domain", fqn)},
                                 textContent: "ドメインモデル",
                             }),
                         ]}));
@@ -235,11 +235,11 @@ const GlossaryApp = (() => {
                     className: `jig-card jig-card--type ${isCompact ? "jig-card--compact" : ""}`,
                     children: [
                         createElement("h3", {children: [
-                            globalThis.Jig.dom.kindBadgeElement(term.kind || ""),
+                            Jig.dom.kindBadgeElement(term.kind || ""),
                             createElement("span", {textContent: term.title || ""}),
                         ]}),
                         ...metaChildren,
-                        createElement("div", {className: "markdown", innerHTML: globalThis.Jig.markdown.parse(term.description || "")}),
+                        createElement("div", {className: "markdown", innerHTML: Jig.markdown.parse(term.description || "")}),
                     ]
                 });
                 groupSection.appendChild(article);
@@ -260,7 +260,7 @@ const GlossaryApp = (() => {
     function renderMarkdownDescriptions() {
         Array.from(document.getElementsByClassName("markdown"))
             .forEach(node => {
-                node.innerHTML = globalThis.Jig.markdown.parse(node.innerHTML);
+                node.innerHTML = Jig.markdown.parse(node.innerHTML);
             });
     }
 
@@ -400,7 +400,7 @@ const GlossaryApp = (() => {
             exportButton.addEventListener("click", () => {
                 const filteredTerms = getFilteredTerms(terms, controls);
                 const csvText = buildGlossaryCsv(filteredTerms);
-                globalThis.Jig.dom.downloadCsv(csvText, "glossary.csv");
+                Jig.dom.downloadCsv(csvText, "glossary.csv");
             });
         }
 

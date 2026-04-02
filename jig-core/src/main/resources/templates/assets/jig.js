@@ -18,62 +18,6 @@ window.addEventListener("popstate", function (event) {
     }
 });
 
-/* ===== テーブルソート ===== */
-function sortTable(event) {
-    const headerColumn = event.target;
-    const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
-
-    const rows = Array.from(headerColumn.closest("table").querySelectorAll("tbody tr"));
-
-    const orderFlag = headerColumn.dataset.orderFlag === "true";
-
-    // デフォルトでは辞書順でソート
-    let type = "string";
-
-    // 1行目を見てclass=numberがあれば数値としてソート
-    const firstRow = rows[0];
-    if (firstRow) {
-        const cell = firstRow.cells[columnIndex];
-        if (cell && cell.classList.contains("number")) {
-            type = "number";
-        }
-    }
-
-    rows.sort(function (a, b) {
-        const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
-        const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
-
-        // 数値は降順、文字は昇順
-        if (type === "number") {
-            const aNumber = parseFloat(aValue) || 0;
-            const bNumber = parseFloat(bValue) || 0;
-            return (aNumber - bNumber) * (orderFlag ? 1 : -1);
-        }
-        return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
-    });
-
-    rows.forEach(row => headerColumn.closest("table").getElementsByTagName("tbody")[0].appendChild(row));
-
-    headerColumn.dataset.orderFlag = (!orderFlag).toString();
-}
-
-function setupSortableTables() {
-    document.querySelectorAll("table.sortable").forEach(table => {
-        const headers = table.querySelectorAll("thead th");
-        headers.forEach((header, index) => {
-            if (header.hasAttribute("onclick")) {
-                return;
-            }
-            if (header.classList.contains("no-sort")) {
-                return;
-            }
-
-            header.addEventListener("click", sortTable);
-            header.style.cursor = "pointer";
-        });
-    });
-}
-
 function updateRelativeTime() {
     const element = document.getElementById("jig-timestamp");
     if (!element) return;
@@ -165,11 +109,7 @@ function setupHeaderNavigation() {
 }
 
 // ページ読み込み時のイベント
-// リスナーの登録はそのページだけでやる
 document.addEventListener("DOMContentLoaded", function () {
-    if (document.body.classList.contains("outbound")) {
-        setupSortableTables();
-    }
     updateRelativeTime();
     setupHeaderNavigation();
 });
@@ -649,6 +589,61 @@ globalThis.Jig.dom = (() => {
         return typeLinkResolver;
     }
 
+    function setupSortableTables() {
+        function sortTable(event) {
+            const headerColumn = event.target;
+            const columnIndex = Array.from(headerColumn.parentNode.children).indexOf(headerColumn);
+
+            const rows = Array.from(headerColumn.closest("table").querySelectorAll("tbody tr"));
+
+            const orderFlag = headerColumn.dataset.orderFlag === "true";
+
+            // デフォルトでは辞書順でソート
+            let type = "string";
+
+            // 1行目を見てclass=numberがあれば数値としてソート
+            const firstRow = rows[0];
+            if (firstRow) {
+                const cell = firstRow.cells[columnIndex];
+                if (cell && cell.classList.contains("number")) {
+                    type = "number";
+                }
+            }
+
+            rows.sort(function (a, b) {
+                const aValue = a.getElementsByTagName("td")[columnIndex].textContent;
+                const bValue = b.getElementsByTagName("td")[columnIndex].textContent;
+
+                // 数値は降順、文字は昇順
+                if (type === "number") {
+                    const aNumber = parseFloat(aValue) || 0;
+                    const bNumber = parseFloat(bValue) || 0;
+                    return (aNumber - bNumber) * (orderFlag ? 1 : -1);
+                }
+                return (aValue.localeCompare(bValue)) * (orderFlag ? -1 : 1);
+            });
+
+            rows.forEach(row => headerColumn.closest("table").getElementsByTagName("tbody")[0].appendChild(row));
+
+            headerColumn.dataset.orderFlag = (!orderFlag).toString();
+        }
+
+        document.querySelectorAll("table.sortable").forEach(table => {
+            const headers = table.querySelectorAll("thead th");
+            headers.forEach((header, index) => {
+                if (header.hasAttribute("onclick")) {
+                    return;
+                }
+                if (header.classList.contains("no-sort")) {
+                    return;
+                }
+
+                header.addEventListener("click", sortTable);
+                header.style.cursor = "pointer";
+            });
+        });
+    }
+
     return {
         setTypeLinkResolver,
         clearTypeLinkResolver,
@@ -662,6 +657,7 @@ globalThis.Jig.dom = (() => {
         createFieldsList,
         createMethodItem,
         createMethodsList,
+        setupSortableTables,
     };
 })();
 

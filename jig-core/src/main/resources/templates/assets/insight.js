@@ -185,7 +185,7 @@ const InsightApp = (() => {
             setInsightCount("method-count", (insightData.methods || []).length);
         }
 
-        globalThis.setupSortableTables?.();
+        Jig.dom.setupSortableTables();
         setupZoomIcons();
         document.getElementById("cancel-zoom")?.addEventListener("click", (e) => cancelZoom(e));
     }

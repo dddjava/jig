@@ -1162,7 +1162,7 @@ if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", function () {
         const body = dom.getDocumentBody();
         if (!body || !body.classList.contains("package-relation")) return;
-        setupSortableTables();
+        Jig.dom.setupSortableTables();
         renderPackageTable(packageContext);
         setupPackageFilterControl(packageContext);
         // domainPackageRootsに基づく初期aggregationDepth設定

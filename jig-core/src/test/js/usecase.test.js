@@ -487,6 +487,17 @@ test.describe('UsecaseApp', () => {
 
         // ServiceA クラスのセクションは表示される（ハンドラを含むため）
         assert.strictEqual(mainList.children.length, 1);
+
+        // クラス単位の図にはハンドラ（method1）のみが含まれ、otherMethodは含まれない
+        const serviceSection = mainList.children[0];
+        const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+        if (classDiagram) {
+            const code = classDiagram.querySelector('.mermaid').textContent;
+            const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1()');
+            const otherMethodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#otherMethod()');
+            assert.ok(code.includes(method1NodeId), 'クラス図にmethod1が含まれる');
+            assert.ok(!code.includes(otherMethodNodeId), 'クラス図にotherMethodは含まれない');
+        }
     });
 
     test('ハンドラのみ表示でinbound呼び出しが一つもないクラスは非表示になる', () => {

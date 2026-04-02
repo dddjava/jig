@@ -388,16 +388,17 @@ function buildUsecaseDiagram(rootMethod, diagramContext) {
 
 /**
  * @param {Usecase} usecase
+ * @param {Set<string>|null} handlerFqns ハンドラのみ表示時のFQN集合、nullはすべて表示
  * @returns {{nodes: DiagramNode[], edges: DiagramEdge[]}}
  */
-function buildClassGraph(usecase) {
+function buildClassGraph(usecase, handlerFqns = null) {
     /** @type {DiagramNode[]} */
     const nodes = [];
     /** @type {DiagramEdge[]} */
     const edges = [];
     const edgeSet = new Set();
     const domainNodeSet = new Set();
-    const classMethods = [...usecase.methods.filter(isUsecase), ...usecase.staticMethods];
+    const classMethods = [...usecase.methods.filter(m => isUsecase(m) && (!handlerFqns || handlerFqns.has(m.fqn))), ...usecase.staticMethods];
     const methodFqns = new Set(classMethods.map(m => m.fqn));
     const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
 
@@ -859,7 +860,7 @@ const UsecaseApp = {
             }
 
             // Class diagram (internal relations)
-            const classGraph = buildClassGraph(usecase);
+            const classGraph = buildClassGraph(usecase, handlerFqns);
             if (classGraph.edges.length > 0) {
                 const classDiagramContainer = createElement("div", {className: "diagram-container class-diagram"});
                 const mmdContainer = createElement("div", {className: "mermaid-diagram"});

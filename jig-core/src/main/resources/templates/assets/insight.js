@@ -1,44 +1,47 @@
-const InsightApp = {
-    state: {
+globalThis.Jig ??= {};
+globalThis.Jig.dom ??= {};
+
+const InsightApp = (() => {
+    const state = {
         data: null,
-    },
+    };
 
-    parseInsightData() {
+    function parseInsightData() {
         return globalThis.insightData ?? null;
-    },
+    }
 
-    setInsightCount(elementId, count) {
+    function setInsightCount(elementId, count) {
         const element = document.getElementById(elementId);
         if (element) {
             element.textContent = count.toString();
         }
-    },
+    }
 
-    createCell(text, className) {
-        return globalThis.Jig.dom.createElement("td", {
+    function createCell(text, className) {
+        return Jig.dom.createElement("td", {
             className: className || undefined,
             textContent: text
         });
-    },
+    }
 
-    createZoomCell() {
-        return globalThis.Jig.dom.createElement("td", {
+    function createZoomCell() {
+        return Jig.dom.createElement("td", {
             children: [
-                globalThis.Jig.dom.createElement("i", {
+                Jig.dom.createElement("i", {
                     className: "zoom",
                     textContent: "🔍"
                 })
             ]
         });
-    },
+    }
 
-    renderPackageInsights(packages) {
+    function renderPackageInsights(packages) {
         const tbody = document.querySelector("#package-insight-list tbody");
         if (!tbody) {
             return;
         }
         packages.forEach(packageInsight => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             row.dataset.fqn = packageInsight.fqn;
             row.appendChild(this.createZoomCell());
             row.appendChild(this.createCell(packageInsight.fqn, "fqn"));
@@ -50,15 +53,15 @@ const InsightApp = {
             row.appendChild(this.createCell(packageInsight.size.toString(), "number"));
             tbody.appendChild(row);
         });
-    },
+    }
 
-    renderTypeInsights(types) {
+    function renderTypeInsights(types) {
         const tbody = document.querySelector("#type-insight-list tbody");
         if (!tbody) {
             return;
         }
         types.forEach(typeInsight => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             row.dataset.fqn = typeInsight.fqn;
             row.dataset.packageFqn = typeInsight.packageFqn;
             row.appendChild(this.createZoomCell());
@@ -73,15 +76,15 @@ const InsightApp = {
             row.appendChild(this.createCell(typeInsight.size.toString(), "number"));
             tbody.appendChild(row);
         });
-    },
+    }
 
-    renderMethodInsights(methods) {
+    function renderMethodInsights(methods) {
         const tbody = document.querySelector("#method-insight-list tbody");
         if (!tbody) {
             return;
         }
         methods.forEach(methodInsight => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             row.dataset.fqn = methodInsight.fqn;
             row.dataset.packageFqn = methodInsight.packageFqn;
             row.dataset.typeFqn = methodInsight.typeFqn;
@@ -97,9 +100,9 @@ const InsightApp = {
             row.appendChild(this.createCell(methodInsight.size.toString(), "number"));
             tbody.appendChild(row);
         });
-    },
+    }
 
-    setupZoomIcons() {
+    function setupZoomIcons() {
         const zoomIcons = document.querySelectorAll("i.zoom");
 
         zoomIcons.forEach(icon => {
@@ -124,21 +127,21 @@ const InsightApp = {
                 document.getElementById("cancel-zoom").classList.remove("hidden");
             });
         });
-    },
+    }
 
-    cancelZoom(event) {
+    function cancelZoom(event) {
         // すべてのテーブルからhidden-by-zoomクラスを削除
         document.querySelectorAll("table tbody tr.hidden-by-zoom").forEach(row => {
             row.classList.remove("hidden-by-zoom");
         });
         event.target.classList.add("hidden");
-    },
+    }
 
-    fqnStartsWith(prefix, targetRow) {
+    function fqnStartsWith(prefix, targetRow) {
         return targetRow.querySelector("td.fqn").textContent.startsWith(prefix);
-    },
+    }
 
-    zoomFamilyTables(baseTable, baseRow) {
+    function zoomFamilyTables(baseTable, baseRow) {
         baseTable.parentElement.querySelectorAll("table").forEach(table => {
             if (table === baseTable) return;
 
@@ -175,9 +178,9 @@ const InsightApp = {
                 if (!this.fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
             });
         })
-    },
+    }
 
-    init() {
+    function init() {
         if (typeof document === "undefined" || !document.body.classList.contains("insight")) {
             return;
         }
@@ -196,16 +199,26 @@ const InsightApp = {
         this.setupZoomIcons();
         document.getElementById("cancel-zoom")?.addEventListener("click", (e) => this.cancelZoom(e));
     }
-};
 
-// ページ読み込み時のイベント
+    return {
+        init,
+        parseInsightData,
+        setInsightCount,
+        createCell,
+        createZoomCell,
+        renderPackageInsights,
+        renderTypeInsights,
+        renderMethodInsights,
+        setupZoomIcons,
+        cancelZoom,
+    }
+})();
+
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
         InsightApp.init();
     });
 }
-
-// Test-only exports for Node; no-op in browsers.
 if (typeof module !== "undefined" && module.exports) {
     module.exports = InsightApp;
 }

@@ -2,7 +2,7 @@ globalThis.Jig ??= {};
 globalThis.Jig.glossary ??= {};
 globalThis.Jig.dom ??= {};
 
-const ListOutput = (function () {
+const ListOutput = (() => {
     const headerDefinitions = {
         controller: [
             "パッケージ名",
@@ -821,9 +821,10 @@ const ListOutput = (function () {
 })();
 
 if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", () => ListOutput.init());
+    document.addEventListener("DOMContentLoaded", () => {
+        ListOutput.init()
+    });
 }
-
 if (typeof module !== "undefined" && module.exports) {
     module.exports = ListOutput;
 }

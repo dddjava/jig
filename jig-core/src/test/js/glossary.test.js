@@ -427,6 +427,20 @@ test.describe('glossary.js', () => {
             assert.equal(link.href, '#app.Acc');
         });
 
+        test('用語サイドバーはkind付きでも例外なく描画できる', () => {
+            const doc = setupDocument();
+            const sidebar = doc.createElement('div');
+            doc.elementsById.set('term-sidebar-list', sidebar);
+
+            assert.doesNotThrow(() => {
+                glossary.renderTermSidebar([{title: 'Acc', fqn: 'app.Acc', kind: 'クラス'}]);
+            });
+
+            const link = sidebar.children[0].children[1].children[0].children[0];
+            assert.equal(link.tagName, 'a');
+            assert.equal(link.textContent, 'Acc');
+        });
+
         test('FQNがない場合のアンカーID生成', () => {
             assert.equal(glossary.buildTermAnchorId({title: 'NoFqn'}, 5), 'term-5');
         });
@@ -538,6 +552,13 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('種類バッジ', () => {
+        test('kindBadgeChar は既知/未知の種類文字を返す', () => {
+            assert.equal(globalThis.Jig.dom.kindBadgeChar('パッケージ'), 'P');
+            assert.equal(globalThis.Jig.dom.kindBadgeChar('クラス'), 'C');
+            assert.equal(globalThis.Jig.dom.kindBadgeChar('unknown'), 'U');
+            assert.equal(globalThis.Jig.dom.kindBadgeChar(''), '?');
+        });
+
         test('kindBadgeElement は data-kind 属性を付与した span を返す', () => {
             const badge = globalThis.Jig.dom.kindBadgeElement('クラス');
             assert.equal(badge.className, 'kind-badge');

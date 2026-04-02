@@ -91,7 +91,7 @@ function renderTermSidebar(terms) {
         const kind = terms[i]?.kind;
         if (kind) {
             link.setAttribute("data-kind", kind);
-            link.setAttribute("data-kind-char", KIND_BADGE[kind] ?? kind.charAt(0));
+            link.setAttribute("data-kind-char", globalThis.Jig.dom.kindBadgeChar(kind));
         }
     });
 

@@ -530,11 +530,15 @@ globalThis.Jig.dom = (() => {
 
     const KIND_BADGE = {"パッケージ": "P", "クラス": "C", "メソッド": "M", "フィールド": "F"};
 
+    function kindBadgeChar(kind) {
+        return KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?");
+    }
+
     function kindBadgeElement(kind) {
         return createElement("span", {
             className: "kind-badge",
             attributes: {"data-kind": kind},
-            textContent: KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?"),
+            textContent: kindBadgeChar(kind),
         });
     }
 
@@ -653,6 +657,7 @@ globalThis.Jig.dom = (() => {
         createCell,
         createElementForTypeRef,
         downloadCsv,
+        kindBadgeChar,
         kindBadgeElement,
         createFieldsList,
         createMethodItem,
@@ -1000,6 +1005,7 @@ if (typeof module !== "undefined" && module.exports) {
         fqnToId: globalThis.Jig?.fqnToId,
         getTypeTerm: globalThis.Jig?.glossary?.getTypeTerm,
         getMethodTerm: globalThis.Jig?.glossary?.getMethodTerm,
+        kindBadgeChar: globalThis.Jig?.dom?.kindBadgeChar,
         kindBadgeElement: globalThis.Jig?.dom?.kindBadgeElement,
     };
 }

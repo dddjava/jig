@@ -671,7 +671,7 @@ function renderPackages(packages, container) {
                 const c = createElement("div", {className: "mermaid-diagram"});
                 panels['direct'].appendChild(c);
                 diagramRegistry.push({container: c, pkg, diagramType: 'packageDirect'});
-                globalThis.Jig.observe.lazyRender(c, () => {
+                globalThis.Jig.dom.lazyRender(c, () => {
                     renderedContainers.add(c);
                     c.innerHTML = "";
                     const diagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
@@ -682,7 +682,7 @@ function renderPackages(packages, container) {
                 const c = createElement("div", {className: "mermaid-diagram"});
                 panels['inner-pkg'].appendChild(c);
                 diagramRegistry.push({container: c, pkg, diagramType: 'package'});
-                globalThis.Jig.observe.lazyRender(c, () => {
+                globalThis.Jig.dom.lazyRender(c, () => {
                     renderedContainers.add(c);
                     c.innerHTML = "";
                     const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
@@ -721,7 +721,7 @@ function renderPackages(packages, container) {
                 incomingCheckbox.addEventListener('change', () => {
                     if (renderedContainers.has(c)) render();
                 });
-                globalThis.Jig.observe.lazyRender(c, () => {
+                globalThis.Jig.dom.lazyRender(c, () => {
                     renderedContainers.add(c);
                     render();
                 });
@@ -793,7 +793,7 @@ function renderTypes(types, container) {
         const mmdContainer = createElement("div", {className: "mermaid-diagram"});
         section.appendChild(mmdContainer);
         diagramRegistry.push({container: mmdContainer, type, diagramType: 'classDirect'});
-        globalThis.Jig.observe.lazyRender(mmdContainer, () => {
+        globalThis.Jig.dom.lazyRender(mmdContainer, () => {
             renderedContainers.add(mmdContainer);
             mmdContainer.innerHTML = "";
             const diagramGenerator = (dir) => createTypeRelationDiagram(type, dir);

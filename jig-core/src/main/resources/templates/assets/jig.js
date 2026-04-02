@@ -87,7 +87,6 @@ Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML
 
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
-globalThis.Jig.observe ??= {};
 globalThis.Jig.sidebar ??= {};
 globalThis.Jig.markdown ??= {};
 globalThis.Jig.mermaid ??= {};
@@ -371,6 +370,23 @@ globalThis.Jig.dom = (() => {
         });
     }
 
+    function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
+        if (typeof IntersectionObserver === "undefined") {
+            renderFn();
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    renderFn();
+                    observer.unobserve(container);
+                }
+            });
+        }, {rootMargin});
+        observer.observe(container);
+    }
+
     return {
         setTypeLinkResolver,
         clearTypeLinkResolver,
@@ -385,25 +401,9 @@ globalThis.Jig.dom = (() => {
         createMethodItem,
         createMethodsList,
         setupSortableTables,
+        lazyRender,
     };
 })();
-
-globalThis.Jig.observe.lazyRender = function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
-    if (typeof IntersectionObserver === "undefined") {
-        renderFn();
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                renderFn();
-                observer.unobserve(container);
-            }
-        });
-    }, {rootMargin});
-    observer.observe(container);
-};
 
 globalThis.Jig.sidebar.createSection = function createSidebarSection(title, items) {
     if (!items || items.length === 0) return null;

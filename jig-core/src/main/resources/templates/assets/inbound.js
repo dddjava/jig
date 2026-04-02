@@ -83,7 +83,7 @@ const InboundApp = (() => {
             const mmdContainer = Jig.dom.createElement("div", { className: "mermaid-diagram" });
             section.appendChild(mmdContainer);
 
-            Jig.observe.lazyRender(mmdContainer, () => {
+            Jig.dom.lazyRender(mmdContainer, () => {
                 const fqnToNodeId = (fqn) => Jig.fqnToId("n", fqn);
                 const builder = new Jig.mermaid.Builder();
                 builder.applyThemeClassDefs();

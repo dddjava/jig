@@ -675,7 +675,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
         }));
 
         const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        globalThis.Jig.observe.lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
+        globalThis.Jig.dom.lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
         cardChildren.push(portMermaidContainer);
 
         const itemList = createElement("div", {className: "outbound-operation-list"});
@@ -683,7 +683,7 @@ function renderOutboundList(grouped, visibility = DEFAULT_VISIBILITY) {
             const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
             const operationWithPort = {...operation, outboundPort: group.outboundPort};
             const operationMermaidCode = generateOperationMermaidCode(operationWithPort, visibility);
-            globalThis.Jig.observe.lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
+            globalThis.Jig.dom.lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
             itemList.appendChild(createElement("article", {
                 className: "outbound-operation-item jig-card jig-card--item",
@@ -742,7 +742,7 @@ function renderPersistenceList(grouped, visibility = DEFAULT_VISIBILITY) {
         const targetId = fqnToId("persistence", group.persistenceTarget);
 
         const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        globalThis.Jig.observe.lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
+        globalThis.Jig.dom.lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outbound-group-card jig-card jig-card--type",
@@ -779,7 +779,7 @@ function renderExternalList(grouped, visibility = DEFAULT_VISIBILITY) {
         const externalLabel = getTypeTerm(externalFqn).title;
 
         const externalMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-        globalThis.Jig.observe.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
+        globalThis.Jig.dom.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
         container.appendChild(createElement("section", {
             className: "outbound-group-card jig-card jig-card--type",

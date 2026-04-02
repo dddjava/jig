@@ -1,7 +1,6 @@
 globalThis.Jig ??= {};
 globalThis.Jig.dom ??= {};
 globalThis.Jig.packageDiagram ??= {};
-globalThis.Jig.observe ??= {};
 globalThis.Jig.mermaid ??= {};
 
 /**
@@ -23,7 +22,7 @@ const IndexApp = (() => {
         const createElement = Jig.dom.createElement;
         const domainPackageDiagram = createElement("div", { className: "mermaid-diagram" });
         packageDiagramContainer.appendChild(domainPackageDiagram);
-        Jig.observe.lazyRender(domainPackageDiagram, () => {
+        Jig.dom.lazyRender(domainPackageDiagram, () => {
             domainPackageDiagram.innerHTML = "";
             console.log("Rendering package diagram for " + packageRoot);
             const pkgDiagram = Jig.packageDiagram.createPackageLevelDiagram(

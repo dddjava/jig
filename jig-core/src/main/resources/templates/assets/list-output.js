@@ -3,6 +3,7 @@ globalThis.Jig.glossary ??= {};
 globalThis.Jig.dom ??= {};
 
 const ListOutput = (() => {
+
     const headerDefinitions = {
         controller: [
             "パッケージ名",
@@ -741,6 +742,7 @@ if (typeof document !== "undefined") {
         ListOutput.init()
     });
 }
+
 if (typeof module !== "undefined" && module.exports) {
     module.exports = ListOutput;
 }

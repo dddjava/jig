@@ -1,7 +1,6 @@
 globalThis.Jig ??= {};
 globalThis.Jig.dom ??= {};
-
-const createElement = globalThis.Jig.dom.createElement;
+globalThis.Jig.glossary ??= {};
 
 const InboundApp = (() => {
     const state = {
@@ -32,10 +31,10 @@ const InboundApp = (() => {
         sidebar.innerHTML = "";
 
         const items = controllers.map(c => ({
-            id: globalThis.Jig.fqnToId("adapter", c.fqn),
-            label: globalThis.Jig.glossary.getTypeTerm(c.fqn).title
+            id: Jig.fqnToId("adapter", c.fqn),
+            label: Jig.glossary.getTypeTerm(c.fqn).title
         }));
-        globalThis.Jig.sidebar.renderSection(sidebar, "コントローラー", items);
+        Jig.sidebar.renderSection(sidebar, "コントローラー", items);
     }
 
     function renderControllerList(controllers) {
@@ -49,15 +48,15 @@ const InboundApp = (() => {
         }
 
         controllers.forEach(controller => {
-            const typeTerm = globalThis.Jig.glossary.getTypeTerm(controller.fqn);
-            const section = createElement("section", {
+            const typeTerm = Jig.glossary.getTypeTerm(controller.fqn);
+            const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: globalThis.Jig.fqnToId("adapter", controller.fqn),
+                id: Jig.fqnToId("adapter", controller.fqn),
                 children: [
-                    createElement("h3", {
-                        children: [createElement("a", { textContent: typeTerm.title })]
+                    Jig.dom.createElement("h3", {
+                        children: [Jig.dom.createElement("a", { textContent: typeTerm.title })]
                     }),
-                    createElement("div", {
+                    Jig.dom.createElement("div", {
                         className: "fully-qualified-name",
                         textContent: controller.fqn
                     })
@@ -65,28 +64,28 @@ const InboundApp = (() => {
             });
 
             if (typeTerm.description) {
-                section.appendChild(createElement("section", {
+                section.appendChild(Jig.dom.createElement("section", {
                     className: "markdown",
-                    innerHTML: globalThis.Jig.markdown.parse(typeTerm.description)
+                    innerHTML: Jig.markdown.parse(typeTerm.description)
                 }));
             }
 
             if (controller.classPath) {
-                section.appendChild(createElement("div", {
+                section.appendChild(Jig.dom.createElement("div", {
                     className: "class-path",
                     textContent: controller.classPath
                 }));
             }
 
-            const methodsList = globalThis.Jig.dom.createMethodsList("エントリーポイント", controller.entrypoints);
+            const methodsList = Jig.dom.createMethodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 
-            const mmdContainer = createElement("div", { className: "mermaid-diagram" });
+            const mmdContainer = Jig.dom.createElement("div", { className: "mermaid-diagram" });
             section.appendChild(mmdContainer);
 
-            globalThis.Jig.observe.lazyRender(mmdContainer, () => {
-                const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
-                const builder = new globalThis.Jig.mermaid.Builder();
+            Jig.observe.lazyRender(mmdContainer, () => {
+                const fqnToNodeId = (fqn) => Jig.fqnToId("n", fqn);
+                const builder = new Jig.mermaid.Builder();
                 builder.applyThemeClassDefs();
 
                 const entrypointFqns = new Set(controller.entrypoints.map(ep => ep.fqn));
@@ -110,15 +109,15 @@ const InboundApp = (() => {
                 const entrypointGroups = new Map();
                 controller.entrypoints.forEach(ep => {
                     const typeFqn = ep.fqn.split('#')[0];
-                    const subgraph = builder.ensureSubgraph(entrypointGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
-                    const label = globalThis.Jig.glossary.getMethodTerm(ep.fqn, true).title;
+                    const subgraph = builder.ensureSubgraph(entrypointGroups, Jig.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+                    const label = Jig.glossary.getMethodTerm(ep.fqn, true).title;
                     builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, 'method');
                     builder.addClass(fqnToNodeId(ep.fqn), "inbound");
                 });
 
                 // パスノードとdotted edge
                 controller.entrypoints.forEach(ep => {
-                    const pathNodeId = globalThis.Jig.fqnToId("path", ep.fqn);
+                    const pathNodeId = Jig.fqnToId("path", ep.fqn);
                     builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
                     builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
                 });
@@ -133,14 +132,14 @@ const InboundApp = (() => {
                     }
                 });
                 usecaseGroups.forEach((methods, typeFqn) => {
-                    const sgLabel = globalThis.Jig.glossary.getTypeTerm(typeFqn).title;
-                    const subgraph = builder.startSubgraph(globalThis.Jig.fqnToId("sg", typeFqn), sgLabel);
+                    const sgLabel = Jig.glossary.getTypeTerm(typeFqn).title;
+                    const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), sgLabel);
                     methods.forEach(fqn => {
                         const mId = fqnToNodeId(fqn);
-                        const mLabel = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
+                        const mLabel = Jig.glossary.getMethodTerm(fqn, true).title;
                         builder.addNodeToSubgraph(subgraph, mId, mLabel, 'method');
                         builder.addClass(mId, "usecase");
-                        builder.addClick(mId, `./usecase.html#${globalThis.Jig.fqnToId("method", fqn)}`);
+                        builder.addClick(mId, `./usecase.html#${Jig.fqnToId("method", fqn)}`);
                     });
                 });
 
@@ -149,8 +148,8 @@ const InboundApp = (() => {
                 allFqns.forEach(fqn => {
                     if (!entrypointFqns.has(fqn) && !usecaseMethodToType.has(fqn)) {
                         const typeFqn = fqn.split('#')[0];
-                        const subgraph = builder.ensureSubgraph(methodGroups, globalThis.Jig.fqnToId("sg", typeFqn), globalThis.Jig.glossary.getTypeTerm(typeFqn).title);
-                        const label = globalThis.Jig.glossary.getMethodTerm(fqn, true).title;
+                        const subgraph = builder.ensureSubgraph(methodGroups, Jig.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+                        const label = Jig.glossary.getMethodTerm(fqn, true).title;
                         const nodeId = fqnToNodeId(fqn);
                         builder.addNodeToSubgraph(subgraph, nodeId, label, 'method');
                         builder.addClass(nodeId, "inactive");
@@ -165,7 +164,7 @@ const InboundApp = (() => {
                     }
                 });
 
-                const { edgeLengthByKey } = globalThis.Jig.graph.computeOutboundEdgeLengths({
+                const { edgeLengthByKey } = Jig.graph.computeOutboundEdgeLengths({
                     nodesInSubgraph: adapterFqns,
                     edges: controller.relations
                 });
@@ -179,7 +178,7 @@ const InboundApp = (() => {
                 const generator = (dir) => builder.build(dir);
                 if (generator('LR')) {
                     mmdContainer.innerHTML = "";
-                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, { direction: 'LR' });
+                    Jig.mermaid.renderWithControls(mmdContainer, generator, { direction: 'LR' });
                 }
             });
 

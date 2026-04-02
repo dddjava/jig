@@ -208,6 +208,7 @@ if (typeof document !== "undefined") {
         InsightApp.init();
     });
 }
+
 if (typeof module !== "undefined" && module.exports) {
     module.exports = InsightApp;
 }

@@ -38,14 +38,14 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.typeLinkResolver('org.example.Account');
+            const resolved = globalThis.Jig.dom.getTypeLinkResolver()('org.example.Account');
             assert.equal(resolved.href, '#' + globalThis.Jig.fqnToId("domain", 'org.example.Account'));
             assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('deprecatedなdomain型に対して、deprecatedクラスを返す', () => {
@@ -60,14 +60,14 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.typeLinkResolver('org.example.OldClass');
+            const resolved = globalThis.Jig.dom.getTypeLinkResolver()('org.example.OldClass');
             assert.equal(resolved.href, '#' + globalThis.Jig.fqnToId("domain", 'org.example.OldClass'));
             assert.equal(resolved.className, 'deprecated');
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('domain型でない場合、weakクラスと単純名を返す（hrefなし）', () => {
@@ -81,7 +81,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.typeLinkResolver('java.lang.String');
+            const resolved = globalThis.Jig.dom.getTypeLinkResolver()('java.lang.String');
             assert.equal(resolved.href, undefined);
             assert.equal(resolved.className, 'weak');
             assert.equal(resolved.text, 'String');
@@ -89,7 +89,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('リゾルバー経由でdomain型はリンク付き要素になる', () => {
@@ -113,7 +113,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('リゾルバー経由でdomain型でない場合はweak spanになる', () => {
@@ -136,7 +136,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('型引数がある場合、spanで型と型引数を組み立てる', () => {
@@ -167,7 +167,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('配列型（Hoge[]）はベース型のリンクを解決して[]を付け直す', () => {
@@ -190,7 +190,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
 
         test('多次元配列型（Hoge[][]）もベース型のリンクを解決して[][]を付け直す', () => {
@@ -213,7 +213,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.typeLinkResolver = null;
+            globalThis.Jig.dom.clearTypeLinkResolver();
         });
     });
 

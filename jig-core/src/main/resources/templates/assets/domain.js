@@ -1051,7 +1051,7 @@ const DomainApp = {
         });
         globalThis.domainData._childPackagesMap = childrenMap;
 
-        globalThis.Jig.dom.typeLinkResolver = (fqn) => {
+        globalThis.Jig.dom.setTypeLinkResolver((fqn) => {
             const domainType = getDomainData()?._typesMap?.get(fqn);
             if (domainType) {
                 return {
@@ -1064,7 +1064,7 @@ const DomainApp = {
                 className: 'weak',
                 text: fqn.substring(fqn.lastIndexOf('.') + 1)
             };
-        };
+        });
 
         renderSidebar(data.packages);
 

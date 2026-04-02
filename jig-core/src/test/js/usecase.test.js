@@ -355,7 +355,7 @@ test.describe('UsecaseApp', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();
 
-        const resolver = globalThis.Jig.dom.typeLinkResolver;
+        const resolver = globalThis.Jig.dom.getTypeLinkResolver();
         assert.ok(resolver, 'リゾルバーが設定されていること');
 
         const resolved = resolver('com.example.Order');
@@ -370,7 +370,7 @@ test.describe('UsecaseApp', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();
 
-        assert.strictEqual(globalThis.Jig.dom.typeLinkResolver, null);
+        assert.strictEqual(globalThis.Jig.dom.getTypeLinkResolver(), null);
     });
 
     test('deprecatedなdomain型はdeprecatedクラスを返す', () => {
@@ -382,7 +382,7 @@ test.describe('UsecaseApp', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();
 
-        const resolved = globalThis.Jig.dom.typeLinkResolver('com.example.OldClass');
+        const resolved = globalThis.Jig.dom.getTypeLinkResolver()('com.example.OldClass');
         assert.strictEqual(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.OldClass'));
         assert.strictEqual(resolved.className, 'deprecated');
 
@@ -396,7 +396,7 @@ test.describe('UsecaseApp', () => {
         globalThis.usecaseData = { usecases: [] };
         UsecaseApp.init();
 
-        const resolver = globalThis.Jig.dom.typeLinkResolver;
+        const resolver = globalThis.Jig.dom.getTypeLinkResolver();
         assert.ok(resolver);
         const resolved = resolver('java.lang.String');
         assert.strictEqual(resolved, null);

@@ -626,7 +626,7 @@ const UsecaseApp = {
             if (!domainData._typesMap) {
                 domainData._typesMap = new Map(domainData.types.map(t => [t.fqn, t]));
             }
-            globalThis.Jig.dom.typeLinkResolver = (fqn) => {
+            globalThis.Jig.dom.setTypeLinkResolver((fqn) => {
                 const domainType = domainData._typesMap.get(fqn);
                 if (domainType) {
                     return {
@@ -635,7 +635,9 @@ const UsecaseApp = {
                     };
                 }
                 return null;
-            };
+            });
+        } else {
+            globalThis.Jig.dom.clearTypeLinkResolver();
         }
 
         this.initControls();

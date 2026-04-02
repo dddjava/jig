@@ -420,221 +420,245 @@ function renderWithExtendedLimit(diagram, source, button) {
 
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
-globalThis.Jig.dom ??= {};
-globalThis.Jig.dom.typeLinkResolver = null;
 globalThis.Jig.observe ??= {};
 globalThis.Jig.sidebar ??= {};
 globalThis.Jig.markdown ??= {};
 globalThis.Jig.mermaid ??= {};
 
-globalThis.Jig.dom.createElement = function createElement(tagName, options = {}) {
-    const element = document.createElement(tagName);
-    if (options.className) element.className = options.className;
-    if (options.id) element.id = options.id;
-    if (options.textContent != null) element.textContent = options.textContent;
-    if (options.innerHTML != null) element.innerHTML = options.innerHTML;
-    if (options.attributes) {
-        for (const [key, value] of Object.entries(options.attributes)) {
-            element.setAttribute(key, value);
+globalThis.Jig.dom = (() => {
+    let typeLinkResolver = null;
+
+    function createElement(tagName, options = {}) {
+        const element = document.createElement(tagName);
+        if (options.className) element.className = options.className;
+        if (options.id) element.id = options.id;
+        if (options.textContent != null) element.textContent = options.textContent;
+        if (options.innerHTML != null) element.innerHTML = options.innerHTML;
+        if (options.attributes) {
+            for (const [key, value] of Object.entries(options.attributes)) {
+                element.setAttribute(key, value);
+            }
         }
+        if (options.style) {
+            Object.assign(element.style, options.style);
+        }
+        if (options.children) {
+            options.children.forEach(child => {
+                // 文字列を指定することもあるのでappendChildではなくappendを使用する
+                if (child) element.append(child);
+            });
+        }
+        return element;
     }
-    if (options.style) {
-        Object.assign(element.style, options.style);
-    }
-    if (options.children) {
-        options.children.forEach(child => {
-            // 文字列を指定することもあるのでappendChildではなくappendを使用する
-            if (child) element.append(child);
+
+    /**
+     * テキストとクラス名を指定してtd要素を作成する
+     * @param {string} text
+     * @param {string} [className]
+     * @returns {HTMLElement}
+     */
+    function createCell(text, className) {
+        return createElement("td", {
+            className: className || undefined,
+            textContent: text
         });
     }
-    return element;
-};
 
-/**
- * テキストとクラス名を指定してtd要素を作成する
- * @param {string} text
- * @param {string} [className]
- * @returns {HTMLElement}
- */
-globalThis.Jig.dom.createCell = function createCell(text, className) {
-    return globalThis.Jig.dom.createElement("td", {
-        className: className || undefined,
-        textContent: text
-    });
-};
+    /**
+     * @param {string} fqn
+     * @param {string | undefined} className
+     * @returns {HTMLElement}
+     */
+    function createTypeLink(fqn, className = undefined) {
+        // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
+        const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';
+        const baseFqn = arraySuffix ? fqn.slice(0, -arraySuffix.length) : fqn;
 
-
-/**
- * TypeRefを表現する要素を返す。
- * typeLinkResolver が設定されている場合はリンク付きの要素を返す。
- *
- * @param {TypeRef} typeRef
- * @param {string | undefined} className
- * @returns {HTMLElement}
- */
-globalThis.Jig.dom.createElementForTypeRef = function createTypeRefLink(typeRef, className= undefined) {
-    if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
-        const typeElements= createTypeLink(typeRef.fqn);
-        const argumentElements = typeRef.typeArgumentRefs
-            .map(typeRef => createTypeRefLink(typeRef))
-            // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
-            .flatMap((v, i) => i ? [', ', v] : [v]);
-
-        return globalThis.Jig.dom.createElement("span", {
-            className: className,
-            children: [typeElements, '<', ...argumentElements, '>']
-        })
-    }
-
-    // 型引数なし
-    return createTypeLink(typeRef.fqn, className);
-}
-
-/**
- * @param {string} fqn
- * @param {string | undefined} className
- * @returns {HTMLElement}
- */
-function createTypeLink(fqn, className = undefined) {
-    // 配列型（例: Hoge[], Hoge[][]）はベース型で解決し、[] を付け直す
-    const arraySuffix = fqn.match(/(\[\])+$/)?.[0] ?? '';
-    const baseFqn = arraySuffix ? fqn.slice(0, -arraySuffix.length) : fqn;
-
-    const resolved = globalThis.Jig.dom.typeLinkResolver?.(baseFqn);
-    const title = (resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(baseFqn).title) + arraySuffix;
-    const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
-    if (resolved?.href) {
-        return globalThis.Jig.dom.createElement('a', {
+        const resolved = typeLinkResolver?.(baseFqn);
+        const title = (resolved?.text ?? globalThis.Jig.glossary.getTypeTerm(baseFqn).title) + arraySuffix;
+        const classes = [className, resolved?.className].filter(Boolean).join(' ') || undefined;
+        if (resolved?.href) {
+            return createElement('a', {
+                className: classes,
+                attributes: {href: resolved.href},
+                textContent: title
+            });
+        }
+        return createElement('span', {
             className: classes,
-            attributes: {href: resolved.href},
             textContent: title
         });
     }
-    return globalThis.Jig.dom.createElement('span', {
-        className: classes,
-        textContent: title
-    });
-}
 
-globalThis.Jig.dom.downloadCsv = function downloadCsv(text, filename) {
-    const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    URL.revokeObjectURL(url);
-};
+    /**
+     * TypeRefを表現する要素を返す。
+     * typeLinkResolver が設定されている場合はリンク付きの要素を返す。
+     *
+     * @param {TypeRef} typeRef
+     * @param {string | undefined} className
+     * @returns {HTMLElement}
+     */
+    function createElementForTypeRef(typeRef, className = undefined) {
+        if (typeRef.typeArgumentRefs && typeRef.typeArgumentRefs.length) {
+            const typeElements = createTypeLink(typeRef.fqn);
+            const argumentElements = typeRef.typeArgumentRefs
+                .map(argumentTypeRef => createElementForTypeRef(argumentTypeRef))
+                // カンマを挟む。HTML Elementが文字列になってしまうのでjoinは使えない。
+                .flatMap((v, i) => i ? [', ', v] : [v]);
 
-const KIND_BADGE = { "パッケージ": "P", "クラス": "C", "メソッド": "M", "フィールド": "F" };
+            return createElement("span", {
+                className: className,
+                children: [typeElements, '<', ...argumentElements, '>']
+            });
+        }
 
-globalThis.Jig.dom.kindBadgeElement = function kindBadgeElement(kind) {
-    return globalThis.Jig.dom.createElement("span", {
-        className: "kind-badge",
-        attributes: { "data-kind": kind },
-        textContent: KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?"),
-    });
-};
-
-/**
- * @param {Array} fields
- * @param {Function} [createTypeRefFn]
- * @returns {HTMLElement | null}
- */
-globalThis.Jig.dom.createFieldsList = function createFieldsList(fields, createTypeRefFn) {
-    const fn = createTypeRefFn || globalThis.Jig.dom.createElementForTypeRef;
-    if (fields.length === 0) return null;
-
-    const createElement = globalThis.Jig.dom.createElement;
-    const items = fields.map(field => createElement("div", {
-        className: "method-item",
-        children: [
-            createElement("div", {
-                className: "method-signature",
-                children: [
-                    createElement("span", {
-                        className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
-                        textContent: field.name
-                    }),
-                    createElement("span", {className: "method-return-sep", textContent: ":"}),
-                    fn(field.typeRef)
-                ]
-            })
-        ]
-    }));
-
-    return createElement("section", {
-        className: "methods-section jig-card jig-card--item fields",
-        children: [
-            createElement("h4", {textContent: "フィールド"}),
-            ...items
-        ]
-    });
-};
-
-/**
- * @param {Object} method
- * @param {Function} [createTypeRefFn]
- * @returns {HTMLElement}
- */
-globalThis.Jig.dom.createMethodItem = function createMethodItem(method, createTypeRefFn) {
-    const fn = createTypeRefFn || globalThis.Jig.dom.createElementForTypeRef;
-    const createElement = globalThis.Jig.dom.createElement;
-    const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
-
-    const paramElements = method.parameterTypeRefs
-        .map(param => fn(param))
-        .flatMap((el, i) => i ? [', ', el] : [el]);
-
-    const signatureEl = createElement("div", {
-        className: "method-signature",
-        children: [
-            createElement("span", {
-                className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
-                textContent: methodTerm.title
-            }),
-            '(',
-            ...paramElements,
-            ')',
-            createElement("span", {className: "method-return-sep", textContent: ":"}),
-            fn(method.returnTypeRef)
-        ]
-    });
-
-    const children = [signatureEl];
-    if (methodTerm.description) {
-        children.push(createElement("div", {
-            className: "markdown",
-            innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
-        }));
+        // 型引数なし
+        return createTypeLink(typeRef.fqn, className);
     }
 
-    return createElement("div", {
-        className: "method-item",
-        children
-    });
-};
+    function downloadCsv(text, filename) {
+        const blob = new Blob([text], {type: "text/csv;charset=utf-8;"});
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+        URL.revokeObjectURL(url);
+    }
 
-/**
- * @param {string} kind
- * @param {Array} methods
- * @param {Function} [createTypeRefFn]
- * @returns {HTMLElement | null}
- */
-globalThis.Jig.dom.createMethodsList = function createMethodsList(kind, methods, createTypeRefFn) {
-    if (methods.length === 0) return null;
+    const KIND_BADGE = {"パッケージ": "P", "クラス": "C", "メソッド": "M", "フィールド": "F"};
 
-    const createElement = globalThis.Jig.dom.createElement;
-    return createElement("section", {
-        className: "methods-section jig-card jig-card--item",
-        children: [
-            createElement("h4", {textContent: kind}),
-            ...methods.map(method => globalThis.Jig.dom.createMethodItem(method, createTypeRefFn))
-        ]
-    });
-};
+    function kindBadgeElement(kind) {
+        return createElement("span", {
+            className: "kind-badge",
+            attributes: {"data-kind": kind},
+            textContent: KIND_BADGE[kind] ?? (kind ? kind.charAt(0).toUpperCase() : "?"),
+        });
+    }
+
+    /**
+     * @param {Array} fields
+     * @param {Function} [createTypeRefFn]
+     * @returns {HTMLElement | null}
+     */
+    function createFieldsList(fields, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        if (fields.length === 0) return null;
+
+        const items = fields.map(field => createElement("div", {
+            className: "method-item",
+            children: [
+                createElement("div", {
+                    className: "method-signature",
+                    children: [
+                        createElement("span", {
+                            className: "method-name" + (field.isDeprecated ? " deprecated" : ""),
+                            textContent: field.name
+                        }),
+                        createElement("span", {className: "method-return-sep", textContent: ":"}),
+                        fn(field.typeRef)
+                    ]
+                })
+            ]
+        }));
+
+        return createElement("section", {
+            className: "methods-section jig-card jig-card--item fields",
+            children: [
+                createElement("h4", {textContent: "フィールド"}),
+                ...items
+            ]
+        });
+    }
+
+    /**
+     * @param {Object} method
+     * @param {Function} [createTypeRefFn]
+     * @returns {HTMLElement}
+     */
+    function createMethodItem(method, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
+
+        const paramElements = method.parameterTypeRefs
+            .map(param => fn(param))
+            .flatMap((el, i) => i ? [', ', el] : [el]);
+
+        const signatureEl = createElement("div", {
+            className: "method-signature",
+            children: [
+                createElement("span", {
+                    className: "method-name" + (method.isDeprecated ? " deprecated" : ""),
+                    textContent: methodTerm.title
+                }),
+                '(',
+                ...paramElements,
+                ')',
+                createElement("span", {className: "method-return-sep", textContent: ":"}),
+                fn(method.returnTypeRef)
+            ]
+        });
+
+        const children = [signatureEl];
+        if (methodTerm.description) {
+            children.push(createElement("div", {
+                className: "markdown",
+                innerHTML: globalThis.Jig.markdown.parse(methodTerm.description)
+            }));
+        }
+
+        return createElement("div", {
+            className: "method-item",
+            children
+        });
+    }
+
+    /**
+     * @param {string} kind
+     * @param {Array} methods
+     * @param {Function} [createTypeRefFn]
+     * @returns {HTMLElement | null}
+     */
+    function createMethodsList(kind, methods, createTypeRefFn) {
+        if (methods.length === 0) return null;
+
+        return createElement("section", {
+            className: "methods-section jig-card jig-card--item",
+            children: [
+                createElement("h4", {textContent: kind}),
+                ...methods.map(method => createMethodItem(method, createTypeRefFn))
+            ]
+        });
+    }
+
+    function setTypeLinkResolver(resolver) {
+        typeLinkResolver = (typeof resolver === "function") ? resolver : null;
+    }
+
+    function clearTypeLinkResolver() {
+        typeLinkResolver = null;
+    }
+
+    function getTypeLinkResolver() {
+        return typeLinkResolver;
+    }
+
+    return {
+        setTypeLinkResolver,
+        clearTypeLinkResolver,
+        getTypeLinkResolver,
+        createElement,
+        createCell,
+        createElementForTypeRef,
+        downloadCsv,
+        kindBadgeElement,
+        createFieldsList,
+        createMethodItem,
+        createMethodsList,
+    };
+})();
 
 globalThis.Jig.observe.lazyRender = function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
     if (typeof IntersectionObserver === "undefined") {

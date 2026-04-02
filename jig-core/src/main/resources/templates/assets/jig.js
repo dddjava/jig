@@ -18,14 +18,6 @@ window.addEventListener("popstate", function (event) {
     }
 });
 
-/* ===== marked ===== */
-Array.from(document.getElementsByClassName("markdown")).forEach(x => {
-    const source = x.innerHTML != null ? String(x.innerHTML) : "";
-    x.innerHTML = (globalThis.marked && typeof globalThis.marked.parse === "function")
-        ? globalThis.marked.parse(source)
-        : source;
-});
-
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
 globalThis.Jig.mermaid ??= {};
@@ -121,6 +113,21 @@ globalThis.Jig.dom = (() => {
         container.appendChild(trigger);
         container.appendChild(dropdown);
         pageTitleEl.replaceWith(container);
+    }
+
+    function renderMarkdownDescriptions(root = document) {
+        if (!root) return;
+        const elements = root.getElementsByClassName
+            ? Array.from(root.getElementsByClassName("markdown"))
+            : Array.from(root.querySelectorAll?.(".markdown") || []);
+        elements.forEach(node => {
+            node.innerHTML = parseMarkdown(node.innerHTML);
+        });
+    }
+
+    function initCommonUi() {
+        setupHeaderNavigation();
+        renderMarkdownDescriptions(document);
     }
 
     /**
@@ -435,6 +442,8 @@ globalThis.Jig.dom = (() => {
         createElement,
         parseMarkdown,
         setupHeaderNavigation,
+        renderMarkdownDescriptions,
+        initCommonUi,
         createCell,
         createElementForTypeRef,
         downloadCsv,
@@ -452,7 +461,7 @@ globalThis.Jig.dom = (() => {
 
 // ページ読み込み時のイベント
 document.addEventListener("DOMContentLoaded", function () {
-    globalThis.Jig.dom.setupHeaderNavigation();
+    globalThis.Jig.dom.initCommonUi();
 });
 
 // 用語集ユーティリティは jig-common.js に移動

@@ -41,7 +41,31 @@ const IndexApp = (() => {
         });
     }
 
+    function renderDocumentLinks() {
+        const container = document.getElementById("document-links");
+        if (!container) return;
+
+        const ul = container.querySelector("ul");
+        if (!ul) return;
+        ul.innerHTML = "";
+
+        const links = globalThis.navigationData?.links || [];
+        links.forEach(link => {
+            const li = Jig.dom.createElement("li", {
+                children: [
+                    Jig.dom.createElement("a", {
+                        attributes: { href: link.href },
+                        textContent: link.label
+                    })
+                ]
+            });
+            ul.appendChild(li);
+        });
+    }
+
     function init() {
+        renderDocumentLinks();
+
         const packageDiagramContainer = document.getElementById("package-diagram");
         if (!packageDiagramContainer) throw new Error("package-diagram container is not defined");
 

@@ -70,12 +70,8 @@ public class IndexView {
         html.append("\n");
         html.append("<main>\n");
 
-        html.append("    <section>\n");
-        html.append("        <ul>\n");
-        for (JigDocument doc : JigDocument.values()) {
-            appendLinkIfPresent(html, documentLinks, doc);
-        }
-        html.append("        </ul>\n");
+        html.append("    <section id=\"document-links\">\n");
+        html.append("        <ul></ul>\n");
         html.append("    </section>\n");
 
         if (documentLinks.containsKey(JigDocument.PackageRelation)) {
@@ -92,6 +88,7 @@ public class IndexView {
         html.append("    <script src=\"./assets/jig.js\"></script>\n");
         html.append("    <script src=\"./assets/jig-common.js\"></script>\n");
         html.append("    <script src=\"./assets/jig-mermaid-diagram.js\"></script>\n");
+        html.append("    <script src=\"./data/navigation-data.js\"></script>\n");
         html.append("    <script src=\"./data/package-data.js\"></script>\n");
         html.append("    <script src=\"./data/glossary-data.js\"></script>\n");
         html.append("    <script src=\"./assets/index.js\"></script>\n");

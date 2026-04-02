@@ -1,6 +1,6 @@
-const createElement = globalThis.Jig.dom.createElement;
-const createElementForTypeRef = globalThis.Jig.dom.createElementForTypeRef;
-const { getTypeTerm, getMethodTerm, getFieldTerm } = globalThis.Jig.glossary;
+globalThis.Jig ??= {};
+globalThis.Jig.dom ??= {};
+globalThis.Jig.glossary ??= {};
 
 const domainSettings = {
     diagramDirection: 'TB',
@@ -112,7 +112,7 @@ function pkgHasEnum(pkg) {
 function renderPackageNavItem(pkg) {
     // 子が1つだけでタイプを持たないパッケージを統合して表示
     let currentPkg = pkg;
-    const mergedNames = [getTypeTerm(pkg.fqn).title];
+    const mergedNames = [Jig.glossary.getTypeTerm(pkg.fqn).title];
 
     while (true) {
         const childPackages = getDirectChildPackages(currentPkg);
@@ -120,21 +120,21 @@ function renderPackageNavItem(pkg) {
         if (currentPkg.types.length > 0) break;
 
         const childPkg = childPackages[0];
-        mergedNames.push(getTypeTerm(childPkg.fqn).title);
+        mergedNames.push(Jig.glossary.getTypeTerm(childPkg.fqn).title);
         currentPkg = childPkg;
     }
 
-    const summaryLink = createElement("a", {
+    const summaryLink = Jig.dom.createElement("a", {
         attributes: {href: "#" + globalThis.Jig.fqnToId("domain", currentPkg.fqn)},
         textContent: mergedNames.join("/")
     });
-    const details = createElement("details", {
+    const details = Jig.dom.createElement("details", {
         attributes: {
             open: "",
             "data-has-enum-children": pkgHasEnum(currentPkg) ? "true" : "false"
         },
         children: [
-            createElement("summary", {
+            Jig.dom.createElement("summary", {
                 className: "package",
                 children: [summaryLink, document.createTextNode("/")]
             })
@@ -150,12 +150,12 @@ function renderPackageNavItem(pkg) {
     // 子タイプを表示
     currentPkg.types.forEach(child => {
         const domainType = getDomainData()._typesMap?.get(child.fqn);
-        const link = createElement("a", {
+        const link = Jig.dom.createElement("a", {
             attributes: {href: "#" + globalThis.Jig.fqnToId("domain", child.fqn)},
             className: domainType?.isDeprecated ? "deprecated" : "",
-            textContent: getTypeTerm(child.fqn).title
+            textContent: Jig.glossary.getTypeTerm(child.fqn).title
         });
-        details.appendChild(createElement("div", {
+        details.appendChild(Jig.dom.createElement("div", {
             attributes: { "data-has-enum": domainType?.enumInfo ? "true" : "false" },
             children: [link]
         }));
@@ -229,28 +229,28 @@ function createRelatedClassesList(type) {
     const detailsContent = [];
 
     if (outgoingFqns.length > 0) {
-        detailsContent.push(createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
-        detailsContent.push(createElement("ul", {
+        detailsContent.push(Jig.dom.createElement("h4", {textContent: `参照するクラス (${outgoingFqns.length})`}));
+        detailsContent.push(Jig.dom.createElement("ul", {
             children: outgoingFqns.map(fqn =>
-                createElement("li", {children: [createElementForTypeRef({fqn})]})
+                Jig.dom.createElement("li", {children: [Jig.dom.createElementForTypeRef({fqn})]})
             )
         }));
     }
 
     if (incomingFqns.length > 0) {
-        detailsContent.push(createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
-        detailsContent.push(createElement("ul", {
+        detailsContent.push(Jig.dom.createElement("h4", {textContent: `参照されるクラス (${incomingFqns.length})`}));
+        detailsContent.push(Jig.dom.createElement("ul", {
             children: incomingFqns.map(fqn =>
-                createElement("li", {children: [createElementForTypeRef({fqn})]})
+                Jig.dom.createElement("li", {children: [Jig.dom.createElementForTypeRef({fqn})]})
             )
         }));
     }
 
-    return createElement("section", {
+    return Jig.dom.createElement("section", {
         className: "jig-card--item",
-        children: [createElement("details", {
+        children: [Jig.dom.createElement("details", {
             children: [
-                createElement("summary", {textContent: "関連情報"}),
+                Jig.dom.createElement("summary", {textContent: "関連情報"}),
                 ...detailsContent
             ]
         })]
@@ -321,10 +321,10 @@ function createTypeRelationDiagram(type, direction = domainSettings.diagramDirec
     const builder = new globalThis.Jig.mermaid.Builder();
     byPackage.forEach((fqns, pkgFqn) => {
         if (pkgFqn) {
-            const sg = builder.startSubgraph(globalThis.Jig.fqnToId("sg", pkgFqn), getTypeTerm(pkgFqn).title);
-            fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), getTypeTerm(fqn).title));
+            const sg = builder.startSubgraph(globalThis.Jig.fqnToId("sg", pkgFqn), Jig.glossary.getTypeTerm(pkgFqn).title);
+            fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
         } else {
-            fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), getTypeTerm(fqn).title));
+            fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
         }
     });
     involvedFqns.forEach(fqn => builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`));
@@ -417,9 +417,9 @@ function createRelationDiagram(pkg, {showExternalOutgoing = true, showExternalIn
     });
 
     const builder = new globalThis.Jig.mermaid.Builder();
-    const sg = builder.startSubgraph(globalThis.Jig.fqnToId("sg", pkg.fqn), getTypeTerm(pkg.fqn).title, direction);
-    internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), getTypeTerm(fqn).title));
-    externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), getTypeTerm(fqn).title, 'package'));
+    const sg = builder.startSubgraph(globalThis.Jig.fqnToId("sg", pkg.fqn), Jig.glossary.getTypeTerm(pkg.fqn).title, direction);
+    internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
+    externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title, 'package'));
     [...internalFqns, ...externalPkgFqns].forEach(fqn =>
         builder.addClick(fqnToMermaidId(fqn), `#${fqnToHtmlId(fqn)}`)
     );
@@ -470,38 +470,38 @@ function createChildrenTable(pkg) {
         ...childPackages.map(childPkg => ({
             isPackage: true,
             fqn: childPkg.fqn,
-            title: getTypeTerm(childPkg.fqn).title
+            title: Jig.glossary.getTypeTerm(childPkg.fqn).title
         })),
         ...types.map(type => ({
             isPackage: false,
             fqn: type.fqn,
-            title: getTypeTerm(type.fqn).title
+            title: Jig.glossary.getTypeTerm(type.fqn).title
         }))
     ];
 
     if (allChildren.length === 0) return null;
 
-    const tbody = createElement("tbody", {
+    const tbody = Jig.dom.createElement("tbody", {
         children: allChildren.map(child => {
             const prefix = child.isPackage ? "▶︎ " : "";
             // 型の場合は createTypeLink を使用して deprecated 処理を統一
             const link = child.isPackage
-                ? createElement("a", {
+                ? Jig.dom.createElement("a", {
                     attributes: {href: "#" + globalThis.Jig.fqnToId("domain", child.fqn)},
                     textContent: child.title
                 })
-                : createElementForTypeRef({fqn: child.fqn});
-            const cell = createElement("td", {
+                : Jig.dom.createElementForTypeRef({fqn: child.fqn});
+            const cell = Jig.dom.createElement("td", {
                 children: [document.createTextNode(prefix), link]
             });
-            return createElement("tr", {children: [cell]});
+            return Jig.dom.createElement("tr", {children: [cell]});
         })
     });
 
-    return createElement("table", {
+    return Jig.dom.createElement("table", {
         children: [
-            createElement("thead", {
-                children: [createElement("tr", {children: [createElement("th", {textContent: "名前"})]})]
+            Jig.dom.createElement("thead", {
+                children: [Jig.dom.createElement("tr", {children: [Jig.dom.createElement("th", {textContent: "名前"})]})]
             }),
             tbody
         ]
@@ -509,11 +509,11 @@ function createChildrenTable(pkg) {
 }
 
 function createFieldsList(fields) {
-    return globalThis.Jig.dom.createFieldsList(fields, createElementForTypeRef);
+    return globalThis.Jig.dom.createFieldsList(fields, Jig.dom.createElementForTypeRef);
 }
 
 function createMethodsList(kind, methods) {
-    return globalThis.Jig.dom.createMethodsList(kind, methods, createElementForTypeRef);
+    return globalThis.Jig.dom.createMethodsList(kind, methods, Jig.dom.createElementForTypeRef);
 }
 
 /**
@@ -524,50 +524,50 @@ function createEnumSection(type) {
     if (!type.enumInfo) return null;
 
     const constants = type.enumInfo.constants;
-    const dl = createElement("dl", {
+    const dl = Jig.dom.createElement("dl", {
         children: constants.flatMap(constant => {
-            const nodes = [createElement("dt", {textContent: constant.name})];
-            const term = getFieldTerm(`${type.fqn}#${constant.name}`);
+            const nodes = [Jig.dom.createElement("dt", {textContent: constant.name})];
+            const term = Jig.glossary.getFieldTerm(`${type.fqn}#${constant.name}`);
             // 取れたかどうかに関わらず異なる場合のみ出す
             if (term && term.title !== constant.name) {
-                nodes.push(createElement("dd", {textContent: term.title}));
+                nodes.push(Jig.dom.createElement("dd", {textContent: term.title}));
             }
             return nodes;
         })
     });
 
-    const section = createElement("section", {
+    const section = Jig.dom.createElement("section", {
         className: "jig-card jig-card--item",
         children: [
-            createElement("h4", {textContent: "列挙値"}),
+            Jig.dom.createElement("h4", {textContent: "列挙値"}),
             dl
         ]
     });
 
     const parameterNames = type.enumInfo.parameterNames;
     if (parameterNames.length) {
-        const thead = createElement("thead", {
-            children: [createElement("tr", {
+        const thead = Jig.dom.createElement("thead", {
+            children: [Jig.dom.createElement("tr", {
                 children: [
-                    createElement("th", {textContent: "列挙定数名"}),
-                    ...parameterNames.map(name => createElement("th", {textContent: name}))
+                    Jig.dom.createElement("th", {textContent: "列挙定数名"}),
+                    ...parameterNames.map(name => Jig.dom.createElement("th", {textContent: name}))
                 ]
             })]
         });
-        const tbody = createElement("tbody", {
+        const tbody = Jig.dom.createElement("tbody", {
             children:
-                constants.map(constant => createElement("tr", {
+                constants.map(constant => Jig.dom.createElement("tr", {
                     children: [
-                        createElement("td", {className: "method-name", textContent: constant.name}),
-                        ...constant.params.map(param => createElement("td", {textContent: param}))
+                        Jig.dom.createElement("td", {className: "method-name", textContent: constant.name}),
+                        ...constant.params.map(param => Jig.dom.createElement("td", {textContent: param}))
                     ]
                 }))
         });
 
-        section.appendChild(createElement("details", {
+        section.appendChild(Jig.dom.createElement("details", {
             children: [
-                createElement("summary", {textContent: "列挙引数"}),
-                createElement("table", {className: "fields", children: [thead, tbody]})
+                Jig.dom.createElement("summary", {textContent: "列挙引数"}),
+                Jig.dom.createElement("table", {className: "fields", children: [thead, tbody]})
             ]
         }));
     }
@@ -604,24 +604,24 @@ function renderPackages(packages, container) {
     const allPackageRelations = derivePackageRelations();
 
     packages.forEach(pkg => {
-        const section = createElement("section", {
+        const section = Jig.dom.createElement("section", {
             className: "jig-card jig-card--type",
             id: globalThis.Jig.fqnToId("domain", pkg.fqn),
             attributes: { "data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false" },
             children: [
-                createElement("h3", {
-                    children: [globalThis.Jig.dom.kindBadgeElement("パッケージ"), document.createTextNode(getTypeTerm(pkg.fqn).title)]
+                Jig.dom.createElement("h3", {
+                    children: [globalThis.Jig.dom.kindBadgeElement("パッケージ"), document.createTextNode(Jig.glossary.getTypeTerm(pkg.fqn).title)]
                 }),
-                createElement("div", {
+                Jig.dom.createElement("div", {
                     className: "fully-qualified-name",
                     textContent: pkg.fqn
                 })
             ]
         });
 
-        const pkgDescription = getTypeTerm(pkg.fqn).description;
+        const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
         if (pkgDescription) {
-            section.appendChild(createElement("section", {
+            section.appendChild(Jig.dom.createElement("section", {
                 className: "markdown",
                 innerHTML: globalThis.Jig.dom.parseMarkdown(pkgDescription)
             }));
@@ -643,13 +643,13 @@ function renderPackages(packages, container) {
         ].filter(Boolean);
 
         if (tabDefs.length > 0) {
-            const tabsBar = createElement("div", {className: "diagram-tabs"});
+            const tabsBar = Jig.dom.createElement("div", {className: "diagram-tabs"});
             const panels = {};
             tabDefs.forEach((tab, i) => {
-                panels[tab.id] = createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
+                panels[tab.id] = Jig.dom.createElement("div", {className: "diagram-panel" + (i > 0 ? " hidden" : "")});
             });
             tabDefs.forEach((tab, i) => {
-                const btn = createElement("button", {
+                const btn = Jig.dom.createElement("button", {
                     className: "diagram-tab" + (i === 0 ? " active" : ""),
                     textContent: tab.label,
                 });
@@ -662,13 +662,13 @@ function renderPackages(packages, container) {
                 tabsBar.appendChild(btn);
             });
 
-            section.appendChild(createElement("section", {
+            section.appendChild(Jig.dom.createElement("section", {
                 className: "jig-card--item domain-diagrams-section",
                 children: [tabsBar, ...Object.values(panels)],
             }));
 
             if (panels['direct']) {
-                const c = createElement("div", {className: "mermaid-diagram"});
+                const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 panels['direct'].appendChild(c);
                 diagramRegistry.push({container: c, pkg, diagramType: 'packageDirect'});
                 globalThis.Jig.dom.lazyRender(c, () => {
@@ -679,7 +679,7 @@ function renderPackages(packages, container) {
                 });
             }
             if (panels['inner-pkg']) {
-                const c = createElement("div", {className: "mermaid-diagram"});
+                const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 panels['inner-pkg'].appendChild(c);
                 diagramRegistry.push({container: c, pkg, diagramType: 'package'});
                 globalThis.Jig.dom.lazyRender(c, () => {
@@ -690,23 +690,23 @@ function renderPackages(packages, container) {
                 });
             }
             if (panels['inner-class']) {
-                const outgoingCheckbox = createElement("input", {
+                const outgoingCheckbox = Jig.dom.createElement("input", {
                     attributes: {type: "checkbox", class: "class-relation-external-outgoing"}
                 });
                 outgoingCheckbox.checked = true;
-                const incomingCheckbox = createElement("input", {
+                const incomingCheckbox = Jig.dom.createElement("input", {
                     attributes: {type: "checkbox", class: "class-relation-external-incoming"}
                 });
                 incomingCheckbox.checked = true;
-                panels['inner-class'].appendChild(createElement("div", {
+                panels['inner-class'].appendChild(Jig.dom.createElement("div", {
                     className: "diagram-panel-options",
                     children: [
-                        createElement("label", {className: "diagram-panel-option", children: [outgoingCheckbox, document.createTextNode("関連先")]}),
-                        createElement("label", {className: "diagram-panel-option", children: [incomingCheckbox, document.createTextNode("関連元")]}),
+                        Jig.dom.createElement("label", {className: "diagram-panel-option", children: [outgoingCheckbox, document.createTextNode("関連先")]}),
+                        Jig.dom.createElement("label", {className: "diagram-panel-option", children: [incomingCheckbox, document.createTextNode("関連元")]}),
                     ]
                 }));
 
-                const c = createElement("div", {className: "mermaid-diagram"});
+                const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 panels['inner-class'].appendChild(c);
                 diagramRegistry.push({container: c, pkg, diagramType: 'type'});
 
@@ -741,16 +741,16 @@ function renderTypes(types, container) {
     if (types.length === 0) return;
 
     types.forEach(type => {
-        const titleSpan = createElement("span", {
-            textContent: getTypeTerm(type.fqn).title,
+        const titleSpan = Jig.dom.createElement("span", {
+            textContent: Jig.glossary.getTypeTerm(type.fqn).title,
             className: type.isDeprecated ? "deprecated" : ""
         });
 
         const lastDot = type.fqn.lastIndexOf('.');
         const packageFqn = lastDot > 0 ? type.fqn.substring(0, lastDot) : null;
-        const fqnDiv = createElement("div", {className: "fully-qualified-name"});
+        const fqnDiv = Jig.dom.createElement("div", {className: "fully-qualified-name"});
         if (packageFqn) {
-            fqnDiv.appendChild(createElement("a", {
+            fqnDiv.appendChild(Jig.dom.createElement("a", {
                 textContent: packageFqn,
                 attributes: { href: "#" + globalThis.Jig.fqnToId("domain", packageFqn) }
             }));
@@ -759,19 +759,19 @@ function renderTypes(types, container) {
             fqnDiv.textContent = type.fqn;
         }
 
-        const section = createElement("section", {
+        const section = Jig.dom.createElement("section", {
             className: "jig-card jig-card--type",
             id: globalThis.Jig.fqnToId("domain", type.fqn),
             attributes: { "data-has-enum": type.enumInfo ? "true" : "false" },
             children: [
-                createElement("h3", {children: [globalThis.Jig.dom.kindBadgeElement("クラス"), titleSpan]}),
+                Jig.dom.createElement("h3", {children: [globalThis.Jig.dom.kindBadgeElement("クラス"), titleSpan]}),
                 fqnDiv
             ]
         });
 
-        const typeDescription = getTypeTerm(type.fqn).description;
+        const typeDescription = Jig.glossary.getTypeTerm(type.fqn).description;
         if (typeDescription) {
-            section.appendChild(createElement("section", {
+            section.appendChild(Jig.dom.createElement("section", {
                 className: "markdown",
                 innerHTML: globalThis.Jig.dom.parseMarkdown(typeDescription)
             }));
@@ -790,7 +790,7 @@ function renderTypes(types, container) {
         const staticList = createMethodsList("staticメソッド", type.staticMethods);
         if (staticList) section.appendChild(staticList);
 
-        const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+        const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         section.appendChild(mmdContainer);
         diagramRegistry.push({container: mmdContainer, type, diagramType: 'classDirect'});
         globalThis.Jig.dom.lazyRender(mmdContainer, () => {
@@ -799,7 +799,7 @@ function renderTypes(types, container) {
             const diagramGenerator = (dir) => createTypeRelationDiagram(type, dir);
             if (diagramGenerator(domainSettings.diagramDirection)) {
                 globalThis.Jig.mermaid.renderWithControls(mmdContainer, diagramGenerator, {direction: domainSettings.diagramDirection});
-                section.insertBefore(createElement("h4", {textContent: "クラス関連図", className: "diagram-heading"}), mmdContainer);
+                section.insertBefore(Jig.dom.createElement("h4", {textContent: "クラス関連図", className: "diagram-heading"}), mmdContainer);
             }
         });
 
@@ -1015,7 +1015,7 @@ const DomainApp = {
         if (!data) {
             const main = document.getElementById("domain-main");
             if (main) {
-                main.appendChild(createElement("p", {
+                main.appendChild(Jig.dom.createElement("p", {
                     className: "jig-data-error",
                     textContent: "ドメインデータ（domain-data.js）が読み込まれていません。JIG を実行してデータファイルを生成してください。"
                 }));
@@ -1074,7 +1074,7 @@ const DomainApp = {
 
         if (warnings.length > 0) {
             warnings.forEach(warning => {
-                main.appendChild(createElement("p", {
+                main.appendChild(Jig.dom.createElement("p", {
                     className: "jig-data-warning",
                     textContent: warning + "。一部の情報が表示されない可能性があります。"
                 }));

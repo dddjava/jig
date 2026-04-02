@@ -11,43 +11,42 @@
  * @property {string} domainPackageRoots
  */
 
-/**
- * @type {PackageData}
- */
-function getPackageData() {
-    return globalThis.packageData;
-}
+const IndexApp = (() => {
+    /**
+     * @type {PackageData}
+     */
+    function getPackageData() {
+        return globalThis.packageData;
+    }
 
-function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
-    const createElement = globalThis.Jig.dom.createElement;
-    const domainPackageDiagram = createElement("div", {className: "mermaid-diagram"});
-    packageDiagramContainer.appendChild(domainPackageDiagram);
-    globalThis.Jig.observe.lazyRender(domainPackageDiagram, () => {
-        domainPackageDiagram.innerHTML = "";
-        console.log("Rendering package diagram for " + packageRoot);
-        const pkgDiagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
-            {fqn: packageRoot},
-            allPackages, allPackageRelations,
-            {
-                transitiveReductionEnabled: true,
-                diagramDirection: "TB"
+    function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
+        const createElement = globalThis.Jig.dom.createElement;
+        const domainPackageDiagram = createElement("div", { className: "mermaid-diagram" });
+        packageDiagramContainer.appendChild(domainPackageDiagram);
+        globalThis.Jig.observe.lazyRender(domainPackageDiagram, () => {
+            domainPackageDiagram.innerHTML = "";
+            console.log("Rendering package diagram for " + packageRoot);
+            const pkgDiagram = globalThis.Jig.packageDiagram.createPackageLevelDiagram(
+                { fqn: packageRoot },
+                allPackages, allPackageRelations,
+                {
+                    transitiveReductionEnabled: true,
+                    diagramDirection: "TB"
+                }
+            );
+            if (pkgDiagram) {
+                // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
+                packageDiagramContainer.insertBefore(createElement("h3", { textContent: titleLabel }), domainPackageDiagram);
+                globalThis.Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
             }
-        );
-        if (pkgDiagram) {
-            // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-            packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
-            globalThis.Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
-        }
-    });
-}
+        });
+    }
 
-const IndexApp = {
-
-    init() {
+    function init() {
         const packageDiagramContainer = document.getElementById("package-diagram");
         if (!packageDiagramContainer) throw new Error("package-diagram container is not defined");
 
-        const packageData = getPackageData()
+        const packageData = getPackageData();
         const allPackages = packageData.packages;
         const allPackageRelations = packageData.relations;
 
@@ -58,9 +57,9 @@ const IndexApp = {
                 packageRoot,
                 "ドメインパッケージ: " + packageRoot
             );
-        })
+        });
 
-        const commonRoot = globalThis.Jig.packageDiagram.getCommonPrefix(allPackages.map(pkg => pkg.fqn))
+        const commonRoot = globalThis.Jig.packageDiagram.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
         renderPackageDiagram(
             packageDiagramContainer,
             allPackages, allPackageRelations,
@@ -68,11 +67,16 @@ const IndexApp = {
             "最上位パッケージ: " + commonRoot
         );
     }
-}
+
+    return {
+        init,
+        getPackageData,
+        renderPackageDiagram,
+    };
+})();
 
 if (typeof document !== 'undefined') {
     document.addEventListener("DOMContentLoaded", () => {
         IndexApp.init();
     });
 }
-

@@ -18,72 +18,13 @@ window.addEventListener("popstate", function (event) {
     }
 });
 
-function normalizeNavigationHref(href) {
-    return String(href || "").replace(/^\.\//, "");
-}
-
-function setupHeaderNavigation() {
-    if (document.body.classList.contains("index")) return;
-
-    const navigationData = globalThis.navigationData;
-    if (!navigationData || !Array.isArray(navigationData.links) || navigationData.links.length === 0) return;
-
-    const header = document.querySelector("header.top") || document.querySelector("header");
-    if (!header) return;
-    if (header.querySelector(".jig-header-nav")) return;
-
-    const pageTitleEl = header.querySelector(".jig-page-title");
-    if (!pageTitleEl) return;
-
-    const currentFileName = (location.pathname.split("/").pop() || "");
-    const normalizedCurrent = normalizeNavigationHref(currentFileName);
-
-    const container = document.createElement("div");
-    container.className = "jig-header-nav";
-
-    const trigger = document.createElement("span");
-    trigger.className = "jig-header-nav__trigger";
-    trigger.textContent = pageTitleEl.textContent;
-
-    const dropdown = document.createElement("ul");
-    dropdown.className = "jig-header-nav__dropdown";
-    dropdown.setAttribute("role", "list");
-
-    navigationData.links.forEach(link => {
-        if (!link) return;
-        const href = normalizeNavigationHref(link.href);
-        const label = link.label != null ? String(link.label) : href;
-        if (!href) return;
-
-        const isCurrent = (href === normalizedCurrent);
-        const li = document.createElement("li");
-        li.className = "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : "");
-
-        if (isCurrent) {
-            const span = document.createElement("span");
-            span.textContent = label;
-            li.appendChild(span);
-        } else {
-            const a = document.createElement("a");
-            a.href = href;
-            a.textContent = label;
-            li.appendChild(a);
-        }
-        dropdown.appendChild(li);
-    });
-
-    container.appendChild(trigger);
-    container.appendChild(dropdown);
-    pageTitleEl.replaceWith(container);
-}
-
-// ページ読み込み時のイベント
-document.addEventListener("DOMContentLoaded", function () {
-    setupHeaderNavigation();
-});
-
 /* ===== marked ===== */
-Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = globalThis.Jig.dom.parseMarkdown(x.innerHTML))
+Array.from(document.getElementsByClassName("markdown")).forEach(x => {
+    const source = x.innerHTML != null ? String(x.innerHTML) : "";
+    x.innerHTML = (globalThis.marked && typeof globalThis.marked.parse === "function")
+        ? globalThis.marked.parse(source)
+        : source;
+});
 
 /* ===== 共通ユーティリティ (Jig.*) ===== */
 
@@ -121,6 +62,65 @@ globalThis.Jig.dom = (() => {
             return globalThis.marked.parse(source);
         }
         return source;
+    }
+
+    function normalizeNavigationHref(href) {
+        return String(href || "").replace(/^\.\//, "");
+    }
+
+    function setupHeaderNavigation() {
+        if (document.body.classList.contains("index")) return;
+
+        const navigationData = globalThis.navigationData;
+        if (!navigationData || !Array.isArray(navigationData.links) || navigationData.links.length === 0) return;
+
+        const header = document.querySelector("header.top") || document.querySelector("header");
+        if (!header) return;
+        if (header.querySelector(".jig-header-nav")) return;
+
+        const pageTitleEl = header.querySelector(".jig-page-title");
+        if (!pageTitleEl) return;
+
+        const currentFileName = (location.pathname.split("/").pop() || "");
+        const normalizedCurrent = normalizeNavigationHref(currentFileName);
+
+        const container = document.createElement("div");
+        container.className = "jig-header-nav";
+
+        const trigger = document.createElement("span");
+        trigger.className = "jig-header-nav__trigger";
+        trigger.textContent = pageTitleEl.textContent;
+
+        const dropdown = document.createElement("ul");
+        dropdown.className = "jig-header-nav__dropdown";
+        dropdown.setAttribute("role", "list");
+
+        navigationData.links.forEach(link => {
+            if (!link) return;
+            const href = normalizeNavigationHref(link.href);
+            const label = link.label != null ? String(link.label) : href;
+            if (!href) return;
+
+            const isCurrent = (href === normalizedCurrent);
+            const li = document.createElement("li");
+            li.className = "jig-header-nav__item" + (isCurrent ? " jig-header-nav__item--current" : "");
+
+            if (isCurrent) {
+                const span = document.createElement("span");
+                span.textContent = label;
+                li.appendChild(span);
+            } else {
+                const a = document.createElement("a");
+                a.href = href;
+                a.textContent = label;
+                li.appendChild(a);
+            }
+            dropdown.appendChild(li);
+        });
+
+        container.appendChild(trigger);
+        container.appendChild(dropdown);
+        pageTitleEl.replaceWith(container);
     }
 
     /**
@@ -434,6 +434,7 @@ globalThis.Jig.dom = (() => {
         getTypeLinkResolver,
         createElement,
         parseMarkdown,
+        setupHeaderNavigation,
         createCell,
         createElementForTypeRef,
         downloadCsv,
@@ -448,6 +449,11 @@ globalThis.Jig.dom = (() => {
         renderSection,
     };
 })();
+
+// ページ読み込み時のイベント
+document.addEventListener("DOMContentLoaded", function () {
+    globalThis.Jig.dom.setupHeaderNavigation();
+});
 
 // 用語集ユーティリティは jig-common.js に移動
 globalThis.Jig.glossary ??= {};

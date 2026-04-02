@@ -5,7 +5,6 @@ const { getTypeTerm, getMethodTerm, getFieldTerm } = globalThis.Jig.glossary;
 const domainSettings = {
     diagramDirection: 'TB',
     showDiagrams: true,
-    showExternalRelations: true,
     showDeprecatedNodes: true,
     showFields: true,
     showMethods: true,
@@ -343,7 +342,7 @@ function createTypeRelationDiagram(type, direction = domainSettings.diagramDirec
  * @param {PackageType} pkg
  * @returns {string | null}
  */
-function createRelationDiagram(pkg, {showExternalOutgoing = domainSettings.showExternalRelations, showExternalIncoming = domainSettings.showExternalRelations, direction = domainSettings.diagramDirection} = {}) {
+function createRelationDiagram(pkg, {showExternalOutgoing = true, showExternalIncoming = true, direction = domainSettings.diagramDirection} = {}) {
     const fqnToMermaidId = (fqn) => globalThis.Jig.fqnToId("n", fqn);
     const fqnToHtmlId = (fqn) => globalThis.Jig.fqnToId("domain", fqn);
 
@@ -857,8 +856,8 @@ function rerenderDiagrams() {
                 const panel = container.closest('.diagram-panel');
                 const outgoing = panel?.querySelector('.class-relation-external-outgoing');
                 const incoming = panel?.querySelector('.class-relation-external-incoming');
-                const showExternalOutgoing = outgoing ? outgoing.checked : domainSettings.showExternalRelations;
-                const showExternalIncoming = incoming ? incoming.checked : domainSettings.showExternalRelations;
+                const showExternalOutgoing = outgoing ? outgoing.checked : true;
+                const showExternalIncoming = incoming ? incoming.checked : true;
                 const generator = (dir) => createRelationDiagram(pkg, {showExternalOutgoing, showExternalIncoming, direction: dir});
                 if (generator(domainSettings.diagramDirection)) {
                     globalThis.Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
@@ -876,14 +875,6 @@ function initSettings() {
         directionToggle.addEventListener('click', () => {
             domainSettings.diagramDirection = domainSettings.diagramDirection === 'TB' ? 'LR' : 'TB';
             updateDirectionIcon();
-            rerenderDiagrams();
-        });
-    }
-
-    const externalCheckbox = document.getElementById('show-external-relations');
-    if (externalCheckbox) {
-        externalCheckbox.addEventListener('change', () => {
-            domainSettings.showExternalRelations = externalCheckbox.checked;
             rerenderDiagrams();
         });
     }

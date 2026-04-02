@@ -450,6 +450,19 @@ globalThis.Jig.dom.createElement = function createElement(tagName, options = {})
     return element;
 };
 
+/**
+ * テキストとクラス名を指定してtd要素を作成する
+ * @param {string} text
+ * @param {string} [className]
+ * @returns {HTMLElement}
+ */
+globalThis.Jig.dom.createCell = function createCell(text, className) {
+    return globalThis.Jig.dom.createElement("td", {
+        className: className || undefined,
+        textContent: text
+    });
+};
+
 
 /**
  * TypeRefを表現する要素を返す。

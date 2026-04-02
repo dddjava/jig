@@ -103,6 +103,14 @@ function setupJig() {
         }
         return element;
     };
+
+    global.Jig.dom.createCell = function createCell(text, className) {
+        const cell = global.Jig.dom.createElement('td', {
+            className: className,
+            textContent: text
+        });
+        return cell;
+    };
 }
 
 test.describe('list-output.js', () => {

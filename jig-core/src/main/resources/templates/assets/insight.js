@@ -14,13 +14,6 @@ const InsightApp = (() => {
         }
     }
 
-    function createCell(text, className) {
-        return Jig.dom.createElement("td", {
-            className: className || undefined,
-            textContent: text
-        });
-    }
-
     function createZoomCell() {
         return Jig.dom.createElement("td", {
             children: [
@@ -40,14 +33,14 @@ const InsightApp = (() => {
         packages.forEach(packageInsight => {
             const row = Jig.dom.createElement("tr");
             row.dataset.fqn = packageInsight.fqn;
-            row.appendChild(this.createZoomCell());
-            row.appendChild(this.createCell(packageInsight.fqn, "fqn"));
-            row.appendChild(this.createCell(packageInsight.label));
-            row.appendChild(this.createCell(packageInsight.numberOfTypes.toString(), "number"));
-            row.appendChild(this.createCell(packageInsight.numberOfMethods.toString(), "number"));
-            row.appendChild(this.createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
-            row.appendChild(this.createCell(packageInsight.cyclomaticComplexity.toString(), "number"));
-            row.appendChild(this.createCell(packageInsight.size.toString(), "number"));
+            row.appendChild(createZoomCell());
+            row.appendChild(Jig.dom.createCell(packageInsight.fqn, "fqn"));
+            row.appendChild(Jig.dom.createCell(packageInsight.label));
+            row.appendChild(Jig.dom.createCell(packageInsight.numberOfTypes.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.numberOfMethods.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.cyclomaticComplexity.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(packageInsight.size.toString(), "number"));
             tbody.appendChild(row);
         });
     }
@@ -61,16 +54,16 @@ const InsightApp = (() => {
             const row = Jig.dom.createElement("tr");
             row.dataset.fqn = typeInsight.fqn;
             row.dataset.packageFqn = typeInsight.packageFqn;
-            row.appendChild(this.createZoomCell());
-            row.appendChild(this.createCell(typeInsight.fqn, "fqn"));
-            row.appendChild(this.createCell(typeInsight.label));
-            row.appendChild(this.createCell(typeInsight.numberOfMethods.toString(), "number"));
-            row.appendChild(this.createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
-            row.appendChild(this.createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
-            row.appendChild(this.createCell(typeInsight.instability.toFixed(2), "number"));
-            row.appendChild(this.createCell(typeInsight.lcom.toFixed(2), "number"));
-            row.appendChild(this.createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
-            row.appendChild(this.createCell(typeInsight.size.toString(), "number"));
+            row.appendChild(createZoomCell());
+            row.appendChild(Jig.dom.createCell(typeInsight.fqn, "fqn"));
+            row.appendChild(Jig.dom.createCell(typeInsight.label));
+            row.appendChild(Jig.dom.createCell(typeInsight.numberOfMethods.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.instability.toFixed(2), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.lcom.toFixed(2), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.cyclomaticComplexity.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(typeInsight.size.toString(), "number"));
             tbody.appendChild(row);
         });
     }
@@ -85,16 +78,16 @@ const InsightApp = (() => {
             row.dataset.fqn = methodInsight.fqn;
             row.dataset.packageFqn = methodInsight.packageFqn;
             row.dataset.typeFqn = methodInsight.typeFqn;
-            row.appendChild(this.createZoomCell());
-            row.appendChild(this.createCell(methodInsight.fqn, "fqn"));
-            row.appendChild(this.createCell(methodInsight.label));
-            row.appendChild(this.createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
-            row.appendChild(this.createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
-            row.appendChild(this.createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
-            row.appendChild(this.createCell(methodInsight.numberOfUsingFields.toString(), "number"));
-            row.appendChild(this.createCell(methodInsight.numberOfUsingOwnFields.toString(), "number"));
-            row.appendChild(this.createCell(methodInsight.numberOfUsingOwnMethods.toString(), "number"));
-            row.appendChild(this.createCell(methodInsight.size.toString(), "number"));
+            row.appendChild(createZoomCell());
+            row.appendChild(Jig.dom.createCell(methodInsight.fqn, "fqn"));
+            row.appendChild(Jig.dom.createCell(methodInsight.label));
+            row.appendChild(Jig.dom.createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingMethods.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingFields.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingOwnFields.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingOwnMethods.toString(), "number"));
+            row.appendChild(Jig.dom.createCell(methodInsight.size.toString(), "number"));
             tbody.appendChild(row);
         });
     }
@@ -114,12 +107,12 @@ const InsightApp = (() => {
 
                 // クリックされた行以外を非表示にする
                 allRows.forEach(r => {
-                    if (r !== row && !this.fqnStartsWith(fqn, r)) {
+                    if (r !== row && !fqnStartsWith(fqn, r)) {
                         r.classList.add("hidden-by-zoom");
                     }
                 });
 
-                this.zoomFamilyTables(table, row);
+                zoomFamilyTables(table, row);
                 // ズーム解除ボタンを表示
                 document.getElementById("cancel-zoom").classList.remove("hidden");
             });
@@ -172,7 +165,7 @@ const InsightApp = (() => {
                 }
             }
             allRows.forEach(r => {
-                if (!this.fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
+                if (!fqnStartsWith(prefix, r)) r.classList.add("hidden-by-zoom");
             });
         })
     }
@@ -182,26 +175,25 @@ const InsightApp = (() => {
             return;
         }
 
-        const insightData = this.parseInsightData();
+        const insightData = parseInsightData();
         if (insightData) {
-            this.renderPackageInsights(insightData.packages || []);
-            this.renderTypeInsights(insightData.types || []);
-            this.renderMethodInsights(insightData.methods || []);
-            this.setInsightCount("package-count", (insightData.packages || []).length);
-            this.setInsightCount("type-count", (insightData.types || []).length);
-            this.setInsightCount("method-count", (insightData.methods || []).length);
+            renderPackageInsights(insightData.packages || []);
+            renderTypeInsights(insightData.types || []);
+            renderMethodInsights(insightData.methods || []);
+            setInsightCount("package-count", (insightData.packages || []).length);
+            setInsightCount("type-count", (insightData.types || []).length);
+            setInsightCount("method-count", (insightData.methods || []).length);
         }
 
         globalThis.setupSortableTables?.();
-        this.setupZoomIcons();
-        document.getElementById("cancel-zoom")?.addEventListener("click", (e) => this.cancelZoom(e));
+        setupZoomIcons();
+        document.getElementById("cancel-zoom")?.addEventListener("click", (e) => cancelZoom(e));
     }
 
     return {
         init,
         parseInsightData,
         setInsightCount,
-        createCell,
         createZoomCell,
         renderPackageInsights,
         renderTypeInsights,

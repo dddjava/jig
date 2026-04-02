@@ -51,7 +51,7 @@ function setupJig() {
 
     // Jig.dom.createElementはdocument.createElementを使用する
     global.Jig.dom.createElement = function createElement(tagName, options = {}) {
-        const element = document.createElement(tagName);
+        const element = global.document.createElement(tagName);
         if (options.className) element.className = options.className;
         if (options.textContent != null) element.textContent = options.textContent;
         if (options.children) {
@@ -60,6 +60,14 @@ function setupJig() {
             });
         }
         return element;
+    };
+
+    global.Jig.dom.createCell = function createCell(text, className) {
+        const cell = global.Jig.dom.createElement('td', {
+            className: className,
+            textContent: text
+        });
+        return cell;
     };
 }
 
@@ -128,7 +136,7 @@ test.describe('insight.js', () => {
             setupDocument();
             setupJig();
 
-            const cell = insight.createCell('Hello', 'number');
+            const cell = Jig.dom.createCell('Hello', 'number');
 
 
 

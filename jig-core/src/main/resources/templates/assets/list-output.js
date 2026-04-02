@@ -364,24 +364,14 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                item.methodSignature,
-                item.returnType,
-                getTypeLabel(item),
-                formatFieldTypes(item.usingFieldTypes),
-                item.cyclomaticComplexity,
-                item.path,
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if (index === 6) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(item.methodSignature));
+            row.appendChild(Jig.dom.createCell(item.returnType));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingFieldTypes)));
+            row.appendChild(Jig.dom.createCell(item.cyclomaticComplexity, "number"));
+            row.appendChild(Jig.dom.createCell(item.path));
             fragment.appendChild(row);
         });
 
@@ -396,31 +386,21 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                item.methodSignature,
-                item.returnType,
-                markIfTrue(item.eventHandler),
-                getTypeLabel(item),
-                getMethodLabel(item),
-                getReturnTypeLabel(item),
-                formatFieldTypes(getParameterTypeLabels(item)),
-                formatFieldTypes(item.usingFieldTypes),
-                item.cyclomaticComplexity,
-                formatFieldTypes(item.usingServiceMethods),
-                formatFieldTypes(item.usingRepositoryMethods),
-                markIfTrue(item.useNull),
-                markIfTrue(item.useStream),
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if (index === 10) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(item.methodSignature));
+            row.appendChild(Jig.dom.createCell(item.returnType));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.eventHandler)));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(getMethodLabel(item)));
+            row.appendChild(Jig.dom.createCell(getReturnTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(getParameterTypeLabels(item))));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingFieldTypes)));
+            row.appendChild(Jig.dom.createCell(item.cyclomaticComplexity, "number"));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingServiceMethods)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.usingRepositoryMethods)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.useNull)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.useStream)));
             fragment.appendChild(row);
         });
 
@@ -435,30 +415,20 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                item.methodSignature,
-                item.returnType,
-                getTypeLabel(item),
-                getReturnTypeLabel(item),
-                formatFieldTypes(getParameterTypeLabels(item)),
-                item.cyclomaticComplexity,
-                formatFieldTypes(item.insertTables),
-                formatFieldTypes(item.selectTables),
-                formatFieldTypes(item.updateTables),
-                formatFieldTypes(item.deleteTables),
-                item.callerTypeCount,
-                item.callerMethodCount,
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if ([7, 12, 13].includes(index)) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(item.methodSignature));
+            row.appendChild(Jig.dom.createCell(item.returnType));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(getReturnTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(getParameterTypeLabels(item))));
+            row.appendChild(Jig.dom.createCell(item.cyclomaticComplexity, "number"));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.insertTables)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.selectTables)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.updateTables)));
+            row.appendChild(Jig.dom.createCell(formatFieldTypes(item.deleteTables)));
+            row.appendChild(Jig.dom.createCell(item.callerTypeCount, "number"));
+            row.appendChild(Jig.dom.createCell(item.callerMethodCount, "number"));
             fragment.appendChild(row);
         });
 
@@ -473,19 +443,9 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                getPackageLabel(item),
-                item.classCount,
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if (index === 2) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(getPackageLabel(item)));
+            row.appendChild(Jig.dom.createCell(item.classCount, "number"));
             fragment.appendChild(row);
         });
 
@@ -500,26 +460,16 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                getTypeLabel(item),
-                item.businessRuleKind,
-                item.incomingBusinessRuleCount,
-                item.outgoingBusinessRuleCount,
-                item.incomingClassCount,
-                markIfTrue(item.nonPublic),
-                markIfTrue(item.samePackageOnly),
-                item.incomingClassList,
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if ([4, 5, 6].includes(index)) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(item.businessRuleKind));
+            row.appendChild(Jig.dom.createCell(item.incomingBusinessRuleCount, "number"));
+            row.appendChild(Jig.dom.createCell(item.outgoingBusinessRuleCount, "number"));
+            row.appendChild(Jig.dom.createCell(item.incomingClassCount, "number"));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.nonPublic)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.samePackageOnly)));
+            row.appendChild(Jig.dom.createCell(item.incomingClassList));
             fragment.appendChild(row);
         });
 
@@ -534,26 +484,16 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                getTypeLabel(item),
-                item.constants,
-                item.fields,
-                item.usageCount,
-                item.usagePlaces,
-                markIfTrue(item.hasParameters),
-                markIfTrue(item.hasBehavior),
-                markIfTrue(item.isPolymorphic),
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if (index === 5) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(item.constants));
+            row.appendChild(Jig.dom.createCell(item.fields));
+            row.appendChild(Jig.dom.createCell(item.usageCount, "number"));
+            row.appendChild(Jig.dom.createCell(item.usagePlaces));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.hasParameters)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.hasBehavior)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.isPolymorphic)));
             fragment.appendChild(row);
         });
 
@@ -568,24 +508,14 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                getTypeLabel(item),
-                item.fieldTypes,
-                item.usageCount,
-                item.usagePlaces,
-                item.methodCount,
-                item.methods,
-            ];
-            values.forEach((value, index) => {
-                const cell = Jig.dom.createElement("td");
-                if ([4, 6].includes(index)) {
-                    cell.className = "number";
-                }
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(item.fieldTypes));
+            row.appendChild(Jig.dom.createCell(item.usageCount, "number"));
+            row.appendChild(Jig.dom.createCell(item.usagePlaces));
+            row.appendChild(Jig.dom.createCell(item.methodCount, "number"));
+            row.appendChild(Jig.dom.createCell(item.methods));
             fragment.appendChild(row);
         });
 
@@ -600,20 +530,13 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                getTypeLabel(item),
-                item.memberName,
-                item.memberType,
-                item.annotationType,
-                item.annotationDescription,
-            ];
-            values.forEach(value => {
-                const cell = Jig.dom.createElement("td");
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(item.memberName));
+            row.appendChild(Jig.dom.createCell(item.memberType));
+            row.appendChild(Jig.dom.createCell(item.annotationType));
+            row.appendChild(Jig.dom.createCell(item.annotationDescription));
             fragment.appendChild(row);
         });
 
@@ -628,24 +551,17 @@ const ListOutput = (() => {
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
             const row = Jig.dom.createElement("tr");
-            const values = [
-                item.packageName,
-                item.typeName,
-                item.methodSignature,
-                item.returnType,
-                getTypeLabel(item),
-                markIfTrue(item.notUseMember),
-                markIfTrue(item.primitiveInterface),
-                markIfTrue(item.referenceNull),
-                markIfTrue(item.nullDecision),
-                markIfTrue(item.returnsBoolean),
-                markIfTrue(item.returnsVoid),
-            ];
-            values.forEach(value => {
-                const cell = Jig.dom.createElement("td");
-                cell.textContent = value ?? "";
-                row.appendChild(cell);
-            });
+            row.appendChild(Jig.dom.createCell(item.packageName));
+            row.appendChild(Jig.dom.createCell(item.typeName));
+            row.appendChild(Jig.dom.createCell(item.methodSignature));
+            row.appendChild(Jig.dom.createCell(item.returnType));
+            row.appendChild(Jig.dom.createCell(getTypeLabel(item)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.notUseMember)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.primitiveInterface)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.referenceNull)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.nullDecision)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.returnsBoolean)));
+            row.appendChild(Jig.dom.createCell(markIfTrue(item.returnsVoid)));
             fragment.appendChild(row);
         });
 

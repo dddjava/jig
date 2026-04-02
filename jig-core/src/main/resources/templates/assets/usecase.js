@@ -148,6 +148,20 @@ function isUsecase(method) {
  * @param {OutboundData} outboundData
  * @returns {Set<string>}
  */
+/**
+ * inboundクラスから直接呼び出されているメソッドのFQN集合を返す
+ * @returns {Set<string>}
+ */
+function buildHandlerFqns() {
+    const fqns = new Set();
+    (globalThis.inboundData?.controllers || []).forEach(controller => {
+        (controller.relations || []).forEach(relation => {
+            if (relation?.to) fqns.add(relation.to);
+        });
+    });
+    return fqns;
+}
+
 function buildOutboundOperationSet(outboundData) {
     if (!outboundData?.outboundPorts) return new Set();
     const set = new Set();
@@ -594,7 +608,8 @@ function buildSequenceDiagramCode(sequence) {
 const UsecaseApp = {
     state: {
         data: null,
-        selectedTabs: new Map() // methodFqn -> 'usecase' | 'sequence'
+        selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
+        handlerFqns: null        // ハンドラのみ表示時のFQN集合、nullはすべて表示
     },
 
     /**
@@ -657,6 +672,12 @@ const UsecaseApp = {
             checkbox.addEventListener('change', update);
             update();
         });
+
+        // 表示対象ラジオボタン
+        ['display-target-all', 'display-target-handlers-only'].forEach(id => {
+            const radio = document.getElementById(id);
+            if (radio) radio.addEventListener('change', () => this.render());
+        });
     },
 
     /**
@@ -664,6 +685,8 @@ const UsecaseApp = {
      */
     render() {
         const scrollInfo = this.getScrollInfo();
+        const handlersOnly = document.getElementById('display-target-handlers-only')?.checked ?? false;
+        this.state.handlerFqns = handlersOnly ? buildHandlerFqns() : null;
         const usecases = this.state.data.usecases;
         this.renderSidebar(usecases);
         this.renderUsecaseList(usecases);
@@ -722,6 +745,10 @@ const UsecaseApp = {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
+        const handlerFqns = this.state.handlerFqns;
+        const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
+        const visibleUsecases = usecases.filter(u => u.methods.some(isVisibleMethod));
+
         const section = createElement("section", {
             className: "in-page-sidebar__section",
             children: [
@@ -731,7 +758,7 @@ const UsecaseApp = {
                 }),
                 createElement("ul", {
                     className: "in-page-sidebar__links",
-                    children: usecases.map(usecase => {
+                    children: visibleUsecases.map(usecase => {
                         const children = [
                             createElement("a", {
                                 className: "in-page-sidebar__link",
@@ -739,12 +766,11 @@ const UsecaseApp = {
                                 textContent: globalThis.Jig.glossary.getTypeTerm(usecase.fqn).title
                             })
                         ];
-                        if (usecase.methods.length > 0) {
+                        const visibleMethods = usecase.methods.filter(isVisibleMethod);
+                        if (visibleMethods.length > 0) {
                             children.push(createElement("ul", {
                                 className: "in-page-sidebar__links",
-                                children: usecase.methods
-                                    .filter(isUsecase)
-                                    .map(method =>
+                                children: visibleMethods.map(method =>
                                     createElement("li", {
                                         className: "in-page-sidebar__item",
                                         children: [
@@ -804,7 +830,13 @@ const UsecaseApp = {
             showDiagramDomainTypes
         };
 
+        const handlerFqns = this.state.handlerFqns;
+        const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
+
         usecases.forEach(usecase => {
+            const visibleUsecaseMethods = usecase.methods.filter(isVisibleMethod);
+            if (handlerFqns && visibleUsecaseMethods.length === 0) return;
+
             const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
             const section = createElement("section", {
                 className: "jig-card jig-card--type",
@@ -893,7 +925,7 @@ const UsecaseApp = {
                 }
             }
 
-            usecase.methods.filter(isUsecase).forEach(method => {
+            visibleUsecaseMethods.forEach(method => {
                 const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
                 const methodDescription = methodTerm.description;
 

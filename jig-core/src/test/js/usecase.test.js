@@ -74,6 +74,17 @@ test.describe('UsecaseApp', () => {
         const domainTypesCheckbox = doc.createElement('input');
         domainTypesCheckbox.id = 'show-diagram-domain-types';
         domainTypesCheckbox.checked = false;
+        // 表示対象ラジオボタン（デフォルトはすべて表示）
+        const radioAll = doc.createElement('input');
+        radioAll.id = 'display-target-all';
+        radioAll.type = 'radio';
+        radioAll.name = 'display-target';
+        radioAll.checked = true;
+        const radioHandlersOnly = doc.createElement('input');
+        radioHandlersOnly.id = 'display-target-handlers-only';
+        radioHandlersOnly.type = 'radio';
+        radioHandlersOnly.name = 'display-target';
+        radioHandlersOnly.checked = false;
         // コンテナ要素を事前登録
         ['usecase-sidebar-list', 'usecase-list'].forEach(id => {
             const el = doc.createElement('div');
@@ -396,6 +407,83 @@ test.describe('UsecaseApp', () => {
         showDeclarations.checked = false;
         showDeclarations.dispatchEvent(new window.Event('change'));
         assert.strictEqual(document.body.classList.contains('hide-usecase-declarations'), true);
+    });
+
+    test('ハンドラのみ表示でinbound呼び出しのあるメソッドだけ表示される', () => {
+        globalThis.inboundData = {
+            controllers: [{
+                relations: [
+                    { from: 'web.Ctrl#entry()', to: 'com.example.ServiceA#method1()' }
+                ]
+            }]
+        };
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
+        });
+        globalThis.usecaseData = mockUsecaseData;
+
+        // ハンドラのみ表示を選択
+        document.getElementById('display-target-handlers-only').checked = true;
+        document.getElementById('display-target-all').checked = false;
+
+        UsecaseApp.init();
+
+        // サイドバーに method1 は表示され otherMethod は表示されない
+        const sidebar = document.getElementById('usecase-sidebar-list');
+        const sidebarLinks = sidebar.querySelectorAll('a');
+        const linkTexts = sidebarLinks.map(a => a.textContent);
+        assert.ok(linkTexts.includes('method1'), 'ハンドラのmethod1はサイドバーに表示される');
+        assert.ok(!linkTexts.includes('otherMethod'), 'ハンドラでないotherMethodはサイドバーに表示されない');
+
+        // メイン一覧に method1 の article は存在し otherMethod の article は存在しない
+        const mainList = document.getElementById('usecase-list');
+        const method1Id = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
+        const otherMethodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#otherMethod()');
+        assert.ok(document.getElementById(method1Id), 'method1のarticleが存在する');
+        assert.ok(!document.getElementById(otherMethodId), 'otherMethodのarticleは存在しない');
+
+        // ServiceA クラスのセクションは表示される（ハンドラを含むため）
+        assert.strictEqual(mainList.children.length, 1);
+    });
+
+    test('ハンドラのみ表示でinbound呼び出しが一つもないクラスは非表示になる', () => {
+        // inboundDataなし
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
+        });
+        globalThis.usecaseData = mockUsecaseData;
+
+        document.getElementById('display-target-handlers-only').checked = true;
+        document.getElementById('display-target-all').checked = false;
+
+        UsecaseApp.init();
+
+        // クラスセクションが表示されない
+        const mainList = document.getElementById('usecase-list');
+        assert.strictEqual(mainList.children.length, 0, 'ハンドラなしのクラスは非表示');
+        // サイドバーも空
+        const sidebar = document.getElementById('usecase-sidebar-list');
+        const sidebarLinks = sidebar.querySelectorAll('a');
+        assert.strictEqual(sidebarLinks.length, 0, 'サイドバーにリンクなし');
+    });
+
+    test('すべて表示（デフォルト）では全メソッドが表示される', () => {
+        setGlossaryData({
+            "com.example.ServiceA": { title: "ServiceA" },
+            "com.example.ServiceA#method1()": { title: "method1" },
+            "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
+        });
+        globalThis.usecaseData = mockUsecaseData;
+        UsecaseApp.init();
+
+        const method1Id = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
+        const otherMethodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#otherMethod()');
+        assert.ok(document.getElementById(method1Id), 'method1が表示される');
+        assert.ok(document.getElementById(otherMethodId), 'otherMethodも表示される');
     });
 
     test('シーケンス図タブを選択した状態で再レンダリングしてもシーケンス図が維持される', () => {

@@ -145,7 +145,7 @@ test.describe('detectStronglyConnectedComponents', () => {
             ['e', ['f']],
             ['f', ['d']],
         ]);
-        const sccs = jigCommon.detectStronglyConnectedComponents(graph);
+        const sccs = jigMermaid.detectStronglyConnectedComponents(graph);
         const sortedSccs = sccs.map(scc => scc.sort()).sort((a, b) => a[0].localeCompare(b[0]));
         assert.deepEqual(sortedSccs, [['a', 'b', 'c'], ['d', 'e', 'f']]);
     });
@@ -160,7 +160,7 @@ test.describe('transitiveReduction', () => {
             {from: 'b', to: 'c'},
             {from: 'a', to: 'c'},
         ];
-        const result = jigCommon.transitiveReduction(relations);
+        const result = jigMermaid.transitiveReduction(relations);
         assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'b>c']);
     });
 
@@ -170,7 +170,7 @@ test.describe('transitiveReduction', () => {
             {from: 'b', to: 'a'},
             {from: 'a', to: 'c'},
         ];
-        const result = jigCommon.transitiveReduction(relations);
+        const result = jigMermaid.transitiveReduction(relations);
         assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a']);
     });
 
@@ -179,7 +179,7 @@ test.describe('transitiveReduction', () => {
             {from: 'a', to: 'b'},
             {from: 'c', to: 'd'},
         ];
-        const result = jigCommon.transitiveReduction(relations);
+        const result = jigMermaid.transitiveReduction(relations);
         assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'c>d']);
     });
 
@@ -190,7 +190,7 @@ test.describe('transitiveReduction', () => {
             {from: 'b', to: 'c'},
             {from: 'a', to: 'c'},
         ];
-        const result = jigCommon.transitiveReduction(relations);
+        const result = jigMermaid.transitiveReduction(relations);
         assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
     });
 });
@@ -199,7 +199,7 @@ test.describe('transitiveReduction', () => {
 
 test.describe('computeSubgraphDepthMap', () => {
     test('DAGの最長パスで深さを計算する', () => {
-        const { depthMap, maxDepth } = jigCommon.computeSubgraphDepthMap({
+        const { depthMap, maxDepth } = jigMermaid.computeSubgraphDepthMap({
             nodesInSubgraph: ['A', 'B', 'C', 'D'],
             edges: [
                 {from: 'A', to: 'B'},
@@ -215,7 +215,7 @@ test.describe('computeSubgraphDepthMap', () => {
     });
 
     test('循環のみの場合は全ノードをdepth=1で開始する', () => {
-        const { depthMap, maxDepth } = jigCommon.computeSubgraphDepthMap({
+        const { depthMap, maxDepth } = jigMermaid.computeSubgraphDepthMap({
             nodesInSubgraph: ['A', 'B'],
             edges: [
                 {from: 'A', to: 'B'},
@@ -230,7 +230,7 @@ test.describe('computeSubgraphDepthMap', () => {
 
 test.describe('computeOutboundEdgeLengths', () => {
     test('浅いノードから外部へのエッジが長くなる', () => {
-        const { edgeLengthByKey } = jigCommon.computeOutboundEdgeLengths({
+        const { edgeLengthByKey } = jigMermaid.computeOutboundEdgeLengths({
             nodesInSubgraph: ['A', 'B', 'C'],
             edges: [
                 {from: 'A', to: 'B'},

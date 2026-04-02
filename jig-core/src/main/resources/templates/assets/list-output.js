@@ -1,3 +1,7 @@
+globalThis.Jig ??= {};
+globalThis.Jig.glossary ??= {};
+globalThis.Jig.dom ??= {};
+
 const ListOutput = (function () {
     const headerDefinitions = {
         controller: [
@@ -103,25 +107,25 @@ const ListOutput = (function () {
     };
 
     function getTypeLabel(item) {
-        return globalThis.Jig.glossary.getTypeTerm(item.packageName + "." + item.typeName).title;
+        return Jig.glossary.getTypeTerm(item.packageName + "." + item.typeName).title;
     }
 
     function getPackageLabel(item) {
-        return globalThis.Jig.glossary.getPackageTerm(item.packageName).title;
+        return Jig.glossary.getPackageTerm(item.packageName).title;
     }
 
     function getReturnTypeLabel(item) {
-        return globalThis.Jig.glossary.getTypeTerm(item.returnTypeFqn ?? "").title;
+        return Jig.glossary.getTypeTerm(item.returnTypeFqn ?? "").title;
     }
 
     function getParameterTypeLabels(item) {
-        return (item.parameterTypeFqns ?? []).map(fqn => globalThis.Jig.glossary.getTypeTerm(fqn).title);
+        return (item.parameterTypeFqns ?? []).map(fqn => Jig.glossary.getTypeTerm(fqn).title);
     }
 
     function getMethodLabel(item) {
         const fqn = item.methodFqn ?? "";
         if (!fqn) return "";
-        const term = globalThis.Jig.glossary.findTerm(fqn);
+        const term = Jig.glossary.findTerm(fqn);
         if (!term) return "";
         const hashIdx = fqn.lastIndexOf('#');
         const parenIdx = fqn.indexOf('(', hashIdx);
@@ -359,7 +363,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -371,7 +375,7 @@ const ListOutput = (function () {
                 item.path,
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if (index === 6) {
                     cell.className = "number";
                 }
@@ -391,7 +395,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -410,7 +414,7 @@ const ListOutput = (function () {
                 markIfTrue(item.useStream),
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if (index === 10) {
                     cell.className = "number";
                 }
@@ -430,7 +434,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -448,7 +452,7 @@ const ListOutput = (function () {
                 item.callerMethodCount,
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if ([7, 12, 13].includes(index)) {
                     cell.className = "number";
                 }
@@ -468,14 +472,14 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 getPackageLabel(item),
                 item.classCount,
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if (index === 2) {
                     cell.className = "number";
                 }
@@ -495,7 +499,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -509,7 +513,7 @@ const ListOutput = (function () {
                 item.incomingClassList,
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if ([4, 5, 6].includes(index)) {
                     cell.className = "number";
                 }
@@ -529,7 +533,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -543,7 +547,7 @@ const ListOutput = (function () {
                 markIfTrue(item.isPolymorphic),
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if (index === 5) {
                     cell.className = "number";
                 }
@@ -563,7 +567,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -575,7 +579,7 @@ const ListOutput = (function () {
                 item.methods,
             ];
             values.forEach((value, index) => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 if ([4, 6].includes(index)) {
                     cell.className = "number";
                 }
@@ -595,7 +599,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -606,7 +610,7 @@ const ListOutput = (function () {
                 item.annotationDescription,
             ];
             values.forEach(value => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 cell.textContent = value ?? "";
                 row.appendChild(cell);
             });
@@ -623,7 +627,7 @@ const ListOutput = (function () {
 
         const fragment = document.createDocumentFragment();
         items.forEach(item => {
-            const row = globalThis.Jig.dom.createElement("tr");
+            const row = Jig.dom.createElement("tr");
             const values = [
                 item.packageName,
                 item.typeName,
@@ -638,7 +642,7 @@ const ListOutput = (function () {
                 markIfTrue(item.returnsVoid),
             ];
             values.forEach(value => {
-                const cell = globalThis.Jig.dom.createElement("td");
+                const cell = Jig.dom.createElement("td");
                 cell.textContent = value ?? "";
                 row.appendChild(cell);
             });
@@ -652,11 +656,11 @@ const ListOutput = (function () {
         const table = document.getElementById(tableElementId);
         if (!table) return;
 
-        const thead = globalThis.Jig.dom.createElement("thead");
-        const tr = globalThis.Jig.dom.createElement("tr");
+        const thead = Jig.dom.createElement("thead");
+        const tr = Jig.dom.createElement("tr");
 
         headers.forEach(headerText => {
-            const th = globalThis.Jig.dom.createElement("th");
+            const th = Jig.dom.createElement("th");
             th.textContent = headerText;
             tr.appendChild(th);
         });
@@ -713,7 +717,7 @@ const ListOutput = (function () {
         if (businessPackageExportButton) {
             businessPackageExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessPackageCsv(data.businessRules.packages);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-package.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-business-package.csv");
             });
         }
 
@@ -721,7 +725,7 @@ const ListOutput = (function () {
         if (businessAllExportButton) {
             businessAllExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessAllCsv(data.businessRules.all);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-all.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-business-all.csv");
             });
         }
 
@@ -729,7 +733,7 @@ const ListOutput = (function () {
         if (businessEnumExportButton) {
             businessEnumExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessEnumCsv(data.businessRules.enums);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-enum.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-business-enum.csv");
             });
         }
 
@@ -737,7 +741,7 @@ const ListOutput = (function () {
         if (businessCollectionExportButton) {
             businessCollectionExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessCollectionCsv(data.businessRules.collections);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-collection.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-business-collection.csv");
             });
         }
 
@@ -745,7 +749,7 @@ const ListOutput = (function () {
         if (businessValidationExportButton) {
             businessValidationExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessValidationCsv(data.businessRules.validations);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-validation.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-business-validation.csv");
             });
         }
 
@@ -753,7 +757,7 @@ const ListOutput = (function () {
         if (businessSmellExportButton) {
             businessSmellExportButton.addEventListener("click", () => {
                 const csvText = buildBusinessSmellCsv(data.businessRules.methodSmells);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-business-smell.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-business-smell.csv");
             });
         }
 
@@ -761,7 +765,7 @@ const ListOutput = (function () {
         if (controllerExportButton) {
             controllerExportButton.addEventListener("click", () => {
                 const csvText = buildControllerCsv(data.applications.controllers);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-controller.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-controller.csv");
             });
         }
 
@@ -769,7 +773,7 @@ const ListOutput = (function () {
         if (serviceExportButton) {
             serviceExportButton.addEventListener("click", () => {
                 const csvText = buildServiceCsv(data.applications.services);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-service.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-service.csv");
             });
         }
 
@@ -777,7 +781,7 @@ const ListOutput = (function () {
         if (repositoryExportButton) {
             repositoryExportButton.addEventListener("click", () => {
                 const csvText = buildRepositoryCsv(data.applications.repositories);
-                globalThis.Jig.dom.downloadCsv(csvText, "list-output-repository.csv");
+                Jig.dom.downloadCsv(csvText, "list-output-repository.csv");
             });
         }
     }

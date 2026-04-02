@@ -1,7 +1,3 @@
-/* ===== 共通 ===== */
-
-// 共通ユーティリティ名前空間
-// ページ固有JSから参照されるため、衝突しない名前空間に集約する
 globalThis.Jig ??= {};
 
 // ブラウザバックなどで該当要素に移動する
@@ -17,10 +13,6 @@ window.addEventListener("popstate", function (event) {
         }
     }
 });
-
-/* ===== 共通ユーティリティ (Jig.*) ===== */
-
-globalThis.Jig.mermaid ??= {};
 
 globalThis.Jig.dom = (() => {
     let typeLinkResolver = null;
@@ -459,21 +451,6 @@ globalThis.Jig.dom = (() => {
     };
 })();
 
-// ページ読み込み時のイベント
 document.addEventListener("DOMContentLoaded", function () {
     globalThis.Jig.dom.initCommonUi();
 });
-
-// 用語集ユーティリティは jig-common.js に移動
-globalThis.Jig.glossary ??= {};
-
-// Test-only exports for Node; no-op in browsers.
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-        fqnToId: globalThis.Jig?.fqnToId,
-        getTypeTerm: globalThis.Jig?.glossary?.getTypeTerm,
-        getMethodTerm: globalThis.Jig?.glossary?.getMethodTerm,
-        kindBadgeChar: globalThis.Jig?.dom?.kindBadgeChar,
-        kindBadgeElement: globalThis.Jig?.dom?.kindBadgeElement,
-    };
-}

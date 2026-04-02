@@ -9,7 +9,6 @@ require("../../main/resources/templates/assets/jig-common.js");
 require("../../main/resources/templates/assets/jig-mermaid-diagram.js");
 require("../../main/resources/templates/assets/jig.js");
 
-const jig = require("../../main/resources/templates/assets/jig.js");
 const outbound = require("../../main/resources/templates/assets/outbound.js");
 
 // ===== テスト用ヘルパー =====
@@ -553,7 +552,7 @@ test.describe("outbound.js", () => {
             assert.ok(container.children.length > 0, "セクションが描画されていない");
             const section = container.children[0];
             assert.ok(section.className.includes("outbound-group-card"));
-            assert.equal(section.id, jig.fqnToId("port", simpleGroup.outboundPort.fqn));
+            assert.equal(section.id, Jig.fqnToId("port", simpleGroup.outboundPort.fqn));
         });
 
         test("ポートのラベルと FQN を描画する", () => {

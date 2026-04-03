@@ -60,7 +60,7 @@ function setupGlobals() {
 
 // DOM setup needed for DOM-dependent tests (renderTooLargeDiagram, flashButtonLabel)
 setupGlobals();
-const jig = require('../../main/resources/templates/assets/jig.js');
+const jig = require('../../main/resources/templates/assets/jig-dom.js');
 const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid.js');
 
 function resetDocument() {
@@ -136,4 +136,4 @@ test.describe('typeLinkResolver', () => {
         assert.equal(globalThis.Jig.dom.type.getResolver(), null);
     });
 });
-// Pure function tests have been moved to jig-common.test.js
+// Pure function tests have been moved to jig-glossary.test.js

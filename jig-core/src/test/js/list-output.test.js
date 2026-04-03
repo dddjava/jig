@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-require('../../main/resources/templates/assets/jig-common.js');
+require('../../main/resources/templates/assets/jig-glossary.js');
 const listOutput = require('../../main/resources/templates/assets/list-output.js');
 
 class Element {

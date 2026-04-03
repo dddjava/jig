@@ -2,12 +2,12 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { DocumentStub } = require("./dom-stub.js");
 
-// jig-common.js と jig.js をロード（outbound.js が require 時に Jig 名前空間を参照するため先に行う）
+// jig-glossary.js と jig-dom.js をロード（outbound.js が require 時に Jig 名前空間を参照するため先に行う）
 global.window = { addEventListener: () => {} };
 global.document = new DocumentStub();
-require("../../main/resources/templates/assets/jig-common.js");
+require("../../main/resources/templates/assets/jig-glossary.js");
 require("../../main/resources/templates/assets/jig-mermaid.js");
-require("../../main/resources/templates/assets/jig.js");
+require("../../main/resources/templates/assets/jig-dom.js");
 
 const outbound = require("../../main/resources/templates/assets/outbound.js");
 

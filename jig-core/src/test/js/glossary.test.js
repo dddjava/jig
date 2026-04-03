@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
-// jig-common.js と jig.js をロード（window・document のスタブが必要）
+// jig-glossary.js と jig-dom.js をロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
 global.document = global.document || {
     addEventListener: () => {},
@@ -10,8 +10,8 @@ global.document = global.document || {
     createElement: (tag) => ({ tagName: tag, children: [], className: '', textContent: '', style: {}, appendChild(c) { this.children.push(c); } }),
     body: { classList: { contains: () => false } },
 };
-require('../../main/resources/templates/assets/jig-common.js');
-require('../../main/resources/templates/assets/jig.js');
+require('../../main/resources/templates/assets/jig-glossary.js');
+require('../../main/resources/templates/assets/jig-dom.js');
 
 const glossary = require('../../main/resources/templates/assets/glossary.js');
 

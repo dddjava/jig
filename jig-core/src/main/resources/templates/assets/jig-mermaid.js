@@ -1421,7 +1421,7 @@ if (typeof module !== 'undefined' && module.exports) {
         flashButtonLabel: MermaidDiagramModule.mermaid.flashButtonLabel,
         renderTooLargeDiagram: MermaidDiagramModule.mermaid.renderTooLargeDiagram,
         renderWithControls: MermaidDiagramModule.mermaid.renderWithControls,
-        // Mermaid utilities (moved from jig-common.js)
+        // Mermaid utilities (moved from jig-glossary.js)
         MermaidBuilder: MermaidDiagramModule.mermaid.Builder,
         nodeStyleDefs: MermaidDiagramModule.mermaid.nodeStyleDefs,
         nodeShapes: MermaidDiagramModule.mermaid.nodeShapes,

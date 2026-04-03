@@ -3,9 +3,9 @@ const { test, beforeEach } = require('node:test');
 const path = require('path');
 const { DocumentStub, EventStub, setGlossaryData } = require('./dom-stub.js');
 
-const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
+const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-glossary.js');
 const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid.js');
-const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
+const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-dom.js');
 const usecaseJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/usecase.js');
 
 // モック用のデータ

@@ -2,12 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
-// jig-common.js と jig.js をロード（window・document のスタブが必要）
+// jig-glossary.js と jig-dom.js をロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
 global.document = new DocumentStub();
-require('../../main/resources/templates/assets/jig-common.js');
+require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
-require('../../main/resources/templates/assets/jig.js');
+require('../../main/resources/templates/assets/jig-dom.js');
 
 const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, derivePackageRelations } = require('../../main/resources/templates/assets/domain.js');
 

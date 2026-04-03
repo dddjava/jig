@@ -3,8 +3,8 @@ const assert = require('node:assert/strict');
 const { setGlossaryData } = require('./dom-stub.js');
 
 // Pure functions - no DOM setup needed
-const jigCommon = require('../../main/resources/templates/assets/jig-common.js');
-// Mermaid utilities (moved from jig-common.js to jig-mermaid.js)
+const jigCommon = require('../../main/resources/templates/assets/jig-glossary.js');
+// Mermaid utilities (moved from jig-glossary.js to jig-mermaid.js)
 const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid.js');
 
 // ----- estimateEdgeCount -----

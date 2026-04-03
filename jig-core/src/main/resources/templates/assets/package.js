@@ -658,7 +658,10 @@ const PackageApp = (() => {
         }
 
         diagram.style.display = 'block';
-        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.render.renderWithControls !== 'function') return;
+        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.render.renderWithControls !== 'function') {
+            console.warn('Jig.mermaid.render.renderWithControls is not available for rendering mutual dependency diagram');
+            return;
+        }
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.mutualDependencyDiagramDirection});
     }
 
@@ -857,7 +860,10 @@ const PackageApp = (() => {
         applyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
-        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.render.renderWithControls !== 'function') return;
+        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.render.renderWithControls !== 'function') {
+            console.warn('Jig.mermaid.render.renderWithControls is not available for rendering package diagram');
+            return;
+        }
         const generator = (dir) => buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, dir).source;
         Jig.mermaid.render.renderWithControls(diagram, generator, {
             edgeCount: renderPlan.uniqueRelations.length,

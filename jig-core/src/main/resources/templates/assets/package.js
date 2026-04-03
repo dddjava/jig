@@ -1195,16 +1195,6 @@ const PackageApp = (() => {
         setupFocusControl,
         setupDiagramDirectionControl,
         setupTransitiveReductionControl,
-
-        // Expose internal functions from globalThis.Jig.packageDiagram for testing via PackageApp
-        buildDiagramNodeMaps: (...args) => globalThis.Jig.packageDiagram.buildDiagramNodeMaps(...args),
-        buildDiagramNodeLabel: (...args) => globalThis.Jig.packageDiagram.buildDiagramNodeLabel(...args),
-        buildDiagramSubgraphLabel: (...args) => globalThis.Jig.packageDiagram.buildDiagramSubgraphLabel(...args),
-        buildDiagramNodeTooltip: (...args) => globalThis.Jig.packageDiagram.buildDiagramNodeTooltip(...args),
-        buildDiagramGroupTree: (...args) => globalThis.Jig.packageDiagram.buildDiagramGroupTree(...args),
-        buildSubgraphLines: (...args) => globalThis.Jig.packageDiagram.buildSubgraphLines(...args),
-        buildDiagramEdgeLines: (...args) => globalThis.Jig.packageDiagram.buildDiagramEdgeLines(...args),
-        buildDiagramNodeLines: (...args) => globalThis.Jig.packageDiagram.buildDiagramNodeLines(...args),
     };
 })();
 

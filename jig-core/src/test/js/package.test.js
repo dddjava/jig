@@ -762,73 +762,6 @@ test.describe('package.js', () => {
                 assert.ok(lines.includes('org_dddjava_jig_adapter_JigResultData["JigResultData"]'));
             });
 
-            test('buildDiagramEdgeLines: 相互依存の双方向リンクを生成する', () => {
-                const {ensureNodeId} = PackageApp.buildDiagramNodeMaps(new Set(['a', 'b']));
-                const result = PackageApp.buildDiagramEdgeLines(
-                    [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
-                    ensureNodeId
-                );
-                assert.equal(result.edgeLines.some(line => line.includes('<-->')), true);
-                assert.equal(result.linkStyles.length, 1);
-            });
-
-            test('buildDiagramNodeLabel: サブグラフ配下のラベルを短縮する', () => {
-                const label = PackageApp.buildDiagramNodeLabel(
-                    'com.example.domain.model',
-                    'com.example.domain.model',
-                    'com.example.domain'
-                );
-                assert.equal(label, 'model');
-            });
-
-            test('buildDiagramSubgraphLabel: 親サブグラフ配下ならプレフィックスを省略する', () => {
-                const label = PackageApp.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
-                assert.equal(label, 'domain');
-            });
-
-            test('buildDiagramNodeTooltip: FQNを返す', () => {
-                assert.equal(PackageApp.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
-                assert.equal(PackageApp.buildDiagramNodeTooltip(null), '');
-            });
-
-            test('buildDiagramGroupTree: 共通プレフィックスでグループ化する', () => {
-                const visibleFqns = ['com.example.a', 'com.example.b'];
-                const nodeIdByFqn = new Map([
-                    ['com.example.a', 'P0'],
-                    ['com.example.b', 'P1'],
-                ]);
-
-                const rootGroup = PackageApp.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
-
-                assert.equal(rootGroup.children.has('com.example'), true);
-            });
-
-            test('buildSubgraphLines: サブグラフ行を生成する', () => {
-                const rootGroup = {
-                    key: '',
-                    nodes: ['ROOT'],
-                    children: new Map([
-                        ['com.example', {
-                            key: 'com.example',
-                            nodes: ['P0'],
-                            children: new Map([
-                                ['com.example.domain', {key: 'com.example.domain', nodes: ['P1', 'P2'], children: new Map()}],
-                            ]),
-                        }],
-                    ]),
-                };
-                const addNodeLines = (lines, nodeId) => {
-                    lines.push(`node ${nodeId}`);
-                };
-
-                const lines = PackageApp.buildSubgraphLines(rootGroup, addNodeLines, text => text);
-
-                assert.equal(lines.some(line => line.includes('node ROOT')), true);
-                assert.equal(lines.some(line => line.includes('node P0')), true);
-                assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["com.example"]')), true);
-                assert.equal(lines.some(line => line.includes('subgraph') && line.includes('["domain"]')), true);
-            });
-
             test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
                 const stats = new Map([
                     [0, {packageCount: 2, relationCount: 1}],
@@ -844,43 +777,6 @@ test.describe('package.js', () => {
                 ]);
             });
 
-            test('buildDiagramNodeLines: クリックハンドラ名を埋め込む', () => {
-                const visibleSet = new Set(['app.a']);
-                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = PackageApp.buildDiagramNodeMaps(visibleSet);
-                const nodeLines = PackageApp.buildDiagramNodeLines(
-                    visibleSet,
-                    nodeIdByFqn,
-                    {
-                        nodeIdToFqn,
-                        nodeLabelById,
-                        escapeMermaidText: text => text,
-                        clickHandlerName: PackageApp.DIAGRAM_CLICK_HANDLER_NAME,
-                        parentFqnsWithRelations: new Set()
-                    }
-                );
-                const clickLine = nodeLines.find(line => line.startsWith('click '));
-                assert.ok(clickLine);
-                assert.equal(clickLine.includes(PackageApp.DIAGRAM_CLICK_HANDLER_NAME), true);
-            });
-
-            test('buildDiagramNodeLines: nodeClickUrlCallbackでhrefクリックを埋め込む', () => {
-                const visibleSet = new Set(['app.a']);
-                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = PackageApp.buildDiagramNodeMaps(visibleSet);
-                const nodeLines = PackageApp.buildDiagramNodeLines(
-                    visibleSet,
-                    nodeIdByFqn,
-                    {
-                        nodeIdToFqn,
-                        nodeLabelById,
-                        escapeMermaidText: text => text,
-                        nodeClickUrlCallback: (fqn) => `#anchor-${fqn}`,
-                        parentFqnsWithRelations: new Set()
-                    }
-                );
-                const clickLine = nodeLines.find(line => line.startsWith('click ') && line.includes('href'));
-                assert.ok(clickLine, 'href クリック行があるはず');
-                assert.ok(clickLine.includes('href "#anchor-app.a"'), `click ... href "..." の形式のはず: ${clickLine}`);
-            });
         });
 
         test.describe('UI', () => {

@@ -1395,7 +1395,6 @@ globalThis.Jig.packageDiagram = {
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        ...PackageDiagramModule,
         isTooLarge: MermaidDiagramModule.mermaid.isTooLarge,
         estimateEdgeCount: MermaidDiagramModule.mermaid.estimateEdgeCount,
         detectStronglyConnectedComponents: MermaidDiagramModule.graph.detectStronglyConnectedComponents,
@@ -1411,5 +1410,6 @@ if (typeof module !== 'undefined' && module.exports) {
         nodeShapes: MermaidDiagramModule.mermaid.nodeShapes,
         getNodeDefinition: MermaidDiagramModule.mermaid.getNodeDefinition,
         edgeTypeForLength: MermaidDiagramModule.mermaid.edgeTypeForLength,
+        PackageDiagramModule
     };
 }

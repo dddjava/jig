@@ -12,23 +12,22 @@ const IndexApp = (() => {
         const createElement = Jig.dom.createElement;
         const domainPackageDiagram = createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
-        Jig.dom.lazyRender(domainPackageDiagram, () => {
-            domainPackageDiagram.innerHTML = "";
-            console.log("Rendering package diagram for " + packageRoot);
-            const pkgDiagram = Jig.mermaid.createPackageLevelDiagram(
-                {fqn: packageRoot},
-                allPackages, allPackageRelations,
-                {
-                    transitiveReductionEnabled: true,
-                    diagramDirection: "TB"
-                }
-            );
-            if (pkgDiagram) {
-                // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-                packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
-                Jig.mermaid.render.renderWithControls(domainPackageDiagram, pkgDiagram);
+
+        domainPackageDiagram.innerHTML = "";
+        console.log("Rendering package diagram for " + packageRoot);
+        const pkgDiagram = Jig.mermaid.createPackageLevelDiagram(
+            {fqn: packageRoot},
+            allPackages, allPackageRelations,
+            {
+                transitiveReductionEnabled: true,
+                diagramDirection: "TB"
             }
-        });
+        );
+        if (pkgDiagram) {
+            // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
+            packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
+            Jig.mermaid.render.renderWithControls(domainPackageDiagram, pkgDiagram);
+        }
     }
 
     function renderDocumentLinks() {

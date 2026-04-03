@@ -410,23 +410,6 @@ globalThis.Jig.dom = (() => {
         });
     }
 
-    function lazyRender(container, renderFn, {rootMargin = "200px"} = {}) {
-        if (typeof IntersectionObserver === "undefined") {
-            renderFn();
-            return;
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    renderFn();
-                    observer.unobserve(container);
-                }
-            });
-        }, {rootMargin});
-        observer.observe(container);
-    }
-
     function createSection(title, items) {
         if (!items || items.length === 0) return null;
 
@@ -469,7 +452,6 @@ globalThis.Jig.dom = (() => {
         createCell,
         downloadCsv,
         setupSortableTables,
-        lazyRender,
 
         type: {
             setResolver: setTypeLinkResolver,

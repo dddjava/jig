@@ -686,15 +686,26 @@ const OutboundApp = (() => {
             }));
 
             const portMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.mermaid.diagram.register(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
+            Jig.mermaid.diagram.register(portMermaidContainer, () => {
+                const currentVisibility = readVisibility();
+                const currentPortMermaidCode = generatePortMermaidCode(group, currentVisibility);
+                if (currentPortMermaidCode) {
+                    renderMermaid(currentPortMermaidCode, portMermaidContainer);
+                }
+            });
             cardChildren.push(portMermaidContainer);
 
             const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
             group.operations.forEach(operation => {
                 const mermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
-                const operationMermaidCode = generateOperationMermaidCode(operationWithPort, visibility);
-                Jig.mermaid.diagram.register(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
+                Jig.mermaid.diagram.register(mermaidContainer, () => {
+                    const currentVisibility = readVisibility();
+                    const currentOperationMermaidCode = generateOperationMermaidCode(operationWithPort, currentVisibility);
+                    if (currentOperationMermaidCode) {
+                        renderMermaid(currentOperationMermaidCode, mermaidContainer);
+                    }
+                });
 
                 itemList.appendChild(Jig.dom.createElement("article", {
                     className: "outbound-operation-item jig-card jig-card--item",
@@ -753,7 +764,13 @@ const OutboundApp = (() => {
             const targetId = Jig.fqnToId("persistence", group.persistenceTarget);
 
             const persistenceMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.mermaid.diagram.register(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
+            Jig.mermaid.diagram.register(persistenceMermaidContainer, () => {
+                const currentVisibility = readVisibility();
+                const currentPersistenceMermaidCode = generatePersistenceMermaidCode(group, currentVisibility);
+                if (currentPersistenceMermaidCode) {
+                    renderMermaid(currentPersistenceMermaidCode, persistenceMermaidContainer);
+                }
+            });
 
             container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",
@@ -790,7 +807,13 @@ const OutboundApp = (() => {
             const externalLabel = Jig.glossary.getTypeTerm(externalFqn).title;
 
             const externalMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.mermaid.diagram.register(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
+            Jig.mermaid.diagram.register(externalMermaidContainer, () => {
+                const currentVisibility = readVisibility();
+                const currentExternalMermaidCode = generateExternalTypeMermaidCode(group, currentVisibility);
+                if (currentExternalMermaidCode) {
+                    renderMermaid(currentExternalMermaidCode, externalMermaidContainer);
+                }
+            });
 
             container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",

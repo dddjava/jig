@@ -647,6 +647,86 @@ test.describe('domain.js', () => {
         });
     });
 
+    test.describe('パッケージ処理（renderPackages）', () => {
+        test('複数のパッケージを持つdomainDataでレンダリングされること', () => {
+            const packages = [
+                {fqn: 'org.example', types: [{fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []}]},
+                {fqn: 'org.example.domain', types: [{fqn: 'org.example.domain.Account', isDeprecated: false, fields: [], methods: [], staticMethods: []}]},
+            ];
+            const types = [
+                {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []},
+                {fqn: 'org.example.domain.Account', isDeprecated: false, fields: [], methods: [], staticMethods: []},
+            ];
+            setupDomainData(packages, types);
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.User': {title: 'User'},
+                'org.example.domain': {title: 'domain'},
+                'org.example.domain.Account': {title: 'Account'},
+            });
+
+            const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            globalThis.typeRelationsData = {relations: []};
+
+            DomainApp.init();
+
+            // パッケージがレンダリングされていることを確認
+            const packageSections = main.children.filter(el => el.className && el.className.includes('jig-card--type'));
+            assert.ok(packageSections.length > 0, "パッケージセクションが存在すること");
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
+
+        test('パッケージ間の型関連からパッケージ関連が導出されること', () => {
+            const packages = [
+                {fqn: 'org.example', types: [{fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []}]},
+                {fqn: 'org.other', types: [{fqn: 'org.other.Service', isDeprecated: false, fields: [], methods: [], staticMethods: []}]},
+            ];
+            const types = [
+                {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []},
+                {fqn: 'org.other.Service', isDeprecated: false, fields: [], methods: [], staticMethods: []},
+            ];
+            setupDomainData(packages, types);
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.User': {title: 'User'},
+                'org.other': {title: 'other'},
+                'org.other.Service': {title: 'Service'},
+            });
+
+            const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
+            global.document = doc;
+
+            const main = doc.createElement("div");
+            doc.elementsById.set("domain-main", main);
+            doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
+            // パッケージ間に型関連がある場合
+            globalThis.typeRelationsData = {
+                relations: [
+                    {from: 'org.example.User', to: 'org.other.Service'},
+                ]
+            };
+
+            DomainApp.init();
+
+            // エラーが出ず正常に処理されることを確認
+            assert.ok(main.children.length > 0, "main に要素が追加されること");
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+            delete globalThis.typeRelationsData;
+        });
+    });
+
     test.describe('パッケージ関連図の処理', () => {
         test('createRelationDiagramは空パッケージでnullを返す', () => {
             const packages = [{fqn: 'app', types: []}];

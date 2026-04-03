@@ -630,7 +630,7 @@ const DomainApp = (() => {
                         renderedContainers.add(c);
                         c.innerHTML = "";
                         const diagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
-                        if (diagram) Jig.mermaid.renderWithControls(c, diagram);
+                        if (diagram) Jig.mermaid.render.renderWithControls(c, diagram);
                     });
                 }
                 if (panels['inner-pkg']) {
@@ -641,7 +641,7 @@ const DomainApp = (() => {
                         renderedContainers.add(c);
                         c.innerHTML = "";
                         const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
-                        if (diagram) Jig.mermaid.renderWithControls(c, diagram);
+                        if (diagram) Jig.mermaid.render.renderWithControls(c, diagram);
                     });
                 }
                 if (panels['inner-class']) {
@@ -677,7 +677,7 @@ const DomainApp = (() => {
                             showExternalOutgoing: outgoingCheckbox.checked,
                             showExternalIncoming: incomingCheckbox.checked
                         });
-                        if (diagram) Jig.mermaid.renderWithControls(c, diagram);
+                        if (diagram) Jig.mermaid.render.renderWithControls(c, diagram);
                     };
                     outgoingCheckbox.addEventListener('change', () => {
                         if (renderedContainers.has(c)) render();
@@ -762,7 +762,7 @@ const DomainApp = (() => {
                 mmdContainer.innerHTML = "";
                 const diagramGenerator = (dir) => createTypeRelationDiagram(type, dir);
                 if (diagramGenerator(domainSettings.diagramDirection)) {
-                    Jig.mermaid.renderWithControls(mmdContainer, diagramGenerator, {direction: domainSettings.diagramDirection});
+                    Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: domainSettings.diagramDirection});
                     section.insertBefore(Jig.dom.createElement("h4", {
                         textContent: "クラス関連図",
                         className: "diagram-heading"
@@ -807,17 +807,17 @@ const DomainApp = (() => {
                 if (diagramType === 'packageDirect') {
                     const generator = (dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir);
                     if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
                     }
                 } else if (diagramType === 'package') {
                     const generator = (dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir);
                     if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
                     }
                 } else if (diagramType === 'classDirect') {
                     const generator = (dir) => createTypeRelationDiagram(type, dir);
                     if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
                     }
                 } else {
                     const panel = container.closest('.diagram-panel');
@@ -831,7 +831,7 @@ const DomainApp = (() => {
                         direction: dir
                     });
                     if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
                     }
                 }
             });

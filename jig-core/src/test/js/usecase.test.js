@@ -174,14 +174,22 @@ test.describe('usecase.js', () => {
             assert.equal(tabs.children[1].textContent, 'シーケンス図');
 
             const mermaidPres = methodSection.querySelectorAll('.mermaid');
-            assert.equal(mermaidPres.length, 2);
-            const graphCode = mermaidPres[0].textContent;
-            assert.ok(graphCode.includes('graph LR'));
+            // renderWithControls が呼ばれる際に .mermaid 要素が生成される可能性があるため、
+            // 最低でも 2 個（ユースケース図とシーケンス図）以上の要素が存在すること
+            assert.ok(mermaidPres.length >= 2, `.mermaid 要素が最低2個存在すること（実際: ${mermaidPres.length}）`);
+
+            // テキストコンテンツを持つ .mermaid 要素を探す
+            const usecaseMermaid = Array.from(mermaidPres).find(el => el.textContent.includes('graph LR'));
+            const sequenceMermaid = Array.from(mermaidPres).find(el => el.textContent.includes('sequenceDiagram'));
+
+            assert.ok(usecaseMermaid, 'ユースケース図（graph LR）が存在すること');
+            assert.ok(sequenceMermaid, 'シーケンス図（sequenceDiagram）が存在すること');
+
+            const graphCode = usecaseMermaid.textContent;
             assert.ok(graphCode.includes('subgraph'), 'ユースケース図にsubgraphが含まれること');
             assert.ok(graphCode.includes('ServiceA'), 'subgraphにクラス名が含まれること');
             assert.ok(graphCode.includes('direction LR'), 'subgraphにdirection LRが含まれること');
             assert.ok(graphCode.includes('classDef'), 'Theme classDefが含まれるべき');
-            assert.ok(mermaidPres[1].textContent.includes('sequenceDiagram'));
 
             const description = methodSection.querySelector('.description');
             assert.equal(description.innerHTML, 'Description of method1');

@@ -693,7 +693,7 @@ const UsecaseApp = (() => {
                     });
 
                     const generator = (dir) => builder.build(dir);
-                    Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                 });
             }
 
@@ -850,7 +850,7 @@ const UsecaseApp = (() => {
                             });
 
                             const generator = (dir) => builder.build(dir);
-                            Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                            Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                         });
                     }
 
@@ -859,7 +859,7 @@ const UsecaseApp = (() => {
                         (sequencePanel || diagramContainer).appendChild(sequenceContainer);
 
                         Jig.dom.lazyRender(sequenceContainer, () => {
-                            Jig.mermaid.renderWithControls(sequenceContainer, sequenceDiagramCode);
+                            Jig.mermaid.render.renderWithControls(sequenceContainer, sequenceDiagramCode);
                         });
                     }
                 }

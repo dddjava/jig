@@ -45,7 +45,61 @@
     </nav>
 
     <main class="usecase">
-        <div id="jig-document-description" class="hidden"></div>
+        <div id="jig-document-description" class="hidden">
+            <p>ユースケースの内容や関連を知るためのドキュメントです。</p>
+            <h2>用語</h2>
+            <dl>
+                <dt>ユースケース</dt>
+                <dd>本ドキュメントではpublicメソッドをユースケースとしています。説明とダイアグラム（ユースケース図とシーケンス図）が出力されます。</dd>
+                <dt>内部メソッド</dt>
+                <dd>本ドキュメントではpublicメソッドをユースケースとして扱っており、それ以外のメソッドが「内部メソッド」となります。</dd>
+                <dt>ハンドラ</dt>
+                <dd>入力インタフェースから直接呼び出されるユースケースのことです。</dd>
+            </dl>
+            <div>
+                <h2>ユースケース図の説明</h2>
+                <p>ユースケースの関連を示すダイアグラムです。</p>
+                <p>それぞれのノードの意味と配色は以下となっています。</p>
+                <div class="mermaid">
+                    graph LR
+                        subgraph sg_XXX ["サービスクラス"]
+                            direction LR
+                            node_usecase1(["ユースケース"]):::usecase
+                            node_internal(["内部メソッド"]):::inactive
+                        end
+                        node_inbound1["入力インタフェース"]:::inbound
+                        node_outbound1["出力インタフェース"]:::outbound
+                        node_domain1["ドメイン（引数）"]:::domain
+                        node_domain2["ドメイン（戻り値）"]:::domain
+                        node_inbound1--> node_usecase1
+                        node_usecase1 --> node_internal
+                        node_internal --> node_outbound1
+                        node_domain1 -.-> node_usecase1 -.-> node_domain2
+                        classDef inbound fill:#E8F0FE,stroke:#2E5C8A
+                        classDef usecase fill:#E6F8F0,stroke:#2D7A4A
+                        classDef outbound fill:#FFF0E6,stroke:#CC6600
+                        classDef inactive fill:#e0e0e0,stroke:#aaa
+                        classDef domain fill:#FEF9E7,stroke:#B7950B
+                </div>
+                <ul>
+                    <li>ユースケースは該当のユースケースにリンクされます。</li>
+                    <li>入力インタフェース、出力インタフェース、ドメインはそれぞれのドキュメントにリンクされます。</li>
+                    <li>この図に表示される入力インタフェース、出力インタフェースはクラス名のみです。</li>
+                    <li>クラス単位のユースケース図では、そのクラスに含まれるユースケースの関連を示します。クラス外のユースケースや内部メソッド、外部インタフェースは表示されません。</li>
+                    <li>メソッド単位のユースース図では、そのユースケースの呼び出し元を1階層、呼び出し先を出力インタフェースまで表示します。</li>
+                </ul>
+            </div>
+            <div>
+                <h2>シーケンス図の説明</h2>
+                <ul>
+                    <li>そのユースケースを起点とした、ユースケース、メソッド、外部インタフェースの呼び出しを表示します。</li>
+                    <li>ユースケースとは異なり外部インタフェースのメソッド名が表示されます。</li>
+                    <li>制御構文は対応していません。</li>
+                    <li>順序は処理順ではなくバイトコードでの登場順となります。複雑な記述をしている場合の実際の動作はテストで確認することをおすすめします。</li>
+                </ul>
+            </div>
+        </div>
+
         <div id="usecase-list" class="jig-card-list">
             <!-- JavaScriptで描画されます -->
         </div>

@@ -14,6 +14,7 @@ const DomainApp = (() => {
 
     const diagramRegistry = []; // [{container, pkg, diagramType}] diagramType: 'package' | 'type'
     const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
+    let diagramObserver = null; // IntersectionObserver インスタンス
 
     /**
      * @returns {DomainData}
@@ -795,10 +796,53 @@ const DomainApp = (() => {
     }
 
     /**
+     * 指定されたダイアグラムを再生成
+     * @param {HTMLElement} container
+     * @param {Object} diagram - {container, pkg, type, diagramType}
+     */
+    function renderDiagram(container, diagram) {
+        const {pkg, type, diagramType} = diagram;
+        const allPackages = getDomainData().packages;
+        const allPackageRelations = derivePackageRelations();
+
+        container.innerHTML = "";
+        if (diagramType === 'packageDirect') {
+            const generator = (dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir);
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        } else if (diagramType === 'package') {
+            const generator = (dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir);
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        } else if (diagramType === 'classDirect') {
+            const generator = (dir) => createTypeRelationDiagram(type, dir);
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        } else {
+            const panel = container.closest('.diagram-panel');
+            const outgoing = panel?.querySelector('.class-relation-external-outgoing');
+            const incoming = panel?.querySelector('.class-relation-external-incoming');
+            const showExternalOutgoing = outgoing ? outgoing.checked : true;
+            const showExternalIncoming = incoming ? incoming.checked : true;
+            const generator = (dir) => createRelationDiagram(pkg, {
+                showExternalOutgoing,
+                showExternalIncoming,
+                direction: dir
+            });
+            if (generator(domainSettings.diagramDirection)) {
+                Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
+            }
+        }
+    }
+
+    /**
      * @returns {void}
      */
     function rerenderDiagrams() {
-        // 表示済みダイアグラムを削除のみ。再生成は遅延レンダリングに任せる
+        // 表示済みダイアグラムを削除。再生成は IntersectionObserver に任せる
         diagramRegistry
             .filter(({container}) => renderedContainers.has(container))
             .forEach(({container}) => {
@@ -1025,6 +1069,26 @@ const DomainApp = (() => {
 
         renderPackages(data.packages, main);
         renderTypes(data.types, main);
+
+        // IntersectionObserver で表示範囲内のダイアグラムを自動レンダリング
+        if ('IntersectionObserver' in window) {
+            diagramObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
+                        renderedContainers.add(entry.target);
+                        const diagram = diagramRegistry.find(d => d.container === entry.target);
+                        if (diagram) {
+                            renderDiagram(entry.target, diagram);
+                        }
+                    }
+                });
+            }, {rootMargin: '100px'});
+
+            // 全ダイアグラムを observe
+            diagramRegistry.forEach(({container}) => {
+                diagramObserver.observe(container);
+            });
+        }
     }
 
     return {

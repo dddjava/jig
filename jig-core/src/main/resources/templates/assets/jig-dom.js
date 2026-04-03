@@ -109,7 +109,7 @@ globalThis.Jig.dom = (() => {
 
     function setupDocumentHelp() {
         const helpContent = document.getElementById("jig-document-description");
-        if (!helpContent) return;
+        if (!helpContent || !helpContent.textContent) return;
 
         const header = document.querySelector("header.top") || document.querySelector("header");
         if (!header) return;
@@ -125,10 +125,7 @@ globalThis.Jig.dom = (() => {
             children: [
                 createElement("div", {
                     className: "help-content",
-                    children: [
-                        createElement("h2", { textContent: "ドキュメントの説明" }),
-                        helpContent
-                    ]
+                    children: [ helpContent ]
                 })
             ]
         });

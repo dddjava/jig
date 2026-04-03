@@ -14,6 +14,7 @@ const DomainApp = (() => {
 
     const diagramRegistry = []; // [{container, pkg, diagramType}] diagramType: 'package' | 'type'
     const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
+    let diagramObserver = null; // IntersectionObserver インスタンス
 
     /**
      * @returns {DomainData}
@@ -795,8 +796,7 @@ const DomainApp = (() => {
     }
 
     /**
-     * 指定されたダイアグラムを再生成（設定変更時、表示範囲内のダイアグラム用）
-     * 表示範囲外のダイアグラムは削除のみで、スクロール時に setupLazyMermaidRender で再生成される
+     * 指定されたダイアグラムを再生成
      * @param {HTMLElement} container
      * @param {Object} diagram - {container, pkg, type, diagramType}
      */
@@ -1083,6 +1083,27 @@ const DomainApp = (() => {
 
         renderPackages(data.packages, main);
         renderTypes(data.types, main);
+
+        // 削除されたダイアグラムが再度表示範囲に入ったときに自動レンダリング
+        if ('IntersectionObserver' in window) {
+            diagramObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // 削除済み（renderedContainers に属さない）かつ表示範囲内なら再レンダリング
+                    if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
+                        renderedContainers.add(entry.target);
+                        const diagram = diagramRegistry.find(d => d.container === entry.target);
+                        if (diagram) {
+                            renderDiagram(entry.target, diagram);
+                        }
+                    }
+                });
+            }, {rootMargin: '100px'});
+
+            // 全ダイアグラムを observe
+            diagramRegistry.forEach(({container}) => {
+                diagramObserver.observe(container);
+            });
+        }
     }
 
     return {

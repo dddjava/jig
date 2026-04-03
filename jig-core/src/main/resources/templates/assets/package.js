@@ -658,8 +658,8 @@ const PackageApp = (() => {
         }
 
         diagram.style.display = 'block';
-        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== 'function') return;
-        Jig.mermaid.renderWithControls(diagram, generator, {direction: context.mutualDependencyDiagramDirection});
+        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.render.renderWithControls !== 'function') return;
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.mutualDependencyDiagramDirection});
     }
 
     function buildMutualDependencyDiagramSource(causes, direction, mutualPairLabel) {
@@ -857,9 +857,9 @@ const PackageApp = (() => {
         applyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
-        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== 'function') return;
+        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.render.renderWithControls !== 'function') return;
         const generator = (dir) => buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, dir).source;
-        Jig.mermaid.renderWithControls(diagram, generator, {
+        Jig.mermaid.render.renderWithControls(diagram, generator, {
             edgeCount: renderPlan.uniqueRelations.length,
             direction: context.diagramDirection
         });

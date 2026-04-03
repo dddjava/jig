@@ -873,7 +873,7 @@ test.describe('package.js', () => {
 
                 const renderWithControls = test.mock.fn(() => {
                 });
-                globalThis.Jig.mermaid.renderWithControls = renderWithControls;
+                globalThis.Jig.mermaid.render.renderWithControls = renderWithControls;
 
                 const item = {causes: ['a.A -> b.B']};
                 PackageApp.renderMutualDependencyDiagram(item, itemNode, testContext);
@@ -914,7 +914,7 @@ test.describe('package.js', () => {
 
                 // renderWithControlsへの委譲をキャプチャする
                 let capturedRenderArgs = null;
-                globalThis.Jig.mermaid.renderWithControls = (el, text, opts) => {
+                globalThis.Jig.mermaid.render.renderWithControls = (el, text, opts) => {
                     capturedRenderArgs = {el, text, opts};
                 };
 

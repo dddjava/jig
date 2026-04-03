@@ -234,9 +234,9 @@ const OutboundApp = (() => {
     function renderMermaid(mermaidCode, container) {
         if (!mermaidCode) return;
         if (!container) return;
-        if (!Jig || !Jig.mermaid || typeof Jig.mermaid.renderWithControls !== "function") return;
+        if (!Jig || !Jig.mermaid || typeof Jig.mermaid.render.renderWithControls !== "function") return;
         container.innerHTML = "";
-        Jig.mermaid.renderWithControls(container, mermaidCode);
+        Jig.mermaid.render.renderWithControls(container, mermaidCode);
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {

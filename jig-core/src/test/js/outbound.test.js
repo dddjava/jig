@@ -4,7 +4,9 @@ const { DocumentStub } = require("./dom-stub.js");
 
 // jig-glossary.js と jig-dom.js をロード（outbound.js が require 時に Jig 名前空間を参照するため先に行う）
 global.window = { addEventListener: () => {} };
-global.document = new DocumentStub();
+const doc = new DocumentStub();
+doc.body.classList.add("outbound-interface");
+global.document = doc;
 require("../../main/resources/templates/assets/jig-glossary.js");
 require("../../main/resources/templates/assets/jig-mermaid.js");
 require("../../main/resources/templates/assets/jig-dom.js");
@@ -29,6 +31,7 @@ function makeEmptyData() {
 
 function setupDom() {
     const doc = new DocumentStub();
+    doc.body.classList.add("outbound-interface");
     for (const id of [
         "outbound-port-list", "outbound-sidebar-list",
         "outbound-persistence-list", "persistence-sidebar-list",

@@ -234,10 +234,6 @@ const OutboundApp = (() => {
     function renderMermaid(mermaidCode, container) {
         if (!mermaidCode) return;
         if (!container) return;
-        if (!Jig || !Jig.mermaid || typeof Jig.mermaid.render.renderWithControls !== "function") {
-            console.warn('Jig.mermaid.render.renderWithControls is not available for rendering outbound diagram');
-            return;
-        }
         container.innerHTML = "";
         Jig.mermaid.render.renderWithControls(container, mermaidCode);
     }

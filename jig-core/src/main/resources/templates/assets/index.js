@@ -26,7 +26,7 @@ const IndexApp = (() => {
             if (pkgDiagram) {
                 // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
                 packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
-                Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
+                Jig.mermaid.render.renderWithControls(domainPackageDiagram, pkgDiagram);
             }
         });
     }
@@ -72,7 +72,7 @@ const IndexApp = (() => {
             );
         });
 
-        const commonRoot = Jig.packageDiagram.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
+        const commonRoot = Jig.util.getCommonPrefix(allPackages.map(pkg => pkg.fqn));
         renderPackageDiagram(
             packageDiagramContainer,
             allPackages, allPackageRelations,

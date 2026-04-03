@@ -838,16 +838,28 @@ const DomainApp = (() => {
         }
     }
 
+    function isVisible(element) {
+        const rect = element.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+    }
+
     /**
      * @returns {void}
      */
     function rerenderDiagrams() {
-        // 表示済みダイアグラムを削除。再生成は IntersectionObserver に任せる
+        // 表示済みダイアグラムを削除。表示範囲内のみ即座に再生成
         diagramRegistry
             .filter(({container}) => renderedContainers.has(container))
-            .forEach(({container}) => {
+            .forEach((diagram) => {
+                const {container} = diagram;
                 container.innerHTML = "";
                 renderedContainers.delete(container);
+
+                // 表示範囲内なら即座に再生成
+                if (isVisible(container)) {
+                    renderedContainers.add(container);
+                    renderDiagram(container, diagram);
+                }
             });
     }
 

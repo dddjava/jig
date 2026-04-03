@@ -2,7 +2,7 @@ globalThis.Jig ??= {};
 globalThis.Jig.glossary ??= {};
 globalThis.Jig.dom ??= {};
 
-const ListOutput = (() => {
+const ListOutputApp = (() => {
 
     const headerDefinitions = {
         controller: [
@@ -739,10 +739,10 @@ const ListOutput = (() => {
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
-        ListOutput.init()
+        ListOutputApp.init()
     });
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = ListOutput;
+    module.exports = ListOutputApp;
 }

@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 require('../../main/resources/templates/assets/jig-glossary.js');
-const listOutput = require('../../main/resources/templates/assets/list-output.js');
+const ListOutputApp = require('../../main/resources/templates/assets/list-output.js');
 
 class Element {
     constructor(tagName) {
@@ -119,7 +119,7 @@ test.describe('list-output.js', () => {
             test('CSV値はクォートし、改行とダブルクォートを処理する', () => {
                 const value = '"a"\r\nline';
 
-                const escaped = listOutput.escapeCsvValue(value);
+                const escaped = ListOutputApp.escapeCsvValue(value);
 
                 assert.equal(escaped, '"""a""\nline"');
             });
@@ -140,7 +140,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildControllerCsv(items);
+                const csv = ListOutputApp.buildControllerCsv(items);
 
                 assert.equal(
                     csv,
@@ -177,7 +177,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildServiceCsv(items);
+                const csv = ListOutputApp.buildServiceCsv(items);
 
                 assert.equal(
                     csv,
@@ -211,7 +211,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildRepositoryCsv(items);
+                const csv = ListOutputApp.buildRepositoryCsv(items);
 
                 assert.equal(
                     csv,
@@ -231,7 +231,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildBusinessPackageCsv(items);
+                const csv = ListOutputApp.buildBusinessPackageCsv(items);
 
                 assert.equal(
                     csv,
@@ -258,7 +258,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildBusinessAllCsv(items);
+                const csv = ListOutputApp.buildBusinessAllCsv(items);
 
                 assert.equal(
                     csv,
@@ -285,7 +285,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildBusinessEnumCsv(items);
+                const csv = ListOutputApp.buildBusinessEnumCsv(items);
 
                 assert.equal(
                     csv,
@@ -310,7 +310,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildBusinessCollectionCsv(items);
+                const csv = ListOutputApp.buildBusinessCollectionCsv(items);
 
                 assert.equal(
                     csv,
@@ -334,7 +334,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildBusinessValidationCsv(items);
+                const csv = ListOutputApp.buildBusinessValidationCsv(items);
 
                 assert.equal(
                     csv,
@@ -362,7 +362,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                const csv = listOutput.buildBusinessSmellCsv(items);
+                const csv = ListOutputApp.buildBusinessSmellCsv(items);
 
                 assert.equal(
                     csv,
@@ -386,7 +386,7 @@ test.describe('list-output.js', () => {
                         },
                     };
     
-                    const data = listOutput.getListData();
+                    const data = ListOutputApp.getListData();
     
                     assert.equal(data.applications.controllers.length, 1);
                     assert.equal(data.applications.controllers[0].typeName, 'ExampleController');
@@ -397,7 +397,7 @@ test.describe('list-output.js', () => {
                     setupDocument();
                     global.listData = [{typeName: 'ArrayController'}];
     
-                    const data = listOutput.getListData();
+                    const data = ListOutputApp.getListData();
     
                     assert.equal(data.applications.controllers.length, 1);
                     assert.equal(data.applications.controllers[0].typeName, 'ArrayController');
@@ -408,7 +408,7 @@ test.describe('list-output.js', () => {
                     setupDocument();
                     global.listData = {};
     
-                    const data = listOutput.getListData();
+                    const data = ListOutputApp.getListData();
     
                     assert.equal(data.applications.controllers.length, 0);
                     assert.equal(data.applications.services.length, 0);
@@ -421,7 +421,7 @@ test.describe('list-output.js', () => {
     test.describe('表示用整形', () => {
         test.describe('formatFieldTypes', () => {
             test('使用フィールド型を改行で連結する', () => {
-                const formatted = listOutput.formatFieldTypes(['A', 'B']);
+                const formatted = ListOutputApp.formatFieldTypes(['A', 'B']);
 
                 assert.equal(formatted, 'A\nB');
             });
@@ -451,7 +451,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                listOutput.renderControllerTable(items);
+                ListOutputApp.renderControllerTable(items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -481,7 +481,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                listOutput.renderServiceTable(items);
+                ListOutputApp.renderServiceTable(items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -513,7 +513,7 @@ test.describe('list-output.js', () => {
                     },
                 ];
 
-                listOutput.renderRepositoryTable(items);
+                ListOutputApp.renderRepositoryTable(items);
 
                 assert.equal(tbody.children.length, 1);
                 const row = tbody.children[0];
@@ -543,7 +543,7 @@ test.describe('list-output.js', () => {
                             classCount: 10,
                         }];
         
-                        listOutput.renderBusinessPackageTable(items);
+                        ListOutputApp.renderBusinessPackageTable(items);
         
                         assert.equal(tbody.children.length, 1);
                         const row = tbody.children[0];
@@ -571,7 +571,7 @@ test.describe('list-output.js', () => {
                             incomingClassCount: 3,
                         }];
         
-                        listOutput.renderBusinessAllTable(items);
+                        ListOutputApp.renderBusinessAllTable(items);
         
                         assert.equal(tbody.children.length, 1);
                         const row = tbody.children[0];
@@ -601,7 +601,7 @@ test.describe('list-output.js', () => {
                             usageCount: 5,
                         }];
         
-                        listOutput.renderBusinessEnumTable(items);
+                        ListOutputApp.renderBusinessEnumTable(items);
         
                         assert.equal(tbody.children.length, 1);
                         const row = tbody.children[0];
@@ -628,7 +628,7 @@ test.describe('list-output.js', () => {
                             methodCount: 3,
                         }];
         
-                        listOutput.renderBusinessCollectionTable(items);
+                        ListOutputApp.renderBusinessCollectionTable(items);
         
                         assert.equal(tbody.children.length, 1);
                         const row = tbody.children[0];
@@ -656,7 +656,7 @@ test.describe('list-output.js', () => {
                             memberName: "name",
                         }];
         
-                        listOutput.renderBusinessValidationTable(items);
+                        ListOutputApp.renderBusinessValidationTable(items);
         
                         assert.equal(tbody.children.length, 1);
                         const row = tbody.children[0];
@@ -681,7 +681,7 @@ test.describe('list-output.js', () => {
                             methodSignature: "doSomething()",
                         }];
         
-                        listOutput.renderBusinessSmellTable(items);
+                        ListOutputApp.renderBusinessSmellTable(items);
         
                         assert.equal(tbody.children.length, 1);
                         const row = tbody.children[0];
@@ -707,7 +707,7 @@ test.describe('list-output.js', () => {
 
                 doc.allElements.push(tab1, tab2, button1, button2);
 
-                listOutput.activateTabGroup('test', 'two');
+                ListOutputApp.activateTabGroup('test', 'two');
 
                 assert.equal(tab1.className, '');
                 assert.equal(tab2.className, 'is-active');

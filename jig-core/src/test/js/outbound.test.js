@@ -11,7 +11,7 @@ require("../../main/resources/templates/assets/jig-glossary.js");
 require("../../main/resources/templates/assets/jig-mermaid.js");
 require("../../main/resources/templates/assets/jig-dom.js");
 
-const outbound = require("../../main/resources/templates/assets/outbound.js");
+const OutboundApp = require("../../main/resources/templates/assets/outbound.js");
 
 // ===== テスト用ヘルパー =====
 
@@ -68,21 +68,21 @@ test.describe("outbound.js", () => {
 
     test.describe("toCrudChar", () => {
         test("各SQL操作タイプをCRUD文字に変換する", () => {
-            assert.equal(outbound.toCrudChar("SELECT"), "R");
-            assert.equal(outbound.toCrudChar("INSERT"), "C");
-            assert.equal(outbound.toCrudChar("UPDATE"), "U");
-            assert.equal(outbound.toCrudChar("DELETE"), "D");
+            assert.equal(OutboundApp.toCrudChar("SELECT"), "R");
+            assert.equal(OutboundApp.toCrudChar("INSERT"), "C");
+            assert.equal(OutboundApp.toCrudChar("UPDATE"), "U");
+            assert.equal(OutboundApp.toCrudChar("DELETE"), "D");
         });
 
         test("不明なタイプは空文字を返す", () => {
-            assert.equal(outbound.toCrudChar("MERGE"), "");
-            assert.equal(outbound.toCrudChar(null), "");
-            assert.equal(outbound.toCrudChar(undefined), "");
+            assert.equal(OutboundApp.toCrudChar("MERGE"), "");
+            assert.equal(OutboundApp.toCrudChar(null), "");
+            assert.equal(OutboundApp.toCrudChar(undefined), "");
         });
 
         test("小文字でも変換できる", () => {
-            assert.equal(outbound.toCrudChar("select"), "R");
-            assert.equal(outbound.toCrudChar("insert"), "C");
+            assert.equal(OutboundApp.toCrudChar("select"), "R");
+            assert.equal(OutboundApp.toCrudChar("insert"), "C");
         });
     });
 
@@ -90,15 +90,15 @@ test.describe("outbound.js", () => {
 
     test.describe("formatPersistenceAccessors", () => {
         test("空配列の場合は [\"なし\"] を返す", () => {
-            assert.deepEqual(outbound.formatPersistenceAccessors([]), ["なし"]);
+            assert.deepEqual(OutboundApp.formatPersistenceAccessors([]), ["なし"]);
         });
 
         test("null の場合は [\"なし\"] を返す", () => {
-            assert.deepEqual(outbound.formatPersistenceAccessors(null), ["なし"]);
+            assert.deepEqual(OutboundApp.formatPersistenceAccessors(null), ["なし"]);
         });
 
         test("永続化操作をid・操作タイプ・ターゲット名を含む文字列に整形する", () => {
-            const result = outbound.formatPersistenceAccessors([
+            const result = OutboundApp.formatPersistenceAccessors([
                 { id: "com.example.Mapper.find", targetOperationTypes: { "orders": "SELECT" } }
             ]);
             assert.equal(result.length, 1);
@@ -107,7 +107,7 @@ test.describe("outbound.js", () => {
         });
 
         test("複数の操作は複数の文字列として返す", () => {
-            const result = outbound.formatPersistenceAccessors([
+            const result = OutboundApp.formatPersistenceAccessors([
                 { id: "op1", targetOperationTypes: { "tableA": "INSERT" } },
                 { id: "op2", targetOperationTypes: { "tableB": "SELECT" } }
             ]);
@@ -119,7 +119,7 @@ test.describe("outbound.js", () => {
 
     test.describe("groupOperationsByOutboundPort", () => {
         test("データなしの場合は空配列を返す", () => {
-            const grouped = outbound.groupOperationsByOutboundPort(makeEmptyData());
+            const grouped = OutboundApp.groupOperationsByOutboundPort(makeEmptyData());
             assert.equal(grouped.length, 0);
         });
 
@@ -131,7 +131,7 @@ test.describe("outbound.js", () => {
                 ]
                 // links.operationToExecution が空なのでopAは紐付かない
             };
-            const grouped = outbound.groupOperationsByOutboundPort(data);
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
             assert.equal(grouped.length, 0);
         });
 
@@ -156,7 +156,7 @@ test.describe("outbound.js", () => {
                     executionToOtherExternalAccessor: []
                 }
             };
-            const grouped = outbound.groupOperationsByOutboundPort(data);
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
             assert.equal(grouped.length, 2);
             assert.equal(grouped[0].outboundPort.label, "あ");
             assert.equal(grouped[1].outboundPort.label, "い");
@@ -178,7 +178,7 @@ test.describe("outbound.js", () => {
                     executionToOtherExternalAccessor: []
                 }
             };
-            const grouped = outbound.groupOperationsByOutboundPort(data);
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
             const op = grouped[0].operations[0];
             assert.equal(op.outboundAdapter?.fqn, "adapterA");
             assert.equal(op.outboundAdapterExecution?.fqn, "execA");
@@ -198,7 +198,7 @@ test.describe("outbound.js", () => {
                     executionToOtherExternalAccessor: []
                 }
             };
-            const grouped = outbound.groupOperationsByOutboundPort(data);
+            const grouped = OutboundApp.groupOperationsByOutboundPort(data);
             const op = grouped[0].operations[0];
             assert.equal(op.outboundAdapter, null);
             assert.equal(op.outboundAdapterExecution, null);
@@ -219,7 +219,7 @@ test.describe("outbound.js", () => {
                     persistenceAccessors: [{ id: "op2", targetOperationTypes: { "table_a": "SELECT" } }]
                 }
             ];
-            const grouped = outbound.groupOperationsByPersistenceTarget(operations);
+            const grouped = OutboundApp.groupOperationsByPersistenceTarget(operations);
             assert.equal(grouped.length, 2);
             assert.equal(grouped[0].persistenceTarget, "table_a");
             assert.equal(grouped[1].persistenceTarget, "table_b");
@@ -236,7 +236,7 @@ test.describe("outbound.js", () => {
                     persistenceAccessors: [{ id: "op2", targetOperationTypes: { "orders": "INSERT" } }]
                 }
             ];
-            const grouped = outbound.groupOperationsByPersistenceTarget(operations);
+            const grouped = OutboundApp.groupOperationsByPersistenceTarget(operations);
             assert.equal(grouped.length, 1);
             assert.equal(grouped[0].persistenceTarget, "orders");
             assert.equal(grouped[0].operations.length, 2);
@@ -249,7 +249,7 @@ test.describe("outbound.js", () => {
                     { id: "op1", targetOperationTypes: { "orders": "SELECT", "items": "SELECT" } }
                 ]
             };
-            const grouped = outbound.groupOperationsByPersistenceTarget([operation]);
+            const grouped = OutboundApp.groupOperationsByPersistenceTarget([operation]);
             assert.equal(grouped.length, 2); // orders と items
             grouped.forEach(g => assert.equal(g.operations.length, 1)); // 各ターゲットで重複なし
         });
@@ -274,7 +274,7 @@ test.describe("outbound.js", () => {
                     }]
                 }]
             }];
-            const grouped = outbound.groupOperationsByExternalType(operations);
+            const grouped = OutboundApp.groupOperationsByExternalType(operations);
             assert.equal(grouped.length, 1);
             assert.equal(grouped[0].externalType.fqn, "com.example.ExtType");
             assert.equal(grouped[0].operations.length, 1);
@@ -291,7 +291,7 @@ test.describe("outbound.js", () => {
                     methods: [{ name: "call", externals: [{ fqn: "com.example.Ext", label: "Ext", method: "m" }] }]
                 }]
             });
-            const grouped = outbound.groupOperationsByExternalType([makeOp("p1", "P1"), makeOp("p2", "P2")]);
+            const grouped = OutboundApp.groupOperationsByExternalType([makeOp("p1", "P1"), makeOp("p2", "P2")]);
             assert.equal(grouped.length, 1);
             assert.equal(grouped[0].operations.length, 2);
         });
@@ -301,37 +301,37 @@ test.describe("outbound.js", () => {
 
     test.describe("MermaidBuilder", () => {
         test("isEmpty: 初期状態では真を返す", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             assert.ok(builder.isEmpty());
         });
 
         test("isEmpty: ノードを追加すると偽を返す", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             assert.ok(!builder.isEmpty());
         });
 
         test("isEmpty: エッジのみでは偽を返す", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addEdge("A", "B");
             assert.ok(!builder.isEmpty());
         });
 
         test("isEmpty: サブグラフを追加すると偽を返す", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.startSubgraph("Group");
             assert.ok(!builder.isEmpty());
         });
 
         test("sanitize: 非英数字をアンダースコアに変換する", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             assert.equal(builder.sanitize("com.example.MyClass"), "com_example_MyClass");
             assert.equal(builder.sanitize("foo#bar(baz)"), "foo_bar_baz_");
             assert.equal(builder.sanitize(null), "");
         });
 
         test("addNode: 同じノードは重複しない", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             builder.addNode("A", "NodeA");
             const code = builder.build();
@@ -339,7 +339,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addEdge: 同じエッジは重複しない", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             builder.addNode("B", "NodeB");
             builder.addEdge("A", "B");
@@ -349,7 +349,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addEdge: ラベルなしエッジを生成する", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             builder.addNode("B", "NodeB");
             builder.addEdge("A", "B");
@@ -358,7 +358,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addEdge: ラベル付きエッジを生成する", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             builder.addNode("B", "NodeB");
             builder.addEdge("A", "B", "SELECT");
@@ -367,19 +367,19 @@ test.describe("outbound.js", () => {
         });
 
         test("build: デフォルトで graph LR から始まる", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             assert.ok(builder.build().startsWith("graph LR"));
         });
 
         test("build: direction を変更できる", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             assert.ok(builder.build("TB").startsWith("graph TB"));
         });
 
         test("startSubgraph・addNodeToSubgraph: subgraph を生成する", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             const sg = builder.startSubgraph("MyGroup");
             builder.addNodeToSubgraph(sg, "N1", "Node1");
             const code = builder.build();
@@ -389,7 +389,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addNodeToSubgraph: 同じノードは重複しない", () => {
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             const sg = builder.startSubgraph("Group");
             builder.addNodeToSubgraph(sg, "N1", "Node1");
             builder.addNodeToSubgraph(sg, "N1", "Node1");
@@ -402,7 +402,7 @@ test.describe("outbound.js", () => {
 
     test.describe("generatePortMermaidCode", () => {
         test("デフォルト表示設定で graph LR のコードを生成する", () => {
-            const code = outbound.generatePortMermaidCode(simpleGroup);
+            const code = OutboundApp.generatePortMermaidCode(simpleGroup);
             assert.ok(code !== null);
             assert.ok(code.startsWith("graph LR"));
             assert.ok(code.includes("Port"), `ポート名が含まれない: ${code}`);
@@ -420,7 +420,7 @@ test.describe("outbound.js", () => {
                 direction: "LR",
                 crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
             };
-            const code = outbound.generatePortMermaidCode(simpleGroup, allHidden);
+            const code = OutboundApp.generatePortMermaidCode(simpleGroup, allHidden);
             assert.equal(code, null);
         });
 
@@ -450,15 +450,15 @@ test.describe("outbound.js", () => {
                 direction: "LR",
                 crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
             };
-            const code = outbound.generatePortMermaidCode(groupWithAccessor, visibility);
+            const code = OutboundApp.generatePortMermaidCode(groupWithAccessor, visibility);
             assert.ok(code !== null);
             assert.ok(code.includes("orders"), `ターゲット名が含まれない: ${code}`);
         });
 
         test("direction 設定が反映される", () => {
-            const visibility = { ...outbound.generatePortMermaidCode.length, port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: true, direction: "TB", crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true };
+            const visibility = { ...OutboundApp.generatePortMermaidCode.length, port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: true, direction: "TB", crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true };
             // MermaidBuilder を直接使って direction を確認
-            const builder = new outbound.MermaidBuilder();
+            const builder = new OutboundApp.MermaidBuilder();
             builder.addNode("A", "NodeA");
             assert.ok(builder.build("TB").startsWith("graph TB"));
         });
@@ -476,7 +476,7 @@ test.describe("outbound.js", () => {
                 persistenceAccessors: [],
                 externalAccessors: []
             };
-            const code = outbound.generateOperationMermaidCode(operation);
+            const code = OutboundApp.generateOperationMermaidCode(operation);
             assert.ok(code !== null);
             assert.ok(code.startsWith("graph LR"));
             assert.ok(code.includes("Port"));
@@ -503,7 +503,7 @@ test.describe("outbound.js", () => {
                     externalAccessors: []
                 }]
             };
-            const code = outbound.generatePersistenceMermaidCode(group);
+            const code = OutboundApp.generatePersistenceMermaidCode(group);
             assert.ok(code !== null);
             assert.ok(code.includes("orders"), `ターゲット名が含まれない: ${code}`);
         });
@@ -531,7 +531,7 @@ test.describe("outbound.js", () => {
                     }]
                 }]
             };
-            const code = outbound.generateExternalTypeMermaidCode(group);
+            const code = OutboundApp.generateExternalTypeMermaidCode(group);
             assert.ok(code !== null);
             assert.ok(code.includes("ExtService"), `外部型名が含まれない: ${code}`);
         });
@@ -542,7 +542,7 @@ test.describe("outbound.js", () => {
     test.describe("renderOutboundList", () => {
         test("データなしの場合「データなし」を表示する", () => {
             const doc = setupDom();
-            outbound.renderOutboundList([]);
+            OutboundApp.renderOutboundList([]);
             const container = doc.getElementById("outbound-port-list");
             assert.ok(container.children.length > 0);
             assert.equal(container.children[0].textContent, "データなし");
@@ -550,7 +550,7 @@ test.describe("outbound.js", () => {
 
         test("出力ポートグループをセクションとして描画する", () => {
             const doc = setupDom();
-            outbound.renderOutboundList([simpleGroup]);
+            OutboundApp.renderOutboundList([simpleGroup]);
             const container = doc.getElementById("outbound-port-list");
             assert.ok(container.children.length > 0, "セクションが描画されていない");
             const section = container.children[0];
@@ -560,7 +560,7 @@ test.describe("outbound.js", () => {
 
         test("ポートのラベルと FQN を描画する", () => {
             const doc = setupDom();
-            outbound.renderOutboundList([simpleGroup]);
+            OutboundApp.renderOutboundList([simpleGroup]);
             const container = doc.getElementById("outbound-port-list");
             const section = container.children[0];
             const h3 = section.children.find(c => c.tagName === "h3");
@@ -574,7 +574,7 @@ test.describe("outbound.js", () => {
     test.describe("renderCrudTable", () => {
         test("永続化操作なしの場合はメッセージを表示する", () => {
             const doc = setupDom();
-            outbound.renderCrudTable([]);
+            OutboundApp.renderCrudTable([]);
             const container = doc.getElementById("outbound-crud-panel");
             assert.equal(container.textContent, "永続化操作なし");
         });
@@ -596,7 +596,7 @@ test.describe("outbound.js", () => {
                     externalAccessors: []
                 }]
             }];
-            outbound.renderCrudTable(grouped);
+            OutboundApp.renderCrudTable(grouped);
             const container = doc.getElementById("outbound-crud-panel");
             assert.ok(container.children.length > 0, "テーブルが描画されていない");
             const table = container.children[0];
@@ -616,7 +616,7 @@ test.describe("outbound.js", () => {
                     externalAccessors: []
                 }]
             }];
-            outbound.renderCrudTable(grouped);
+            OutboundApp.renderCrudTable(grouped);
             const container = doc.getElementById("outbound-crud-panel");
             const table = container.children[0];
             const tbody = table.children.find(c => c.tagName === "tbody");
@@ -641,7 +641,7 @@ test.describe("outbound.js", () => {
                      externalAccessors: []
                  }]
              }];
-             outbound.renderCrudTable(grouped);
+             OutboundApp.renderCrudTable(grouped);
              const container = doc.getElementById("outbound-crud-panel");
              assert.ok(container);
              const table = container.children[0];

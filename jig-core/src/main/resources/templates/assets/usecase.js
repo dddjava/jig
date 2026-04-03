@@ -3,7 +3,7 @@ globalThis.Jig.glossary ??= {};
 globalThis.Jig.dom ??= {};
 globalThis.Jig.mermaid ??= {};
 
-const Usecase = (() => {
+const UsecaseApp = (() => {
 
     const state = {
         data: null,
@@ -1100,10 +1100,10 @@ const Usecase = (() => {
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
-        Usecase.init();
+        UsecaseApp.init();
     });
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = Usecase;
+    module.exports = UsecaseApp;
 }

@@ -3,7 +3,7 @@ globalThis.Jig.glossary ??= {};
 globalThis.Jig.dom ??= {};
 globalThis.Jig.mermaid ??= {};
 
-const Outbound = (() => {
+const OutboundApp = (() => {
 
     const state = {
         visibility: null, // Will be initialized from DEFAULT_VISIBILITY
@@ -978,10 +978,10 @@ const Outbound = (() => {
 
 if (typeof document !== "undefined") {
     document.addEventListener("DOMContentLoaded", () => {
-        Outbound.init();
+        OutboundApp.init();
     });
 }
 
 if (typeof module !== "undefined" && module.exports) {
-    module.exports = Outbound;
+    module.exports = OutboundApp;
 }

@@ -3,16 +3,9 @@ globalThis.Jig.dom ??= {};
 globalThis.Jig.packageDiagram ??= {};
 globalThis.Jig.mermaid ??= {};
 
-/**
- * @typedef {Object} PackageData
- * @property {Package[]} packages
- * @property {Relation[]} relations
- * @property {string} domainPackageRoots
- */
-
 const IndexApp = (() => {
     /**
-     * @type {PackageData}
+     * @returns {PackageData}
      */
     function getPackageData() {
         return globalThis.packageData;

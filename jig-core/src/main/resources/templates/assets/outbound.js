@@ -36,10 +36,6 @@ const OutboundApp = (() => {
      * Java側（OutboundInterfaceAdapter）が生成する出力ポートデータのスキーマ。
      * outboundPortOperation の fqn は必ず設定される（Java側保証）。
      * outboundAdapter・outboundAdapterExecution は対応する実装が見つからない場合 null になる。
-     *
-     * @typedef {{fqn: string, signature: string}} OutboundPortOperation
-     * @typedef {{fqn: string}} OutboundAdapter
-     * @typedef {{fqn: string}} OutboundAdapterExecution
      */
     function getOutboundData() {
         return globalThis.outboundData || {

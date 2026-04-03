@@ -13,14 +13,6 @@ function estimateEdgeCount(source) {
 }
 
 
-/**
- * @typedef {Object} Term
- * @property {string} title
- * @property {string} simpleText TODO いる？？
- * @property {string} kind
- * @property {string} description
- */
-
 // 用語集ユーティリティ
 globalThis.Jig.glossary = (() => {
 

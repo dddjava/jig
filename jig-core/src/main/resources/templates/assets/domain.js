@@ -19,63 +19,6 @@ const DomainApp = (() => {
     const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
 
     /**
-     * @typedef {Object} TypeRef
-     * @property {string} fqn
-     * @property {TypeRef[]} [typeArgumentRefs]
-     */
-
-    /**
-     * @typedef {Object} DomainField
-     * @property {string} name
-     * @property {TypeRef} typeRef
-     * @property {boolean} isDeprecated
-     */
-
-    /**
-     * @typedef {Object} DomainMethod
-     * @property {string} fqn
-     * @property {TypeRef[]} parameterTypeRefs
-     * @property {TypeRef} returnTypeRef
-     * @property {boolean} isDeprecated
-     */
-
-    /**
-     * @typedef {Object} EnumConstant
-     * @property {string} name
-     * @property {string[]} params
-     */
-
-    /**
-     * @typedef {Object} EnumInfo
-     * @property {EnumConstant[]} constants
-     * @property {string[]} parameterNames
-     */
-
-    /**
-     * @typedef {Object} DomainType
-     * @property {string} fqn
-     * @property {DomainField[]} fields
-     * @property {DomainMethod[]} methods
-     * @property {DomainMethod[]} staticMethods
-     * @property {EnumInfo} [enumInfo]
-     * @property {boolean} isDeprecated
-     */
-
-    /**
-     * @typedef {Object} PackageType
-     * @property {string} fqn
-     * @property {{fqn: string}[]} types
-     */
-
-    /**
-     * @typedef {Object} DomainData
-     * @property {PackageType[]} packages
-     * @property {DomainType[]} types
-     * @property {Map<string, DomainType>} _typesMap
-     * @property {Map<string, PackageType[]>} _childPackagesMap
-     */
-
-    /**
      * @returns {DomainData}
      */
     function getDomainData() {

@@ -1,5 +1,5 @@
-const assert = require('assert');
-const { test, beforeEach } = require('node:test');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
 const path = require('path');
 const { setGlossaryData } = require('./dom-stub.js');
@@ -94,7 +94,7 @@ test.describe('InboundApp', () => {
         InboundApp = require(inboundJsPath);
     }
 
-    beforeEach(() => {
+    test.beforeEach(() => {
         setupDom();
         loadInboundApp();
     });
@@ -106,28 +106,28 @@ test.describe('InboundApp', () => {
         InboundApp.init();
 
         const sidebar = document.getElementById('inbound-sidebar-list');
-        assert.strictEqual(sidebar.children.length, 1);
-        assert.strictEqual(sidebar.querySelector('p').textContent, 'コントローラー');
-        assert.strictEqual(sidebar.querySelector('a').textContent, 'ControllerA');
+        assert.equal(sidebar.children.length, 1);
+        assert.equal(sidebar.querySelector('p').textContent, 'コントローラー');
+        assert.equal(sidebar.querySelector('a').textContent, 'ControllerA');
 
         const mainList = document.getElementById('inbound-list');
-        assert.strictEqual(mainList.children.length, 1);
+        assert.equal(mainList.children.length, 1);
         const controllerSection = mainList.children[0];
-        assert.strictEqual(controllerSection.id, globalThis.Jig.fqnToId("adapter", 'com.example.ControllerA'));
-        assert.strictEqual(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
-        assert.strictEqual(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
-        assert.strictEqual(controllerSection.querySelector('.class-path').textContent, '/api');
-        assert.strictEqual(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
+        assert.equal(controllerSection.id, globalThis.Jig.fqnToId("adapter", 'com.example.ControllerA'));
+        assert.equal(controllerSection.querySelector('h3 a').textContent, 'ControllerA');
+        assert.equal(controllerSection.querySelector('.fully-qualified-name').textContent, 'com.example.ControllerA');
+        assert.equal(controllerSection.querySelector('.class-path').textContent, '/api');
+        assert.equal(controllerSection.querySelector('.markdown').innerHTML, 'Description of ControllerA');
 
         // エントリーポイント一覧（createMethodsList）
         const methodsSection = controllerSection.querySelector('.methods-section');
         assert.ok(methodsSection);
         const methodItems = methodsSection.querySelectorAll('.method-item');
-        assert.strictEqual(methodItems.length, 1);
+        assert.equal(methodItems.length, 1);
         assert.ok(methodItems[0].querySelector('.method-name').textContent.includes('method1'));
 
         // 個別カード（jig-card--item）は廃止
-        assert.strictEqual(controllerSection.querySelector('article.jig-card--item'), null);
+        assert.equal(controllerSection.querySelector('article.jig-card--item'), null);
 
         // コントローラー単位の統合ダイアグラム
         const mermaidPre = controllerSection.querySelector('.mermaid');
@@ -143,7 +143,7 @@ test.describe('InboundApp', () => {
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
-        assert.strictEqual(mainList.textContent, 'データなし');
+        assert.equal(mainList.textContent, 'データなし');
     });
 
     test('adapter chain: 浅いノードから外部へのエッジは長くなる', () => {

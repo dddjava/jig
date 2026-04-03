@@ -247,7 +247,19 @@ class DocumentStub {
 
     querySelector(selector, contextElement = null) {
         if (!contextElement && this.selectors.has(selector)) return this.selectors.get(selector);
-        if (selector.startsWith('#')) return this.getElementById(selector.substring(1));
+        if (selector.startsWith('#')) {
+            // #id のみか、#id rest の複合セレクタかを判断
+            const spaceIdx = selector.indexOf(' ');
+            if (spaceIdx === -1) {
+                return this.getElementById(selector.substring(1));
+            }
+            const idPart = selector.substring(1, spaceIdx);
+            const rest = selector.substring(spaceIdx + 1).trim();
+            const byId = this.getElementById(idPart);
+            if (!byId) return null;
+            const parts = rest.split(/\s+/);
+            return findFirstByParts(byId, parts);
+        }
         const root = contextElement || this.body;
         const parts = selector.trim().split(/\s+/);
         return findFirstByParts(root, parts);

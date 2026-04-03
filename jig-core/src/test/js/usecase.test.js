@@ -1,5 +1,5 @@
-const assert = require('assert');
-const {test, beforeEach} = require('node:test');
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const path = require('path');
 const {DocumentStub, EventStub, setGlossaryData} = require('./dom-stub.js');
 
@@ -55,7 +55,7 @@ test.describe('usecase.js', () => {
         let doc;
         let UsecaseApp;
 
-        beforeEach(() => {
+        test.beforeEach(() => {
             doc = new DocumentStub();
             doc.body.classList.add("usecase-model");
             global.document = doc;
@@ -133,47 +133,47 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const sidebar = document.getElementById('usecase-sidebar-list');
-            assert.strictEqual(sidebar.children.length, 1);
-            assert.strictEqual(sidebar.querySelector('p').textContent, 'ユースケース');
+            assert.equal(sidebar.children.length, 1);
+            assert.equal(sidebar.querySelector('p').textContent, 'ユースケース');
             const sidebarLinks = sidebar.querySelectorAll('a');
-            assert.strictEqual(sidebarLinks[0].textContent, 'ServiceA');
+            assert.equal(sidebarLinks[0].textContent, 'ServiceA');
             assert.ok(sidebarLinks[1].classList.contains('in-page-sidebar__link--sub'));
-            assert.strictEqual(sidebarLinks[1].textContent, 'method1');
-            assert.strictEqual(sidebarLinks[2].textContent, 'otherMethod');
+            assert.equal(sidebarLinks[1].textContent, 'method1');
+            assert.equal(sidebarLinks[2].textContent, 'otherMethod');
 
             const mainList = document.getElementById('usecase-list');
-            assert.strictEqual(mainList.children.length, 1);
+            assert.equal(mainList.children.length, 1);
             const serviceSection = mainList.children[0];
-            assert.strictEqual(serviceSection.querySelector('h3 a').id, globalThis.Jig.fqnToId("type", 'com.example.ServiceA'));
-            assert.strictEqual(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
-            assert.strictEqual(serviceSection.querySelector('.declaration').textContent, 'com.example.ServiceA');
-            assert.strictEqual(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
+            assert.equal(serviceSection.querySelector('h3 a').id, globalThis.Jig.fqnToId("type", 'com.example.ServiceA'));
+            assert.equal(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
+            assert.equal(serviceSection.querySelector('.declaration').textContent, 'com.example.ServiceA');
+            assert.equal(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
 
             const fieldsSection = serviceSection.querySelector('section.methods-section');
             assert.ok(fieldsSection);
-            assert.strictEqual(fieldsSection.querySelector('.method-name').textContent, 'field1');
+            assert.equal(fieldsSection.querySelector('.method-name').textContent, 'field1');
 
             const staticMethodsSection = serviceSection.querySelector('section.static-methods');
             assert.ok(staticMethodsSection);
-            assert.strictEqual(staticMethodsSection.querySelector('h4').textContent, 'staticメソッド');
-            assert.strictEqual(staticMethodsSection.querySelector('.method-name').textContent, 'staticMethod1');
+            assert.equal(staticMethodsSection.querySelector('h4').textContent, 'staticメソッド');
+            assert.equal(staticMethodsSection.querySelector('.method-name').textContent, 'staticMethod1');
 
             const methodSection = serviceSection.querySelector('article.jig-card--item');
             assert.ok(methodSection);
-            assert.strictEqual(methodSection.querySelector('h4').id, globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()'));
-            assert.strictEqual(methodSection.querySelector('h4').textContent, 'method1');
-            assert.strictEqual(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
+            assert.equal(methodSection.querySelector('h4').id, globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()'));
+            assert.equal(methodSection.querySelector('h4').textContent, 'method1');
+            assert.equal(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
 
             const diagramContainer = methodSection.querySelector('.diagram-container');
             assert.ok(diagramContainer);
             const tabs = diagramContainer.querySelector('.diagram-tabs');
             assert.ok(tabs);
-            assert.strictEqual(tabs.children.length, 2);
-            assert.strictEqual(tabs.children[0].textContent, 'ユースケース図');
-            assert.strictEqual(tabs.children[1].textContent, 'シーケンス図');
+            assert.equal(tabs.children.length, 2);
+            assert.equal(tabs.children[0].textContent, 'ユースケース図');
+            assert.equal(tabs.children[1].textContent, 'シーケンス図');
 
             const mermaidPres = methodSection.querySelectorAll('.mermaid');
-            assert.strictEqual(mermaidPres.length, 2);
+            assert.equal(mermaidPres.length, 2);
             const graphCode = mermaidPres[0].textContent;
             assert.ok(graphCode.includes('graph LR'));
             assert.ok(graphCode.includes('subgraph'), 'ユースケース図にsubgraphが含まれること');
@@ -183,7 +183,7 @@ test.describe('usecase.js', () => {
             assert.ok(mermaidPres[1].textContent.includes('sequenceDiagram'));
 
             const description = methodSection.querySelector('.description');
-            assert.strictEqual(description.innerHTML, 'Description of method1');
+            assert.equal(description.innerHTML, 'Description of method1');
         });
 
         test('クラス単位の図では内部メソッド（非PUBLIC）は表示されない', () => {
@@ -354,7 +354,7 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const mainList = document.getElementById('usecase-list');
-            assert.strictEqual(mainList.textContent, 'データなし');
+            assert.equal(mainList.textContent, 'データなし');
         });
 
         test('domain-data.jsがある場合にリゾルバーがdomain.html#fqnリンクを設定する', () => {
@@ -370,8 +370,8 @@ test.describe('usecase.js', () => {
             assert.ok(resolver, 'リゾルバーが設定されていること');
 
             const resolved = resolver('com.example.Order');
-            assert.strictEqual(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order'));
-            assert.strictEqual(resolved.className, undefined);
+            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order'));
+            assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
         });
@@ -381,7 +381,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = {usecases: []};
             UsecaseApp.init();
 
-            assert.strictEqual(globalThis.Jig.dom.type.getResolver(), null);
+            assert.equal(globalThis.Jig.dom.type.getResolver(), null);
         });
 
         test('deprecatedなdomain型はdeprecatedクラスを返す', () => {
@@ -394,8 +394,8 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const resolved = globalThis.Jig.dom.type.getResolver()('com.example.OldClass');
-            assert.strictEqual(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.OldClass'));
-            assert.strictEqual(resolved.className, 'deprecated');
+            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.OldClass'));
+            assert.equal(resolved.className, 'deprecated');
 
             delete globalThis.domainData;
         });
@@ -410,7 +410,7 @@ test.describe('usecase.js', () => {
             const resolver = globalThis.Jig.dom.type.getResolver();
             assert.ok(resolver);
             const resolved = resolver('java.lang.String');
-            assert.strictEqual(resolved, null);
+            assert.equal(resolved, null);
 
             delete globalThis.domainData;
         });
@@ -427,38 +427,38 @@ test.describe('usecase.js', () => {
             const showDeclarations = document.getElementById('show-declarations');
 
             // Initial state
-            assert.strictEqual(showFields.checked, true);
-            assert.strictEqual(document.body.classList.contains('hide-usecase-fields'), false);
+            assert.equal(showFields.checked, true);
+            assert.equal(document.body.classList.contains('hide-usecase-fields'), false);
 
             // Toggle fields
             showFields.checked = false;
             showFields.dispatchEvent(new window.Event('change'));
-            assert.strictEqual(document.body.classList.contains('hide-usecase-fields'), true);
+            assert.equal(document.body.classList.contains('hide-usecase-fields'), true);
 
             // Toggle static methods
             showStaticMethods.checked = false;
             showStaticMethods.dispatchEvent(new window.Event('change'));
-            assert.strictEqual(document.body.classList.contains('hide-usecase-static-methods'), true);
+            assert.equal(document.body.classList.contains('hide-usecase-static-methods'), true);
 
             // Toggle diagrams
             showDiagrams.checked = false;
             showDiagrams.dispatchEvent(new window.Event('change'));
-            assert.strictEqual(document.body.classList.contains('hide-usecase-diagrams'), true);
+            assert.equal(document.body.classList.contains('hide-usecase-diagrams'), true);
 
             // Toggle details
             showDetails.checked = false;
             showDetails.dispatchEvent(new window.Event('change'));
-            assert.strictEqual(document.body.classList.contains('hide-usecase-details'), true);
+            assert.equal(document.body.classList.contains('hide-usecase-details'), true);
 
             // Toggle descriptions
             showDescriptions.checked = false;
             showDescriptions.dispatchEvent(new window.Event('change'));
-            assert.strictEqual(document.body.classList.contains('hide-usecase-descriptions'), true);
+            assert.equal(document.body.classList.contains('hide-usecase-descriptions'), true);
 
             // Toggle declarations
             showDeclarations.checked = false;
             showDeclarations.dispatchEvent(new window.Event('change'));
-            assert.strictEqual(document.body.classList.contains('hide-usecase-declarations'), true);
+            assert.equal(document.body.classList.contains('hide-usecase-declarations'), true);
         });
 
         test('ハンドラのみ表示でinbound呼び出しのあるメソッドだけ表示される', () => {
@@ -497,7 +497,7 @@ test.describe('usecase.js', () => {
             assert.ok(!document.getElementById(otherMethodId), 'otherMethodのarticleは存在しない');
 
             // ServiceA クラスのセクションは表示される（ハンドラを含むため）
-            assert.strictEqual(mainList.children.length, 1);
+            assert.equal(mainList.children.length, 1);
 
             // クラス単位の図にはハンドラ（method1）のみが含まれ、otherMethodは含まれない
             const serviceSection = mainList.children[0];
@@ -527,11 +527,11 @@ test.describe('usecase.js', () => {
 
             // クラスセクションが表示されない
             const mainList = document.getElementById('usecase-list');
-            assert.strictEqual(mainList.children.length, 0, 'ハンドラなしのクラスは非表示');
+            assert.equal(mainList.children.length, 0, 'ハンドラなしのクラスは非表示');
             // サイドバーも空
             const sidebar = document.getElementById('usecase-sidebar-list');
             const sidebarLinks = sidebar.querySelectorAll('a');
-            assert.strictEqual(sidebarLinks.length, 0, 'サイドバーにリンクなし');
+            assert.equal(sidebarLinks.length, 0, 'サイドバーにリンクなし');
         });
 
         test('すべて表示（デフォルト）では全メソッドが表示される', () => {
@@ -566,7 +566,7 @@ test.describe('usecase.js', () => {
             sequenceBtn.dispatchEvent(new window.Event('click'));
 
             // 状態が 'sequence' になっていることを確認
-            assert.strictEqual(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
+            assert.equal(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
 
             // 再レンダリング（チェックボックス変更をシミュレート）
             const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods');
@@ -768,7 +768,7 @@ test.describe('usecase.js', () => {
     test.describe('SequenceDiagram', () => {
         test.describe('buildSequenceDiagram', () => {
 
-            beforeEach(() => {
+            test.beforeEach(() => {
                 delete require.cache[jigCommonJsPath];
                 delete require.cache[jigMermaidDiagramJsPath];
                 delete require.cache[jigJsPath];
@@ -801,10 +801,10 @@ test.describe('usecase.js', () => {
 
                 const result = SequenceDiagram.buildDiagram(rootMethod, methodMap);
 
-                assert.strictEqual(result.calls.length, 0);
-                assert.strictEqual(result.participants.length, 1);
-                assert.strictEqual(result.participants[0].label, 'method1');
-                assert.strictEqual(result.participants[0].kind, "usecase");
+                assert.equal(result.calls.length, 0);
+                assert.equal(result.participants.length, 1);
+                assert.equal(result.participants[0].label, 'method1');
+                assert.equal(result.participants[0].kind, "usecase");
             });
 
             test('ユースケース内メソッドへの呼び出しはメソッド単位のパーティシパント', () => {
@@ -825,13 +825,13 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 2);
-                assert.strictEqual(result.participants[0].label, 'method1');
-                assert.strictEqual(result.participants[0].kind, "usecase");
-                assert.strictEqual(result.participants[1].label, 'otherMethod');
-                assert.strictEqual(result.participants[1].kind, "usecase");
-                assert.strictEqual(result.calls.length, 1);
-                assert.strictEqual(result.calls[0].label, '');
+                assert.equal(result.participants.length, 2);
+                assert.equal(result.participants[0].label, 'method1');
+                assert.equal(result.participants[0].kind, "usecase");
+                assert.equal(result.participants[1].label, 'otherMethod');
+                assert.equal(result.participants[1].kind, "usecase");
+                assert.equal(result.calls.length, 1);
+                assert.equal(result.calls[0].label, '');
             });
 
             test('ユースケース外メソッドへの呼び出しはoutboundOperationSetにある場合だけクラス単位のパーティシパント', () => {
@@ -849,11 +849,11 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 2);
-                assert.strictEqual(result.participants[1].label, 'RepositoryB');
-                assert.strictEqual(result.participants[1].kind, 'outbound');
-                assert.strictEqual(result.calls.length, 1);
-                assert.strictEqual(result.calls[0].label, 'save');
+                assert.equal(result.participants.length, 2);
+                assert.equal(result.participants[1].label, 'RepositoryB');
+                assert.equal(result.participants[1].kind, 'outbound');
+                assert.equal(result.calls.length, 1);
+                assert.equal(result.calls[0].label, 'save');
             });
 
             test('outboundOperationSetにない外部呼び出しは無視される', () => {
@@ -870,8 +870,8 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 1);
-                assert.strictEqual(result.calls.length, 0);
+                assert.equal(result.participants.length, 1);
+                assert.equal(result.calls.length, 0);
             });
 
             test('内部と外部への呼び出しが混在する場合も両方適切に処理', () => {
@@ -896,10 +896,10 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 3);
-                assert.strictEqual(result.calls.length, 2);
-                assert.strictEqual(result.calls[0].label, '');
-                assert.strictEqual(result.calls[1].label, 'save');
+                assert.equal(result.participants.length, 3);
+                assert.equal(result.calls.length, 2);
+                assert.equal(result.calls[0].label, '');
+                assert.equal(result.calls[1].label, 'save');
             });
 
             test('再帰的に内部メソッドを処理する', () => {
@@ -925,8 +925,8 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 3);
-                assert.strictEqual(result.calls.length, 2);
+                assert.equal(result.participants.length, 3);
+                assert.equal(result.calls.length, 2);
             });
 
             test('循環参照があっても無限ループしない', () => {
@@ -950,9 +950,9 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 2);
+                assert.equal(result.participants.length, 2);
                 // methodA->methodB と methodB->methodA の2呼び出し
-                assert.strictEqual(result.calls.length, 2);
+                assert.equal(result.calls.length, 2);
             });
 
             test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドはパーティシパントとして追加されず呼び出しがインライン化される', () => {
@@ -973,11 +973,11 @@ test.describe('usecase.js', () => {
                 });
 
                 // A と C だけがパーティシパントとして残る
-                assert.strictEqual(result.participants.length, 2);
+                assert.equal(result.participants.length, 2);
                 assert.ok(result.participants.find(p => p.id.includes('_A_')));
                 assert.ok(result.participants.find(p => p.id.includes('_C_')));
                 // コールは A -> C になる
-                assert.strictEqual(result.calls.length, 1);
+                assert.equal(result.calls.length, 1);
                 assert.ok(result.calls[0].from.includes('_A_'));
                 assert.ok(result.calls[0].to.includes('_C_'));
             });
@@ -998,9 +998,9 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 2);
+                assert.equal(result.participants.length, 2);
                 assert.ok(result.participants.find(p => p.kind === 'outbound'));
-                assert.strictEqual(result.calls.length, 1);
+                assert.equal(result.calls.length, 1);
                 assert.ok(result.calls[0].from.includes('_A_'));
             });
 
@@ -1023,8 +1023,8 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: true
                 });
 
-                assert.strictEqual(result.participants.length, 2);
-                assert.strictEqual(result.calls.length, 1);
+                assert.equal(result.participants.length, 2);
+                assert.equal(result.calls.length, 1);
                 assert.ok(result.calls[0].from.includes('_A_'));
                 assert.ok(result.calls[0].to.includes('_D_'));
             });
@@ -1041,15 +1041,15 @@ test.describe('usecase.js', () => {
                     showDiagramOutboundPorts: false
                 });
 
-                assert.strictEqual(result.participants.length, 1);
-                assert.strictEqual(result.calls.length, 0);
+                assert.equal(result.participants.length, 1);
+                assert.equal(result.calls.length, 0);
             });
         });
 
         test.describe('buildSequenceDiagramCode', () => {
 
 
-            beforeEach(() => {
+            test.beforeEach(() => {
                 delete require.cache[jigCommonJsPath];
                 delete require.cache[jigMermaidDiagramJsPath];
                 delete require.cache[jigJsPath];
@@ -1077,7 +1077,7 @@ test.describe('usecase.js', () => {
 
             test('callsが空の場合はnullを返す', () => {
                 const sequence = {participants: [{id: 'node-a', label: 'methodA', isExternal: false}], calls: []};
-                assert.strictEqual(SequenceDiagram.buildCode(sequence), null);
+                assert.equal(SequenceDiagram.buildCode(sequence), null);
             });
 
             test('外部パーティシパントはbox LightGrayに入り内部はその外に出力される', () => {
@@ -1127,7 +1127,7 @@ test.describe('usecase.js', () => {
     test.describe('buildOutboundOperationSet', () => {
 
 
-        beforeEach(() => {
+        test.beforeEach(() => {
             delete require.cache[jigCommonJsPath];
             delete require.cache[jigMermaidDiagramJsPath];
             delete require.cache[jigJsPath];
@@ -1154,15 +1154,15 @@ test.describe('usecase.js', () => {
         });
 
         test('nullの場合は空Setを返す', () => {
-            assert.strictEqual(UsecaseApp.buildOutboundOperationSet(null).size, 0);
+            assert.equal(UsecaseApp.buildOutboundOperationSet(null).size, 0);
         });
 
         test('undefinedの場合は空Setを返す', () => {
-            assert.strictEqual(UsecaseApp.buildOutboundOperationSet(undefined).size, 0);
+            assert.equal(UsecaseApp.buildOutboundOperationSet(undefined).size, 0);
         });
 
         test('outboundPortsがない場合は空Setを返す', () => {
-            assert.strictEqual(UsecaseApp.buildOutboundOperationSet({}).size, 0);
+            assert.equal(UsecaseApp.buildOutboundOperationSet({}).size, 0);
         });
 
         test('outboundPortsのoperationsのfqnをSetに収集する', () => {
@@ -1184,7 +1184,7 @@ test.describe('usecase.js', () => {
                 ]
             };
             const set = UsecaseApp.buildOutboundOperationSet(outboundData);
-            assert.strictEqual(set.size, 3);
+            assert.equal(set.size, 3);
             assert.ok(set.has('com.example.RepositoryB#save()'));
             assert.ok(set.has('com.example.RepositoryB#find()'));
             assert.ok(set.has('com.example.ExternalApi#call()'));
@@ -1194,7 +1194,7 @@ test.describe('usecase.js', () => {
     test.describe('buildUsecaseDiagram', () => {
 
 
-        beforeEach(() => {
+        test.beforeEach(() => {
             delete require.cache[jigCommonJsPath];
             delete require.cache[jigMermaidDiagramJsPath];
             delete require.cache[jigJsPath];
@@ -1234,8 +1234,8 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            assert.strictEqual(result.nodes.length, 1);
-            assert.strictEqual(result.edges.length, 0);
+            assert.equal(result.nodes.length, 1);
+            assert.equal(result.edges.length, 0);
         });
 
         test('outboundOperationSetに含まれる外部呼び出しはクラスノードとしてexternal:trueで追加される', () => {
@@ -1253,12 +1253,12 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            assert.strictEqual(result.nodes.length, 2);
-            assert.strictEqual(result.edges.length, 1);
+            assert.equal(result.nodes.length, 2);
+            assert.equal(result.edges.length, 1);
             const externalNode = result.nodes.find(n => n.fqn === 'com.example.RepositoryB');
             assert.ok(externalNode);
-            assert.strictEqual(externalNode.kind, 'outbound');
-            assert.strictEqual(result.edges[0].to, 'com.example.RepositoryB');
+            assert.equal(externalNode.kind, 'outbound');
+            assert.equal(result.edges[0].to, 'com.example.RepositoryB');
         });
 
         test('outboundOperationSetに含まれない外部呼び出しは追加されない', () => {
@@ -1276,7 +1276,7 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            assert.strictEqual(result.nodes.length, 2);
+            assert.equal(result.nodes.length, 2);
             const nodes = result.nodes.map(n => n.fqn);
             assert.ok(nodes.includes('com.example.RepositoryB'));
             assert.ok(!nodes.includes('com.example.OtherService'));
@@ -1305,8 +1305,8 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            assert.strictEqual(result.nodes.length, 2);
-            result.nodes.forEach(n => assert.strictEqual(n.kind, "usecase"));
+            assert.equal(result.nodes.length, 2);
+            result.nodes.forEach(n => assert.equal(n.kind, "usecase"));
         });
 
         test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドはノードとして追加されず呼び出しがインライン化される', () => {
@@ -1323,13 +1323,13 @@ test.describe('usecase.js', () => {
             });
 
             // A と C だけがノードとして残る
-            assert.strictEqual(result.nodes.length, 2);
+            assert.equal(result.nodes.length, 2);
             assert.ok(result.nodes.find(n => n.fqn === 'A'));
             assert.ok(result.nodes.find(n => n.fqn === 'C'));
             // エッジは A -> C になる
-            assert.strictEqual(result.edges.length, 1);
-            assert.strictEqual(result.edges[0].from, 'A');
-            assert.strictEqual(result.edges[0].to, 'C');
+            assert.equal(result.edges.length, 1);
+            assert.equal(result.edges[0].from, 'A');
+            assert.equal(result.edges[0].to, 'C');
         });
 
         test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドを介した外部呼び出しもインライン化される', () => {
@@ -1345,11 +1345,11 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            assert.strictEqual(result.nodes.length, 2);
+            assert.equal(result.nodes.length, 2);
             assert.ok(result.nodes.find(n => n.fqn === 'ext'));
-            assert.strictEqual(result.edges.length, 1);
-            assert.strictEqual(result.edges[0].from, 'A');
-            assert.strictEqual(result.edges[0].to, 'ext');
+            assert.equal(result.edges.length, 1);
+            assert.equal(result.edges[0].from, 'A');
+            assert.equal(result.edges[0].to, 'ext');
         });
 
         test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドの循環参照があっても無限ループしない', () => {
@@ -1366,12 +1366,12 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            assert.strictEqual(result.nodes.length, 2);
+            assert.equal(result.nodes.length, 2);
             assert.ok(result.nodes.find(n => n.fqn === 'A'));
             assert.ok(result.nodes.find(n => n.fqn === 'D'));
-            assert.strictEqual(result.edges.length, 1);
-            assert.strictEqual(result.edges[0].from, 'A');
-            assert.strictEqual(result.edges[0].to, 'D');
+            assert.equal(result.edges.length, 1);
+            assert.equal(result.edges[0].from, 'A');
+            assert.equal(result.edges[0].to, 'D');
         });
 
         test('showDiagramOutboundPortsがfalseの場合、外部ポートはノードとして追加されない', () => {
@@ -1386,9 +1386,9 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: false
             });
 
-            assert.strictEqual(result.nodes.length, 1);
+            assert.equal(result.nodes.length, 1);
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
-            assert.strictEqual(result.edges.length, 0);
+            assert.equal(result.edges.length, 0);
         });
 
         test('直接の呼び出し元(usecase)は caller -> root のエッジで追加される', () => {
@@ -1408,7 +1408,7 @@ test.describe('usecase.js', () => {
 
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
-            assert.strictEqual(result.edges.length, 1);
+            assert.equal(result.edges.length, 1);
             assert.deepStrictEqual(result.edges[0], {from: 'pkg.Cls#B()', to: 'pkg.Cls#A()'});
         });
 
@@ -1432,7 +1432,7 @@ test.describe('usecase.js', () => {
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#C()'));
             assert.ok(!result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
-            assert.strictEqual(result.edges.length, 1);
+            assert.equal(result.edges.length, 1);
             assert.ok(result.edges.find(e => e.from === 'pkg.Cls#C()' && e.to === 'pkg.Cls#A()'));
         });
 
@@ -1521,7 +1521,7 @@ test.describe('usecase.js', () => {
             });
 
             const callerEdges = result.edges.filter(e => e.from === 'pkg.Cls#U()' && e.to === 'pkg.Cls#A()');
-            assert.strictEqual(callerEdges.length, 1);
+            assert.equal(callerEdges.length, 1);
         });
 
         test('showDiagramInternalMethods=falseで逆方向循環があっても無限ループしない', () => {
@@ -1597,8 +1597,8 @@ test.describe('usecase.js', () => {
 
             const inboundNodes = result.nodes.filter(n => n.fqn === 'web.Ctrl');
             const inboundEdges = result.edges.filter(e => e.from === 'web.Ctrl' && e.to === 'pkg.Cls#A()');
-            assert.strictEqual(inboundNodes.length, 1);
-            assert.strictEqual(inboundEdges.length, 1);
+            assert.equal(inboundNodes.length, 1);
+            assert.equal(inboundEdges.length, 1);
         });
     });
 });

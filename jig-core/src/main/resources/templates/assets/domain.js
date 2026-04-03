@@ -1,8 +1,5 @@
-globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
-globalThis.Jig.glossary ??= {};
-
 const DomainApp = (() => {
+    const Jig = globalThis.Jig;
 
     const domainSettings = {
         diagramDirection: 'TB',

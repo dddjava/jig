@@ -1,9 +1,5 @@
-globalThis.Jig ??= {};
-globalThis.Jig.glossary ??= {};
-globalThis.Jig.dom ??= {};
-globalThis.Jig.mermaid ??= {};
-
 const UsecaseApp = (() => {
+    const Jig = globalThis.Jig;
 
     const state = {
         data: null,

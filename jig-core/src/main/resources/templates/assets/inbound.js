@@ -1,8 +1,6 @@
-globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
-globalThis.Jig.glossary ??= {};
-
 const InboundApp = (() => {
+    const Jig = globalThis.Jig;
+
     const state = {
         data: null
     };

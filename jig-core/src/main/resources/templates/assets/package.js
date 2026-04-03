@@ -1,8 +1,3 @@
-globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
-globalThis.Jig.glossary ??= {};
-globalThis.Jig.packageDiagram ??= {};
-
 const PackageApp = (() => {
     const Jig = globalThis.Jig;
 

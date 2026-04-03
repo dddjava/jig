@@ -1,7 +1,6 @@
-globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
-
 const InsightApp = (() => {
+    const Jig = globalThis.Jig;
+
 
     function parseInsightData() {
         return globalThis.insightData ?? null;

@@ -1,9 +1,6 @@
-globalThis.Jig ??= {};
-globalThis.Jig.dom ??= {};
-globalThis.Jig.packageDiagram ??= {};
-globalThis.Jig.mermaid ??= {};
-
 const IndexApp = (() => {
+    const Jig = globalThis.Jig;
+
     /**
      * @returns {PackageData}
      */

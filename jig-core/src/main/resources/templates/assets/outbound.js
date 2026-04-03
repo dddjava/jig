@@ -1,9 +1,5 @@
-globalThis.Jig ??= {};
-globalThis.Jig.glossary ??= {};
-globalThis.Jig.dom ??= {};
-globalThis.Jig.mermaid ??= {};
-
 const OutboundApp = (() => {
+    const Jig = globalThis.Jig;
 
     const state = {
         visibility: null, // Will be initialized from DEFAULT_VISIBILITY

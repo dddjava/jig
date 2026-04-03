@@ -1,8 +1,5 @@
-globalThis.Jig ??= {};
-globalThis.Jig.glossary ??= {};
-globalThis.Jig.dom ??= {};
-
 const ListOutputApp = (() => {
+    const Jig = globalThis.Jig;
 
     const headerDefinitions = {
         controller: [

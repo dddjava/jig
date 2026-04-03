@@ -11,11 +11,9 @@ const Usecase = (() => {
         handlerFqns: null        // ハンドラのみ表示時のFQN集合、nullはすべて表示
     };
 
-    const createElement = (...args) => globalThis.Jig.dom.createElement(...args);
-    const createElementForTypeRef = (...args) => globalThis.Jig.dom.type.elementForRef(...args);
-    const fqnToNodeId = (fqn) => globalThis.Jig.fqnToId("node", fqn);    // Mermaid内部ノード
-    const fqnToTypeId = (fqn) => globalThis.Jig.fqnToId("type", fqn);    // usecaseクラスのHTML id
-    const fqnToMethodId = (fqn) => globalThis.Jig.fqnToId("method", fqn); // usecaseメソッドのHTML id
+    const fqnToNodeId = (fqn) => Jig.fqnToId("node", fqn);    // Mermaid内部ノード
+    const fqnToTypeId = (fqn) => Jig.fqnToId("type", fqn);    // usecaseクラスのHTML id
+    const fqnToMethodId = (fqn) => Jig.fqnToId("method", fqn); // usecaseメソッドのHTML id
 
     /**
      * @typedef {Object} TypeRef
@@ -510,7 +508,7 @@ const Usecase = (() => {
          * @returns {SequenceParticipant}
          */
         function ensureUsecaseParticipant(key) {
-            const label = globalThis.Jig.glossary.getMethodTerm(key, true).title
+            const label = Jig.glossary.getMethodTerm(key, true).title
             return ensureParticipant(key, label, "usecase");
         }
 
@@ -561,7 +559,7 @@ const Usecase = (() => {
                     if (!diagramContext.showDiagramOutboundPorts) continue;
                     const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                     const methodName = getMethodSimpleName(calleeFqn);
-                    const callee = ensureParticipant(classFqn,  globalThis.Jig.glossary.getTypeTerm(classFqn).title, "outbound");
+                    const callee = ensureParticipant(classFqn,  Jig.glossary.getTypeTerm(classFqn).title, "outbound");
                     calls.push({from: caller.id, to: callee.id, label: methodName});
                 }
             }
@@ -659,42 +657,42 @@ const Usecase = (() => {
         const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
         const visibleUsecases = usecases.filter(u => u.methods.some(isVisibleMethod));
 
-        const section = createElement("section", {
+        const section = Jig.dom.createElement("section", {
             className: "in-page-sidebar__section",
             children: [
-                createElement("p", {
+                Jig.dom.createElement("p", {
                     className: "in-page-sidebar__title",
                     textContent: "ユースケース"
                 }),
-                createElement("ul", {
+                Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
                     children: visibleUsecases.map(usecase => {
                         const children = [
-                            createElement("a", {
+                            Jig.dom.createElement("a", {
                                 className: "in-page-sidebar__link",
                                 attributes: {href: "#" + fqnToTypeId(usecase.fqn)},
-                                textContent: globalThis.Jig.glossary.getTypeTerm(usecase.fqn).title
+                                textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
                             })
                         ];
                         const visibleMethods = usecase.methods.filter(isVisibleMethod);
                         if (visibleMethods.length > 0) {
-                            children.push(createElement("ul", {
+                            children.push(Jig.dom.createElement("ul", {
                                 className: "in-page-sidebar__links",
                                 children: visibleMethods.map(method =>
-                                    createElement("li", {
+                                    Jig.dom.createElement("li", {
                                         className: "in-page-sidebar__item",
                                         children: [
-                                            createElement("a", {
+                                            Jig.dom.createElement("a", {
                                                 className: "in-page-sidebar__link in-page-sidebar__link--sub",
                                                 attributes: {href: "#" + fqnToMethodId(method.fqn)},
-                                                textContent: globalThis.Jig.glossary.getMethodTerm(method.fqn).title
+                                                textContent: Jig.glossary.getMethodTerm(method.fqn).title
                                             })
                                         ]
                                     })
                                 )
                             }));
                         }
-                        return createElement("li", {
+                        return Jig.dom.createElement("li", {
                             className: "in-page-sidebar__item",
                             children
                         });
@@ -747,14 +745,14 @@ const Usecase = (() => {
             const visibleUsecaseMethods = usecase.methods.filter(isVisibleMethod);
             if (handlerFqns && visibleUsecaseMethods.length === 0) return;
 
-            const term = globalThis.Jig.glossary.getTypeTerm(usecase.fqn);
-            const section = createElement("section", {
+            const term = Jig.glossary.getTypeTerm(usecase.fqn);
+            const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
                 children: [
-                    createElement("h3", {
-                        children: [createElement("a", {id: fqnToTypeId(usecase.fqn), textContent: term.title})]
+                    Jig.dom.createElement("h3", {
+                        children: [Jig.dom.createElement("a", {id: fqnToTypeId(usecase.fqn), textContent: term.title})]
                     }),
-                    createElement("div", {
+                    Jig.dom.createElement("div", {
                         className: "declaration",
                         textContent: usecase.fqn
                     })
@@ -762,38 +760,38 @@ const Usecase = (() => {
             });
 
             if (term.description) {
-                section.appendChild(createElement("section", {
+                section.appendChild(Jig.dom.createElement("section", {
                     className: "markdown",
-                    innerHTML: globalThis.Jig.dom.parseMarkdown(term.description)
+                    innerHTML: Jig.dom.parseMarkdown(term.description)
                 }));
             }
 
             // Class diagram (internal relations)
             const classGraph = buildClassGraph(usecase, handlerFqns);
             if (classGraph.edges.length > 0) {
-                const classDiagramContainer = createElement("div", {className: "diagram-container class-diagram"});
-                const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+                const classDiagramContainer = Jig.dom.createElement("div", {className: "diagram-container class-diagram"});
+                const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 classDiagramContainer.appendChild(mmdContainer);
                 section.appendChild(classDiagramContainer);
 
-                globalThis.Jig.dom.lazyRender(mmdContainer, () => {
-                    const builder = new globalThis.Jig.mermaid.Builder();
+                Jig.dom.lazyRender(mmdContainer, () => {
+                    const builder = new Jig.mermaid.Builder();
                     builder.applyThemeClassDefs();
 
                     classGraph.nodes.forEach(node => {
                         const nodeId = fqnToNodeId(node.fqn);
                         if (node.kind === "inbound-class") {
-                            const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                            const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "inbound");
-                            builder.addClick(nodeId, "./inbound.html#" + globalThis.Jig.fqnToId("adapter", node.fqn));
+                            builder.addClick(nodeId, "./inbound.html#" + Jig.fqnToId("adapter", node.fqn));
                         } else if (node.kind === "domain-type") {
-                            const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                            const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "domain");
-                            builder.addClick(nodeId, "./domain.html#" + globalThis.Jig.fqnToId("domain", node.fqn));
+                            builder.addClick(nodeId, "./domain.html#" + Jig.fqnToId("domain", node.fqn));
                         } else {
-                            const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                            const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                             if (node.kind === "usecase") {
                                 builder.addNode(nodeId, nodeLabel, 'method');
                                 builder.addClass(nodeId, "usecase");
@@ -810,15 +808,15 @@ const Usecase = (() => {
                     });
 
                     const generator = (dir) => builder.build(dir);
-                    globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                    Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                 });
             }
 
-            const fieldsList = globalThis.Jig.dom.type.fieldsList(usecase.fields, createElementForTypeRef);
+            const fieldsList = Jig.dom.type.fieldsList(usecase.fields, Jig.dom.type.elementForRef);
             if (fieldsList) section.appendChild(fieldsList);
 
             if (usecase.staticMethods.length > 0) {
-                const staticList = globalThis.Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, createElementForTypeRef);
+                const staticList = Jig.dom.type.methodsList("staticメソッド", usecase.staticMethods, Jig.dom.type.elementForRef);
                 if (staticList) {
                     staticList.classList.add("static-methods");
                     section.appendChild(staticList);
@@ -828,7 +826,7 @@ const Usecase = (() => {
             // usecaseとするのはPUBLICのみ
             const internalMethods = usecase.methods.filter(method => !isUsecase(method))
             if (internalMethods.length > 0) {
-                const staticList = globalThis.Jig.dom.type.methodsList("メソッド", internalMethods, createElementForTypeRef);
+                const staticList = Jig.dom.type.methodsList("メソッド", internalMethods, Jig.dom.type.elementForRef);
                 if (staticList) {
                     staticList.classList.add("methods");
                     section.appendChild(staticList);
@@ -836,14 +834,14 @@ const Usecase = (() => {
             }
 
             visibleUsecaseMethods.forEach(method => {
-                const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn);
+                const methodTerm = Jig.glossary.getMethodTerm(method.fqn);
                 const methodDescription = methodTerm.description;
 
-                const methodSection = createElement("article", {
+                const methodSection = Jig.dom.createElement("article", {
                     className: "jig-card jig-card--item",
                     children: [
-                        createElement("h4", {id: fqnToMethodId(method.fqn), textContent: methodTerm.title}),
-                        createElement("div", {
+                        Jig.dom.createElement("h4", {id: fqnToMethodId(method.fqn), textContent: methodTerm.title}),
+                        Jig.dom.createElement("div", {
                             className: "declaration",
                             textContent: methodTerm.shortDeclaration
                         })
@@ -852,9 +850,9 @@ const Usecase = (() => {
 
                 // Method Description
                 if (methodDescription) {
-                    methodSection.appendChild(createElement("section", {
+                    methodSection.appendChild(Jig.dom.createElement("section", {
                         className: "description markdown",
-                        innerHTML: globalThis.Jig.dom.parseMarkdown(methodDescription)
+                        innerHTML: Jig.dom.parseMarkdown(methodDescription)
                     }));
                 }
 
@@ -867,7 +865,7 @@ const Usecase = (() => {
                 const hasSequence = sequenceDiagramCode !== null;
 
                 if (hasUsecaseDiagram || hasSequence) {
-                    const diagramContainer = createElement("div", {className: "diagram-container"});
+                    const diagramContainer = Jig.dom.createElement("div", {className: "diagram-container"});
                     methodSection.appendChild(diagramContainer);
 
                     let usecasePanel = null;
@@ -877,21 +875,21 @@ const Usecase = (() => {
                         const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
                         const isUsecaseActive = selectedTab === 'usecase';
 
-                        const usecaseBtn = createElement("button", {
+                        const usecaseBtn = Jig.dom.createElement("button", {
                             className: "diagram-tab" + (isUsecaseActive ? " active" : ""),
                             textContent: "ユースケース図"
                         });
-                        const sequenceBtn = createElement("button", {
+                        const sequenceBtn = Jig.dom.createElement("button", {
                             className: "diagram-tab" + (!isUsecaseActive ? " active" : ""),
                             textContent: "シーケンス図"
                         });
-                        diagramContainer.appendChild(createElement("div", {
+                        diagramContainer.appendChild(Jig.dom.createElement("div", {
                             className: "diagram-tabs",
                             children: [usecaseBtn, sequenceBtn]
                         }));
 
-                        usecasePanel = createElement("div", {className: "diagram-panel" + (isUsecaseActive ? "" : " hidden")});
-                        sequencePanel = createElement("div", {className: "diagram-panel" + (!isUsecaseActive ? "" : " hidden")});
+                        usecasePanel = Jig.dom.createElement("div", {className: "diagram-panel" + (isUsecaseActive ? "" : " hidden")});
+                        sequencePanel = Jig.dom.createElement("div", {className: "diagram-panel" + (!isUsecaseActive ? "" : " hidden")});
 
                         usecaseBtn.addEventListener('click', () => {
                             usecaseBtn.classList.add('active');
@@ -913,11 +911,11 @@ const Usecase = (() => {
                     }
 
                     if (hasUsecaseDiagram) {
-                        const mmdContainer = createElement("div", {className: "mermaid-diagram"});
+                        const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                         (usecasePanel || diagramContainer).appendChild(mmdContainer);
 
-                        globalThis.Jig.dom.lazyRender(mmdContainer, () => {
-                            const builder = new globalThis.Jig.mermaid.Builder();
+                        Jig.dom.lazyRender(mmdContainer, () => {
+                            const builder = new Jig.mermaid.Builder();
                             builder.applyThemeClassDefs();
 
                             const classSubgraphs = new Map();
@@ -925,27 +923,27 @@ const Usecase = (() => {
                                 const nodeId = fqnToNodeId(node.fqn);
                                 if (node.kind === "outbound" || node.kind === "inbound-class" || node.kind === "domain-type") {
                                     // 外部ポート / inboundクラス / ドメインモデル
-                                    const nodeLabel = globalThis.Jig.glossary.getTypeTerm(node.fqn).title;
+                                    const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, 'class');
                                     if (node.kind === "inbound-class") {
                                         builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + globalThis.Jig.fqnToId("adapter", node.fqn));
+                                        builder.addClick(nodeId, "./inbound.html#" + Jig.fqnToId("adapter", node.fqn));
                                     } else if (node.kind === "outbound") {
                                         builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + globalThis.Jig.fqnToId("port", node.fqn));
+                                        builder.addClick(nodeId, "./outbound.html#" + Jig.fqnToId("port", node.fqn));
                                     } else if (node.kind === "domain-type") {
                                         builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, "./domain.html#" + globalThis.Jig.fqnToId("domain", node.fqn));
+                                        builder.addClick(nodeId, "./domain.html#" + Jig.fqnToId("domain", node.fqn));
                                     }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);
-                                    const classNodeId = globalThis.Jig.fqnToId("sg", classFqn);
-                                    const classLabel = globalThis.Jig.glossary.getTypeTerm(classFqn).title;
+                                    const classNodeId = Jig.fqnToId("sg", classFqn);
+                                    const classLabel = Jig.glossary.getTypeTerm(classFqn).title;
                                     const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel, 'LR');
                                     if (node.kind === "usecase") {
                                         // ユースケース: 角丸、ページ内リンク
-                                        const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                        const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                                         builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
                                         builder.addClass(nodeId, "usecase");
                                         // 自身を強調表示
@@ -955,7 +953,7 @@ const Usecase = (() => {
                                         builder.addClick(nodeId, "#" + fqnToMethodId(node.fqn));
                                     } else {
                                         // その他(method or static-method)
-                                        const nodeLabel = globalThis.Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                        const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                                         builder.addNodeToSubgraph(subgraph, nodeId, nodeLabel, 'method');
                                         builder.addClass(nodeId, "inactive");
                                     }
@@ -967,30 +965,30 @@ const Usecase = (() => {
                             });
 
                             const generator = (dir) => builder.build(dir);
-                            globalThis.Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                            Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                         });
                     }
 
                     if (hasSequence) {
-                        const sequenceContainer = createElement("div", {className: "mermaid-diagram"});
+                        const sequenceContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                         (sequencePanel || diagramContainer).appendChild(sequenceContainer);
 
-                        globalThis.Jig.dom.lazyRender(sequenceContainer, () => {
-                            globalThis.Jig.mermaid.renderWithControls(sequenceContainer, sequenceDiagramCode);
+                        Jig.dom.lazyRender(sequenceContainer, () => {
+                            Jig.mermaid.renderWithControls(sequenceContainer, sequenceDiagramCode);
                         });
                     }
                 }
 
-                const dl = createElement("dl", { className: "depends" });
+                const dl = Jig.dom.createElement("dl", { className: "depends" });
                 if (method.parameterTypeRefs.length > 0) {
-                     dl.appendChild(createElement("dt", { textContent: "要求するもの（引数）" }));
+                     dl.appendChild(Jig.dom.createElement("dt", { textContent: "要求するもの（引数）" }));
                      method.parameterTypeRefs.forEach(parameterTypeRef => {
-                         dl.appendChild(createElement("dd", { children: [createElementForTypeRef(parameterTypeRef)] }));
+                         dl.appendChild(Jig.dom.createElement("dd", { children: [Jig.dom.type.elementForRef(parameterTypeRef)] }));
                      });
                 }
                 if (method.returnTypeRef.fqn !== 'void') {
-                    dl.appendChild(createElement("dt", { textContent: "得られるもの（戻り値）" }));
-                    dl.appendChild(createElement("dd", { children: [createElementForTypeRef(method.returnTypeRef)] }));
+                    dl.appendChild(Jig.dom.createElement("dt", { textContent: "得られるもの（戻り値）" }));
+                    dl.appendChild(Jig.dom.createElement("dd", { children: [Jig.dom.type.elementForRef(method.returnTypeRef)] }));
                 }
                 methodSection.appendChild(dl);
 
@@ -1066,18 +1064,18 @@ const Usecase = (() => {
             if (!domainData._typesMap) {
                 domainData._typesMap = new Map(domainData.types.map(t => [t.fqn, t]));
             }
-            globalThis.Jig.dom.type.setResolver((fqn) => {
+            Jig.dom.type.setResolver((fqn) => {
                 const domainType = domainData._typesMap.get(fqn);
                 if (domainType) {
                     return {
-                        href: 'domain.html#' + globalThis.Jig.fqnToId("domain", fqn),
+                        href: 'domain.html#' + Jig.fqnToId("domain", fqn),
                         className: domainType.isDeprecated ? 'deprecated' : undefined
                     };
                 }
                 return null;
             });
         } else {
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         }
 
         initControls();

@@ -963,6 +963,9 @@ const DomainApp = (() => {
     function init() {
         if (typeof document === "undefined" || !document.body.classList.contains("domain-model")) return;
 
+        // 古いダイアグラムレジストリをクリア
+        Jig.mermaid.diagram.clearRegistry();
+
         const data = getDomainData();
         if (!data) {
             const main = document.getElementById("domain-main");

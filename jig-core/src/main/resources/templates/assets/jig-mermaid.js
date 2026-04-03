@@ -1329,7 +1329,8 @@ globalThis.Jig.mermaid = (() => {
         function clearRegistry() {
             diagramRegistry.length = 0;
             renderedContainers.clear();
-            observedContainers.clear();
+            // observedContainers は WeakSet なので clear() メソッドがない
+            // diagramRegistry をクリアすれば十分
         }
 
         return {

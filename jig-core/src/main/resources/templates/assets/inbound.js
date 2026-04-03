@@ -10,6 +10,9 @@ const InboundApp = (() => {
     }
 
     function init() {
+        // 古いダイアグラムレジストリをクリア
+        Jig.mermaid.diagram.clearRegistry();
+
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
         state.data = null;
 

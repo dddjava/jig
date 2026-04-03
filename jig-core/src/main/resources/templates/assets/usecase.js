@@ -757,11 +757,24 @@ const UsecaseApp = (() => {
                         (usecasePanel || diagramContainer).appendChild(mmdContainer);
 
                         Jig.mermaid.diagram.register(mmdContainer, () => {
+                            // 毎回新しい diagramContext を作成（現在の設定値を反映）
+                            const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
+                            const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
+                            const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
+                            const currentDiagramContext = {
+                                methodMap,
+                                outboundOperationSet,
+                                showDiagramInternalMethods,
+                                showDiagramOutboundPorts,
+                                showDiagramDomainTypes
+                            };
+                            const currentUsecaseDiagram = buildUsecaseDiagram(method, currentDiagramContext);
+
                             const builder = new Jig.mermaid.Builder();
                             builder.applyThemeClassDefs();
 
                             const classSubgraphs = new Map();
-                            usecaseDiagram.nodes.forEach(node => {
+                            currentUsecaseDiagram.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
                                 if (node.kind === "outbound" || node.kind === "inbound-class" || node.kind === "domain-type") {
                                     // 外部ポート / inboundクラス / ドメインモデル
@@ -802,7 +815,7 @@ const UsecaseApp = (() => {
                                 }
                             });
 
-                            usecaseDiagram.edges.forEach(edge => {
+                            currentUsecaseDiagram.edges.forEach(edge => {
                                 builder.addEdge(fqnToNodeId(edge.from), fqnToNodeId(edge.to), "", edge.dotted ?? false);
                             });
 

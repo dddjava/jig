@@ -1,5 +1,4 @@
 globalThis.Jig ??= {};
-globalThis.Jig.glossary ??= {};
 
 const MermaidDiagramModule = (() => {
     const nodeStyleDefs = {

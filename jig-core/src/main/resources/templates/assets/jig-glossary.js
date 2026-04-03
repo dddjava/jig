@@ -1,5 +1,4 @@
 globalThis.Jig ??= {};
-globalThis.Jig.glossary ??= {};
 
 // Estimate Mermaid edge count from source
 function estimateEdgeCount(source) {

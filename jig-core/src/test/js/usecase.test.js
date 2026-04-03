@@ -49,14 +49,13 @@ const mockUsecaseData = {
     ]
 };
 
-test.describe('UsecaseApp', () => {
+test.describe('Usecase', () => {
     let doc;
-    let UsecaseApp;
-    let buildSequenceDiagram;
-    let buildSequenceDiagramCode;
+    let Usecase;
 
     beforeEach(() => {
         doc = new DocumentStub();
+        doc.body.classList.add("usecase-model");
         global.document = doc;
         global.window = { addEventListener: () => {}, Event: EventStub };
         global.marked = { parse: (text) => text };
@@ -108,7 +107,7 @@ test.describe('UsecaseApp', () => {
             container.appendChild(pre);
         };
 
-        ({ UsecaseApp, buildSequenceDiagram, buildSequenceDiagramCode } = require(usecaseJsPath));
+        Usecase = require(usecaseJsPath);
     });
 
     test('init should render data from globalThis.usecaseData', () => {
@@ -119,7 +118,7 @@ test.describe('UsecaseApp', () => {
             "com.example.ServiceA#otherMethod()": { title: "otherMethod", description: "" }
         });
         globalThis.usecaseData = mockUsecaseData;
-        UsecaseApp.init();
+        Usecase.init();
 
         const sidebar = document.getElementById('usecase-sidebar-list');
         assert.strictEqual(sidebar.children.length, 1);
@@ -209,7 +208,7 @@ test.describe('UsecaseApp', () => {
             "com.example.ServiceA#internalHelper()": { title: "internalHelper" }
         });
         globalThis.usecaseData = usecaseDataWithInternal;
-        UsecaseApp.init();
+        Usecase.init();
 
         const classDiagram = document.getElementById('usecase-list').children[0].querySelector('.diagram-container.class-diagram');
         // publicMethod のみなのでエッジがなく、クラス図は生成されない
@@ -223,7 +222,7 @@ test.describe('UsecaseApp', () => {
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
         });
         globalThis.usecaseData = mockUsecaseData;
-        UsecaseApp.init();
+        Usecase.init();
 
         const mainList = document.getElementById('usecase-list');
         const serviceSection = mainList.children[0];
@@ -282,7 +281,7 @@ test.describe('UsecaseApp', () => {
             "com.example.Order": { title: "Order" }
         });
         globalThis.usecaseData = usecaseDataWithDomain;
-        UsecaseApp.init();
+        Usecase.init();
 
         const serviceSection = document.getElementById('usecase-list').children[0];
         const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
@@ -319,7 +318,7 @@ test.describe('UsecaseApp', () => {
             "web.OrderCtrl": { title: "OrderCtrl" }
         });
         globalThis.usecaseData = mockUsecaseData;
-        UsecaseApp.init();
+        Usecase.init();
 
         const serviceSection = document.getElementById('usecase-list').children[0];
         const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
@@ -340,7 +339,7 @@ test.describe('UsecaseApp', () => {
 
     test('renderUsecaseList should handle empty data', () => {
         globalThis.usecaseData = { usecases: [] };
-        UsecaseApp.init();
+        Usecase.init();
 
         const mainList = document.getElementById('usecase-list');
         assert.strictEqual(mainList.textContent, 'データなし');
@@ -353,7 +352,7 @@ test.describe('UsecaseApp', () => {
             ]
         };
         globalThis.usecaseData = { usecases: [] };
-        UsecaseApp.init();
+        Usecase.init();
 
         const resolver = globalThis.Jig.dom.type.getResolver();
         assert.ok(resolver, 'リゾルバーが設定されていること');
@@ -368,7 +367,7 @@ test.describe('UsecaseApp', () => {
     test('domain-data.jsがない場合、リゾルバーは設定されない', () => {
         delete globalThis.domainData;
         globalThis.usecaseData = { usecases: [] };
-        UsecaseApp.init();
+        Usecase.init();
 
         assert.strictEqual(globalThis.Jig.dom.type.getResolver(), null);
     });
@@ -380,7 +379,7 @@ test.describe('UsecaseApp', () => {
             ]
         };
         globalThis.usecaseData = { usecases: [] };
-        UsecaseApp.init();
+        Usecase.init();
 
         const resolved = globalThis.Jig.dom.type.getResolver()('com.example.OldClass');
         assert.strictEqual(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.OldClass'));
@@ -394,7 +393,7 @@ test.describe('UsecaseApp', () => {
             types: []
         };
         globalThis.usecaseData = { usecases: [] };
-        UsecaseApp.init();
+        Usecase.init();
 
         const resolver = globalThis.Jig.dom.type.getResolver();
         assert.ok(resolver);
@@ -406,7 +405,7 @@ test.describe('UsecaseApp', () => {
 
     test('initControls should toggle body classes', () => {
         globalThis.usecaseData = mockUsecaseData;
-        UsecaseApp.init();
+        Usecase.init();
 
         const showFields = document.getElementById('show-fields');
         const showStaticMethods = document.getElementById('show-static-methods');
@@ -469,7 +468,7 @@ test.describe('UsecaseApp', () => {
         document.getElementById('display-target-handlers-only').checked = true;
         document.getElementById('display-target-all').checked = false;
 
-        UsecaseApp.init();
+        Usecase.init();
 
         // サイドバーに method1 は表示され otherMethod は表示されない
         const sidebar = document.getElementById('usecase-sidebar-list');
@@ -512,7 +511,7 @@ test.describe('UsecaseApp', () => {
         document.getElementById('display-target-handlers-only').checked = true;
         document.getElementById('display-target-all').checked = false;
 
-        UsecaseApp.init();
+        Usecase.init();
 
         // クラスセクションが表示されない
         const mainList = document.getElementById('usecase-list');
@@ -530,7 +529,7 @@ test.describe('UsecaseApp', () => {
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
         });
         globalThis.usecaseData = mockUsecaseData;
-        UsecaseApp.init();
+        Usecase.init();
 
         const method1Id = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
         const otherMethodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#otherMethod()');
@@ -545,7 +544,7 @@ test.describe('UsecaseApp', () => {
             "com.example.ServiceA#method1()": { title: "method1" },
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
         });
-        UsecaseApp.init();
+        Usecase.init();
 
         const methodFqn = "com.example.ServiceA#method1()";
         const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
@@ -555,7 +554,7 @@ test.describe('UsecaseApp', () => {
         sequenceBtn.dispatchEvent(new window.Event('click'));
 
         // 状態が 'sequence' になっていることを確認
-        assert.strictEqual(UsecaseApp.state.selectedTabs.get(methodFqn), 'sequence');
+        assert.strictEqual(Usecase.state.selectedTabs.get(methodFqn), 'sequence');
 
         // 再レンダリング（チェックボックス変更をシミュレート）
         const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods');
@@ -593,7 +592,7 @@ test.describe('UsecaseApp', () => {
         const internalCheckbox = document.getElementById('show-diagram-internal-methods');
         internalCheckbox.checked = false;
 
-        UsecaseApp.init();
+        Usecase.init();
 
         const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()')).parentElement;
         assert.ok(methodSection);
@@ -633,7 +632,7 @@ test.describe('UsecaseApp', () => {
             "com.example.Order": { title: "Order" }
         });
         globalThis.usecaseData = usecaseDataWithDomainParam;
-        UsecaseApp.init();
+        Usecase.init();
 
         const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1(Order)');
         const methodSection = document.getElementById(methodId).parentElement;
@@ -677,7 +676,7 @@ test.describe('UsecaseApp', () => {
             "com.example.Order": { title: "Order" }
         });
         globalThis.usecaseData = usecaseDataWithDomainReturn;
-        UsecaseApp.init();
+        Usecase.init();
 
         const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#findOrder()');
         const methodSection = document.getElementById(methodId).parentElement;
@@ -720,7 +719,7 @@ test.describe('UsecaseApp', () => {
             "com.example.Order": { title: "Order" }
         });
         globalThis.usecaseData = usecaseDataWithDomain;
-        UsecaseApp.init();
+        Usecase.init();
 
         const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#findOrder()');
         const methodSection = document.getElementById(methodId)?.parentElement;
@@ -742,7 +741,7 @@ test.describe('UsecaseApp', () => {
             "com.example.ServiceA#otherMethod()": { title: "otherMethod" }
         });
         globalThis.usecaseData = mockUsecaseData;
-        UsecaseApp.init();
+        Usecase.init();
 
         const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
         const methodSection = document.getElementById(methodId).parentElement;
@@ -755,7 +754,7 @@ test.describe('UsecaseApp', () => {
 });
 
 test.describe('buildSequenceDiagram', () => {
-    let buildSequenceDiagram;
+    
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
@@ -764,7 +763,7 @@ test.describe('buildSequenceDiagram', () => {
         delete require.cache[usecaseJsPath];
         delete globalThis.inboundData;
 
-        global.document = new DocumentStub();
+        const doc = new DocumentStub(); doc.body.classList.add("usecase-model"); global.document = doc;
         global.window = { addEventListener: () => {}, Event: EventStub };
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
@@ -772,14 +771,14 @@ test.describe('buildSequenceDiagram', () => {
         require(jigCommonJsPath);
         require(jigMermaidDiagramJsPath);
         require(jigJsPath);
-        ({ buildSequenceDiagram } = require(usecaseJsPath));
+        Usecase = require(usecaseJsPath);
     });
 
     test('callMethodsが空の場合はcallsが空', () => {
         const rootMethod = { fqn: 'com.example.ServiceA#method1()', callMethods: [] };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildSequenceDiagram(rootMethod, methodMap);
+        const result = Usecase.buildSequenceDiagram(rootMethod, methodMap);
 
         assert.strictEqual(result.calls.length, 0);
         assert.strictEqual(result.participants.length, 1);
@@ -798,7 +797,7 @@ test.describe('buildSequenceDiagram', () => {
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -822,7 +821,7 @@ test.describe('buildSequenceDiagram', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save(com.example.Entity)']);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -843,7 +842,7 @@ test.describe('buildSequenceDiagram', () => {
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -869,7 +868,7 @@ test.describe('buildSequenceDiagram', () => {
         ]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -898,7 +897,7 @@ test.describe('buildSequenceDiagram', () => {
             ['com.example.ServiceA#deepMethod()', deepMethod]
         ]);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -923,7 +922,7 @@ test.describe('buildSequenceDiagram', () => {
             ['com.example.ServiceA#methodB()', methodB]
         ]);
 
-        const result = buildSequenceDiagram(methodA, {
+        const result = Usecase.buildSequenceDiagram(methodA, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -945,7 +944,7 @@ test.describe('buildSequenceDiagram', () => {
             ['pkg.Cls#C()', {...methodC, kind: 'usecase'}]
         ]);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -971,7 +970,7 @@ test.describe('buildSequenceDiagram', () => {
         ]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: false,
@@ -996,7 +995,7 @@ test.describe('buildSequenceDiagram', () => {
             ['pkg.Cls#D()', {...methodD, kind: 'usecase'}]
         ]);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1014,7 +1013,7 @@ test.describe('buildSequenceDiagram', () => {
         const methodMap = new Map([['pkg.Cls#A()', {...rootMethod, kind: 'usecase'}]]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildSequenceDiagram(rootMethod, {
+        const result = Usecase.buildSequenceDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -1027,7 +1026,7 @@ test.describe('buildSequenceDiagram', () => {
 });
 
 test.describe('buildSequenceDiagramCode', () => {
-    let buildSequenceDiagramCode;
+    
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
@@ -1035,7 +1034,7 @@ test.describe('buildSequenceDiagramCode', () => {
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
 
-        global.document = new DocumentStub();
+        const doc = new DocumentStub(); doc.body.classList.add("usecase-model"); global.document = doc;
         global.window = { addEventListener: () => {}, Event: EventStub };
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
@@ -1043,12 +1042,12 @@ test.describe('buildSequenceDiagramCode', () => {
         require(jigCommonJsPath);
         require(jigMermaidDiagramJsPath);
         require(jigJsPath);
-        ({ buildSequenceDiagramCode } = require(usecaseJsPath));
+        Usecase = require(usecaseJsPath);
     });
 
     test('callsが空の場合はnullを返す', () => {
         const sequence = { participants: [{id: 'node-a', label: 'methodA', isExternal: false}], calls: [] };
-        assert.strictEqual(buildSequenceDiagramCode(sequence), null);
+        assert.strictEqual(Usecase.buildSequenceDiagramCode(sequence), null);
     });
 
     test('外部パーティシパントはbox LightGrayに入り内部はその外に出力される', () => {
@@ -1061,7 +1060,7 @@ test.describe('buildSequenceDiagramCode', () => {
                 {from: 'node-a', to: 'node-b', label: 'save'}
             ]
         };
-        const code = buildSequenceDiagramCode(sequence);
+        const code = Usecase.buildSequenceDiagramCode(sequence);
 
         assert.ok(code.startsWith('sequenceDiagram\n'));
         assert.ok(code.includes('box outbounds'));
@@ -1085,7 +1084,7 @@ test.describe('buildSequenceDiagramCode', () => {
                 {from: 'node-a', to: 'node-b', label: ''}
             ]
         };
-        const code = buildSequenceDiagramCode(sequence);
+        const code = Usecase.buildSequenceDiagramCode(sequence);
 
         assert.ok(code.startsWith('sequenceDiagram\n'));
         assert.ok(!code.includes('box'));
@@ -1095,7 +1094,7 @@ test.describe('buildSequenceDiagramCode', () => {
 });
 
 test.describe('buildOutboundOperationSet', () => {
-    let buildOutboundOperationSet;
+    
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
@@ -1103,7 +1102,7 @@ test.describe('buildOutboundOperationSet', () => {
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
 
-        global.document = new DocumentStub();
+        const doc = new DocumentStub(); doc.body.classList.add("usecase-model"); global.document = doc;
         global.window = { addEventListener: () => {}, Event: EventStub };
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
@@ -1111,19 +1110,19 @@ test.describe('buildOutboundOperationSet', () => {
         require(jigCommonJsPath);
         require(jigMermaidDiagramJsPath);
         require(jigJsPath);
-        ({ buildOutboundOperationSet } = require(usecaseJsPath));
+        Usecase = require(usecaseJsPath);
     });
 
     test('nullの場合は空Setを返す', () => {
-        assert.strictEqual(buildOutboundOperationSet(null).size, 0);
+        assert.strictEqual(Usecase.buildOutboundOperationSet(null).size, 0);
     });
 
     test('undefinedの場合は空Setを返す', () => {
-        assert.strictEqual(buildOutboundOperationSet(undefined).size, 0);
+        assert.strictEqual(Usecase.buildOutboundOperationSet(undefined).size, 0);
     });
 
     test('outboundPortsがない場合は空Setを返す', () => {
-        assert.strictEqual(buildOutboundOperationSet({}).size, 0);
+        assert.strictEqual(Usecase.buildOutboundOperationSet({}).size, 0);
     });
 
     test('outboundPortsのoperationsのfqnをSetに収集する', () => {
@@ -1144,7 +1143,7 @@ test.describe('buildOutboundOperationSet', () => {
                 }
             ]
         };
-        const set = buildOutboundOperationSet(outboundData);
+        const set = Usecase.buildOutboundOperationSet(outboundData);
         assert.strictEqual(set.size, 3);
         assert.ok(set.has('com.example.RepositoryB#save()'));
         assert.ok(set.has('com.example.RepositoryB#find()'));
@@ -1153,7 +1152,7 @@ test.describe('buildOutboundOperationSet', () => {
 });
 
 test.describe('buildUsecaseDiagram', () => {
-    let buildUsecaseDiagram;
+    
 
     beforeEach(() => {
         delete require.cache[jigCommonJsPath];
@@ -1161,7 +1160,7 @@ test.describe('buildUsecaseDiagram', () => {
         delete require.cache[jigJsPath];
         delete require.cache[usecaseJsPath];
 
-        global.document = new DocumentStub();
+        const doc = new DocumentStub(); doc.body.classList.add("usecase-model"); global.document = doc;
         global.window = { addEventListener: () => {}, Event: EventStub };
         global.marked = { parse: (text) => text };
         global.mermaid = { initialize: () => {}, run: () => {} };
@@ -1169,7 +1168,7 @@ test.describe('buildUsecaseDiagram', () => {
         require(jigCommonJsPath);
         require(jigMermaidDiagramJsPath);
         require(jigJsPath);
-        ({ buildUsecaseDiagram } = require(usecaseJsPath));
+        Usecase = require(usecaseJsPath);
     });
 
     test('outboundOperationSetが空の場合、外部ノードは追加されない', () => {
@@ -1179,7 +1178,7 @@ test.describe('buildUsecaseDiagram', () => {
         };
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -1198,7 +1197,7 @@ test.describe('buildUsecaseDiagram', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -1221,7 +1220,7 @@ test.describe('buildUsecaseDiagram', () => {
         const methodMap = new Map([['com.example.ServiceA#method1()', rootMethod]]);
         const outboundOperationSet = new Set(['com.example.RepositoryB#save()']);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -1250,7 +1249,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['com.example.ServiceA#otherMethod()', otherMethod]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -1267,7 +1266,7 @@ test.describe('buildUsecaseDiagram', () => {
         const methodC = { fqn: 'C', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC]]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1290,7 +1289,7 @@ test.describe('buildUsecaseDiagram', () => {
         const methodMap = new Map([['A', rootMethod], ['B', methodB]]);
         const outboundOperationSet = new Set(['ext#method()']);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: false,
@@ -1311,7 +1310,7 @@ test.describe('buildUsecaseDiagram', () => {
         const methodD = { fqn: 'D', callMethods: [], kind: 'usecase' };
         const methodMap = new Map([['A', rootMethod], ['B', methodB], ['C', methodC], ['D', methodD]]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1331,7 +1330,7 @@ test.describe('buildUsecaseDiagram', () => {
         const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
         const outboundOperationSet = new Set(['ext.Cls#method()']);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -1351,7 +1350,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['pkg.Cls#B()', callerMethod]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1374,7 +1373,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['pkg.Cls#C()', usecaseCaller]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1396,7 +1395,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['pkg.Cls#B()', callerMethod]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -1417,7 +1416,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['pkg.Cls#C()', indirectCaller]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: true,
@@ -1440,7 +1439,7 @@ test.describe('buildUsecaseDiagram', () => {
         ]);
         const outboundOperationSet = new Set(['ext.Repo#save()']);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet,
             showDiagramInternalMethods: true,
@@ -1465,7 +1464,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['pkg.Cls#U()', usecaseCaller]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1488,7 +1487,7 @@ test.describe('buildUsecaseDiagram', () => {
             ['pkg.Cls#U()', usecaseCaller]
         ]);
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1513,7 +1512,7 @@ test.describe('buildUsecaseDiagram', () => {
             ]
         };
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,
@@ -1540,7 +1539,7 @@ test.describe('buildUsecaseDiagram', () => {
             ]
         };
 
-        const result = buildUsecaseDiagram(rootMethod, {
+        const result = Usecase.buildUsecaseDiagram(rootMethod, {
             methodMap,
             outboundOperationSet: new Set(),
             showDiagramInternalMethods: false,

@@ -367,7 +367,7 @@ const UsecaseApp = (() => {
          * @param {DiagramContext} diagramContext
          * @returns {SequenceDiagram}
          */
-        build(rootMethod, diagramContext) {
+        buildDiagram(rootMethod, diagramContext) {
             /** @type {string[]} */
             const participantKeys = [];
             /** @type {Map<string, SequenceParticipant>} */
@@ -744,7 +744,7 @@ const UsecaseApp = (() => {
                 const usecaseDiagram = buildUsecaseDiagram(method, diagramContext);
                 const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-                const sequenceDiagram = SequenceDiagram.build(method, diagramContext);
+                const sequenceDiagram = SequenceDiagram.buildDiagram(method, diagramContext);
                 const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
                 const hasSequenceDiagram = sequenceDiagramCode !== null;
 

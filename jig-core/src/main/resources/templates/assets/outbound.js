@@ -25,11 +25,6 @@ const OutboundApp = (() => {
         crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true
     };
 
-    const createElement = (...args) => globalThis.Jig.dom.createElement(...args);
-    const fqnToId = (...args) => globalThis.Jig.fqnToId(...args);
-    const getTypeTerm = (...args) => globalThis.Jig.glossary.getTypeTerm(...args);
-    const getMethodTerm = (...args) => globalThis.Jig.glossary.getMethodTerm(...args);
-
     // ===== データ取得・変換 =====
 
     /**
@@ -117,15 +112,15 @@ const OutboundApp = (() => {
                     externalAccessors
                 }];
             }).sort((a, b) => {
-                const left = getMethodTerm(a.outboundPortOperation.fqn).title;
-                const right = getMethodTerm(b.outboundPortOperation.fqn).title;
+                const left = Jig.glossary.getMethodTerm(a.outboundPortOperation.fqn).title;
+                const right = Jig.glossary.getMethodTerm(b.outboundPortOperation.fqn).title;
                 return left.localeCompare(right, "ja");
             });
             return {outboundPort: port, operations};
         }).filter(group => group.operations.length > 0)
           .sort((a, b) => {
-            const left = getTypeTerm(a.outboundPort.fqn).title;
-            const right = getTypeTerm(b.outboundPort.fqn).title;
+            const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
+            const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
             return left.localeCompare(right, "ja");
         });
     }
@@ -150,8 +145,8 @@ const OutboundApp = (() => {
         });
         return Array.from(map.values()).map(group => {
             group.operations.sort((a, b) => {
-                const left = getTypeTerm(a.outboundPort.fqn).title;
-                const right = getTypeTerm(b.outboundPort.fqn).title;
+                const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
+                const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
                 return left.localeCompare(right, "ja");
             });
             return group;
@@ -174,7 +169,7 @@ const OutboundApp = (() => {
             });
         });
         return Array.from(map.values())
-            .sort((a, b) => getTypeTerm(a.externalType.fqn).title.localeCompare(getTypeTerm(b.externalType.fqn).title, "ja"));
+            .sort((a, b) => Jig.glossary.getTypeTerm(a.externalType.fqn).title.localeCompare(Jig.glossary.getTypeTerm(b.externalType.fqn).title, "ja"));
     }
 
     function collectAllTargets(grouped) {
@@ -226,7 +221,7 @@ const OutboundApp = (() => {
     // ===== DOM ユーティリティ =====
 
     function renderNoData(container) {
-        container.appendChild(createElement("p", {
+        container.appendChild(Jig.dom.createElement("p", {
             className: "weak",
             textContent: "データなし"
         }));
@@ -238,15 +233,15 @@ const OutboundApp = (() => {
     function renderMermaid(mermaidCode, container) {
         if (!mermaidCode) return;
         if (!container) return;
-        if (!globalThis.Jig || !globalThis.Jig.mermaid || typeof globalThis.Jig.mermaid.renderWithControls !== "function") return;
+        if (!Jig || !Jig.mermaid || typeof Jig.mermaid.renderWithControls !== "function") return;
         container.innerHTML = "";
-        globalThis.Jig.mermaid.renderWithControls(container, mermaidCode);
+        Jig.mermaid.renderWithControls(container, mermaidCode);
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
         if (!visibility.port) return null;
         if (visibility.operation) {
-            const portOpId = fqnToId("portOp", portOpFqn);
+            const portOpId = Jig.fqnToId("portOp", portOpFqn);
             builder.addNodeToSubgraph(
                 builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
                 portOpId, portOpName, 'method'
@@ -254,7 +249,7 @@ const OutboundApp = (() => {
             builder.addClass(portOpId, "outbound");
             return portOpId;
         } else {
-            const portNodeId = fqnToId("port", portFqn);
+            const portNodeId = Jig.fqnToId("port", portFqn);
             builder.addNode(portNodeId, portLabel, 'class');
             builder.addClass(portNodeId, "outbound");
             return portNodeId;
@@ -266,12 +261,12 @@ const OutboundApp = (() => {
 
         if (visibility.execution) {
             const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
-            const executionId = fqnToId("exec", executionFqn);
+            const executionId = Jig.fqnToId("exec", executionFqn);
             builder.addNodeToSubgraph(sg, executionId, executionName, 'method');
             if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
             return executionId;
         } else {
-            const adapterNodeId = fqnToId("adapter", adapterFqn);
+            const adapterNodeId = Jig.fqnToId("adapter", adapterFqn);
             builder.addNode(adapterNodeId, adapterLabel, 'class');
             if (sourceNodeId) builder.addEdge(sourceNodeId, adapterNodeId);
             return adapterNodeId;
@@ -282,14 +277,14 @@ const OutboundApp = (() => {
         const groupId = op.group;
         if (!visibility.accessor || !groupId) return sourceNodeId;
 
-        const groupLabel = getTypeTerm(groupId).title;
+        const groupLabel = Jig.glossary.getTypeTerm(groupId).title;
         if (visibility.accessorMethod) {
-            const opNodeId = fqnToId("op", op.id);
+            const opNodeId = Jig.fqnToId("op", op.id);
             builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
             if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
             return opNodeId;
         } else {
-            const accessorNodeId = fqnToId("accessor", groupId);
+            const accessorNodeId = Jig.fqnToId("accessor", groupId);
             if (!accessorNodes.has(groupId)) {
                 accessorNodes.set(groupId, accessorNodeId);
                 builder.addNode(accessorNodeId, groupLabel, 'class');
@@ -317,7 +312,7 @@ const OutboundApp = (() => {
             if (!visibility.externalType) return;
             if (!extTypeNodes.has(ext.fqn)) {
                 extTypeNodes.set(ext.fqn, `ExtType_${extTypeNodes.size}`);
-                builder.addNode(extTypeNodes.get(ext.fqn), getTypeTerm(ext.fqn).title, 'external');
+                builder.addNode(extTypeNodes.get(ext.fqn), Jig.glossary.getTypeTerm(ext.fqn).title, 'external');
             }
             const edgeLabel = visibility.externalTypeMethod ? ext.method : undefined;
             if (fromNodeId) builder.addEdge(fromNodeId, extTypeNodes.get(ext.fqn), edgeLabel);
@@ -335,12 +330,12 @@ const OutboundApp = (() => {
             return sourceNodeId;
         }
 
-        const accessorLabel = getTypeTerm(accessor.fqn).title;
+        const accessorLabel = Jig.glossary.getTypeTerm(accessor.fqn).title;
         if (visibility.externalAccessorMethod) {
             // 外部アクセッサをsubgraphにして各メソッドをノードに
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.methods.forEach(accMethod => {
-                const accMethodNodeId = fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
+                const accMethodNodeId = Jig.fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
                 builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, 'method');
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
@@ -348,7 +343,7 @@ const OutboundApp = (() => {
             return null;
         } else {
             // クラス単位の単一ノード
-            const nodeId = fqnToId("extAcc", accessor.fqn);
+            const nodeId = Jig.fqnToId("extAcc", accessor.fqn);
             if (!extAccessorNodes.has(accessor.fqn)) {
                 extAccessorNodes.set(accessor.fqn, nodeId);
                 builder.addNode(nodeId, accessorLabel, 'class');
@@ -375,10 +370,10 @@ const OutboundApp = (() => {
     }
 
     function generatePortMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
-        const builder = new globalThis.Jig.mermaid.Builder();
+        const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
         const portFqn = group.outboundPort.fqn;
-        const portLabel = getTypeTerm(portFqn).title;
+        const portLabel = Jig.glossary.getTypeTerm(portFqn).title;
 
         const portSubgraphs = new Map();
         const adapterSubgraphs = new Map();
@@ -390,12 +385,12 @@ const OutboundApp = (() => {
         const extTypeNodes = new Map();
 
         group.operations.forEach((operation) => {
-            const portOpName = getMethodTerm(operation.outboundPortOperation.fqn).title;
+            const portOpName = Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title;
             const portOpFqn = operation.outboundPortOperation.fqn;
 
             const adapterFqn = operation.outboundAdapter?.fqn;
-            const adapterLabel = getTypeTerm(operation.outboundAdapter?.fqn).title;
-            const executionName = getMethodTerm(operation.outboundAdapterExecution?.fqn).title;
+            const adapterLabel = Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title;
+            const executionName = Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn).title;
             const executionFqn = operation.outboundAdapterExecution?.fqn;
 
             let lastNodeId = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -429,18 +424,18 @@ const OutboundApp = (() => {
     function extractOperationProps(operation) {
         return {
             portFqn:       operation.outboundPort.fqn,
-            portLabel:     getTypeTerm(operation.outboundPort.fqn).title,
-            portOpName:    getMethodTerm(operation.outboundPortOperation.fqn).title,
+            portLabel:     Jig.glossary.getTypeTerm(operation.outboundPort.fqn).title,
+            portOpName:    Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title,
             portOpFqn:     operation.outboundPortOperation.fqn,
             adapterFqn:    operation.outboundAdapter?.fqn,
-            adapterLabel:  getTypeTerm(operation.outboundAdapter?.fqn).title,
-            executionName: getMethodTerm(operation.outboundAdapterExecution?.fqn).title,
+            adapterLabel:  Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title,
+            executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn).title,
             executionFqn:  operation.outboundAdapterExecution?.fqn,
         };
     }
 
     function generatePersistenceMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
-        const builder = new globalThis.Jig.mermaid.Builder();
+        const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
         const persistenceTarget = group.persistenceTarget;
 
@@ -477,7 +472,7 @@ const OutboundApp = (() => {
     }
 
     function generateExternalTypeMermaidCode(group, visibility = state.visibility || DEFAULT_VISIBILITY) {
-        const builder = new globalThis.Jig.mermaid.Builder();
+        const builder = new Jig.mermaid.Builder();
         builder.applyThemeClassDefs();
         const externalType = group.externalType;
 
@@ -518,15 +513,15 @@ const OutboundApp = (() => {
     // ===== CRUD テーブル描画 =====
 
     function createPortGroupRow(group, allPersistenceTargets) {
-        return createElement("tr", {
+        return Jig.dom.createElement("tr", {
             className: "port-group-row",
             style: {cursor: "pointer"},
             children: [
-                createElement("td", {
+                Jig.dom.createElement("td", {
                     className: "port-group-cell",
                     children: [
-                        document.createTextNode(getTypeTerm(group.outboundPort.fqn).title),
-                        createElement("span", {
+                        document.createTextNode(Jig.glossary.getTypeTerm(group.outboundPort.fqn).title),
+                        Jig.dom.createElement("span", {
                             className: "weak",
                             style: {marginLeft: "8px"},
                             textContent: `(${group.operations.length})`
@@ -534,7 +529,7 @@ const OutboundApp = (() => {
                     ]
                 }),
                 ...allPersistenceTargets.map(persistenceTarget => {
-                    const cell = createElement("td", {className: "crud-cell port-crud-cell"});
+                    const cell = Jig.dom.createElement("td", {className: "crud-cell port-crud-cell"});
                     const cruds = new Set();
                     group.operations.forEach(operation => {
                         operation.persistenceAccessors.forEach(op => {
@@ -557,16 +552,16 @@ const OutboundApp = (() => {
     }
 
     function createOperationRow(operation, allPersistenceTargets, portId) {
-        return createElement("tr", {
+        return Jig.dom.createElement("tr", {
             className: `operation-row ${portId}`,
             style: {display: "none"},
             children: [
-                createElement("td", {
+                Jig.dom.createElement("td", {
                     className: "operation-cell",
-                    textContent: getMethodTerm(operation.outboundPortOperation.fqn).title
+                    textContent: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title
                 }),
                 ...allPersistenceTargets.map(persistenceTarget => {
-                    const cell = createElement("td", {className: "crud-cell"});
+                    const cell = Jig.dom.createElement("td", {className: "crud-cell"});
                     const cruds = new Set();
                     operation.persistenceAccessors.forEach(op => {
                         if (persistenceTarget in op.targetOperationTypes) {
@@ -587,7 +582,7 @@ const OutboundApp = (() => {
     }
 
     function appendGroupToTable(tbody, group, allPersistenceTargets) {
-        const portId = fqnToId("port", group.outboundPort.fqn);
+        const portId = Jig.fqnToId("port", group.outboundPort.fqn);
         const portRow = createPortGroupRow(group, allPersistenceTargets);
         tbody.appendChild(portRow);
 
@@ -619,23 +614,23 @@ const OutboundApp = (() => {
             return;
         }
 
-        const headerRow = createElement("tr", {
+        const headerRow = Jig.dom.createElement("tr", {
             children: [
-                createElement("th", {textContent: "出力ポート / 操作"}),
-                ...allPersistenceTargets.map(persistenceTarget => createElement("th", {
+                Jig.dom.createElement("th", {textContent: "出力ポート / 操作"}),
+                ...allPersistenceTargets.map(persistenceTarget => Jig.dom.createElement("th", {
                     id: `crud-target-${persistenceTarget}`,
                     textContent: persistenceTarget
                 }))
             ]
         });
 
-        const tbody = createElement("tbody");
+        const tbody = Jig.dom.createElement("tbody");
         grouped.forEach(group => appendGroupToTable(tbody, group, allPersistenceTargets));
 
-        const table = createElement("table", {
+        const table = Jig.dom.createElement("table", {
             className: "zebra crud-table",
             children: [
-                createElement("thead", {children: [headerRow]}),
+                Jig.dom.createElement("thead", {children: [headerRow]}),
                 tbody
             ]
         });
@@ -656,12 +651,12 @@ const OutboundApp = (() => {
             const portMermaidCode = generatePortMermaidCode(group, visibility);
             if (!portMermaidCode) return;
             const portFqnValue = group.outboundPort.fqn;
-            const portId = fqnToId("port", portFqnValue);
-            const portLabel = getTypeTerm(portFqnValue).title;
+            const portId = Jig.fqnToId("port", portFqnValue);
+            const portLabel = Jig.glossary.getTypeTerm(portFqnValue).title;
 
             const cardChildren = [
-                createElement("h3", {textContent: portLabel}),
-                createElement("p", {
+                Jig.dom.createElement("h3", {textContent: portLabel}),
+                Jig.dom.createElement("p", {
                     className: "fully-qualified-name",
                     textContent: portFqnValue
                 })
@@ -670,51 +665,51 @@ const OutboundApp = (() => {
             if (visibility.adapter) {
                 const adapterLabels = Array.from(new Set(group.operations.map(operation => {
                     const fqn = operation.outboundAdapter?.fqn ?? "";
-                    const label = getTypeTerm(fqn).title;
+                    const label = Jig.glossary.getTypeTerm(fqn).title;
                     return label + (label !== fqn ? ` (${fqn})` : "");
                 })));
                 if (adapterLabels.length > 0) {
-                    cardChildren.push(createElement("p", {
+                    cardChildren.push(Jig.dom.createElement("p", {
                         className: "weak",
                         textContent: "Implementation: " + adapterLabels.join(", ")
                     }));
                 }
             }
 
-            cardChildren.push(createElement("p", {
+            cardChildren.push(Jig.dom.createElement("p", {
                 className: "weak",
                 textContent: `${group.operations.length} operations`
             }));
 
-            const portMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-            globalThis.Jig.dom.lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
+            const portMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
+            Jig.dom.lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
             cardChildren.push(portMermaidContainer);
 
-            const itemList = createElement("div", {className: "outbound-operation-list"});
+            const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
             group.operations.forEach(operation => {
-                const mermaidContainer = createElement("div", {className: "mermaid-diagram"});
+                const mermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
                 const operationMermaidCode = generateOperationMermaidCode(operationWithPort, visibility);
-                globalThis.Jig.dom.lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
+                Jig.dom.lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
-                itemList.appendChild(createElement("article", {
+                itemList.appendChild(Jig.dom.createElement("article", {
                     className: "outbound-operation-item jig-card jig-card--item",
                     children: [
-                        createElement("h4", {textContent: getMethodTerm(operation.outboundPortOperation.fqn).title}),
+                        Jig.dom.createElement("h4", {textContent: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title}),
                         mermaidContainer,
-                        createElement("p", {
+                        Jig.dom.createElement("p", {
                             className: "outbound-persistence-detail-title",
                             textContent: "永続化操作"
                         }),
-                        createElement("ul", {
+                        Jig.dom.createElement("ul", {
                             className: "outbound-persistence-detail-list",
-                            children: formatPersistenceAccessors(operation.persistenceAccessors).map(text => createElement("li", {textContent: text}))
+                            children: formatPersistenceAccessors(operation.persistenceAccessors).map(text => Jig.dom.createElement("li", {textContent: text}))
                         })
                     ]
                 }));
             });
-            const itemListDetails = createElement("details", {});
-            const itemListSummary = createElement("summary", {
+            const itemListDetails = Jig.dom.createElement("details", {});
+            const itemListSummary = Jig.dom.createElement("summary", {
                 className: "outbound-operation-list-summary",
                 textContent: `操作別詳細 (${group.operations.length}件)`
             });
@@ -722,17 +717,17 @@ const OutboundApp = (() => {
             itemListDetails.appendChild(itemList);
             cardChildren.push(itemListDetails);
 
-            container.appendChild(createElement("section", {
+            container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",
                 id: portId,
                 children: cardChildren
             }));
         });
 
-        globalThis.Jig.dom.sidebar.renderSection(sidebar,"出力ポート", grouped.map(group => {
+        Jig.dom.sidebar.renderSection(sidebar,"出力ポート", grouped.map(group => {
             return {
-                id: fqnToId("port", group.outboundPort.fqn),
-                label: getTypeTerm(group.outboundPort.fqn).title
+                id: Jig.fqnToId("port", group.outboundPort.fqn),
+                label: Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
             };
         }));
 
@@ -751,23 +746,23 @@ const OutboundApp = (() => {
         grouped.forEach(group => {
             const persistenceMermaidCode = generatePersistenceMermaidCode(group, visibility);
             if (!persistenceMermaidCode) return;
-            const targetId = fqnToId("persistence", group.persistenceTarget);
+            const targetId = Jig.fqnToId("persistence", group.persistenceTarget);
 
-            const persistenceMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-            globalThis.Jig.dom.lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
+            const persistenceMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
+            Jig.dom.lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
-            container.appendChild(createElement("section", {
+            container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",
                 id: targetId,
                 children: [
-                    createElement("h3", {textContent: group.persistenceTarget}),
+                    Jig.dom.createElement("h3", {textContent: group.persistenceTarget}),
                     persistenceMermaidContainer
                 ]
             }));
         });
 
-        globalThis.Jig.dom.sidebar.renderSection(sidebar,"永続化操作対象", grouped.map(group => ({
-            id: fqnToId("persistence", group.persistenceTarget),
+        Jig.dom.sidebar.renderSection(sidebar,"永続化操作対象", grouped.map(group => ({
+            id: Jig.fqnToId("persistence", group.persistenceTarget),
             label: group.persistenceTarget
         })));
 
@@ -787,26 +782,26 @@ const OutboundApp = (() => {
             const externalMermaidCode = generateExternalTypeMermaidCode(group, visibility);
             if (!externalMermaidCode) return;
             const externalFqn = group.externalType.fqn;
-            const externalId = fqnToId("external", externalFqn);
-            const externalLabel = getTypeTerm(externalFqn).title;
+            const externalId = Jig.fqnToId("external", externalFqn);
+            const externalLabel = Jig.glossary.getTypeTerm(externalFqn).title;
 
-            const externalMermaidContainer = createElement("div", {className: "mermaid-diagram port-diagram"});
-            globalThis.Jig.dom.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
+            const externalMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
+            Jig.dom.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
-            container.appendChild(createElement("section", {
+            container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",
                 id: externalId,
                 children: [
-                    createElement("h3", {textContent: externalLabel}),
-                    createElement("p", {className: "fully-qualified-name", textContent: externalFqn}),
+                    Jig.dom.createElement("h3", {textContent: externalLabel}),
+                    Jig.dom.createElement("p", {className: "fully-qualified-name", textContent: externalFqn}),
                     externalMermaidContainer
                 ]
             }));
         });
 
-        globalThis.Jig.dom.sidebar.renderSection(sidebar,"外部型", grouped.map(group => ({
-            id: fqnToId("external", group.externalType.fqn),
-            label: getTypeTerm(group.externalType.fqn).title
+        Jig.dom.sidebar.renderSection(sidebar,"外部型", grouped.map(group => ({
+            id: Jig.fqnToId("external", group.externalType.fqn),
+            label: Jig.glossary.getTypeTerm(group.externalType.fqn).title
         })));
 
         if (grouped.length === 0) {
@@ -960,15 +955,12 @@ const OutboundApp = (() => {
         renderExternalList,
         renderCrudTable,
         toCrudChar,
-        createElement,
         renderNoData,
         generateOperationMermaidCode,
         generatePortMermaidCode,
         generatePersistenceMermaidCode,
         generateExternalTypeMermaidCode,
         addExternalAccessorNode,
-        // Match old export name for testing
-        MermaidBuilder: globalThis.Jig.mermaid.Builder
     };
 })();
 

@@ -301,37 +301,37 @@ test.describe("outbound.js", () => {
 
     test.describe("MermaidBuilder", () => {
         test("isEmpty: 初期状態では真を返す", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             assert.ok(builder.isEmpty());
         });
 
         test("isEmpty: ノードを追加すると偽を返す", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             assert.ok(!builder.isEmpty());
         });
 
         test("isEmpty: エッジのみでは偽を返す", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addEdge("A", "B");
             assert.ok(!builder.isEmpty());
         });
 
         test("isEmpty: サブグラフを追加すると偽を返す", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.startSubgraph("Group");
             assert.ok(!builder.isEmpty());
         });
 
         test("sanitize: 非英数字をアンダースコアに変換する", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             assert.equal(builder.sanitize("com.example.MyClass"), "com_example_MyClass");
             assert.equal(builder.sanitize("foo#bar(baz)"), "foo_bar_baz_");
             assert.equal(builder.sanitize(null), "");
         });
 
         test("addNode: 同じノードは重複しない", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             builder.addNode("A", "NodeA");
             const code = builder.build();
@@ -339,7 +339,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addEdge: 同じエッジは重複しない", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             builder.addNode("B", "NodeB");
             builder.addEdge("A", "B");
@@ -349,7 +349,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addEdge: ラベルなしエッジを生成する", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             builder.addNode("B", "NodeB");
             builder.addEdge("A", "B");
@@ -358,7 +358,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addEdge: ラベル付きエッジを生成する", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             builder.addNode("B", "NodeB");
             builder.addEdge("A", "B", "SELECT");
@@ -367,19 +367,19 @@ test.describe("outbound.js", () => {
         });
 
         test("build: デフォルトで graph LR から始まる", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             assert.ok(builder.build().startsWith("graph LR"));
         });
 
         test("build: direction を変更できる", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             assert.ok(builder.build("TB").startsWith("graph TB"));
         });
 
         test("startSubgraph・addNodeToSubgraph: subgraph を生成する", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             const sg = builder.startSubgraph("MyGroup");
             builder.addNodeToSubgraph(sg, "N1", "Node1");
             const code = builder.build();
@@ -389,7 +389,7 @@ test.describe("outbound.js", () => {
         });
 
         test("addNodeToSubgraph: 同じノードは重複しない", () => {
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             const sg = builder.startSubgraph("Group");
             builder.addNodeToSubgraph(sg, "N1", "Node1");
             builder.addNodeToSubgraph(sg, "N1", "Node1");
@@ -458,7 +458,7 @@ test.describe("outbound.js", () => {
         test("direction 設定が反映される", () => {
             const visibility = { ...OutboundApp.generatePortMermaidCode.length, port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: true, direction: "TB", crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true };
             // MermaidBuilder を直接使って direction を確認
-            const builder = new OutboundApp.MermaidBuilder();
+            const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
             assert.ok(builder.build("TB").startsWith("graph TB"));
         });

@@ -14,7 +14,6 @@ const DomainApp = (() => {
 
     const diagramRegistry = []; // [{container, pkg, diagramType}] diagramType: 'package' | 'type'
     const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
-    let diagramObserver = null; // IntersectionObserver インスタンス
 
     /**
      * @returns {DomainData}
@@ -796,7 +795,8 @@ const DomainApp = (() => {
     }
 
     /**
-     * 指定されたダイアグラムを再生成
+     * 指定されたダイアグラムを再生成（設定変更時、表示範囲内のダイアグラム用）
+     * 表示範囲外のダイアグラムは削除のみで、スクロール時に setupLazyMermaidRender で再生成される
      * @param {HTMLElement} container
      * @param {Object} diagram - {container, pkg, type, diagramType}
      */
@@ -844,10 +844,12 @@ const DomainApp = (() => {
     }
 
     /**
+     * 設定変更時のダイアグラム再レンダリング
+     * 表示範囲内のダイアグラムは即座に再生成
+     * 表示範囲外のダイアグラムは削除のみで、スクロール時に setupLazyMermaidRender で再生成される
      * @returns {void}
      */
     function rerenderDiagrams() {
-        // 表示済みダイアグラムを削除。表示範囲内のみ即座に再生成
         diagramRegistry
             .filter(({container}) => renderedContainers.has(container))
             .forEach((diagram) => {
@@ -1081,26 +1083,6 @@ const DomainApp = (() => {
 
         renderPackages(data.packages, main);
         renderTypes(data.types, main);
-
-        // IntersectionObserver で表示範囲内のダイアグラムを自動レンダリング
-        if ('IntersectionObserver' in window) {
-            diagramObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
-                        renderedContainers.add(entry.target);
-                        const diagram = diagramRegistry.find(d => d.container === entry.target);
-                        if (diagram) {
-                            renderDiagram(entry.target, diagram);
-                        }
-                    }
-                });
-            }, {rootMargin: '100px'});
-
-            // 全ダイアグラムを observe
-            diagramRegistry.forEach(({container}) => {
-                diagramObserver.observe(container);
-            });
-        }
     }
 
     return {

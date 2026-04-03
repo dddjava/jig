@@ -829,7 +829,22 @@ const UsecaseApp = (() => {
                         (sequencePanel || diagramContainer).appendChild(sequenceContainer);
 
                         Jig.mermaid.diagram.register(sequenceContainer, () => {
-                            Jig.mermaid.render.renderWithControls(sequenceContainer, sequenceDiagramCode);
+                            // 毎回新しい diagramContext を作成（現在の設定値を反映）
+                            const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
+                            const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
+                            const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
+                            const currentDiagramContext = {
+                                methodMap,
+                                outboundOperationSet,
+                                showDiagramInternalMethods,
+                                showDiagramOutboundPorts,
+                                showDiagramDomainTypes
+                            };
+                            const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, currentDiagramContext);
+                            const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
+                            if (currentSequenceDiagramCode) {
+                                Jig.mermaid.render.renderWithControls(sequenceContainer, currentSequenceDiagramCode);
+                            }
                         });
                     }
                 }

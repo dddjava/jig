@@ -942,6 +942,8 @@ const OutboundApp = (() => {
     function renderPanels() {
         const {visibility, data, grouped, persistenceGrouped, externalGrouped} = state;
         if (!data) return;
+        // 古いダイアグラムレジストリをクリア
+        Jig.mermaid.diagram.clearRegistry();
         renderPersistenceList(persistenceGrouped, visibility);
         renderExternalList(externalGrouped, visibility);
         renderOutboundList(grouped, visibility);

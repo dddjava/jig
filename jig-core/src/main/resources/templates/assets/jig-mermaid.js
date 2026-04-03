@@ -1323,9 +1323,19 @@ globalThis.Jig.mermaid = (() => {
                 });
         }
 
+        /**
+         * ダイアグラムレジストリをクリア
+         */
+        function clearRegistry() {
+            diagramRegistry.length = 0;
+            renderedContainers.clear();
+            observedContainers.clear();
+        }
+
         return {
             register,
-            rerenderVisible
+            rerenderVisible,
+            clearRegistry
         };
     })();
 

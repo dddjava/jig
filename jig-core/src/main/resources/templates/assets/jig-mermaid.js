@@ -1245,6 +1245,88 @@ globalThis.Jig.mermaid = (() => {
     })();
 
     /**
+     * ダイアグラム管理（設定変更時の再レンダリング対応）
+     */
+    const diagram = (() => {
+        const diagramRegistry = []; // [{container, renderFn}]
+        const renderedContainers = new Set();
+        let diagramObserver = null;
+        const observedContainers = new WeakSet();
+
+        function isVisible(element) {
+            const rect = element.getBoundingClientRect();
+            return rect.top < window.innerHeight && rect.bottom > 0;
+        }
+
+        function ensureObserver() {
+            if (diagramObserver) return;
+            if (!('IntersectionObserver' in window)) return;
+
+            diagramObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
+                        renderedContainers.add(entry.target);
+                        const d = diagramRegistry.find(d => d.container === entry.target);
+                        if (d) {
+                            d.renderFn();
+                        }
+                    }
+                });
+            }, {rootMargin: '100px'});
+        }
+
+        /**
+         * ダイアグラムを登録（遅延レンダリング対応）
+         * @param {HTMLElement} container
+         * @param {Function} renderFn - レンダリング関数
+         */
+        function register(container, renderFn) {
+            if (!container || typeof renderFn !== 'function') return;
+
+            diagramRegistry.push({container, renderFn});
+
+            // IntersectionObserver で自動レンダリング
+            if ('IntersectionObserver' in window) {
+                ensureObserver();
+                if (diagramObserver && !observedContainers.has(container)) {
+                    diagramObserver.observe(container);
+                    observedContainers.add(container);
+                }
+            } else {
+                // IntersectionObserver 非サポート時は即座にレンダリング
+                renderedContainers.add(container);
+                renderFn();
+            }
+        }
+
+        /**
+         * 表示範囲内のダイアグラムのみ再レンダリング
+         * @param {Function} [shouldRerender] - 再レンダリング判定関数（省略時は全て）
+         */
+        function rerenderVisible(shouldRerender) {
+            diagramRegistry
+                .filter(({container}) => renderedContainers.has(container))
+                .forEach(({container, renderFn}) => {
+                    // 表示範囲内のみ再レンダリング
+                    if (isVisible(container)) {
+                        if (!shouldRerender || shouldRerender(container)) {
+                            renderFn();
+                        }
+                    } else {
+                        // 表示範囲外は削除のみで、スクロール時に自動再レンダリング
+                        container.innerHTML = "";
+                        renderedContainers.delete(container);
+                    }
+                });
+        }
+
+        return {
+            register,
+            rerenderVisible
+        };
+    })();
+
+    /**
      * パッケージダイアグラム作成
      * index.htmlおよびdomain.htmlで表示するもの。
      *
@@ -1280,6 +1362,7 @@ globalThis.Jig.mermaid = (() => {
         builder,
         graph,
         render,
+        diagram,
         // 高レベルAPI
         createPackageLevelDiagram,
         Builder: builder.MermaidBuilder,

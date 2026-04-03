@@ -12,8 +12,6 @@ const DomainApp = (() => {
         transitiveReductionEnabled: true,
     };
 
-    const diagramRegistry = []; // [{container, pkg, diagramType}] diagramType: 'package' | 'type'
-    const renderedContainers = new Set(); // 実際に描画済みのコンテナ（設定変更時の再描画対象）
     let diagramObserver = null; // IntersectionObserver インスタンス
 
     /**
@@ -626,23 +624,17 @@ const DomainApp = (() => {
                 if (panels['direct']) {
                     const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                     panels['direct'].appendChild(c);
-                    diagramRegistry.push({container: c, pkg, diagramType: 'packageDirect'});
-                    Jig.dom.lazyRender(c, () => {
-                        renderedContainers.add(c);
-                        c.innerHTML = "";
-                        const diagram = createPackageDirectRelationDiagram(pkg, allPackageRelations);
-                        if (diagram) Jig.mermaid.render.renderWithControls(c, diagram);
+                    Jig.mermaid.diagram.register(c, () => {
+                        const diagramDef = {container: c, pkg, type: undefined, diagramType: 'packageDirect'};
+                        renderDiagram(c, diagramDef);
                     });
                 }
                 if (panels['inner-pkg']) {
                     const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                     panels['inner-pkg'].appendChild(c);
-                    diagramRegistry.push({container: c, pkg, diagramType: 'package'});
-                    Jig.dom.lazyRender(c, () => {
-                        renderedContainers.add(c);
-                        c.innerHTML = "";
-                        const diagram = createPackageRelationDiagram(pkg, allPackages, allPackageRelations);
-                        if (diagram) Jig.mermaid.render.renderWithControls(c, diagram);
+                    Jig.mermaid.diagram.register(c, () => {
+                        const diagramDef = {container: c, pkg, type: undefined, diagramType: 'package'};
+                        renderDiagram(c, diagramDef);
                     });
                 }
                 if (panels['inner-class']) {
@@ -670,26 +662,14 @@ const DomainApp = (() => {
 
                     const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                     panels['inner-class'].appendChild(c);
-                    diagramRegistry.push({container: c, pkg, diagramType: 'type'});
 
                     const render = () => {
-                        c.innerHTML = "";
-                        const diagram = createRelationDiagram(pkg, {
-                            showExternalOutgoing: outgoingCheckbox.checked,
-                            showExternalIncoming: incomingCheckbox.checked
-                        });
-                        if (diagram) Jig.mermaid.render.renderWithControls(c, diagram);
+                        const diagramDef = {container: c, pkg, type: undefined, diagramType: 'type'};
+                        renderDiagram(c, diagramDef);
                     };
-                    outgoingCheckbox.addEventListener('change', () => {
-                        if (renderedContainers.has(c)) render();
-                    });
-                    incomingCheckbox.addEventListener('change', () => {
-                        if (renderedContainers.has(c)) render();
-                    });
-                    Jig.dom.lazyRender(c, () => {
-                        renderedContainers.add(c);
-                        render();
-                    });
+                    outgoingCheckbox.addEventListener('change', render);
+                    incomingCheckbox.addEventListener('change', render);
+                    Jig.mermaid.diagram.register(c, render);
                 }
             }
 
@@ -757,18 +737,13 @@ const DomainApp = (() => {
 
             const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
-            diagramRegistry.push({container: mmdContainer, type, diagramType: 'classDirect'});
-            Jig.dom.lazyRender(mmdContainer, () => {
-                renderedContainers.add(mmdContainer);
-                mmdContainer.innerHTML = "";
-                const diagramGenerator = (dir) => createTypeRelationDiagram(type, dir);
-                if (diagramGenerator(domainSettings.diagramDirection)) {
-                    Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: domainSettings.diagramDirection});
-                    section.insertBefore(Jig.dom.createElement("h4", {
-                        textContent: "クラス関連図",
-                        className: "diagram-heading"
-                    }), mmdContainer);
-                }
+            Jig.mermaid.diagram.register(mmdContainer, () => {
+                const diagramDef = {container: mmdContainer, pkg: undefined, type, diagramType: 'classDirect'};
+                renderDiagram(mmdContainer, diagramDef);
+                section.insertBefore(Jig.dom.createElement("h4", {
+                    textContent: "クラス関連図",
+                    className: "diagram-heading"
+                }), mmdContainer);
             });
 
             const relatedList = createRelatedClassesList(type);
@@ -802,7 +777,9 @@ const DomainApp = (() => {
      */
     function renderDiagram(container, diagram) {
         const {pkg, type, diagramType} = diagram;
-        const allPackages = getDomainData().packages;
+        const data = getDomainData();
+        if (!data) return;
+        const allPackages = data.packages;
         const allPackageRelations = derivePackageRelations();
 
         container.innerHTML = "";
@@ -822,7 +799,8 @@ const DomainApp = (() => {
                 Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
             }
         } else {
-            const panel = container.closest('.diagram-panel');
+            // テスト環境など closest が使えない場合に対応
+            const panel = typeof container.closest === 'function' ? container.closest('.diagram-panel') : null;
             const outgoing = panel?.querySelector('.class-relation-external-outgoing');
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
@@ -838,32 +816,6 @@ const DomainApp = (() => {
         }
     }
 
-    function isVisible(element) {
-        const rect = element.getBoundingClientRect();
-        return rect.top < window.innerHeight && rect.bottom > 0;
-    }
-
-    /**
-     * 設定変更時のダイアグラム再レンダリング
-     * 表示範囲内のダイアグラムは即座に再生成
-     * 表示範囲外のダイアグラムは削除のみで、スクロール時に setupLazyMermaidRender で再生成される
-     * @returns {void}
-     */
-    function rerenderDiagrams() {
-        diagramRegistry
-            .filter(({container}) => renderedContainers.has(container))
-            .forEach((diagram) => {
-                const {container} = diagram;
-                container.innerHTML = "";
-                renderedContainers.delete(container);
-
-                // 表示範囲内なら即座に再生成
-                if (isVisible(container)) {
-                    renderedContainers.add(container);
-                    renderDiagram(container, diagram);
-                }
-            });
-    }
 
     /**
      * @returns {void}
@@ -943,7 +895,7 @@ const DomainApp = (() => {
             directionToggle.addEventListener('click', () => {
                 domainSettings.diagramDirection = domainSettings.diagramDirection === 'TB' ? 'LR' : 'TB';
                 updateDirectionIcon();
-                rerenderDiagrams();
+                Jig.mermaid.diagram.rerenderVisible();
             });
         }
 
@@ -951,7 +903,7 @@ const DomainApp = (() => {
         if (deprecatedCheckbox) {
             deprecatedCheckbox.addEventListener('change', () => {
                 domainSettings.showDeprecatedNodes = deprecatedCheckbox.checked;
-                rerenderDiagrams();
+                Jig.mermaid.diagram.rerenderVisible();
             });
         }
 
@@ -960,7 +912,7 @@ const DomainApp = (() => {
             reductionCheckbox.checked = domainSettings.transitiveReductionEnabled;
             reductionCheckbox.addEventListener('change', () => {
                 domainSettings.transitiveReductionEnabled = reductionCheckbox.checked;
-                rerenderDiagrams();
+                Jig.mermaid.diagram.rerenderVisible();
             });
         }
 
@@ -1023,8 +975,6 @@ const DomainApp = (() => {
             return;
         }
 
-        diagramRegistry.length = 0;
-        renderedContainers.clear();
         initSettings();
 
         // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）
@@ -1083,27 +1033,6 @@ const DomainApp = (() => {
 
         renderPackages(data.packages, main);
         renderTypes(data.types, main);
-
-        // 削除されたダイアグラムが再度表示範囲に入ったときに自動レンダリング
-        if ('IntersectionObserver' in window) {
-            diagramObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    // 削除済み（renderedContainers に属さない）かつ表示範囲内なら再レンダリング
-                    if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
-                        renderedContainers.add(entry.target);
-                        const diagram = diagramRegistry.find(d => d.container === entry.target);
-                        if (diagram) {
-                            renderDiagram(entry.target, diagram);
-                        }
-                    }
-                });
-            }, {rootMargin: '100px'});
-
-            // 全ダイアグラムを observe
-            diagramRegistry.forEach(({container}) => {
-                diagramObserver.observe(container);
-            });
-        }
     }
 
     return {

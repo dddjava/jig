@@ -26,7 +26,7 @@ public record Configuration(
         CoreDomainCondition architecture = new CoreDomainCondition(properties.getDomainPattern());
         JigService jigService = new JigService(architecture, jigEventRepository);
 
-        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(glossaryRepository, properties);
+        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(properties);
         JigDocumentGenerator jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
 
         return new Configuration(

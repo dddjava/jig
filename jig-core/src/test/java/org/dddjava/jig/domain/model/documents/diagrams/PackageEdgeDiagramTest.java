@@ -3,11 +3,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.packages.PackageIds;
-import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermId;
-import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
@@ -24,9 +20,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.argumentSet;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class PackageEdgeDiagramTest {
 
@@ -73,10 +66,6 @@ class PackageEdgeDiagramTest {
     @ParameterizedTest
     void 出力されるパターン(List<TypeRelationship> classRelations, int depth, List<String> expectedContainsTexts) {
         var sut = PackageRelations.from(new TypeRelationships(classRelations)).applyDepth(new PackageDepth(depth));
-
-        JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
-        Term dummyTerm = Term.simple(new TermId("dummy"), "dummy", TermKind.パッケージ);
-        when(jigDocumentContext.packageTerm(any())).thenReturn(dummyTerm);
 
         var list = sut.listUnique().stream()
                 .map(packageRelation -> "\"%s\" -> \"%s\";".formatted(packageRelation.from().asText(), packageRelation.to().asText()))

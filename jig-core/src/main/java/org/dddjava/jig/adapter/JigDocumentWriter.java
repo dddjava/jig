@@ -56,19 +56,15 @@ public class JigDocumentWriter {
 
     public void writeJsData(String variableName, String json) {
         String fileName = jigDocument.fileName();
-        write(
-                outputStream -> {
-                    try (var writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-                        writer.write("globalThis." + variableName + " = " + json);
-                    }
-                },
-                "data/" + fileName + "-data.js"
-        );
+        writeJs(variableName, json, fileName + "-data");
     }
 
     public void writeJsDataAs(String variableName, String json, String fileName) {
-        write(
-                outputStream -> {
+        writeJs(variableName, json, fileName);
+    }
+
+    private void writeJs(String variableName, String json, String fileName) {
+        write(outputStream -> {
                     try (var writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
                         writer.write("globalThis." + variableName + " = " + json);
                     }

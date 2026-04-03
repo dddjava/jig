@@ -26,7 +26,9 @@ const PackageApp = (() => {
 
     const dom = {
         getFocusTarget: () => document.getElementById('focus-target'),
-        setFocusTargetText: (element, text) => { if (element) element.textContent = text; },
+        setFocusTargetText: (element, text) => {
+            if (element) element.textContent = text;
+        },
 
         getPackageTableBody: () => document.querySelector('#package-table tbody'),
         getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
@@ -119,7 +121,7 @@ const PackageApp = (() => {
             filteredPackages = filteredPackages.filter(item =>
                 focusSet.has(Jig.packageDiagram.getAggregatedFqn(item.fqn, aggregationDepth))
             );
-            
+
             const filterDirectRelation = (relation) => {
                 const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
                 const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
@@ -271,7 +273,7 @@ const PackageApp = (() => {
         let nextRelations = uniqueRelations;
         if (aggregatedRoot) {
             const focusSet = collectFocusSet(aggregatedRoot, uniqueRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
-            
+
             const filterDirectRelation = (relation) => {
                 const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
                 const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);

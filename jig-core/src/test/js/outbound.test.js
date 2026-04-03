@@ -1,9 +1,12 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { DocumentStub } = require("./dom-stub.js");
+const {DocumentStub} = require("./dom-stub.js");
 
 // jig-glossary.js と jig-dom.js をロード（outbound.js が require 時に Jig 名前空間を参照するため先に行う）
-global.window = { addEventListener: () => {} };
+global.window = {
+    addEventListener: () => {
+    }
+};
 const doc = new DocumentStub();
 doc.body.classList.add("outbound-interface");
 global.document = doc;
@@ -44,17 +47,18 @@ function setupDom() {
     }
     global.document = doc;
     // renderMermaid が呼ばれた際にエラーにならないようモック
-    globalThis.Jig.mermaid.renderWithControls = () => {};
+    globalThis.Jig.mermaid.renderWithControls = () => {
+    };
     return doc;
 }
 
 // テスト用の操作グループ（Mermaid コード生成・DOM 描画で再利用）
 const simpleGroup = {
-    outboundPort: { fqn: "com.example.Port", label: "Port" },
+    outboundPort: {fqn: "com.example.Port", label: "Port"},
     operations: [{
-        outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
-        outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-        outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
+        outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
+        outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+        outboundAdapterExecution: {fqn: "com.example.Adapter#save()", label: "save"},
         persistenceAccessors: [],
         externalAccessors: []
     }]
@@ -99,7 +103,7 @@ test.describe("outbound.js", () => {
 
         test("永続化操作をid・操作タイプ・ターゲット名を含む文字列に整形する", () => {
             const result = OutboundApp.formatPersistenceAccessors([
-                { id: "com.example.Mapper.find", targetOperationTypes: { "orders": "SELECT" } }
+                {id: "com.example.Mapper.find", targetOperationTypes: {"orders": "SELECT"}}
             ]);
             assert.equal(result.length, 1);
             assert.ok(result[0].includes("com.example.Mapper.find"), "idを含む");
@@ -108,8 +112,8 @@ test.describe("outbound.js", () => {
 
         test("複数の操作は複数の文字列として返す", () => {
             const result = OutboundApp.formatPersistenceAccessors([
-                { id: "op1", targetOperationTypes: { "tableA": "INSERT" } },
-                { id: "op2", targetOperationTypes: { "tableB": "SELECT" } }
+                {id: "op1", targetOperationTypes: {"tableA": "INSERT"}},
+                {id: "op2", targetOperationTypes: {"tableB": "SELECT"}}
             ]);
             assert.equal(result.length, 2);
         });
@@ -127,7 +131,7 @@ test.describe("outbound.js", () => {
             const data = {
                 ...makeEmptyData(),
                 outboundPorts: [
-                    { fqn: "portA", label: "A", operations: [{ fqn: "opA", label: "save" }] }
+                    {fqn: "portA", label: "A", operations: [{fqn: "opA", label: "save"}]}
                 ]
                 // links.operationToExecution が空なのでopAは紐付かない
             };
@@ -138,19 +142,19 @@ test.describe("outbound.js", () => {
         test("出力ポート単位でグルーピングし、ラベルの昇順にソートする", () => {
             const data = {
                 outboundPorts: [
-                    { fqn: "portB", label: "い", operations: [{ fqn: "opB", label: "B操作" }] },
-                    { fqn: "portA", label: "あ", operations: [{ fqn: "opA", label: "A操作" }] }
+                    {fqn: "portB", label: "い", operations: [{fqn: "opB", label: "B操作"}]},
+                    {fqn: "portA", label: "あ", operations: [{fqn: "opA", label: "A操作"}]}
                 ],
                 outboundAdapters: [
-                    { fqn: "adapterA", label: "A", executions: [{ fqn: "execA", label: "execA" }] },
-                    { fqn: "adapterB", label: "B", executions: [{ fqn: "execB", label: "execB" }] }
+                    {fqn: "adapterA", label: "A", executions: [{fqn: "execA", label: "execA"}]},
+                    {fqn: "adapterB", label: "B", executions: [{fqn: "execB", label: "execB"}]}
                 ],
                 persistenceAccessors: [],
                 otherExternalAccessors: [],
                 links: {
                     operationToExecution: [
-                        { operation: "opA", execution: "execA" },
-                        { operation: "opB", execution: "execB" }
+                        {operation: "opA", execution: "execA"},
+                        {operation: "opB", execution: "execB"}
                     ],
                     executionToPersistenceAccessor: [],
                     executionToOtherExternalAccessor: []
@@ -165,15 +169,15 @@ test.describe("outbound.js", () => {
         test("アダプターに実行が見つかった場合、outboundAdapter・outboundAdapterExecution が設定される", () => {
             const data = {
                 outboundPorts: [
-                    { fqn: "portA", label: "A", operations: [{ fqn: "opA", label: "save" }] }
+                    {fqn: "portA", label: "A", operations: [{fqn: "opA", label: "save"}]}
                 ],
                 outboundAdapters: [
-                    { fqn: "adapterA", label: "AdapterA", executions: [{ fqn: "execA", label: "execA" }] }
+                    {fqn: "adapterA", label: "AdapterA", executions: [{fqn: "execA", label: "execA"}]}
                 ],
                 persistenceAccessors: [],
                 otherExternalAccessors: [],
                 links: {
-                    operationToExecution: [{ operation: "opA", execution: "execA" }],
+                    operationToExecution: [{operation: "opA", execution: "execA"}],
                     executionToPersistenceAccessor: [],
                     executionToOtherExternalAccessor: []
                 }
@@ -187,13 +191,13 @@ test.describe("outbound.js", () => {
         test("実行に対応するアダプターがない場合、outboundAdapter・outboundAdapterExecution が null になる", () => {
             const data = {
                 outboundPorts: [
-                    { fqn: "portA", label: "A", operations: [{ fqn: "opA", label: "save" }] }
+                    {fqn: "portA", label: "A", operations: [{fqn: "opA", label: "save"}]}
                 ],
                 outboundAdapters: [],
                 persistenceAccessors: [],
                 otherExternalAccessors: [],
                 links: {
-                    operationToExecution: [{ operation: "opA", execution: "execUnknown" }],
+                    operationToExecution: [{operation: "opA", execution: "execUnknown"}],
                     executionToPersistenceAccessor: [],
                     executionToOtherExternalAccessor: []
                 }
@@ -211,12 +215,12 @@ test.describe("outbound.js", () => {
         test("永続化ターゲット単位でグルーピングし、ターゲット名でソートする", () => {
             const operations = [
                 {
-                    outboundPort: { fqn: "port1", label: "P1" },
-                    persistenceAccessors: [{ id: "op1", targetOperationTypes: { "table_b": "SELECT" } }]
+                    outboundPort: {fqn: "port1", label: "P1"},
+                    persistenceAccessors: [{id: "op1", targetOperationTypes: {"table_b": "SELECT"}}]
                 },
                 {
-                    outboundPort: { fqn: "port2", label: "P2" },
-                    persistenceAccessors: [{ id: "op2", targetOperationTypes: { "table_a": "SELECT" } }]
+                    outboundPort: {fqn: "port2", label: "P2"},
+                    persistenceAccessors: [{id: "op2", targetOperationTypes: {"table_a": "SELECT"}}]
                 }
             ];
             const grouped = OutboundApp.groupOperationsByPersistenceTarget(operations);
@@ -228,12 +232,12 @@ test.describe("outbound.js", () => {
         test("同じターゲットに複数の操作が対応する場合、まとめて重複排除する", () => {
             const operations = [
                 {
-                    outboundPort: { fqn: "port1", label: "P1" },
-                    persistenceAccessors: [{ id: "op1", targetOperationTypes: { "orders": "SELECT" } }]
+                    outboundPort: {fqn: "port1", label: "P1"},
+                    persistenceAccessors: [{id: "op1", targetOperationTypes: {"orders": "SELECT"}}]
                 },
                 {
-                    outboundPort: { fqn: "port2", label: "P2" },
-                    persistenceAccessors: [{ id: "op2", targetOperationTypes: { "orders": "INSERT" } }]
+                    outboundPort: {fqn: "port2", label: "P2"},
+                    persistenceAccessors: [{id: "op2", targetOperationTypes: {"orders": "INSERT"}}]
                 }
             ];
             const grouped = OutboundApp.groupOperationsByPersistenceTarget(operations);
@@ -244,9 +248,9 @@ test.describe("outbound.js", () => {
 
         test("同じ操作が複数ターゲットに紐付く場合も重複排除する", () => {
             const operation = {
-                outboundPort: { fqn: "port1", label: "P1" },
+                outboundPort: {fqn: "port1", label: "P1"},
                 persistenceAccessors: [
-                    { id: "op1", targetOperationTypes: { "orders": "SELECT", "items": "SELECT" } }
+                    {id: "op1", targetOperationTypes: {"orders": "SELECT", "items": "SELECT"}}
                 ]
             };
             const grouped = OutboundApp.groupOperationsByPersistenceTarget([operation]);
@@ -260,8 +264,8 @@ test.describe("outbound.js", () => {
     test.describe("groupOperationsByExternalType", () => {
         test("外部型単位でグルーピングする", () => {
             const operations = [{
-                outboundPort: { fqn: "port1", label: "P1" },
-                outboundPortOperation: { fqn: "op1", label: "call" },
+                outboundPort: {fqn: "port1", label: "P1"},
+                outboundPortOperation: {fqn: "op1", label: "call"},
                 outboundAdapter: null,
                 outboundAdapterExecution: null,
                 persistenceAccessors: [],
@@ -270,7 +274,7 @@ test.describe("outbound.js", () => {
                     label: "Client",
                     methods: [{
                         name: "fetch",
-                        externals: [{ fqn: "com.example.ExtType", label: "ExtType", method: "get" }]
+                        externals: [{fqn: "com.example.ExtType", label: "ExtType", method: "get"}]
                     }]
                 }]
             }];
@@ -282,13 +286,13 @@ test.describe("outbound.js", () => {
 
         test("同じ外部型を参照する複数の操作はまとめられる", () => {
             const makeOp = (portFqn, portLabel) => ({
-                outboundPort: { fqn: portFqn, label: portLabel },
-                outboundPortOperation: { fqn: portFqn + "#op", label: "op" },
+                outboundPort: {fqn: portFqn, label: portLabel},
+                outboundPortOperation: {fqn: portFqn + "#op", label: "op"},
                 outboundAdapter: null, outboundAdapterExecution: null,
                 persistenceAccessors: [],
                 externalAccessors: [{
                     fqn: "com.example.Client", label: "Client",
-                    methods: [{ name: "call", externals: [{ fqn: "com.example.Ext", label: "Ext", method: "m" }] }]
+                    methods: [{name: "call", externals: [{fqn: "com.example.Ext", label: "Ext", method: "m"}]}]
                 }]
             });
             const grouped = OutboundApp.groupOperationsByExternalType([makeOp("p1", "P1"), makeOp("p2", "P2")]);
@@ -426,16 +430,16 @@ test.describe("outbound.js", () => {
 
         test("accessor を表示する設定で永続化アクセッサノードを含む", () => {
             const groupWithAccessor = {
-                outboundPort: { fqn: "com.example.Port", label: "Port" },
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
                 operations: [{
-                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
-                    outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                    outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
+                    outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: {fqn: "com.example.Adapter#save()", label: "save"},
                     persistenceAccessors: [{
                         id: "com.example.Mapper.save",
                         group: "com.example.Mapper",
                         groupLabel: "Mapper",
-                        targetOperationTypes: { "orders": "INSERT" }
+                        targetOperationTypes: {"orders": "INSERT"}
                     }],
                     externalAccessors: []
                 }]
@@ -456,7 +460,25 @@ test.describe("outbound.js", () => {
         });
 
         test("direction 設定が反映される", () => {
-            const visibility = { ...OutboundApp.generatePortMermaidCode.length, port: true, operation: true, adapter: true, execution: true, accessor: false, accessorMethod: false, target: true, externalAccessor: false, externalAccessorMethod: false, externalType: true, externalTypeMethod: true, direction: "TB", crudCreate: true, crudRead: true, crudUpdate: true, crudDelete: true };
+            const visibility = {
+                ...OutboundApp.generatePortMermaidCode.length,
+                port: true,
+                operation: true,
+                adapter: true,
+                execution: true,
+                accessor: false,
+                accessorMethod: false,
+                target: true,
+                externalAccessor: false,
+                externalAccessorMethod: false,
+                externalType: true,
+                externalTypeMethod: true,
+                direction: "TB",
+                crudCreate: true,
+                crudRead: true,
+                crudUpdate: true,
+                crudDelete: true
+            };
             // MermaidBuilder を直接使って direction を確認
             const builder = new Jig.mermaid.Builder();
             builder.addNode("A", "NodeA");
@@ -469,10 +491,10 @@ test.describe("outbound.js", () => {
     test.describe("generateOperationMermaidCode", () => {
         test("単一操作の mermaid コードを生成する", () => {
             const operation = {
-                outboundPort: { fqn: "com.example.Port", label: "Port" },
-                outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
-                outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
+                outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
+                outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                outboundAdapterExecution: {fqn: "com.example.Adapter#save()", label: "save"},
                 persistenceAccessors: [],
                 externalAccessors: []
             };
@@ -490,15 +512,15 @@ test.describe("outbound.js", () => {
             const group = {
                 persistenceTarget: "orders",
                 operations: [{
-                    outboundPort: { fqn: "com.example.Port", label: "Port" },
-                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
-                    outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                    outboundAdapterExecution: { fqn: "com.example.Adapter#save()", label: "save" },
+                    outboundPort: {fqn: "com.example.Port", label: "Port"},
+                    outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: {fqn: "com.example.Adapter#save()", label: "save"},
                     persistenceAccessors: [{
                         id: "com.example.Mapper.save",
                         group: "com.example.Mapper",
                         groupLabel: "Mapper",
-                        targetOperationTypes: { "orders": "INSERT" }
+                        targetOperationTypes: {"orders": "INSERT"}
                     }],
                     externalAccessors: []
                 }]
@@ -514,19 +536,19 @@ test.describe("outbound.js", () => {
     test.describe("generateExternalTypeMermaidCode", () => {
         test("外部型グループの mermaid コードを生成する", () => {
             const group = {
-                externalType: { fqn: "com.example.ExtService", label: "ExtService" },
+                externalType: {fqn: "com.example.ExtService", label: "ExtService"},
                 operations: [{
-                    outboundPort: { fqn: "com.example.Port", label: "Port" },
-                    outboundPortOperation: { fqn: "com.example.Port#call()", label: "call" },
-                    outboundAdapter: { fqn: "com.example.Adapter", label: "Adapter" },
-                    outboundAdapterExecution: { fqn: "com.example.Adapter#call()", label: "call" },
+                    outboundPort: {fqn: "com.example.Port", label: "Port"},
+                    outboundPortOperation: {fqn: "com.example.Port#call()", label: "call"},
+                    outboundAdapter: {fqn: "com.example.Adapter", label: "Adapter"},
+                    outboundAdapterExecution: {fqn: "com.example.Adapter#call()", label: "call"},
                     persistenceAccessors: [],
                     externalAccessors: [{
                         fqn: "com.example.Client",
                         label: "Client",
                         methods: [{
                             name: "fetch",
-                            externals: [{ fqn: "com.example.ExtService", label: "ExtService", method: "get" }]
+                            externals: [{fqn: "com.example.ExtService", label: "ExtService", method: "get"}]
                         }]
                     }]
                 }]
@@ -582,16 +604,16 @@ test.describe("outbound.js", () => {
         test("永続化操作ありの場合はテーブルを描画する", () => {
             const doc = setupDom();
             const grouped = [{
-                outboundPort: { fqn: "com.example.Port", label: "Port" },
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
                 operations: [{
-                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
+                    outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
                     outboundAdapter: null,
                     outboundAdapterExecution: null,
                     persistenceAccessors: [{
                         id: "op1",
                         group: "com.example.Mapper",
                         groupLabel: "Mapper",
-                        targetOperationTypes: { "orders": "INSERT" }
+                        targetOperationTypes: {"orders": "INSERT"}
                     }],
                     externalAccessors: []
                 }]
@@ -606,12 +628,12 @@ test.describe("outbound.js", () => {
         test("CRUDセルに操作タイプ文字（C/R/U/D）を表示する", () => {
             const doc = setupDom();
             const grouped = [{
-                outboundPort: { fqn: "com.example.Port", label: "Port" },
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
                 operations: [{
-                    outboundPortOperation: { fqn: "com.example.Port#save()", label: "save" },
+                    outboundPortOperation: {fqn: "com.example.Port#save()", label: "save"},
                     outboundAdapter: null, outboundAdapterExecution: null,
                     persistenceAccessors: [
-                        { id: "op1", group: "g", groupLabel: "G", targetOperationTypes: { "orders": "INSERT" } }
+                        {id: "op1", group: "g", groupLabel: "G", targetOperationTypes: {"orders": "INSERT"}}
                     ],
                     externalAccessors: []
                 }]
@@ -629,23 +651,28 @@ test.describe("outbound.js", () => {
         });
 
         test("複数のCRUD操作が混在する場合、すべて表示される", () => {
-             const doc = setupDom();
-             const grouped = [{
-                 outboundPort: { fqn: "com.example.Port", label: "Port" },
-                 operations: [{
-                     outboundPortOperation: { fqn: "com.example.Port#execute()", label: "execute" },
-                     outboundAdapter: null, outboundAdapterExecution: null,
-                     persistenceAccessors: [
-                         { id: "op1", group: "g", groupLabel: "G", targetOperationTypes: { "orders": "INSERT", "users": "UPDATE" } }
-                     ],
-                     externalAccessors: []
-                 }]
-             }];
-             OutboundApp.renderCrudTable(grouped);
-             const container = doc.getElementById("outbound-crud-panel");
-             assert.ok(container);
-             const table = container.children[0];
-             assert.equal(table.tagName, "table");
+            const doc = setupDom();
+            const grouped = [{
+                outboundPort: {fqn: "com.example.Port", label: "Port"},
+                operations: [{
+                    outboundPortOperation: {fqn: "com.example.Port#execute()", label: "execute"},
+                    outboundAdapter: null, outboundAdapterExecution: null,
+                    persistenceAccessors: [
+                        {
+                            id: "op1",
+                            group: "g",
+                            groupLabel: "G",
+                            targetOperationTypes: {"orders": "INSERT", "users": "UPDATE"}
+                        }
+                    ],
+                    externalAccessors: []
+                }]
+            }];
+            OutboundApp.renderCrudTable(grouped);
+            const container = doc.getElementById("outbound-crud-panel");
+            assert.ok(container);
+            const table = container.children[0];
+            assert.equal(table.tagName, "table");
         });
     });
 

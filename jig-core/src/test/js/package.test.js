@@ -1,9 +1,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
+const {Element, DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // 依存モジュールを先にロードして Jig 名前空間をセットアップする
-global.window = global.window || { addEventListener: () => {} };
+global.window = global.window || {
+    addEventListener: () => {
+    }
+};
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
@@ -80,7 +83,8 @@ function setupDiagramEnvironment(doc, context) {
     transitiveReductionToggle.type = 'checkbox';
     doc.elementsById.set('transitive-reduction-toggle', transitiveReductionToggle);
 
-    globalThis.Jig.mermaid.renderWithControls = function() {};
+    globalThis.Jig.mermaid.renderWithControls = function () {
+    };
     return diagram;
 }
 
@@ -371,13 +375,21 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: ['app'], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: ['app'],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 assert.deepEqual(Array.from(base.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
             test('filterFocusDiagramRelations: relatedSetで絞り込む', () => {
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: [],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -398,7 +410,11 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: [],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -419,7 +435,11 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: [],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -440,7 +460,11 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: [],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -462,7 +486,11 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.d', to: 'app.b'},
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: [],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -484,7 +512,11 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.c', to: 'app.d'},
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                    packageFilterFqn: [],
+                    aggregationDepth: 0,
+                    transitiveReductionEnabled: false
+                });
                 const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
@@ -540,9 +572,11 @@ test.describe('package.js', () => {
             });
 
             test('renderFocusLabel: 対象表示を更新する', () => {
-                const mockTarget = { textContent: '' };
+                const mockTarget = {textContent: ''};
                 const getFocusTargetMock = test.mock.fn(() => mockTarget);
-                const setFocusTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
+                const setFocusTargetTextMock = test.mock.fn((element, text) => {
+                    element.textContent = text;
+                });
 
                 test.mock.method(PackageApp.dom, 'getFocusTarget', getFocusTargetMock);
                 test.mock.method(PackageApp.dom, 'setFocusTargetText', setFocusTargetTextMock);
@@ -616,10 +650,10 @@ test.describe('package.js', () => {
                 PackageApp.setupPackageFilterControl(testContext);
 
                 input.value = 'app.domain\napp.other';
-                applyButton.dispatchEvent({ type: 'click' });
+                applyButton.dispatchEvent({type: 'click'});
                 assert.deepEqual(testContext.packageFilterFqn, ['app.domain', 'app.other']);
 
-                clearButton.dispatchEvent({ type: 'click' });
+                clearButton.dispatchEvent({type: 'click'});
                 assert.deepEqual(testContext.packageFilterFqn, []);
                 assert.equal(input.value, '');
             });
@@ -629,7 +663,7 @@ test.describe('package.js', () => {
     test.describe('テーブル', () => {
         test.describe('ロジック', () => {
             test('buildPackageTableRowSpecs: 行データを整形する', () => {
-                setGlossaryData( {'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}});
+                setGlossaryData({'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}});
                 const rows = [
                     {fqn: 'app.a', classCount: 2, incomingCount: 0, outgoingCount: 1},
                 ];
@@ -658,7 +692,7 @@ test.describe('package.js', () => {
 
         test.describe('UI', () => {
             test('renderPackageTable: 行とカウントを描画する', () => {
-                setGlossaryData( {
+                setGlossaryData({
                     'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
                     'app.b': {title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
                 });
@@ -833,7 +867,7 @@ test.describe('package.js', () => {
                 assert.equal(lrRadio.checked, true);
 
                 tdRadio.checked = true;
-                tdRadio.dispatchEvent({ type: 'change' });
+                tdRadio.dispatchEvent({type: 'change'});
 
                 assert.equal(testContext.mutualDependencyDiagramDirection, 'TD');
             });
@@ -849,10 +883,11 @@ test.describe('package.js', () => {
                 button.style = {}; // Initialize style object
                 itemNode.appendChild(button);
 
-                const renderWithControls = test.mock.fn(() => {});
+                const renderWithControls = test.mock.fn(() => {
+                });
                 globalThis.Jig.mermaid.renderWithControls = renderWithControls;
 
-                const item = { causes: ['a.A -> b.B'] };
+                const item = {causes: ['a.A -> b.B']};
                 PackageApp.renderMutualDependencyDiagram(item, itemNode, testContext);
 
                 assert.equal(button.style.display, 'none');
@@ -886,12 +921,13 @@ test.describe('package.js', () => {
             test('renderPackageDiagram: エッジ数超過でもrenderWithControlsにedgeCountを渡す', () => {
                 const doc = setupDocument();
                 const diagramMock = setupDiagramEnvironment(doc, testContext);
-                const renderWithControls = test.mock.fn(() => {});
+                const renderWithControls = test.mock.fn(() => {
+                });
 
                 // renderWithControlsへの委譲をキャプチャする
                 let capturedRenderArgs = null;
                 globalThis.Jig.mermaid.renderWithControls = (el, text, opts) => {
-                    capturedRenderArgs = { el, text, opts };
+                    capturedRenderArgs = {el, text, opts};
                 };
 
                 const packages = [];
@@ -958,7 +994,7 @@ test.describe('package.js', () => {
 
                 // changeイベントを発火させる
                 checkbox.checked = false;
-                checkbox.dispatchEvent({ type: 'change' });
+                checkbox.dispatchEvent({type: 'change'});
 
                 assert.equal(testContext.transitiveReductionEnabled, false);
             });

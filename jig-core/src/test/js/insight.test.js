@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub } = require('./dom-stub.js');
+const {Element, DocumentStub} = require('./dom-stub.js');
 
 function setupDocument() {
     const doc = new DocumentStub();
@@ -51,7 +51,6 @@ test.describe('insight.js', () => {
     });
 
 
-
     // UI要素の構築をテスト（表示フォーマット、セルのレンダリングなど）
     test.describe('表示部品', () => {
 
@@ -64,9 +63,7 @@ test.describe('insight.js', () => {
             doc.elementsById.set('package-count', target);
 
 
-
             insight.setInsightCount('package-count', 12);
-
 
 
             assert.equal(target.textContent, '12');
@@ -74,13 +71,11 @@ test.describe('insight.js', () => {
         });
 
 
-
         test('テーブルセルはテキストとクラス名を設定する', () => {
 
             setupDocument();
 
             const cell = Jig.dom.createCell('Hello', 'number');
-
 
 
             assert.equal(cell.tagName, 'td');
@@ -92,13 +87,11 @@ test.describe('insight.js', () => {
         });
 
 
-
         test('ズームセルはアイコンを追加する', () => {
 
             setupDocument();
 
             const cell = insight.createZoomCell();
-
 
 
             assert.equal(cell.tagName, 'td');
@@ -114,7 +107,6 @@ test.describe('insight.js', () => {
     });
 
 
-
     // テーブルへのデータレンダリングをテスト（行・セルの追加など）
     test.describe('テーブル描画', () => {
 
@@ -123,7 +115,6 @@ test.describe('insight.js', () => {
             const doc = setupDocument();
 
             const {packageTbody} = buildInsightTables(doc);
-
 
 
             insight.renderPackageInsights([
@@ -149,7 +140,6 @@ test.describe('insight.js', () => {
             ]);
 
 
-
             assert.equal(packageTbody.children.length, 1);
 
             const row = packageTbody.children[0];
@@ -163,13 +153,11 @@ test.describe('insight.js', () => {
         });
 
 
-
         test('型一覧を描画する', () => {
 
             const doc = setupDocument();
 
             const {typeTbody} = buildInsightTables(doc);
-
 
 
             insight.renderTypeInsights([
@@ -201,7 +189,6 @@ test.describe('insight.js', () => {
             ]);
 
 
-
             assert.equal(typeTbody.children.length, 1);
 
             const row = typeTbody.children[0];
@@ -213,13 +200,11 @@ test.describe('insight.js', () => {
         });
 
 
-
         test('メソッド一覧を描画する', () => {
 
             const doc = setupDocument();
 
             const {methodTbody} = buildInsightTables(doc);
-
 
 
             insight.renderMethodInsights([
@@ -253,7 +238,6 @@ test.describe('insight.js', () => {
             ]);
 
 
-
             assert.equal(methodTbody.children.length, 1);
 
             const row = methodTbody.children[0];
@@ -282,9 +266,40 @@ test.describe('insight.js', () => {
 
             // 例外が発生しないことを確認
             const testData = {
-                packages: [{fqn: 'app', label: 'App', numberOfTypes: 1, numberOfMethods: 1, numberOfUsingTypes: 0, cyclomaticComplexity: 1, size: 1}],
-                types: [{fqn: 'app.Type', packageFqn: 'app', label: 'Type', numberOfMethods: 1, numberOfUsingTypes: 0, numberOfUsedByTypes: 0, instability: 0, lcom: 0, cyclomaticComplexity: 1, size: 1}],
-                methods: [{fqn: 'app.Type#method', packageFqn: 'app', typeFqn: 'app.Type', label: 'method', cyclomaticComplexity: 1, numberOfUsingTypes: 0, numberOfUsingMethods: 0, numberOfUsingFields: 0, numberOfUsingOwnFields: 0, numberOfUsingOwnMethods: 0, size: 1}]
+                packages: [{
+                    fqn: 'app',
+                    label: 'App',
+                    numberOfTypes: 1,
+                    numberOfMethods: 1,
+                    numberOfUsingTypes: 0,
+                    cyclomaticComplexity: 1,
+                    size: 1
+                }],
+                types: [{
+                    fqn: 'app.Type',
+                    packageFqn: 'app',
+                    label: 'Type',
+                    numberOfMethods: 1,
+                    numberOfUsingTypes: 0,
+                    numberOfUsedByTypes: 0,
+                    instability: 0,
+                    lcom: 0,
+                    cyclomaticComplexity: 1,
+                    size: 1
+                }],
+                methods: [{
+                    fqn: 'app.Type#method',
+                    packageFqn: 'app',
+                    typeFqn: 'app.Type',
+                    label: 'method',
+                    cyclomaticComplexity: 1,
+                    numberOfUsingTypes: 0,
+                    numberOfUsingMethods: 0,
+                    numberOfUsingFields: 0,
+                    numberOfUsingOwnFields: 0,
+                    numberOfUsingOwnMethods: 0,
+                    size: 1
+                }]
             };
 
             // 全てのrenderメソッドは安全に実行される

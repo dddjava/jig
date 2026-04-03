@@ -127,7 +127,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildControllerCsv', () => {
             test('CSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.ExampleController": { title: "例" } } };
+                globalThis.glossaryData = {terms: {"com.example.ExampleController": {title: "例"}}};
                 const items = [
                     {
                         packageName: 'com.example',
@@ -152,12 +152,14 @@ test.describe('list-output.js', () => {
 
         test.describe('buildServiceCsv', () => {
             test('SERVICEのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: {
-                    "com.example.ExampleService": { title: "例" },
-                    "com.example.ExampleService#handle()": { title: "取得" },
-                    "com.example.Example": { title: "例" },
-                    "com.example.Param": { title: "Param" },
-                } };
+                globalThis.glossaryData = {
+                    terms: {
+                        "com.example.ExampleService": {title: "例"},
+                        "com.example.ExampleService#handle()": {title: "取得"},
+                        "com.example.Example": {title: "例"},
+                        "com.example.Param": {title: "Param"},
+                    }
+                };
                 const items = [
                     {
                         packageName: 'com.example',
@@ -189,10 +191,12 @@ test.describe('list-output.js', () => {
 
         test.describe('buildRepositoryCsv', () => {
             test('REPOSITORYのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: {
-                    "com.example.ExampleRepository": { title: "例" },
-                    "com.example.Example": { title: "例" },
-                } };
+                globalThis.glossaryData = {
+                    terms: {
+                        "com.example.ExampleRepository": {title: "例"},
+                        "com.example.Example": {title: "例"},
+                    }
+                };
                 const items = [
                     {
                         packageName: 'com.example',
@@ -223,7 +227,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessPackageCsv', () => {
             test('BUSINESS_PACKAGEのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.business": { title: "業務パッケージ" } } };
+                globalThis.glossaryData = {terms: {"com.example.business": {title: "業務パッケージ"}}};
                 const items = [
                     {
                         packageName: "com.example.business",
@@ -243,7 +247,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessAllCsv', () => {
             test('BUSINESS_ALLのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.business.BusinessRule": { title: "ビジネスルール" } } };
+                globalThis.glossaryData = {terms: {"com.example.business.BusinessRule": {title: "ビジネスルール"}}};
                 const items = [
                     {
                         packageName: "com.example.business",
@@ -270,7 +274,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessEnumCsv', () => {
             test('BUSINESS_ENUMのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.business.Status": { title: "状態" } } };
+                globalThis.glossaryData = {terms: {"com.example.business.Status": {title: "状態"}}};
                 const items = [
                     {
                         packageName: "com.example.business",
@@ -297,7 +301,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessCollectionCsv', () => {
             test('BUSINESS_COLLECTIONのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.business.Users": { title: "利用者一覧" } } };
+                globalThis.glossaryData = {terms: {"com.example.business.Users": {title: "利用者一覧"}}};
                 const items = [
                     {
                         packageName: "com.example.business",
@@ -322,7 +326,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessValidationCsv', () => {
             test('BUSINESS_VALIDATIONのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.business.User": { title: "利用者" } } };
+                globalThis.glossaryData = {terms: {"com.example.business.User": {title: "利用者"}}};
                 const items = [
                     {
                         packageName: "com.example.business",
@@ -346,7 +350,7 @@ test.describe('list-output.js', () => {
 
         test.describe('buildBusinessSmellCsv', () => {
             test('BUSINESS_SMELLのCSVにヘッダーと行を出力する', () => {
-                globalThis.glossaryData = { terms: { "com.example.business.Smell": { title: "におい" } } };
+                globalThis.glossaryData = {terms: {"com.example.business.Smell": {title: "におい"}}};
                 const items = [
                     {
                         packageName: "com.example.business",
@@ -373,51 +377,51 @@ test.describe('list-output.js', () => {
         });
     });
 
-        test.describe('データ読み込み', () => {
-            test.describe('getListData', () => {
-                test('listDataから一覧を取得する', () => {
-                    setupDocument();
-                    global.listData = {
-                        applications: {
-                            controllers: [{typeName: 'ExampleController'}],
-                        },
-                        businessRules: {
-                            packages: [{packageName: 'com.example'}],
-                        },
-                    };
-    
-                    const data = ListOutputApp.getListData();
-    
-                    assert.equal(data.applications.controllers.length, 1);
-                    assert.equal(data.applications.controllers[0].typeName, 'ExampleController');
-                    assert.equal(data.businessRules.packages.length, 1);
-                });
-    
-                test('listDataが配列の場合はcontrollerとして扱う', () => {
-                    setupDocument();
-                    global.listData = [{typeName: 'ArrayController'}];
-    
-                    const data = ListOutputApp.getListData();
-    
-                    assert.equal(data.applications.controllers.length, 1);
-                    assert.equal(data.applications.controllers[0].typeName, 'ArrayController');
-                    assert.equal(data.businessRules.all.length, 0);
-                });
-    
-                test('listDataが空の場合は空の各種一覧を返す', () => {
-                    setupDocument();
-                    global.listData = {};
-    
-                    const data = ListOutputApp.getListData();
-    
-                    assert.equal(data.applications.controllers.length, 0);
-                    assert.equal(data.applications.services.length, 0);
-                    assert.equal(data.applications.repositories.length, 0);
-                    assert.equal(data.businessRules.packages.length, 0);
-                    assert.equal(data.businessRules.all.length, 0);
-                });
+    test.describe('データ読み込み', () => {
+        test.describe('getListData', () => {
+            test('listDataから一覧を取得する', () => {
+                setupDocument();
+                global.listData = {
+                    applications: {
+                        controllers: [{typeName: 'ExampleController'}],
+                    },
+                    businessRules: {
+                        packages: [{packageName: 'com.example'}],
+                    },
+                };
+
+                const data = ListOutputApp.getListData();
+
+                assert.equal(data.applications.controllers.length, 1);
+                assert.equal(data.applications.controllers[0].typeName, 'ExampleController');
+                assert.equal(data.businessRules.packages.length, 1);
+            });
+
+            test('listDataが配列の場合はcontrollerとして扱う', () => {
+                setupDocument();
+                global.listData = [{typeName: 'ArrayController'}];
+
+                const data = ListOutputApp.getListData();
+
+                assert.equal(data.applications.controllers.length, 1);
+                assert.equal(data.applications.controllers[0].typeName, 'ArrayController');
+                assert.equal(data.businessRules.all.length, 0);
+            });
+
+            test('listDataが空の場合は空の各種一覧を返す', () => {
+                setupDocument();
+                global.listData = {};
+
+                const data = ListOutputApp.getListData();
+
+                assert.equal(data.applications.controllers.length, 0);
+                assert.equal(data.applications.services.length, 0);
+                assert.equal(data.applications.repositories.length, 0);
+                assert.equal(data.businessRules.packages.length, 0);
+                assert.equal(data.businessRules.all.length, 0);
             });
         });
+    });
     test.describe('表示用整形', () => {
         test.describe('formatFieldTypes', () => {
             test('使用フィールド型を改行で連結する', () => {
@@ -433,7 +437,7 @@ test.describe('list-output.js', () => {
             test('CONTROLLERのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
-                globalThis.glossaryData = { terms: {} };
+                globalThis.glossaryData = {terms: {}};
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -467,7 +471,7 @@ test.describe('list-output.js', () => {
             test('SERVICEのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
-                globalThis.glossaryData = { terms: {} };
+                globalThis.glossaryData = {terms: {}};
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -497,7 +501,7 @@ test.describe('list-output.js', () => {
             test('REPOSITORYのテーブルを描画する', () => {
                 const doc = setupDocument();
                 setupJig();
-                globalThis.glossaryData = { terms: {} };
+                globalThis.glossaryData = {terms: {}};
                 const table = doc.createElement('table');
                 const tbody = doc.createElement('tbody');
                 table.appendChild(tbody);
@@ -529,168 +533,168 @@ test.describe('list-output.js', () => {
             });
         });
 
-                test.describe('renderBusinessPackageTable', () => {
-                    test('BUSINESS_PACKAGEのテーブルを描画する', () => {
-                        const doc = setupDocument();
-                        globalThis.glossaryData = { terms: {} };
-                        const table = doc.createElement('table');
-                        const tbody = doc.createElement('tbody');
-                        table.appendChild(tbody);
-                        doc.elementsById.set('business-package-list', table);
+        test.describe('renderBusinessPackageTable', () => {
+            test('BUSINESS_PACKAGEのテーブルを描画する', () => {
+                const doc = setupDocument();
+                globalThis.glossaryData = {terms: {}};
+                const table = doc.createElement('table');
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                doc.elementsById.set('business-package-list', table);
 
-                        const items = [{
-                            packageName: "com.example.business",
-                            classCount: 10,
-                        }];
-        
-                        ListOutputApp.renderBusinessPackageTable(items);
-        
-                        assert.equal(tbody.children.length, 1);
-                        const row = tbody.children[0];
-                        assert.equal(row.children.length, 3);
-                        assert.equal(row.children[0].textContent, 'com.example.business');
-                        assert.equal(row.children[2].textContent, '10');
-                        assert.equal(row.children[2].className, 'number');
-                    });
-                });
-        
-                test.describe('renderBusinessAllTable', () => {
-                    test('BUSINESS_ALLのテーブルを描画する', () => {
-                        const doc = setupDocument();
-                        globalThis.glossaryData = { terms: {} };
-                        const table = doc.createElement('table');
-                        const tbody = doc.createElement('tbody');
-                        table.appendChild(tbody);
-                        doc.elementsById.set('business-all-list', table);
-        
-                        const items = [{
-                            packageName: "com.example.business",
-                            typeName: "BusinessRule",
-                            incomingBusinessRuleCount: 1,
-                            outgoingBusinessRuleCount: 2,
-                            incomingClassCount: 3,
-                        }];
-        
-                        ListOutputApp.renderBusinessAllTable(items);
-        
-                        assert.equal(tbody.children.length, 1);
-                        const row = tbody.children[0];
-                        assert.equal(row.children.length, 10);
-                        assert.equal(row.children[0].textContent, 'com.example.business');
-                        assert.equal(row.children[4].textContent, '1');
-                        assert.equal(row.children[4].className, 'number');
-                        assert.equal(row.children[5].textContent, '2');
-                        assert.equal(row.children[5].className, 'number');
-                        assert.equal(row.children[6].textContent, '3');
-                        assert.equal(row.children[6].className, 'number');
-                    });
-                });
-        
-                test.describe('renderBusinessEnumTable', () => {
-                    test('BUSINESS_ENUMのテーブルを描画する', () => {
-                        const doc = setupDocument();
-                        globalThis.glossaryData = { terms: {} };
-                        const table = doc.createElement('table');
-                        const tbody = doc.createElement('tbody');
-                        table.appendChild(tbody);
-                        doc.elementsById.set('business-enum-list', table);
-        
-                        const items = [{
-                            packageName: "com.example.business",
-                            typeName: "Status",
-                            usageCount: 5,
-                        }];
-        
-                        ListOutputApp.renderBusinessEnumTable(items);
-        
-                        assert.equal(tbody.children.length, 1);
-                        const row = tbody.children[0];
-                        assert.equal(row.children.length, 10);
-                        assert.equal(row.children[0].textContent, 'com.example.business');
-                        assert.equal(row.children[5].textContent, '5');
-                        assert.equal(row.children[5].className, 'number');
-                    });
-                });
-        
-                test.describe('renderBusinessCollectionTable', () => {
-                    test('BUSINESS_COLLECTIONのテーブルを描画する', () => {
-                        const doc = setupDocument();
-                        globalThis.glossaryData = { terms: {} };
-                        const table = doc.createElement('table');
-                        const tbody = doc.createElement('tbody');
-                        table.appendChild(tbody);
-                        doc.elementsById.set('business-collection-list', table);
-        
-                        const items = [{
-                            packageName: "com.example.business",
-                            typeName: "Users",
-                            usageCount: 1,
-                            methodCount: 3,
-                        }];
-        
-                        ListOutputApp.renderBusinessCollectionTable(items);
-        
-                        assert.equal(tbody.children.length, 1);
-                        const row = tbody.children[0];
-                        assert.equal(row.children.length, 8);
-                        assert.equal(row.children[0].textContent, 'com.example.business');
-                        assert.equal(row.children[4].textContent, '1');
-                        assert.equal(row.children[4].className, 'number');
-                        assert.equal(row.children[6].textContent, '3');
-                        assert.equal(row.children[6].className, 'number');
-                    });
-                });
-        
-                test.describe('renderBusinessValidationTable', () => {
-                    test('BUSINESS_VALIDATIONのテーブルを描画する', () => {
-                        const doc = setupDocument();
-                        globalThis.glossaryData = { terms: {} };
-                        const table = doc.createElement('table');
-                        const tbody = doc.createElement('tbody');
-                        table.appendChild(tbody);
-                        doc.elementsById.set('business-validation-list', table);
-        
-                        const items = [{
-                            packageName: "com.example.business",
-                            typeName: "User",
-                            memberName: "name",
-                        }];
-        
-                        ListOutputApp.renderBusinessValidationTable(items);
-        
-                        assert.equal(tbody.children.length, 1);
-                        const row = tbody.children[0];
-                        assert.equal(row.children.length, 7);
-                        assert.equal(row.children[0].textContent, 'com.example.business');
-                        assert.equal(row.children[3].textContent, 'name');
-                    });
-                });
-        
-                test.describe('renderBusinessSmellTable', () => {
-                    test('BUSINESS_SMELLのテーブルを描画する', () => {
-                        const doc = setupDocument();
-                        globalThis.glossaryData = { terms: {} };
-                        const table = doc.createElement('table');
-                        const tbody = doc.createElement('tbody');
-                        table.appendChild(tbody);
-                        doc.elementsById.set('business-smell-list', table);
-        
-                        const items = [{
-                            packageName: "com.example.business",
-                            typeName: "Smell",
-                            methodSignature: "doSomething()",
-                        }];
-        
-                        ListOutputApp.renderBusinessSmellTable(items);
-        
-                        assert.equal(tbody.children.length, 1);
-                        const row = tbody.children[0];
-                        assert.equal(row.children.length, 11);
-                        assert.equal(row.children[0].textContent, 'com.example.business');
-                        assert.equal(row.children[2].textContent, 'doSomething()');
-                    });
-                });
+                const items = [{
+                    packageName: "com.example.business",
+                    classCount: 10,
+                }];
+
+                ListOutputApp.renderBusinessPackageTable(items);
+
+                assert.equal(tbody.children.length, 1);
+                const row = tbody.children[0];
+                assert.equal(row.children.length, 3);
+                assert.equal(row.children[0].textContent, 'com.example.business');
+                assert.equal(row.children[2].textContent, '10');
+                assert.equal(row.children[2].className, 'number');
             });
+        });
+
+        test.describe('renderBusinessAllTable', () => {
+            test('BUSINESS_ALLのテーブルを描画する', () => {
+                const doc = setupDocument();
+                globalThis.glossaryData = {terms: {}};
+                const table = doc.createElement('table');
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                doc.elementsById.set('business-all-list', table);
+
+                const items = [{
+                    packageName: "com.example.business",
+                    typeName: "BusinessRule",
+                    incomingBusinessRuleCount: 1,
+                    outgoingBusinessRuleCount: 2,
+                    incomingClassCount: 3,
+                }];
+
+                ListOutputApp.renderBusinessAllTable(items);
+
+                assert.equal(tbody.children.length, 1);
+                const row = tbody.children[0];
+                assert.equal(row.children.length, 10);
+                assert.equal(row.children[0].textContent, 'com.example.business');
+                assert.equal(row.children[4].textContent, '1');
+                assert.equal(row.children[4].className, 'number');
+                assert.equal(row.children[5].textContent, '2');
+                assert.equal(row.children[5].className, 'number');
+                assert.equal(row.children[6].textContent, '3');
+                assert.equal(row.children[6].className, 'number');
+            });
+        });
+
+        test.describe('renderBusinessEnumTable', () => {
+            test('BUSINESS_ENUMのテーブルを描画する', () => {
+                const doc = setupDocument();
+                globalThis.glossaryData = {terms: {}};
+                const table = doc.createElement('table');
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                doc.elementsById.set('business-enum-list', table);
+
+                const items = [{
+                    packageName: "com.example.business",
+                    typeName: "Status",
+                    usageCount: 5,
+                }];
+
+                ListOutputApp.renderBusinessEnumTable(items);
+
+                assert.equal(tbody.children.length, 1);
+                const row = tbody.children[0];
+                assert.equal(row.children.length, 10);
+                assert.equal(row.children[0].textContent, 'com.example.business');
+                assert.equal(row.children[5].textContent, '5');
+                assert.equal(row.children[5].className, 'number');
+            });
+        });
+
+        test.describe('renderBusinessCollectionTable', () => {
+            test('BUSINESS_COLLECTIONのテーブルを描画する', () => {
+                const doc = setupDocument();
+                globalThis.glossaryData = {terms: {}};
+                const table = doc.createElement('table');
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                doc.elementsById.set('business-collection-list', table);
+
+                const items = [{
+                    packageName: "com.example.business",
+                    typeName: "Users",
+                    usageCount: 1,
+                    methodCount: 3,
+                }];
+
+                ListOutputApp.renderBusinessCollectionTable(items);
+
+                assert.equal(tbody.children.length, 1);
+                const row = tbody.children[0];
+                assert.equal(row.children.length, 8);
+                assert.equal(row.children[0].textContent, 'com.example.business');
+                assert.equal(row.children[4].textContent, '1');
+                assert.equal(row.children[4].className, 'number');
+                assert.equal(row.children[6].textContent, '3');
+                assert.equal(row.children[6].className, 'number');
+            });
+        });
+
+        test.describe('renderBusinessValidationTable', () => {
+            test('BUSINESS_VALIDATIONのテーブルを描画する', () => {
+                const doc = setupDocument();
+                globalThis.glossaryData = {terms: {}};
+                const table = doc.createElement('table');
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                doc.elementsById.set('business-validation-list', table);
+
+                const items = [{
+                    packageName: "com.example.business",
+                    typeName: "User",
+                    memberName: "name",
+                }];
+
+                ListOutputApp.renderBusinessValidationTable(items);
+
+                assert.equal(tbody.children.length, 1);
+                const row = tbody.children[0];
+                assert.equal(row.children.length, 7);
+                assert.equal(row.children[0].textContent, 'com.example.business');
+                assert.equal(row.children[3].textContent, 'name');
+            });
+        });
+
+        test.describe('renderBusinessSmellTable', () => {
+            test('BUSINESS_SMELLのテーブルを描画する', () => {
+                const doc = setupDocument();
+                globalThis.glossaryData = {terms: {}};
+                const table = doc.createElement('table');
+                const tbody = doc.createElement('tbody');
+                table.appendChild(tbody);
+                doc.elementsById.set('business-smell-list', table);
+
+                const items = [{
+                    packageName: "com.example.business",
+                    typeName: "Smell",
+                    methodSignature: "doSomething()",
+                }];
+
+                ListOutputApp.renderBusinessSmellTable(items);
+
+                assert.equal(tbody.children.length, 1);
+                const row = tbody.children[0];
+                assert.equal(row.children.length, 11);
+                assert.equal(row.children[0].textContent, 'com.example.business');
+                assert.equal(row.children[2].textContent, 'doSomething()');
+            });
+        });
+    });
     test.describe('タブ切り替え', () => {
         test.describe('activateTabGroup', () => {
             test('タブを切り替える', () => {

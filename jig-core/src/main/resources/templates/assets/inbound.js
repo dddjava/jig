@@ -57,7 +57,7 @@ const InboundApp = (() => {
                 id: Jig.fqnToId("adapter", controller.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
-                        children: [Jig.dom.createElement("a", { textContent: typeTerm.title })]
+                        children: [Jig.dom.createElement("a", {textContent: typeTerm.title})]
                     }),
                     Jig.dom.createElement("div", {
                         className: "fully-qualified-name",
@@ -83,7 +83,7 @@ const InboundApp = (() => {
             const methodsList = Jig.dom.type.methodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 
-            const mmdContainer = Jig.dom.createElement("div", { className: "mermaid-diagram" });
+            const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
             section.appendChild(mmdContainer);
 
             Jig.dom.lazyRender(mmdContainer, () => {
@@ -167,7 +167,7 @@ const InboundApp = (() => {
                     }
                 });
 
-                const { edgeLengthByKey } = Jig.graph.computeOutboundEdgeLengths({
+                const {edgeLengthByKey} = Jig.graph.computeOutboundEdgeLengths({
                     nodesInSubgraph: adapterFqns,
                     edges: controller.relations
                 });
@@ -181,7 +181,7 @@ const InboundApp = (() => {
                 const generator = (dir) => builder.build(dir);
                 if (generator('LR')) {
                     mmdContainer.innerHTML = "";
-                    Jig.mermaid.renderWithControls(mmdContainer, generator, { direction: 'LR' });
+                    Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                 }
             });
 

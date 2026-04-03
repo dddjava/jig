@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { setGlossaryData } = require('./dom-stub.js');
+const {setGlossaryData} = require('./dom-stub.js');
 
 // Pure functions - no DOM setup needed
 const sut = require('../../main/resources/templates/assets/jig-glossary.js');
@@ -49,7 +49,7 @@ test.describe("fqnToId", () => {
 
 test.describe("getTypeTerm", () => {
     test("glossaryに登録されている場合はterm全体を返す", () => {
-        setGlossaryData( {
+        setGlossaryData({
             "com.example.MyClass": {title: "マイクラス", description: "説明文"}
         });
         const term = sut.getTypeTerm("com.example.MyClass");
@@ -59,7 +59,7 @@ test.describe("getTypeTerm", () => {
     });
 
     test("glossaryに登録されていない場合、単純名をtitleとして返す", () => {
-        setGlossaryData( {});
+        setGlossaryData({});
         const term = sut.getTypeTerm("java.lang.String");
         assert.equal(term.title, "String");
         assert.equal(term.description, "");
@@ -67,7 +67,7 @@ test.describe("getTypeTerm", () => {
     });
 
     test("単純名がない場合、fqn全体をtitleとして返す", () => {
-        setGlossaryData( {});
+        setGlossaryData({});
         const term = sut.getTypeTerm("(default)");
         assert.equal(term.title, "(default)");
         assert.equal(term.description, "");
@@ -79,7 +79,7 @@ test.describe("getTypeTerm", () => {
 
 test.describe("getMethodTerm", () => {
     test("glossaryに登録されている場合はterm全体を返す", () => {
-        setGlossaryData( {
+        setGlossaryData({
             "com.example.Foo#bar(java.lang.String)": {title: "文字列で保存", description: "説明"}
         });
         const term = sut.getMethodTerm("com.example.Foo#bar(java.lang.String)");
@@ -89,7 +89,7 @@ test.describe("getMethodTerm", () => {
     });
 
     test("引数を単純名に変換して再検索する", () => {
-        setGlossaryData( {
+        setGlossaryData({
             "com.example.Foo#bar(String)": {title: "文字列版", description: ""}
         });
         const term = sut.getMethodTerm("com.example.Foo#bar(java.lang.String)");
@@ -98,7 +98,7 @@ test.describe("getMethodTerm", () => {
     });
 
     test("登録なしの場合、メソッド名と引数単純名を返す", () => {
-        setGlossaryData( {});
+        setGlossaryData({});
         const term = sut.getMethodTerm("hoge.fuga.Class#save(java.lang.String)");
         assert.equal(term.title, "save(String)");
         assert.equal(term.description, "");
@@ -106,21 +106,21 @@ test.describe("getMethodTerm", () => {
     });
 
     test("引数なしメソッドの場合", () => {
-        setGlossaryData( {});
+        setGlossaryData({});
         const term = sut.getMethodTerm("hoge.fuga.Class#list()");
         assert.equal(term.title, "list()");
         delete globalThis.glossaryData;
     });
 
     test("複数引数の場合、カンマ区切りで表示", () => {
-        setGlossaryData( {});
+        setGlossaryData({});
         const term = sut.getMethodTerm("hoge.fuga.Class#save(com.example.User,java.lang.Long)");
         assert.equal(term.title, "save(User,Long)");
         delete globalThis.glossaryData;
     });
 
     test("空のfqnの場合", () => {
-        setGlossaryData( {});
+        setGlossaryData({});
         assert.throws(
             () => {
                 sut.getMethodTerm("");

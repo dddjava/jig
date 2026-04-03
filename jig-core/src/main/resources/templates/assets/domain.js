@@ -101,7 +101,7 @@ const DomainApp = (() => {
                 textContent: Jig.glossary.getTypeTerm(child.fqn).title
             });
             details.appendChild(Jig.dom.createElement("div", {
-                attributes: { "data-has-enum": domainType?.enumInfo ? "true" : "false" },
+                attributes: {"data-has-enum": domainType?.enumInfo ? "true" : "false"},
                 children: [link]
             }));
         });
@@ -121,9 +121,12 @@ const DomainApp = (() => {
         if (directRelations.length === 0) return null;
 
         const packageFqns = new Set([pkg.fqn]);
-        directRelations.forEach(r => { packageFqns.add(r.from); packageFqns.add(r.to); });
+        directRelations.forEach(r => {
+            packageFqns.add(r.from);
+            packageFqns.add(r.to);
+        });
 
-        const { source } = Jig.packageDiagram.buildMermaidDiagramSource(
+        const {source} = Jig.packageDiagram.buildMermaidDiagramSource(
             packageFqns, directRelations,
             {
                 diagramDirection: direction,
@@ -235,7 +238,10 @@ const DomainApp = (() => {
         const edges = Array.from(edgeMap.values());
 
         const involvedFqns = new Set([type.fqn]);
-        edges.forEach(r => { involvedFqns.add(r.from); involvedFqns.add(r.to); });
+        edges.forEach(r => {
+            involvedFqns.add(r.from);
+            involvedFqns.add(r.to);
+        });
 
         const fqnToMermaidId = (fqn) => Jig.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.fqnToId("domain", fqn);
@@ -254,7 +260,7 @@ const DomainApp = (() => {
         });
         const edgeLengthByKey = new Map();
         byPackage.forEach(fqns => {
-            const { edgeLengthByKey: lengths } = Jig.graph.computeOutboundEdgeLengths({
+            const {edgeLengthByKey: lengths} = Jig.graph.computeOutboundEdgeLengths({
                 nodesInSubgraph: fqns,
                 edges: edges
             });
@@ -290,7 +296,11 @@ const DomainApp = (() => {
      * @param {Object} options
      * @returns {string | null}
      */
-    function createRelationDiagram(pkg, {showExternalOutgoing = true, showExternalIncoming = true, direction = domainSettings.diagramDirection} = {}) {
+    function createRelationDiagram(pkg, {
+        showExternalOutgoing = true,
+        showExternalIncoming = true,
+        direction = domainSettings.diagramDirection
+    } = {}) {
         const fqnToMermaidId = (fqn) => Jig.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.fqnToId("domain", fqn);
 
@@ -344,9 +354,9 @@ const DomainApp = (() => {
 
         // エッジ（重複排除）
         const allEdges = [
-            ...internalRelations.map(r => ({ from: r.from, to: r.to })),
-            ...externalOutgoing.map(r => ({ from: r.from, to: packageOf(r.to) })),
-            ...externalIncoming.map(r => ({ from: packageOf(r.from), to: r.to })),
+            ...internalRelations.map(r => ({from: r.from, to: r.to})),
+            ...externalOutgoing.map(r => ({from: r.from, to: packageOf(r.to)})),
+            ...externalIncoming.map(r => ({from: packageOf(r.from), to: r.to})),
         ];
         const uniqueEdgesMap = new Map();
         allEdges.forEach(e => {
@@ -359,7 +369,7 @@ const DomainApp = (() => {
             edges = Jig.graph.transitiveReduction(edges);
         }
 
-        const { edgeLengthByKey } = Jig.graph.computeOutboundEdgeLengths({
+        const {edgeLengthByKey} = Jig.graph.computeOutboundEdgeLengths({
             nodesInSubgraph: internalFqns,
             edges: edges
         });
@@ -555,7 +565,7 @@ const DomainApp = (() => {
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
                 id: Jig.fqnToId("domain", pkg.fqn),
-                attributes: { "data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false" },
+                attributes: {"data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false"},
                 children: [
                     Jig.dom.createElement("h3", {
                         children: [Jig.dom.kind.badgeElement("パッケージ"), document.createTextNode(Jig.glossary.getTypeTerm(pkg.fqn).title)]
@@ -583,11 +593,11 @@ const DomainApp = (() => {
             // データのあるダイアグラムのみタブとして表示
             const tabDefs = [
                 createPackageDirectRelationDiagram(pkg, allPackageRelations) !== null
-                    && { id: 'direct',      label: 'パッケージ関連図',           diagramType: 'packageDirect' },
+                && {id: 'direct', label: 'パッケージ関連図', diagramType: 'packageDirect'},
                 createPackageRelationDiagram(pkg, allPackages, allPackageRelations) !== null
-                    && { id: 'inner-pkg',   label: 'パッケージ内パッケージ関連図', diagramType: 'package' },
+                && {id: 'inner-pkg', label: 'パッケージ内パッケージ関連図', diagramType: 'package'},
                 pkg.types.length > 0 && createRelationDiagram(pkg) !== null
-                    && { id: 'inner-class', label: 'パッケージ内クラス関連図',    diagramType: 'type' },
+                && {id: 'inner-class', label: 'パッケージ内クラス関連図', diagramType: 'type'},
             ].filter(Boolean);
 
             if (tabDefs.length > 0) {
@@ -649,8 +659,14 @@ const DomainApp = (() => {
                     panels['inner-class'].appendChild(Jig.dom.createElement("div", {
                         className: "diagram-panel-options",
                         children: [
-                            Jig.dom.createElement("label", {className: "diagram-panel-option", children: [outgoingCheckbox, document.createTextNode("関連先")]}),
-                            Jig.dom.createElement("label", {className: "diagram-panel-option", children: [incomingCheckbox, document.createTextNode("関連元")]}),
+                            Jig.dom.createElement("label", {
+                                className: "diagram-panel-option",
+                                children: [outgoingCheckbox, document.createTextNode("関連先")]
+                            }),
+                            Jig.dom.createElement("label", {
+                                className: "diagram-panel-option",
+                                children: [incomingCheckbox, document.createTextNode("関連元")]
+                            }),
                         ]
                     }));
 
@@ -660,7 +676,10 @@ const DomainApp = (() => {
 
                     const render = () => {
                         c.innerHTML = "";
-                        const diagram = createRelationDiagram(pkg, {showExternalOutgoing: outgoingCheckbox.checked, showExternalIncoming: incomingCheckbox.checked});
+                        const diagram = createRelationDiagram(pkg, {
+                            showExternalOutgoing: outgoingCheckbox.checked,
+                            showExternalIncoming: incomingCheckbox.checked
+                        });
                         if (diagram) Jig.mermaid.renderWithControls(c, diagram);
                     };
                     outgoingCheckbox.addEventListener('change', () => {
@@ -700,7 +719,7 @@ const DomainApp = (() => {
             if (packageFqn) {
                 fqnDiv.appendChild(Jig.dom.createElement("a", {
                     textContent: packageFqn,
-                    attributes: { href: "#" + Jig.fqnToId("domain", packageFqn) }
+                    attributes: {href: "#" + Jig.fqnToId("domain", packageFqn)}
                 }));
                 fqnDiv.appendChild(document.createTextNode("." + type.fqn.substring(lastDot + 1)));
             } else {
@@ -710,7 +729,7 @@ const DomainApp = (() => {
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
                 id: Jig.fqnToId("domain", type.fqn),
-                attributes: { "data-has-enum": type.enumInfo ? "true" : "false" },
+                attributes: {"data-has-enum": type.enumInfo ? "true" : "false"},
                 children: [
                     Jig.dom.createElement("h3", {children: [Jig.dom.kind.badgeElement("クラス"), titleSpan]}),
                     fqnDiv
@@ -747,7 +766,10 @@ const DomainApp = (() => {
                 const diagramGenerator = (dir) => createTypeRelationDiagram(type, dir);
                 if (diagramGenerator(domainSettings.diagramDirection)) {
                     Jig.mermaid.renderWithControls(mmdContainer, diagramGenerator, {direction: domainSettings.diagramDirection});
-                    section.insertBefore(Jig.dom.createElement("h4", {textContent: "クラス関連図", className: "diagram-heading"}), mmdContainer);
+                    section.insertBefore(Jig.dom.createElement("h4", {
+                        textContent: "クラス関連図",
+                        className: "diagram-heading"
+                    }), mmdContainer);
                 }
             });
 
@@ -806,7 +828,11 @@ const DomainApp = (() => {
                     const incoming = panel?.querySelector('.class-relation-external-incoming');
                     const showExternalOutgoing = outgoing ? outgoing.checked : true;
                     const showExternalIncoming = incoming ? incoming.checked : true;
-                    const generator = (dir) => createRelationDiagram(pkg, {showExternalOutgoing, showExternalIncoming, direction: dir});
+                    const generator = (dir) => createRelationDiagram(pkg, {
+                        showExternalOutgoing,
+                        showExternalIncoming,
+                        direction: dir
+                    });
                     if (generator(domainSettings.diagramDirection)) {
                         Jig.mermaid.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
                     }

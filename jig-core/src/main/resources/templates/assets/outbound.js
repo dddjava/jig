@@ -118,11 +118,11 @@ const OutboundApp = (() => {
             });
             return {outboundPort: port, operations};
         }).filter(group => group.operations.length > 0)
-          .sort((a, b) => {
-            const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
-            const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
-            return left.localeCompare(right, "ja");
-        });
+            .sort((a, b) => {
+                const left = Jig.glossary.getTypeTerm(a.outboundPort.fqn).title;
+                const right = Jig.glossary.getTypeTerm(b.outboundPort.fqn).title;
+                return left.localeCompare(right, "ja");
+            });
     }
 
     function groupOperationsByPersistenceTarget(operations) {
@@ -210,11 +210,16 @@ const OutboundApp = (() => {
 
     function isCrudVisible(operationType, visibility) {
         switch ((operationType || "").toUpperCase()) {
-            case 'INSERT': return visibility.crudCreate !== false;
-            case 'SELECT': return visibility.crudRead !== false;
-            case 'UPDATE': return visibility.crudUpdate !== false;
-            case 'DELETE': return visibility.crudDelete !== false;
-            default: return true;
+            case 'INSERT':
+                return visibility.crudCreate !== false;
+            case 'SELECT':
+                return visibility.crudRead !== false;
+            case 'UPDATE':
+                return visibility.crudUpdate !== false;
+            case 'DELETE':
+                return visibility.crudDelete !== false;
+            default:
+                return true;
         }
     }
 
@@ -398,12 +403,12 @@ const OutboundApp = (() => {
             lastNodeId = addAdapterNode(builder, lastNodeId, adapterFqn, adapterLabel, executionFqn, executionName, visibility, adapterSubgraphs);
 
             operation.persistenceAccessors.forEach(op => {
-                    const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
+                const currentNode = addAccessorNode(builder, lastNodeId, op, visibility, accessorSubgraphs, accessorNodes);
 
-                    if (visibility.target) {
-                        addPersistenceTargetEdges(builder, currentNode, op, persistenceTargetNodes, visibility);
-                    }
-                });
+                if (visibility.target) {
+                    addPersistenceTargetEdges(builder, currentNode, op, persistenceTargetNodes, visibility);
+                }
+            });
 
             operation.externalAccessors.forEach(accessor => {
                 addExternalAccessorNode(builder, lastNodeId, accessor, visibility, extAccessorNodes, extAccessorSubgraphs, extTypeNodes);
@@ -423,14 +428,14 @@ const OutboundApp = (() => {
 
     function extractOperationProps(operation) {
         return {
-            portFqn:       operation.outboundPort.fqn,
-            portLabel:     Jig.glossary.getTypeTerm(operation.outboundPort.fqn).title,
-            portOpName:    Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title,
-            portOpFqn:     operation.outboundPortOperation.fqn,
-            adapterFqn:    operation.outboundAdapter?.fqn,
-            adapterLabel:  Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title,
+            portFqn: operation.outboundPort.fqn,
+            portLabel: Jig.glossary.getTypeTerm(operation.outboundPort.fqn).title,
+            portOpName: Jig.glossary.getMethodTerm(operation.outboundPortOperation.fqn).title,
+            portOpFqn: operation.outboundPortOperation.fqn,
+            adapterFqn: operation.outboundAdapter?.fqn,
+            adapterLabel: Jig.glossary.getTypeTerm(operation.outboundAdapter?.fqn).title,
             executionName: Jig.glossary.getMethodTerm(operation.outboundAdapterExecution?.fqn).title,
-            executionFqn:  operation.outboundAdapterExecution?.fqn,
+            executionFqn: operation.outboundAdapterExecution?.fqn,
         };
     }
 
@@ -446,8 +451,10 @@ const OutboundApp = (() => {
         const persistenceTargetNodes = new Map();
 
         group.operations.forEach((operation) => {
-            const { portFqn, portLabel, portOpName, portOpFqn,
-                    adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
+            const {
+                portFqn, portLabel, portOpName, portOpFqn,
+                adapterFqn, adapterLabel, executionName, executionFqn
+            } = extractOperationProps(operation);
 
             operation.persistenceAccessors
                 .filter(op => persistenceTarget in op.targetOperationTypes)
@@ -487,8 +494,10 @@ const OutboundApp = (() => {
                 accessor.methods.some(accMethod =>
                     accMethod.externals.some(ext => ext.fqn === externalType.fqn)));
 
-            const { portFqn, portLabel, portOpName, portOpFqn,
-                    adapterFqn, adapterLabel, executionName, executionFqn } = extractOperationProps(operation);
+            const {
+                portFqn, portLabel, portOpName, portOpFqn,
+                adapterFqn, adapterLabel, executionName, executionFqn
+            } = extractOperationProps(operation);
 
             relevantAccessors.forEach(accessor => {
                 let currentNode = addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility);
@@ -724,7 +733,7 @@ const OutboundApp = (() => {
             }));
         });
 
-        Jig.dom.sidebar.renderSection(sidebar,"出力ポート", grouped.map(group => {
+        Jig.dom.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => {
             return {
                 id: Jig.fqnToId("port", group.outboundPort.fqn),
                 label: Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
@@ -761,7 +770,7 @@ const OutboundApp = (() => {
             }));
         });
 
-        Jig.dom.sidebar.renderSection(sidebar,"永続化操作対象", grouped.map(group => ({
+        Jig.dom.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
             id: Jig.fqnToId("persistence", group.persistenceTarget),
             label: group.persistenceTarget
         })));
@@ -799,7 +808,7 @@ const OutboundApp = (() => {
             }));
         });
 
-        Jig.dom.sidebar.renderSection(sidebar,"外部型", grouped.map(group => ({
+        Jig.dom.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
             id: Jig.fqnToId("external", group.externalType.fqn),
             label: Jig.glossary.getTypeTerm(group.externalType.fqn).title
         })));

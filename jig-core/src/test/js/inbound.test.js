@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { JSDOM } = require('jsdom');
-const { setGlossaryData } = require('./dom-stub.js');
+const {JSDOM} = require('jsdom');
+const {setGlossaryData} = require('./dom-stub.js');
 
 // モック用のデータ
 const mockInboundData = {
@@ -10,14 +10,14 @@ const mockInboundData = {
             fqn: "com.example.ControllerA",
             classPath: "/api",
             relations: [
-                { from: "com.example.ControllerA#method1()", to: "com.example.ServiceA#serviceMethod()" }
+                {from: "com.example.ControllerA#method1()", to: "com.example.ServiceA#serviceMethod()"}
             ],
             entrypoints: [
                 {
                     fqn: "com.example.ControllerA#method1()",
                     visibility: "PUBLIC",
                     parameterTypeRefs: [],
-                    returnTypeRef: { fqn: "void" },
+                    returnTypeRef: {fqn: "void"},
                     isDeprecated: false,
                     path: "GET /method1"
                 }
@@ -31,17 +31,22 @@ const mockUsecaseData = {
         {
             fqn: "com.example.ServiceA",
             methods: [
-                { fqn: "com.example.ServiceA#serviceMethod()" }
+                {fqn: "com.example.ServiceA#serviceMethod()"}
             ]
         }
     ]
 };
 
 const mockGlossaryData = {
-    "com.example.ControllerA": { title: "ControllerA", description: "Description of ControllerA", kind: "クラス" },
-    "com.example.ControllerA#method1()": { title: "method1", simpleText: "method1", kind: "メソッド", description: "" },
-    "com.example.ServiceA": { title: "ServiceA", description: "", kind: "クラス" },
-    "com.example.ServiceA#serviceMethod()": { title: "serviceMethod", simpleText: "serviceMethod", kind: "メソッド", description: "" }
+    "com.example.ControllerA": {title: "ControllerA", description: "Description of ControllerA", kind: "クラス"},
+    "com.example.ControllerA#method1()": {title: "method1", simpleText: "method1", kind: "メソッド", description: ""},
+    "com.example.ServiceA": {title: "ServiceA", description: "", kind: "クラス"},
+    "com.example.ServiceA#serviceMethod()": {
+        title: "serviceMethod",
+        simpleText: "serviceMethod",
+        kind: "メソッド",
+        description: ""
+    }
 };
 
 test.describe('InboundApp', () => {
@@ -57,7 +62,7 @@ test.describe('InboundApp', () => {
                 <div id="inbound-list"></div>
             </body>
             </html>
-        `, { runScripts: "dangerously" });
+        `, {runScripts: "dangerously"});
 
         const window = dom.window;
         const document = window.document;
@@ -67,13 +72,20 @@ test.describe('InboundApp', () => {
             constructor(callback) {
                 this.callback = callback;
             }
+
             observe(element) {
-                this.callback([{ isIntersecting: true, target: element }]);
+                this.callback([{isIntersecting: true, target: element}]);
             }
-            unobserve() {}
+
+            unobserve() {
+            }
         };
-        global.marked = { parse: (text) => text }; // markedのモック
-        global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
+        global.marked = {parse: (text) => text}; // markedのモック
+        global.mermaid = {
+            initialize: () => {
+            }, run: () => {
+            }
+        }; // mermaidのモック
 
         // グローバルデータをクリア（テスト間での汚染防止）
         delete globalThis.inboundData;
@@ -128,7 +140,7 @@ test.describe('InboundApp', () => {
     });
 
     test('renderControllerList should handle empty data', () => {
-        globalThis.inboundData = { controllers: [] };
+        globalThis.inboundData = {controllers: []};
         InboundApp.init();
 
         const mainList = document.getElementById('inbound-list');
@@ -143,30 +155,69 @@ test.describe('InboundApp', () => {
                 fqn: "com.example.ControllerA",
                 classPath: "/api",
                 relations: [
-                    { from: "com.example.ControllerA#method1()", to: "com.example.ControllerA#internalMethod()" },
-                    { from: "com.example.ControllerA#internalMethod()", to: "com.example.ServiceA#serviceMethod()" },
-                    { from: "com.example.ControllerA#method2()", to: "com.example.ServiceB#serviceMethod2()" }
+                    {from: "com.example.ControllerA#method1()", to: "com.example.ControllerA#internalMethod()"},
+                    {from: "com.example.ControllerA#internalMethod()", to: "com.example.ServiceA#serviceMethod()"},
+                    {from: "com.example.ControllerA#method2()", to: "com.example.ServiceB#serviceMethod2()"}
                 ],
                 entrypoints: [
-                    { fqn: "com.example.ControllerA#method1()", visibility: "PUBLIC", parameterTypeRefs: [], returnTypeRef: { fqn: "void" }, isDeprecated: false, path: "GET /method1" },
-                    { fqn: "com.example.ControllerA#method2()", visibility: "PUBLIC", parameterTypeRefs: [], returnTypeRef: { fqn: "void" }, isDeprecated: false, path: "GET /method2" }
+                    {
+                        fqn: "com.example.ControllerA#method1()",
+                        visibility: "PUBLIC",
+                        parameterTypeRefs: [],
+                        returnTypeRef: {fqn: "void"},
+                        isDeprecated: false,
+                        path: "GET /method1"
+                    },
+                    {
+                        fqn: "com.example.ControllerA#method2()",
+                        visibility: "PUBLIC",
+                        parameterTypeRefs: [],
+                        returnTypeRef: {fqn: "void"},
+                        isDeprecated: false,
+                        path: "GET /method2"
+                    }
                 ]
             }]
         };
-        setGlossaryData( {
-            "com.example.ControllerA": { title: "ControllerA", description: "", kind: "クラス" },
-            "com.example.ControllerA#method1()": { title: "method1", simpleText: "method1", kind: "メソッド", description: "" },
-            "com.example.ControllerA#method2()": { title: "method2", simpleText: "method2", kind: "メソッド", description: "" },
-            "com.example.ControllerA#internalMethod()": { title: "internalMethod", simpleText: "internalMethod", kind: "メソッド", description: "" },
-            "com.example.ServiceA": { title: "ServiceA", description: "", kind: "クラス" },
-            "com.example.ServiceA#serviceMethod()": { title: "serviceMethod", simpleText: "serviceMethod", kind: "メソッド", description: "" },
-            "com.example.ServiceB": { title: "ServiceB", description: "", kind: "クラス" },
-            "com.example.ServiceB#serviceMethod2()": { title: "serviceMethod2", simpleText: "serviceMethod2", kind: "メソッド", description: "" }
+        setGlossaryData({
+            "com.example.ControllerA": {title: "ControllerA", description: "", kind: "クラス"},
+            "com.example.ControllerA#method1()": {
+                title: "method1",
+                simpleText: "method1",
+                kind: "メソッド",
+                description: ""
+            },
+            "com.example.ControllerA#method2()": {
+                title: "method2",
+                simpleText: "method2",
+                kind: "メソッド",
+                description: ""
+            },
+            "com.example.ControllerA#internalMethod()": {
+                title: "internalMethod",
+                simpleText: "internalMethod",
+                kind: "メソッド",
+                description: ""
+            },
+            "com.example.ServiceA": {title: "ServiceA", description: "", kind: "クラス"},
+            "com.example.ServiceA#serviceMethod()": {
+                title: "serviceMethod",
+                simpleText: "serviceMethod",
+                kind: "メソッド",
+                description: ""
+            },
+            "com.example.ServiceB": {title: "ServiceB", description: "", kind: "クラス"},
+            "com.example.ServiceB#serviceMethod2()": {
+                title: "serviceMethod2",
+                simpleText: "serviceMethod2",
+                kind: "メソッド",
+                description: ""
+            }
         });
         globalThis.usecaseData = {
             usecases: [
-                { fqn: "com.example.ServiceA", methods: [{ fqn: "com.example.ServiceA#serviceMethod()" }] },
-                { fqn: "com.example.ServiceB", methods: [{ fqn: "com.example.ServiceB#serviceMethod2()" }] }
+                {fqn: "com.example.ServiceA", methods: [{fqn: "com.example.ServiceA#serviceMethod()"}]},
+                {fqn: "com.example.ServiceB", methods: [{fqn: "com.example.ServiceB#serviceMethod2()"}]}
             ]
         };
         InboundApp.init();

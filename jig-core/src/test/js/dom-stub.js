@@ -53,22 +53,42 @@ function collectAllByParts(root, parts, results) {
         else collectAllByParts(candidate, rest, results);
     }
 }
+
 class ClassList {
     constructor() {
         this.set = new Set();
     }
-    add(c) { this.set.add(c); }
-    remove(c) { this.set.delete(c); }
-    delete(c) { this.set.delete(c); }
-    has(c) { return this.set.has(c); }
-    contains(c) { return this.set.has(c); }
+
+    add(c) {
+        this.set.add(c);
+    }
+
+    remove(c) {
+        this.set.delete(c);
+    }
+
+    delete(c) {
+        this.set.delete(c);
+    }
+
+    has(c) {
+        return this.set.has(c);
+    }
+
+    contains(c) {
+        return this.set.has(c);
+    }
+
     toggle(className, force) {
         if (force === true) this.set.add(className);
         else if (force === false) this.set.delete(className);
         else if (this.set.has(className)) this.set.delete(className);
         else this.set.add(className);
     }
-    toString() { return Array.from(this.set).join(" "); }
+
+    toString() {
+        return Array.from(this.set).join(" ");
+    }
 }
 
 class Element {
@@ -88,21 +108,46 @@ class Element {
         this.parentNode = null;
     }
 
-    get parentElement() { return this.parentNode; }
+    get parentElement() {
+        return this.parentNode;
+    }
 
-    get id() { return this.getAttribute("id"); }
-    set id(value) { this.setAttribute("id", value); }
+    get id() {
+        return this.getAttribute("id");
+    }
 
-    get name() { return this.getAttribute("name"); }
-    set name(value) { this.setAttribute("name", value); }
+    set id(value) {
+        this.setAttribute("id", value);
+    }
 
-    get type() { return this.getAttribute("type"); }
-    set type(value) { this.setAttribute("type", value); }
+    get name() {
+        return this.getAttribute("name");
+    }
 
-    get href() { return this.getAttribute("href"); }
-    set href(value) { this.setAttribute("href", value); }
+    set name(value) {
+        this.setAttribute("name", value);
+    }
 
-    get checked() { return this._checked; }
+    get type() {
+        return this.getAttribute("type");
+    }
+
+    set type(value) {
+        this.setAttribute("type", value);
+    }
+
+    get href() {
+        return this.getAttribute("href");
+    }
+
+    set href(value) {
+        this.setAttribute("href", value);
+    }
+
+    get checked() {
+        return this._checked;
+    }
+
     set checked(value) {
         this._checked = !!value;
         // ラジオボタンの場合、同じ名前を持つ他のラジオボタンのcheckedをfalseにする
@@ -119,12 +164,16 @@ class Element {
         if (this.children.length > 0) return this.children.map(c => c.textContent).join("");
         return this._textContent;
     }
+
     set textContent(value) {
         this._textContent = String(value ?? "");
         this.children = [];
     }
 
-    get innerHTML() { return this._innerHTML; }
+    get innerHTML() {
+        return this._innerHTML;
+    }
+
     set innerHTML(value) {
         this._innerHTML = value ?? "";
         if (value === "" || value === null || value === undefined) {
@@ -133,8 +182,13 @@ class Element {
         }
     }
 
-    get className() { return this.classList.toString(); }
-    set className(value) { this.classList.set = new Set(value.split(" ").filter(c => c)); }
+    get className() {
+        return this.classList.toString();
+    }
+
+    set className(value) {
+        this.classList.set = new Set(value.split(" ").filter(c => c));
+    }
 
     appendChild(child) {
         if (child && typeof child === "object") child.parentNode = this;
@@ -144,14 +198,19 @@ class Element {
 
     insertBefore(newNode, referenceNode) {
         if (newNode && typeof newNode === "object") newNode.parentNode = this;
-        if (!referenceNode) { this.children.push(newNode); return newNode; }
+        if (!referenceNode) {
+            this.children.push(newNode);
+            return newNode;
+        }
         const idx = this.children.indexOf(referenceNode);
         if (idx === -1) this.children.push(newNode);
         else this.children.splice(idx, 0, newNode);
         return newNode;
     }
 
-    removeAttribute(name) { this.attributes.delete(name); }
+    removeAttribute(name) {
+        this.attributes.delete(name);
+    }
 
     append(...children) {
         children.forEach(child => {
@@ -182,7 +241,9 @@ class Element {
         }
     }
 
-    getAttribute(name) { return this.attributes.get(name) || null; }
+    getAttribute(name) {
+        return this.attributes.get(name) || null;
+    }
 
     addEventListener(type, listener) {
         if (!this.eventListeners.has(type)) this.eventListeners.set(type, []);
@@ -194,7 +255,9 @@ class Element {
         listeners.forEach(l => l(event));
     }
 
-    click() { this.dispatchEvent({ type: "click", target: this }); }
+    click() {
+        this.dispatchEvent({type: "click", target: this});
+    }
 
     querySelector(selector) {
         if (this.ownerDocument) return this.ownerDocument.querySelector(selector, this);
@@ -240,7 +303,9 @@ class DocumentStub {
         return new Element("fragment", this);
     }
 
-    getElementById(id) { return this.elementsById.get(id) || null; }
+    getElementById(id) {
+        return this.elementsById.get(id) || null;
+    }
 
     getElementsByClassName(className) {
         return this.allElements.filter(el => el.classList.contains(className));
@@ -287,7 +352,9 @@ class DocumentStub {
 }
 
 class EventStub {
-    constructor(type) { this.type = type; }
+    constructor(type) {
+        this.type = type;
+    }
 }
 
 // ----- glossaryData ヘルパー -----
@@ -295,13 +362,13 @@ class EventStub {
 // すべてのglossaryData設定をこれ経由で行い、テストの脆性を減らす
 function setGlossaryData(data) {
     if (!data) {
-        globalThis.glossaryData = { terms: {} };
+        globalThis.glossaryData = {terms: {}};
         return;
     }
 
     // 空オブジェクトの場合
     if (!Array.isArray(data) && Object.keys(data).length === 0) {
-        globalThis.glossaryData = { terms: {} };
+        globalThis.glossaryData = {terms: {}};
         return;
     }
 
@@ -324,7 +391,7 @@ function setGlossaryData(data) {
     }
 
     // 古いフォーマット（fqnキーマップ）を新しいwrapper形式に変換
-    globalThis.glossaryData = { terms: data };
+    globalThis.glossaryData = {terms: data};
 }
 
-module.exports = { Element, DocumentStub, EventStub, setGlossaryData };
+module.exports = {Element, DocumentStub, EventStub, setGlossaryData};

@@ -1,20 +1,23 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { DocumentStub, setGlossaryData } = require('./dom-stub.js');
+const {DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // jig-glossary.js と jig-dom.js をロード（window・document のスタブが必要）
-global.window = global.window || { addEventListener: () => {} };
+global.window = global.window || {
+    addEventListener: () => {
+    }
+};
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
 
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
-const { renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram } = DomainApp;
+const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram} = DomainApp;
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
-    globalThis.domainData = { packages, types };
+    globalThis.domainData = {packages, types};
     globalThis.domainData._typesMap = new Map(types.map(t => [t.fqn, t]));
     globalThis.domainData._childPackagesMap = new Map(
         packages.map(p => [p.fqn, packages.filter(q => {
@@ -28,7 +31,13 @@ test.describe('domain.js', () => {
     // ドメイン型のリンク解決をテスト（型から HTML リンクへの変換）
     test.describe('typeLinkResolver（DomainApp.init() で登録）', () => {
         test('domain型に対して、ページ内リンクのhrefを返す', () => {
-            const domainType = {fqn: 'org.example.Account', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            const domainType = {
+                fqn: 'org.example.Account',
+                isDeprecated: false,
+                fields: [],
+                methods: [],
+                staticMethods: []
+            };
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.Account': {title: '口座', description: ''}});
             const doc = new DocumentStub();
@@ -36,7 +45,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -51,7 +60,13 @@ test.describe('domain.js', () => {
         });
 
         test('deprecatedなdomain型に対して、deprecatedクラスを返す', () => {
-            const domainType = {fqn: 'org.example.OldClass', isDeprecated: true, fields: [], methods: [], staticMethods: []};
+            const domainType = {
+                fqn: 'org.example.OldClass',
+                isDeprecated: true,
+                fields: [],
+                methods: [],
+                staticMethods: []
+            };
             setupDomainData([], [domainType]);
             setGlossaryData({});
             const doc = new DocumentStub();
@@ -59,7 +74,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -81,7 +96,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -97,7 +112,13 @@ test.describe('domain.js', () => {
         });
 
         test('リゾルバー経由でdomain型はリンク付き要素になる', () => {
-            const domainType = {fqn: 'org.example.User', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            const domainType = {
+                fqn: 'org.example.User',
+                isDeprecated: false,
+                fields: [],
+                methods: [],
+                staticMethods: []
+            };
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.User': {title: 'ユーザー', description: ''}});
             const doc = new DocumentStub();
@@ -105,7 +126,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -129,7 +150,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -157,7 +178,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -178,7 +199,13 @@ test.describe('domain.js', () => {
         });
 
         test('配列型（Hoge[]）はベース型のリンクを解決して[]を付け直す', () => {
-            const domainType = {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            const domainType = {
+                fqn: 'org.example.Item',
+                isDeprecated: false,
+                fields: [],
+                methods: [],
+                staticMethods: []
+            };
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.Item': {title: 'アイテム', description: ''}});
             const doc = new DocumentStub();
@@ -186,7 +213,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -202,7 +229,13 @@ test.describe('domain.js', () => {
         });
 
         test('多次元配列型（Hoge[][]）もベース型のリンクを解決して[][]を付け直す', () => {
-            const domainType = {fqn: 'org.example.Item', isDeprecated: false, fields: [], methods: [], staticMethods: []};
+            const domainType = {
+                fqn: 'org.example.Item',
+                isDeprecated: false,
+                fields: [],
+                methods: [],
+                staticMethods: []
+            };
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.Item': {title: 'アイテム', description: ''}});
             const doc = new DocumentStub();
@@ -210,7 +243,7 @@ test.describe('domain.js', () => {
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             DomainApp.init();
 
@@ -313,7 +346,10 @@ test.describe('domain.js', () => {
                 types: []
             };
 
-            setupDomainData([comPkg, examplePkg, subPkg, deepPkg], [{fqn: 'com.example.sub.deep.MyClass', methods: []}]);
+            setupDomainData([comPkg, examplePkg, subPkg, deepPkg], [{
+                fqn: 'com.example.sub.deep.MyClass',
+                methods: []
+            }]);
             setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
@@ -429,19 +465,19 @@ test.describe('domain.js', () => {
     // パッケージ関連図の Mermaid ソース生成をテスト
     test.describe('createRelationDiagram', () => {
         test('関係図のMermaidソースを生成する（fqnToMermaidIdが正常に動作すること）', () => {
-            const pkg = { fqn: 'org.example', types: [{ fqn: 'org.example.A' }, { fqn: 'org.example.B' }] };
-            const typeA = { fqn: 'org.example.A', isDeprecated: false };
-            const typeB = { fqn: 'org.example.B', isDeprecated: false };
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
             setupDomainData([pkg], [typeA, typeB]);
             globalThis.typeRelationsData = {
                 relations: [
-                    { from: 'org.example.A', to: 'org.example.B' }
+                    {from: 'org.example.A', to: 'org.example.B'}
                 ]
             };
             setGlossaryData({
-                'org.example.A': { title: 'A' },
-                'org.example.B': { title: 'B' },
-                'org.example': { title: 'example' }
+                'org.example.A': {title: 'A'},
+                'org.example.B': {title: 'B'},
+                'org.example': {title: 'example'}
             });
 
             const result = createRelationDiagram(pkg);
@@ -462,20 +498,20 @@ test.describe('domain.js', () => {
 
     test.describe('createTypeRelationDiagram', () => {
         test('クラスの関連図を生成する（出力・入力両方）', () => {
-            const typeA = { fqn: 'org.example.A', isDeprecated: false };
-            const typeB = { fqn: 'org.example.B', isDeprecated: false };
-            const typeC = { fqn: 'org.example.C', isDeprecated: false };
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
+            const typeC = {fqn: 'org.example.C', isDeprecated: false};
             setupDomainData([], [typeA, typeB, typeC]);
             globalThis.typeRelationsData = {
                 relations: [
-                    { from: 'org.example.A', to: 'org.example.B' },
-                    { from: 'org.example.C', to: 'org.example.A' },
+                    {from: 'org.example.A', to: 'org.example.B'},
+                    {from: 'org.example.C', to: 'org.example.A'},
                 ]
             };
             setGlossaryData({
-                'org.example.A': { title: 'A' },
-                'org.example.B': { title: 'B' },
-                'org.example.C': { title: 'C' },
+                'org.example.A': {title: 'A'},
+                'org.example.B': {title: 'B'},
+                'org.example.C': {title: 'C'},
             });
 
             const result = createTypeRelationDiagram(typeA);
@@ -499,10 +535,10 @@ test.describe('domain.js', () => {
         });
 
         test('関連がない場合は null を返す', () => {
-            const typeA = { fqn: 'org.example.A', isDeprecated: false };
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
             setupDomainData([], [typeA]);
-            globalThis.typeRelationsData = { relations: [] };
-            setGlossaryData({ 'org.example.A': { title: 'A' } });
+            globalThis.typeRelationsData = {relations: []};
+            setGlossaryData({'org.example.A': {title: 'A'}});
 
             const result = createTypeRelationDiagram(typeA);
 
@@ -514,20 +550,20 @@ test.describe('domain.js', () => {
         });
 
         test('subgraph外向きエッジは深さに応じて長さが変わる', () => {
-            const typeA = { fqn: 'org.example.A', isDeprecated: false };
-            const typeB = { fqn: 'org.example.B', isDeprecated: false };
-            const typeX = { fqn: 'org.other.X', isDeprecated: false };
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
+            const typeX = {fqn: 'org.other.X', isDeprecated: false};
             setupDomainData([], [typeA, typeB, typeX]);
             globalThis.typeRelationsData = {
                 relations: [
-                    { from: 'org.example.A', to: 'org.example.B' },
-                    { from: 'org.example.A', to: 'org.other.X' },
+                    {from: 'org.example.A', to: 'org.example.B'},
+                    {from: 'org.example.A', to: 'org.other.X'},
                 ]
             };
             setGlossaryData({
-                'org.example.A': { title: 'A' },
-                'org.example.B': { title: 'B' },
-                'org.other.X': { title: 'X' },
+                'org.example.A': {title: 'A'},
+                'org.example.B': {title: 'B'},
+                'org.other.X': {title: 'X'},
             });
 
             const result = createTypeRelationDiagram(typeA);
@@ -564,7 +600,7 @@ test.describe('domain.js', () => {
 
         test('glossaryData が undefined の場合、警告を表示してレンダリング続行する', () => {
             delete globalThis.glossaryData;
-            globalThis.typeRelationsData = { relations: [] }; // 他の optional データは設定
+            globalThis.typeRelationsData = {relations: []}; // 他の optional データは設定
             const doc = new DocumentStub();
             doc.body.classList.add("domain-model");
             global.document = doc;
@@ -617,7 +653,7 @@ test.describe('domain.js', () => {
             const types = [];
 
             setupDomainData(packages, types);
-            globalThis.typeRelationsData = { relations: [] };
+            globalThis.typeRelationsData = {relations: []};
 
             const result = createRelationDiagram(packages[0]);
 

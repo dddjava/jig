@@ -182,22 +182,28 @@ const GlossaryApp = (() => {
                 const metaChildren = [];
                 const metaItems = [];
                 if (term.fqn) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
-                        createElement("span", {className: "meta-value", textContent: term.fqn}),
-                    ]}));
+                    metaItems.push(createElement("div", {
+                        children: [
+                            createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
+                            createElement("span", {className: "meta-value", textContent: term.fqn}),
+                        ]
+                    }));
                 }
                 if (term.simpleText) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "単純名"}),
-                        createElement("span", {className: "meta-value", textContent: term.simpleText}),
-                    ]}));
+                    metaItems.push(createElement("div", {
+                        children: [
+                            createElement("span", {className: "meta-label", textContent: "単純名"}),
+                            createElement("span", {className: "meta-value", textContent: term.simpleText}),
+                        ]
+                    }));
                 }
                 if (term.kind) {
-                    metaItems.push(createElement("div", {children: [
-                        createElement("span", {className: "meta-label", textContent: "種類"}),
-                        createElement("span", {className: "meta-value", textContent: term.kind}),
-                    ]}));
+                    metaItems.push(createElement("div", {
+                        children: [
+                            createElement("span", {className: "meta-label", textContent: "種類"}),
+                            createElement("span", {className: "meta-value", textContent: term.kind}),
+                        ]
+                    }));
                 }
                 if ((term.kind === "クラス" || term.kind === "パッケージ") && term.fqn) {
                     const domainRoots = getDomainPackageRoots();
@@ -206,14 +212,16 @@ const GlossaryApp = (() => {
                         fqn === root || fqn.startsWith(root + ".")
                     );
                     if (isInDomain) {
-                        metaItems.push(createElement("div", {children: [
-                            createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
-                            createElement("a", {
-                                className: "meta-value",
-                                attributes: {href: "domain.html#" + Jig.fqnToId("domain", fqn)},
-                                textContent: "ドメインモデル",
-                            }),
-                        ]}));
+                        metaItems.push(createElement("div", {
+                            children: [
+                                createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
+                                createElement("a", {
+                                    className: "meta-value",
+                                    attributes: {href: "domain.html#" + Jig.fqnToId("domain", fqn)},
+                                    textContent: "ドメインモデル",
+                                }),
+                            ]
+                        }));
                     }
                 }
                 if (metaItems.length > 0) {
@@ -234,12 +242,17 @@ const GlossaryApp = (() => {
                     id: anchorId,
                     className: `jig-card jig-card--type ${isCompact ? "jig-card--compact" : ""}`,
                     children: [
-                        createElement("h3", {children: [
-                            Jig.dom.kind.badgeElement(term.kind || ""),
-                            createElement("span", {textContent: term.title || ""}),
-                        ]}),
+                        createElement("h3", {
+                            children: [
+                                Jig.dom.kind.badgeElement(term.kind || ""),
+                                createElement("span", {textContent: term.title || ""}),
+                            ]
+                        }),
                         ...metaChildren,
-                        createElement("div", {className: "markdown", innerHTML: Jig.dom.parseMarkdown(term.description || "")}),
+                        createElement("div", {
+                            className: "markdown",
+                            innerHTML: Jig.dom.parseMarkdown(term.description || "")
+                        }),
                     ]
                 });
                 groupSection.appendChild(article);

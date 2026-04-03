@@ -13,13 +13,13 @@ const IndexApp = (() => {
 
     function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
         const createElement = Jig.dom.createElement;
-        const domainPackageDiagram = createElement("div", { className: "mermaid-diagram" });
+        const domainPackageDiagram = createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
         Jig.dom.lazyRender(domainPackageDiagram, () => {
             domainPackageDiagram.innerHTML = "";
             console.log("Rendering package diagram for " + packageRoot);
             const pkgDiagram = Jig.packageDiagram.createPackageLevelDiagram(
-                { fqn: packageRoot },
+                {fqn: packageRoot},
                 allPackages, allPackageRelations,
                 {
                     transitiveReductionEnabled: true,
@@ -28,7 +28,7 @@ const IndexApp = (() => {
             );
             if (pkgDiagram) {
                 // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-                packageDiagramContainer.insertBefore(createElement("h3", { textContent: titleLabel }), domainPackageDiagram);
+                packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
                 Jig.mermaid.renderWithControls(domainPackageDiagram, pkgDiagram);
             }
         });
@@ -47,7 +47,7 @@ const IndexApp = (() => {
             const li = Jig.dom.createElement("li", {
                 children: [
                     Jig.dom.createElement("a", {
-                        attributes: { href: link.href },
+                        attributes: {href: link.href},
                         textContent: link.label
                     })
                 ]

@@ -299,14 +299,14 @@ const UsecaseApp = (() => {
 
         classMethods.forEach(method => {
             const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
-            nodes.push({ fqn: method.fqn, kind });
+            nodes.push({fqn: method.fqn, kind});
 
             (method.callMethods || []).forEach(calleeFqn => {
                 if (methodFqns.has(calleeFqn)) {
                     const edgeKey = `${method.fqn}->${calleeFqn}`;
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
-                        edges.push({ from: method.fqn, to: calleeFqn });
+                        edges.push({from: method.fqn, to: calleeFqn});
                     }
                 }
             });
@@ -316,12 +316,12 @@ const UsecaseApp = (() => {
                 if (!domainFqnSet.has(typeRef.fqn)) return;
                 if (!domainNodeSet.has(typeRef.fqn)) {
                     domainNodeSet.add(typeRef.fqn);
-                    nodes.push({ fqn: typeRef.fqn, kind: "domain-type" });
+                    nodes.push({fqn: typeRef.fqn, kind: "domain-type"});
                 }
                 const edgeKey = `${typeRef.fqn}->${method.fqn}`;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
-                    edges.push({ from: typeRef.fqn, to: method.fqn, dotted: true });
+                    edges.push({from: typeRef.fqn, to: method.fqn, dotted: true});
                 }
             });
 
@@ -329,12 +329,12 @@ const UsecaseApp = (() => {
             if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
                 if (!domainNodeSet.has(returnFqn)) {
                     domainNodeSet.add(returnFqn);
-                    nodes.push({ fqn: returnFqn, kind: "domain-type" });
+                    nodes.push({fqn: returnFqn, kind: "domain-type"});
                 }
                 const edgeKey = `${method.fqn}->${returnFqn}`;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
-                    edges.push({ from: method.fqn, to: returnFqn, dotted: true });
+                    edges.push({from: method.fqn, to: returnFqn, dotted: true});
                 }
             }
         });
@@ -348,17 +348,17 @@ const UsecaseApp = (() => {
                 const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
                 if (!inboundNodeSet.has(callerClassFqn)) {
                     inboundNodeSet.add(callerClassFqn);
-                    nodes.push({ fqn: callerClassFqn, kind: "inbound-class" });
+                    nodes.push({fqn: callerClassFqn, kind: "inbound-class"});
                 }
                 const edgeKey = `${callerClassFqn}->${relation.to}`;
                 if (!edgeSet.has(edgeKey)) {
                     edgeSet.add(edgeKey);
-                    edges.push({ from: callerClassFqn, to: relation.to });
+                    edges.push({from: callerClassFqn, to: relation.to});
                 }
             });
         });
 
-        return { nodes, edges };
+        return {nodes, edges};
     }
 
     const SequenceDiagram = {
@@ -440,7 +440,7 @@ const UsecaseApp = (() => {
                         if (!diagramContext.showDiagramOutboundPorts) continue;
                         const classFqn = getClassFqnFromMethodFqn(calleeFqn);
                         const methodName = getMethodSimpleName(calleeFqn);
-                        const callee = ensureParticipant(classFqn,  Jig.glossary.getTypeTerm(classFqn).title, "outbound");
+                        const callee = ensureParticipant(classFqn, Jig.glossary.getTypeTerm(classFqn).title, "outbound");
                         calls.push({from: caller.id, to: callee.id, label: methodName});
                     }
                 }
@@ -473,7 +473,9 @@ const UsecaseApp = (() => {
 
             if (outbounds.length > 0) {
                 code += '  box outbounds\n';
-                outbounds.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
+                outbounds.forEach(p => {
+                    code += `    participant ${p.id} as ${p.label}\n`;
+                });
                 code += '  end\n';
             }
 
@@ -499,10 +501,10 @@ const UsecaseApp = (() => {
         for (const el of elements) {
             const rect = el.getBoundingClientRect();
             if (rect.top >= containerRect.top) {
-                return { id: el.id, offset: rect.top - containerRect.top };
+                return {id: el.id, offset: rect.top - containerRect.top};
             }
         }
-        return { scrollTop: main.scrollTop };
+        return {scrollTop: main.scrollTop};
     }
 
     /**
@@ -604,7 +606,10 @@ const UsecaseApp = (() => {
         /** @type {Map<string, UsecaseMethod>} */
         const methodMap = new Map();
         usecases.forEach(usecase => {
-            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: isUsecase(m) ? "usecase" : "method"}));
+            (usecase.methods || []).forEach(m => methodMap.set(m.fqn, {
+                ...m,
+                kind: isUsecase(m) ? "usecase" : "method"
+            }));
             (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: "static-method"}));
         });
 
@@ -863,16 +868,16 @@ const UsecaseApp = (() => {
                     }
                 }
 
-                const dl = Jig.dom.createElement("dl", { className: "depends" });
+                const dl = Jig.dom.createElement("dl", {className: "depends"});
                 if (method.parameterTypeRefs.length > 0) {
-                     dl.appendChild(Jig.dom.createElement("dt", { textContent: "要求するもの（引数）" }));
-                     method.parameterTypeRefs.forEach(parameterTypeRef => {
-                         dl.appendChild(Jig.dom.createElement("dd", { children: [Jig.dom.type.elementForRef(parameterTypeRef)] }));
-                     });
+                    dl.appendChild(Jig.dom.createElement("dt", {textContent: "要求するもの（引数）"}));
+                    method.parameterTypeRefs.forEach(parameterTypeRef => {
+                        dl.appendChild(Jig.dom.createElement("dd", {children: [Jig.dom.type.elementForRef(parameterTypeRef)]}));
+                    });
                 }
                 if (method.returnTypeRef.fqn !== 'void') {
-                    dl.appendChild(Jig.dom.createElement("dt", { textContent: "得られるもの（戻り値）" }));
-                    dl.appendChild(Jig.dom.createElement("dd", { children: [Jig.dom.type.elementForRef(method.returnTypeRef)] }));
+                    dl.appendChild(Jig.dom.createElement("dt", {textContent: "得られるもの（戻り値）"}));
+                    dl.appendChild(Jig.dom.createElement("dd", {children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
                 }
                 methodSection.appendChild(dl);
 
@@ -888,15 +893,15 @@ const UsecaseApp = (() => {
      */
     function initControls() {
         const controls = [
-            { id: 'show-fields', class: 'hide-usecase-fields' },
-            { id: 'show-static-methods', class: 'hide-usecase-static-methods' },
-            { id: 'show-diagrams', class: 'hide-usecase-diagrams' },
-            { id: 'show-details', class: 'hide-usecase-details' },
-            { id: 'show-descriptions', class: 'hide-usecase-descriptions' },
-            { id: 'show-declarations', class: 'hide-usecase-declarations' },
-            { id: 'show-diagram-internal-methods', reRender: true },
-            { id: 'show-diagram-outbound-ports', reRender: true },
-            { id: 'show-diagram-domain-types', reRender: true }
+            {id: 'show-fields', class: 'hide-usecase-fields'},
+            {id: 'show-static-methods', class: 'hide-usecase-static-methods'},
+            {id: 'show-diagrams', class: 'hide-usecase-diagrams'},
+            {id: 'show-details', class: 'hide-usecase-details'},
+            {id: 'show-descriptions', class: 'hide-usecase-descriptions'},
+            {id: 'show-declarations', class: 'hide-usecase-declarations'},
+            {id: 'show-diagram-internal-methods', reRender: true},
+            {id: 'show-diagram-outbound-ports', reRender: true},
+            {id: 'show-diagram-domain-types', reRender: true}
         ];
 
         controls.forEach(control => {

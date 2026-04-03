@@ -35,19 +35,19 @@ globalThis.Jig.glossary = (() => {
     function getPackageTerm(fqn) {
         const term = findTerm(fqn);
         if (term) return term;
-        return { title: typeSimpleName(fqn) || fqn, description: "" };
+        return {title: typeSimpleName(fqn) || fqn, description: ""};
     }
 
     function getTypeTerm(fqn) {
         const term = findTerm(fqn);
         if (term) return term;
-        return { title: typeSimpleName(fqn) || fqn, description: "" };
+        return {title: typeSimpleName(fqn) || fqn, description: ""};
     }
 
     function getFieldTerm(fqn) {
         const term = findTerm(fqn);
         if (term) return term;
-        return { title: fqn.substring(fqn.lastIndexOf('#') + 1) || fqn, description: "" };
+        return {title: fqn.substring(fqn.lastIndexOf('#') + 1) || fqn, description: ""};
     }
 
     /**
@@ -74,7 +74,7 @@ globalThis.Jig.glossary = (() => {
 
         const term = findTerm(fqn);
         if (term) {
-            return { ...term, shortDeclaration: shortDeclaration };
+            return {...term, shortDeclaration: shortDeclaration};
         }
 
         // 引数を単純名に変換した FQN で再検索

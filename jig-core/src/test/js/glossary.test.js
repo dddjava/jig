@@ -1,14 +1,22 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
+const {Element, DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // jig-glossary.js と jig-dom.js をロード（window・document のスタブが必要）
-global.window = global.window || { addEventListener: () => {} };
+global.window = global.window || {
+    addEventListener: () => {
+    }
+};
 global.document = global.document || {
-    addEventListener: () => {},
+    addEventListener: () => {
+    },
     getElementsByClassName: () => [],
-    createElement: (tag) => ({ tagName: tag, children: [], className: '', textContent: '', style: {}, appendChild(c) { this.children.push(c); } }),
-    body: { classList: { contains: () => false } },
+    createElement: (tag) => ({
+        tagName: tag, children: [], className: '', textContent: '', style: {}, appendChild(c) {
+            this.children.push(c);
+        }
+    }),
+    body: {classList: {contains: () => false}},
 };
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-dom.js');
@@ -39,7 +47,8 @@ function setupDocument() {
     const doc = new GlossaryDocumentStub();
     global.document = doc;
     global.window = {
-        addEventListener: () => {},
+        addEventListener: () => {
+        },
     };
 
     // テストに必要なコントロール要素を初期化
@@ -139,7 +148,13 @@ test.describe('glossary.js', () => {
             const doc = setupDocument();
             const terms = [
                 {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account', simpleText: 'Account'},
-                {title: 'My Account', description: 'desc', kind: 'クラス', fqn: 'app.MyAccount', simpleText: 'MyAccount'},
+                {
+                    title: 'My Account',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'app.MyAccount',
+                    simpleText: 'MyAccount'
+                },
             ];
             const controls = {
                 searchInput: doc.getElementById('search-input'),
@@ -167,8 +182,20 @@ test.describe('glossary.js', () => {
             const doc = setupDocument();
             const terms = [
                 {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account', simpleText: 'Account'},
-                {title: 'MyService', description: 'desc', kind: 'クラス', fqn: 'app.MyService', simpleText: 'MyService'},
-                {title: 'YourAccount', description: 'desc', kind: 'クラス', fqn: 'app.YourAccount', simpleText: 'YourAccount'},
+                {
+                    title: 'MyService',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'app.MyService',
+                    simpleText: 'MyService'
+                },
+                {
+                    title: 'YourAccount',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'app.YourAccount',
+                    simpleText: 'YourAccount'
+                },
             ];
             const controls = {
                 searchInput: doc.getElementById('search-input'),
@@ -201,10 +228,34 @@ test.describe('glossary.js', () => {
         test('ドメインパッケージでフィルタする', () => {
             const doc = setupDocument();
             const terms = [
-                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'com.example.domain.model.Account', simpleText: 'Account'},
-                {title: 'AccountRepo', description: 'desc', kind: 'クラス', fqn: 'com.example.domain.model.repository.AccountRepo', simpleText: 'AccountRepo'},
-                {title: 'ExternalService', description: 'desc', kind: 'クラス', fqn: 'com.example.external.ExternalService', simpleText: 'ExternalService'},
-                {title: 'AccountMethod', description: 'action', kind: 'メソッド', fqn: 'com.example.domain.model.Account#create', simpleText: 'create'},
+                {
+                    title: 'Account',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'com.example.domain.model.Account',
+                    simpleText: 'Account'
+                },
+                {
+                    title: 'AccountRepo',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'com.example.domain.model.repository.AccountRepo',
+                    simpleText: 'AccountRepo'
+                },
+                {
+                    title: 'ExternalService',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'com.example.external.ExternalService',
+                    simpleText: 'ExternalService'
+                },
+                {
+                    title: 'AccountMethod',
+                    description: 'action',
+                    kind: 'メソッド',
+                    fqn: 'com.example.domain.model.Account#create',
+                    simpleText: 'create'
+                },
             ];
             const controls = {
                 searchInput: doc.getElementById('search-input'),
@@ -221,7 +272,7 @@ test.describe('glossary.js', () => {
                 showOnlyDomain: doc.getElementById('show-only-domain'),
             };
 
-            setGlossaryData( {
+            setGlossaryData({
                 domainPackageRoots: ['com.example.domain.model']
             });
 
@@ -235,8 +286,20 @@ test.describe('glossary.js', () => {
         test('ドメインパッケージフィルタがオフの場合は全件返す', () => {
             const doc = setupDocument();
             const terms = [
-                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'com.example.domain.model.Account', simpleText: 'Account'},
-                {title: 'ExternalService', description: 'desc', kind: 'クラス', fqn: 'com.example.external.ExternalService', simpleText: 'ExternalService'},
+                {
+                    title: 'Account',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'com.example.domain.model.Account',
+                    simpleText: 'Account'
+                },
+                {
+                    title: 'ExternalService',
+                    description: 'desc',
+                    kind: 'クラス',
+                    fqn: 'com.example.external.ExternalService',
+                    simpleText: 'ExternalService'
+                },
             ];
             const controls = {
                 searchInput: doc.getElementById('search-input'),
@@ -253,7 +316,7 @@ test.describe('glossary.js', () => {
                 showOnlyDomain: doc.getElementById('show-only-domain'),
             };
 
-            setGlossaryData( {
+            setGlossaryData({
                 domainPackageRoots: ['com.example.domain.model']
             });
 
@@ -343,7 +406,7 @@ test.describe('glossary.js', () => {
 
     test.describe('データ読み込み', () => {
         test('ドメインパッケージルートを取得', () => {
-            setGlossaryData( {
+            setGlossaryData({
                 domainPackageRoots: ['com.example.domain.model', 'com.example.domain.service']
             });
             const result = glossary.getDomainPackageRoots();
@@ -352,14 +415,21 @@ test.describe('glossary.js', () => {
         });
 
         test('ドメインパッケージルートがない場合は空配列を返す', () => {
-            setGlossaryData( {});
+            setGlossaryData({});
             const result = glossary.getDomainPackageRoots();
             assert.deepEqual(result, []);
             delete globalThis.glossaryData;
         });
 
         test('globalThis.glossaryData (fqnキーマップ) から取得', () => {
-            setGlossaryData( {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}});
+            setGlossaryData({
+                'app.Account': {
+                    title: 'Account',
+                    simpleText: 'Account',
+                    kind: 'クラス',
+                    description: ''
+                }
+            });
             const result = glossary.getGlossaryData();
             assert.equal(result[0].title, 'Account');
             assert.equal(result[0].fqn, 'app.Account');
@@ -373,7 +443,7 @@ test.describe('glossary.js', () => {
         });
 
         test('globalThis.glossaryData (wrapper形式: {terms, domainPackageRoots}) から取得', () => {
-            setGlossaryData( {
+            setGlossaryData({
                 terms: {'app.Account': {title: 'Account', simpleText: 'Account', kind: 'クラス', description: ''}},
                 domainPackageRoots: ['com.example.domain.model']
             });
@@ -387,7 +457,14 @@ test.describe('glossary.js', () => {
             const doc = setupDocument();
             const script = doc.createElement('script');
             script.id = 'glossary-data';
-            script.textContent = JSON.stringify({'app.FromScript': {title: 'FromScript', simpleText: 'FromScript', kind: 'クラス', description: ''}});
+            script.textContent = JSON.stringify({
+                'app.FromScript': {
+                    title: 'FromScript',
+                    simpleText: 'FromScript',
+                    kind: 'クラス',
+                    description: ''
+                }
+            });
             doc.elementsById.set('glossary-data', script);
 
             const result = glossary.getGlossaryData();
@@ -488,7 +565,12 @@ test.describe('glossary.js', () => {
             doc.elementsById.set('term-list', list);
 
             setGlossaryData({domainPackageRoots: ['com.example.domain']});
-            glossary.renderGlossaryTerms([{title: 'Foo', fqn: 'com.example.domain.Foo', kind: 'クラス', description: 'D'}], true);
+            glossary.renderGlossaryTerms([{
+                title: 'Foo',
+                fqn: 'com.example.domain.Foo',
+                kind: 'クラス',
+                description: 'D'
+            }], true);
             delete globalThis.glossaryData;
 
             const article = list.children[0].children[1];
@@ -506,7 +588,12 @@ test.describe('glossary.js', () => {
             doc.elementsById.set('term-list', list);
 
             setGlossaryData({domainPackageRoots: ['com.example.domain']});
-            glossary.renderGlossaryTerms([{title: 'Bar', fqn: 'com.other.Bar', kind: 'クラス', description: 'D'}], true);
+            glossary.renderGlossaryTerms([{
+                title: 'Bar',
+                fqn: 'com.other.Bar',
+                kind: 'クラス',
+                description: 'D'
+            }], true);
             delete globalThis.glossaryData;
 
             const article = list.children[0].children[1];
@@ -522,7 +609,12 @@ test.describe('glossary.js', () => {
             doc.elementsById.set('term-list', list);
 
             setGlossaryData({domainPackageRoots: ['com.example.domain']});
-            glossary.renderGlossaryTerms([{title: 'foo()', fqn: 'com.example.domain.Foo#foo()', kind: 'メソッド', description: 'D'}], true);
+            glossary.renderGlossaryTerms([{
+                title: 'foo()',
+                fqn: 'com.example.domain.Foo#foo()',
+                kind: 'メソッド',
+                description: 'D'
+            }], true);
             delete globalThis.glossaryData;
 
             const article = list.children[0].children[1];
@@ -648,8 +740,11 @@ test.describe('glossary.js', () => {
             link.textContent = 'A';
 
             const clickEvent = new Event('click');
-            Object.defineProperty(clickEvent, 'target', { value: link, enumerable: true });
-            Object.defineProperty(clickEvent, 'preventDefault', { value: () => {}, enumerable: true });
+            Object.defineProperty(clickEvent, 'target', {value: link, enumerable: true});
+            Object.defineProperty(clickEvent, 'preventDefault', {
+                value: () => {
+                }, enumerable: true
+            });
 
             // 実際のイベントハンドラ実行の代わりにロジック確認
             const hash = '#group-A';

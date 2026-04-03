@@ -622,19 +622,15 @@ const DomainApp = (() => {
                 }));
 
                 if (panels['direct']) {
-                    const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-                    panels['direct'].appendChild(c);
-                    Jig.mermaid.diagram.register(c, () => {
-                        const diagramDef = {container: c, pkg, type: undefined, diagramType: 'packageDirect'};
-                        renderDiagram(c, diagramDef);
+                    Jig.mermaid.diagram.createAndRegister(panels['direct'], (container) => {
+                        const diagramDef = {container, pkg, type: undefined, diagramType: 'packageDirect'};
+                        renderDiagram(container, diagramDef);
                     });
                 }
                 if (panels['inner-pkg']) {
-                    const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-                    panels['inner-pkg'].appendChild(c);
-                    Jig.mermaid.diagram.register(c, () => {
-                        const diagramDef = {container: c, pkg, type: undefined, diagramType: 'package'};
-                        renderDiagram(c, diagramDef);
+                    Jig.mermaid.diagram.createAndRegister(panels['inner-pkg'], (container) => {
+                        const diagramDef = {container, pkg, type: undefined, diagramType: 'package'};
+                        renderDiagram(container, diagramDef);
                     });
                 }
                 if (panels['inner-class']) {
@@ -660,16 +656,13 @@ const DomainApp = (() => {
                         ]
                     }));
 
-                    const c = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-                    panels['inner-class'].appendChild(c);
-
-                    const render = () => {
-                        const diagramDef = {container: c, pkg, type: undefined, diagramType: 'type'};
-                        renderDiagram(c, diagramDef);
+                    const render = (container) => {
+                        const diagramDef = {container, pkg, type: undefined, diagramType: 'type'};
+                        renderDiagram(container, diagramDef);
                     };
-                    outgoingCheckbox.addEventListener('change', render);
-                    incomingCheckbox.addEventListener('change', render);
-                    Jig.mermaid.diagram.register(c, render);
+                    const c = Jig.mermaid.diagram.createAndRegister(panels['inner-class'], render);
+                    outgoingCheckbox.addEventListener('change', () => render(c));
+                    incomingCheckbox.addEventListener('change', () => render(c));
                 }
             }
 
@@ -735,17 +728,15 @@ const DomainApp = (() => {
             const staticList = createMethodsList("staticメソッド", type.staticMethods);
             if (staticList) section.appendChild(staticList);
 
-            const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-            section.appendChild(mmdContainer);
-            Jig.mermaid.diagram.register(mmdContainer, () => {
-                const diagramDef = {container: mmdContainer, pkg: undefined, type, diagramType: 'classDirect'};
-                renderDiagram(mmdContainer, diagramDef);
+            Jig.mermaid.diagram.createAndRegister(section, (container) => {
+                const diagramDef = {container, pkg: undefined, type, diagramType: 'classDirect'};
+                renderDiagram(container, diagramDef);
                 // 見出しはまだ追加されていない場合のみ追加
                 if (!section.querySelector('h4.diagram-heading')) {
                     section.insertBefore(Jig.dom.createElement("h4", {
                         textContent: "クラス関連図",
                         className: "diagram-heading"
-                    }), mmdContainer);
+                    }), container);
                 }
             });
 

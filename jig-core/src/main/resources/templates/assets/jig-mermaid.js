@@ -1315,9 +1315,48 @@ globalThis.Jig.mermaid = (() => {
                 });
         }
 
+        /**
+         * ダイアグラムコンテナを作成して登録するヘルパー関数
+         * コンテナの作成・追加・登録をまとめて処理
+         *
+         * renderFn は以下の2つのパターンをサポート：
+         * 1. container パラメータを受け取り、自分で renderWithControls を呼ぶ
+         * 2. mermaid定義またはコードを返す - この関数が renderWithControls を呼ぶ
+         *
+         * @param {HTMLElement|Array} parentContainer - 親要素（HTMLElement）またはコンテナ追加先（Array）
+         * @param {Function} renderFn - (container?: HTMLElement) => mermaidDef|undefined
+         * @param {Object} [options={}] - オプション
+         * @param {string} [options.className="mermaid-diagram"] - コンテナのクラス名
+         * @returns {HTMLElement} 作成されたコンテナ
+         */
+        function createAndRegister(parentContainer, renderFn, options = {}) {
+            const {className = "mermaid-diagram"} = options;
+            const container = Jig.dom.createElement("div", {className});
+
+            // parentContainer が配列の場合は push、そうでなければ appendChild
+            if (Array.isArray(parentContainer)) {
+                parentContainer.push(container);
+            } else {
+                parentContainer.appendChild(container);
+            }
+
+            register(container, () => {
+                const result = renderFn(container);
+                // renderFn が mermaid定義を返した場合、自動でレンダリング
+                if (result) {
+                    container.innerHTML = "";
+                    Jig.mermaid.render.renderWithControls(container, result);
+                }
+                // renderFn が void/undefined を返した場合は、renderFn 内で既に renderWithControls を呼んでいると仮定
+            });
+
+            return container;
+        }
+
         return {
             register,
-            rerenderVisible
+            rerenderVisible,
+            createAndRegister
         };
     })();
 

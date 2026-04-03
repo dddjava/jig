@@ -81,10 +81,7 @@ const InboundApp = (() => {
             const methodsList = Jig.dom.type.methodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 
-            const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-            section.appendChild(mmdContainer);
-
-            Jig.mermaid.diagram.register(mmdContainer, () => {
+            Jig.mermaid.diagram.createAndRegister(section, (mmdContainer) => {
                 const fqnToNodeId = (fqn) => Jig.fqnToId("n", fqn);
                 const builder = new Jig.mermaid.Builder();
                 builder.applyThemeClassDefs();

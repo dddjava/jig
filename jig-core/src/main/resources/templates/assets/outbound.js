@@ -685,15 +685,13 @@ const OutboundApp = (() => {
                 textContent: `${group.operations.length} operations`
             }));
 
-            const portMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.mermaid.diagram.register(portMermaidContainer, () => {
+            Jig.mermaid.diagram.createAndRegister(cardChildren, (container) => {
                 const currentVisibility = readVisibility();
                 const currentPortMermaidCode = generatePortMermaidCode(group, currentVisibility);
                 if (currentPortMermaidCode) {
-                    renderMermaid(currentPortMermaidCode, portMermaidContainer);
+                    renderMermaid(currentPortMermaidCode, container);
                 }
-            });
-            cardChildren.push(portMermaidContainer);
+            }, {className: "mermaid-diagram port-diagram"});
 
             const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
             group.operations.forEach(operation => {

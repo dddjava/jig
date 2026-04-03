@@ -612,11 +612,10 @@ const UsecaseApp = (() => {
             const classGraph = buildClassGraph(usecase, handlerFqns);
             if (classGraph.edges.length > 0) {
                 const classDiagramContainer = Jig.dom.createElement("div", {className: "diagram-container class-diagram"});
-                const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-                classDiagramContainer.appendChild(mmdContainer);
                 section.appendChild(classDiagramContainer);
 
-                Jig.mermaid.diagram.register(mmdContainer, () => {
+                Jig.mermaid.diagram.createAndRegister(classDiagramContainer, (mmdContainer) => {
+                    mmdContainer.innerHTML = "";
                     const builder = new Jig.mermaid.Builder();
                     builder.applyThemeClassDefs();
 
@@ -753,10 +752,8 @@ const UsecaseApp = (() => {
                     }
 
                     if (hasUsecaseDiagram) {
-                        const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-                        (usecasePanel || diagramContainer).appendChild(mmdContainer);
-
-                        Jig.mermaid.diagram.register(mmdContainer, () => {
+                        Jig.mermaid.diagram.createAndRegister(usecasePanel || diagramContainer, (mmdContainer) => {
+                            mmdContainer.innerHTML = "";
                             // 毎回新しい diagramContext を作成（現在の設定値を反映）
                             const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
                             const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
@@ -825,10 +822,8 @@ const UsecaseApp = (() => {
                     }
 
                     if (hasSequenceDiagram) {
-                        const sequenceContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
-                        (sequencePanel || diagramContainer).appendChild(sequenceContainer);
-
-                        Jig.mermaid.diagram.register(sequenceContainer, () => {
+                        Jig.mermaid.diagram.createAndRegister(sequencePanel || diagramContainer, (sequenceContainer) => {
+                            sequenceContainer.innerHTML = "";
                             // 毎回新しい diagramContext を作成（現在の設定値を反映）
                             const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
                             const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;

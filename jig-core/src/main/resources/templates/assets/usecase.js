@@ -880,6 +880,9 @@ const UsecaseApp = (() => {
             if (radio) radio.addEventListener('change', () => {
                 const handlersOnly = document.getElementById('display-target-handlers-only')?.checked ?? false;
                 state.handlerFqns = handlersOnly ? buildHandlerFqns() : null;
+                const usecases = state.data.usecases;
+                renderSidebar(usecases);
+                renderUsecaseList(usecases);
                 Jig.mermaid.diagram.rerenderVisible();
             });
         });

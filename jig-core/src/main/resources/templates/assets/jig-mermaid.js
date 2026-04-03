@@ -1323,20 +1323,9 @@ globalThis.Jig.mermaid = (() => {
                 });
         }
 
-        /**
-         * ダイアグラムレジストリをクリア
-         */
-        function clearRegistry() {
-            diagramRegistry.length = 0;
-            renderedContainers.clear();
-            // observedContainers は WeakSet なので clear() メソッドがない
-            // diagramRegistry をクリアすれば十分
-        }
-
         return {
             register,
-            rerenderVisible,
-            clearRegistry
+            rerenderVisible
         };
     })();
 

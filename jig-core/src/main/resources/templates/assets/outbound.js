@@ -235,10 +235,7 @@ const OutboundApp = (() => {
         if (!mermaidCode) return;
         if (!container) return;
         container.innerHTML = "";
-        // 複数のダイアグラムが同時レンダリングされるのを防ぐため、レンダリングを遅延実行
-        setImmediate(() => {
-            Jig.mermaid.render.renderWithControls(container, mermaidCode);
-        });
+        Jig.mermaid.render.renderWithControls(container, mermaidCode);
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
@@ -942,8 +939,6 @@ const OutboundApp = (() => {
     function renderPanels() {
         const {visibility, data, grouped, persistenceGrouped, externalGrouped} = state;
         if (!data) return;
-        // 古いダイアグラムレジストリをクリア
-        Jig.mermaid.diagram.clearRegistry();
         renderPersistenceList(persistenceGrouped, visibility);
         renderExternalList(externalGrouped, visibility);
         renderOutboundList(grouped, visibility);

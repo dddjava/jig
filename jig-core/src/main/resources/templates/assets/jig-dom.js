@@ -3,16 +3,18 @@ globalThis.Jig ??= {};
 // ブラウザバックなどで該当要素に移動する
 // Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
 // なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
-window.addEventListener("popstate", function (event) {
-    const hash = event.target.location.hash;
+if (typeof window !== 'undefined') {
+    window.addEventListener("popstate", function (event) {
+        const hash = event.target.location.hash;
 
-    if (hash) {
-        const anchor = document.getElementById(hash.substring(1))
-        if (anchor) {
-            anchor.scrollIntoView();
+        if (hash) {
+            const anchor = document.getElementById(hash.substring(1))
+            if (anchor) {
+                anchor.scrollIntoView();
+            }
         }
-    }
-});
+    });
+}
 
 globalThis.Jig.dom = (() => {
     let typeLinkResolver = null;
@@ -489,6 +491,8 @@ globalThis.Jig.dom = (() => {
     };
 })();
 
-document.addEventListener("DOMContentLoaded", function () {
-    globalThis.Jig.dom.initCommonUi();
-});
+if (typeof document !== 'undefined') {
+    document.addEventListener("DOMContentLoaded", function () {
+        globalThis.Jig.dom.initCommonUi();
+    });
+}

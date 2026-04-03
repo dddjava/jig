@@ -12,6 +12,9 @@ const InboundApp = (() => {
     }
 
     function init() {
+        // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
+        state.data = null;
+
         state.data = parseInboundData();
         if (!state.data) {
             return;

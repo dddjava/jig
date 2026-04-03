@@ -1,12 +1,19 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const path = require('path');
 const {DocumentStub, EventStub, setGlossaryData} = require('./dom-stub.js');
 
-const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-glossary.js');
-const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid.js');
-const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-dom.js');
-const usecaseJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/usecase.js');
+// モジュールを事前にロード
+require('../../main/resources/templates/assets/jig-glossary.js');
+require('../../main/resources/templates/assets/jig-mermaid.js');
+require('../../main/resources/templates/assets/jig-dom.js');
+const UsecaseApp = require('../../main/resources/templates/assets/usecase.js');
+
+// ネストしたdescribeブロック内での require() 呼び出しに使用
+// （キャッシュされたモジュールが返されるため、require.cache削除は不要）
+const jigCommonJsPath = '../../main/resources/templates/assets/jig-glossary.js';
+const jigMermaidDiagramJsPath = '../../main/resources/templates/assets/jig-mermaid.js';
+const jigJsPath = '../../main/resources/templates/assets/jig-dom.js';
+const usecaseJsPath = '../../main/resources/templates/assets/usecase.js';
 
 // モック用のデータ
 const mockUsecaseAppData = {
@@ -53,7 +60,6 @@ test.describe('usecase.js', () => {
 
     test.describe('UsecaseApp', () => {
         let doc;
-        let UsecaseApp;
 
         test.beforeEach(() => {
             doc = new DocumentStub();
@@ -69,7 +75,12 @@ test.describe('usecase.js', () => {
                 }, run: () => {
                 }
             };
+
+            // グローバルデータをクリア（テスト間での汚染防止）
             delete globalThis.inboundData;
+            delete globalThis.domainData;
+            delete globalThis.usecaseData;
+            delete globalThis.outboundData;
             // IntersectionObserver は設定しない → lazyRender が即時コールバック
 
             // チェックボックス要素を事前登録
@@ -99,14 +110,6 @@ test.describe('usecase.js', () => {
                 el.id = id;
             });
 
-            delete require.cache[jigCommonJsPath];
-            delete require.cache[jigMermaidDiagramJsPath];
-            delete require.cache[jigJsPath];
-            delete require.cache[usecaseJsPath];
-            require(jigCommonJsPath);
-            require(jigMermaidDiagramJsPath);
-            require(jigJsPath);
-
             // Mermaid の複雑なDOM操作を回避するためにオーバーライド
             globalThis.Jig.mermaid.renderWithControls = (container, source, {direction = 'LR'} = {}) => {
                 const code = (typeof source === 'function') ? source(direction) : source;
@@ -115,8 +118,6 @@ test.describe('usecase.js', () => {
                 pre.textContent = code;
                 container.appendChild(pre);
             };
-
-            UsecaseApp = require(usecaseJsPath);
         });
 
         test('init should render data from globalThis.usecaseData', () => {
@@ -766,13 +767,11 @@ test.describe('usecase.js', () => {
     });
 
     test.describe('SequenceDiagram', () => {
+        let SequenceDiagram;
+
         test.describe('buildSequenceDiagram', () => {
 
             test.beforeEach(() => {
-                delete require.cache[jigCommonJsPath];
-                delete require.cache[jigMermaidDiagramJsPath];
-                delete require.cache[jigJsPath];
-                delete require.cache[usecaseJsPath];
                 delete globalThis.inboundData;
 
                 const doc = new DocumentStub();
@@ -1050,10 +1049,6 @@ test.describe('usecase.js', () => {
 
 
             test.beforeEach(() => {
-                delete require.cache[jigCommonJsPath];
-                delete require.cache[jigMermaidDiagramJsPath];
-                delete require.cache[jigJsPath];
-                delete require.cache[usecaseJsPath];
 
                 const doc = new DocumentStub();
                 doc.body.classList.add("usecase-model");
@@ -1068,11 +1063,6 @@ test.describe('usecase.js', () => {
                     }, run: () => {
                     }
                 };
-
-                require(jigCommonJsPath);
-                require(jigMermaidDiagramJsPath);
-                require(jigJsPath);
-                UsecaseApp = require(usecaseJsPath);
             });
 
             test('callsが空の場合はnullを返す', () => {
@@ -1128,11 +1118,6 @@ test.describe('usecase.js', () => {
 
 
         test.beforeEach(() => {
-            delete require.cache[jigCommonJsPath];
-            delete require.cache[jigMermaidDiagramJsPath];
-            delete require.cache[jigJsPath];
-            delete require.cache[usecaseJsPath];
-
             const doc = new DocumentStub();
             doc.body.classList.add("usecase-model");
             global.document = doc;
@@ -1147,10 +1132,6 @@ test.describe('usecase.js', () => {
                 }
             };
 
-            require(jigCommonJsPath);
-            require(jigMermaidDiagramJsPath);
-            require(jigJsPath);
-            UsecaseApp = require(usecaseJsPath);
         });
 
         test('nullの場合は空Setを返す', () => {
@@ -1195,11 +1176,6 @@ test.describe('usecase.js', () => {
 
 
         test.beforeEach(() => {
-            delete require.cache[jigCommonJsPath];
-            delete require.cache[jigMermaidDiagramJsPath];
-            delete require.cache[jigJsPath];
-            delete require.cache[usecaseJsPath];
-
             const doc = new DocumentStub();
             doc.body.classList.add("usecase-model");
             global.document = doc;
@@ -1213,11 +1189,6 @@ test.describe('usecase.js', () => {
                 }, run: () => {
                 }
             };
-
-            require(jigCommonJsPath);
-            require(jigMermaidDiagramJsPath);
-            require(jigJsPath);
-            UsecaseApp = require(usecaseJsPath);
         });
 
         test('outboundOperationSetが空の場合、外部ノードは追加されない', () => {

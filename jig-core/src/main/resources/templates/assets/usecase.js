@@ -940,6 +940,11 @@ const UsecaseApp = (() => {
         if (typeof document === "undefined") return;
         if (!document.body.classList.contains("usecase-model")) return;
 
+        // モジュールキャッシュを再ロードしなくても状態がリセットされるよう、毎回 init で state をクリア
+        state.data = null;
+        state.selectedTabs = new Map();
+        state.handlerFqns = null;
+
         state.data = getUsecaseData();
         if (!state.data) return;
 

@@ -1,13 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { JSDOM } = require('jsdom');
-const path = require('path');
 const { setGlossaryData } = require('./dom-stub.js');
-
-const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-glossary.js');
-const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid.js');
-const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-dom.js');
-const inboundJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/inbound.js');
 
 // モック用のデータ
 const mockInboundData = {
@@ -51,11 +45,10 @@ const mockGlossaryData = {
 };
 
 test.describe('InboundApp', () => {
-    let window;
-    let document;
     let InboundApp;
 
-    function setupDom() {
+    test.beforeEach(() => {
+        // JSDOM でブラウザ環境をセットアップ（モジュール読み込み前）
         const dom = new JSDOM(`
             <!DOCTYPE html>
             <html>
@@ -66,8 +59,8 @@ test.describe('InboundApp', () => {
             </html>
         `, { runScripts: "dangerously" });
 
-        window = dom.window;
-        document = window.document;
+        const window = dom.window;
+        const document = window.document;
         global.window = window;
         global.document = document;
         global.IntersectionObserver = class {
@@ -81,22 +74,18 @@ test.describe('InboundApp', () => {
         };
         global.marked = { parse: (text) => text }; // markedのモック
         global.mermaid = { initialize: () => {}, run: () => {} }; // mermaidのモック
-    }
 
-    function loadInboundApp() {
-        delete require.cache[jigCommonJsPath];
-        delete require.cache[jigMermaidDiagramJsPath];
-        delete require.cache[jigJsPath];
-        delete require.cache[inboundJsPath];
-        require(jigCommonJsPath);
-        require(jigMermaidDiagramJsPath);
-        require(jigJsPath);
-        InboundApp = require(inboundJsPath);
-    }
+        // グローバルデータをクリア（テスト間での汚染防止）
+        delete globalThis.inboundData;
+        delete globalThis.usecaseData;
+        delete globalThis.glossaryData;
 
-    test.beforeEach(() => {
-        setupDom();
-        loadInboundApp();
+        // ウィンドウをセットアップした後にモジュールをロード
+        // これにより jig-dom.js の window.addEventListener が正しい window に登録される
+        require('../../main/resources/templates/assets/jig-glossary.js');
+        require('../../main/resources/templates/assets/jig-mermaid.js');
+        require('../../main/resources/templates/assets/jig-dom.js');
+        InboundApp = require('../../main/resources/templates/assets/inbound.js');
     });
 
     test('init should render data from globalThis.inboundData', () => {

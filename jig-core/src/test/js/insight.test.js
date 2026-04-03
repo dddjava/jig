@@ -1,43 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-
-const insight = require('../../main/resources/templates/assets/insight.js');
-
-class Element {
-    constructor(tagName) {
-        this.tagName = tagName;
-        this.children = [];
-        this.textContent = '';
-        this.className = '';
-        this.dataset = {};
-        this.parentElement = null;
-    }
-
-    appendChild(child) {
-        child.parentElement = this;
-        this.children.push(child);
-        return child;
-    }
-}
-
-class DocumentStub {
-    constructor() {
-        this.elementsById = new Map();
-        this.selectors = new Map();
-    }
-
-    createElement(tagName) {
-        return new Element(tagName);
-    }
-
-    getElementById(id) {
-        return this.elementsById.get(id) || null;
-    }
-
-    querySelector(selector) {
-        return this.selectors.get(selector) || null;
-    }
-}
+const { Element, DocumentStub } = require('./dom-stub.js');
 
 function setupDocument() {
     const doc = new DocumentStub();
@@ -45,36 +8,17 @@ function setupDocument() {
     return doc;
 }
 
-function setupJig() {
-    global.Jig ??= {};
-    global.Jig.dom ??= {};
+// document グローバルを設定してから jig-dom.js を require する
+setupDocument();
+require('../../main/resources/templates/assets/jig-glossary.js');
+require('../../main/resources/templates/assets/jig-dom.js');
 
-    // Jig.dom.createElementはdocument.createElementを使用する
-    global.Jig.dom.createElement = function createElement(tagName, options = {}) {
-        const element = global.document.createElement(tagName);
-        if (options.className) element.className = options.className;
-        if (options.textContent != null) element.textContent = options.textContent;
-        if (options.children) {
-            options.children.forEach(child => {
-                element.appendChild(child);
-            });
-        }
-        return element;
-    };
-
-    global.Jig.dom.createCell = function createCell(text, className) {
-        const cell = global.Jig.dom.createElement('td', {
-            className: className,
-            textContent: text
-        });
-        return cell;
-    };
-}
+const insight = require('../../main/resources/templates/assets/insight.js');
 
 function buildInsightTables(doc) {
-    const packageTbody = new Element('tbody');
-    const typeTbody = new Element('tbody');
-    const methodTbody = new Element('tbody');
+    const packageTbody = doc.createElement('tbody');
+    const typeTbody = doc.createElement('tbody');
+    const methodTbody = doc.createElement('tbody');
 
     doc.selectors.set('#package-insight-list tbody', packageTbody);
     doc.selectors.set('#type-insight-list tbody', typeTbody);
@@ -134,7 +78,6 @@ test.describe('insight.js', () => {
         test('テーブルセルはテキストとクラス名を設定する', () => {
 
             setupDocument();
-            setupJig();
 
             const cell = Jig.dom.createCell('Hello', 'number');
 
@@ -153,7 +96,6 @@ test.describe('insight.js', () => {
         test('ズームセルはアイコンを追加する', () => {
 
             setupDocument();
-            setupJig();
 
             const cell = insight.createZoomCell();
 
@@ -179,7 +121,6 @@ test.describe('insight.js', () => {
         test('パッケージ一覧を描画する', () => {
 
             const doc = setupDocument();
-            setupJig();
 
             const {packageTbody} = buildInsightTables(doc);
 
@@ -226,7 +167,6 @@ test.describe('insight.js', () => {
         test('型一覧を描画する', () => {
 
             const doc = setupDocument();
-            setupJig();
 
             const {typeTbody} = buildInsightTables(doc);
 
@@ -277,7 +217,6 @@ test.describe('insight.js', () => {
         test('メソッド一覧を描画する', () => {
 
             const doc = setupDocument();
-            setupJig();
 
             const {methodTbody} = buildInsightTables(doc);
 
@@ -335,7 +274,6 @@ test.describe('insight.js', () => {
         test('テーブルの tbody が存在しない場合、各 render メソッドは安全に実行される（例外が発生しない）', () => {
 
             const doc = setupDocument();
-            setupJig();
 
             // 各テーブルの tbody を null に設定
             doc.selectors.set('#package-insight-list tbody', null);

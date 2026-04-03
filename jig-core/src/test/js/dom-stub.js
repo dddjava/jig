@@ -81,6 +81,7 @@ class Element {
         this.classList = new ClassList();
         this.style = {};
         this.attributes = new Map();
+        this.dataset = {};
         this.eventListeners = new Map();
         this.value = "";
         this._checked = false;

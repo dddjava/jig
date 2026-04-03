@@ -1250,8 +1250,7 @@ globalThis.Jig.mermaid = (() => {
     const diagram = (() => {
         const diagramRegistry = []; // [{container, renderFn}]
         const renderedContainers = new Set();
-        let diagramObserver = null;
-        const observedContainers = new WeakSet();
+        const observerMap = new Map(); // コンテナごとに独立した observer
 
         function isVisible(element) {
             if (typeof element.getBoundingClientRect !== 'function') {
@@ -1259,23 +1258,6 @@ globalThis.Jig.mermaid = (() => {
             }
             const rect = element.getBoundingClientRect();
             return rect.top < window.innerHeight && rect.bottom > 0;
-        }
-
-        function ensureObserver() {
-            if (diagramObserver) return;
-            if (!('IntersectionObserver' in window)) return;
-
-            diagramObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
-                        renderedContainers.add(entry.target);
-                        const d = diagramRegistry.find(d => d.container === entry.target);
-                        if (d) {
-                            d.renderFn();
-                        }
-                    }
-                });
-            }, {rootMargin: '100px'});
         }
 
         /**
@@ -1288,13 +1270,23 @@ globalThis.Jig.mermaid = (() => {
 
             diagramRegistry.push({container, renderFn});
 
-            // IntersectionObserver で自動レンダリング
+            // IntersectionObserver で自動レンダリング（各コンテナごとに独立した observer）
             if ('IntersectionObserver' in window) {
-                ensureObserver();
-                if (diagramObserver && !observedContainers.has(container)) {
-                    diagramObserver.observe(container);
-                    observedContainers.add(container);
-                }
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !renderedContainers.has(entry.target)) {
+                            renderedContainers.add(entry.target);
+                            const d = diagramRegistry.find(d => d.container === entry.target);
+                            if (d) {
+                                d.renderFn();
+                            }
+                            observer.unobserve(entry.target); // 一度だけレンダリング
+                        }
+                    });
+                }, {rootMargin: '100px'});
+
+                observer.observe(container);
+                observerMap.set(container, observer);
             } else {
                 // IntersectionObserver 非サポート時は即座にレンダリング
                 renderedContainers.add(container);

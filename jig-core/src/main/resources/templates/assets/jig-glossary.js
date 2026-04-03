@@ -1,6 +1,3 @@
-/* ===== Pure utility functions (no DOM side effects) ===== */
-
-// Namespace
 globalThis.Jig ??= {};
 globalThis.Jig.glossary ??= {};
 
@@ -12,8 +9,6 @@ function estimateEdgeCount(source) {
     return matches ? matches.length : 0;
 }
 
-
-// 用語集ユーティリティ
 globalThis.Jig.glossary = (() => {
 
     /**

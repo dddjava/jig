@@ -1,9 +1,7 @@
-// Mermaidダイアグラムのソース組み立てモジュール
-// MermaidBuilderおよびすべてのMermaidダイアグラム記述をカプセル化する
-// レンダリング制御もこのファイルで扱う
+globalThis.Jig ??= {};
+globalThis.Jig.glossary ??= {};
 
 const MermaidDiagramModule = (() => {
-// Mermaid theme colors
     const nodeStyleDefs = {
         inbound: "fill:#E8F0FE,stroke:#2E5C8A",
         usecase: "fill:#E6F8F0,stroke:#2D7A4A",

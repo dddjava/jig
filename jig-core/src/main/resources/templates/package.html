@@ -12,8 +12,7 @@
     <a href="./index.html">JIG</a> / <b class="jig-page-title">パッケージ関連</b>
 </header>
 <main>
-    <details class="usage">
-        <summary>ℹ️ 使い方</summary>
+    <div id="jig-document-description" class="hidden">
         <p>パッケージ間の依存関係と構成を俯瞰するための一覧です。図と表を組み合わせて、依存方向や責務の偏りを確認してください。</p>
         <ul>
             <li>階層集約: 深さを上げるとサブパッケージがまとめられ、全体像を把握しやすくなります。</li>
@@ -25,7 +24,7 @@
         </ul>
         <p>相互依存は赤い双方向の矢印で強調表示され、下の一覧に原因となるクラス関係が表示されます。</p>
         <p>依存が多い場合は階層集約やフィルタを活用し、関係が密な範囲から確認するのがおすすめです。</p>
-    </details>
+    </div>
     <details class="controls" open>
         <summary>表示設定</summary>
         <div class="control-row">

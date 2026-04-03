@@ -121,6 +121,48 @@ header a {
     cursor: default;
 }
 
+.jig-help-button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #FFF;
+    cursor: pointer;
+    padding: 0.2em;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    opacity: 0.8;
+}
+.jig-help-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    opacity: 1;
+}
+.jig-help-button svg {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+#jig-document-help-panel {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 1em 2em;
+    display: none;
+}
+#jig-document-help-panel.is-active {
+    display: block;
+}
+#jig-document-help-panel h2 {
+    margin-top: 0;
+    font-size: 1.2em;
+    border-bottom: 2px solid #243D1E;
+    padding-bottom: 0.3em;
+}
+#jig-document-help-panel .help-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
 aside.notice {
     background-color: #f9f9f9;
     border-left: 10px solid #ccc;

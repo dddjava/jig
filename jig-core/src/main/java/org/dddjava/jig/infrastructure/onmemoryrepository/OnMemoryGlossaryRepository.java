@@ -20,17 +20,6 @@ public class OnMemoryGlossaryRepository implements GlossaryRepository {
     private final Collection<Term> terms = new ArrayList<>();
 
     @Override
-    public Term get(TypeId typeId) {
-        TermId termId = fromTypeId(typeId);
-        return terms.stream()
-                .filter(term -> term.termKind() == TermKind.クラス)
-                .filter(term -> term.id().equals(termId))
-                .findAny()
-                // 用語として事前登録されていなくても、IDがあるということは用語として存在することになるので、生成して返す。
-                .orElseGet(() -> Term.simple(termId, typeId.asSimpleText(), TermKind.クラス));
-    }
-
-    @Override
     public Term get(PackageId packageId) {
         TermId termId = fromPackageId(packageId);
         return terms.stream()

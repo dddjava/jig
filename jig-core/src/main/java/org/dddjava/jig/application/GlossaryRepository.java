@@ -13,8 +13,6 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
  */
 public interface GlossaryRepository {
 
-    Term get(TypeId typeId);
-
     Term get(PackageId packageId);
 
     void register(Term term);

@@ -701,4 +701,46 @@ test.describe('domain.js', () => {
             delete globalThis.glossaryData;
         });
     });
+
+    // API参照の正確性をテスト
+    test.describe('domain.js - API参照の正確性', () => {
+        test('domain.js が正しいAPI を使用していることを確認（ソースコード検証）', () => {
+            const fs = require('fs');
+            const path = require('path');
+            const domainJsPath = path.join(__dirname, '../../main/resources/templates/assets/domain.js');
+            const content = fs.readFileSync(domainJsPath, 'utf-8');
+
+            // 正しいAPI を使用していることを確認
+            assert.ok(
+                content.includes('Jig.mermaid.builder.buildMermaidDiagramSource'),
+                'domain.js は Jig.mermaid.builder.buildMermaidDiagramSource を使用すべき'
+            );
+
+            assert.ok(
+                content.includes('Jig.mermaid.createPackageLevelDiagram'),
+                'domain.js は Jig.mermaid.createPackageLevelDiagram を使用すべき'
+            );
+
+            assert.ok(
+                content.includes('Jig.util.getPackageFqnFromTypeFqn'),
+                'domain.js は Jig.util.getPackageFqnFromTypeFqn を使用すべき'
+            );
+
+            // 古いAPI が使用されていないことを確認
+            assert.ok(
+                !content.includes('Jig.packageDiagram.buildMermaidDiagramSource'),
+                'domain.js は Jig.packageDiagram.buildMermaidDiagramSource を使用してはいけない'
+            );
+
+            assert.ok(
+                !content.includes('Jig.packageDiagram.createPackageLevelDiagram'),
+                'domain.js は Jig.packageDiagram.createPackageLevelDiagram を使用してはいけない'
+            );
+
+            assert.ok(
+                !content.includes('Jig.packageDiagram.getPackageFqnFromTypeFqn'),
+                'domain.js は Jig.packageDiagram.getPackageFqnFromTypeFqn を使用してはいけない'
+            );
+        });
+    });
 });

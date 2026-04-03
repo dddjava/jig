@@ -123,7 +123,7 @@ const DomainApp = (() => {
             packageFqns.add(r.to);
         });
 
-        const {source} = Jig.packageDiagram.buildMermaidDiagramSource(
+        const {source} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, directRelations,
             {
                 diagramDirection: direction,
@@ -143,7 +143,7 @@ const DomainApp = (() => {
      * @return {string|null}
      */
     function createPackageRelationDiagram(pkg, allPackages, allPackageRelations, direction = domainSettings.diagramDirection) {
-        return Jig.packageDiagram.createPackageLevelDiagram(
+        return Jig.mermaid.createPackageLevelDiagram(
             pkg, allPackages, allPackageRelations,
             {
                 transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
@@ -540,8 +540,8 @@ const DomainApp = (() => {
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
         const relMap = new Map();
         typeRelations.forEach(({from, to}) => {
-            const fromPkg = Jig.packageDiagram.getPackageFqnFromTypeFqn(from);
-            const toPkg = Jig.packageDiagram.getPackageFqnFromTypeFqn(to);
+            const fromPkg = Jig.util.getPackageFqnFromTypeFqn(from);
+            const toPkg = Jig.util.getPackageFqnFromTypeFqn(to);
             if (fromPkg !== toPkg) relMap.set(`${fromPkg}::${toPkg}`, {from: fromPkg, to: toPkg});
         });
         return Array.from(relMap.values());

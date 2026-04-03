@@ -257,7 +257,7 @@ const DomainApp = (() => {
         });
         const edgeLengthByKey = new Map();
         byPackage.forEach(fqns => {
-            const {edgeLengthByKey: lengths} = Jig.graph.computeOutboundEdgeLengths({
+            const {edgeLengthByKey: lengths} = Jig.mermaid.graph.computeOutboundEdgeLengths({
                 nodesInSubgraph: fqns,
                 edges: edges
             });
@@ -363,10 +363,10 @@ const DomainApp = (() => {
 
         let edges = Array.from(uniqueEdgesMap.values());
         if (domainSettings.transitiveReductionEnabled) {
-            edges = Jig.graph.transitiveReduction(edges);
+            edges = Jig.mermaid.graph.transitiveReduction(edges);
         }
 
-        const {edgeLengthByKey} = Jig.graph.computeOutboundEdgeLengths({
+        const {edgeLengthByKey} = Jig.mermaid.graph.computeOutboundEdgeLengths({
             nodesInSubgraph: internalFqns,
             edges: edges
         });

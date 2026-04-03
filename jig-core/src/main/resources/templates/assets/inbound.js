@@ -165,7 +165,7 @@ const InboundApp = (() => {
                     }
                 });
 
-                const {edgeLengthByKey} = Jig.graph.computeOutboundEdgeLengths({
+                const {edgeLengthByKey} = Jig.mermaid.graph.computeOutboundEdgeLengths({
                     nodesInSubgraph: adapterFqns,
                     edges: controller.relations
                 });
@@ -179,7 +179,7 @@ const InboundApp = (() => {
                 const generator = (dir) => builder.build(dir);
                 if (generator('LR')) {
                     mmdContainer.innerHTML = "";
-                    Jig.mermaid.renderWithControls(mmdContainer, generator, {direction: 'LR'});
+                    Jig.mermaid.render.renderWithControls(mmdContainer, generator, {direction: 'LR'});
                 }
             });
 

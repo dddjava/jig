@@ -15,7 +15,7 @@ const IndexApp = (() => {
         Jig.dom.lazyRender(domainPackageDiagram, () => {
             domainPackageDiagram.innerHTML = "";
             console.log("Rendering package diagram for " + packageRoot);
-            const pkgDiagram = Jig.packageDiagram.createPackageLevelDiagram(
+            const pkgDiagram = Jig.mermaid.createPackageLevelDiagram(
                 {fqn: packageRoot},
                 allPackages, allPackageRelations,
                 {

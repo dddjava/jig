@@ -133,12 +133,6 @@ test.describe('package.js', () => {
                 assert.equal(data.relations.length, 0);
             });
 
-            test('getPackageDepth: 深さを返す', () => {
-                assert.equal(PackageApp.getPackageDepth(''), 0);
-                assert.equal(PackageApp.getPackageDepth('(default)'), 0);
-                assert.equal(PackageApp.getPackageDepth('app.domain'), 2);
-            });
-
             test('getMaxPackageDepth: 最大深さを返す', () => {
                 const doc = setupDocument();
                 setPackageData({
@@ -151,12 +145,6 @@ test.describe('package.js', () => {
                 }, testContext);
 
                 assert.equal(PackageApp.getMaxPackageDepth(testContext), 4);
-            });
-
-            test('getCommonPrefixDepth: 共通プレフィックス深さを返す', () => {
-                assert.equal(globalThis.Jig.packageDiagram.getCommonPrefixDepth([]), 0);
-                assert.equal(globalThis.Jig.packageDiagram.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
-                assert.equal(globalThis.Jig.packageDiagram.getCommonPrefixDepth(['app', 'lib.tool']), 0);
             });
         });
     });
@@ -375,7 +363,7 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: ['app'],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false
@@ -385,7 +373,7 @@ test.describe('package.js', () => {
             });
 
             test('filterFocusDiagramRelations: relatedSetで絞り込む', () => {
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: [],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false
@@ -410,7 +398,7 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: [],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false
@@ -435,7 +423,7 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: [],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false
@@ -460,7 +448,7 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: [],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false
@@ -486,7 +474,7 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.d', to: 'app.b'},
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: [],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false
@@ -512,7 +500,7 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.c', to: 'app.d'},
                 ];
-                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {
+                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: [],
                     aggregationDepth: 0,
                     transitiveReductionEnabled: false

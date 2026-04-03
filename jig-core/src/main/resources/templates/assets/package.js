@@ -68,29 +68,20 @@ const PackageApp = (() => {
         return Jig.glossary.getTypeTerm(fqn).title;
     }
 
-    /**
-     * @param {string} fqn
-     * @return {number} 深さ
-     */
-    function getPackageDepth(fqn) {
-        if (!fqn || fqn === '(default)') return 0;
-        return fqn.split('.').length;
-    }
-
     function getMaxPackageDepth(context) {
         const {packages} = getPackageRelationData(context);
-        return packages.reduce((max, item) => Math.max(max, getPackageDepth(item.fqn)), 0);
+        return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
     // 集計
     function buildAggregationStats(packages, relations, maxDepth) {
         const stats = new Map();
         for (let depth = 0; depth <= maxDepth; depth += 1) {
-            const aggregatedPackages = new Set(packages.map(item => Jig.packageDiagram.getAggregatedFqn(item.fqn, depth)));
+            const aggregatedPackages = new Set(packages.map(item => Jig.util.getAggregatedFqn(item.fqn, depth)));
             const relationKeys = new Set();
             relations.forEach(relation => {
-                const from = Jig.packageDiagram.getAggregatedFqn(relation.from, depth);
-                const to = Jig.packageDiagram.getAggregatedFqn(relation.to, depth);
+                const from = Jig.util.getAggregatedFqn(relation.from, depth);
+                const to = Jig.util.getAggregatedFqn(relation.to, depth);
                 if (from === to) return;
                 relationKeys.add(`${from}::${to}`);
             });
@@ -104,30 +95,30 @@ const PackageApp = (() => {
 
     function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, focusedPackageFqn, maxDepth, aggregationDepth, focusCallerMode, focusCalleeMode) {
         let filteredPackages = packageFilterFqn.length > 0
-            ? packages.filter(item => Jig.packageDiagram.isWithinPackageFilters(item.fqn, packageFilterFqn))
+            ? packages.filter(item => Jig.util.isWithinPackageFilters(item.fqn, packageFilterFqn))
             : packages;
         let filteredRelations = packageFilterFqn.length > 0
-            ? relations.filter(relation => Jig.packageDiagram.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.packageDiagram.isWithinPackageFilters(relation.to, packageFilterFqn))
+            ? relations.filter(relation => Jig.util.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.util.isWithinPackageFilters(relation.to, packageFilterFqn))
             : relations;
 
         if (focusedPackageFqn) {
-            const aggregatedRoot = Jig.packageDiagram.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
+            const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
             const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
             filteredPackages = filteredPackages.filter(item =>
-                focusSet.has(Jig.packageDiagram.getAggregatedFqn(item.fqn, aggregationDepth))
+                focusSet.has(Jig.util.getAggregatedFqn(item.fqn, aggregationDepth))
             );
 
             const filterDirectRelation = (relation) => {
-                const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
                 const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
                 const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
                 return isCaller || isCallee;
             };
 
             const filterTransitiveRelation = (relation) => {
-                const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
                 return focusSet.has(from) && focusSet.has(to);
             };
 
@@ -161,29 +152,29 @@ const PackageApp = (() => {
 
     function getInitialAggregationDepth(domainPackageRoots) {
         if (!domainPackageRoots?.length) return 0;
-        const minDepth = Math.min(...domainPackageRoots.map(fqn => getPackageDepth(fqn)));
+        const minDepth = Math.min(...domainPackageRoots.map(fqn => Jig.util.getPackageDepth(fqn)));
         return minDepth + 1;
     }
 
     function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
-        return rowFqns.map(fqn => Jig.packageDiagram.isWithinPackageFilters(fqn, packageFilterFqn));
+        return rowFqns.map(fqn => Jig.util.isWithinPackageFilters(fqn, packageFilterFqn));
     }
 
     function buildFocusRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, focusCallerMode, focusCalleeMode, focusedPackageFqn) {
         if (!focusedPackageFqn) {
-            return rowFqns.map(rowFqn => Jig.packageDiagram.isWithinPackageFilters(rowFqn, packageFilterFqn));
+            return rowFqns.map(rowFqn => Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn));
         }
 
         const filteredRelations = packageFilterFqn.length > 0
             ? relations.filter(relation =>
-                Jig.packageDiagram.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.packageDiagram.isWithinPackageFilters(relation.to, packageFilterFqn)
+                Jig.util.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.util.isWithinPackageFilters(relation.to, packageFilterFqn)
             )
             : relations;
-        const aggregatedRoot = Jig.packageDiagram.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
+        const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
         const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
         return rowFqns.map(rowFqn => {
-            const aggregatedRow = Jig.packageDiagram.getAggregatedFqn(rowFqn, aggregationDepth);
-            return Jig.packageDiagram.isWithinPackageFilters(rowFqn, packageFilterFqn) && focusSet.has(aggregatedRow);
+            const aggregatedRow = Jig.util.getAggregatedFqn(rowFqn, aggregationDepth);
+            return Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn) && focusSet.has(aggregatedRow);
         });
     }
 
@@ -208,8 +199,8 @@ const PackageApp = (() => {
     function buildReverseAdjacency(relations, aggregationDepth) {
         const reverseAdjacency = new Map();
         relations.forEach(relation => {
-            const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-            const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+            const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+            const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
             if (!reverseAdjacency.has(to)) reverseAdjacency.set(to, new Set());
             reverseAdjacency.get(to).add(from);
         });
@@ -219,8 +210,8 @@ const PackageApp = (() => {
     function buildForwardAdjacency(relations, aggregationDepth) {
         const forwardAdjacency = new Map();
         relations.forEach(relation => {
-            const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-            const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+            const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+            const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
             if (!forwardAdjacency.has(from)) forwardAdjacency.set(from, new Set());
             forwardAdjacency.get(from).add(to);
         });
@@ -235,8 +226,8 @@ const PackageApp = (() => {
         if (focusCallerMode !== '0') {
             if (focusCallerMode === '1') {
                 relations.forEach(relation => {
-                    const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-                    const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+                    const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+                    const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
                     if (to === root) focusSet.add(from);
                 });
             } else {
@@ -249,8 +240,8 @@ const PackageApp = (() => {
         if (focusCalleeMode !== '0') {
             if (focusCalleeMode === '1') {
                 relations.forEach(relation => {
-                    const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-                    const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+                    const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+                    const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
                     if (from === root) focusSet.add(to);
                 });
             } else {
@@ -270,16 +261,16 @@ const PackageApp = (() => {
             const focusSet = collectFocusSet(aggregatedRoot, uniqueRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
 
             const filterDirectRelation = (relation) => {
-                const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
                 const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
                 const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
                 return isCaller || isCallee;
             };
 
             const filterTransitiveRelation = (relation) => {
-                const from = Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth);
+                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
+                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
                 return focusSet.has(from) && focusSet.has(to);
             };
 
@@ -289,8 +280,8 @@ const PackageApp = (() => {
                 nextRelations = uniqueRelations.filter(filterDirectRelation);
             } else {
                 nextRelations = uniqueRelations.filter(relation =>
-                    focusSet.has(Jig.packageDiagram.getAggregatedFqn(relation.from, aggregationDepth)) &&
-                    focusSet.has(Jig.packageDiagram.getAggregatedFqn(relation.to, aggregationDepth))
+                    focusSet.has(Jig.util.getAggregatedFqn(relation.from, aggregationDepth)) &&
+                    focusSet.has(Jig.util.getAggregatedFqn(relation.to, aggregationDepth))
                 );
             }
 
@@ -305,13 +296,13 @@ const PackageApp = (() => {
     }
 
     function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, focusedPackageFqn, aggregationDepth, focusCallerMode, focusCalleeMode, transitiveReductionEnabled) {
-        const base = Jig.packageDiagram.buildVisibleDiagramRelations(
+        const base = Jig.mermaid.builder.buildVisibleDiagramRelations(
             packages,
             relations,
             causeRelationEvidence,
             {packageFilterFqn, aggregationDepth, transitiveReductionEnabled}
         );
-        const aggregatedRoot = focusedPackageFqn ? Jig.packageDiagram.getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
+        const aggregatedRoot = focusedPackageFqn ? Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
         const {uniqueRelations, packageFqns} = filterFocusDiagramRelations(
             base.uniqueRelations,
             base.packageFqns,
@@ -519,8 +510,8 @@ const PackageApp = (() => {
         if (!mutualPairs || mutualPairs.size === 0) return [];
         const relationMap = new Map();
         causeRelationEvidence.forEach(relation => {
-            const fromPackage = Jig.packageDiagram.getAggregatedFqn(Jig.packageDiagram.getPackageFqnFromTypeFqn(relation.from), aggregationDepth);
-            const toPackage = Jig.packageDiagram.getAggregatedFqn(Jig.packageDiagram.getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
+            const fromPackage = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(relation.from), aggregationDepth);
+            const toPackage = Jig.util.getAggregatedFqn(Jig.util.getPackageFqnFromTypeFqn(relation.to), aggregationDepth);
             if (fromPackage === toPackage) return;
             const key = fromPackage < toPackage ? `${fromPackage}::${toPackage}` : `${toPackage}::${fromPackage}`;
             if (!relationMap.has(key)) {
@@ -687,7 +678,7 @@ const PackageApp = (() => {
 
         const packages = new Map();
         nodes.forEach(node => {
-            const packageFqn = Jig.packageDiagram.getPackageFqnFromTypeFqn(node);
+            const packageFqn = Jig.util.getPackageFqnFromTypeFqn(node);
             const packageName = packageFqn === '(default)'
                 ? '(default)'
                 : Jig.glossary.typeSimpleName(packageFqn);
@@ -716,8 +707,8 @@ const PackageApp = (() => {
             .slice(0, 2);
 
         const packageRelations = edges.map(({from, to}) => ({
-            from: Jig.packageDiagram.getPackageFqnFromTypeFqn(from),
-            to: Jig.packageDiagram.getPackageFqnFromTypeFqn(to),
+            from: Jig.util.getPackageFqnFromTypeFqn(from),
+            to: Jig.util.getPackageFqnFromTypeFqn(to),
         }));
         const packageAdjacency = new Map();
         const ensureAdjacent = packageFqn => {
@@ -759,7 +750,7 @@ const PackageApp = (() => {
             let bestDepth = -1;
             let tiedRoots = [];
             outerRoots.forEach(root => {
-                const depth = Jig.packageDiagram.getCommonPrefixDepth([packageFqn, root]);
+                const depth = Jig.util.getCommonPrefixDepth([packageFqn, root]);
                 if (depth > bestDepth) {
                     bestDepth = depth;
                     bestRoot = root;
@@ -785,7 +776,7 @@ const PackageApp = (() => {
             classNodes.forEach(classFqn => {
                 const nodeId = escapeId(classFqn);
                 const className = Jig.glossary.typeSimpleName(classFqn);
-                targetLines.push(Jig.mermaid.getNodeDefinition(nodeId, className, 'class'));
+                targetLines.push(Jig.mermaid.builder.getNodeDefinition(nodeId, className, 'class'));
             });
         };
         const createTreeNode = () => ({classes: new Set(), children: new Map()});
@@ -891,7 +882,7 @@ const PackageApp = (() => {
             context.focusCalleeMode,
             context.transitiveReductionEnabled
         );
-        const {source, nodeIdToFqn, mutualPairs} = Jig.packageDiagram.buildMermaidDiagramSource(
+        const {source, nodeIdToFqn, mutualPairs} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
             {diagramDirection: direction, focusedPackageFqn, clickHandlerName: DIAGRAM_CLICK_HANDLER_NAME}
         );
@@ -1155,7 +1146,6 @@ const PackageApp = (() => {
         getPackageRelationData,
         parsePackageRelationData,
         getGlossaryTitle,
-        getPackageDepth,
         getMaxPackageDepth,
         buildAggregationStats,
         buildAggregationStatsForFilters,

@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const PackageDiagramModule = require('../../main/resources/templates/assets/jig-mermaid.js').PackageDiagramModule;
+const sut = require('../../main/resources/templates/assets/jig-mermaid.js')
+const PackageDiagramModule = sut.PackageDiagramModule;
 require('../../main/resources/templates/assets/jig-glossary.js');
 const PackageApp = require("../../main/resources/templates/assets/package");
 
@@ -194,7 +195,11 @@ test.describe('jig-mermaid.js', () => {
                         key: 'com.example',
                         nodes: ['P0'],
                         children: new Map([
-                            ['com.example.domain', {key: 'com.example.domain', nodes: ['P1', 'P2'], children: new Map()}],
+                            ['com.example.domain', {
+                                key: 'com.example.domain',
+                                nodes: ['P1', 'P2'],
+                                children: new Map()
+                            }],
                         ]),
                     }],
                 ]),
@@ -247,6 +252,188 @@ test.describe('jig-mermaid.js', () => {
             const clickLine = nodeLines.find(line => line.startsWith('click ') && line.includes('href'));
             assert.ok(clickLine, 'href クリック行があるはず');
             assert.ok(clickLine.includes('href "#anchor-app.a"'), `click ... href "..." の形式のはず: ${clickLine}`);
+        });
+    });
+
+// ----- detectStronglyConnectedComponents -----
+
+    test.describe('detectStronglyConnectedComponents', () => {
+        test('循環を検出する', () => {
+            const graph = new Map([
+                ['a', ['b']],
+                ['b', ['c']],
+                ['c', ['a', 'd']],
+                ['d', ['e']],
+                ['e', ['f']],
+                ['f', ['d']],
+            ]);
+            const sccs = sut.detectStronglyConnectedComponents(graph);
+            const sortedSccs = sccs.map(scc => scc.sort()).sort((a, b) => a[0].localeCompare(b[0]));
+            assert.deepEqual(sortedSccs, [['a', 'b', 'c'], ['d', 'e', 'f']]);
+        });
+    });
+
+// ----- transitiveReduction -----
+
+    test.describe('transitiveReduction', () => {
+        test('単純な推移関係を簡約する', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'b', to: 'c'},
+                {from: 'a', to: 'c'},
+            ];
+            const result = sut.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'b>c']);
+        });
+
+        test('循環参照は対象外とする', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'b', to: 'a'},
+                {from: 'a', to: 'c'},
+            ];
+            const result = sut.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a']);
+        });
+
+        test('循環ではないが簡約対象でもない', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'c', to: 'd'},
+            ];
+            const result = sut.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'c>d']);
+        });
+
+        test('循環からの関係は簡約対象にしない', () => {
+            const relations = [
+                {from: 'a', to: 'b'},
+                {from: 'b', to: 'a'}, // cycle
+                {from: 'b', to: 'c'},
+                {from: 'a', to: 'c'},
+            ];
+            const result = sut.transitiveReduction(relations);
+            assert.deepEqual(result.map(r => `${r.from}>${r.to}`).sort(), ['a>b', 'a>c', 'b>a', 'b>c']);
+        });
+    });
+
+// ----- computeSubgraphDepthMap / computeOutboundEdgeLengths -----
+
+    test.describe('computeSubgraphDepthMap', () => {
+        test('DAGの最長パスで深さを計算する', () => {
+            const {depthMap, maxDepth} = sut.computeSubgraphDepthMap({
+                nodesInSubgraph: ['A', 'B', 'C', 'D'],
+                edges: [
+                    {from: 'A', to: 'B'},
+                    {from: 'B', to: 'C'},
+                    {from: 'A', to: 'D'},
+                ],
+            });
+            assert.equal(depthMap.get('A'), 1);
+            assert.equal(depthMap.get('B'), 2);
+            assert.equal(depthMap.get('C'), 3);
+            assert.equal(depthMap.get('D'), 2);
+            assert.equal(maxDepth, 3);
+        });
+
+        test('循環のみの場合は全ノードをdepth=1で開始する', () => {
+            const {depthMap, maxDepth} = sut.computeSubgraphDepthMap({
+                nodesInSubgraph: ['A', 'B'],
+                edges: [
+                    {from: 'A', to: 'B'},
+                    {from: 'B', to: 'A'},
+                ],
+            });
+            assert.ok(depthMap.get('A') >= 1);
+            assert.ok(depthMap.get('B') >= 1);
+            assert.ok(maxDepth >= 1);
+        });
+    });
+
+    test.describe('computeOutboundEdgeLengths', () => {
+        test('浅いノードから外部へのエッジが長くなる', () => {
+            const {edgeLengthByKey} = sut.computeOutboundEdgeLengths({
+                nodesInSubgraph: ['A', 'B', 'C'],
+                edges: [
+                    {from: 'A', to: 'B'},
+                    {from: 'B', to: 'C'},
+                    {from: 'A', to: 'X'},
+                    {from: 'C', to: 'Y'},
+                ],
+            });
+            assert.equal(edgeLengthByKey.get('A::X'), 3);
+            assert.equal(edgeLengthByKey.get('C::Y'), 1);
+            assert.equal(edgeLengthByKey.get('A::B'), 1);
+        });
+    });
+
+// ----- MermaidBuilder.applyThemeClassDefs -----
+
+    test.describe('MermaidBuilder.applyThemeClassDefs', () => {
+        test('全テーマのclassDefを追加する', () => {
+            const builder = new sut.MermaidBuilder();
+            builder.applyThemeClassDefs();
+            const code = builder.build();
+            assert.ok(code.includes('classDef inbound'), 'inbound classDef should be present');
+            assert.ok(code.includes('classDef usecase'), 'usecase classDef should be present');
+            assert.ok(code.includes('classDef outbound'), 'outbound classDef should be present');
+            assert.ok(code.includes('classDef inactive'), 'inactive classDef should be present');
+        });
+
+        test('nodeStyleDefsから色コードが正しく取得される', () => {
+            assert.equal(sut.nodeStyleDefs.inbound, 'fill:#E8F0FE,stroke:#2E5C8A');
+            assert.equal(sut.nodeStyleDefs.usecase, 'fill:#E6F8F0,stroke:#2D7A4A');
+            assert.equal(sut.nodeStyleDefs.outbound, 'fill:#FFF0E6,stroke:#CC6600');
+            assert.equal(sut.nodeStyleDefs.inactive, 'fill:#e0e0e0,stroke:#aaa');
+        });
+    });
+
+// ----- getNodeDefinition & MermaidBuilder node shapes -----
+
+    test.describe('Mermaid node shapes', () => {
+        test('getNodeDefinition: default shape is class (square)', () => {
+            const def = sut.getNodeDefinition('id1', 'label1');
+            assert.equal(def, 'id1["label1"]');
+        });
+
+        test('getNodeDefinition: method shape is rounded', () => {
+            const def = sut.getNodeDefinition('id1', 'label1', 'method');
+            assert.equal(def, 'id1(["label1"])');
+        });
+
+        test('getNodeDefinition: package shape is stacked', () => {
+            const def = sut.getNodeDefinition('id1', 'label1', 'package');
+            assert.equal(def, 'id1@{shape: st-rect, label: "label1"}');
+        });
+
+        test('getNodeDefinition: database shape is cylindrical', () => {
+            const def = sut.getNodeDefinition('id1', 'label1', 'database');
+            assert.equal(def, 'id1[("label1")]');
+        });
+
+        test('getNodeDefinition: external shape is double circle', () => {
+            const def = sut.getNodeDefinition('id1', 'label1', 'external');
+            assert.equal(def, 'id1(("label1"))');
+        });
+
+        test('getNodeDefinition: fallback to raw shape string', () => {
+            const def = sut.getNodeDefinition('id1', 'label1', '>"$LABEL"]');
+            assert.equal(def, 'id1>"label1"]');
+        });
+
+        test('MermaidBuilder.addNode uses default shape', () => {
+            const builder = new sut.MermaidBuilder();
+            builder.addNode('id1', 'label1');
+            const code = builder.build();
+            assert.ok(code.includes('id1["label1"]'));
+        });
+
+        test('MermaidBuilder.addNodeToSubgraph uses specified shape', () => {
+            const builder = new sut.MermaidBuilder();
+            const sg = builder.startSubgraph('sg1');
+            builder.addNodeToSubgraph(sg, 'id1', 'label1', 'method');
+            const code = builder.build();
+            assert.ok(code.includes('id1(["label1"])'));
         });
     });
 });

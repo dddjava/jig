@@ -746,16 +746,16 @@ const UsecaseApp = (() => {
 
                 const sequenceDiagram = SequenceDiagram.build(method, diagramContext);
                 const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
-                const hasSequence = sequenceDiagramCode !== null;
+                const hasSequenceDiagram = sequenceDiagramCode !== null;
 
-                if (hasUsecaseDiagram || hasSequence) {
+                if (hasUsecaseDiagram || hasSequenceDiagram) {
                     const diagramContainer = Jig.dom.createElement("div", {className: "diagram-container"});
                     methodSection.appendChild(diagramContainer);
 
                     let usecasePanel = null;
                     let sequencePanel = null;
 
-                    if (hasUsecaseDiagram && hasSequence) {
+                    if (hasUsecaseDiagram && hasSequenceDiagram) {
                         const selectedTab = state.selectedTabs.get(method.fqn) || 'usecase';
                         const isUsecaseActive = selectedTab === 'usecase';
 
@@ -853,7 +853,7 @@ const UsecaseApp = (() => {
                         });
                     }
 
-                    if (hasSequence) {
+                    if (hasSequenceDiagram) {
                         const sequenceContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                         (sequencePanel || diagramContainer).appendChild(sequenceContainer);
 

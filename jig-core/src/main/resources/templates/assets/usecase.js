@@ -361,128 +361,129 @@ const UsecaseApp = (() => {
         return { nodes, edges };
     }
 
-    /**
-     * @param {UsecaseMethod} rootMethod
-     * @param {DiagramContext} diagramContext
-     * @returns {SequenceDiagram}
-     */
-    function buildSequenceDiagram(rootMethod, diagramContext) {
-        /** @type {string[]} */
-        const participantKeys = [];
-        /** @type {Map<string, SequenceParticipant>} */
-        const participants = new Map();
-        /** @type {SequenceCall[]} */
-        const calls = [];
-        const visited = new Set();
-
+    const SequenceDiagram = {
         /**
-         * @param {string} fqn
-         * @returns {string}
+         * @param {UsecaseMethod} rootMethod
+         * @param {DiagramContext} diagramContext
+         * @returns {SequenceDiagram}
          */
-        function getMethodSimpleName(fqn) {
-            const hashIdx = fqn.indexOf('#');
-            if (hashIdx === -1) return fqn;
-            const parenIdx = fqn.indexOf('(', hashIdx);
-            return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
-        }
+        build(rootMethod, diagramContext) {
+            /** @type {string[]} */
+            const participantKeys = [];
+            /** @type {Map<string, SequenceParticipant>} */
+            const participants = new Map();
+            /** @type {SequenceCall[]} */
+            const calls = [];
+            const visited = new Set();
 
-        /**
-         * @param {string} key
-         * @returns {SequenceParticipant}
-         */
-        function ensureUsecaseParticipant(key) {
-            const label = Jig.glossary.getMethodTerm(key, true).title
-            return ensureParticipant(key, label, "usecase");
-        }
-
-        /**
-         * @param {string} key
-         * @param {string} label
-         * @param {string} kind
-         * @returns {SequenceParticipant}
-         */
-        function ensureParticipant(key, label, kind) {
-            if (!participants.has(key)) {
-                participants.set(key, {id: fqnToNodeId(key), label, kind});
-                participantKeys.push(key);
+            /**
+             * @param {string} fqn
+             * @returns {string}
+             */
+            function getMethodSimpleName(fqn) {
+                const hashIdx = fqn.indexOf('#');
+                if (hashIdx === -1) return fqn;
+                const parenIdx = fqn.indexOf('(', hashIdx);
+                return parenIdx === -1 ? fqn.slice(hashIdx + 1) : fqn.slice(hashIdx + 1, parenIdx);
             }
-            return participants.get(key);
-        }
 
-        ensureUsecaseParticipant(rootMethod.fqn);
-        visited.add(rootMethod.fqn);
+            /**
+             * @param {string} key
+             * @param {string} label
+             * @param {string} kind
+             * @returns {SequenceParticipant}
+             */
+            function ensureParticipant(key, label, kind) {
+                if (!participants.has(key)) {
+                    participants.set(key, {id: fqnToNodeId(key), label, kind});
+                    participantKeys.push(key);
+                }
+                return participants.get(key);
+            }
 
-        /**
-         * @param {string} effectiveCallerFqn
-         * @param {string[]} callMethods
-         * @param {Set<string>} inliningPath
-         */
-        function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
-            if (!callMethods) return;
-            for (const calleeFqn of callMethods) {
-                const caller = participants.get(effectiveCallerFqn);
-                if (diagramContext.methodMap.has(calleeFqn)) {
-                    const m = diagramContext.methodMap.get(calleeFqn);
-                    const isUc = m.kind === "usecase";
-                    if (diagramContext.showDiagramInternalMethods || isUc) {
-                        const callee = ensureUsecaseParticipant(calleeFqn);
-                        calls.push({from: caller.id, to: callee.id, label: ''});
-                        if (!visited.has(calleeFqn)) {
-                            visited.add(calleeFqn);
-                            traverse(calleeFqn, m.callMethods, new Set());
+            /**
+             * @param {string} key
+             * @returns {SequenceParticipant}
+             */
+            function ensureUsecaseParticipant(key) {
+                const label = Jig.glossary.getMethodTerm(key, true).title
+                return ensureParticipant(key, label, "usecase");
+            }
+
+            /**
+             * @param {string} effectiveCallerFqn
+             * @param {string[]} callMethods
+             * @param {Set<string>} inliningPath
+             */
+            function traverse(effectiveCallerFqn, callMethods, inliningPath = new Set()) {
+                if (!callMethods) return;
+                for (const calleeFqn of callMethods) {
+                    const caller = participants.get(effectiveCallerFqn);
+                    if (diagramContext.methodMap.has(calleeFqn)) {
+                        const m = diagramContext.methodMap.get(calleeFqn);
+                        const isUc = m.kind === "usecase";
+                        if (diagramContext.showDiagramInternalMethods || isUc) {
+                            const callee = ensureUsecaseParticipant(calleeFqn);
+                            calls.push({from: caller.id, to: callee.id, label: ''});
+                            if (!visited.has(calleeFqn)) {
+                                visited.add(calleeFqn);
+                                traverse(calleeFqn, m.callMethods, new Set());
+                            }
+                        } else {
+                            if (!inliningPath.has(calleeFqn)) {
+                                const nextPath = new Set(inliningPath);
+                                nextPath.add(calleeFqn);
+                                traverse(effectiveCallerFqn, m.callMethods, nextPath);
+                            }
                         }
-                    } else {
-                        if (!inliningPath.has(calleeFqn)) {
-                            const nextPath = new Set(inliningPath);
-                            nextPath.add(calleeFqn);
-                            traverse(effectiveCallerFqn, m.callMethods, nextPath);
-                        }
+                    } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
+                        if (!diagramContext.showDiagramOutboundPorts) continue;
+                        const classFqn = getClassFqnFromMethodFqn(calleeFqn);
+                        const methodName = getMethodSimpleName(calleeFqn);
+                        const callee = ensureParticipant(classFqn,  Jig.glossary.getTypeTerm(classFqn).title, "outbound");
+                        calls.push({from: caller.id, to: callee.id, label: methodName});
                     }
-                } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
-                    if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const classFqn = getClassFqnFromMethodFqn(calleeFqn);
-                    const methodName = getMethodSimpleName(calleeFqn);
-                    const callee = ensureParticipant(classFqn,  Jig.glossary.getTypeTerm(classFqn).title, "outbound");
-                    calls.push({from: caller.id, to: callee.id, label: methodName});
                 }
             }
+
+            ensureUsecaseParticipant(rootMethod.fqn);
+            visited.add(rootMethod.fqn);
+            traverse(rootMethod.fqn, rootMethod.callMethods);
+
+            return {
+                participants: participantKeys.map(k => participants.get(k)),
+                calls
+            };
+        },
+
+        /**
+         * @param {SequenceDiagram} sequence
+         * @returns {string|null}
+         */
+        buildCode(sequence) {
+            if (sequence.calls.length === 0) return null;
+            let code = 'sequenceDiagram\n';
+
+            const outbounds = sequence.participants.filter(p => p.kind === "outbound");
+            const internal = sequence.participants.filter(p => p.kind !== "outbound");
+
+            internal.forEach(p => {
+                code += `  participant ${p.id} as ${p.label}\n`;
+            });
+
+            if (outbounds.length > 0) {
+                code += '  box outbounds\n';
+                outbounds.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
+                code += '  end\n';
+            }
+
+            sequence.calls.forEach(call => {
+                code += `  ${call.from}->>${call.to}: ${call.label}\n`;
+            });
+
+            return code;
         }
-
-        traverse(rootMethod.fqn, rootMethod.callMethods);
-
-        return {
-            participants: participantKeys.map(k => participants.get(k)),
-            calls
-        };
-    }
-
-    /**
-     * @param {SequenceDiagram} sequence
-     * @returns {string|null}
-     */
-    function buildSequenceDiagramCode(sequence) {
-        if (sequence.calls.length === 0) return null;
-        let code = 'sequenceDiagram\n';
-
-        const outbounds = sequence.participants.filter(p => p.kind === "outbound");
-        const internal = sequence.participants.filter(p => p.kind !== "outbound");
-
-        internal.forEach(p => {
-            code += `  participant ${p.id} as ${p.label}\n`;
-        });
-
-        if (outbounds.length > 0) {
-            code += '  box outbounds\n';
-            outbounds.forEach(p => { code += `    participant ${p.id} as ${p.label}\n`; });
-            code += '  end\n';
-        }
-
-        sequence.calls.forEach(call => {
-            code += `  ${call.from}->>${call.to}: ${call.label}\n`;
-        });
-
-        return code;
-    }
+    };
 
     /**
      * 現在のスクロール位置を取得
@@ -743,8 +744,8 @@ const UsecaseApp = (() => {
                 const usecaseDiagram = buildUsecaseDiagram(method, diagramContext);
                 const hasUsecaseDiagram = usecaseDiagram.edges.length > 0;
 
-                const sequenceDiagram = buildSequenceDiagram(method, diagramContext);
-                const sequenceDiagramCode = buildSequenceDiagramCode(sequenceDiagram);
+                const sequenceDiagram = SequenceDiagram.build(method, diagramContext);
+                const sequenceDiagramCode = SequenceDiagram.buildCode(sequenceDiagram);
                 const hasSequence = sequenceDiagramCode !== null;
 
                 if (hasUsecaseDiagram || hasSequence) {
@@ -971,8 +972,7 @@ const UsecaseApp = (() => {
         buildOutboundOperationSet,
         buildUsecaseDiagram,
         buildClassGraph,
-        buildSequenceDiagram,
-        buildSequenceDiagramCode,
+        SequenceDiagram,
         render,
         getScrollInfo,
         restoreScroll,

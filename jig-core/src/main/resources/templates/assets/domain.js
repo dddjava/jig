@@ -740,10 +740,13 @@ const DomainApp = (() => {
             Jig.mermaid.diagram.register(mmdContainer, () => {
                 const diagramDef = {container: mmdContainer, pkg: undefined, type, diagramType: 'classDirect'};
                 renderDiagram(mmdContainer, diagramDef);
-                section.insertBefore(Jig.dom.createElement("h4", {
-                    textContent: "クラス関連図",
-                    className: "diagram-heading"
-                }), mmdContainer);
+                // 見出しはまだ追加されていない場合のみ追加
+                if (!section.querySelector('h4.diagram-heading')) {
+                    section.insertBefore(Jig.dom.createElement("h4", {
+                        textContent: "クラス関連図",
+                        className: "diagram-heading"
+                    }), mmdContainer);
+                }
             });
 
             const relatedList = createRelatedClassesList(type);

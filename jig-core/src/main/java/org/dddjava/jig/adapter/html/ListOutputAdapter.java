@@ -60,8 +60,8 @@ public class ListOutputAdapter {
 
         String listJson = buildJson(repository, jigService);
 
-        jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("listData", listJson);
+        jigDocumentWriter.writeHtml();
+        jigDocumentWriter.writeData("listData", listJson);
         return jigDocumentWriter.outputFilePaths();
     }
 

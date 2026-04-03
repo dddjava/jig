@@ -47,15 +47,15 @@ public class DomainModelAdapter {
         var json = buildJson(packageList, jigTypes, enumModels);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-        jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("domainData", json);
+        jigDocumentWriter.writeHtml();
+        jigDocumentWriter.writeData("domainData", json);
 
         var typeRelationships = jigService.typeRelationships(jigRepository);
         var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
                 .map(relation -> Json.object("from", relation.from().fqn())
                         .and("to", relation.to().fqn()))
                 .toList())).build();
-        jigDocumentWriter.writeJsDataAs("typeRelationsData", typeRelationsJson, "type-relations-data");
+        jigDocumentWriter.writeData("typeRelationsData", typeRelationsJson, "type-relations-data");
 
         return jigDocumentWriter.outputFilePaths();
     }

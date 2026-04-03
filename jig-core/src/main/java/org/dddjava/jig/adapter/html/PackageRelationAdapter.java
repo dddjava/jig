@@ -37,14 +37,14 @@ public class PackageRelationAdapter {
 
         var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
 
-        jigDocumentWriter.writeHtmlTemplate();
-        jigDocumentWriter.writeJsData("packageData", buildJson(jigPackages, packageRelations, domainPackageRoots));
+        jigDocumentWriter.writeHtml();
+        jigDocumentWriter.writeData("packageData", buildJson(jigPackages, packageRelations, domainPackageRoots));
 
         var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
                 .map(relation -> Json.object("from", relation.from().fqn())
                         .and("to", relation.to().fqn()))
                 .toList())).build();
-        jigDocumentWriter.writeJsDataAs("typeRelationsData", typeRelationsJson, "type-relations-data");
+        jigDocumentWriter.writeData("typeRelationsData", typeRelationsJson, "type-relations-data");
 
         return jigDocumentWriter.outputFilePaths();
     }

@@ -2,10 +2,7 @@ package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,56 +21,40 @@ public class JigDocumentWriter {
         this.outputDirectory = outputDirectory;
     }
 
-    public void write(OutputStreamWriter writer, String fileName) {
-        Path outputFilePath = outputDirectory.resolve(fileName);
-        try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
-            writer.writeTo(outputStream);
-        } catch (IOException e) {
+    public List<Path> outputFilePaths() {
+        return writtenDocuments;
+    }
+
+    public void writeHtml() {
+        String fileName = jigDocument.fileName();
+        Path outputFilePath = outputDirectory.resolve(fileName + ".html");
+        try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
+             InputStream resource = JigDocumentWriter.class.getResourceAsStream("/templates/" + fileName + ".html")) {
+            Objects.requireNonNull(resource).transferTo(outputStream);
+        } catch (
+                IOException e) {
             throw new UncheckedIOException(e);
         }
         writtenDocuments.add(outputFilePath);
     }
 
-    public List<Path> outputFilePaths() {
-        return writtenDocuments;
-    }
-
-    public interface OutputStreamWriter {
-        void writeTo(OutputStream outputStream) throws IOException;
-    }
-
-    public void writeHtmlTemplate() {
+    public void writeData(String variableName, String json) {
         String fileName = jigDocument.fileName();
-        write(
-                outputStream -> {
-                    try (var resource = JigDocumentWriter.class.getResourceAsStream("/templates/" + fileName + ".html")) {
-                        Objects.requireNonNull(resource).transferTo(outputStream);
-                    }
-                },
-                fileName + ".html"
-        );
+        writeString(variableName, json, fileName + "-data");
     }
 
-    public void writeJsData(String variableName, String json) {
-        String fileName = jigDocument.fileName();
-        writeJs(variableName, json, fileName + "-data");
+    public void writeData(String variableName, String json, String fileName) {
+        writeString(variableName, json, fileName);
     }
 
-    public void writeJsDataAs(String variableName, String json, String fileName) {
-        writeJs(variableName, json, fileName);
-    }
-
-    private void writeJs(String variableName, String json, String fileName) {
-        write(outputStream -> {
-                    try (var writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-                        writer.write("globalThis." + variableName + " = " + json);
-                    }
-                },
-                "data/" + fileName + ".js"
-        );
-    }
-
-    public JigDocument jigDocument() {
-        return jigDocument;
+    private void writeString(String variableName, String value, String fileName) {
+        Path outputFilePath = outputDirectory.resolve("data/" + fileName + ".js");
+        try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
+             OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+            writer.write("globalThis." + variableName + " = " + value);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        writtenDocuments.add(outputFilePath);
     }
 }

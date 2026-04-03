@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
+const { DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
 // jig-glossary.js と jig-dom.js をロード（window・document のスタブが必要）
 global.window = global.window || { addEventListener: () => {} };
@@ -9,7 +9,8 @@ require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
 
-const { DomainApp, renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, derivePackageRelations } = require('../../main/resources/templates/assets/domain.js');
+const DomainApp = require('../../main/resources/templates/assets/domain.js');
+const { renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram } = DomainApp;
 
 // ヘルパー関数：_typesMap と _childPackagesMap を設定
 function setupDomainData(packages, types) {
@@ -31,6 +32,7 @@ test.describe('domain.js', () => {
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.Account': {title: '口座', description: ''}});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -53,6 +55,7 @@ test.describe('domain.js', () => {
             setupDomainData([], [domainType]);
             setGlossaryData({});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -74,6 +77,7 @@ test.describe('domain.js', () => {
             setupDomainData([], []);
             setGlossaryData({});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -97,6 +101,7 @@ test.describe('domain.js', () => {
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.User': {title: 'ユーザー', description: ''}});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -120,6 +125,7 @@ test.describe('domain.js', () => {
             setupDomainData([], []);
             setGlossaryData({});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -147,6 +153,7 @@ test.describe('domain.js', () => {
             setupDomainData([], domainTypes);
             setGlossaryData({'java.util.List': {title: 'List', description: ''}});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -175,6 +182,7 @@ test.describe('domain.js', () => {
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.Item': {title: 'アイテム', description: ''}});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -198,6 +206,7 @@ test.describe('domain.js', () => {
             setupDomainData([], [domainType]);
             setGlossaryData({'org.example.Item': {title: 'アイテム', description: ''}});
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
             doc.elementsById.set("domain-sidebar-list", doc.createElement("div"));
             doc.elementsById.set("domain-main", doc.createElement("div"));
@@ -538,6 +547,7 @@ test.describe('domain.js', () => {
         test('domainData が undefined の場合、#domain-main にエラーメッセージを表示する', () => {
             delete globalThis.domainData;
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
 
             const main = doc.createElement("div");
@@ -556,6 +566,7 @@ test.describe('domain.js', () => {
             delete globalThis.glossaryData;
             globalThis.typeRelationsData = { relations: [] }; // 他の optional データは設定
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
 
             const main = doc.createElement("div");
@@ -580,6 +591,7 @@ test.describe('domain.js', () => {
             delete globalThis.typeRelationsData;
             setGlossaryData({}); // 他の optional データは設定
             const doc = new DocumentStub();
+            doc.body.classList.add("domain-model");
             global.document = doc;
 
             const main = doc.createElement("div");

@@ -1395,8 +1395,6 @@ globalThis.Jig.packageDiagram = {
 // Test-only exports for Node; no-op in browsers.
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        isTooLarge: MermaidDiagramModule.mermaid.isTooLarge,
-        estimateEdgeCount: MermaidDiagramModule.mermaid.estimateEdgeCount,
         detectStronglyConnectedComponents: MermaidDiagramModule.graph.detectStronglyConnectedComponents,
         transitiveReduction: MermaidDiagramModule.graph.transitiveReduction,
         computeSubgraphDepthMap: MermaidDiagramModule.graph.computeSubgraphDepthMap,
@@ -1404,12 +1402,11 @@ if (typeof module !== 'undefined' && module.exports) {
         flashButtonLabel: MermaidDiagramModule.mermaid.flashButtonLabel,
         renderTooLargeDiagram: MermaidDiagramModule.mermaid.renderTooLargeDiagram,
         renderWithControls: MermaidDiagramModule.mermaid.renderWithControls,
-        // Mermaid utilities (moved from jig-glossary.js)
         MermaidBuilder: MermaidDiagramModule.mermaid.Builder,
         nodeStyleDefs: MermaidDiagramModule.mermaid.nodeStyleDefs,
         nodeShapes: MermaidDiagramModule.mermaid.nodeShapes,
         getNodeDefinition: MermaidDiagramModule.mermaid.getNodeDefinition,
-        edgeTypeForLength: MermaidDiagramModule.mermaid.edgeTypeForLength,
-        PackageDiagramModule
+        PackageDiagramModule,
+        MermaidDiagramModule,
     };
 }

@@ -1254,6 +1254,9 @@ globalThis.Jig.mermaid = (() => {
         const observedContainers = new WeakSet();
 
         function isVisible(element) {
+            if (typeof element.getBoundingClientRect !== 'function') {
+                return true; // テスト環境など、getBoundingClientRect が使えない場合は表示中と判断
+            }
             const rect = element.getBoundingClientRect();
             return rect.top < window.innerHeight && rect.bottom > 0;
         }

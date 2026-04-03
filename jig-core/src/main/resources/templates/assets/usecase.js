@@ -484,49 +484,6 @@ const UsecaseApp = (() => {
     };
 
     /**
-     * 現在のスクロール位置を取得
-     * @returns {ScrollInfo|null}
-     */
-    function getScrollInfo() {
-        const main = document.querySelector('.split-view > main');
-        if (!main) return null;
-
-        const elements = main.querySelectorAll('.jig-card--type h3 a[id], .jig-card--item h4[id]');
-        const containerRect = main.getBoundingClientRect();
-
-        for (const el of elements) {
-            const rect = el.getBoundingClientRect();
-            if (rect.top >= containerRect.top) {
-                return {id: el.id, offset: rect.top - containerRect.top};
-            }
-        }
-        return {scrollTop: main.scrollTop};
-    }
-
-    /**
-     * スクロール位置を復元
-     * @param {ScrollInfo|null} info
-     */
-    function restoreScroll(info) {
-        const main = document.querySelector('.split-view > main');
-        if (!main || !info) return;
-
-        if (info.id) {
-            const el = document.getElementById(info.id);
-            if (el) {
-                const containerRect = main.getBoundingClientRect();
-                const newRect = el.getBoundingClientRect();
-                main.scrollTop += (newRect.top - containerRect.top - info.offset);
-                return;
-            }
-        }
-
-        if (info.scrollTop !== undefined) {
-            main.scrollTop = info.scrollTop;
-        }
-    }
-
-    /**
      * サイドバーの描画
      * @param {Usecase[]} usecases
      */
@@ -909,7 +866,7 @@ const UsecaseApp = (() => {
                     document.body.classList.toggle(control.class, !checkbox.checked);
                 }
                 if (control.reRender) {
-                    render();
+                    Jig.mermaid.diagram.rerenderVisible();
                 }
             };
 
@@ -920,7 +877,11 @@ const UsecaseApp = (() => {
         // 表示対象ラジオボタン
         ['display-target-all', 'display-target-handlers-only'].forEach(id => {
             const radio = document.getElementById(id);
-            if (radio) radio.addEventListener('change', () => render());
+            if (radio) radio.addEventListener('change', () => {
+                const handlersOnly = document.getElementById('display-target-handlers-only')?.checked ?? false;
+                state.handlerFqns = handlersOnly ? buildHandlerFqns() : null;
+                Jig.mermaid.diagram.rerenderVisible();
+            });
         });
     }
 
@@ -928,13 +889,11 @@ const UsecaseApp = (() => {
      * 画面の描画
      */
     function render() {
-        const scrollInfo = getScrollInfo();
         const handlersOnly = document.getElementById('display-target-handlers-only')?.checked ?? false;
         state.handlerFqns = handlersOnly ? buildHandlerFqns() : null;
         const usecases = state.data.usecases;
         renderSidebar(usecases);
         renderUsecaseList(usecases);
-        restoreScroll(scrollInfo);
     }
 
     function init() {
@@ -980,8 +939,6 @@ const UsecaseApp = (() => {
         buildClassGraph,
         SequenceDiagram,
         render,
-        getScrollInfo,
-        restoreScroll,
         renderSidebar,
         renderUsecaseList,
     };

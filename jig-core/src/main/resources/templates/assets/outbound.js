@@ -858,6 +858,7 @@ const OutboundApp = (() => {
         renderTabs();
         if ('visibility' in newState) {
             renderPanels();
+            Jig.mermaid.diagram.rerenderVisible();
         }
     }
 

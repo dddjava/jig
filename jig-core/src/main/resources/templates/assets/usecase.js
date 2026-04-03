@@ -659,7 +659,7 @@ const UsecaseApp = (() => {
                 classDiagramContainer.appendChild(mmdContainer);
                 section.appendChild(classDiagramContainer);
 
-                Jig.dom.lazyRender(mmdContainer, () => {
+                Jig.mermaid.diagram.register(mmdContainer, () => {
                     const builder = new Jig.mermaid.Builder();
                     builder.applyThemeClassDefs();
 
@@ -799,7 +799,7 @@ const UsecaseApp = (() => {
                         const mmdContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                         (usecasePanel || diagramContainer).appendChild(mmdContainer);
 
-                        Jig.dom.lazyRender(mmdContainer, () => {
+                        Jig.mermaid.diagram.register(mmdContainer, () => {
                             const builder = new Jig.mermaid.Builder();
                             builder.applyThemeClassDefs();
 
@@ -858,7 +858,7 @@ const UsecaseApp = (() => {
                         const sequenceContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                         (sequencePanel || diagramContainer).appendChild(sequenceContainer);
 
-                        Jig.dom.lazyRender(sequenceContainer, () => {
+                        Jig.mermaid.diagram.register(sequenceContainer, () => {
                             Jig.mermaid.render.renderWithControls(sequenceContainer, sequenceDiagramCode);
                         });
                     }

@@ -686,7 +686,7 @@ const OutboundApp = (() => {
             }));
 
             const portMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.dom.lazyRender(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
+            Jig.mermaid.diagram.register(portMermaidContainer, () => renderMermaid(portMermaidCode, portMermaidContainer));
             cardChildren.push(portMermaidContainer);
 
             const itemList = Jig.dom.createElement("div", {className: "outbound-operation-list"});
@@ -694,7 +694,7 @@ const OutboundApp = (() => {
                 const mermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram"});
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
                 const operationMermaidCode = generateOperationMermaidCode(operationWithPort, visibility);
-                Jig.dom.lazyRender(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
+                Jig.mermaid.diagram.register(mermaidContainer, () => renderMermaid(operationMermaidCode, mermaidContainer));
 
                 itemList.appendChild(Jig.dom.createElement("article", {
                     className: "outbound-operation-item jig-card jig-card--item",
@@ -753,7 +753,7 @@ const OutboundApp = (() => {
             const targetId = Jig.fqnToId("persistence", group.persistenceTarget);
 
             const persistenceMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.dom.lazyRender(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
+            Jig.mermaid.diagram.register(persistenceMermaidContainer, () => renderMermaid(persistenceMermaidCode, persistenceMermaidContainer));
 
             container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",
@@ -790,7 +790,7 @@ const OutboundApp = (() => {
             const externalLabel = Jig.glossary.getTypeTerm(externalFqn).title;
 
             const externalMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
-            Jig.dom.lazyRender(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
+            Jig.mermaid.diagram.register(externalMermaidContainer, () => renderMermaid(externalMermaidCode, externalMermaidContainer));
 
             container.appendChild(Jig.dom.createElement("section", {
                 className: "outbound-group-card jig-card jig-card--type",

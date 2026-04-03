@@ -5,7 +5,7 @@ const path = require('path');
 const { setGlossaryData } = require('./dom-stub.js');
 
 const jigCommonJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-common.js');
-const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid-diagram.js');
+const jigMermaidDiagramJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig-mermaid.js');
 const jigJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/jig.js');
 const inboundJsPath = path.resolve(__dirname, '../../main/resources/templates/assets/inbound.js');
 

@@ -61,13 +61,13 @@ function setupGlobals() {
 // DOM setup needed for DOM-dependent tests (renderTooLargeDiagram, flashButtonLabel)
 setupGlobals();
 const jig = require('../../main/resources/templates/assets/jig.js');
-const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
+const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid.js');
 
 function resetDocument() {
     global.document = createDocument();
 }
 
-test.describe('jig-mermaid-diagram.js - DOM dependent functions', () => {
+test.describe('jig-mermaid.js - DOM dependent functions', () => {
     test('renderTooLargeDiagramは案内表示を追加する', () => {
         resetDocument();
 

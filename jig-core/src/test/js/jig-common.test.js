@@ -4,8 +4,8 @@ const { setGlossaryData } = require('./dom-stub.js');
 
 // Pure functions - no DOM setup needed
 const jigCommon = require('../../main/resources/templates/assets/jig-common.js');
-// Mermaid utilities (moved from jig-common.js to jig-mermaid-diagram.js)
-const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
+// Mermaid utilities (moved from jig-common.js to jig-mermaid.js)
+const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid.js');
 
 // ----- estimateEdgeCount -----
 

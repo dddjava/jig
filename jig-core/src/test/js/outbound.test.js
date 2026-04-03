@@ -6,7 +6,7 @@ const { DocumentStub } = require("./dom-stub.js");
 global.window = { addEventListener: () => {} };
 global.document = new DocumentStub();
 require("../../main/resources/templates/assets/jig-common.js");
-require("../../main/resources/templates/assets/jig-mermaid-diagram.js");
+require("../../main/resources/templates/assets/jig-mermaid.js");
 require("../../main/resources/templates/assets/jig.js");
 
 const outbound = require("../../main/resources/templates/assets/outbound.js");

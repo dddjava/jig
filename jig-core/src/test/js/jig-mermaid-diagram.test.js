@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const common = require('../../main/resources/templates/assets/jig-common.js');
-const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid-diagram.js');
+const jigMermaid = require('../../main/resources/templates/assets/jig-mermaid.js');
 
 test.describe('package-diagram', () => {
     test.describe('FQN ユーティリティ', () => {

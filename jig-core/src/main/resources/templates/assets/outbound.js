@@ -235,7 +235,10 @@ const OutboundApp = (() => {
         if (!mermaidCode) return;
         if (!container) return;
         container.innerHTML = "";
-        Jig.mermaid.render.renderWithControls(container, mermaidCode);
+        // 複数のダイアグラムが同時レンダリングされるのを防ぐため、レンダリングを遅延実行
+        setImmediate(() => {
+            Jig.mermaid.render.renderWithControls(container, mermaidCode);
+        });
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {

@@ -2,16 +2,21 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Element, DocumentStub, setGlossaryData } = require('./dom-stub.js');
 
-const common = require('../../main/resources/templates/assets/jig-glossary.js');
-const pkgDiagram = require('../../main/resources/templates/assets/jig-mermaid.js');
+// 依存モジュールを先にロードして Jig 名前空間をセットアップする
+global.window = global.window || { addEventListener: () => {} };
+global.document = new DocumentStub();
+require('../../main/resources/templates/assets/jig-glossary.js');
+require('../../main/resources/templates/assets/jig-mermaid.js');
+require('../../main/resources/templates/assets/jig-dom.js');
 
-const pkg = require('../../main/resources/templates/assets/package.js');
-const originalDom = {...pkg.dom};
+const PackageApp = require('../../main/resources/templates/assets/package.js');
+const originalDom = {...PackageApp.dom};
 
 let testContext;
 
 function setupDocument() {
     const doc = new DocumentStub();
+    doc.body.classList.add("package-relation");
     global.document = doc;
     return doc;
 }
@@ -38,7 +43,7 @@ function setupDomMocks() {
     const methods = Object.keys(originalDom);
     methods.forEach(name => {
         if (typeof originalDom[name] !== 'function') return;
-        test.mock.method(pkg.dom, name, test.mock.fn((...args) => originalDom[name](...args)));
+        test.mock.method(PackageApp.dom, name, test.mock.fn((...args) => originalDom[name](...args)));
     });
 }
 
@@ -53,16 +58,6 @@ function createPackageFilterControls(doc) {
     doc.elementsById.set('apply-package-filter', applyButton);
     doc.elementsById.set('clear-package-filter', clearButton);
     return {input, applyButton, clearButton};
-}
-
-function createRelatedFilterControls(doc) {
-    const select = doc.createElement('select');
-    select.id = 'related-mode-select';
-    const clearButton = doc.createElement('button');
-    clearButton.id = 'clear-related-filter';
-    doc.elementsById.set('related-mode-select', select);
-    doc.elementsById.set('clear-related-filter', clearButton);
-    return {select, clearButton};
 }
 
 function createDepthSelect(doc) {
@@ -91,32 +86,32 @@ function setupDiagramEnvironment(doc, context) {
 
 test.describe('package.js', () => {
     test.beforeEach(() => {
-        // Reset the context for each test to ensure isolation
-        testContext = {
-            packageRelationCache: null,
-            diagramNodeIdToFqn: new Map(),
-            aggregationDepth: 0,
-            packageFilterFqn: [],
-            focusCallerMode: '1',
-            focusCalleeMode: '1',
-            focusedPackageFqn: null,
-            diagramDirection: 'TD',
-            mutualDependencyDiagramDirection: 'LR',
-            transitiveReductionEnabled: true,
-        };
+        // Use the module's internal state for testing, resetting it before each test
+        testContext = PackageApp.state;
+        testContext.packageRelationCache = null;
+        testContext.diagramNodeIdToFqn = new Map();
+        testContext.aggregationDepth = 0;
+        testContext.packageFilterFqn = [];
+        testContext.focusCallerMode = '1';
+        testContext.focusCalleeMode = '1';
+        testContext.focusedPackageFqn = null;
+        testContext.diagramDirection = 'TD';
+        testContext.mutualDependencyDiagramDirection = 'LR';
+        testContext.transitiveReductionEnabled = true;
+
         setupDomMocks();
     });
 
     test.describe('データ取得/整形', () => {
         test.describe('ロジック', () => {
             test('parsePackageRelationData: 配列/オブジェクトに対応する', () => {
-                const arrayData = pkg.parsePackageRelationData([
+                const arrayData = PackageApp.parsePackageRelationData([
                     {fqn: 'app.a', classCount: 1},
                 ]);
                 assert.equal(arrayData.packages.length, 1);
                 assert.equal(arrayData.relations.length, 0);
 
-                const objectData = pkg.parsePackageRelationData({
+                const objectData = PackageApp.parsePackageRelationData({
                     packages: [{fqn: 'app.b', classCount: 2}],
                     relations: [{from: 'app.b', to: 'app.c'}],
                 });
@@ -128,16 +123,16 @@ test.describe('package.js', () => {
                 setupDocument();
                 setPackageData([{fqn: 'app.a', classCount: 1}], testContext);
 
-                const data = pkg.getPackageRelationData(testContext);
+                const data = PackageApp.getPackageRelationData(testContext);
 
                 assert.equal(data.packages.length, 1);
                 assert.equal(data.relations.length, 0);
             });
 
             test('getPackageDepth: 深さを返す', () => {
-                assert.equal(pkg.getPackageDepth(''), 0);
-                assert.equal(pkg.getPackageDepth('(default)'), 0);
-                assert.equal(pkg.getPackageDepth('app.domain'), 2);
+                assert.equal(PackageApp.getPackageDepth(''), 0);
+                assert.equal(PackageApp.getPackageDepth('(default)'), 0);
+                assert.equal(PackageApp.getPackageDepth('app.domain'), 2);
             });
 
             test('getMaxPackageDepth: 最大深さを返す', () => {
@@ -151,13 +146,13 @@ test.describe('package.js', () => {
                     relations: [],
                 }, testContext);
 
-                assert.equal(pkg.getMaxPackageDepth(testContext), 4);
+                assert.equal(PackageApp.getMaxPackageDepth(testContext), 4);
             });
 
             test('getCommonPrefixDepth: 共通プレフィックス深さを返す', () => {
-                assert.equal(pkgDiagram.getCommonPrefixDepth([]), 0);
-                assert.equal(pkgDiagram.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
-                assert.equal(pkgDiagram.getCommonPrefixDepth(['app', 'lib.tool']), 0);
+                assert.equal(globalThis.Jig.packageDiagram.getCommonPrefixDepth([]), 0);
+                assert.equal(globalThis.Jig.packageDiagram.getCommonPrefixDepth(['app.domain.a', 'app.domain.b']), 2);
+                assert.equal(globalThis.Jig.packageDiagram.getCommonPrefixDepth(['app', 'lib.tool']), 0);
             });
         });
     });
@@ -178,7 +173,7 @@ test.describe('package.js', () => {
                     {from: 'app.other.d', to: 'app.domain.a'},
                 ];
 
-                const stats = pkg.buildAggregationStatsForFilters(
+                const stats = PackageApp.buildAggregationStatsForFilters(
                     packages,
                     relations,
                     ['app.domain'],
@@ -208,14 +203,15 @@ test.describe('package.js', () => {
                     {from: 'app.other.d', to: 'app.domain.a'},
                 ];
 
-                const stats = pkg.buildAggregationStatsForFilters(
+                const stats = PackageApp.buildAggregationStatsForFilters(
                     packages,
                     relations,
                     ['app.domain'],
                     'app.domain.a',
                     0,
                     0,
-                    'all'
+                    '-1', // focusCallerMode
+                    '-1'  // focusCalleeMode
                 );
                 const depth0 = stats.get(0);
 
@@ -228,49 +224,49 @@ test.describe('package.js', () => {
     test.describe('フィルタ', () => {
         test.describe('ロジック', () => {
             test('normalizePackageFilterValue: 空文字または空白のみの文字列は空の配列を返す', () => {
-                assert.deepEqual(pkg.normalizePackageFilterValue(''), []);
-                assert.deepEqual(pkg.normalizePackageFilterValue('   '), []);
+                assert.deepEqual(PackageApp.normalizePackageFilterValue(''), []);
+                assert.deepEqual(PackageApp.normalizePackageFilterValue('   '), []);
             });
 
             test('normalizePackageFilterValue: 改行区切りの文字列を配列として返す', () => {
-                assert.deepEqual(pkg.normalizePackageFilterValue('app.domain\napp.other'), ['app.domain', 'app.other']);
-                assert.deepEqual(pkg.normalizePackageFilterValue('  app.domain  \n  app.other  '), ['app.domain', 'app.other']);
-                assert.deepEqual(pkg.normalizePackageFilterValue('app.domain\n\napp.other'), ['app.domain', 'app.other']);
+                assert.deepEqual(PackageApp.normalizePackageFilterValue('app.domain\napp.other'), ['app.domain', 'app.other']);
+                assert.deepEqual(PackageApp.normalizePackageFilterValue('  app.domain  \n  app.other  '), ['app.domain', 'app.other']);
+                assert.deepEqual(PackageApp.normalizePackageFilterValue('app.domain\n\napp.other'), ['app.domain', 'app.other']);
             });
 
             test('normalizeAggregationDepthValue: 数値化する', () => {
-                assert.equal(pkg.normalizeAggregationDepthValue('2'), 2);
-                assert.equal(pkg.normalizeAggregationDepthValue('0'), 0);
-                assert.equal(pkg.normalizeAggregationDepthValue('abc'), 0);
+                assert.equal(PackageApp.normalizeAggregationDepthValue('2'), 2);
+                assert.equal(PackageApp.normalizeAggregationDepthValue('0'), 0);
+                assert.equal(PackageApp.normalizeAggregationDepthValue('abc'), 0);
             });
 
             test('findDefaultPackageFilterCandidate: domainPackageRootsがあれば返す', () => {
-                const candidate = pkg.findDefaultPackageFilterCandidate(['app.domain']);
+                const candidate = PackageApp.findDefaultPackageFilterCandidate(['app.domain']);
                 assert.equal(candidate, 'app.domain');
             });
 
             test('findDefaultPackageFilterCandidate: 複数のdomainPackageRootsを改行結合して返す', () => {
-                const candidate = pkg.findDefaultPackageFilterCandidate(['com.a.domain', 'org.b.domain']);
+                const candidate = PackageApp.findDefaultPackageFilterCandidate(['com.a.domain', 'org.b.domain']);
                 assert.equal(candidate, 'com.a.domain\norg.b.domain');
             });
 
             test('findDefaultPackageFilterCandidate: domainPackageRootsが空ならnullを返す', () => {
-                assert.equal(pkg.findDefaultPackageFilterCandidate([]), null);
-                assert.equal(pkg.findDefaultPackageFilterCandidate(null), null);
+                assert.equal(PackageApp.findDefaultPackageFilterCandidate([]), null);
+                assert.equal(PackageApp.findDefaultPackageFilterCandidate(null), null);
             });
 
             test('getInitialAggregationDepth: domainPackageRootsが空ならば0を返す', () => {
-                assert.equal(pkg.getInitialAggregationDepth([]), 0);
-                assert.equal(pkg.getInitialAggregationDepth(null), 0);
+                assert.equal(PackageApp.getInitialAggregationDepth([]), 0);
+                assert.equal(PackageApp.getInitialAggregationDepth(null), 0);
             });
 
             test('getInitialAggregationDepth: 最も浅いパッケージの深さ+1を返す', () => {
-                assert.equal(pkg.getInitialAggregationDepth(['com.example.domain']), 4); // 深さ3 → 4
-                assert.equal(pkg.getInitialAggregationDepth(['com.example', 'com.example.domain']), 3); // 深さ2 → 3
+                assert.equal(PackageApp.getInitialAggregationDepth(['com.example.domain']), 4); // 深さ3 → 4
+                assert.equal(PackageApp.getInitialAggregationDepth(['com.example', 'com.example.domain']), 3); // 深さ2 → 3
             });
 
             test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
-                const visibility = pkg.buildPackageRowVisibility(
+                const visibility = PackageApp.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],
                     ['app.domain']
                 );
@@ -278,7 +274,7 @@ test.describe('package.js', () => {
             });
 
             test('buildPackageRowVisibility: 複数パッケージフィルタのうちいずれかに一致するものを表示する', () => {
-                const visibility = pkg.buildPackageRowVisibility(
+                const visibility = PackageApp.buildPackageRowVisibility(
                     ['app.domain.model', 'app.domain.service', 'app.other'],
                     ['app.domain.model', 'app.other']
                 );
@@ -287,13 +283,13 @@ test.describe('package.js', () => {
 
             test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみを表示する', () => {
                 const rowFqns = ['app.domain', 'app.other'];
-                const visibility = pkg.buildFocusRowVisibility(
+                const visibility = PackageApp.buildFocusRowVisibility(
                     rowFqns,
                     [],
                     ['app.domain'],
                     0,
-                    '1', // relatedCallerFilterMode
-                    '0' // relatedCalleeFilterMode
+                    '1', // focusCallerMode
+                    '0' // focusCalleeMode
                 );
                 assert.deepEqual(visibility, [true, false]);
             });
@@ -301,13 +297,13 @@ test.describe('package.js', () => {
             test('buildRelatedRowVisibility: 関係する行のみ表示する', () => {
                 const rowFqns = ['app.a', 'app.b', 'app.c'];
                 const relations = [{from: 'app.a', to: 'app.b'}];
-                const visibility = pkg.buildFocusRowVisibility(
+                const visibility = PackageApp.buildFocusRowVisibility(
                     rowFqns,
                     relations,
                     [],
                     0,
-                    '0', // relatedCallerFilterMode
-                    '1', // relatedCalleeFilterMode
+                    '0', // focusCallerMode
+                    '1', // focusCalleeMode
                     'app.a'
                 );
                 assert.deepEqual(visibility, [true, true, false]);
@@ -332,7 +328,7 @@ test.describe('package.js', () => {
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const related = pkg.collectFocusSet('app.domain.a', relations, aggregationDepth, '0', '1');
+                const related = PackageApp.collectFocusSet('app.domain.a', relations, aggregationDepth, '0', '1');
 
                 assert.deepEqual(Array.from(related).sort(), ['app.domain.a', 'app.domain.b']);
             });
@@ -344,7 +340,7 @@ test.describe('package.js', () => {
                     {from: 'app.domain.b', to: 'app.domain.c'},
                 ];
 
-                const focusSet = pkg.collectFocusSet('app.domain.a', relations, aggregationDepth, '-1', '-1');
+                const focusSet = PackageApp.collectFocusSet('app.domain.a', relations, aggregationDepth, '-1', '-1');
 
                 assert.deepEqual(
                     Array.from(focusSet).sort(),
@@ -359,7 +355,7 @@ test.describe('package.js', () => {
                     {from: 'app.c', to: 'app.a'},
                     {from: 'app.a', to: 'app.d'},
                 ];
-                const focusSet = pkg.collectFocusSet('app.a', relations, aggregationDepth, '0', '1');
+                const focusSet = PackageApp.collectFocusSet('app.a', relations, aggregationDepth, '0', '1');
                 assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.b', 'app.d']); // a -> b, a -> d (direct callees)
             });
 
@@ -370,19 +366,19 @@ test.describe('package.js', () => {
                     {from: 'app.c', to: 'app.a'},
                     {from: 'app.d', to: 'app.a'},
                 ];
-                const focusSet = pkg.collectFocusSet('app.a', relations, aggregationDepth, '1', '0');
+                const focusSet = PackageApp.collectFocusSet('app.a', relations, aggregationDepth, '1', '0');
                 assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.c', 'app.d']); // c -> a, d -> a (direct callers)
             });
 
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: ['app'], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: ['app'], aggregationDepth: 0, transitiveReductionEnabled: false});
                 assert.deepEqual(Array.from(base.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
             test('filterFocusDiagramRelations: relatedSetで絞り込む', () => {
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
-                const filtered = pkg.filterFocusDiagramRelations(
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
                     'app.b',
@@ -402,8 +398,8 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
-                const filtered = pkg.filterFocusDiagramRelations(
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
                     'app.b',
@@ -423,8 +419,8 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
-                const filtered = pkg.filterFocusDiagramRelations(
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
                     'app.b',
@@ -444,8 +440,8 @@ test.describe('package.js', () => {
                     {from: 'app.a', to: 'app.b'},
                     {from: 'app.b', to: 'app.c'}
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
-                const filtered = pkg.filterFocusDiagramRelations(
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
                     'app.b',
@@ -466,8 +462,8 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.d', to: 'app.b'},
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
-                const filtered = pkg.filterFocusDiagramRelations(
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
                     'app.b', // focus target
@@ -488,8 +484,8 @@ test.describe('package.js', () => {
                     {from: 'app.b', to: 'app.c'},
                     {from: 'app.c', to: 'app.d'},
                 ];
-                const base = pkg.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
-                const filtered = pkg.filterFocusDiagramRelations(
+                const base = globalThis.Jig.packageDiagram.buildVisibleDiagramRelations(packages, relations, [], {packageFilterFqn: [], aggregationDepth: 0, transitiveReductionEnabled: false});
+                const filtered = PackageApp.filterFocusDiagramRelations(
                     base.uniqueRelations,
                     base.packageFqns,
                     'app.b', // focus target
@@ -502,17 +498,17 @@ test.describe('package.js', () => {
             });
 
             test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
-                const {packageFqns} = pkg.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, '1', '1');
+                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, '1', '1');
                 assert.deepEqual(Array.from(packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
             test('buildVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
-                const {packageFqns} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.b', 0, '1', '1', false);
+                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], [], 'app.b', 0, '1', '1', false);
                 assert.deepEqual(Array.from(packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
             });
 
             test('buildVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
-                const {packageFqns} = pkg.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, '-1', '-1');
+                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, '-1', '-1');
                 assert.deepEqual(Array.from(packageFqns).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });
@@ -532,11 +528,11 @@ test.describe('package.js', () => {
                 }, testContext);
                 const rows = buildPackageRows(doc, ['app.a', 'app.b', 'app.c']);
                 testContext.aggregationDepth = 0;
-                testContext.relatedCallerFilterMode = '1';
-                testContext.relatedCalleeFilterMode = '1';
+                testContext.focusCallerMode = '1';
+                testContext.focusCalleeMode = '1';
                 testContext.packageFilterFqn = [];
 
-                pkg.filterFocusTableRows('app.a', testContext);
+                PackageApp.filterFocusTableRows('app.a', testContext);
 
                 assert.equal(rows[0].classList.contains('hidden'), false);
                 assert.equal(rows[1].classList.contains('hidden'), false);
@@ -548,17 +544,17 @@ test.describe('package.js', () => {
                 const getFocusTargetMock = test.mock.fn(() => mockTarget);
                 const setFocusTargetTextMock = test.mock.fn((element, text) => { element.textContent = text; });
 
-                test.mock.method(pkg.dom, 'getFocusTarget', getFocusTargetMock);
-                test.mock.method(pkg.dom, 'setFocusTargetText', setFocusTargetTextMock);
+                test.mock.method(PackageApp.dom, 'getFocusTarget', getFocusTargetMock);
+                test.mock.method(PackageApp.dom, 'setFocusTargetText', setFocusTargetTextMock);
 
                 testContext.focusedPackageFqn = null;
-                pkg.renderFocusLabel(testContext);
+                PackageApp.renderFocusLabel(testContext);
                 assert.equal(mockTarget.textContent, '未選択');
                 assert.equal(setFocusTargetTextMock.mock.calls.length, 1);
                 assert.deepEqual(setFocusTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
 
                 testContext.focusedPackageFqn = 'app.domain';
-                pkg.renderFocusLabel(testContext);
+                PackageApp.renderFocusLabel(testContext);
                 assert.equal(mockTarget.textContent, 'app.domain');
                 assert.equal(setFocusTargetTextMock.mock.calls.length, 2);
                 assert.deepEqual(setFocusTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
@@ -579,7 +575,7 @@ test.describe('package.js', () => {
                 const {input} = createPackageFilterControls(doc);
                 createDepthSelect(doc); // for renderDiagramAndTable
 
-                const applied = pkg.applyDefaultPackageFilterIfPresent(testContext);
+                const applied = PackageApp.applyDefaultPackageFilterIfPresent(testContext);
 
                 assert.equal(applied, true);
                 assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
@@ -600,7 +596,7 @@ test.describe('package.js', () => {
                 createPackageFilterControls(doc);
                 createDepthSelect(doc);
 
-                const applied = pkg.applyDefaultPackageFilterIfPresent(testContext);
+                const applied = PackageApp.applyDefaultPackageFilterIfPresent(testContext);
 
                 assert.equal(applied, false);
             });
@@ -617,7 +613,7 @@ test.describe('package.js', () => {
 
                 const {input, applyButton, clearButton} = createPackageFilterControls(doc);
 
-                pkg.setupPackageFilterControl(testContext);
+                PackageApp.setupPackageFilterControl(testContext);
 
                 input.value = 'app.domain\napp.other';
                 applyButton.dispatchEvent({ type: 'click' });
@@ -638,7 +634,7 @@ test.describe('package.js', () => {
                     {fqn: 'app.a', classCount: 2, incomingCount: 0, outgoingCount: 1},
                 ];
 
-                const specs = pkg.buildPackageTableRowSpecs(rows);
+                const specs = PackageApp.buildPackageTableRowSpecs(rows);
 
                 assert.deepEqual(specs, [{
                     fqn: 'app.a',
@@ -651,7 +647,7 @@ test.describe('package.js', () => {
             });
 
             test('buildPackageTableActionSpecs: ボタン文言を返す', () => {
-                const specs = pkg.buildPackageTableActionSpecs();
+                const specs = PackageApp.buildPackageTableActionSpecs();
 
                 assert.equal(specs.filter.ariaLabel, 'このパッケージで絞り込み');
                 assert.equal(specs.filter.screenReaderText, '絞り込み');
@@ -680,7 +676,7 @@ test.describe('package.js', () => {
                 const tbody = new Element('tbody', doc);
                 doc.selectors.set('#package-table tbody', tbody);
 
-                pkg.renderPackageTable(testContext);
+                PackageApp.renderPackageTable(testContext);
 
                 assert.equal(tbody.children.length, 2);
                 assert.equal(tbody.children[0].children[3].textContent, 'A');
@@ -695,7 +691,7 @@ test.describe('package.js', () => {
     test.describe('ダイアグラム', () => {
         test.describe('ロジック', () => {
             test('buildMutualDependencyItems: 相互依存の原因を整形する', () => {
-                const items = pkg.buildMutualDependencyItems(
+                const items = PackageApp.buildMutualDependencyItems(
                     new Set(['app.alpha::app.beta']),
                     [
                         {from: 'app.alpha.A', to: 'app.beta.B'},
@@ -716,7 +712,7 @@ test.describe('package.js', () => {
                     'a.b.c.d.sub.C -> a.b.x.y.sub.D',
                     'a.b.x.y.sub.D -> a.b.c.d.sub.C'
                 ];
-                const {source} = pkg.buildMutualDependencyDiagramSource(causes, 'LR', 'a.b.c.d <-> a.b.x.y');
+                const {source} = PackageApp.buildMutualDependencyDiagramSource(causes, 'LR', 'a.b.c.d <-> a.b.x.y');
                 const lines = source.split('\n').map(l => l.trim());
                 assert.ok(lines.includes('graph LR;'));
                 assert.ok(lines.includes('subgraph O0["d"]'));
@@ -736,7 +732,7 @@ test.describe('package.js', () => {
                     'a.b.c.A -> a.b.c.d.B',
                     'a.b.c.d.B -> a.b.c.A',
                 ];
-                const {source} = pkg.buildMutualDependencyDiagramSource(causes, 'LR', 'a.b.c <-> a.b.c.d');
+                const {source} = PackageApp.buildMutualDependencyDiagramSource(causes, 'LR', 'a.b.c <-> a.b.c.d');
                 const lines = source.split('\n').map(l => l.trim());
                 assert.ok(lines.includes('subgraph O0["c"]'));
                 assert.ok(!lines.includes('subgraph O1["d"]'));
@@ -752,7 +748,7 @@ test.describe('package.js', () => {
                     'org.dddjava.jig.adapter.JigResultData -> org.dddjava.jig.JigResult$JigSummary',
                     'org.dddjava.jig.adapter.html.view.IndexView -> org.dddjava.jig.HandleResult',
                 ];
-                const {source} = pkg.buildMutualDependencyDiagramSource(
+                const {source} = PackageApp.buildMutualDependencyDiagramSource(
                     causes,
                     'LR',
                     'org.dddjava.jig <-> org.dddjava.jig.adapter'
@@ -767,8 +763,8 @@ test.describe('package.js', () => {
             });
 
             test('buildDiagramEdgeLines: 相互依存の双方向リンクを生成する', () => {
-                const {ensureNodeId} = pkgDiagram.buildDiagramNodeMaps(new Set(['a', 'b']), new Map());
-                const result = pkgDiagram.buildDiagramEdgeLines(
+                const {ensureNodeId} = PackageApp.buildDiagramNodeMaps(new Set(['a', 'b']));
+                const result = PackageApp.buildDiagramEdgeLines(
                     [{from: 'a', to: 'b'}, {from: 'b', to: 'a'}],
                     ensureNodeId
                 );
@@ -777,7 +773,7 @@ test.describe('package.js', () => {
             });
 
             test('buildDiagramNodeLabel: サブグラフ配下のラベルを短縮する', () => {
-                const label = pkgDiagram.buildDiagramNodeLabel(
+                const label = PackageApp.buildDiagramNodeLabel(
                     'com.example.domain.model',
                     'com.example.domain.model',
                     'com.example.domain'
@@ -786,13 +782,13 @@ test.describe('package.js', () => {
             });
 
             test('buildDiagramSubgraphLabel: 親サブグラフ配下ならプレフィックスを省略する', () => {
-                const label = pkgDiagram.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
+                const label = PackageApp.buildDiagramSubgraphLabel('com.example.domain', 'com.example');
                 assert.equal(label, 'domain');
             });
 
             test('buildDiagramNodeTooltip: FQNを返す', () => {
-                assert.equal(pkgDiagram.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
-                assert.equal(pkgDiagram.buildDiagramNodeTooltip(null), '');
+                assert.equal(PackageApp.buildDiagramNodeTooltip('com.example.domain'), 'com.example.domain');
+                assert.equal(PackageApp.buildDiagramNodeTooltip(null), '');
             });
 
             test('buildDiagramGroupTree: 共通プレフィックスでグループ化する', () => {
@@ -802,7 +798,7 @@ test.describe('package.js', () => {
                     ['com.example.b', 'P1'],
                 ]);
 
-                const rootGroup = pkgDiagram.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
+                const rootGroup = PackageApp.buildDiagramGroupTree(visibleFqns, nodeIdByFqn);
 
                 assert.equal(rootGroup.children.has('com.example'), true);
             });
@@ -825,7 +821,7 @@ test.describe('package.js', () => {
                     lines.push(`node ${nodeId}`);
                 };
 
-                const lines = pkgDiagram.buildSubgraphLines(rootGroup, addNodeLines, text => text);
+                const lines = PackageApp.buildSubgraphLines(rootGroup, addNodeLines, text => text);
 
                 assert.equal(lines.some(line => line.includes('node ROOT')), true);
                 assert.equal(lines.some(line => line.includes('node P0')), true);
@@ -840,7 +836,7 @@ test.describe('package.js', () => {
                     [2, {packageCount: 1, relationCount: 0}],
                 ]);
 
-                const options = pkg.buildAggregationDepthOptions(stats, 2);
+                const options = PackageApp.buildAggregationDepthOptions(stats, 2);
 
                 assert.deepEqual(options, [
                     {value: '0', text: '集約なし（P2 / R1）'},
@@ -850,27 +846,27 @@ test.describe('package.js', () => {
 
             test('buildDiagramNodeLines: クリックハンドラ名を埋め込む', () => {
                 const visibleSet = new Set(['app.a']);
-                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkgDiagram.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
-                const nodeLines = pkgDiagram.buildDiagramNodeLines(
+                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = PackageApp.buildDiagramNodeMaps(visibleSet);
+                const nodeLines = PackageApp.buildDiagramNodeLines(
                     visibleSet,
                     nodeIdByFqn,
                     {
                         nodeIdToFqn,
                         nodeLabelById,
                         escapeMermaidText: text => text,
-                        clickHandlerName: pkg.DIAGRAM_CLICK_HANDLER_NAME,
+                        clickHandlerName: PackageApp.DIAGRAM_CLICK_HANDLER_NAME,
                         parentFqnsWithRelations: new Set()
                     }
                 );
                 const clickLine = nodeLines.find(line => line.startsWith('click '));
                 assert.ok(clickLine);
-                assert.equal(clickLine.includes(pkg.DIAGRAM_CLICK_HANDLER_NAME), true);
+                assert.equal(clickLine.includes(PackageApp.DIAGRAM_CLICK_HANDLER_NAME), true);
             });
 
             test('buildDiagramNodeLines: nodeClickUrlCallbackでhrefクリックを埋め込む', () => {
                 const visibleSet = new Set(['app.a']);
-                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = pkgDiagram.buildDiagramNodeMaps(visibleSet, new Map([['app.a', 'A']]));
-                const nodeLines = pkgDiagram.buildDiagramNodeLines(
+                const {nodeIdByFqn, nodeIdToFqn, nodeLabelById} = PackageApp.buildDiagramNodeMaps(visibleSet);
+                const nodeLines = PackageApp.buildDiagramNodeLines(
                     visibleSet,
                     nodeIdByFqn,
                     {
@@ -894,7 +890,7 @@ test.describe('package.js', () => {
                 doc.elementsById.set('mutual-dependency-list', container);
                 testContext.aggregationDepth = 0;
 
-                pkg.renderMutualDependencyList(
+                PackageApp.renderMutualDependencyList(
                     new Set(['app.alpha::app.beta']),
                     [
                         {from: 'app.alpha.A', to: 'app.beta.B'},
@@ -925,7 +921,7 @@ test.describe('package.js', () => {
                 const container = new Element('div', doc);
                 doc.elementsById.set('mutual-dependency-list', container);
 
-                pkg.renderMutualDependencyList(
+                PackageApp.renderMutualDependencyList(
                     new Set(['a::b']),
                     [{from: 'a.A', to: 'b.B'}, {from: 'b.B', to: 'a.A'}],
                     0,
@@ -961,7 +957,7 @@ test.describe('package.js', () => {
                 globalThis.Jig.mermaid.renderWithControls = renderWithControls;
 
                 const item = { causes: ['a.A -> b.B'] };
-                pkg.renderMutualDependencyDiagram(item, itemNode, testContext);
+                PackageApp.renderMutualDependencyDiagram(item, itemNode, testContext);
 
                 assert.equal(button.style.display, 'none');
                 assert.ok(diagram.style.display === 'block' || diagram.style.display === ''); // Mermaid rendering might change this
@@ -982,7 +978,7 @@ test.describe('package.js', () => {
                     ],
                 }, testContext);
 
-                pkg.renderPackageDiagram(testContext, [], null);
+                PackageApp.renderPackageDiagram(testContext, [], null);
 
                 const diagram = doc.getElementById('package-relation-diagram');
                 assert.equal(diagram.textContent.includes('graph'), true);
@@ -1013,7 +1009,7 @@ test.describe('package.js', () => {
                 }
                 setPackageData({packages, relations}, testContext);
 
-                pkg.renderPackageDiagram(testContext, [], null);
+                PackageApp.renderPackageDiagram(testContext, [], null);
 
                 assert.ok(capturedRenderArgs, 'renderWithControlsが呼ばれること');
                 assert.equal(capturedRenderArgs.el, diagramMock, 'diagramが渡されること');
@@ -1028,9 +1024,9 @@ test.describe('package.js', () => {
                     called = {fqn, context};
                 };
 
-                pkg.registerDiagramClickHandler(testContext, applyFocus);
+                PackageApp.registerDiagramClickHandler(testContext, applyFocus);
 
-                global.window[pkg.DIAGRAM_CLICK_HANDLER_NAME]('P1');
+                global.window[PackageApp.DIAGRAM_CLICK_HANDLER_NAME]('P1');
 
                 assert.deepEqual(called, {fqn: 'app.example', context: testContext});
             });
@@ -1057,7 +1053,7 @@ test.describe('package.js', () => {
                 doc.selectorsAll.set('#package-table tbody tr', []);
 
 
-                pkg.setupTransitiveReductionControl(testContext);
+                PackageApp.setupTransitiveReductionControl(testContext);
 
                 const checkbox = doc.getElementById('transitive-reduction-toggle');
                 assert.ok(checkbox, 'checkbox should be created');

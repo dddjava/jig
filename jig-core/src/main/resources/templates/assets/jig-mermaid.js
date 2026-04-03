@@ -1406,6 +1406,15 @@ globalThis.Jig.packageDiagram = {
     buildMermaidDiagramSource: PackageDiagramModule.buildMermaidDiagramSource,
     getCommonPrefix: PackageDiagramModule.getCommonPrefix,
     getCommonPrefixDepth: PackageDiagramModule.getCommonPrefixDepth,
+    // Add missing functions for testing
+    buildDiagramNodeMaps: PackageDiagramModule.buildDiagramNodeMaps,
+    buildDiagramNodeLines: PackageDiagramModule.buildDiagramNodeLines,
+    buildDiagramNodeLabel: PackageDiagramModule.buildDiagramNodeLabel,
+    buildDiagramSubgraphLabel: PackageDiagramModule.buildDiagramSubgraphLabel,
+    buildDiagramNodeTooltip: PackageDiagramModule.buildDiagramNodeTooltip,
+    buildDiagramGroupTree: PackageDiagramModule.buildDiagramGroupTree,
+    buildSubgraphLines: PackageDiagramModule.buildSubgraphLines,
+    buildDiagramEdgeLines: PackageDiagramModule.buildDiagramEdgeLines,
 };
 
 // Test-only exports for Node; no-op in browsers.

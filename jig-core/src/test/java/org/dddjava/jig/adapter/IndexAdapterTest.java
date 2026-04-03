@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -14,14 +14,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class IndexViewTest {
+class IndexAdapterTest {
 
     @TempDir
     Path tempDir;
 
     @Test
     void 出力対象がない場合は一覧セクションを出力しない() throws IOException {
-        var sut = new IndexView();
+        var sut = new IndexAdapter();
 
         sut.render(List.of(), tempDir);
 
@@ -36,7 +36,7 @@ class IndexViewTest {
 
     @Test
     void 出力対象がある場合は対応する一覧セクションを出力する() throws IOException {
-        var sut = new IndexView();
+        var sut = new IndexAdapter();
         var results = List.of(
                 HandleResult.withOutput(JigDocument.PackageRelation, List.of(Path.of("package.html"))),
                 HandleResult.withOutput(JigDocument.ListOutput, List.of(Path.of("list-output.html")))
@@ -50,10 +50,10 @@ class IndexViewTest {
     }
 
     private String readIndex() throws IOException {
-        return Files.readString(tempDir.resolve(IndexView.INDEX_FILE_NAME), StandardCharsets.UTF_8);
+        return Files.readString(tempDir.resolve(IndexAdapter.INDEX_FILE_NAME), StandardCharsets.UTF_8);
     }
 
     private String readNavigationData() throws IOException {
-        return Files.readString(tempDir.resolve("data").resolve(IndexView.NAVIGATION_DATA_JS), StandardCharsets.UTF_8);
+        return Files.readString(tempDir.resolve("data").resolve(IndexAdapter.NAVIGATION_DATA_JS), StandardCharsets.UTF_8);
     }
 }

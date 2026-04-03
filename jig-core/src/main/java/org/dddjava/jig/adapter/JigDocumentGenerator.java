@@ -3,7 +3,7 @@ package org.dddjava.jig.adapter;
 import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
-import org.dddjava.jig.adapter.html.*;
+import org.dddjava.jig.adapter.documents.*;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -56,7 +56,7 @@ public class JigDocumentGenerator {
         generateIndex(handleResults);
         generateDebugHtml();
         generateAssets();
-        return new JigResultData(handleResults, IndexView.indexFilePath(outputDirectory));
+        return new JigResultData(handleResults, IndexAdapter.indexFilePath(outputDirectory));
     }
 
     private void prepareOutputDirectory() {
@@ -127,8 +127,8 @@ public class JigDocumentGenerator {
 
     private void generateIndex(List<HandleResult> results) {
         Metrics.timer("jig.document.time", "phase", "index").record(() -> {
-            IndexView indexView = new IndexView();
-            indexView.render(results, outputDirectory);
+            IndexAdapter indexAdapter = new IndexAdapter();
+            indexAdapter.render(results, outputDirectory);
         });
     }
 

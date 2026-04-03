@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-public class IndexView {
+public class IndexAdapter {
     static final String INDEX_FILE_NAME = "index.html";
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
 

@@ -797,52 +797,13 @@ const DomainApp = (() => {
     /**
      * @returns {void}
      */
-    function isVisible(element) {
-        const rect = element.getBoundingClientRect();
-        return rect.top < window.innerHeight && rect.bottom > 0;
-    }
-
     function rerenderDiagrams() {
-        const allPackages = getDomainData().packages;
-        const allPackageRelations = derivePackageRelations();
+        // 表示済みダイアグラムを削除のみ。再生成は遅延レンダリングに任せる
         diagramRegistry
             .filter(({container}) => renderedContainers.has(container))
-            .forEach(({container, pkg, type, diagramType}) => {
+            .forEach(({container}) => {
                 container.innerHTML = "";
-
-                // 表示範囲内のダイアグラムのみ再生成
-                if (!isVisible(container)) return;
-
-                if (diagramType === 'packageDirect') {
-                    const generator = (dir) => createPackageDirectRelationDiagram(pkg, allPackageRelations, dir);
-                    if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-                    }
-                } else if (diagramType === 'package') {
-                    const generator = (dir) => createPackageRelationDiagram(pkg, allPackages, allPackageRelations, dir);
-                    if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-                    }
-                } else if (diagramType === 'classDirect') {
-                    const generator = (dir) => createTypeRelationDiagram(type, dir);
-                    if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-                    }
-                } else {
-                    const panel = container.closest('.diagram-panel');
-                    const outgoing = panel?.querySelector('.class-relation-external-outgoing');
-                    const incoming = panel?.querySelector('.class-relation-external-incoming');
-                    const showExternalOutgoing = outgoing ? outgoing.checked : true;
-                    const showExternalIncoming = incoming ? incoming.checked : true;
-                    const generator = (dir) => createRelationDiagram(pkg, {
-                        showExternalOutgoing,
-                        showExternalIncoming,
-                        direction: dir
-                    });
-                    if (generator(domainSettings.diagramDirection)) {
-                        Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
-                    }
-                }
+                renderedContainers.delete(container);
             });
     }
 

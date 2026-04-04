@@ -1,7 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const {JSDOM} = require('jsdom');
-const {setGlossaryData} = require('./dom-stub.js');
+const {DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // モック用のデータ
 const mockInboundData = {
@@ -51,35 +50,98 @@ const mockGlossaryData = {
 
 test.describe('InboundApp', () => {
     let InboundApp;
+    let doc;
+
+    function createElement(tagName, options = {}) {
+        const element = doc.createElement(tagName);
+        if (options.className) element.className = options.className;
+        if (options.id) element.id = options.id;
+        if (options.textContent != null) element.textContent = options.textContent;
+        if (options.innerHTML != null) element.innerHTML = options.innerHTML;
+        if (options.attributes) {
+            Object.entries(options.attributes).forEach(([name, value]) => {
+                element.setAttribute(name, value);
+            });
+        }
+        if (options.style) {
+            Object.assign(element.style, options.style);
+        }
+        if (options.children) {
+            options.children.forEach(child => {
+                if (child) element.append(child);
+            });
+        }
+        return element;
+    }
+
+    function createSidebarSection(title, items) {
+        if (!items || items.length === 0) return null;
+        return createElement('section', {
+            className: 'in-page-sidebar__section',
+            children: [
+                createElement('p', {
+                    className: 'in-page-sidebar__title',
+                    textContent: title
+                }),
+                createElement('ul', {
+                    className: 'in-page-sidebar__links',
+                    children: items.map(({id, label}) => createElement('li', {
+                        className: 'in-page-sidebar__item',
+                        children: [
+                            createElement('a', {
+                                className: 'in-page-sidebar__link',
+                                attributes: {href: '#' + id},
+                                textContent: label
+                            })
+                        ]
+                    }))
+                })
+            ]
+        });
+    }
+
+    function createMethodsList(kind, methods) {
+        if (!methods || methods.length === 0) return null;
+
+        return createElement('section', {
+            className: 'methods-section jig-card jig-card--item',
+            children: [
+                createElement('h4', {textContent: kind}),
+                ...methods.map(method => createElement('div', {
+                    className: 'method-item',
+                    children: [
+                        createElement('div', {
+                            className: 'method-signature',
+                            children: [
+                                createElement('span', {
+                                    className: 'method-name',
+                                    textContent: globalThis.Jig.glossary.getMethodTerm(method.fqn, true).title
+                                })
+                            ]
+                        })
+                    ]
+                }))
+            ]
+        });
+    }
 
     test.beforeEach(() => {
-        // JSDOM でブラウザ環境をセットアップ（モジュール読み込み前）
-        const dom = new JSDOM(`
-            <!DOCTYPE html>
-            <html>
-            <body>
-                <div id="inbound-sidebar-list"></div>
-                <div id="inbound-list"></div>
-            </body>
-            </html>
-        `, {runScripts: "dangerously"});
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-mermaid.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/inbound.js')];
 
-        const window = dom.window;
-        const document = window.document;
-        global.window = window;
-        global.document = document;
-        global.IntersectionObserver = class {
-            constructor(callback) {
-                this.callback = callback;
-            }
-
-            observe(element) {
-                this.callback([{isIntersecting: true, target: element}]);
-            }
-
-            unobserve() {
-            }
+        doc = new DocumentStub();
+        global.window = {
+            addEventListener: () => {
+            },
+            innerHeight: 900
         };
+        global.document = doc;
+        ['inbound-sidebar-list', 'inbound-list'].forEach(id => {
+            const el = doc.createElement('div');
+            el.id = id;
+            doc.body.appendChild(el);
+        });
         global.marked = {parse: (text) => text}; // markedのモック
         global.mermaid = {
             initialize: () => {
@@ -91,12 +153,32 @@ test.describe('InboundApp', () => {
         delete globalThis.inboundData;
         delete globalThis.usecaseData;
         delete globalThis.glossaryData;
+        delete globalThis.Jig;
 
-        // ウィンドウをセットアップした後にモジュールをロード
-        // これにより jig-dom.js の window.addEventListener が正しい window に登録される
         require('../../main/resources/templates/assets/jig-glossary.js');
         require('../../main/resources/templates/assets/jig-mermaid.js');
-        require('../../main/resources/templates/assets/jig-dom.js');
+        globalThis.Jig.dom = {
+            createElement,
+            parseMarkdown: (markdown) => String(markdown ?? ''),
+            sidebar: {
+                renderSection: (container, title, items) => {
+                    if (!container) return;
+                    const section = createSidebarSection(title, items);
+                    if (section) container.appendChild(section);
+                }
+            },
+            type: {
+                methodsList: createMethodsList
+            }
+        };
+        globalThis.Jig.mermaid.render.renderWithControls = (targetEl, source, {direction} = {}) => {
+            const code = (typeof source === 'function') ? source(direction || 'LR') : source;
+            const pre = createElement('pre', {
+                className: 'mermaid',
+                textContent: String(code ?? '')
+            });
+            targetEl.appendChild(pre);
+        };
         InboundApp = require('../../main/resources/templates/assets/inbound.js');
     });
 

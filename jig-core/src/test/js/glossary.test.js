@@ -624,20 +624,25 @@ test.describe('glossary.js', () => {
             assert.ok(!link, 'メソッドには関連ドキュメントリンクがないはず');
         });
 
-        test('Markdown説明文のレンダリング (markedがある場合)', () => {
+        test('Markdown説明文は renderGlossaryTerms で描画時に変換される', () => {
             const doc = setupDocument();
-            const el = doc.createElement('div');
-            el.className = 'markdown';
-            el.innerHTML = '# Hello';
+            const list = doc.createElement('div');
+            doc.elementsById.set('term-list', list);
 
             global.marked = {
                 parse: (text) => `<h1>${text.replace('# ', '')}</h1>`
             };
             global.window.marked = global.marked;
 
-            glossary.renderMarkdownDescriptions();
+            glossary.renderGlossaryTerms([{
+                title: 'Hello',
+                fqn: 'com.example.Hello',
+                kind: 'クラス',
+                description: '# Hello'
+            }], true);
 
-            assert.equal(el.innerHTML, '<h1>Hello</h1>');
+            const markdown = list.children[0].children[1].children.find(c => c.className === 'markdown');
+            assert.equal(markdown.innerHTML, '<h1>Hello</h1>');
             delete global.marked;
             delete global.window.marked;
         });
@@ -692,28 +697,6 @@ test.describe('glossary.js', () => {
             // 実際には glossary.js が読み込まれた時点でイベントリスナーが登録される
             // ここでは簡易的に listener を取得して呼ぶ
             // (本来は再読み込みが必要だが、ロジックの導通確認を優先)
-        });
-
-        test('renderMarkdownDescriptions: markdown要素を処理する', () => {
-            setupDocument();
-            globalThis.Jig ??= {};
-            globalThis.Jig.dom.parseMarkdown = (text) => text.replace(/\*(.+?)\*/g, '<strong>$1</strong>');
-
-            const doc = global.document;
-            const elem = doc.createElement('div');
-            elem.className = 'markdown';
-            elem.innerHTML = '*emphasized* text';
-            doc.body.appendChild(elem);
-
-            // renderMarkdownDescriptions 関数呼び出しのシミュレーション
-            const elements = global.document.getElementsByClassName('markdown');
-            if (elements && elements.length > 0) {
-                elements.forEach(node => {
-                    node.innerHTML = globalThis.Jig.dom.parseMarkdown(node.innerHTML);
-                });
-            }
-
-            assert.ok(elem.innerHTML.includes('<strong>emphasized</strong>'));
         });
 
         test('renderJumpBar: ジャンプバーリンククリック時にスクロール', () => {

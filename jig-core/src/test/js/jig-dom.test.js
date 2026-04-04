@@ -503,8 +503,8 @@ test.describe('jig-dom.js', () => {
         });
     });
 
-    test.describe('initCommonUi - renderMarkdownDescriptions', () => {
-        test('.markdown クラスの HTML が marked で変換される', () => {
+    test.describe('initCommonUi', () => {
+        test('既存 .markdown 要素は再変換しない（Markdownは描画前に変換する）', () => {
             const markdownHtml = `
                 <div class="markdown"># Heading</div>
                 <p>Regular paragraph</p>
@@ -515,8 +515,8 @@ test.describe('jig-dom.js', () => {
             Jig.dom.initCommonUi();
 
             const markdowns = document.querySelectorAll('.markdown');
-            assert.equal(markdowns[0].innerHTML, '<p># Heading</p>');
-            assert.equal(markdowns[1].innerHTML, '<p>**Bold text**</p>');
+            assert.equal(markdowns[0].innerHTML, '# Heading');
+            assert.equal(markdowns[1].innerHTML, '**Bold text**');
         });
     });
 

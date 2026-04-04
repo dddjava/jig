@@ -270,13 +270,6 @@ const GlossaryApp = (() => {
         renderGlossaryTerms(sortedTerms, controls.showAttributesCheckbox?.checked);
     }
 
-    function renderMarkdownDescriptions() {
-        Array.from(document.getElementsByClassName("markdown"))
-            .forEach(node => {
-                node.innerHTML = Jig.dom.parseMarkdown(node.innerHTML);
-            });
-    }
-
     function getFilteredTerms(terms, controls) {
         if (!controls) return terms;
         const showEmptyDescription = controls.showEmptyDescription.checked;
@@ -447,7 +440,6 @@ const GlossaryApp = (() => {
         renderTermSidebar,
         renderGlossaryTerms,
         renderFilteredTerms,
-        renderMarkdownDescriptions,
     };
 })();
 

@@ -141,20 +141,9 @@ globalThis.Jig.dom = (() => {
         helpContent.classList.remove("hidden");
     }
 
-    function renderMarkdownDescriptions(root = document) {
-        if (!root) return;
-        const elements = root.getElementsByClassName
-            ? Array.from(root.getElementsByClassName("markdown"))
-            : Array.from(root.querySelectorAll?.(".markdown") || []);
-        elements.forEach(node => {
-            node.innerHTML = parseMarkdown(node.innerHTML);
-        });
-    }
-
     function initCommonUi() {
         setupHeaderNavigation();
         setupDocumentHelp();
-        renderMarkdownDescriptions(document);
     }
 
     /**

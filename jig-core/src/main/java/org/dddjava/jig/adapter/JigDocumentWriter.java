@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class JigDocumentWriter {
 
@@ -27,15 +26,44 @@ public class JigDocumentWriter {
 
     public void writeHtml() {
         String fileName = jigDocument.fileName();
+        String resourcePath = "templates/" + fileName + ".html";
         Path outputFilePath = outputDirectory.resolve(fileName + ".html");
         try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
-             InputStream resource = JigDocumentWriter.class.getResourceAsStream("/templates/" + fileName + ".html")) {
-            Objects.requireNonNull(resource).transferTo(outputStream);
-        } catch (
-                IOException e) {
+             InputStream resource = getResourceAsStream(resourcePath)) {
+            resource.transferTo(outputStream);
+            writtenDocuments.add(outputFilePath);
+        } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        writtenDocuments.add(outputFilePath);
+    }
+
+    private static InputStream getResourceAsStream(String absolutePath) {
+        var clz = JigDocumentWriter.class;
+        // Classから探す
+        var resource = clz.getResourceAsStream("/" + absolutePath);
+        if (resource != null) {
+            return resource;
+        }
+
+        // クラスパスで探す
+        var classLoader = clz.getClassLoader();
+        var classLoaderResource = classLoader.getResourceAsStream(absolutePath);
+        if (classLoaderResource != null) {
+            return classLoaderResource;
+        }
+
+        // コンテキストクラスローダーで探す
+        var contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (classLoader != contextClassLoader) {
+            var contextClassLoaderResource = contextClassLoader.getResourceAsStream(absolutePath);
+            if (contextClassLoaderResource != null) {
+                return contextClassLoaderResource;
+            }
+        }
+
+        // 見つからなければ例外
+        throw new IllegalStateException(absolutePath + " not found." +
+                " This may be because the resource is not in the classpath or the module is not configured to allow resource access.");
     }
 
     public void writeData(String variableName, String json) {

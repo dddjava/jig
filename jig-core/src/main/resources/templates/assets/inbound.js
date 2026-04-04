@@ -57,7 +57,7 @@ const InboundApp = (() => {
                 }
             });
 
-            const { edgeLengthByKey } = Jig.graph.computeOutboundEdgeLengths({
+            const { edgeLengthByKey } = Jig.mermaid.graph.computeOutboundEdgeLengths({
                 nodesInSubgraph: adapterFqns,
                 edges: controller.relations
             });
@@ -133,14 +133,17 @@ const InboundApp = (() => {
         /**
          * 3. MermaidBuilderからソースを作成してレンダリングする
          */
-        render(container, controller, usecaseData) {
+        render(section, controller, usecaseData) {
             const generator = (dir) => {
                 const data = this.prepareData(controller, usecaseData);
                 const builder = new Jig.mermaid.Builder();
                 this.buildBuilder(data, builder);
                 return builder.build(dir);
             };
-            Jig.mermaid.renderWithControls(container, generator, { direction: 'LR' });
+
+            Jig.mermaid.diagram.createAndRegister(section, (mmdContainer) => {
+                Jig.mermaid.render.renderWithControls(mmdContainer, generator, { direction: 'LR' });
+            });
         }
     };
 
@@ -220,12 +223,7 @@ const InboundApp = (() => {
             const methodsList = Jig.dom.type.methodsList("エントリーポイント", controller.entrypoints);
             if (methodsList) section.appendChild(methodsList);
 
-            const mmdContainer = Jig.dom.createElement("div", { className: "mermaid-diagram" });
-            section.appendChild(mmdContainer);
-
-            Jig.dom.lazyRender(mmdContainer, () => {
-                Diagram.render(mmdContainer, controller, globalThis.usecaseData);
-            });
+            Diagram.render(section, controller, globalThis.usecaseData);
 
             container.appendChild(section);
         });

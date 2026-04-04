@@ -2,8 +2,6 @@ globalThis.Jig ??= {};
 globalThis.Jig.dom ??= {};
 
 const GlossaryApp = (() => {
-    const createElement = Jig.dom.createElement;
-
     // 文字列の比較は日本語を優先しつつ大小を無視する
     const termCollator = new Intl.Collator("ja", {numeric: true, sensitivity: "base"});
 
@@ -127,7 +125,7 @@ const GlossaryApp = (() => {
 
         jumpBar.textContent = "";
         chars.forEach(char => {
-            const link = createElement("a", {
+            const link = Jig.dom.createElement("a", {
                 className: "glossary-jump-link",
                 href: `#group-${char}`,
                 textContent: char
@@ -167,11 +165,11 @@ const GlossaryApp = (() => {
 
         sortedChars.forEach(char => {
             const groupTerms = groups[char];
-            const groupSection = createElement("section", {
+            const groupSection = Jig.dom.createElement("section", {
                 className: "glossary-group",
                 id: `group-${char}`,
                 children: [
-                    createElement("h2", {className: "glossary-group-header", textContent: char})
+                    Jig.dom.createElement("h2", {className: "glossary-group-header", textContent: char})
                 ]
             });
 
@@ -182,26 +180,26 @@ const GlossaryApp = (() => {
                 const metaChildren = [];
                 const metaItems = [];
                 if (term.fqn) {
-                    metaItems.push(createElement("div", {
+                    metaItems.push(Jig.dom.createElement("div", {
                         children: [
-                            createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
-                            createElement("span", {className: "meta-value", textContent: term.fqn}),
+                            Jig.dom.createElement("span", {className: "meta-label", textContent: "完全修飾名"}),
+                            Jig.dom.createElement("span", {className: "meta-value", textContent: term.fqn}),
                         ]
                     }));
                 }
                 if (term.simpleText) {
-                    metaItems.push(createElement("div", {
+                    metaItems.push(Jig.dom.createElement("div", {
                         children: [
-                            createElement("span", {className: "meta-label", textContent: "単純名"}),
-                            createElement("span", {className: "meta-value", textContent: term.simpleText}),
+                            Jig.dom.createElement("span", {className: "meta-label", textContent: "単純名"}),
+                            Jig.dom.createElement("span", {className: "meta-value", textContent: term.simpleText}),
                         ]
                     }));
                 }
                 if (term.kind) {
-                    metaItems.push(createElement("div", {
+                    metaItems.push(Jig.dom.createElement("div", {
                         children: [
-                            createElement("span", {className: "meta-label", textContent: "種類"}),
-                            createElement("span", {className: "meta-value", textContent: term.kind}),
+                            Jig.dom.createElement("span", {className: "meta-label", textContent: "種類"}),
+                            Jig.dom.createElement("span", {className: "meta-value", textContent: term.kind}),
                         ]
                     }));
                 }
@@ -212,10 +210,10 @@ const GlossaryApp = (() => {
                         fqn === root || fqn.startsWith(root + ".")
                     );
                     if (isInDomain) {
-                        metaItems.push(createElement("div", {
+                        metaItems.push(Jig.dom.createElement("div", {
                             children: [
-                                createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
-                                createElement("a", {
+                                Jig.dom.createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
+                                Jig.dom.createElement("a", {
                                     className: "meta-value",
                                     attributes: {href: "domain.html#" + Jig.fqnToId("domain", fqn)},
                                     textContent: "ドメインモデル",
@@ -225,10 +223,10 @@ const GlossaryApp = (() => {
                     }
                 }
                 if (metaItems.length > 0) {
-                    const details = createElement("details", {
+                    const details = Jig.dom.createElement("details", {
                         children: [
-                            createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報"}),
-                            createElement("section", {
+                            Jig.dom.createElement("summary", {className: "term-attributes-toggle", textContent: "属性情報"}),
+                            Jig.dom.createElement("section", {
                                 className: "jig-card jig-card--item weak",
                                 children: metaItems
                             })
@@ -238,14 +236,14 @@ const GlossaryApp = (() => {
                     metaChildren.push(details);
                 }
 
-                const article = createElement("article", {
+                const article = Jig.dom.createElement("article", {
                     id: anchorId,
                     className: `jig-card jig-card--type ${isCompact ? "jig-card--compact" : ""}`,
                     children: [
-                        createElement("h3", {
+                        Jig.dom.createElement("h3", {
                             children: [
                                 Jig.dom.kind.badgeElement(term.kind || ""),
-                                createElement("span", {textContent: term.title || ""}),
+                                Jig.dom.createElement("span", {textContent: term.title || ""}),
                             ]
                         }),
                         ...metaChildren,

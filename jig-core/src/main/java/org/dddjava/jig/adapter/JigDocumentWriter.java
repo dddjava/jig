@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,12 +27,15 @@ public class JigDocumentWriter {
 
     public void writeHtml() {
         String fileName = jigDocument.fileName();
-        String resourcePath = "templates/" + fileName + ".html";
         Path outputFilePath = outputDirectory.resolve(fileName + ".html");
-        try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
-             InputStream resource = getResourceAsStream(resourcePath)) {
-            resource.transferTo(outputStream);
-            writtenDocuments.add(outputFilePath);
+        copyResourceTo("templates/" + fileName + ".html", outputFilePath);
+        writtenDocuments.add(outputFilePath);
+    }
+
+    static void copyResourceTo(String resourcePath, Path outputPath) {
+        try (InputStream is = getResourceAsStream(resourcePath)) {
+            Files.createDirectories(outputPath.getParent());
+            Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

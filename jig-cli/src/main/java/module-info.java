@@ -9,4 +9,6 @@ module org.dddjava.jig.cli {
     requires spring.boot;
     requires spring.boot.autoconfigure;
     requires spring.context;
+
+    opens org.dddjava.jig.cli;
 }

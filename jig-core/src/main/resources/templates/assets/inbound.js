@@ -207,10 +207,7 @@ const InboundApp = (() => {
             });
 
             if (typeTerm.description) {
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "markdown",
-                    innerHTML: Jig.dom.parseMarkdown(typeTerm.description)
-                }));
+                section.appendChild(Jig.dom.createMarkdownElement(typeTerm.description));
             }
 
             if (controller.classPath) {

@@ -249,10 +249,7 @@ const GlossaryApp = (() => {
                             ]
                         }),
                         ...metaChildren,
-                        createElement("div", {
-                            className: "markdown",
-                            innerHTML: Jig.dom.parseMarkdown(term.description || "")
-                        }),
+                        Jig.dom.createMarkdownElement(term.description || ""),
                     ]
                 });
                 groupSection.appendChild(article);

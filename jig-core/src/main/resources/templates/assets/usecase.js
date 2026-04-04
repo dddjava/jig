@@ -602,10 +602,7 @@ const UsecaseApp = (() => {
             });
 
             if (term.description) {
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "markdown",
-                    innerHTML: Jig.dom.parseMarkdown(term.description)
-                }));
+                section.appendChild(Jig.dom.createMarkdownElement(term.description));
             }
 
             // Class diagram (internal relations)
@@ -692,8 +689,8 @@ const UsecaseApp = (() => {
                 // Method Description
                 if (methodDescription) {
                     methodSection.appendChild(Jig.dom.createElement("section", {
-                        className: "description markdown",
-                        innerHTML: Jig.dom.parseMarkdown(methodDescription)
+                        className: "description",
+                        children: [Jig.dom.createMarkdownElement(methodDescription)]
                     }));
                 }
 

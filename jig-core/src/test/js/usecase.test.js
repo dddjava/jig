@@ -192,7 +192,7 @@ test.describe('usecase.js', () => {
             assert.ok(graphCode.includes('classDef'), 'Theme classDefが含まれるべき');
 
             const description = methodSection.querySelector('.description');
-            assert.equal(description.innerHTML, 'Description of method1');
+            assert.equal(description.querySelector('.markdown')?.innerHTML, 'Description of method1');
         });
 
         test('クラス単位の図では内部メソッド（非PUBLIC）は表示されない', () => {

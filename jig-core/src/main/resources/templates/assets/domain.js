@@ -575,10 +575,7 @@ const DomainApp = (() => {
 
             const pkgDescription = Jig.glossary.getTypeTerm(pkg.fqn).description;
             if (pkgDescription) {
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "markdown",
-                    innerHTML: Jig.dom.parseMarkdown(pkgDescription)
-                }));
+                section.appendChild(Jig.dom.createMarkdownElement(pkgDescription));
             }
 
             const childrenTable = createChildrenTable(pkg);
@@ -709,10 +706,7 @@ const DomainApp = (() => {
 
             const typeDescription = Jig.glossary.getTypeTerm(type.fqn).description;
             if (typeDescription) {
-                section.appendChild(Jig.dom.createElement("section", {
-                    className: "markdown",
-                    innerHTML: Jig.dom.parseMarkdown(typeDescription)
-                }));
+                section.appendChild(Jig.dom.createMarkdownElement(typeDescription));
             }
 
             if (type.enumInfo) {

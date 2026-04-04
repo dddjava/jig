@@ -155,6 +155,19 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('createMarkdownElement', () => {
+        test('DIV.markdown を生成する', () => {
+            const el = Jig.dom.createMarkdownElement('plain');
+            assert.equal(el.tagName, 'DIV');
+            assert.equal(el.className, 'markdown');
+        });
+
+        test('parseMarkdown の結果を innerHTML に設定する', () => {
+            const el = Jig.dom.createMarkdownElement('# Heading');
+            assert.equal(el.innerHTML, '<p># Heading</p>');
+        });
+    });
+
     test.describe('createCell', () => {
         test('テキストのみで <td> を作成', () => {
             const cell = Jig.dom.createCell('Data');

@@ -160,6 +160,10 @@ test.describe('InboundApp', () => {
         globalThis.Jig.dom = {
             createElement,
             parseMarkdown: (markdown) => String(markdown ?? ''),
+            createMarkdownElement: (markdown) => createElement('div', {
+                className: 'markdown',
+                innerHTML: String(markdown ?? '')
+            }),
             sidebar: {
                 renderSection: (container, title, items) => {
                     if (!container) return;

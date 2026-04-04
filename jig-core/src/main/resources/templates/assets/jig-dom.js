@@ -50,6 +50,13 @@ globalThis.Jig.dom = (() => {
         return source;
     }
 
+    function createMarkdownElement(markdown) {
+        return createElement("div", {
+            className: "markdown",
+            innerHTML: parseMarkdown(markdown)
+        });
+    }
+
     function normalizeNavigationHref(href) {
         return String(href || "").replace(/^\.\//, "");
     }
@@ -302,10 +309,7 @@ globalThis.Jig.dom = (() => {
 
         const children = [signatureEl];
         if (methodTerm.description) {
-            children.push(createElement("div", {
-                className: "markdown",
-                innerHTML: parseMarkdown(methodTerm.description)
-            }));
+            children.push(createMarkdownElement(methodTerm.description));
         }
 
         return createElement("div", {
@@ -437,6 +441,7 @@ globalThis.Jig.dom = (() => {
     return {
         createElement,
         parseMarkdown,
+        createMarkdownElement,
         initCommonUi,
         createCell,
         downloadCsv,

@@ -37,7 +37,6 @@ public class PackageRelationAdapter {
 
         var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
 
-        jigDocumentWriter.writeHtml();
         jigDocumentWriter.writeData("packageData", buildJson(jigPackages, packageRelations, domainPackageRoots));
 
         var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()

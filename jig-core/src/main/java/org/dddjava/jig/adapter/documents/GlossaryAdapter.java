@@ -31,7 +31,6 @@ public class GlossaryAdapter {
 
         var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
 
-        jigDocumentWriter.writeHtml();
         jigDocumentWriter.writeData("glossaryData", buildJson(glossary, domainPackageRoots));
 
         return jigDocumentWriter.outputFilePaths();

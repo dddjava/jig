@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class JigDocumentGenerator {
 
@@ -97,15 +98,25 @@ public class JigDocumentGenerator {
             try {
                 long startTime = System.currentTimeMillis();
 
+                // HTMLコピー（Adapter固有の処理ではないため、Generator側で一元管理）
+                var htmlWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+                htmlWriter.writeHtml();
+
                 var outputFilePaths = switch (jigDocument) {
                     case DomainModel, UsecaseModel, InboundInterface,
                          ListOutput,
                          OutboundInterface, Insight, Glossary, PackageRelation -> compositeAdapter.invoke(jigDocument, jigRepository);
                 };
 
+                // HTMLのパス + データファイルのパスを結合
+                var allPaths = Stream.concat(
+                        htmlWriter.outputFilePaths().stream(),
+                        outputFilePaths.stream()
+                ).toList();
+
                 long takenTime = System.currentTimeMillis() - startTime;
                 logger.info("[{}] completed: {} ms", jigDocument, takenTime);
-                return HandleResult.withOutput(jigDocument, outputFilePaths);
+                return HandleResult.withOutput(jigDocument, allPaths);
             } catch (Exception e) {
                 // ドキュメント出力に失敗しても例外を伝播させない
                 logger.warn("[{}] failed to write document.", jigDocument, e);

@@ -40,7 +40,6 @@ public class UsecaseModelAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        jigDocumentWriter.writeHtml();
         jigDocumentWriter.writeData("usecaseData", json);
 
         return jigDocumentWriter.outputFilePaths();

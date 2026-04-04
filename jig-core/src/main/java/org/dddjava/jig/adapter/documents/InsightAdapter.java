@@ -37,7 +37,6 @@ public class InsightAdapter {
 
         String insightJson = buildJson(result);
 
-        jigDocumentWriter.writeHtml();
         jigDocumentWriter.writeData("insightData", insightJson);
 
         return jigDocumentWriter.outputFilePaths();

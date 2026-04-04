@@ -47,7 +47,6 @@ public class DomainModelAdapter {
         var json = buildJson(packageList, jigTypes, enumModels);
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-        jigDocumentWriter.writeHtml();
         jigDocumentWriter.writeData("domainData", json);
 
         var typeRelationships = jigService.typeRelationships(jigRepository);

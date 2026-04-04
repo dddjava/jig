@@ -38,7 +38,6 @@ public class OutboundInterfaceAdapter {
 
         var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
 
-        jigDocumentWriter.writeHtml();
         jigDocumentWriter.writeData("outboundData", json);
 
         return jigDocumentWriter.outputFilePaths();

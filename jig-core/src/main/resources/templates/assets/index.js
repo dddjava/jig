@@ -9,8 +9,7 @@ const IndexApp = (() => {
     }
 
     function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
-        const createElement = Jig.dom.createElement;
-        const domainPackageDiagram = createElement("div", {className: "mermaid-diagram"});
+        const domainPackageDiagram = Jig.dom.createElement("div", {className: "mermaid-diagram"});
         packageDiagramContainer.appendChild(domainPackageDiagram);
 
         domainPackageDiagram.innerHTML = "";
@@ -25,7 +24,7 @@ const IndexApp = (() => {
         );
         if (pkgDiagram) {
             // ダイアグラムが出力されない場合もあるので、タイトル行は表示するときだけ追加する
-            packageDiagramContainer.insertBefore(createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
+            packageDiagramContainer.insertBefore(Jig.dom.createElement("h3", {textContent: titleLabel}), domainPackageDiagram);
             Jig.mermaid.render.renderWithControls(domainPackageDiagram, pkgDiagram);
         }
     }

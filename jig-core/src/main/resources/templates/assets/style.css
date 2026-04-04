@@ -270,11 +270,16 @@ main table thead {
 /* markdown */
 .markdown {
     margin: 0.5em;
+    font-size: 0.9em;
 }
 
 .markdown table thead {
     color: #000;
     background-color: #CCC;
+}
+
+.markdown p {
+    margin: 0.1em;
 }
 
 /* サイドバー＋コンテンツの横並びコンテナ */
@@ -393,12 +398,6 @@ main table thead {
 .method-return-sep {
     margin: 0 4px;
     color: #999;
-}
-
-.method-item .markdown {
-    margin: 4px 0 0 0;
-    font-size: 0.9em;
-    color: #444;
 }
 
 main table.fields thead {
@@ -522,7 +521,7 @@ body.hide-usecase-static-methods .static-methods {
     display: none;
 }
 
-body.hide-usecase-descriptions .markdown {
+body.hide-usecase-descriptions .description {
     display: none;
 }
 
@@ -906,16 +905,6 @@ label {
 .jig-card.jig-card--compact h3 {
     margin: 0;
     font-size: 1rem;
-}
-
-.jig-card.jig-card--compact .markdown {
-    margin: 0;
-    font-size: 0.9em;
-    color: #444;
-}
-
-.jig-card.jig-card--compact .markdown p {
-    margin: 0;
 }
 
 /* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */

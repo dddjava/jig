@@ -17,11 +17,7 @@ public class JigDocumentWriter {
         return outputFilePath;
     }
 
-    public static Path writeData(Path outputDirectory, JigDocument jigDocument, String variableName, String json) {
-        return writeData(outputDirectory, jigDocument.fileName() + "-data", variableName, json);
-    }
-
-    public static Path writeData(Path outputDirectory, String fileName, String variableName, String json) {
+    public static void writeData(Path outputDirectory, String fileName, String variableName, String json) {
         Path outputFilePath = outputDirectory.resolve("data/" + fileName + ".js");
         try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
              OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
@@ -29,7 +25,6 @@ public class JigDocumentWriter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        return outputFilePath;
     }
 
     public static void copyResourceTo(String resourcePath, Path outputPath) {

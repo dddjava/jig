@@ -231,11 +231,11 @@ const OutboundApp = (() => {
 
     // ===== Mermaid ダイアグラム生成 =====
 
-    function renderMermaid(mermaidCode, container, options = {}) {
-        if (!mermaidCode) return;
+    function renderMermaid(diagramFn, container, options = {}) {
+        if (!diagramFn) return;
         if (!container) return;
         container.innerHTML = "";
-        Jig.mermaid.render.renderWithControls(container, mermaidCode, options);
+        Jig.mermaid.render.renderWithControls(container, diagramFn, options);
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {

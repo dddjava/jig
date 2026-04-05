@@ -1063,7 +1063,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderWithControls(targetEl, source, {edgeCount, direction} = {}) {
+        function renderWithControls(targetEl, diagramFn, {direction} = {}) {
             if (!targetEl) return;
 
             let diagramEl = null;
@@ -1084,12 +1084,11 @@ globalThis.Jig.mermaid = (() => {
             const container = ensureMermaidDiagramContainer(diagramEl) || targetEl;
 
             const renderDiagram = (newDirection) => {
-                const text = (typeof source === "function") ? source(newDirection) : source;
-                const currentSource = text != null ? String(text) : "";
+                const currentSource = diagramFn(newDirection) ?? "";
 
                 ensureCopySourceButton(container, currentSource);
                 ensureDownloadButton(container);
-                if (typeof source === "function") {
+                if (/^\s*(?:graph|flowchart)\s/m.test(currentSource)) {
                     ensureDirectionButton(container, newDirection, renderDiagram);
                 }
 
@@ -1100,17 +1099,17 @@ globalThis.Jig.mermaid = (() => {
                     return;
                 }
 
-                const resolvedEdgeCount = edgeCount != null ? edgeCount : estimateEdgeCount(currentSource);
-                if (resolvedEdgeCount > DEFAULT_MAX_EDGES) {
+                const edgeCount = estimateEdgeCount(currentSource);
+                if (edgeCount > DEFAULT_MAX_EDGES) {
                     diagramEl.style.display = "none";
                     setEdgeWarning(container, {
                         visible: true,
                         message: [
                             "関連数が多すぎるため描画を省略しました。",
-                            `エッジ数: ${resolvedEdgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
+                            `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
                             "描画する場合はボタンを押してください。"
                         ].join("\n"),
-                        onAction: () => renderMermaidNode(diagramEl, currentSource, resolvedEdgeCount, container)
+                        onAction: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
                     });
                     return;
                 }
@@ -1120,8 +1119,8 @@ globalThis.Jig.mermaid = (() => {
 
             let initialDirection = direction;
             if (!initialDirection) {
-                const text = (typeof source === "function") ? source("LR") : String(source);
-                const match = text.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
+                const text = diagramFn("LR");
+                const match = text?.match(/^(\s*(?:graph|flowchart)\s+)(TB|TD|LR)\b/m);
                 initialDirection = match ? match[2] : "LR";
             }
 
@@ -1348,7 +1347,8 @@ globalThis.Jig.mermaid = (() => {
                 // renderFn が mermaid定義を返した場合、自動でレンダリング
                 if (result) {
                     container.innerHTML = "";
-                    Jig.mermaid.render.renderWithControls(container, result);
+                    const diagramFn = typeof result === "function" ? result : () => result;
+                    Jig.mermaid.render.renderWithControls(container, diagramFn);
                 }
                 // renderFn が void/undefined を返した場合は、renderFn 内で既に renderWithControls を呼んでいると仮定
             });

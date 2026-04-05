@@ -857,10 +857,7 @@ const PackageApp = (() => {
         setDiagramSource(diagram, renderPlan.source);
 
         const generator = (dir) => buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, dir).source;
-        Jig.mermaid.render.renderWithControls(diagram, generator, {
-            edgeCount: renderPlan.uniqueRelations.length,
-            direction: context.diagramDirection
-        });
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
     }
 
     function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, direction = context.diagramDirection) {

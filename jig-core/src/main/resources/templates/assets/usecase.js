@@ -835,7 +835,7 @@ const UsecaseApp = (() => {
                             const currentSequenceDiagram = SequenceDiagram.buildDiagram(method, currentDiagramContext);
                             const currentSequenceDiagramCode = SequenceDiagram.buildCode(currentSequenceDiagram);
                             if (currentSequenceDiagramCode) {
-                                Jig.mermaid.render.renderWithControls(sequenceContainer, currentSequenceDiagramCode);
+                                Jig.mermaid.render.renderWithControls(sequenceContainer, () => currentSequenceDiagramCode);
                             }
                         });
                     }

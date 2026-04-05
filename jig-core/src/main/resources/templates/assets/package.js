@@ -12,7 +12,7 @@ const PackageApp = (() => {
         focusCallerMode: '1', // '0':なし, '1':直接, '-1':すべて
         focusCalleeMode: '1', // '0':なし, '1':直接, '-1':すべて
         focusedPackageFqn: null,
-        diagramDirection: 'TD',
+        diagramDirection: 'TB',
         mutualDependencyDiagramDirection: 'LR',
         transitiveReductionEnabled: true,
     };
@@ -555,7 +555,7 @@ const PackageApp = (() => {
         settingsLabel.textContent = '図の向き:';
         settingsRow.appendChild(settingsLabel);
 
-        ['TD', 'LR'].forEach(direction => {
+        ['TB', 'LR'].forEach(direction => {
             const label = document.createElement('label');
             label.className = 'radio-label';
             const radio = document.createElement('input');
@@ -580,7 +580,7 @@ const PackageApp = (() => {
                 }
             });
             label.appendChild(radio);
-            label.appendChild(document.createTextNode(direction === 'TD' ? ' 縦' : ' 横'));
+            label.appendChild(document.createTextNode(direction === 'TB' ? ' 縦' : ' 横'));
             settingsRow.appendChild(label);
         });
 
@@ -796,7 +796,7 @@ const PackageApp = (() => {
             targetLines.push('end');
         };
 
-        let lines = [`graph ${direction || 'TD'};`];
+        let lines = [`graph ${direction || 'TB'};`];
 
         if (outerRoots.length >= 1) {
             const groups = new Map(outerRoots.map(root => [root, []]));

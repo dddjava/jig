@@ -100,7 +100,7 @@ test.describe('package.js', () => {
         testContext.focusCallerMode = '1';
         testContext.focusCalleeMode = '1';
         testContext.focusedPackageFqn = null;
-        testContext.diagramDirection = 'TD';
+        testContext.diagramDirection = 'TB';
         testContext.mutualDependencyDiagramDirection = 'LR';
         testContext.transitiveReductionEnabled = true;
 
@@ -849,7 +849,7 @@ test.describe('package.js', () => {
 
                 const details = container.children[0];
                 const settingsRow = details.children[1];
-                const tdRadio = settingsRow.children[1].children[0]; // 縦 TD
+                const tdRadio = settingsRow.children[1].children[0]; // 縦 TB
                 const lrRadio = settingsRow.children[2].children[0]; // 横 LR
 
                 assert.equal(testContext.mutualDependencyDiagramDirection, 'LR');
@@ -858,7 +858,7 @@ test.describe('package.js', () => {
                 tdRadio.checked = true;
                 tdRadio.dispatchEvent({type: 'change'});
 
-                assert.equal(testContext.mutualDependencyDiagramDirection, 'TD');
+                assert.equal(testContext.mutualDependencyDiagramDirection, 'TB');
             });
 
             test('renderMutualDependencyDiagram: 描画後にボタンを非表示にする', () => {

@@ -82,7 +82,7 @@
 
 /**
  * @typedef {Object} MermaidDiagramSourceOptions
- * @property {string} diagramDirection - 図の向き ('TD' または 'LR')
+ * @property {string} diagramDirection - 図の向き ('TB' または 'LR')
  * @property {string|null} [focusedPackageFqn] - フォーカスされたパッケージ
  * @property {string|null} [clickHandlerName] - クリックハンドラ関数名
  */

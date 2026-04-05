@@ -103,7 +103,10 @@ globalThis.Jig.mermaid = (() => {
 
             startSubgraph(id, label = id, direction = null) {
                 const subgraph = {id, label, lines: []};
-                if (direction) subgraph.lines.push(`direction ${direction}`);
+                if (direction) {
+                    const safeDirection = (direction === 'TD') ? 'TB' : direction;
+                    subgraph.lines.push(`direction ${safeDirection}`);
+                }
                 this.subgraphs.push(subgraph);
                 return subgraph;
             }
@@ -954,7 +957,7 @@ globalThis.Jig.mermaid = (() => {
             const button = ensureMermaidControlButton(container, "mermaid-direction-button", "Switch Direction", "⇄");
             if (!button) return null;
             button.onclick = () => {
-                const newDirection = (currentDirection === "LR") ? "TD" : "LR";
+                const newDirection = (currentDirection === "LR") ? "TB" : "LR";
                 onUpdate(newDirection);
             };
             return button;

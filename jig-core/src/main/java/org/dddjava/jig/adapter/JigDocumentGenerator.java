@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter;
 
-import io.micrometer.core.instrument.Metrics;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.documents.*;
@@ -18,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class JigDocumentGenerator {
@@ -102,18 +100,16 @@ public class JigDocumentGenerator {
     }
 
     private HandleResult generateDocument(JigDocument jigDocument) {
-        return Objects.requireNonNull(Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
-            try {
-                long startTime = System.currentTimeMillis();
-                Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
-                logger.info("[{}] completed: {} ms", jigDocument, System.currentTimeMillis() - startTime);
-                return HandleResult.withOutput(jigDocument, List.of(htmlPath));
-            } catch (Exception e) {
-                // ドキュメント出力に失敗しても例外を伝播させない
-                logger.warn("[{}] failed to write document.", jigDocument, e);
-                return HandleResult.withException(jigDocument, e);
-            }
-        }));
+        try {
+            long startTime = System.currentTimeMillis();
+            Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
+            logger.info("[{}] completed: {} ms", jigDocument, System.currentTimeMillis() - startTime);
+            return HandleResult.withOutput(jigDocument, List.of(htmlPath));
+        } catch (Exception e) {
+            // ドキュメント出力に失敗しても例外を伝播させない
+            logger.warn("[{}] failed to write document.", jigDocument, e);
+            return HandleResult.withException(jigDocument, e);
+        }
     }
 
     private void generateDebugHtml() {
@@ -121,10 +117,8 @@ public class JigDocumentGenerator {
     }
 
     private void generateIndex(List<HandleResult> results) {
-        Metrics.timer("jig.document.time", "phase", "index").record(() -> {
-            IndexAdapter indexAdapter = new IndexAdapter();
-            indexAdapter.render(results, outputDirectory);
-        });
+        IndexAdapter indexAdapter = new IndexAdapter();
+        indexAdapter.render(results, outputDirectory);
     }
 
     private void generateAssets() {

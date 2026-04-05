@@ -18,6 +18,7 @@ global.document = global.document || {
     }),
     body: {classList: {contains: () => false}},
 };
+require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-dom.js');
 

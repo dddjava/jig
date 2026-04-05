@@ -10,6 +10,7 @@ function setupDocument() {
 
 // document グローバルを設定してから jig-dom.js を require する
 setupDocument();
+require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-dom.js');
 

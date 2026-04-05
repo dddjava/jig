@@ -93,9 +93,12 @@ public class JigDocumentGenerator {
     private void writeDataFiles(JigRepository jigRepository) {
         jigDocuments.stream()
                 .flatMap(doc -> adaptersMap.getOrDefault(doc, List.of()).stream())
+                // 同じDataAdapterは一度だけ出力する
                 .distinct()
-                .forEach(adapter -> JigDocumentWriter.writeData(
-                        outputDirectory, adapter.dataFileName(), adapter.variableName(), adapter.buildJson(jigRepository)));
+                .forEach(adapter -> {
+                    String jsonText = adapter.buildJson(jigRepository);
+                    JigDocumentWriter.writeData(outputDirectory, adapter.dataFileName(), adapter.variableName(), jsonText);
+                });
     }
 
     private HandleResult generateDocument(JigDocument jigDocument) {

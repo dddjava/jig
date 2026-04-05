@@ -25,12 +25,6 @@ public class JigDocumentGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
 
-    private static final List<String> ASSET_FILES = List.of(
-            "domain.js", "favicon.ico", "glossary.js", "inbound.js", "index.js",
-            "insight.js", "jig-dom.js", "jig-glossary.js", "jig-mermaid.js",
-            "list-output.js", "outbound.js", "package.js", "style.css", "types.js", "usecase.js"
-    );
-
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
     private final Map<JigDocument, List<JigDocumentAdapter>> adaptersMap;
@@ -41,14 +35,14 @@ public class JigDocumentGenerator {
 
         var typeRelationsDataAdapter = new TypeRelationsDataAdapter(jigService);
         this.adaptersMap = Map.of(
-                JigDocument.DomainModel,       List.of(new DomainDataAdapter(jigService), typeRelationsDataAdapter),
-                JigDocument.PackageRelation,   List.of(new PackageDataAdapter(jigService), typeRelationsDataAdapter),
-                JigDocument.Glossary,          List.of(new GlossaryDataAdapter(jigService)),
-                JigDocument.Insight,           List.of(new InsightDataAdapter(jigService)),
-                JigDocument.InboundInterface,  List.of(new InboundDataAdapter(jigService)),
+                JigDocument.DomainModel, List.of(new DomainDataAdapter(jigService), typeRelationsDataAdapter),
+                JigDocument.PackageRelation, List.of(new PackageDataAdapter(jigService), typeRelationsDataAdapter),
+                JigDocument.Glossary, List.of(new GlossaryDataAdapter(jigService)),
+                JigDocument.Insight, List.of(new InsightDataAdapter(jigService)),
+                JigDocument.InboundInterface, List.of(new InboundDataAdapter(jigService)),
                 JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService)),
-                JigDocument.UsecaseModel,      List.of(new UsecaseDataAdapter(jigService)),
-                JigDocument.ListOutput,        List.of(new ListOutputDataAdapter(jigService))
+                JigDocument.UsecaseModel, List.of(new UsecaseDataAdapter(jigService)),
+                JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService))
         );
     }
 
@@ -136,7 +130,25 @@ public class JigDocumentGenerator {
 
     private void generateAssets() {
         Path assetsPath = outputDirectory.resolve("assets");
-        for (String fileName : ASSET_FILES) {
+        for (String fileName : List.of(
+                // 共通
+                "favicon.ico",
+                "index.js",
+                "style.css",
+                "jig-dom.js", "jig-glossary.js", "jig-mermaid.js",
+                // typesは開発用なので不要
+                // "types.js",
+
+                // 各ドキュメント用
+                "domain.js",
+                "glossary.js",
+                "inbound.js",
+                "insight.js",
+                "list-output.js",
+                "outbound.js",
+                "package.js",
+                "usecase.js"
+        )) {
             JigDocumentWriter.copyResourceTo("templates/assets/" + fileName, assetsPath.resolve(fileName));
         }
     }

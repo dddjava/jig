@@ -114,11 +114,7 @@ public class JigDocumentGenerator {
     }
 
     private void generateDebugHtml() {
-        try {
-            JigDocumentWriter.copyResourceTo("templates/debug.html", outputDirectory.resolve("debug.html"));
-        } catch (Exception e) {
-            logger.warn("debug.html の出力に失敗しました", e);
-        }
+        JigDocumentWriter.copyResourceTo("templates/debug.html", outputDirectory.resolve("debug.html"));
     }
 
     private void generateIndex(List<HandleResult> results) {

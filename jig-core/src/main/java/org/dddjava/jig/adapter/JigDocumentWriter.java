@@ -1,6 +1,8 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class JigDocumentWriter {
+    private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     public static Path writeHtml(JigDocument jigDocument, Path outputDirectory) {
         String fileName = jigDocument.fileName();
@@ -32,7 +35,8 @@ public class JigDocumentWriter {
             Files.createDirectories(outputPath.getParent());
             Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            logger.error("リソースのコピーに失敗したため、ドキュメントの一部もしくはすべてが欠落します。" +
+                    "通常は起こらない例外なので環境を確認してみてください。(from:{} to:{})", resourcePath, outputPath, e);
         }
     }
 

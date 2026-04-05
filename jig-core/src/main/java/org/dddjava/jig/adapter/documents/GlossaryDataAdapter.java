@@ -1,41 +1,43 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.JigDocumentAdapter;
-import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class GlossaryAdapter implements JigDocumentAdapter {
+/**
+ * 用語集（glossary-data.js）
+ */
+public class GlossaryDataAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final Path outputDirectory;
 
-    public GlossaryAdapter(JigService jigService, Path outputDirectory) {
+    public GlossaryDataAdapter(JigService jigService) {
         this.jigService = jigService;
-        this.outputDirectory = outputDirectory;
     }
 
     @Override
-    public JigDocument supportedDocument() {
-        return JigDocument.Glossary;
+    public String variableName() {
+        return "glossaryData";
     }
 
     @Override
-    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+    public String dataFileName() {
+        return "glossary-data";
+    }
+
+    @Override
+    public String buildJson(JigRepository jigRepository) {
         var glossary = jigService.glossary(jigRepository);
         var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
-
-        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "glossaryData", buildJson(glossary, domainPackageRoots)));
+        return buildGlossaryJson(glossary, domainPackageRoots);
     }
 
-    public static String buildJson(Glossary glossary, List<String> domainPackageRoots) {
+    static String buildGlossaryJson(Glossary glossary, List<String> domainPackageRoots) {
         var map = new LinkedHashMap<String, String>();
         for (var term : glossary.list()) {
             var value = Json.object("title", term.title())
@@ -49,5 +51,4 @@ public class GlossaryAdapter implements JigDocumentAdapter {
                 .and("domainPackageRoots", Json.array(domainPackageRoots))
                 .build();
     }
-
 }

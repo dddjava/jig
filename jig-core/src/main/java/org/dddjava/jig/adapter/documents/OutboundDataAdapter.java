@@ -1,45 +1,44 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.JigDocumentAdapter;
-import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * 出力インタフェース
+ * 出力インタフェース（outbound-data.js）
  */
-public class OutboundInterfaceAdapter implements JigDocumentAdapter {
+public class OutboundDataAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final Path outputDirectory;
 
-    public OutboundInterfaceAdapter(JigService jigService, Path outputDirectory) {
+    public OutboundDataAdapter(JigService jigService) {
         this.jigService = jigService;
-        this.outputDirectory = outputDirectory;
     }
 
     @Override
-    public JigDocument supportedDocument() {
-        return JigDocument.OutboundInterface;
+    public String variableName() {
+        return "outboundData";
     }
 
     @Override
-    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
-        var outboundAdapters = jigService.outboundAdapters(jigRepository);
-        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "outboundData", buildJson(outboundAdapters)));
+    public String dataFileName() {
+        return "outbound-data";
     }
 
-    public static String buildJson(OutboundAdapters outboundAdapters) {
+    @Override
+    public String buildJson(JigRepository jigRepository) {
+        return buildOutboundJson(jigService.outboundAdapters(jigRepository));
+    }
+
+    static String buildOutboundJson(OutboundAdapters outboundAdapters) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var accessorTypesMap = new LinkedHashSet<String>();              // typeFqn
@@ -169,5 +168,4 @@ public class OutboundInterfaceAdapter implements JigDocumentAdapter {
                 .and("links", links)
                 .build();
     }
-
 }

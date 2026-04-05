@@ -19,7 +19,7 @@ class GlossaryAdapterTest {
                 new Term(new TermId("app.Account"), "Account", "desc", TermKind.クラス)
         ));
 
-        String js = "globalThis.glossaryData = " + GlossaryAdapter.buildJson(glossary, List.of());
+        String js = "globalThis.glossaryData = " + GlossaryDataAdapter.buildGlossaryJson(glossary, List.of());
 
         assertTrue(js.contains("globalThis.glossaryData = "));
         assertTrue(js.contains("\"app.Account\""));

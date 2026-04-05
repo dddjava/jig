@@ -1,7 +1,6 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.JigDocumentAdapter;
-import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
@@ -10,7 +9,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
@@ -30,14 +28,16 @@ import org.dddjava.jig.domain.model.knowledge.usecases.Usecase;
 import org.dddjava.jig.domain.model.knowledge.validations.Validation;
 import org.dddjava.jig.domain.model.knowledge.validations.Validations;
 
-import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class ListOutputAdapter implements JigDocumentAdapter {
+/**
+ * 一覧出力（list-output-data.js）
+ */
+public class ListOutputDataAdapter implements JigDocumentAdapter {
 
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター
@@ -45,24 +45,27 @@ public class ListOutputAdapter implements JigDocumentAdapter {
     private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = Collectors.joining(", ", "[", "]");
 
     private final JigService jigService;
-    private final Path outputDirectory;
 
-    public ListOutputAdapter(JigService jigService, Path outputDirectory) {
+    public ListOutputDataAdapter(JigService jigService) {
         this.jigService = jigService;
-        this.outputDirectory = outputDirectory;
     }
 
     @Override
-    public JigDocument supportedDocument() {
-        return JigDocument.ListOutput;
+    public String variableName() {
+        return "listData";
     }
 
     @Override
-    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
-        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "listData", buildJson(jigRepository, jigService)));
+    public String dataFileName() {
+        return "list-output-data";
     }
 
-    public static String buildJson(JigRepository repository, JigService jigService) {
+    @Override
+    public String buildJson(JigRepository jigRepository) {
+        return buildListJson(jigRepository, jigService);
+    }
+
+    static String buildListJson(JigRepository repository, JigService jigService) {
         InputAdapters inputAdapters = jigService.inputAdapters(repository);
         ServiceAngles serviceAngles = jigService.serviceAngles(repository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(repository);
@@ -82,16 +85,16 @@ public class ListOutputAdapter implements JigDocumentAdapter {
                 .sorted(Comparator.comparing(JigPackage::packageId))
                 .toList();
         String controllerJson = inputAdapters.listEntrypoint().stream()
-                .map(ListOutputAdapter::formatControllerJson)
+                .map(ListOutputDataAdapter::formatControllerJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String serviceJson = serviceAngles.list().stream()
-                .map(ListOutputAdapter::formatServiceJson)
+                .map(ListOutputDataAdapter::formatServiceJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String repositoryJson = datasourceAngles.list().stream()
-                .map(ListOutputAdapter::formatRepositoryJson)
+                .map(ListOutputDataAdapter::formatRepositoryJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String packageJson = jigTypePackages.stream()
-                .map(ListOutputAdapter::formatBusinessPackageJson)
+                .map(ListOutputDataAdapter::formatBusinessPackageJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String allJson = coreDomainJigTypes.list().stream()
                 .map(jigType -> formatBusinessAllJson(jigType, coreTypesAndRelations, allClassRelations))
@@ -103,10 +106,10 @@ public class ListOutputAdapter implements JigDocumentAdapter {
                 .map(jigType -> formatBusinessCollectionJson(jigType, allClassRelations))
                 .collect(Collectors.joining(",", "[", "]"));
         String validationJson = Validations.from(jigTypes).list().stream()
-                .map(ListOutputAdapter::formatBusinessValidationJson)
+                .map(ListOutputDataAdapter::formatBusinessValidationJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String methodSmellJson = methodSmells.list().stream()
-                .map(ListOutputAdapter::formatBusinessMethodSmellJson)
+                .map(ListOutputDataAdapter::formatBusinessMethodSmellJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
         return """
@@ -267,5 +270,4 @@ public class ListOutputAdapter implements JigDocumentAdapter {
                 .and("returnsVoid", methodSmell.returnsVoid())
                 .build();
     }
-
 }

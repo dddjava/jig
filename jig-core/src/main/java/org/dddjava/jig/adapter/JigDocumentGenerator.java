@@ -17,6 +17,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -33,22 +34,22 @@ public class JigDocumentGenerator {
 
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
-    private final List<JigDocumentAdapter> adapters;
+    private final Map<JigDocument, List<JigDocumentAdapter>> adaptersMap;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
-        Path outputDir = jigDocumentContext.outputDirectory();
 
-        this.adapters = List.of(
-                new DomainModelAdapter(jigService, outputDir),
-                new InsightAdapter(jigService, outputDir),
-                new OutboundInterfaceAdapter(jigService, outputDir),
-                new InboundInterfaceAdapter(jigService, outputDir),
-                new UsecaseModelAdapter(jigService, outputDir),
-                new ListOutputAdapter(jigService, outputDir),
-                new GlossaryAdapter(jigService, outputDir),
-                new PackageRelationAdapter(jigService, outputDir)
+        var typeRelationsDataAdapter = new TypeRelationsDataAdapter(jigService);
+        this.adaptersMap = Map.of(
+                JigDocument.DomainModel,       List.of(new DomainDataAdapter(jigService), typeRelationsDataAdapter),
+                JigDocument.PackageRelation,   List.of(new PackageDataAdapter(jigService), typeRelationsDataAdapter),
+                JigDocument.Glossary,          List.of(new GlossaryDataAdapter(jigService)),
+                JigDocument.Insight,           List.of(new InsightDataAdapter(jigService)),
+                JigDocument.InboundInterface,  List.of(new InboundDataAdapter(jigService)),
+                JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService)),
+                JigDocument.UsecaseModel,      List.of(new UsecaseDataAdapter(jigService)),
+                JigDocument.ListOutput,        List.of(new ListOutputDataAdapter(jigService))
         );
     }
 
@@ -101,14 +102,17 @@ public class JigDocumentGenerator {
             try {
                 long startTime = System.currentTimeMillis();
 
+                // HTMLコピー（Adapter固有の処理ではないため、Generator側で一元管理）
                 Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
 
-                var outputFilePaths = adapters.stream()
-                        .filter(adapter -> adapter.supportedDocument() == jigDocument)
-                        .findFirst()
-                        .map(adapter -> adapter.write(jigDocument, jigRepository))
-                        .orElse(List.of());
+                // JSONデータ生成とファイル書き出し
+                var outputFilePaths = adaptersMap.getOrDefault(jigDocument, List.of())
+                        .stream()
+                        .map(adapter -> JigDocumentWriter.writeData(
+                                outputDirectory, adapter.dataFileName(), adapter.variableName(), adapter.buildJson(jigRepository)))
+                        .toList();
 
+                // HTMLのパス + データファイルのパスを結合
                 var allPaths = Stream.concat(
                         Stream.of(htmlPath),
                         outputFilePaths.stream()

@@ -39,7 +39,7 @@ class SampleDataWriterTest {
 
         // outbound-data.js
         {
-            var json = OutboundInterfaceAdapter.buildJson(outboundAdapters);
+            var json = OutboundDataAdapter.buildOutboundJson(outboundAdapters);
             Path sampleFile = Path.of("src/main/resources/templates/data/outbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -51,7 +51,7 @@ class SampleDataWriterTest {
         {
             var glossary = jigService.glossary(repository);
             var domainPackageRoots = jigService.coreDomainJigTypes(repository).domainPackageRoots();
-            var json = GlossaryAdapter.buildJson(glossary, domainPackageRoots);
+            var json = GlossaryDataAdapter.buildGlossaryJson(glossary, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/glossary-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -64,7 +64,7 @@ class SampleDataWriterTest {
             var jigPackages = jigService.packages(repository);
             var packageRelations = jigService.packageRelations(repository);
             var domainPackageRoots = jigService.coreDomainJigTypes(repository).domainPackageRoots();
-            var json = PackageRelationAdapter.buildJson(jigPackages, packageRelations, domainPackageRoots);
+            var json = PackageDataAdapter.buildPackageJson(jigPackages, packageRelations, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -75,7 +75,7 @@ class SampleDataWriterTest {
         // insight-data.js
         {
             var insights = jigService.insights(repository);
-            var json = InsightAdapter.buildJson(insights);
+            var json = InsightDataAdapter.buildInsightJson(insights);
             Path sampleFile = Path.of("src/main/resources/templates/data/insight-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -85,7 +85,7 @@ class SampleDataWriterTest {
 
         // list-output-data.js
         {
-            var json = ListOutputAdapter.buildJson(repository, jigService);
+            var json = ListOutputDataAdapter.buildListJson(repository, jigService);
             Path sampleFile = Path.of("src/main/resources/templates/data/list-output-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -96,7 +96,7 @@ class SampleDataWriterTest {
         // inbound-data.js
         {
             var inputAdapters = jigService.inputAdapters(repository);
-            var json = InboundInterfaceAdapter.buildJson(inputAdapters, jigTypes);
+            var json = InboundDataAdapter.buildInboundJson(inputAdapters, jigTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/inbound-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -107,7 +107,7 @@ class SampleDataWriterTest {
         // usecase-data.js
         {
             var serviceTypes = jigService.serviceTypes(repository);
-            var json = UsecaseModelAdapter.buildJson(serviceTypes);
+            var json = UsecaseDataAdapter.buildUsecaseJson(serviceTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/usecase-data.js");
             Files.writeString(sampleFile,
                 "// 表示確認用のサンプルデータ\n" +
@@ -123,7 +123,7 @@ class SampleDataWriterTest {
                 var packageList = JigPackageWithJigTypes.listWithParent(domainJigTypes);
                 var enumModels = repository.jigDataProvider().fetchEnumModels();
 
-                var json = DomainModelAdapter.buildJson(packageList, domainJigTypes, enumModels);
+                var json = DomainDataAdapter.buildDomainJson(packageList, domainJigTypes, enumModels);
                 Path sampleFile = Path.of("src/main/resources/templates/data/domain-data.js");
                 Files.writeString(sampleFile,
                     "// 表示確認用のサンプルデータ\n" +

@@ -1,10 +1,8 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.JigDocumentAdapter;
-import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -13,35 +11,37 @@ import org.dddjava.jig.domain.model.knowledge.insight.MethodInsight;
 import org.dddjava.jig.domain.model.knowledge.insight.PackageInsight;
 import org.dddjava.jig.domain.model.knowledge.insight.TypeInsight;
 
-import java.nio.file.Path;
-import java.util.List;
 import java.util.stream.Collectors;
 
-
-public class InsightAdapter implements JigDocumentAdapter {
+/**
+ * インサイト（insight-data.js）
+ */
+public class InsightDataAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final Path outputDirectory;
 
-    public InsightAdapter(JigService jigService, Path outputDirectory) {
+    public InsightDataAdapter(JigService jigService) {
         this.jigService = jigService;
-        this.outputDirectory = outputDirectory;
     }
 
     @Override
-    public JigDocument supportedDocument() {
-        return JigDocument.Insight;
+    public String variableName() {
+        return "insightData";
     }
 
     @Override
-    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
-        Insights result = jigService.insights(jigRepository);
-        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "insightData", buildJson(result)));
+    public String dataFileName() {
+        return "insight-data";
     }
 
-    public static String buildJson(Insights result) {
+    @Override
+    public String buildJson(JigRepository jigRepository) {
+        return buildInsightJson(jigService.insights(jigRepository));
+    }
+
+    static String buildInsightJson(Insights result) {
         String packagesJson = result.packageInsightList().stream()
-                .map(InsightAdapter::formatPackageJson)
+                .map(InsightDataAdapter::formatPackageJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
         TypeRelationships typeRelationships = result.typeRelationships();
@@ -51,7 +51,7 @@ public class InsightAdapter implements JigDocumentAdapter {
                 .collect(Collectors.joining(",", "[", "]"));
 
         String methodsJson = result.methodInsightList().stream()
-                .map(InsightAdapter::formatMethodJson)
+                .map(InsightDataAdapter::formatMethodJson)
                 .collect(Collectors.joining(",", "[", "]"));
 
         return """
@@ -98,5 +98,4 @@ public class InsightAdapter implements JigDocumentAdapter {
                 .and("typeFqn", insight.typeFqn())
                 .build();
     }
-
 }

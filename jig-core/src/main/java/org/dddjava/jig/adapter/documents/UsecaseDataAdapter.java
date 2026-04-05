@@ -1,47 +1,46 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.JigDocumentAdapter;
-import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * ユースケース
+ * ユースケース（usecase-data.js）
  */
-public class UsecaseModelAdapter implements JigDocumentAdapter {
+public class UsecaseDataAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final Path outputDirectory;
 
-    public UsecaseModelAdapter(JigService jigService, Path outputDirectory) {
+    public UsecaseDataAdapter(JigService jigService) {
         this.jigService = jigService;
-        this.outputDirectory = outputDirectory;
     }
 
     @Override
-    public JigDocument supportedDocument() {
-        return JigDocument.UsecaseModel;
+    public String variableName() {
+        return "usecaseData";
     }
 
     @Override
-    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
-        var contextJigTypes = jigService.serviceTypes(jigRepository);
-        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "usecaseData", buildJson(contextJigTypes)));
+    public String dataFileName() {
+        return "usecase-data";
     }
 
-    public static String buildJson(JigTypes contextJigTypes) {
+    @Override
+    public String buildJson(JigRepository jigRepository) {
+        return buildUsecaseJson(jigService.serviceTypes(jigRepository));
+    }
+
+    static String buildUsecaseJson(JigTypes contextJigTypes) {
         var usecaseList = contextJigTypes.stream()
                 .flatMap(jigType -> {
                     List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
@@ -50,12 +49,12 @@ public class UsecaseModelAdapter implements JigDocumentAdapter {
 
                     List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods().stream()
                             .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                            .map(UsecaseModelAdapter::buildMethodJson)
+                            .map(UsecaseDataAdapter::buildMethodJson)
                             .collect(Collectors.toList());
 
                     List<JsonObjectBuilder> methodList = jigType.instanceJigMethods().stream()
                             .filter(jigMethod -> jigMethod.isProgrammerDefined())
-                            .map(UsecaseModelAdapter::buildMethodJson)
+                            .map(UsecaseDataAdapter::buildMethodJson)
                             .toList();
 
                     if (methodList.isEmpty() && fields.isEmpty() && staticMethods.isEmpty()) {

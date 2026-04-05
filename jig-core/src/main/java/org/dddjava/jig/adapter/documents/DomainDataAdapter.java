@@ -1,77 +1,62 @@
 package org.dddjava.jig.adapter.documents;
 
 import org.dddjava.jig.adapter.JigDocumentAdapter;
-import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ドメインモデル
+ * ドメインモデル（domain-data.js）
  */
-public class DomainModelAdapter implements JigDocumentAdapter {
+public class DomainDataAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final Path outputDirectory;
 
-    public DomainModelAdapter(JigService jigService, Path outputDirectory) {
+    public DomainDataAdapter(JigService jigService) {
         this.jigService = jigService;
-        this.outputDirectory = outputDirectory;
     }
 
     @Override
-    public JigDocument supportedDocument() {
-        return JigDocument.DomainModel;
+    public String variableName() {
+        return "domainData";
     }
 
     @Override
-    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+    public String dataFileName() {
+        return "domain-data";
+    }
+
+    @Override
+    public String buildJson(JigRepository jigRepository) {
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         if (coreDomainJigTypes.empty()) {
-            return List.of();
+            return "{}";
         }
         var jigTypes = coreDomainJigTypes.jigTypes();
-
         var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-
-        var json = buildJson(packageList, jigTypes, enumModels);
-
-        var paths = new ArrayList<Path>();
-        paths.add(JigDocumentWriter.writeData(outputDirectory, jigDocument, "domainData", json));
-
-        var typeRelationships = jigService.typeRelationships(jigRepository);
-        var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
-                .map(relation -> Json.object("from", relation.from().fqn())
-                        .and("to", relation.to().fqn()))
-                .toList())).build();
-        paths.add(JigDocumentWriter.writeData(outputDirectory, "type-relations-data", "typeRelationsData", typeRelationsJson));
-
-        return paths;
+        return buildDomainJson(packageList, jigTypes, enumModels);
     }
 
-    public static String buildJson(List<JigPackageWithJigTypes> jigPackages,
-                             JigTypes jigTypes,
-                             EnumModels enumModels) {
+    static String buildDomainJson(List<JigPackageWithJigTypes> jigPackages,
+                                  JigTypes jigTypes,
+                                  EnumModels enumModels) {
         List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(DomainModelAdapter::buildPackageJson)
+                .map(DomainDataAdapter::buildPackageJson)
                 .toList();
 
         List<JsonObjectBuilder> types = jigTypes.stream()
-                .map(jigType -> DomainModelAdapter.buildTypeJson(jigType, enumModels))
+                .map(jigType -> DomainDataAdapter.buildTypeJson(jigType, enumModels))
                 .toList();
 
         return Json.object("packages", Json.arrayObjects(packages))
@@ -144,5 +129,4 @@ public class DomainModelAdapter implements JigDocumentAdapter {
         return Json.object("constants", Json.arrayObjects(constants))
                 .and("parameterNames", Json.array(parameterNames));
     }
-
 }

@@ -140,6 +140,7 @@ public class JigDocumentGenerator {
                 // "types.js",
 
                 // 各ドキュメント用
+                // TODO 出力対象のドキュメントだけにする
                 "domain.js",
                 "glossary.js",
                 "inbound.js",

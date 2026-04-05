@@ -101,7 +101,6 @@ public class JigDocumentGenerator {
             try {
                 long startTime = System.currentTimeMillis();
 
-                // HTMLコピー（Adapter固有の処理ではないため、Generator側で一元管理）
                 Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
 
                 var outputFilePaths = adapters.stream()
@@ -110,7 +109,6 @@ public class JigDocumentGenerator {
                         .map(adapter -> adapter.write(jigDocument, jigRepository))
                         .orElse(List.of());
 
-                // HTMLのパス + データファイルのパスを結合
                 var allPaths = Stream.concat(
                         Stream.of(htmlPath),
                         outputFilePaths.stream()

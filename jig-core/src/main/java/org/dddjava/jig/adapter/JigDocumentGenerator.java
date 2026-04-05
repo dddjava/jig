@@ -84,7 +84,10 @@ public class JigDocumentGenerator {
     private List<HandleResult> generateDocuments(JigRepository jigRepository) {
         writeDataFiles(jigRepository);
         return jigDocuments.stream()
-                .map(this::generateDocument)
+                .map(jigDocument -> {
+                    Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
+                    return HandleResult.withOutput(jigDocument, List.of(htmlPath));
+                })
                 .toList();
     }
 
@@ -97,19 +100,6 @@ public class JigDocumentGenerator {
                     String jsonText = adapter.buildJson(jigRepository);
                     JigDocumentWriter.writeData(outputDirectory, adapter.dataFileName(), adapter.variableName(), jsonText);
                 });
-    }
-
-    private HandleResult generateDocument(JigDocument jigDocument) {
-        try {
-            long startTime = System.currentTimeMillis();
-            Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
-            logger.info("[{}] completed: {} ms", jigDocument, System.currentTimeMillis() - startTime);
-            return HandleResult.withOutput(jigDocument, List.of(htmlPath));
-        } catch (Exception e) {
-            // ドキュメント出力に失敗しても例外を伝播させない
-            logger.warn("[{}] failed to write document.", jigDocument, e);
-            return HandleResult.withException(jigDocument, e);
-        }
     }
 
     private void generateDebugHtml() {

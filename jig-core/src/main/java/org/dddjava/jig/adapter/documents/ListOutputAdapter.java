@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
@@ -38,8 +37,7 @@ import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-@HandleDocument
-public class ListOutputAdapter {
+public class ListOutputAdapter implements JigDocumentAdapter {
 
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター
@@ -47,21 +45,21 @@ public class ListOutputAdapter {
     private static final Collector<CharSequence, ?, String> STREAM_COLLECTOR = Collectors.joining(", ", "[", "]");
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public ListOutputAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public ListOutputAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.ListOutput)
-    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.ListOutput;
+    }
 
-        String listJson = buildJson(repository, jigService);
-
-        jigDocumentWriter.writeData("listData", listJson);
-        return jigDocumentWriter.outputFilePaths();
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "listData", buildJson(jigRepository, jigService)));
     }
 
     public static String buildJson(JigRepository repository, JigService jigService) {

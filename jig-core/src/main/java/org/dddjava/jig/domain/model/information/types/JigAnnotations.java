@@ -10,5 +10,4 @@ public class JigAnnotations {
 
     public static final TypeId SERVICE = TypeId.valueOf("org.dddjava.jig.annotation.Service");
     public static final TypeId REPOSITORY = TypeId.valueOf("org.dddjava.jig.annotation.Repository");
-    public static final TypeId HANDLE_DOCUMENT = TypeId.valueOf("org.dddjava.jig.adapter.HandleDocument");
 }

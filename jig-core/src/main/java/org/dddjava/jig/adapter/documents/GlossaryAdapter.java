@@ -1,39 +1,38 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@HandleDocument
-public class GlossaryAdapter {
+public class GlossaryAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public GlossaryAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public GlossaryAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.Glossary)
-    public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
-        var glossary = jigService.glossary(jigRepository);
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.Glossary;
+    }
 
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+        var glossary = jigService.glossary(jigRepository);
         var domainPackageRoots = jigService.coreDomainJigTypes(jigRepository).domainPackageRoots();
 
-        jigDocumentWriter.writeData("glossaryData", buildJson(glossary, domainPackageRoots));
-
-        return jigDocumentWriter.outputFilePaths();
+        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "glossaryData", buildJson(glossary, domainPackageRoots)));
     }
 
     public static String buildJson(Glossary glossary, List<String> domainPackageRoots) {

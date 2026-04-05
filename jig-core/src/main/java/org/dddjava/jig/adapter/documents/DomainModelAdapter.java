@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
@@ -9,7 +9,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
@@ -17,24 +16,29 @@ import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * ドメインモデル
  */
-@HandleDocument
-public class DomainModelAdapter {
+public class DomainModelAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public DomainModelAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public DomainModelAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.DomainModel)
-    public List<Path> invoke(JigRepository jigRepository, JigDocument jigDocument) {
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.DomainModel;
+    }
+
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
         var coreDomainJigTypes = jigService.coreDomainJigTypes(jigRepository);
         if (coreDomainJigTypes.empty()) {
             return List.of();
@@ -46,17 +50,17 @@ public class DomainModelAdapter {
 
         var json = buildJson(packageList, jigTypes, enumModels);
 
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-        jigDocumentWriter.writeData("domainData", json);
+        var paths = new ArrayList<Path>();
+        paths.add(JigDocumentWriter.writeData(outputDirectory, jigDocument, "domainData", json));
 
         var typeRelationships = jigService.typeRelationships(jigRepository);
         var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
                 .map(relation -> Json.object("from", relation.from().fqn())
                         .and("to", relation.to().fqn()))
                 .toList())).build();
-        jigDocumentWriter.writeData("typeRelationsData", typeRelationsJson, "type-relations-data");
+        paths.add(JigDocumentWriter.writeData(outputDirectory, "type-relations-data", "typeRelationsData", typeRelationsJson));
 
-        return jigDocumentWriter.outputFilePaths();
+        return paths;
     }
 
     public static String buildJson(List<JigPackageWithJigTypes> jigPackages,

@@ -1,13 +1,12 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
@@ -21,29 +20,29 @@ import java.util.List;
 /**
  * 入力インタフェース
  */
-@HandleDocument
-public class InboundInterfaceAdapter {
+public class InboundInterfaceAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public InboundInterfaceAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public InboundInterfaceAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.InboundInterface)
-    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
-        var contextJigTypes = jigService.jigTypes(repository);
-        var inputAdapters = jigService.inputAdapters(repository);
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.InboundInterface;
+    }
+
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+        var contextJigTypes = jigService.jigTypes(jigRepository);
+        var inputAdapters = jigService.inputAdapters(jigRepository);
 
         var json = buildJson(inputAdapters, contextJigTypes);
 
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-
-        jigDocumentWriter.writeData("inboundData", json);
-
-        return jigDocumentWriter.outputFilePaths();
+        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "inboundData", json));
     }
 
     public static String buildJson(InputAdapters inputAdapters, JigTypes jigTypes) {

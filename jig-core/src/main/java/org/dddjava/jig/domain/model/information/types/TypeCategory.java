@@ -42,8 +42,7 @@ public enum TypeCategory {
         }
         if (jigType.hasAnnotation(SpringAnnotations.CONTROLLER)
                 || jigType.hasAnnotation(SpringAnnotations.REST_CONTROLLER)
-                || jigType.hasAnnotation(SpringAnnotations.CONTROLLER_ADVICE)
-                || jigType.hasAnnotation(JigAnnotations.HANDLE_DOCUMENT)) {
+                || jigType.hasAnnotation(SpringAnnotations.CONTROLLER_ADVICE)) {
             return InboundAdapter;
         }
         if (jigType.hasAnnotation(SpringAnnotations.REPOSITORY)

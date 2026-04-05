@@ -1,11 +1,10 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -19,27 +18,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@HandleDocument
-public class InsightAdapter {
+public class InsightAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public InsightAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public InsightAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.Insight)
-    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
-        Insights result = jigService.insights(repository);
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.Insight;
+    }
 
-        String insightJson = buildJson(result);
-
-        jigDocumentWriter.writeData("insightData", insightJson);
-
-        return jigDocumentWriter.outputFilePaths();
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+        Insights result = jigService.insights(jigRepository);
+        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "insightData", buildJson(result)));
     }
 
     public static String buildJson(Insights result) {

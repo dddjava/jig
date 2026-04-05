@@ -1,12 +1,11 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 
@@ -19,28 +18,25 @@ import java.util.List;
 /**
  * 出力インタフェース
  */
-@HandleDocument
-public class OutboundInterfaceAdapter {
+public class OutboundInterfaceAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public OutboundInterfaceAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public OutboundInterfaceAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.OutboundInterface)
-    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
-        var outboundAdapters = jigService.outboundAdapters(repository);
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.OutboundInterface;
+    }
 
-        var json = buildJson(outboundAdapters);
-
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-
-        jigDocumentWriter.writeData("outboundData", json);
-
-        return jigDocumentWriter.outputFilePaths();
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+        var outboundAdapters = jigService.outboundAdapters(jigRepository);
+        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "outboundData", buildJson(outboundAdapters)));
     }
 
     public static String buildJson(OutboundAdapters outboundAdapters) {

@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.documents;
 
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.JigDocumentWriter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
@@ -8,7 +8,6 @@ import org.dddjava.jig.adapter.json.JsonSupport;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -21,28 +20,25 @@ import java.util.stream.Stream;
 /**
  * ユースケース
  */
-@HandleDocument
-public class UsecaseModelAdapter {
+public class UsecaseModelAdapter implements JigDocumentAdapter {
 
     private final JigService jigService;
-    private final JigDocumentContext jigDocumentContext;
+    private final Path outputDirectory;
 
-    public UsecaseModelAdapter(JigService jigService, JigDocumentContext jigDocumentContext) {
+    public UsecaseModelAdapter(JigService jigService, Path outputDirectory) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
+        this.outputDirectory = outputDirectory;
     }
 
-    @HandleDocument(JigDocument.UsecaseModel)
-    public List<Path> invoke(JigRepository repository, JigDocument jigDocument) {
-        var contextJigTypes = jigService.serviceTypes(repository);
+    @Override
+    public JigDocument supportedDocument() {
+        return JigDocument.UsecaseModel;
+    }
 
-        var json = buildJson(contextJigTypes);
-
-        var jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
-
-        jigDocumentWriter.writeData("usecaseData", json);
-
-        return jigDocumentWriter.outputFilePaths();
+    @Override
+    public List<Path> write(JigDocument jigDocument, JigRepository jigRepository) {
+        var contextJigTypes = jigService.serviceTypes(jigRepository);
+        return List.of(JigDocumentWriter.writeData(outputDirectory, jigDocument, "usecaseData", buildJson(contextJigTypes)));
     }
 
     public static String buildJson(JigTypes contextJigTypes) {

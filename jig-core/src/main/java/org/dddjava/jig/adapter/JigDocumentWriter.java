@@ -7,32 +7,32 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JigDocumentWriter {
 
-    JigDocument jigDocument;
-    Path outputDirectory;
-    List<Path> writtenDocuments = new ArrayList<>();
-
-    public JigDocumentWriter(JigDocument jigDocument, Path outputDirectory) {
-        this.jigDocument = jigDocument;
-        this.outputDirectory = outputDirectory;
-    }
-
-    public List<Path> outputFilePaths() {
-        return writtenDocuments;
-    }
-
-    public void writeHtml() {
+    public static Path writeHtml(JigDocument jigDocument, Path outputDirectory) {
         String fileName = jigDocument.fileName();
         Path outputFilePath = outputDirectory.resolve(fileName + ".html");
         copyResourceTo("templates/" + fileName + ".html", outputFilePath);
-        writtenDocuments.add(outputFilePath);
+        return outputFilePath;
     }
 
-    static void copyResourceTo(String resourcePath, Path outputPath) {
+    public static Path writeData(Path outputDirectory, JigDocument jigDocument, String variableName, String json) {
+        return writeData(outputDirectory, jigDocument.fileName() + "-data", variableName, json);
+    }
+
+    public static Path writeData(Path outputDirectory, String fileName, String variableName, String json) {
+        Path outputFilePath = outputDirectory.resolve("data/" + fileName + ".js");
+        try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
+             OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+            writer.write("globalThis." + variableName + " = " + json);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return outputFilePath;
+    }
+
+    public static void copyResourceTo(String resourcePath, Path outputPath) {
         try (InputStream is = getResourceAsStream(resourcePath)) {
             Files.createDirectories(outputPath.getParent());
             Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);
@@ -41,7 +41,7 @@ public class JigDocumentWriter {
         }
     }
 
-    private static InputStream getResourceAsStream(String absolutePath) {
+    public static InputStream getResourceAsStream(String absolutePath) {
         var clz = JigDocumentWriter.class;
         // Classから探す
         var resource = clz.getResourceAsStream("/" + absolutePath);
@@ -68,25 +68,5 @@ public class JigDocumentWriter {
         // 見つからなければ例外
         throw new IllegalStateException(absolutePath + " not found." +
                 " This may be because the resource is not in the classpath or the module is not configured to allow resource access.");
-    }
-
-    public void writeData(String variableName, String json) {
-        String fileName = jigDocument.fileName();
-        writeString(variableName, json, fileName + "-data");
-    }
-
-    public void writeData(String variableName, String json, String fileName) {
-        writeString(variableName, json, fileName);
-    }
-
-    private void writeString(String variableName, String value, String fileName) {
-        Path outputFilePath = outputDirectory.resolve("data/" + fileName + ".js");
-        try (OutputStream outputStream = Files.newOutputStream(outputFilePath);
-             OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
-            writer.write("globalThis." + variableName + " = " + value);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        writtenDocuments.add(outputFilePath);
     }
 }

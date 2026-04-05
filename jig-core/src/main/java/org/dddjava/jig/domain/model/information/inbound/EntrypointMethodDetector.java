@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.information.inbound;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
-import org.dddjava.jig.domain.model.information.types.JigAnnotations;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.SpringAnnotations;
 import org.slf4j.Logger;
@@ -36,11 +35,7 @@ class EntrypointMethodDetector {
                                 SpringAnnotations.PATCH_MAPPING)),
                 new EntrypointAnnotation(EntrypointType.QUEUE_LISTENER,
                         List.of(SpringAnnotations.COMPONENT),
-                        List.of(SpringAnnotations.RABBIT_LISTENER)),
-                // TODO カスタムアノテーション対応 https://github.com/dddjava/jig/issues/343
-                new EntrypointAnnotation(EntrypointType.OTHER,
-                        List.of(JigAnnotations.HANDLE_DOCUMENT),
-                        List.of(JigAnnotations.HANDLE_DOCUMENT))
+                        List.of(SpringAnnotations.RABBIT_LISTENER))
         );
     }
 

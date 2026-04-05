@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -34,22 +33,23 @@ public class JigDocumentGenerator {
 
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
-
-    private final CompositeAdapter compositeAdapter;
+    private final List<JigDocumentAdapter> adapters;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
+        Path outputDir = jigDocumentContext.outputDirectory();
 
-        compositeAdapter = new CompositeAdapter();
-        compositeAdapter.register(new DomainModelAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new InsightAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new OutboundInterfaceAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new InboundInterfaceAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new UsecaseModelAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new ListOutputAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new GlossaryAdapter(jigService, jigDocumentContext));
-        compositeAdapter.register(new PackageRelationAdapter(jigService, jigDocumentContext));
+        this.adapters = List.of(
+                new DomainModelAdapter(jigService, outputDir),
+                new InsightAdapter(jigService, outputDir),
+                new OutboundInterfaceAdapter(jigService, outputDir),
+                new InboundInterfaceAdapter(jigService, outputDir),
+                new UsecaseModelAdapter(jigService, outputDir),
+                new ListOutputAdapter(jigService, outputDir),
+                new GlossaryAdapter(jigService, outputDir),
+                new PackageRelationAdapter(jigService, outputDir)
+        );
     }
 
     public JigResult generate(JigRepository jigRepository) {
@@ -102,18 +102,17 @@ public class JigDocumentGenerator {
                 long startTime = System.currentTimeMillis();
 
                 // HTMLコピー（Adapter固有の処理ではないため、Generator側で一元管理）
-                var htmlWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-                htmlWriter.writeHtml();
+                Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
 
-                var outputFilePaths = switch (jigDocument) {
-                    case DomainModel, UsecaseModel, InboundInterface,
-                         ListOutput,
-                         OutboundInterface, Insight, Glossary, PackageRelation -> compositeAdapter.invoke(jigDocument, jigRepository);
-                };
+                var outputFilePaths = adapters.stream()
+                        .filter(adapter -> adapter.supportedDocument() == jigDocument)
+                        .findFirst()
+                        .map(adapter -> adapter.write(jigDocument, jigRepository))
+                        .orElse(List.of());
 
                 // HTMLのパス + データファイルのパスを結合
                 var allPaths = Stream.concat(
-                        htmlWriter.outputFilePaths().stream(),
+                        Stream.of(htmlPath),
                         outputFilePaths.stream()
                 ).toList();
 
@@ -129,12 +128,9 @@ public class JigDocumentGenerator {
     }
 
     private void generateDebugHtml() {
-        Path outputPath = outputDirectory.resolve("debug.html");
-        try (var resource = JigDocumentGenerator.class.getResourceAsStream("/templates/debug.html")) {
-            if (resource != null) {
-                Files.copy(resource, outputPath, StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (IOException e) {
+        try {
+            JigDocumentWriter.copyResourceTo("templates/debug.html", outputDirectory.resolve("debug.html"));
+        } catch (Exception e) {
             logger.warn("debug.html の出力に失敗しました", e);
         }
     }

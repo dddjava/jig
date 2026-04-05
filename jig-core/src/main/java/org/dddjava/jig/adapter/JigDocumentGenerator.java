@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 public class JigDocumentGenerator {
 
@@ -91,36 +90,27 @@ public class JigDocumentGenerator {
     }
 
     private List<HandleResult> generateDocuments(JigRepository jigRepository) {
-        return jigDocuments
-                .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, jigRepository))
+        writeDataFiles(jigRepository);
+        return jigDocuments.stream()
+                .map(this::generateDocument)
                 .toList();
     }
 
-    private HandleResult generateDocument(JigDocument jigDocument, JigRepository jigRepository) {
+    private void writeDataFiles(JigRepository jigRepository) {
+        jigDocuments.stream()
+                .flatMap(doc -> adaptersMap.getOrDefault(doc, List.of()).stream())
+                .distinct()
+                .forEach(adapter -> JigDocumentWriter.writeData(
+                        outputDirectory, adapter.dataFileName(), adapter.variableName(), adapter.buildJson(jigRepository)));
+    }
+
+    private HandleResult generateDocument(JigDocument jigDocument) {
         return Objects.requireNonNull(Metrics.timer("jig.document.time", "phase", jigDocument.name()).record(() -> {
             try {
                 long startTime = System.currentTimeMillis();
-
-                // HTMLコピー（Adapter固有の処理ではないため、Generator側で一元管理）
                 Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
-
-                // JSONデータ生成とファイル書き出し
-                var outputFilePaths = adaptersMap.getOrDefault(jigDocument, List.of())
-                        .stream()
-                        .map(adapter -> JigDocumentWriter.writeData(
-                                outputDirectory, adapter.dataFileName(), adapter.variableName(), adapter.buildJson(jigRepository)))
-                        .toList();
-
-                // HTMLのパス + データファイルのパスを結合
-                var allPaths = Stream.concat(
-                        Stream.of(htmlPath),
-                        outputFilePaths.stream()
-                ).toList();
-
-                long takenTime = System.currentTimeMillis() - startTime;
-                logger.info("[{}] completed: {} ms", jigDocument, takenTime);
-                return HandleResult.withOutput(jigDocument, allPaths);
+                logger.info("[{}] completed: {} ms", jigDocument, System.currentTimeMillis() - startTime);
+                return HandleResult.withOutput(jigDocument, List.of(htmlPath));
             } catch (Exception e) {
                 // ドキュメント出力に失敗しても例外を伝播させない
                 logger.warn("[{}] failed to write document.", jigDocument, e);

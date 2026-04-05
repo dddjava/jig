@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const {DocumentStub, EventStub, setGlossaryData} = require('./dom-stub.js');
 
 // モジュールを事前にロード
+require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
@@ -10,6 +11,7 @@ const UsecaseApp = require('../../main/resources/templates/assets/usecase.js');
 
 // ネストしたdescribeブロック内での require() 呼び出しに使用
 // （キャッシュされたモジュールが返されるため、require.cache削除は不要）
+const jigUtilJsPath = '../../main/resources/templates/assets/jig-util.js';
 const jigCommonJsPath = '../../main/resources/templates/assets/jig-glossary.js';
 const jigMermaidDiagramJsPath = '../../main/resources/templates/assets/jig-mermaid.js';
 const jigJsPath = '../../main/resources/templates/assets/jig-dom.js';

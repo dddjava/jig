@@ -32,6 +32,11 @@ class JigDocumentGeneratorAssetsTest {
         Path copiedAssetsDirectory = jigDocumentContext.outputDirectory().resolve("assets");
         Set<String> copied = collectRelativeFilePaths(copiedAssetsDirectory);
         Set<String> expected = collectTemplateAssetsRelativePaths();
+        // バンドル元のファイルはコピー対象外（jig-bundle.js に集約されるため）
+        expected.remove("jig-dom.js");
+        expected.remove("jig-glossary.js");
+        expected.remove("jig-util.js");
+        expected.remove("jig-mermaid.js");
 
         assertEquals(expected, copied);
     }

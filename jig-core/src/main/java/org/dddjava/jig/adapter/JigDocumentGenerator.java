@@ -118,7 +118,7 @@ public class JigDocumentGenerator {
                 "favicon.ico",
                 "index.js",
                 "style.css",
-                "jig-dom.js", "jig-glossary.js", "jig-mermaid.js",
+                "jig-bundle.js",
                 // typesは開発用なので不要
                 // "types.js",
 

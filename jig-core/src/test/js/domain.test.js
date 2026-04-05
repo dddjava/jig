@@ -8,6 +8,7 @@ global.window = global.window || {
     }
 };
 global.document = new DocumentStub();
+require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');

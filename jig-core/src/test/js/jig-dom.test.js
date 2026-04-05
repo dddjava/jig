@@ -7,6 +7,7 @@ test.describe('jig-dom.js', () => {
 
     test.beforeEach(() => {
         // 前のテストの require キャッシュをクリア
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
@@ -38,6 +39,7 @@ test.describe('jig-dom.js', () => {
         delete globalThis.Jig;
 
         // jig-glossary.js の Jig オブジェクト初期化
+        require('../../main/resources/templates/assets/jig-util.js');
         require('../../main/resources/templates/assets/jig-glossary.js');
         require('../../main/resources/templates/assets/jig-dom.js');
 
@@ -536,7 +538,8 @@ test.describe('jig-dom.js', () => {
     test.describe('initCommonUi - setupDocumentHelp', () => {
         test('#jig-document-description が存在するとヘルプボタンが生成される', () => {
             // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
             const dom = new JSDOM(`
@@ -556,7 +559,8 @@ test.describe('jig-dom.js', () => {
             global.location = dom.window.location;
             delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-glossary.js');
             require('../../main/resources/templates/assets/jig-dom.js');
 
             global.Jig.dom.initCommonUi();
@@ -568,7 +572,8 @@ test.describe('jig-dom.js', () => {
 
         test('#jig-document-description が空の場合、ヘルプボタンは生成されない', () => {
             // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
             const dom = new JSDOM(`
@@ -588,7 +593,8 @@ test.describe('jig-dom.js', () => {
             global.location = dom.window.location;
             delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-glossary.js');
             require('../../main/resources/templates/assets/jig-dom.js');
 
             global.Jig.dom.initCommonUi();
@@ -601,7 +607,8 @@ test.describe('jig-dom.js', () => {
     test.describe('initCommonUi - setupHeaderNavigation', () => {
         test('navigationData.links からナビゲーションドロップダウンを生成', () => {
             // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
             const dom = new JSDOM(`
@@ -627,7 +634,8 @@ test.describe('jig-dom.js', () => {
             };
             delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-glossary.js');
             require('../../main/resources/templates/assets/jig-dom.js');
 
             global.Jig.dom.initCommonUi();
@@ -641,7 +649,8 @@ test.describe('jig-dom.js', () => {
 
         test('body.index クラスがある場合、ナビは生成されない', () => {
             // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
             const dom = new JSDOM(`
@@ -663,7 +672,8 @@ test.describe('jig-dom.js', () => {
             };
             delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-glossary.js');
             require('../../main/resources/templates/assets/jig-dom.js');
 
             global.Jig.dom.initCommonUi();
@@ -674,7 +684,8 @@ test.describe('jig-dom.js', () => {
 
         test('navigationData がない場合、ナビは生成されない', () => {
             // require キャッシュをクリア
-            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
+            delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
             delete require.cache[require.resolve('../../main/resources/templates/assets/jig-dom.js')];
 
             const dom = new JSDOM(`
@@ -694,7 +705,8 @@ test.describe('jig-dom.js', () => {
             global.navigationData = undefined;
             delete globalThis.Jig;
 
-            require('../../main/resources/templates/assets/jig-glossary.js');
+            require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-glossary.js');
             require('../../main/resources/templates/assets/jig-dom.js');
 
             global.Jig.dom.initCommonUi();

@@ -84,4 +84,33 @@ dependencies {
     testImplementation("jakarta.validation:jakarta.validation-api:3.1.1")
 }
 
+def bundleJsOutputDir = layout.buildDirectory.dir("generated/resources/bundle")
+def bundleJsTask = tasks.register("bundleJs") {
+    def inputFiles = files(
+            'src/main/resources/templates/assets/jig-util.js',
+            'src/main/resources/templates/assets/jig-glossary.js',
+            'src/main/resources/templates/assets/jig-dom.js',
+            'src/main/resources/templates/assets/jig-mermaid.js'
+    )
+    def outputFile = bundleJsOutputDir.map { it.file("templates/assets/jig-bundle.js") }
+
+    inputs.files(inputFiles)
+    outputs.file(outputFile)
+
+    doLast {
+        def file = outputFile.get().asFile
+        file.parentFile.mkdirs()
+        file.withWriter('UTF-8') { writer ->
+            inputFiles.each { inputFile ->
+                writer.write("// Source: ${inputFile.name}\n")
+                writer.write(inputFile.getText('UTF-8'))
+                writer.write('\n')
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir(bundleJsOutputDir)
+processResources.dependsOn(bundleJsTask)
+
 build.dependsOn(publishToMavenLocal)

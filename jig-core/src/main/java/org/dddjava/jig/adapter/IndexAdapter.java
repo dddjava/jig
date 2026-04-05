@@ -85,9 +85,7 @@ public class IndexAdapter {
         html.append("\n");
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js\"></script>\n");
         html.append("    <script src=\"https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js\"></script>\n");
-        html.append("    <script src=\"./assets/jig-dom.js\"></script>\n");
-        html.append("    <script src=\"./assets/jig-glossary.js\"></script>\n");
-        html.append("    <script src=\"./assets/jig-mermaid.js\"></script>\n");
+        html.append("    <script src=\"./assets/jig-bundle.js\"></script>\n");
         html.append("    <script src=\"./data/navigation-data.js\"></script>\n");
         html.append("    <script src=\"./data/package-data.js\"></script>\n");
         html.append("    <script src=\"./data/glossary-data.js\"></script>\n");

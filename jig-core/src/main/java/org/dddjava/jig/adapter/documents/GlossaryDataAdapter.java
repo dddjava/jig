@@ -37,7 +37,7 @@ public class GlossaryDataAdapter implements JigDocumentAdapter {
         return buildGlossaryJson(glossary, domainPackageRoots);
     }
 
-    static String buildGlossaryJson(Glossary glossary, List<String> domainPackageRoots) {
+    public static String buildGlossaryJson(Glossary glossary, List<String> domainPackageRoots) {
         var map = new LinkedHashMap<String, String>();
         for (var term : glossary.list()) {
             var value = Json.object("title", term.title())

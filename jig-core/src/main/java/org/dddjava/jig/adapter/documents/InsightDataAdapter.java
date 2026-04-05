@@ -39,7 +39,7 @@ public class InsightDataAdapter implements JigDocumentAdapter {
         return buildInsightJson(jigService.insights(jigRepository));
     }
 
-    static String buildInsightJson(Insights result) {
+    public static String buildInsightJson(Insights result) {
         String packagesJson = result.packageInsightList().stream()
                 .map(InsightDataAdapter::formatPackageJson)
                 .collect(Collectors.joining(",", "[", "]"));

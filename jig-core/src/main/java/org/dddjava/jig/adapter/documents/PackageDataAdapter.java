@@ -38,7 +38,7 @@ public class PackageDataAdapter implements JigDocumentAdapter {
         return buildPackageJson(jigPackages, packageRelations, domainPackageRoots);
     }
 
-    static String buildPackageJson(JigPackages jigPackages, PackageRelations packageRelations, List<String> domainPackageRoots) {
+    public static String buildPackageJson(JigPackages jigPackages, PackageRelations packageRelations, List<String> domainPackageRoots) {
         return Json.object("packages", Json.arrayObjects(jigPackages.listPackage().stream()
                         .map(packageInfo -> Json.object("fqn", packageInfo.fqn())
                                 .and("classCount", packageInfo.numberOfClasses()))

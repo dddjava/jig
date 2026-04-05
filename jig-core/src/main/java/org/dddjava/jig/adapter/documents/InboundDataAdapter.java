@@ -42,7 +42,7 @@ public class InboundDataAdapter implements JigDocumentAdapter {
         return buildInboundJson(inputAdapters, contextJigTypes);
     }
 
-    static String buildInboundJson(InputAdapters inputAdapters, JigTypes jigTypes) {
+    public static String buildInboundJson(InputAdapters inputAdapters, JigTypes jigTypes) {
         List<JsonObjectBuilder> controllerList = new ArrayList<>();
 
         MethodRelations springComponentMethodRelations = inputAdapters.methodRelations().filterApplicationComponent(jigTypes).inlineLambda();

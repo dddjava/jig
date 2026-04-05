@@ -38,7 +38,7 @@ public class OutboundDataAdapter implements JigDocumentAdapter {
         return buildOutboundJson(jigService.outboundAdapters(jigRepository));
     }
 
-    static String buildOutboundJson(OutboundAdapters outboundAdapters) {
+    public static String buildOutboundJson(OutboundAdapters outboundAdapters) {
         var portsMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var adaptersMap = new LinkedHashMap<String, JsonObjectBuilder>();
         var accessorTypesMap = new LinkedHashSet<String>();              // typeFqn

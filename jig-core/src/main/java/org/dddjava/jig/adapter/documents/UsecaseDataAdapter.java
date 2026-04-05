@@ -40,7 +40,7 @@ public class UsecaseDataAdapter implements JigDocumentAdapter {
         return buildUsecaseJson(jigService.serviceTypes(jigRepository));
     }
 
-    static String buildUsecaseJson(JigTypes contextJigTypes) {
+    public static String buildUsecaseJson(JigTypes contextJigTypes) {
         var usecaseList = contextJigTypes.stream()
                 .flatMap(jigType -> {
                     List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()

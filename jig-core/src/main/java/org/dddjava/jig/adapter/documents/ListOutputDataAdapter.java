@@ -65,7 +65,7 @@ public class ListOutputDataAdapter implements JigDocumentAdapter {
         return buildListJson(jigRepository, jigService);
     }
 
-    static String buildListJson(JigRepository repository, JigService jigService) {
+    public static String buildListJson(JigRepository repository, JigService jigService) {
         InputAdapters inputAdapters = jigService.inputAdapters(repository);
         ServiceAngles serviceAngles = jigService.serviceAngles(repository);
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(repository);

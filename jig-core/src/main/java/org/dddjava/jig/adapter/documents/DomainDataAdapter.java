@@ -48,7 +48,7 @@ public class DomainDataAdapter implements JigDocumentAdapter {
         return buildDomainJson(packageList, jigTypes, enumModels);
     }
 
-    static String buildDomainJson(List<JigPackageWithJigTypes> jigPackages,
+    public static String buildDomainJson(List<JigPackageWithJigTypes> jigPackages,
                                   JigTypes jigTypes,
                                   EnumModels enumModels) {
         List<JsonObjectBuilder> packages = jigPackages.stream()

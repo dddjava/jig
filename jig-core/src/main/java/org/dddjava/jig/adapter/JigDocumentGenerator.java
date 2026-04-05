@@ -28,7 +28,7 @@ public class JigDocumentGenerator {
 
     private static final List<String> ASSET_FILES = List.of(
             "domain.js", "favicon.ico", "glossary.js", "inbound.js", "index.js",
-            "insight.js", "jig-dom.js", "jig-glossary.js", "jig-util.js", "jig-mermaid.js",
+            "insight.js", "jig-bundle.js",
             "list-output.js", "outbound.js", "package.js", "style.css", "types.js", "usecase.js"
     );
 

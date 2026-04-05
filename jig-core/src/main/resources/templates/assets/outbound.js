@@ -231,11 +231,11 @@ const OutboundApp = (() => {
 
     // ===== Mermaid ダイアグラム生成 =====
 
-    function renderMermaid(mermaidCode, container) {
+    function renderMermaid(mermaidCode, container, options = {}) {
         if (!mermaidCode) return;
         if (!container) return;
         container.innerHTML = "";
-        Jig.mermaid.render.renderWithControls(container, mermaidCode);
+        Jig.mermaid.render.renderWithControls(container, mermaidCode, options);
     }
 
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
@@ -687,9 +687,9 @@ const OutboundApp = (() => {
 
             Jig.mermaid.diagram.createAndRegister(cardChildren, (container) => {
                 const currentVisibility = readVisibility();
-                const currentPortMermaidCode = generatePortMermaidCode(group, currentVisibility);
-                if (currentPortMermaidCode) {
-                    renderMermaid(currentPortMermaidCode, container);
+                const generator = (dir) => generatePortMermaidCode(group, {...currentVisibility, direction: dir});
+                if (generator(currentVisibility.direction)) {
+                    renderMermaid(generator, container, {direction: currentVisibility.direction});
                 }
             }, {className: "mermaid-diagram port-diagram"});
 
@@ -699,9 +699,12 @@ const OutboundApp = (() => {
                 const operationWithPort = {...operation, outboundPort: group.outboundPort};
                 Jig.mermaid.diagram.register(mermaidContainer, () => {
                     const currentVisibility = readVisibility();
-                    const currentOperationMermaidCode = generateOperationMermaidCode(operationWithPort, currentVisibility);
-                    if (currentOperationMermaidCode) {
-                        renderMermaid(currentOperationMermaidCode, mermaidContainer);
+                    const generator = (dir) => generateOperationMermaidCode(operationWithPort, {
+                        ...currentVisibility,
+                        direction: dir
+                    });
+                    if (generator(currentVisibility.direction)) {
+                        renderMermaid(generator, mermaidContainer, {direction: currentVisibility.direction});
                     }
                 });
 
@@ -764,9 +767,9 @@ const OutboundApp = (() => {
             const persistenceMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
             Jig.mermaid.diagram.register(persistenceMermaidContainer, () => {
                 const currentVisibility = readVisibility();
-                const currentPersistenceMermaidCode = generatePersistenceMermaidCode(group, currentVisibility);
-                if (currentPersistenceMermaidCode) {
-                    renderMermaid(currentPersistenceMermaidCode, persistenceMermaidContainer);
+                const generator = (dir) => generatePersistenceMermaidCode(group, {...currentVisibility, direction: dir});
+                if (generator(currentVisibility.direction)) {
+                    renderMermaid(generator, persistenceMermaidContainer, {direction: currentVisibility.direction});
                 }
             });
 
@@ -807,9 +810,9 @@ const OutboundApp = (() => {
             const externalMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
             Jig.mermaid.diagram.register(externalMermaidContainer, () => {
                 const currentVisibility = readVisibility();
-                const currentExternalMermaidCode = generateExternalTypeMermaidCode(group, currentVisibility);
-                if (currentExternalMermaidCode) {
-                    renderMermaid(currentExternalMermaidCode, externalMermaidContainer);
+                const generator = (dir) => generateExternalTypeMermaidCode(group, {...currentVisibility, direction: dir});
+                if (generator(currentVisibility.direction)) {
+                    renderMermaid(generator, externalMermaidContainer, {direction: currentVisibility.direction});
                 }
             });
 

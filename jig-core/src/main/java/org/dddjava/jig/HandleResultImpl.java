@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -23,15 +22,6 @@ public class HandleResultImpl implements HandleResult {
         this.jigDocument = jigDocument;
         this.outputFilePaths = outputFilePaths;
         this.failureMessage = null;
-    }
-
-    /**
-     * 失敗時のコンストラクタ
-     */
-    HandleResultImpl(JigDocument jigDocument, Exception e) {
-        this.jigDocument = jigDocument;
-        this.outputFilePaths = Collections.emptyList();
-        this.failureMessage = e.getMessage();
     }
 
     public boolean failure() {

@@ -9,9 +9,6 @@ import java.util.List;
  * JigDocumentごとの処理結果
  */
 public interface HandleResult {
-    static HandleResult withException(JigDocument jigDocument, Exception e) {
-        return new HandleResultImpl(jigDocument, e);
-    }
 
     static HandleResult withOutput(JigDocument jigDocument, List<Path> outputFilePaths) {
         return new HandleResultImpl(jigDocument, outputFilePaths);

@@ -227,7 +227,7 @@ test.describe('InboundApp', () => {
         assert.ok(mermaidCode.includes('classDef'), 'Theme classDefが含まれるべき');
     });
 
-    test('renderControllerList should handle empty data', () => {
+    test('renderMain should handle empty data', () => {
         globalThis.inboundData = {controllers: []};
         InboundApp.init();
 

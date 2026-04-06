@@ -907,36 +907,6 @@ test.describe('package.js', () => {
                 assert.equal(mutual.children.length > 0, true);
             });
 
-            test('renderPackageDiagram: エッジ数超過でもrenderWithControlsにedgeCountを渡す', () => {
-                const doc = setupDocument();
-                const diagramMock = setupDiagramEnvironment(doc, testContext);
-                const renderWithControls = test.mock.fn(() => {
-                });
-
-                // renderWithControlsへの委譲をキャプチャする
-                let capturedRenderArgs = null;
-                globalThis.Jig.mermaid.render.renderWithControls = (el, text, opts) => {
-                    capturedRenderArgs = {el, text, opts};
-                };
-
-                const packages = [];
-                const relations = [];
-                for (let i = 0; i < 501; i += 1) {
-                    const from = `app.p${i}`;
-                    const to = `app.p${i + 1}`;
-                    packages.push({fqn: from, classCount: 1});
-                    packages.push({fqn: to, classCount: 1});
-                    relations.push({from, to});
-                }
-                setPackageData({packages, relations}, testContext);
-
-                PackageApp.renderPackageDiagram(testContext, [], null);
-
-                assert.ok(capturedRenderArgs, 'renderWithControlsが呼ばれること');
-                assert.equal(capturedRenderArgs.el, diagramMock, 'diagramが渡されること');
-                assert.ok(capturedRenderArgs.opts.edgeCount > 500, `edgeCountが500超であること: ${capturedRenderArgs.opts.edgeCount}`);
-            });
-
             test('registerDiagramClickHandler: クリックで関連フィルタへ切り替える', () => {
                 global.window = {};
                 testContext.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);

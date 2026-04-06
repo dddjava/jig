@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * 用語集（glossary-data.js）
+ * ほぼ全てのドキュメントで使用
  */
 public class GlossaryDataAdapter implements JigDocumentAdapter {
 

@@ -32,15 +32,16 @@ public class JigDocumentGenerator {
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
         var typeRelationsDataAdapter = new TypeRelationsDataAdapter(jigService);
+        var glossaryDataAdapter = new GlossaryDataAdapter(jigService);
         this.adaptersMap = Map.of(
-                JigDocument.DomainModel, List.of(new DomainDataAdapter(jigService), typeRelationsDataAdapter),
-                JigDocument.PackageRelation, List.of(new PackageDataAdapter(jigService), typeRelationsDataAdapter),
-                JigDocument.Glossary, List.of(new GlossaryDataAdapter(jigService)),
+                JigDocument.DomainModel, List.of(new DomainDataAdapter(jigService), typeRelationsDataAdapter, glossaryDataAdapter),
+                JigDocument.PackageRelation, List.of(new PackageDataAdapter(jigService), typeRelationsDataAdapter, glossaryDataAdapter),
+                JigDocument.Glossary, List.of(glossaryDataAdapter),
                 JigDocument.Insight, List.of(new InsightDataAdapter(jigService)),
-                JigDocument.InboundInterface, List.of(new InboundDataAdapter(jigService)),
-                JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService)),
-                JigDocument.UsecaseModel, List.of(new UsecaseDataAdapter(jigService)),
-                JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService))
+                JigDocument.InboundInterface, List.of(new InboundDataAdapter(jigService), glossaryDataAdapter),
+                JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService), glossaryDataAdapter),
+                JigDocument.UsecaseModel, List.of(new UsecaseDataAdapter(jigService), glossaryDataAdapter),
+                JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService), glossaryDataAdapter)
         );
     }
 

@@ -112,5 +112,6 @@ def bundleJsTask = tasks.register("bundleJs") {
 
 sourceSets.main.resources.srcDir(bundleJsOutputDir)
 processResources.dependsOn(bundleJsTask)
+sourcesJar.dependsOn(bundleJsTask)
 
 build.dependsOn(publishToMavenLocal)

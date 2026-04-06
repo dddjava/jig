@@ -9,12 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemAlreadyExistsException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +27,8 @@ class JigDocumentGeneratorAssetsTest {
         Path copiedAssetsDirectory = jigDocumentContext.outputDirectory().resolve("assets");
         Set<String> copied = collectRelativeFilePaths(copiedAssetsDirectory);
         Set<String> expected = collectTemplateAssetsRelativePaths();
+        // 型定義はコピーしない
+        expected.remove("types.js");
         // バンドル元のファイルはコピー対象外（jig-bundle.js に集約されるため）
         expected.remove("jig-dom.js");
         expected.remove("jig-glossary.js");

@@ -66,7 +66,7 @@ const DomainApp = (() => {
         }
 
         const summaryLink = Jig.dom.createElement("a", {
-            attributes: {href: "#" + Jig.fqnToId("domain", currentPkg.fqn)},
+            attributes: {href: "#" + Jig.util.fqnToId("domain", currentPkg.fqn)},
             textContent: mergedNames.join("/")
         });
         const details = Jig.dom.createElement("details", {
@@ -92,7 +92,7 @@ const DomainApp = (() => {
         currentPkg.types.forEach(child => {
             const domainType = getDomainData()._typesMap?.get(child.fqn);
             const link = Jig.dom.createElement("a", {
-                attributes: {href: "#" + Jig.fqnToId("domain", child.fqn)},
+                attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                 className: domainType?.isDeprecated ? "deprecated" : "",
                 textContent: Jig.glossary.getTypeTerm(child.fqn).title
             });
@@ -126,7 +126,7 @@ const DomainApp = (() => {
             packageFqns, directRelations,
             {
                 diagramDirection: direction,
-                nodeClickUrlCallback: (fqn) => "#" + Jig.fqnToId("domain", fqn),
+                nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
                 focusedPackageFqn: pkg.fqn,
             }
         );
@@ -147,7 +147,7 @@ const DomainApp = (() => {
             {
                 transitiveReductionEnabled: domainSettings.transitiveReductionEnabled,
                 diagramDirection: direction,
-                nodeClickUrlCallback: (fqn) => "#" + Jig.fqnToId("domain", fqn),
+                nodeClickUrlCallback: (fqn) => "#" + Jig.util.fqnToId("domain", fqn),
             }
         );
     }
@@ -239,8 +239,8 @@ const DomainApp = (() => {
             involvedFqns.add(r.to);
         });
 
-        const fqnToMermaidId = (fqn) => Jig.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.fqnToId("domain", fqn);
+        const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
+        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
         function packageOf(fqn) {
             const idx = fqn.lastIndexOf('.');
@@ -270,7 +270,7 @@ const DomainApp = (() => {
         const builder = new Jig.mermaid.Builder();
         byPackage.forEach((fqns, pkgFqn) => {
             if (pkgFqn) {
-                const sg = builder.startSubgraph(Jig.fqnToId("sg", pkgFqn), Jig.glossary.getTypeTerm(pkgFqn).title);
+                const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkgFqn), Jig.glossary.getTypeTerm(pkgFqn).title);
                 fqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
             } else {
                 fqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
@@ -297,8 +297,8 @@ const DomainApp = (() => {
         showExternalIncoming = true,
         direction = domainSettings.diagramDirection
     } = {}) {
-        const fqnToMermaidId = (fqn) => Jig.fqnToId("n", fqn);
-        const fqnToHtmlId = (fqn) => Jig.fqnToId("domain", fqn);
+        const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
+        const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
         const typesMap = getDomainData()._typesMap;
         const relations = (globalThis.typeRelationsData?.relations || [])
@@ -371,7 +371,7 @@ const DomainApp = (() => {
         });
 
         const builder = new Jig.mermaid.Builder();
-        const sg = builder.startSubgraph(Jig.fqnToId("sg", pkg.fqn), Jig.glossary.getTypeTerm(pkg.fqn).title, direction);
+        const sg = builder.startSubgraph(Jig.util.fqnToId("sg", pkg.fqn), Jig.glossary.getTypeTerm(pkg.fqn).title, direction);
         internalFqns.forEach(fqn => builder.addNodeToSubgraph(sg, fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title));
         externalPkgFqns.forEach(fqn => builder.addNode(fqnToMermaidId(fqn), Jig.glossary.getTypeTerm(fqn).title, 'package'));
         [...internalFqns, ...externalPkgFqns].forEach(fqn =>
@@ -441,7 +441,7 @@ const DomainApp = (() => {
                 // 型の場合は createTypeLink を使用して deprecated 処理を統一
                 const link = child.isPackage
                     ? Jig.dom.createElement("a", {
-                        attributes: {href: "#" + Jig.fqnToId("domain", child.fqn)},
+                        attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                         textContent: child.title
                     })
                     : Jig.dom.type.elementForRef({fqn: child.fqn});
@@ -560,7 +560,7 @@ const DomainApp = (() => {
         packages.forEach(pkg => {
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: Jig.fqnToId("domain", pkg.fqn),
+                id: Jig.util.fqnToId("domain", pkg.fqn),
                 attributes: {"data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false"},
                 children: [
                     Jig.dom.createElement("h3", {
@@ -687,7 +687,7 @@ const DomainApp = (() => {
             if (packageFqn) {
                 fqnDiv.appendChild(Jig.dom.createElement("a", {
                     textContent: packageFqn,
-                    attributes: {href: "#" + Jig.fqnToId("domain", packageFqn)}
+                    attributes: {href: "#" + Jig.util.fqnToId("domain", packageFqn)}
                 }));
                 fqnDiv.appendChild(document.createTextNode("." + type.fqn.substring(lastDot + 1)));
             } else {
@@ -696,7 +696,7 @@ const DomainApp = (() => {
 
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: Jig.fqnToId("domain", type.fqn),
+                id: Jig.util.fqnToId("domain", type.fqn),
                 attributes: {"data-has-enum": type.enumInfo ? "true" : "false"},
                 children: [
                     Jig.dom.createElement("h3", {children: [Jig.dom.kind.badgeElement("クラス"), titleSpan]}),
@@ -984,7 +984,7 @@ const DomainApp = (() => {
             const domainType = getDomainData()?._typesMap?.get(fqn);
             if (domainType) {
                 return {
-                    href: '#' + Jig.fqnToId("domain", fqn),
+                    href: '#' + Jig.util.fqnToId("domain", fqn),
                     className: domainType.isDeprecated ? 'deprecated' : undefined
                 };
             }

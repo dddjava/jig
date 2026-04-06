@@ -7,9 +7,9 @@ const UsecaseApp = (() => {
         handlerFqns: null        // ハンドラのみ表示時のFQN集合、nullはすべて表示
     };
 
-    const fqnToNodeId = (fqn) => Jig.fqnToId("node", fqn);    // Mermaid内部ノード
-    const fqnToTypeId = (fqn) => Jig.fqnToId("type", fqn);    // usecaseクラスのHTML id
-    const fqnToMethodId = (fqn) => Jig.fqnToId("method", fqn); // usecaseメソッドのHTML id
+    const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
+    const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
+    const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
 
     /**
      * @return {UsecaseData}
@@ -622,12 +622,12 @@ const UsecaseApp = (() => {
                             const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "inbound");
-                            builder.addClick(nodeId, "./inbound.html#" + Jig.fqnToId("adapter", node.fqn));
+                            builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
                         } else if (node.kind === "domain-type") {
                             const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "domain");
-                            builder.addClick(nodeId, "./domain.html#" + Jig.fqnToId("domain", node.fqn));
+                            builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                         } else {
                             const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                             if (node.kind === "usecase") {
@@ -776,18 +776,18 @@ const UsecaseApp = (() => {
                                     builder.addNode(nodeId, nodeLabel, 'class');
                                     if (node.kind === "inbound-class") {
                                         builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + Jig.fqnToId("adapter", node.fqn));
+                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
                                     } else if (node.kind === "outbound") {
                                         builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + Jig.fqnToId("port", node.fqn));
+                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", node.fqn));
                                     } else if (node.kind === "domain-type") {
                                         builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, "./domain.html#" + Jig.fqnToId("domain", node.fqn));
+                                        builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                                     }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);
-                                    const classNodeId = Jig.fqnToId("sg", classFqn);
+                                    const classNodeId = Jig.util.fqnToId("sg", classFqn);
                                     const classLabel = Jig.glossary.getTypeTerm(classFqn).title;
                                     const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel, 'LR');
                                     if (node.kind === "usecase") {
@@ -940,7 +940,7 @@ const UsecaseApp = (() => {
                 const domainType = domainData._typesMap.get(fqn);
                 if (domainType) {
                     return {
-                        href: 'domain.html#' + Jig.fqnToId("domain", fqn),
+                        href: 'domain.html#' + Jig.util.fqnToId("domain", fqn),
                         className: domainType.isDeprecated ? 'deprecated' : undefined
                     };
                 }

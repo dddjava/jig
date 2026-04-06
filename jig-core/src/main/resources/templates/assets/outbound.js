@@ -241,7 +241,7 @@ const OutboundApp = (() => {
     function addPortNode(builder, portSubgraphs, portFqn, portLabel, portOpFqn, portOpName, visibility) {
         if (!visibility.port) return null;
         if (visibility.operation) {
-            const portOpId = Jig.fqnToId("portOp", portOpFqn);
+            const portOpId = Jig.util.fqnToId("portOp", portOpFqn);
             builder.addNodeToSubgraph(
                 builder.ensureSubgraph(portSubgraphs, portFqn, portLabel),
                 portOpId, portOpName, 'method'
@@ -249,7 +249,7 @@ const OutboundApp = (() => {
             builder.addClass(portOpId, "outbound");
             return portOpId;
         } else {
-            const portNodeId = Jig.fqnToId("port", portFqn);
+            const portNodeId = Jig.util.fqnToId("port", portFqn);
             builder.addNode(portNodeId, portLabel, 'class');
             builder.addClass(portNodeId, "outbound");
             return portNodeId;
@@ -261,12 +261,12 @@ const OutboundApp = (() => {
 
         if (visibility.execution) {
             const sg = builder.ensureSubgraph(adapterSubgraphs, adapterFqn, adapterLabel);
-            const executionId = Jig.fqnToId("exec", executionFqn);
+            const executionId = Jig.util.fqnToId("exec", executionFqn);
             builder.addNodeToSubgraph(sg, executionId, executionName, 'method');
             if (sourceNodeId) builder.addEdge(sourceNodeId, executionId);
             return executionId;
         } else {
-            const adapterNodeId = Jig.fqnToId("adapter", adapterFqn);
+            const adapterNodeId = Jig.util.fqnToId("adapter", adapterFqn);
             builder.addNode(adapterNodeId, adapterLabel, 'class');
             if (sourceNodeId) builder.addEdge(sourceNodeId, adapterNodeId);
             return adapterNodeId;
@@ -279,12 +279,12 @@ const OutboundApp = (() => {
 
         const groupLabel = Jig.glossary.getTypeTerm(groupId).title;
         if (visibility.accessorMethod) {
-            const opNodeId = Jig.fqnToId("op", op.id);
+            const opNodeId = Jig.util.fqnToId("op", op.id);
             builder.addNodeToSubgraph(builder.ensureSubgraph(accessorSubgraphs, groupId, groupLabel), opNodeId, op.id.split('.').pop(), 'method');
             if (sourceNodeId) builder.addEdge(sourceNodeId, opNodeId);
             return opNodeId;
         } else {
-            const accessorNodeId = Jig.fqnToId("accessor", groupId);
+            const accessorNodeId = Jig.util.fqnToId("accessor", groupId);
             if (!accessorNodes.has(groupId)) {
                 accessorNodes.set(groupId, accessorNodeId);
                 builder.addNode(accessorNodeId, groupLabel, 'class');
@@ -335,7 +335,7 @@ const OutboundApp = (() => {
             // 外部アクセッサをsubgraphにして各メソッドをノードに
             const sg = builder.ensureSubgraph(extAccessorSubgraphs, accessor.fqn, accessorLabel);
             accessor.methods.forEach(accMethod => {
-                const accMethodNodeId = Jig.fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
+                const accMethodNodeId = Jig.util.fqnToId("accMethod", accessor.fqn + '#' + accMethod.name);
                 builder.addNodeToSubgraph(sg, accMethodNodeId, accMethod.name, 'method');
                 if (sourceNodeId) builder.addEdge(sourceNodeId, accMethodNodeId);
                 accMethod.externals.forEach(ext => addExternal(accMethodNodeId, ext));
@@ -343,7 +343,7 @@ const OutboundApp = (() => {
             return null;
         } else {
             // クラス単位の単一ノード
-            const nodeId = Jig.fqnToId("extAcc", accessor.fqn);
+            const nodeId = Jig.util.fqnToId("extAcc", accessor.fqn);
             if (!extAccessorNodes.has(accessor.fqn)) {
                 extAccessorNodes.set(accessor.fqn, nodeId);
                 builder.addNode(nodeId, accessorLabel, 'class');
@@ -586,7 +586,7 @@ const OutboundApp = (() => {
     }
 
     function appendGroupToTable(tbody, group, allPersistenceTargets) {
-        const portId = Jig.fqnToId("port", group.outboundPort.fqn);
+        const portId = Jig.util.fqnToId("port", group.outboundPort.fqn);
         const portRow = createPortGroupRow(group, allPersistenceTargets);
         tbody.appendChild(portRow);
 
@@ -655,7 +655,7 @@ const OutboundApp = (() => {
             const portMermaidCode = generatePortMermaidCode(group, visibility);
             if (!portMermaidCode) return;
             const portFqnValue = group.outboundPort.fqn;
-            const portId = Jig.fqnToId("port", portFqnValue);
+            const portId = Jig.util.fqnToId("port", portFqnValue);
             const portLabel = Jig.glossary.getTypeTerm(portFqnValue).title;
 
             const cardChildren = [
@@ -742,7 +742,7 @@ const OutboundApp = (() => {
 
         Jig.dom.sidebar.renderSection(sidebar, "出力ポート", grouped.map(group => {
             return {
-                id: Jig.fqnToId("port", group.outboundPort.fqn),
+                id: Jig.util.fqnToId("port", group.outboundPort.fqn),
                 label: Jig.glossary.getTypeTerm(group.outboundPort.fqn).title
             };
         }));
@@ -762,7 +762,7 @@ const OutboundApp = (() => {
         grouped.forEach(group => {
             const persistenceMermaidCode = generatePersistenceMermaidCode(group, visibility);
             if (!persistenceMermaidCode) return;
-            const targetId = Jig.fqnToId("persistence", group.persistenceTarget);
+            const targetId = Jig.util.fqnToId("persistence", group.persistenceTarget);
 
             const persistenceMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
             Jig.mermaid.diagram.register(persistenceMermaidContainer, () => {
@@ -784,7 +784,7 @@ const OutboundApp = (() => {
         });
 
         Jig.dom.sidebar.renderSection(sidebar, "永続化操作対象", grouped.map(group => ({
-            id: Jig.fqnToId("persistence", group.persistenceTarget),
+            id: Jig.util.fqnToId("persistence", group.persistenceTarget),
             label: group.persistenceTarget
         })));
 
@@ -804,7 +804,7 @@ const OutboundApp = (() => {
             const externalMermaidCode = generateExternalTypeMermaidCode(group, visibility);
             if (!externalMermaidCode) return;
             const externalFqn = group.externalType.fqn;
-            const externalId = Jig.fqnToId("external", externalFqn);
+            const externalId = Jig.util.fqnToId("external", externalFqn);
             const externalLabel = Jig.glossary.getTypeTerm(externalFqn).title;
 
             const externalMermaidContainer = Jig.dom.createElement("div", {className: "mermaid-diagram port-diagram"});
@@ -828,7 +828,7 @@ const OutboundApp = (() => {
         });
 
         Jig.dom.sidebar.renderSection(sidebar, "外部型", grouped.map(group => ({
-            id: Jig.fqnToId("external", group.externalType.fqn),
+            id: Jig.util.fqnToId("external", group.externalType.fqn),
             label: Jig.glossary.getTypeTerm(group.externalType.fqn).title
         })));
 

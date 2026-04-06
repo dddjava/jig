@@ -147,7 +147,7 @@ test.describe('usecase.js', () => {
             const mainList = document.getElementById('usecase-list');
             assert.equal(mainList.children.length, 1);
             const serviceSection = mainList.children[0];
-            assert.equal(serviceSection.querySelector('h3 a').id, globalThis.Jig.fqnToId("type", 'com.example.ServiceA'));
+            assert.equal(serviceSection.querySelector('h3 a').id, globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
             assert.equal(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
             assert.equal(serviceSection.querySelector('.declaration').textContent, 'com.example.ServiceA');
             assert.equal(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
@@ -163,7 +163,7 @@ test.describe('usecase.js', () => {
 
             const methodSection = serviceSection.querySelector('article.jig-card--item');
             assert.ok(methodSection);
-            assert.equal(methodSection.querySelector('h4').id, globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()'));
+            assert.equal(methodSection.querySelector('h4').id, globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()'));
             assert.equal(methodSection.querySelector('h4').textContent, 'method1');
             assert.equal(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
 
@@ -314,13 +314,13 @@ test.describe('usecase.js', () => {
             assert.ok(mermaidPre);
             const code = mermaidPre.textContent;
 
-            const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
-            const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1(Order)');
-            const findOrderNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            const method1NodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#method1(Order)');
+            const findOrderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#findOrder()');
             assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
             assert.ok(code.includes(`${orderNodeId} -.-> ${method1NodeId}`), '引数→メソッドのエッジが破線で含まれること');
             assert.ok(code.includes(`${findOrderNodeId} -.-> ${orderNodeId}`), 'メソッド→戻り値のエッジが破線で含まれること');
-            assert.ok(code.includes('./domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
+            assert.ok(code.includes('./domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
 
             delete globalThis.domainData;
         });
@@ -351,13 +351,13 @@ test.describe('usecase.js', () => {
             assert.ok(mermaidPre);
             const code = mermaidPre.textContent;
 
-            const ctrlNodeId = globalThis.Jig.fqnToId("node", 'web.OrderCtrl');
-            const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1()');
-            const otherMethodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#otherMethod()');
+            const ctrlNodeId = globalThis.Jig.util.fqnToId("node", 'web.OrderCtrl');
+            const method1NodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#method1()');
+            const otherMethodNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#otherMethod()');
             assert.ok(code.includes(ctrlNodeId), 'inboundクラスのノードが含まれること');
             assert.ok(code.includes(`${ctrlNodeId} --> ${method1NodeId}`), 'inbound→method1のエッジが含まれること');
             assert.ok(code.includes(`${ctrlNodeId} --> ${otherMethodNodeId}`), 'inbound→otherMethodのエッジが含まれること');
-            assert.ok(code.includes('./inbound.html#' + globalThis.Jig.fqnToId("adapter", 'web.OrderCtrl')), 'inbound.htmlへのリンクが含まれること');
+            assert.ok(code.includes('./inbound.html#' + globalThis.Jig.util.fqnToId("adapter", 'web.OrderCtrl')), 'inbound.htmlへのリンクが含まれること');
         });
 
         test('renderUsecaseAppList should handle empty data', () => {
@@ -381,7 +381,7 @@ test.describe('usecase.js', () => {
             assert.ok(resolver, 'リゾルバーが設定されていること');
 
             const resolved = resolver('com.example.Order');
-            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order'));
+            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.Order'));
             assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
@@ -405,7 +405,7 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const resolved = globalThis.Jig.dom.type.getResolver()('com.example.OldClass');
-            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.OldClass'));
+            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.OldClass'));
             assert.equal(resolved.className, 'deprecated');
 
             delete globalThis.domainData;
@@ -502,8 +502,8 @@ test.describe('usecase.js', () => {
 
             // メイン一覧に method1 の article は存在し otherMethod の article は存在しない
             const mainList = document.getElementById('usecase-list');
-            const method1Id = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
-            const otherMethodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#otherMethod()');
+            const method1Id = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()');
+            const otherMethodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#otherMethod()');
             assert.ok(document.getElementById(method1Id), 'method1のarticleが存在する');
             assert.ok(!document.getElementById(otherMethodId), 'otherMethodのarticleは存在しない');
 
@@ -515,8 +515,8 @@ test.describe('usecase.js', () => {
             const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
             if (classDiagram) {
                 const code = classDiagram.querySelector('.mermaid').textContent;
-                const method1NodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1()');
-                const otherMethodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#otherMethod()');
+                const method1NodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#method1()');
+                const otherMethodNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#otherMethod()');
                 assert.ok(code.includes(method1NodeId), 'クラス図にmethod1が含まれる');
                 assert.ok(!code.includes(otherMethodNodeId), 'クラス図にotherMethodは含まれない');
             }
@@ -554,8 +554,8 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = mockUsecaseAppData;
             UsecaseApp.init();
 
-            const method1Id = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
-            const otherMethodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#otherMethod()');
+            const method1Id = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()');
+            const otherMethodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#otherMethod()');
             assert.ok(document.getElementById(method1Id), 'method1が表示される');
             assert.ok(document.getElementById(otherMethodId), 'otherMethodも表示される');
         });
@@ -570,7 +570,7 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const methodFqn = "com.example.ServiceA#method1()";
-            const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
+            const methodSection = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn)).parentElement;
             const sequenceBtn = methodSection.querySelectorAll('.diagram-tabs button')[1];
 
             // シーケンス図タブをクリック
@@ -585,7 +585,7 @@ test.describe('usecase.js', () => {
             showDiagramInternalMethods.dispatchEvent(new window.Event('change'));
 
             // 再レンダリング後の要素を取得
-            const newMethodSection = document.getElementById(globalThis.Jig.fqnToId("method", methodFqn)).parentElement;
+            const newMethodSection = document.getElementById(globalThis.Jig.util.fqnToId("method", methodFqn)).parentElement;
             const newSequenceBtn = newMethodSection.querySelectorAll('.diagram-tabs button')[1];
             const newSequencePanel = newMethodSection.querySelectorAll('.diagram-panel')[1];
 
@@ -617,15 +617,15 @@ test.describe('usecase.js', () => {
 
             UsecaseApp.init();
 
-            const methodSection = document.getElementById(globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()')).parentElement;
+            const methodSection = document.getElementById(globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()')).parentElement;
             assert.ok(methodSection);
             const mermaidPre = methodSection.querySelector('.mermaid');
             assert.ok(mermaidPre);
             const code = mermaidPre.textContent;
             assert.ok(code.includes('click'));
-            assert.ok(code.includes('./inbound.html#' + globalThis.Jig.fqnToId("adapter", 'web.Ctrl')));
+            assert.ok(code.includes('./inbound.html#' + globalThis.Jig.util.fqnToId("adapter", 'web.Ctrl')));
             assert.ok(code.includes('click'));
-            assert.ok(code.includes('#' + globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()')));
+            assert.ok(code.includes('#' + globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()')));
         });
 
         test('引数にドメインモデル型を持つメソッドの図にドメインモデルノードと引数→メソッドエッジが追加される', () => {
@@ -657,17 +657,17 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithDomainParam;
             UsecaseApp.init();
 
-            const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1(Order)');
+            const methodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1(Order)');
             const methodSection = document.getElementById(methodId).parentElement;
             const mermaidPre = methodSection.querySelector('.mermaid');
             assert.ok(mermaidPre, 'Mermaid図が生成されること');
             const code = mermaidPre.textContent;
 
-            const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
-            const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#method1(Order)');
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            const methodNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#method1(Order)');
             assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
             assert.ok(code.includes(`${orderNodeId} -.-> ${methodNodeId}`), '引数→メソッドのエッジが破線で含まれること');
-            assert.ok(code.includes('./domain.html#' + globalThis.Jig.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
+            assert.ok(code.includes('./domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.Order')), 'domain.htmlへのリンクが含まれること');
 
             delete globalThis.domainData;
         });
@@ -701,14 +701,14 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithDomainReturn;
             UsecaseApp.init();
 
-            const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#findOrder()');
+            const methodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#findOrder()');
             const methodSection = document.getElementById(methodId).parentElement;
             const mermaidPre = methodSection.querySelector('.mermaid');
             assert.ok(mermaidPre, 'Mermaid図が生成されること');
             const code = mermaidPre.textContent;
 
-            const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
-            const methodNodeId = globalThis.Jig.fqnToId("node", 'com.example.ServiceA#findOrder()');
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            const methodNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#findOrder()');
             assert.ok(code.includes(orderNodeId), 'ドメインモデルのノードが含まれること');
             assert.ok(code.includes(`${methodNodeId} -.-> ${orderNodeId}`), 'メソッド→戻り値のエッジが破線で含まれること');
 
@@ -744,12 +744,12 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = usecaseDataWithDomain;
             UsecaseApp.init();
 
-            const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#findOrder()');
+            const methodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#findOrder()');
             const methodSection = document.getElementById(methodId)?.parentElement;
             // ドメインノードのみでエッジがなければ図自体が生成されないか、生成されてもドメインノードを含まない
             const mermaidPre = methodSection?.querySelector('.mermaid');
             if (mermaidPre) {
-                const orderNodeId = globalThis.Jig.fqnToId("node", 'com.example.Order');
+                const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
                 assert.ok(!mermaidPre.textContent.includes(orderNodeId), 'チェックOFFではドメインノードが含まれないこと');
             }
 
@@ -766,7 +766,7 @@ test.describe('usecase.js', () => {
             globalThis.usecaseData = mockUsecaseAppData;
             UsecaseApp.init();
 
-            const methodId = globalThis.Jig.fqnToId("method", 'com.example.ServiceA#method1()');
+            const methodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()');
             const methodSection = document.getElementById(methodId).parentElement;
             const mermaidPres = methodSection.querySelectorAll('.mermaid');
             assert.ok(mermaidPres.length > 0, 'Mermaid図は生成されること');

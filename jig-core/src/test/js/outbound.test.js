@@ -578,7 +578,7 @@ test.describe("outbound.js", () => {
             assert.ok(container.children.length > 0, "セクションが描画されていない");
             const section = container.children[0];
             assert.ok(section.className.includes("outbound-group-card"));
-            assert.equal(section.id, Jig.fqnToId("port", simpleGroup.outboundPort.fqn));
+            assert.equal(section.id, Jig.util.fqnToId("port", simpleGroup.outboundPort.fqn));
         });
 
         test("ポートのラベルと FQN を描画する", () => {

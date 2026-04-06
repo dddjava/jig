@@ -215,7 +215,7 @@ const GlossaryApp = (() => {
                                 Jig.dom.createElement("span", {className: "meta-label", textContent: "関連ドキュメント"}),
                                 Jig.dom.createElement("a", {
                                     className: "meta-value",
-                                    attributes: {href: "domain.html#" + Jig.fqnToId("domain", fqn)},
+                                    attributes: {href: "domain.html#" + Jig.util.fqnToId("domain", fqn)},
                                     textContent: "ドメインモデル",
                                 }),
                             ]

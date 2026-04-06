@@ -79,12 +79,12 @@ const InboundApp = (() => {
          * 2. 構造化されたデータを元にMermaidBuilderを組み立てる
          */
         buildBuilder(data, builder) {
-            const fqnToNodeId = (fqn) => Jig.fqnToId("n", fqn);
+            const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
             builder.applyThemeClassDefs();
 
             // entrypointノード → クラス単位のsubgraph
             data.entrypointGroups.forEach((eps, typeFqn) => {
-                const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+                const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
                 eps.forEach(ep => {
                     const label = Jig.glossary.getMethodTerm(ep.fqn, true).title;
                     builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, 'method');
@@ -94,7 +94,7 @@ const InboundApp = (() => {
 
             // パスノードとdotted edge
             data.controller.entrypoints.forEach(ep => {
-                const pathNodeId = Jig.fqnToId("path", ep.fqn);
+                const pathNodeId = Jig.util.fqnToId("path", ep.fqn);
                 builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
                 builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
             });
@@ -102,19 +102,19 @@ const InboundApp = (() => {
             // usecaseサブグラフ
             data.usecaseGroups.forEach((methods, typeFqn) => {
                 const sgLabel = Jig.glossary.getTypeTerm(typeFqn).title;
-                const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), sgLabel);
+                const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), sgLabel);
                 methods.forEach(fqn => {
                     const mId = fqnToNodeId(fqn);
                     const mLabel = Jig.glossary.getMethodTerm(fqn, true).title;
                     builder.addNodeToSubgraph(subgraph, mId, mLabel, 'method');
                     builder.addClass(mId, "usecase");
-                    builder.addClick(mId, `./usecase.html#${Jig.fqnToId("method", fqn)}`);
+                    builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`);
                 });
             });
 
             // methodノード
             data.methodGroups.forEach((methods, typeFqn) => {
-                const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+                const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
                 methods.forEach(fqn => {
                     const label = Jig.glossary.getMethodTerm(fqn, true).title;
                     const nodeId = fqnToNodeId(fqn);
@@ -160,7 +160,7 @@ const InboundApp = (() => {
         sidebar.innerHTML = "";
 
         const items = controllers.map(c => ({
-            id: Jig.fqnToId("adapter", c.fqn),
+            id: Jig.util.fqnToId("adapter", c.fqn),
             label: Jig.glossary.getTypeTerm(c.fqn).title
         }));
         Jig.dom.sidebar.renderSection(sidebar, "コントローラー", items);
@@ -181,7 +181,7 @@ const InboundApp = (() => {
 
             const jigCard = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: Jig.fqnToId("adapter", inboundType.fqn),
+                id: Jig.util.fqnToId("adapter", inboundType.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
                         children: [Jig.dom.createElement("a", {textContent: typeTerm.title})]

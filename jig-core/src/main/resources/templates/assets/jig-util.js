@@ -131,9 +131,6 @@ globalThis.Jig.util = (() => {
     }
 })();
 
-// 互換用
-globalThis.Jig.fqnToId = globalThis.Jig.util.fqnToId;
-
 if (typeof module !== "undefined" && module.exports) {
     module.exports = globalThis.Jig.util;
 }

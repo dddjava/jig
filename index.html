@@ -1,56 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
     <title>JIG</title>
-    <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
-<body>
-<div>
-    <header>
-        <h1>JIG</h1>
-        <p>Java Instant-document Gazer</p>
-    </header>
-    <main>
-        <section>
-            <ul>
-                <li><a href="https://github.com/dddjava/jig">GitHub</a></li>
-            </ul>
-        </section>
-        <section>
-          <h2>JIG's JIG Documents (Dogfooding)</h2>
+<body class="index">
 
-          <section>
-            <h3>Package Relation Diagram</h3>
-            <h4>depth 6</h4>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/package-relation-depth6.svg"/>
-            <h4>depth 7</h4>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/package-relation-depth7.svg"/>
+<header>
+    <h1>JIG</h1>
+    <p>出力日時: <span id="jig-timestamp" data-jig-timestamp="2026-04-07T16:37:22Z">2026-04-07T16:37:22Z</span> Version: 2026.4.1</p>
+</header>
 
-            <h4>--More--</h4>
-          </section>
-          <section>
-            <h3>UseCase And Fellows Diagram</h3>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/use-case-and-fellows.svg"/>
-          </section>
-          <section>
-            <h3>Category Diagram</h3>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/category.svg"/>
-          </section>
-          <section>
-            <h3>Category Usage Diagram</h3>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/category-usage.svg"/>
-          </section>
-          <section>
-            <h3>Architecture Diagram</h3>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/architecture.svg"/>
-          </section>
-          <section>
-            <h3>Service Method Call Hierarchy Diagram</h3>
-            <img src="https://irof-web.s3.amazonaws.com/jig/master/service-method-call-hierarchy.svg"/>
-          </section>
-        </section>
-    </main>
-</div>
+<main>
+    <section id="document-links">
+        <ul></ul>
+    </section>
+    <section id="diagrams">
+        <h2>主要パッケージ関連図</h2>
+        <div id="package-diagram"></div>
+    </section>
+</main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+    <script src="./assets/jig-bundle.js"></script>
+    <script src="./data/navigation-data.js"></script>
+    <script src="./data/package-data.js"></script>
+    <script src="./data/glossary-data.js"></script>
+    <script src="./assets/index.js"></script>
+
 </body>
 </html>

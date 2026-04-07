@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>パッケージ関連</title>
+</head>
+<body class="package-relation">
+<header class="top">
+    <a href="./index.html">JIG</a> / <b class="jig-page-title">パッケージ関連</b>
+</header>
+<main>
+    <div id="jig-document-description" class="hidden">
+        <p>パッケージ間の依存関係と構成を俯瞰するための一覧です。図と表を組み合わせて、依存方向や責務の偏りを確認してください。</p>
+        <ul>
+            <li>階層集約: 深さを上げるとサブパッケージがまとめられ、全体像を把握しやすくなります。</li>
+            <li>パッケージフィルタ: 対象のパッケージ配下だけを表示します。</li>
+            <li>フォーカス: 特定のパッケージに焦点を当て、その依存関係のみを表示します。</li>
+            <li>図の向き: 横/縦の切り替えで読みやすい方向に調整できます。</li>
+            <li>図のノードクリック: クリックしたパッケージを関連フィルタの対象にします。</li>
+            <li>依存関係の簡略表示: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
+        </ul>
+        <p>相互依存は赤い双方向の矢印で強調表示され、下の一覧に原因となるクラス関係が表示されます。</p>
+        <p>依存が多い場合は階層集約やフィルタを活用し、関係が密な範囲から確認するのがおすすめです。</p>
+    </div>
+    <details class="controls" open>
+        <summary>表示設定</summary>
+        <div class="control-row">
+            <label class="control-label" for="package-depth-select">階層集約:</label>
+            <select id="package-depth-select"></select>
+            <button type="button" id="depth-up-button">▲</button>
+            <button type="button" id="depth-down-button">▼</button>
+            <span class="note">凡例: P=パッケージ数 / R=関連数</span>
+        </div>
+        <div class="control-row">
+            <button type="button" class="package-filter-icon icon-only"><span class="screen-reader-only">パッケージフィルタ</span></button>
+            <label class="control-label" for="package-filter-input">パッケージフィルタ:</label>
+            <textarea id="package-filter-input" placeholder="com.example&#10;foo.bar"></textarea>
+            <button id="apply-package-filter">適用</button>
+            <button id="clear-package-filter" type="button">解除</button>
+            <button id="reset-package-filter" type="button">デフォルトに戻す</button>
+        </div>
+        <div class="control-row">
+            <button type="button" class="focus-icon icon-only"><span class="screen-reader-only">フォーカス</span></button>
+            <span class="control-label">フォーカス:</span>
+            <span class="note" id="focus-target">未選択</span>
+            <button id="clear-focus" type="button">解除</button>
+            <div class="focus-group">
+                <label for="focus-caller-mode-select">依存元:</label>
+                <select id="focus-caller-mode-select">
+                    <option value="0">なし</option>
+                    <option value="1">直接</option>
+                    <option value="-1">すべて</option>
+                </select>
+                <label for="focus-callee-mode-select">依存先:</label>
+                <select id="focus-callee-mode-select">
+                    <option value="0">なし</option>
+                    <option value="1">直接</option>
+                    <option value="-1">すべて</option>
+                </select>
+            </div>
+        </div>
+        <div class="control-row">
+            <span class="control-label">図の向き:</span>
+            <label class="radio-label">
+                <input type="radio" name="diagram-direction" value="TD" checked>
+                縦
+            </label>
+            <label class="radio-label">
+                <input type="radio" name="diagram-direction" value="LR">
+                横
+            </label>
+        </div>
+        <div class="control-row">
+            <label class="control-label" for="transitive-reduction-toggle">依存関係の簡略表示:</label>
+            <label class="radio-label">
+                <input type="checkbox" id="transitive-reduction-toggle" checked>
+                有効
+            </label>
+        </div>
+    </details>
+
+    <pre id="package-relation-diagram" class="mermaid"></pre>
+    <section id="mutual-dependency-list" class="mutual-dependencies"></section>
+
+    <table id="package-table" class="sortable">
+        <colgroup>
+            <col class="col-action">
+            <col class="col-action">
+            <col class="col-fqn">
+            <col class="col-name">
+            <col class="col-glossary">
+            <col class="col-number">
+            <col class="col-number">
+            <col class="col-number">
+        </colgroup>
+        <thead>
+        <tr>
+            <th class="no-sort"><span class="screen-reader-only">絞り込み</span></th>
+            <th class="no-sort"><span class="screen-reader-only">関連のみ表示</span></th>
+            <th>完全修飾名</th>
+            <th>名称</th>
+            <th class="no-sort"><span class="screen-reader-only">用語集</span></th>
+            <th>クラス数</th>
+            <th>関連数（依存元）</th>
+            <th>関連数（依存先）</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+<script src="./assets/jig-bundle.js"></script>
+<script src="./data/navigation-data.js"></script>
+<script src="./data/type-relations-data.js"></script>
+<script src="./data/package-data.js"></script>
+<script src="./data/glossary-data.js"></script>
+<script src="./assets/package.js"></script>
+</body>
+</html>

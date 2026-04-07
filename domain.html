@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>ドメインモデル</title>
+</head>
+<body class="domain-model">
+<header class="top">
+    <a href="./index.html">JIG</a> / <b class="jig-page-title">ドメインモデル</b>
+</header>
+<div class="split-view">
+    <nav id="domain-sidebar" class="tree in-page-sidebar in-page-sidebar--tree">
+        <details id="sidebar-settings" class="sidebar-settings">
+            <summary>
+                <svg class="settings-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                表示設定
+            </summary>
+            <div class="sidebar-settings-panel">
+                <label>
+                    <input type="checkbox" id="show-enum-only">
+                    列挙のみ表示
+                </label>
+                <fieldset>
+                    <legend>表示内容</legend>
+                    <label>
+                        <input type="checkbox" id="show-fields" checked>
+                        フィールド
+                    </label>
+                    <label>
+                        <input type="checkbox" id="show-methods" checked>
+                        メソッド
+                    </label>
+                    <label>
+                        <input type="checkbox" id="show-static-methods" checked>
+                        staticメソッド
+                    </label>
+                </fieldset>
+                <fieldset>
+                    <legend>ダイアグラム</legend>
+                    <label>
+                        <input type="checkbox" id="show-diagrams" checked>
+                        ダイアグラム表示
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button type="button" id="direction-toggle" class="direction-toggle">
+                            向きを変更
+                            <svg class="direction-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <!-- 初期: 縦方向 -->
+                                <g class="vertical-arrows">
+                                    <path d="M12 5v14"/>
+                                    <path d="M12 5l-3 3"/>
+                                    <path d="M12 5l3 3"/>
+                                    <path d="M12 19l-3-3"/>
+                                    <path d="M12 19l3-3"/>
+                                </g>
+                                <!-- 横方向（display:none） -->
+                                <g class="horizontal-arrows" style="display:none">
+                                    <path d="M5 12h14"/>
+                                    <path d="M19 12l-3-3"/>
+                                    <path d="M19 12l-3 3"/>
+                                    <path d="M5 12l3-3"/>
+                                    <path d="M5 12l3 3"/>
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                    <label>
+                        <input type="checkbox" id="show-deprecated-nodes" checked>
+                        Deprecated ノード
+                    </label>
+                    <label>
+                        <input type="checkbox" id="transitive-reduction-toggle" checked>
+                        依存関係の簡略表示
+                    </label>
+                </fieldset>
+            </div>
+        </details>
+        <div id="domain-sidebar-list" class="in-page-sidebar__list"></div>
+    </nav>
+    <main id="domain-main" class="jig-card-list">
+        <div id="jig-document-description" class="hidden"></div>
+        <!-- JavaScriptで描画されます -->
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+<script src="./assets/jig-bundle.js"></script>
+<script src="./data/navigation-data.js"></script>
+<script src="./data/type-relations-data.js"></script>
+<script src="./data/domain-data.js"></script>
+<script src="./data/glossary-data.js"></script>
+<script src="./assets/domain.js"></script>
+</body>
+</html>

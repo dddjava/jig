@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./assets/style.css" rel="stylesheet">
+    <link rel="icon" href="./assets/favicon.ico">
+    <title>入力インタフェース</title>
+</head>
+<body class="inbound-interface">
+<header class="top">
+    <a href="./index.html">JIG</a> / <b class="jig-page-title">入力インタフェース</b>
+</header>
+<div class="split-view">
+    <nav id="inbound-sidebar" class="tree in-page-sidebar in-page-sidebar--tree">
+        <div id="inbound-sidebar-list" class="in-page-sidebar__list"></div>
+    </nav>
+    <main id="inbound-list" class="jig-card-list">
+        <div id="jig-document-description" class="hidden"></div>
+        <!-- JavaScriptで描画されます -->
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.min.js"></script>
+<script src="./assets/jig-bundle.js"></script>
+<script src="./data/navigation-data.js"></script>
+<script src="./data/inbound-data.js"></script>
+<script src="./data/usecase-data.js"></script>
+<script src="./data/glossary-data.js"></script>
+<script src="./assets/inbound.js"></script>
+</body>
+</html>

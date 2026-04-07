@@ -483,21 +483,24 @@ main table.fields thead {
 }
 
 .usecase .depends {
-    background-color: #f0f2f5;
-    padding: 8px 12px;
-    border-radius: 4px;
+    background-color: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
     border: 1px solid #e2e4ea;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .usecase .depends dt {
     font-weight: bold;
-    color: #31455f;
+    color: #1b3a66;
     margin-bottom: 4px;
+    font-size: 0.95em;
 }
 
 .usecase .depends dd {
     margin-left: 0;
     margin-bottom: 8px;
+    color: #333;
 }
 
 .usecase .depends dd:last-child {

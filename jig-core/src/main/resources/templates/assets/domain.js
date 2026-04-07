@@ -21,6 +21,44 @@ const DomainApp = (() => {
         return globalThis.domainData;
     }
 
+    /**
+     * domainPackageRoots と types からパッケージ一覧を構築する
+     * @param {string[]} domainPackageRoots
+     * @param {{fqn: string}[]} types
+     * @returns {PackageType[]}
+     */
+    function buildPackages(domainPackageRoots, types) {
+        const packageTypesMap = new Map();
+
+        for (const type of types) {
+            const lastDot = type.fqn.lastIndexOf('.');
+            if (lastDot < 0) continue;
+            const pkgFqn = type.fqn.substring(0, lastDot);
+
+            if (!packageTypesMap.has(pkgFqn)) packageTypesMap.set(pkgFqn, []);
+            packageTypesMap.get(pkgFqn).push({fqn: type.fqn});
+
+            let current = pkgFqn;
+            while (true) {
+                if (domainPackageRoots.includes(current)) break;
+                const parentDot = current.lastIndexOf('.');
+                if (parentDot < 0) break;
+                const parent = current.substring(0, parentDot);
+                const isUnderRoot = domainPackageRoots.some(
+                    root => parent === root || parent.startsWith(root + '.'));
+                if (!isUnderRoot) break;
+                if (!packageTypesMap.has(parent)) packageTypesMap.set(parent, []);
+                current = parent;
+            }
+        }
+
+        return Array.from(packageTypesMap.entries())
+            .map(([fqn, pkgTypes]) => ({
+                fqn,
+                types: pkgTypes.sort((a, b) => a.fqn.localeCompare(b.fqn))
+            }))
+            .sort((a, b) => a.fqn.localeCompare(b.fqn));
+    }
 
     /**
      * パッケージの直下の子パッケージを取得する
@@ -28,7 +66,7 @@ const DomainApp = (() => {
      * @returns {PackageType[]}
      */
     function getDirectChildPackages(pkg) {
-        return getDomainData()._childPackagesMap.get(pkg.fqn);
+        return getDomainData()._childPackagesMap.get(pkg.fqn) ?? [];
     }
 
     /**
@@ -554,7 +592,7 @@ const DomainApp = (() => {
     function renderPackages(packages, container) {
         if (packages.length === 0) return;
 
-        const allPackages = getDomainData().packages;
+        const allPackages = getDomainData()._packages;
         const allPackageRelations = derivePackageRelations();
 
         packages.forEach(pkg => {
@@ -970,9 +1008,13 @@ const DomainApp = (() => {
             data.types.map(type => [type.fqn, type])
         );
 
+        // domainPackageRoots と types からパッケージを構築
+        const packages = buildPackages(data.domainPackageRoots, data.types);
+        globalThis.domainData._packages = packages;
+
         // packages の直下の子を事前計算（O(n) → O(1) 取得）
-        const childrenMap = new Map(data.packages.map(p => [p.fqn, []]));
-        data.packages.forEach(p => {
+        const childrenMap = new Map(packages.map(p => [p.fqn, []]));
+        packages.forEach(p => {
             const parentFqn = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
             if (childrenMap.has(parentFqn)) {
                 childrenMap.get(parentFqn).push(p);
@@ -995,7 +1037,7 @@ const DomainApp = (() => {
             };
         });
 
-        renderSidebar(data.packages);
+        renderSidebar(packages);
 
         const main = document.getElementById("domain-main");
         if (!main) return;
@@ -1019,7 +1061,7 @@ const DomainApp = (() => {
             });
         }
 
-        renderPackages(data.packages, main);
+        renderPackages(packages, main);
         renderTypes(data.types, main);
     }
 
@@ -1029,6 +1071,7 @@ const DomainApp = (() => {
         getDirectChildPackages,
         createRelationDiagram,
         createTypeRelationDiagram,
+        buildPackages,
         derivePackageRelations
     };
 })();

@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
-import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 
 import java.util.List;
 
@@ -44,41 +43,23 @@ public class DomainDataAdapter implements JigDocumentAdapter {
             return "{}";
         }
         var jigTypes = coreDomainJigTypes.jigTypes();
-        var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        return buildDomainJson(coreDomainJigTypes, packageList, jigTypes, enumModels);
+        return buildDomainJson(coreDomainJigTypes, jigTypes, enumModels);
     }
 
     public static String buildDomainJson(CoreDomainJigTypes coreDomainJigTypes,
-                                         List<JigPackageWithJigTypes> jigPackages,
                                          JigTypes jigTypes,
                                          EnumModels enumModels) {
-        List<JsonObjectBuilder> packages = jigPackages.stream()
-                .map(DomainDataAdapter::buildPackageJson)
-                .toList();
-
         List<JsonObjectBuilder> types = jigTypes.stream()
                 .map(jigType -> DomainDataAdapter.buildTypeJson(jigType, enumModels))
                 .toList();
 
-        return Json.object("packages", Json.arrayObjects(packages))
-                .and("domainPackageRoots", Json.array(coreDomainJigTypes.domainPackageRoots()))
+        return Json.object("domainPackageRoots", Json.array(coreDomainJigTypes.domainPackageRoots()))
                 .and("types", Json.arrayObjects(types))
                 .build();
     }
 
-    private static JsonObjectBuilder buildPackageJson(JigPackageWithJigTypes jigPackage) {
-        List<JsonObjectBuilder> types = jigPackage.jigTypes().stream()
-                .map(JigType::id)
-                .sorted(Comparable::compareTo)
-                .map(typeId -> Json.object("fqn", typeId.fqn()))
-                .toList();
-
-        return Json.object("fqn", jigPackage.packageId().asText())
-                .and("types", Json.arrayObjects(types));
-    }
-
-    private static JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
+private static JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
         List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
                 .map(JsonSupport::buildFieldJson)
                 .toList();

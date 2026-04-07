@@ -12,8 +12,6 @@ const DomainApp = (() => {
         transitiveReductionEnabled: true,
     };
 
-    let diagramObserver = null; // IntersectionObserver インスタンス
-
     /**
      * @returns {DomainData}
      */

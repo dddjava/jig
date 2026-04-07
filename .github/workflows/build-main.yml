@@ -62,3 +62,4 @@ jobs:
         with:
           branch: gh-pages
           folder: build/jig
+          clean-exclude: '.circleci/config.yml'

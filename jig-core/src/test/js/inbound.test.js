@@ -215,7 +215,6 @@ test.describe('InboundApp', () => {
         assert.equal(methodItems.length, 1);
         assert.ok(methodItems[0].querySelector('.method-name').textContent.includes('method1'));
 
-        // 個別カード（jig-card--item）は廃止
         assert.equal(controllerSection.querySelector('article.jig-card--item'), null);
 
         // コントローラー単位の統合ダイアグラム

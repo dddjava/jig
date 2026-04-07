@@ -325,6 +325,102 @@ test.describe('usecase.js', () => {
             delete globalThis.domainData;
         });
 
+        test('戻り値の型がコレクション型の場合、typeArgumentRefs内のドメイン型がノードに追加される', () => {
+            globalThis.domainData = {
+                types: [{fqn: 'com.example.Order', isDeprecated: false}]
+            };
+            const usecaseDataWithGenerics = {
+                usecases: [{
+                    fqn: "com.example.ServiceA",
+                    fields: [],
+                    staticMethods: [],
+                    methods: [
+                        {
+                            fqn: "com.example.ServiceA#findOrders()",
+                            visibility: "PUBLIC",
+                            parameterTypeRefs: [],
+                            returnTypeRef: {
+                                fqn: "java.util.List",
+                                typeArgumentRefs: [{fqn: "com.example.Order"}]
+                            },
+                            declaration: "findOrders():List<Order>",
+                            isDeprecated: false,
+                            callMethods: []
+                        }
+                    ]
+                }]
+            };
+            setGlossaryData({
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#findOrders()": {title: "findOrders"},
+                "com.example.Order": {title: "Order"}
+            });
+            globalThis.usecaseData = usecaseDataWithGenerics;
+            UsecaseApp.init();
+
+            const serviceSection = document.getElementById('usecase-list').children[0];
+            const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+            assert.ok(classDiagram, 'クラス図が生成されること');
+
+            const mermaidPre = classDiagram.querySelector('.mermaid');
+            const code = mermaidPre.textContent;
+
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            const findOrdersNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#findOrders()');
+            assert.ok(code.includes(orderNodeId), 'typeArgumentRefsのドメイン型がノードとして含まれること');
+            assert.ok(code.includes(`${findOrdersNodeId} -.-> ${orderNodeId}`), 'メソッド→ドメイン型のエッジが破線で含まれること');
+
+            delete globalThis.domainData;
+        });
+
+        test('引数の型がコレクション型の場合、typeArgumentRefs内のドメイン型がノードに追加される', () => {
+            globalThis.domainData = {
+                types: [{fqn: 'com.example.Order', isDeprecated: false}]
+            };
+            const usecaseDataWithGenerics = {
+                usecases: [{
+                    fqn: "com.example.ServiceA",
+                    fields: [],
+                    staticMethods: [],
+                    methods: [
+                        {
+                            fqn: "com.example.ServiceA#saveOrders()",
+                            visibility: "PUBLIC",
+                            parameterTypeRefs: [{
+                                fqn: "java.util.List",
+                                typeArgumentRefs: [{fqn: "com.example.Order"}]
+                            }],
+                            returnTypeRef: {fqn: "void"},
+                            declaration: "saveOrders(List<Order>):void",
+                            isDeprecated: false,
+                            callMethods: []
+                        }
+                    ]
+                }]
+            };
+            setGlossaryData({
+                "com.example.ServiceA": {title: "ServiceA"},
+                "com.example.ServiceA#saveOrders()": {title: "saveOrders"},
+                "com.example.Order": {title: "Order"}
+            });
+            globalThis.usecaseData = usecaseDataWithGenerics;
+            UsecaseApp.init();
+
+            const serviceSection = document.getElementById('usecase-list').children[0];
+            const classDiagram = serviceSection.querySelector('.diagram-container.class-diagram');
+            assert.ok(classDiagram, 'クラス図が生成されること');
+
+            const mermaidPre = classDiagram.querySelector('.mermaid');
+            const code = mermaidPre.textContent;
+
+            const orderNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.Order');
+            const saveOrdersNodeId = globalThis.Jig.util.fqnToId("node", 'com.example.ServiceA#saveOrders()');
+            assert.ok(code.includes(orderNodeId), 'typeArgumentRefsのドメイン型がノードとして含まれること');
+            assert.ok(code.includes(`${orderNodeId} -.-> ${saveOrdersNodeId}`), 'ドメイン型→メソッドのエッジが破線で含まれること');
+
+            delete globalThis.domainData;
+        });
+
         test('クラス単位の図にinboundクラスのノードとエッジが追加される', () => {
             globalThis.inboundData = {
                 controllers: [{

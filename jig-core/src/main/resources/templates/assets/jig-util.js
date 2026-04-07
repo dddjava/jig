@@ -120,6 +120,26 @@ globalThis.Jig.util = (() => {
         return `${prefix}_${sanitized}_${hashStr}`;
     }
 
+    /**
+     * TypeRef から FQN を再帰的に収集する
+     * コレクション型（List<Order> など）の場合、typeArgumentRefs に含まれる型も収集する
+     *
+     * @param {Object|null} typeRef - TypeRef オブジェクト（{fqn: string, typeArgumentRefs?: TypeRef[]}）
+     * @returns {string[]} 収集された FQN の配列（重複あり）
+     *
+     * @example
+     * collectTypeRefFqns({fqn: "java.util.List", typeArgumentRefs: [{fqn: "com.example.Order"}]});
+     * // => ["java.util.List", "com.example.Order"]
+     */
+    function collectTypeRefFqns(typeRef) {
+        if (!typeRef) return [];
+        const fqns = [typeRef.fqn];
+        (typeRef.typeArgumentRefs || []).forEach(argRef => {
+            fqns.push(...collectTypeRefFqns(argRef));
+        });
+        return fqns;
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -128,6 +148,7 @@ globalThis.Jig.util = (() => {
         getPackageFqnFromTypeFqn,
         isWithinPackageFilters,
         getAggregatedFqn,
+        collectTypeRefFqns,
     }
 })();
 

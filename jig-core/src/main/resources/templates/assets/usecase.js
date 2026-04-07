@@ -248,29 +248,33 @@ const UsecaseApp = (() => {
 
                 // 引数の型 → メソッド
                 (method.parameterTypeRefs || []).forEach(typeRef => {
-                    if (!domainFqnSet.has(typeRef.fqn)) return;
-                    if (!nodes.has(typeRef.fqn)) {
-                        nodes.set(typeRef.fqn, {fqn: typeRef.fqn, kind: "domain-type"});
-                    }
-                    const edgeKey = typeRef.fqn + '\u2192' + fqn;
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: typeRef.fqn, to: fqn, dotted: true});
-                    }
+                    Jig.util.collectTypeRefFqns(typeRef)
+                        .filter(domainFqn => domainFqnSet.has(domainFqn))
+                        .forEach(domainFqn => {
+                            if (!nodes.has(domainFqn)) {
+                                nodes.set(domainFqn, {fqn: domainFqn, kind: "domain-type"});
+                            }
+                            const edgeKey = domainFqn + '\u2192' + fqn;
+                            if (!edgeSet.has(edgeKey)) {
+                                edgeSet.add(edgeKey);
+                                edges.push({from: domainFqn, to: fqn, dotted: true});
+                            }
+                        });
                 });
 
                 // メソッド → 戻り値の型
-                const returnFqn = method.returnTypeRef?.fqn;
-                if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
-                    if (!nodes.has(returnFqn)) {
-                        nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
-                    }
-                    const edgeKey = fqn + '\u2192' + returnFqn;
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: fqn, to: returnFqn, dotted: true});
-                    }
-                }
+                Jig.util.collectTypeRefFqns(method.returnTypeRef)
+                    .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
+                    .forEach(returnFqn => {
+                        if (!nodes.has(returnFqn)) {
+                            nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
+                        }
+                        const edgeKey = fqn + '\u2192' + returnFqn;
+                        if (!edgeSet.has(edgeKey)) {
+                            edgeSet.add(edgeKey);
+                            edges.push({from: fqn, to: returnFqn, dotted: true});
+                        }
+                    });
             });
         }
 
@@ -309,30 +313,34 @@ const UsecaseApp = (() => {
 
             // ドメインモデルノード（引数・戻り値）
             (method.parameterTypeRefs || []).forEach(typeRef => {
-                if (!domainFqnSet.has(typeRef.fqn)) return;
-                if (!domainNodeSet.has(typeRef.fqn)) {
-                    domainNodeSet.add(typeRef.fqn);
-                    nodes.push({fqn: typeRef.fqn, kind: "domain-type"});
-                }
-                const edgeKey = `${typeRef.fqn}->${method.fqn}`;
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: typeRef.fqn, to: method.fqn, dotted: true});
-                }
+                Jig.util.collectTypeRefFqns(typeRef)
+                    .filter(domainFqn => domainFqnSet.has(domainFqn))
+                    .forEach(domainFqn => {
+                        if (!domainNodeSet.has(domainFqn)) {
+                            domainNodeSet.add(domainFqn);
+                            nodes.push({fqn: domainFqn, kind: "domain-type"});
+                        }
+                        const edgeKey = `${domainFqn}->${method.fqn}`;
+                        if (!edgeSet.has(edgeKey)) {
+                            edgeSet.add(edgeKey);
+                            edges.push({from: domainFqn, to: method.fqn, dotted: true});
+                        }
+                    });
             });
 
-            const returnFqn = method.returnTypeRef?.fqn;
-            if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
-                if (!domainNodeSet.has(returnFqn)) {
-                    domainNodeSet.add(returnFqn);
-                    nodes.push({fqn: returnFqn, kind: "domain-type"});
-                }
-                const edgeKey = `${method.fqn}->${returnFqn}`;
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: method.fqn, to: returnFqn, dotted: true});
-                }
-            }
+            Jig.util.collectTypeRefFqns(method.returnTypeRef)
+                .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
+                .forEach(returnFqn => {
+                    if (!domainNodeSet.has(returnFqn)) {
+                        domainNodeSet.add(returnFqn);
+                        nodes.push({fqn: returnFqn, kind: "domain-type"});
+                    }
+                    const edgeKey = `${method.fqn}->${returnFqn}`;
+                    if (!edgeSet.has(edgeKey)) {
+                        edgeSet.add(edgeKey);
+                        edges.push({from: method.fqn, to: returnFqn, dotted: true});
+                    }
+                });
         });
 
         // inboundクラスノード（このクラスのメソッドを呼び出すコントローラー）

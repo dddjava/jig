@@ -35,3 +35,30 @@ jobs:
           name: test-failure-reports-${{ matrix.java-version }}-${{ runner.os }}
           path: build/reports/tests/
           retention-days: 3
+
+  deploy-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Build classes
+        run: ./gradlew build -x test
+      - name: Download latest JIG CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release download --pattern jig-cli.jar
+      - name: Run JIG
+        run: java -jar jig-cli.jar
+      - name: Deploy to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: build/jig

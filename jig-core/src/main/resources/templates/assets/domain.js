@@ -656,13 +656,13 @@ const DomainApp = (() => {
 
                 if (panels['direct']) {
                     Jig.mermaid.diagram.createAndRegister(panels['direct'], (container) => {
-                        const diagramDef = {container, pkg, type: undefined, diagramType: 'packageDirect'};
+                        const diagramDef = {pkg, type: undefined, diagramType: 'packageDirect', allPackageRelations};
                         renderDiagram(container, diagramDef);
                     });
                 }
                 if (panels['inner-pkg']) {
                     Jig.mermaid.diagram.createAndRegister(panels['inner-pkg'], (container) => {
-                        const diagramDef = {container, pkg, type: undefined, diagramType: 'package'};
+                        const diagramDef = {pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations};
                         renderDiagram(container, diagramDef);
                     });
                 }
@@ -797,14 +797,10 @@ const DomainApp = (() => {
     /**
      * 指定されたダイアグラムを再生成
      * @param {HTMLElement} container
-     * @param {Object} diagram - {container, pkg, type, diagramType}
+     * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType} = diagram;
-        const data = getDomainData();
-        if (!data) return;
-        const allPackages = data._packages;
-        const allPackageRelations = derivePackageRelations();
+        const {pkg, type, diagramType, allPackages, allPackageRelations} = diagram;
 
         container.innerHTML = "";
         if (diagramType === 'packageDirect') {
@@ -1069,6 +1065,8 @@ const DomainApp = (() => {
         getDirectChildPackages,
         createRelationDiagram,
         createTypeRelationDiagram,
+        createPackageRelationDiagram,
+        createPackageDirectRelationDiagram,
         buildPackages,
         derivePackageRelations
     };

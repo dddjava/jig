@@ -14,7 +14,7 @@ require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
 
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
-const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, buildPackages} = DomainApp;
+const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
 
 // ヘルパー関数：buildPackages で構築したパッケージから _childPackagesMap を設定
 function setupDomainData(domainPackageRoots, types) {
@@ -538,6 +538,138 @@ test.describe('domain.js', () => {
             const idX = globalThis.Jig.util.fqnToId("n", 'org.other.X');
             assert.ok(result.includes(`${idA} ---> ${idX}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idA} --> ${idB}`), 'subgraph内エッジは通常長であること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+    });
+
+    test.describe('createPackageRelationDiagram', () => {
+        test('子パッケージ間に関連がある場合、ダイアグラムが生成される', () => {
+            const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
+            const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
+            setupDomainData(['org.example'], [typeA, typeB]);
+            globalThis.typeRelationsData = {
+                relations: [{from: 'org.example.model.TypeA', to: 'org.example.service.TypeB'}]
+            };
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.model': {title: 'model'},
+                'org.example.service': {title: 'service'},
+                'org.example.model.TypeA': {title: 'TypeA'},
+                'org.example.service.TypeB': {title: 'TypeB'}
+            });
+
+            const packages = globalThis.domainData._packages;
+            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            const allPackageRelations = [{from: 'org.example.model', to: 'org.example.service'}];
+
+            const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
+
+            assert.ok(result !== null, 'ダイアグラムが生成されること');
+            assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+
+        test('子パッケージが存在しない場合はnullを返す', () => {
+            const typeA = {fqn: 'org.example.TypeA', isDeprecated: false};
+            setupDomainData(['org.example'], [typeA]);
+            globalThis.typeRelationsData = {relations: []};
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.TypeA': {title: 'TypeA'}
+            });
+
+            const packages = globalThis.domainData._packages;
+            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            const allPackageRelations = [];
+
+            const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
+
+            assert.equal(result, null, 'ダイアグラムが生成されないこと');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+
+        test('子パッケージ間に関連がない場合はnullを返す', () => {
+            const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
+            const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
+            setupDomainData(['org.example'], [typeA, typeB]);
+            globalThis.typeRelationsData = {relations: []}; // 型関連なし
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.model': {title: 'model'},
+                'org.example.service': {title: 'service'},
+                'org.example.model.TypeA': {title: 'TypeA'},
+                'org.example.service.TypeB': {title: 'TypeB'}
+            });
+
+            const packages = globalThis.domainData._packages;
+            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            const allPackageRelations = [];
+
+            const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
+
+            assert.equal(result, null, 'ダイアグラムが生成されないこと');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+    });
+
+    test.describe('createPackageDirectRelationDiagram', () => {
+        test('対象パッケージが他パッケージへ直接依存している場合、ダイアグラムが生成される', () => {
+            const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
+            const typeB = {fqn: 'org.external.TypeB', isDeprecated: false};
+            setupDomainData(['org.example'], [typeA, typeB]);
+            globalThis.typeRelationsData = {
+                relations: [{from: 'org.example.model.TypeA', to: 'org.external.TypeB'}]
+            };
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.model': {title: 'model'},
+                'org.external': {title: 'external'},
+                'org.example.model.TypeA': {title: 'TypeA'},
+                'org.external.TypeB': {title: 'TypeB'}
+            });
+
+            const packages = globalThis.domainData._packages;
+            const modelPkg = packages.find(p => p.fqn === 'org.example.model');
+            const allPackageRelations = [{from: 'org.example.model', to: 'org.external'}];
+
+            const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations);
+
+            assert.ok(result !== null, 'ダイアグラムが生成されること');
+            assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
+
+            delete globalThis.domainData;
+            delete globalThis.typeRelationsData;
+            delete globalThis.glossaryData;
+        });
+
+        test('対象パッケージに関連がない場合はnullを返す', () => {
+            const typeA = {fqn: 'org.example.TypeA', isDeprecated: false};
+            setupDomainData(['org.example'], [typeA]);
+            globalThis.typeRelationsData = {relations: []};
+            setGlossaryData({
+                'org.example': {title: 'example'},
+                'org.example.TypeA': {title: 'TypeA'}
+            });
+
+            const packages = globalThis.domainData._packages;
+            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            const allPackageRelations = [];
+
+            const result = createPackageDirectRelationDiagram(parentPkg, allPackageRelations);
+
+            assert.equal(result, null, 'ダイアグラムが生成されないこと');
 
             delete globalThis.domainData;
             delete globalThis.typeRelationsData;

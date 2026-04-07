@@ -488,23 +488,27 @@ main table.fields thead {
     border-radius: 6px;
     border: 1px solid #e2e4ea;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.usecase .depends dt {
+.usecase .depends-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.usecase .depends-section h4 {
+    margin: 0;
     font-weight: bold;
     color: #1b3a66;
-    margin-bottom: 4px;
     font-size: 0.95em;
 }
 
-.usecase .depends dd {
-    margin-left: 0;
-    margin-bottom: 8px;
+.usecase .depends-item {
     color: #333;
-}
-
-.usecase .depends dd:last-child {
-    margin-bottom: 0;
+    margin-left: 8px;
 }
 
 .usecase .declaration {

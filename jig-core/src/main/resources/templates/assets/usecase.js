@@ -849,18 +849,22 @@ const UsecaseApp = (() => {
                     }
                 }
 
-                const dl = Jig.dom.createElement("dl", {className: "depends"});
+                const depends = Jig.dom.createElement("div", {className: "depends"});
                 if (method.parameterTypeRefs.length > 0) {
-                    dl.appendChild(Jig.dom.createElement("dt", {textContent: "要求するもの（引数）"}));
+                    const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
+                    parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "要求するもの（引数）"}));
                     method.parameterTypeRefs.forEach(parameterTypeRef => {
-                        dl.appendChild(Jig.dom.createElement("dd", {children: [Jig.dom.type.elementForRef(parameterTypeRef)]}));
+                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.elementForRef(parameterTypeRef)]}));
                     });
+                    depends.appendChild(parametersSection);
                 }
                 if (method.returnTypeRef.fqn !== 'void') {
-                    dl.appendChild(Jig.dom.createElement("dt", {textContent: "得られるもの（戻り値）"}));
-                    dl.appendChild(Jig.dom.createElement("dd", {children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
+                    const returnSection = Jig.dom.createElement("section", {className: "depends-section"});
+                    returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "得られるもの（戻り値）"}));
+                    returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
+                    depends.appendChild(returnSection);
                 }
-                methodSection.appendChild(dl);
+                methodSection.appendChild(depends);
 
                 section.appendChild(methodSection);
             });

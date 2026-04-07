@@ -57,8 +57,9 @@
 
 /**
  * @typedef {Object} DomainData
- * @property {PackageType[]} packages
+ * @property {string[]} domainPackageRoots
  * @property {DomainType[]} types
+ * @property {PackageType[]} _packages
  * @property {Map<string, DomainType>} _typesMap
  * @property {Map<string, PackageType[]>} _childPackagesMap
  */

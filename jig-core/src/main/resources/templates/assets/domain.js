@@ -805,7 +805,7 @@ const DomainApp = (() => {
         const {pkg, type, diagramType} = diagram;
         const data = getDomainData();
         if (!data) return;
-        const allPackages = data.packages;
+        const allPackages = data._packages;
         const allPackageRelations = derivePackageRelations();
 
         container.innerHTML = "";

@@ -2,7 +2,6 @@ import org.dddjava.jig.adapter.documents.*;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
-import org.dddjava.jig.domain.model.knowledge.module.JigPackageWithJigTypes;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -24,10 +23,10 @@ class SampleDataWriterTest {
     void サンプルデータを書き出す(Configuration configuration, JigService jigService) throws IOException {
         // sampleパッケージのみスキャン
         var sampleBasePaths = new SourceBasePaths(
-            new SourceBasePath(Collections.singletonList(
-                Paths.get(TestSupport.defaultPackageClassURI()).resolve("sample"))),
-            new SourceBasePath(Collections.singletonList(
-                TestSupport.getTestSourceRootPath().resolve("sample")))
+                new SourceBasePath(Collections.singletonList(
+                        Paths.get(TestSupport.defaultPackageClassURI()).resolve("sample"))),
+                new SourceBasePath(Collections.singletonList(
+                        TestSupport.getTestSourceRootPath().resolve("sample")))
         );
 
         var factory = DefaultJigRepositoryFactory.init(configuration);
@@ -42,9 +41,9 @@ class SampleDataWriterTest {
             var json = OutboundDataAdapter.buildOutboundJson(outboundAdapters);
             Path sampleFile = Path.of("src/main/resources/templates/data/outbound-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.outboundData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.outboundData = " + json + "\n");
         }
 
         // glossary-data.js
@@ -54,9 +53,9 @@ class SampleDataWriterTest {
             var json = GlossaryDataAdapter.buildGlossaryJson(glossary, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/glossary-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.glossaryData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.glossaryData = " + json + "\n");
         }
 
         // package-data.js
@@ -67,9 +66,9 @@ class SampleDataWriterTest {
             var json = PackageDataAdapter.buildPackageJson(jigPackages, packageRelations, domainPackageRoots);
             Path sampleFile = Path.of("src/main/resources/templates/data/package-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.packageData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.packageData = " + json + "\n");
         }
 
         // insight-data.js
@@ -78,9 +77,9 @@ class SampleDataWriterTest {
             var json = InsightDataAdapter.buildInsightJson(insights);
             Path sampleFile = Path.of("src/main/resources/templates/data/insight-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.insightData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.insightData = " + json + "\n");
         }
 
         // list-output-data.js
@@ -88,9 +87,9 @@ class SampleDataWriterTest {
             var json = ListOutputDataAdapter.buildListJson(repository, jigService);
             Path sampleFile = Path.of("src/main/resources/templates/data/list-output-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.listData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.listData = " + json + "\n");
         }
 
         // inbound-data.js
@@ -99,9 +98,9 @@ class SampleDataWriterTest {
             var json = InboundDataAdapter.buildInboundJson(inputAdapters, jigTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/inbound-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.inboundData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.inboundData = " + json + "\n");
         }
 
         // usecase-data.js
@@ -110,9 +109,9 @@ class SampleDataWriterTest {
             var json = UsecaseDataAdapter.buildUsecaseJson(serviceTypes);
             Path sampleFile = Path.of("src/main/resources/templates/data/usecase-data.js");
             Files.writeString(sampleFile,
-                "// 表示確認用のサンプルデータ\n" +
-                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                "globalThis.usecaseData = " + json + "\n");
+                    "// 表示確認用のサンプルデータ\n" +
+                            "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                            "globalThis.usecaseData = " + json + "\n");
         }
 
         // domain-data.js and type-relations-data.js
@@ -125,9 +124,9 @@ class SampleDataWriterTest {
                 var json = DomainDataAdapter.buildDomainJson(coreDomainJigTypes, domainJigTypes, enumModels);
                 Path sampleFile = Path.of("src/main/resources/templates/data/domain-data.js");
                 Files.writeString(sampleFile,
-                    "// 表示確認用のサンプルデータ\n" +
-                    "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                    "globalThis.domainData = " + json + "\n");
+                        "// 表示確認用のサンプルデータ\n" +
+                                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                                "globalThis.domainData = " + json + "\n");
 
                 var typeRelationships = jigService.typeRelationships(repository);
                 var typeRelationsJson = Json.object("relations", Json.arrayObjects(typeRelationships.list().stream()
@@ -136,9 +135,9 @@ class SampleDataWriterTest {
                         .toList())).build();
                 Path typeRelationsFile = Path.of("src/main/resources/templates/data/type-relations-data.js");
                 Files.writeString(typeRelationsFile,
-                    "// 表示確認用のサンプルデータ\n" +
-                    "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
-                    "globalThis.typeRelationsData = " + typeRelationsJson + "\n");
+                        "// 表示確認用のサンプルデータ\n" +
+                                "// このファイルは" + this.getClass().getSimpleName() + "によって自動生成されます。手動で変更しないでください。\n" +
+                                "globalThis.typeRelationsData = " + typeRelationsJson + "\n");
             }
         }
     }

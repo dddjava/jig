@@ -123,7 +123,7 @@ class SampleDataWriterTest {
                 var packageList = JigPackageWithJigTypes.listWithParent(domainJigTypes);
                 var enumModels = repository.jigDataProvider().fetchEnumModels();
 
-                var json = DomainDataAdapter.buildDomainJson(packageList, domainJigTypes, enumModels);
+                var json = DomainDataAdapter.buildDomainJson(coreDomainJigTypes, packageList, domainJigTypes, enumModels);
                 Path sampleFile = Path.of("src/main/resources/templates/data/domain-data.js");
                 Files.writeString(sampleFile,
                     "// 表示確認用のサンプルデータ\n" +

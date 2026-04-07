@@ -8,6 +8,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
@@ -45,12 +46,13 @@ public class DomainDataAdapter implements JigDocumentAdapter {
         var jigTypes = coreDomainJigTypes.jigTypes();
         var packageList = JigPackageWithJigTypes.listWithParent(jigTypes);
         var enumModels = jigRepository.jigDataProvider().fetchEnumModels();
-        return buildDomainJson(packageList, jigTypes, enumModels);
+        return buildDomainJson(coreDomainJigTypes, packageList, jigTypes, enumModels);
     }
 
-    public static String buildDomainJson(List<JigPackageWithJigTypes> jigPackages,
-                                  JigTypes jigTypes,
-                                  EnumModels enumModels) {
+    public static String buildDomainJson(CoreDomainJigTypes coreDomainJigTypes,
+                                         List<JigPackageWithJigTypes> jigPackages,
+                                         JigTypes jigTypes,
+                                         EnumModels enumModels) {
         List<JsonObjectBuilder> packages = jigPackages.stream()
                 .map(DomainDataAdapter::buildPackageJson)
                 .toList();
@@ -60,6 +62,7 @@ public class DomainDataAdapter implements JigDocumentAdapter {
                 .toList();
 
         return Json.object("packages", Json.arrayObjects(packages))
+                .and("domainPackageRoots", Json.array(coreDomainJigTypes.domainPackageRoots()))
                 .and("types", Json.arrayObjects(types))
                 .build();
     }

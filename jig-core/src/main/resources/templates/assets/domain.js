@@ -191,11 +191,12 @@ const DomainApp = (() => {
     /**
      * クラスカードに表示する関連クラス一覧
      * @param {DomainType} type
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
      * @returns {HTMLElement | null}
      */
-    function createRelatedClassesList(type) {
-        const typesMap = getDomainData()._typesMap;
-        const allRelations = (globalThis.typeRelationsData?.relations || [])
+    function createRelatedClassesList(type, typeRelations, typesMap) {
+        const allRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
         const outgoingFqns = allRelations
@@ -241,12 +242,13 @@ const DomainApp = (() => {
     /**
      * クラスカードに表示するクラス関連図（このクラスと関連する全クラスを表示）
      * @param {DomainType} type
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
      * @param {string} direction
      * @returns {string | null}
      */
-    function createTypeRelationDiagram(type, direction = domainSettings.diagramDirection) {
-        const typesMap = getDomainData()._typesMap;
-        const allRelations = (globalThis.typeRelationsData?.relations || [])
+    function createTypeRelationDiagram(type, typeRelations, typesMap, direction = domainSettings.diagramDirection) {
+        const allRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
         const outgoing = allRelations.filter(r => r.from === type.fqn);
@@ -325,10 +327,12 @@ const DomainApp = (() => {
     /**
      * パッケージカードに表示するパッケージ内クラス関連図
      * @param {PackageType} pkg
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
      * @param {Object} options
      * @returns {string | null}
      */
-    function createRelationDiagram(pkg, {
+    function createRelationDiagram(pkg, typeRelations, typesMap, {
         showExternalOutgoing = true,
         showExternalIncoming = true,
         direction = domainSettings.diagramDirection
@@ -336,8 +340,7 @@ const DomainApp = (() => {
         const fqnToMermaidId = (fqn) => Jig.util.fqnToId("n", fqn);
         const fqnToHtmlId = (fqn) => Jig.util.fqnToId("domain", fqn);
 
-        const typesMap = getDomainData()._typesMap;
-        const relations = (globalThis.typeRelationsData?.relations || [])
+        const relations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
 
         let pkgTypeFqns = new Set(pkg.types.map(t => t.fqn));
@@ -345,7 +348,6 @@ const DomainApp = (() => {
 
         // Deprecated ノード非表示の場合、deprecated 型を除外
         if (!domainSettings.showDeprecatedNodes) {
-            const typesMap = getDomainData()._typesMap;
             pkgTypeFqns = new Set([...pkgTypeFqns].filter(fqn => !typesMap?.get(fqn)?.isDeprecated));
             if (pkgTypeFqns.size === 0) return null;
         }
@@ -569,12 +571,11 @@ const DomainApp = (() => {
      * 型間の関連からパッケージ間の関連を導出する（重複排除）
      * @returns {Array<{from: string, to: string}>}
      */
-    function derivePackageRelations() {
-        const typesMap = getDomainData()._typesMap;
-        const typeRelations = (globalThis.typeRelationsData?.relations || [])
+    function derivePackageRelations(typeRelations, typesMap) {
+        const filteredRelations = typeRelations
             .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
         const relMap = new Map();
-        typeRelations.forEach(({from, to}) => {
+        filteredRelations.forEach(({from, to}) => {
             const fromPkg = Jig.util.getPackageFqnFromTypeFqn(from);
             const toPkg = Jig.util.getPackageFqnFromTypeFqn(to);
             if (fromPkg !== toPkg) relMap.set(`${fromPkg}::${toPkg}`, {from: fromPkg, to: toPkg});
@@ -584,14 +585,16 @@ const DomainApp = (() => {
 
     /**
      * @param {PackageType[]} packages
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
+     * @param {Array} allPackageRelations
      * @param {HTMLElement} container
      * @returns {void}
      */
-    function renderPackages(packages, container) {
+    function renderPackages(packages, typeRelations, typesMap, allPackageRelations, container) {
         if (packages.length === 0) return;
 
         const allPackages = getDomainData()._packages;
-        const allPackageRelations = derivePackageRelations();
 
         packages.forEach(pkg => {
             const section = Jig.dom.createElement("section", {
@@ -625,7 +628,7 @@ const DomainApp = (() => {
                 && {id: 'direct', label: 'パッケージ関連図', diagramType: 'packageDirect'},
                 createPackageRelationDiagram(pkg, allPackages, allPackageRelations) !== null
                 && {id: 'inner-pkg', label: 'パッケージ内パッケージ関連図', diagramType: 'package'},
-                pkg.types.length > 0 && createRelationDiagram(pkg) !== null
+                pkg.types.length > 0 && createRelationDiagram(pkg, typeRelations, typesMap) !== null
                 && {id: 'inner-class', label: 'パッケージ内クラス関連図', diagramType: 'type'},
             ].filter(Boolean);
 
@@ -662,7 +665,7 @@ const DomainApp = (() => {
                 }
                 if (panels['inner-pkg']) {
                     Jig.mermaid.diagram.createAndRegister(panels['inner-pkg'], (container) => {
-                        const diagramDef = {pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations};
+                        const diagramDef = {pkg, type: undefined, diagramType: 'package', allPackages, allPackageRelations, typeRelations, typesMap};
                         renderDiagram(container, diagramDef);
                     });
                 }
@@ -690,7 +693,7 @@ const DomainApp = (() => {
                     }));
 
                     const render = (container) => {
-                        const diagramDef = {container, pkg, type: undefined, diagramType: 'type'};
+                        const diagramDef = {container, pkg, type: undefined, diagramType: 'type', typeRelations, typesMap};
                         renderDiagram(container, diagramDef);
                     };
                     const c = Jig.mermaid.diagram.createAndRegister(panels['inner-class'], render);
@@ -705,10 +708,12 @@ const DomainApp = (() => {
 
     /**
      * @param {DomainType[]} types
+     * @param {Array} typeRelations
+     * @param {Map} typesMap
      * @param {HTMLElement} container
      * @returns {void}
      */
-    function renderTypes(types, container) {
+    function renderTypes(types, typeRelations, typesMap, container) {
         if (types.length === 0) return;
 
         types.forEach(type => {
@@ -759,7 +764,7 @@ const DomainApp = (() => {
             if (staticList) section.appendChild(staticList);
 
             Jig.mermaid.diagram.createAndRegister(section, (container) => {
-                const diagramDef = {container, pkg: undefined, type, diagramType: 'classDirect'};
+                const diagramDef = {container, pkg: undefined, type, diagramType: 'classDirect', typeRelations, typesMap};
                 renderDiagram(container, diagramDef);
                 // 見出しはまだ追加されていない場合のみ追加
                 if (!section.querySelector('h4.diagram-heading')) {
@@ -770,7 +775,7 @@ const DomainApp = (() => {
                 }
             });
 
-            const relatedList = createRelatedClassesList(type);
+            const relatedList = createRelatedClassesList(type, typeRelations, typesMap);
             if (relatedList) section.appendChild(relatedList);
 
             container.appendChild(section);
@@ -800,7 +805,7 @@ const DomainApp = (() => {
      * @param {Object} diagram - {pkg, type, diagramType, allPackages?, allPackageRelations?}
      */
     function renderDiagram(container, diagram) {
-        const {pkg, type, diagramType, allPackages, allPackageRelations} = diagram;
+        const {pkg, type, diagramType, allPackages, allPackageRelations, typeRelations, typesMap} = diagram;
 
         container.innerHTML = "";
         if (diagramType === 'packageDirect') {
@@ -814,7 +819,7 @@ const DomainApp = (() => {
                 Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
             }
         } else if (diagramType === 'classDirect') {
-            const generator = (dir) => createTypeRelationDiagram(type, dir);
+            const generator = (dir) => createTypeRelationDiagram(type, typeRelations, typesMap, dir);
             if (generator(domainSettings.diagramDirection)) {
                 Jig.mermaid.render.renderWithControls(container, generator, {direction: domainSettings.diagramDirection});
             }
@@ -825,7 +830,7 @@ const DomainApp = (() => {
             const incoming = panel?.querySelector('.class-relation-external-incoming');
             const showExternalOutgoing = outgoing ? outgoing.checked : true;
             const showExternalIncoming = incoming ? incoming.checked : true;
-            const generator = (dir) => createRelationDiagram(pkg, {
+            const generator = (dir) => createRelationDiagram(pkg, typeRelations, typesMap, {
                 showExternalOutgoing,
                 showExternalIncoming,
                 direction: dir
@@ -1016,6 +1021,12 @@ const DomainApp = (() => {
         });
         globalThis.domainData._childPackagesMap = childrenMap;
 
+        // typeRelations を一度解決（以降は引数経由で渡す）
+        const typesMap = globalThis.domainData._typesMap;
+        const rawRelations = globalThis.typeRelationsData?.relations || [];
+        const typeRelations = rawRelations.filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+        const allPackageRelations = derivePackageRelations(typeRelations, typesMap);
+
         Jig.dom.type.setResolver((fqn) => {
             const domainType = getDomainData()?._typesMap?.get(fqn);
             if (domainType) {
@@ -1055,8 +1066,8 @@ const DomainApp = (() => {
             });
         }
 
-        renderPackages(packages, main);
-        renderTypes(data.types, main);
+        renderPackages(packages, typeRelations, typesMap, allPackageRelations, main);
+        renderTypes(data.types, typeRelations, typesMap, main);
     }
 
     return {

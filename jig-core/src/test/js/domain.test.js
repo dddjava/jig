@@ -276,12 +276,6 @@ test.describe('domain.js', () => {
                 ['com.example.MyClass', {fqn: 'com.example.MyClass', isDeprecated: false}]
             ]);
 
-            setGlossaryData({
-                'com': {title: 'com'},
-                'com.example': {title: 'example'},
-                'com.example.MyClass': {title: 'MyClass'}
-            });
-
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             assert.equal(result.tagName, 'details');
@@ -289,8 +283,6 @@ test.describe('domain.js', () => {
             assert.equal(summaryLink.tagName, 'a');
             assert.equal(summaryLink.textContent, 'com/example');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
-
-            delete globalThis.glossaryData;
         });
 
         test('タイプを持つパッケージを表示する', () => {
@@ -307,13 +299,6 @@ test.describe('domain.js', () => {
                 ['com.example.deep.MyClass', myClassType]
             ]);
 
-            setGlossaryData({
-                'com': {title: 'com'},
-                'com.example': {title: 'example'},
-                'com.example.deep': {title: 'deep'},
-                'com.example.deep.MyClass': {title: 'MyClass'}
-            });
-
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             assert.equal(result.tagName, 'details');
@@ -322,8 +307,6 @@ test.describe('domain.js', () => {
             // com -> example -> deep で、deep がタイプを持つので統合が止まる
             assert.equal(summaryLink.textContent, 'com/example/deep');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.deep'));
-
-            delete globalThis.glossaryData;
         });
 
         test('複数段階のパッケージが1つずつ続く場合、全て統合して表示する', () => {
@@ -341,22 +324,12 @@ test.describe('domain.js', () => {
                 ['com.example.sub.deep.MyClass', {fqn: 'com.example.sub.deep.MyClass', methods: [], isDeprecated: false}]
             ]);
 
-            setGlossaryData({
-                'com': {title: 'com'},
-                'com.example': {title: 'example'},
-                'com.example.sub': {title: 'sub'},
-                'com.example.sub.deep': {title: 'deep'},
-                'com.example.sub.deep.MyClass': {title: 'MyClass'}
-            });
-
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             const summaryLink = result.children[0].children[0];
             // com -> example -> sub -> deep と続くので、sub がタイプを持つまで統合
             assert.equal(summaryLink.textContent, 'com/example/sub/deep');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.sub.deep'));
-
-            delete globalThis.glossaryData;
         });
 
         test('子パッケージを持つパッケージを表示する', () => {
@@ -375,15 +348,6 @@ test.describe('domain.js', () => {
                 ['com.example.sub2.MyClass2', {fqn: 'com.example.sub2.MyClass2', isDeprecated: false}]
             ]);
 
-            setGlossaryData({
-                'com': {title: 'com'},
-                'com.example': {title: 'example'},
-                'com.example.sub1': {title: 'sub1'},
-                'com.example.sub2': {title: 'sub2'},
-                'com.example.sub1.MyClass1': {title: 'MyClass1'},
-                'com.example.sub2.MyClass2': {title: 'MyClass2'}
-            });
-
             const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             const summaryLink = result.children[0].children[0];
@@ -397,8 +361,6 @@ test.describe('domain.js', () => {
                 .map(child => child.children[0].children[0].textContent);
             assert.ok(childPackageNames.includes('sub1'), 'example should have sub1 as child');
             assert.ok(childPackageNames.includes('sub2'), 'example should have sub2 as child');
-
-            delete globalThis.glossaryData;
         });
 
     });

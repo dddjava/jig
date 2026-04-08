@@ -1,7 +1,6 @@
 package org.dddjava.jig;
 
 import org.dddjava.jig.domain.model.documents.JigDocument;
-import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -12,8 +11,6 @@ public class HandleResultImpl implements HandleResult {
 
     private final JigDocument jigDocument;
     private final List<Path> outputFilePaths;
-    @Nullable
-    private final String failureMessage;
 
     /**
      * 成功時のコンストラクタ
@@ -21,13 +18,6 @@ public class HandleResultImpl implements HandleResult {
     HandleResultImpl(JigDocument jigDocument, List<Path> outputFilePaths) {
         this.jigDocument = jigDocument;
         this.outputFilePaths = outputFilePaths;
-        this.failureMessage = null;
-    }
-
-    public boolean failure() {
-        // 何かしらのエラーがある
-        // 出力対象なしは失敗ではないので、!success() ではない
-        return failureMessage != null;
     }
 
     @Override
@@ -64,12 +54,6 @@ public class HandleResultImpl implements HandleResult {
             return String.format("%s: %s", jigDocument(), outputFileNames());
         }
 
-        if (failureMessage != null) {
-            return String.format("%s: %s", jigDocument(), failureMessage);
-        }
-
-        // 実装上は「例外が起こっていないがなんのアウトプットもない」の場合のみここに入る
-        // 失敗メッセージがない = skip は違和感はある
         return String.format("%s: skip", jigDocument());
     }
 }

@@ -10,7 +10,7 @@ import testing.JigTest;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigTest
 class JigExecutorTest {
@@ -25,11 +25,6 @@ class JigExecutorTest {
         List<JigDocument> actualDocuments = actual.stream().map(handleResult -> handleResult.jigDocument()).toList();
         // canonicalのすべてが処理されている
         assertTrue(actualDocuments.containsAll(JigDocument.canonical()), actualDocuments::toString);
-
-        // すべて失敗していない（success or skip）であること
-        assertAll(actual.stream().map(actualResult ->
-                () -> assertFalse(((HandleResultImpl) actualResult).failure(), () -> actualResult.toString())
-        ));
     }
 
     @Test
@@ -42,10 +37,5 @@ class JigExecutorTest {
         List<JigDocument> actualDocuments = actual.stream().map(handleResult -> handleResult.jigDocument()).toList();
         // canonicalのすべてが処理されている
         assertTrue(actualDocuments.containsAll(JigDocument.canonical()), actualDocuments::toString);
-
-        // すべて失敗していない（success or skip）であること
-        assertAll(actual.stream().map(actualResult ->
-                () -> assertFalse(((HandleResultImpl) actualResult).failure(), () -> actualResult.toString())
-        ));
     }
 }

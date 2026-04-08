@@ -31,9 +31,10 @@ class JigDocumentGeneratorAssetsTest {
         expected.remove("types.js");
         // バンドル元のファイルはコピー対象外（jig-bundle.js に集約されるため）
         expected.remove("jig-dom.js");
+        expected.remove("jig-data.js");
         expected.remove("jig-glossary.js");
-        expected.remove("jig-util.js");
         expected.remove("jig-mermaid.js");
+        expected.remove("jig-util.js");
 
         assertEquals(expected, copied);
     }

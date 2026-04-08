@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * インサイト（insight-data.js）
  */
-public class InsightDataAdapter implements JigDocumentAdapter {
+public class InsightDataAdapter implements JigDocumentDataAdapter {
 
     private final JigService jigService;
 

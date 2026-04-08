@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
-import org.dddjava.jig.adapter.documents.*;
+import org.dddjava.jig.adapter.datajs.*;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
@@ -25,7 +25,7 @@ public class JigDocumentGenerator {
 
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
-    private final Map<JigDocument, List<JigDocumentAdapter>> adaptersMap;
+    private final Map<JigDocument, List<JigDocumentDataAdapter>> adaptersMap;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigDocuments = jigDocumentContext.jigDocuments();

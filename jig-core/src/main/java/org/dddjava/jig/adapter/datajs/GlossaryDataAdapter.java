@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
@@ -13,7 +12,7 @@ import java.util.List;
  * 用語集（glossary-data.js）
  * ほぼ全てのドキュメントで使用
  */
-public class GlossaryDataAdapter implements JigDocumentAdapter {
+public class GlossaryDataAdapter implements JigDocumentDataAdapter {
 
     private final JigService jigService;
 

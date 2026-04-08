@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * 入力インタフェース（inbound-data.js）
  */
-public class InboundDataAdapter implements JigDocumentAdapter {
+public class InboundDataAdapter implements JigDocumentDataAdapter {
 
     private final JigService jigService;
 

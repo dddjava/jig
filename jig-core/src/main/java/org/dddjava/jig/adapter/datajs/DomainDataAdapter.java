@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * ドメインモデル（domain-data.js）
  */
-public class DomainDataAdapter implements JigDocumentAdapter {
+public class DomainDataAdapter implements JigDocumentDataAdapter {
 
     private final JigService jigService;
 
@@ -59,7 +58,7 @@ public class DomainDataAdapter implements JigDocumentAdapter {
                 .build();
     }
 
-private static JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
+    private static JsonObjectBuilder buildTypeJson(JigType jigType, EnumModels enumModels) {
         List<JsonObjectBuilder> fields = jigType.instanceJigFields().fields().stream()
                 .map(JsonSupport::buildFieldJson)
                 .toList();

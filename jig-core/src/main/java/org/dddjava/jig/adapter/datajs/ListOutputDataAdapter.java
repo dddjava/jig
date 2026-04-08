@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * 一覧出力（list-output-data.js）
  */
-public class ListOutputDataAdapter implements JigDocumentAdapter {
+public class ListOutputDataAdapter implements JigDocumentDataAdapter {
 
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター

@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
 import org.dddjava.jig.adapter.json.JsonSupport;
@@ -17,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * ユースケース（usecase-data.js）
  */
-public class UsecaseDataAdapter implements JigDocumentAdapter {
+public class UsecaseDataAdapter implements JigDocumentDataAdapter {
 
     private final JigService jigService;
 

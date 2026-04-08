@@ -1,6 +1,5 @@
-package org.dddjava.jig.adapter.documents;
+package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.adapter.JigDocumentAdapter;
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.information.JigRepository;
@@ -9,7 +8,7 @@ import org.dddjava.jig.domain.model.information.JigRepository;
  * 型関連情報（type-relations-data.js）
  * DomainModel と PackageRelation の両ドキュメントで共有。
  */
-public class TypeRelationsDataAdapter implements JigDocumentAdapter {
+public class TypeRelationsDataAdapter implements JigDocumentDataAdapter {
 
     private final JigService jigService;
 

@@ -447,12 +447,6 @@ test.describe('domain.js', () => {
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
             const typeC = {fqn: 'org.example.C', isDeprecated: false};
 
-            setGlossaryData({
-                'org.example.A': {title: 'A'},
-                'org.example.B': {title: 'B'},
-                'org.example.C': {title: 'C'},
-            });
-
             const typesMap = new Map([
                 ['org.example.A', typeA],
                 ['org.example.B', typeB],
@@ -477,14 +471,10 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`style ${idA} font-weight:bold`), '自身（A）が強調表示されること');
             const sgId = Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId}`), 'パッケージのサブグラフが含まれること');
-
-            delete globalThis.glossaryData;
         });
 
         test('関連がない場合は null を返す', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
-
-            setGlossaryData({'org.example.A': {title: 'A'}});
 
             const typesMap = new Map([['org.example.A', typeA]]);
             const typeRelations = [];
@@ -492,20 +482,12 @@ test.describe('domain.js', () => {
             const result = createTypeRelationDiagram(typeA, typeRelations, typesMap);
 
             assert.equal(result, null);
-
-            delete globalThis.glossaryData;
         });
 
         test('subgraph外向きエッジは深さに応じて長さが変わる', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
             const typeX = {fqn: 'org.other.X', isDeprecated: false};
-
-            setGlossaryData({
-                'org.example.A': {title: 'A'},
-                'org.example.B': {title: 'B'},
-                'org.other.X': {title: 'X'},
-            });
 
             const typesMap = new Map([
                 ['org.example.A', typeA],
@@ -523,10 +505,6 @@ test.describe('domain.js', () => {
             const idX = Jig.util.fqnToId("n", 'org.other.X');
             assert.ok(result.includes(`${idA} ---> ${idX}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idA} --> ${idB}`), 'subgraph内エッジは通常長であること');
-
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
-            delete globalThis.glossaryData;
         });
     });
 
@@ -534,14 +512,6 @@ test.describe('domain.js', () => {
         test('子パッケージ間に関連がある場合、ダイアグラムが生成される', () => {
             const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
             const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
-
-            setGlossaryData({
-                'org.example': {title: 'example'},
-                'org.example.model': {title: 'model'},
-                'org.example.service': {title: 'service'},
-                'org.example.model.TypeA': {title: 'TypeA'},
-                'org.example.service.TypeB': {title: 'TypeB'}
-            });
 
             // パッケージ構造を直接構築
             const packages = [
@@ -556,17 +526,10 @@ test.describe('domain.js', () => {
 
             assert.ok(result !== null, 'ダイアグラムが生成されること');
             assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
-
-            delete globalThis.glossaryData;
         });
 
         test('子パッケージが存在しない場合はnullを返す', () => {
             const typeA = {fqn: 'org.example.TypeA', isDeprecated: false};
-
-            setGlossaryData({
-                'org.example': {title: 'example'},
-                'org.example.TypeA': {title: 'TypeA'}
-            });
 
             const packages = [
                 {fqn: 'org.example', types: [{fqn: 'org.example.TypeA'}]},
@@ -577,21 +540,11 @@ test.describe('domain.js', () => {
             const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
-
-            delete globalThis.glossaryData;
         });
 
         test('子パッケージ間に関連がない場合はnullを返す', () => {
             const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
             const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
-
-            setGlossaryData({
-                'org.example': {title: 'example'},
-                'org.example.model': {title: 'model'},
-                'org.example.service': {title: 'service'},
-                'org.example.model.TypeA': {title: 'TypeA'},
-                'org.example.service.TypeB': {title: 'TypeB'}
-            });
 
             const packages = [
                 {fqn: 'org.example', types: []},
@@ -604,21 +557,11 @@ test.describe('domain.js', () => {
             const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
-
-            delete globalThis.glossaryData;
         });
     });
 
     test.describe('createPackageDirectRelationDiagram', () => {
         test('対象パッケージが他パッケージへ直接依存している場合、ダイアグラムが生成される', () => {
-            setGlossaryData({
-                'org.example': {title: 'example'},
-                'org.example.model': {title: 'model'},
-                'org.external': {title: 'external'},
-                'org.example.model.TypeA': {title: 'TypeA'},
-                'org.external.TypeB': {title: 'TypeB'}
-            });
-
             const modelPkg = {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]};
             const allPackageRelations = [{from: 'org.example.model', to: 'org.external'}];
 
@@ -626,24 +569,15 @@ test.describe('domain.js', () => {
 
             assert.ok(result !== null, 'ダイアグラムが生成されること');
             assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
-
-            delete globalThis.glossaryData;
         });
 
         test('対象パッケージに関連がない場合はnullを返す', () => {
-            setGlossaryData({
-                'org.example': {title: 'example'},
-                'org.example.TypeA': {title: 'TypeA'}
-            });
-
             const parentPkg = {fqn: 'org.example', types: [{fqn: 'org.example.TypeA'}]};
             const allPackageRelations = [];
 
             const result = createPackageDirectRelationDiagram(parentPkg, allPackageRelations);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
-
-            delete globalThis.glossaryData;
         });
     });
 

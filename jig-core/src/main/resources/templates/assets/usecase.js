@@ -15,7 +15,7 @@ const UsecaseApp = (() => {
      * @return {UsecaseData}
      */
     function getUsecaseData() {
-        return globalThis.usecaseData;
+        return Jig.data.usecase.get();
     }
 
     /**
@@ -41,7 +41,7 @@ const UsecaseApp = (() => {
      */
     function buildHandlerFqns() {
         const fqns = new Set();
-        (globalThis.inboundData?.controllers || []).forEach(controller => {
+        Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (relation?.to) fqns.add(relation.to);
             });
@@ -111,7 +111,7 @@ const UsecaseApp = (() => {
             });
         }
 
-        (globalThis.inboundData?.controllers || []).forEach(controller => {
+        Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (!relation?.from || !relation?.to) return;
                 const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
@@ -240,7 +240,7 @@ const UsecaseApp = (() => {
         traverse(rootMethod.fqn, rootMethod.callMethods);
 
         // ドメインモデルノードを追加（引数・戻り値）
-        const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
         if (diagramContext.showDiagramDomainTypes && domainFqnSet.size > 0) {
             [...nodes.keys()].forEach(fqn => {
                 const method = diagramContext.methodMap.get(fqn);
@@ -295,7 +295,7 @@ const UsecaseApp = (() => {
         const domainNodeSet = new Set();
         const classMethods = [...usecase.methods.filter(m => isUsecase(m) && (!handlerFqns || handlerFqns.has(m.fqn))), ...usecase.staticMethods];
         const methodFqns = new Set(classMethods.map(m => m.fqn));
-        const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
 
         classMethods.forEach(method => {
             const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
@@ -345,7 +345,7 @@ const UsecaseApp = (() => {
 
         // inboundクラスノード（このクラスのメソッドを呼び出すコントローラー）
         const inboundNodeSet = new Set();
-        (globalThis.inboundData?.controllers || []).forEach(controller => {
+        Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (!relation?.from || !relation?.to) return;
                 if (!methodFqns.has(relation.to)) return;
@@ -574,7 +574,7 @@ const UsecaseApp = (() => {
             (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: "static-method"}));
         });
 
-        const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
+        const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
         const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
         const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
         const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
@@ -943,13 +943,12 @@ const UsecaseApp = (() => {
         state.data = getUsecaseData();
         if (!state.data) return;
 
-        const domainData = globalThis.domainData;
-        if (domainData && domainData.types) {
-            if (!domainData._typesMap) {
-                domainData._typesMap = new Map(domainData.types.map(t => [t.fqn, t]));
-            }
+        // domain 派生キャッシュはテスト間で再構築する必要がある
+        Jig.data.resetCache();
+
+        if (Jig.data.domain.has()) {
             Jig.dom.type.setResolver((fqn) => {
-                const domainType = domainData._typesMap.get(fqn);
+                const domainType = Jig.data.domain.getType(fqn);
                 if (domainType) {
                     return {
                         href: 'domain.html#' + Jig.util.fqnToId("domain", fqn),

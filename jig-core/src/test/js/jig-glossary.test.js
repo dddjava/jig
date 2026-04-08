@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const {setGlossaryData} = require('./dom-stub.js');
 
 require('../../main/resources/templates/assets/jig-util.js');
+require('../../main/resources/templates/assets/jig-data.js');
 const sut = require('../../main/resources/templates/assets/jig-glossary.js');
 
 test.describe("util", () => {

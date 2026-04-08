@@ -7,7 +7,7 @@ globalThis.Jig.glossary = (() => {
      * @return {Term | undefined}
      */
     function findTerm(fqn) {
-        return globalThis.glossaryData?.terms?.[fqn];
+        return globalThis.Jig.data.glossary.getTerm(fqn);
     }
 
     /**

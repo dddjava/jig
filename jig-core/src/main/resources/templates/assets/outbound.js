@@ -26,7 +26,7 @@ const OutboundApp = (() => {
      */
     const DataLoader = {
         load() {
-            return globalThis.outboundData || {
+            return Jig.data.outbound.get() || {
                 outboundPorts: [],
                 outboundAdapters: [],
                 persistenceAccessors: [],

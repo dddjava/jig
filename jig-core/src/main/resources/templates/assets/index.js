@@ -5,7 +5,7 @@ const IndexApp = (() => {
      * @returns {PackageData}
      */
     function getPackageData() {
-        return globalThis.packageData;
+        return Jig.data.package.get();
     }
 
     function renderPackageDiagram(packageDiagramContainer, allPackages, allPackageRelations, packageRoot, titleLabel) {
@@ -38,7 +38,7 @@ const IndexApp = (() => {
         if (!ul) return;
         ul.innerHTML = "";
 
-        const links = globalThis.navigationData?.links || [];
+        const links = Jig.data.navigation.getLinks();
         links.forEach(link => {
             const li = Jig.dom.createElement("li", {
                 children: [

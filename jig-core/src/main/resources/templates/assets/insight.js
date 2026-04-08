@@ -3,7 +3,7 @@ const InsightApp = (() => {
 
 
     function parseInsightData() {
-        return globalThis.insightData ?? null;
+        return Jig.data.insight.get();
     }
 
     function setInsightCount(elementId, count) {

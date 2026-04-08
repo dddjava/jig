@@ -11,6 +11,7 @@ const doc = new DocumentStub();
 doc.body.classList.add("outbound-interface");
 global.document = doc;
 require("../../main/resources/templates/assets/jig-util.js");
+require("../../main/resources/templates/assets/jig-data.js");
 require("../../main/resources/templates/assets/jig-glossary.js");
 require("../../main/resources/templates/assets/jig-mermaid.js");
 require("../../main/resources/templates/assets/jig-dom.js");

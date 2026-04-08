@@ -134,7 +134,7 @@ const InboundApp = (() => {
     };
 
     function parseInboundData() {
-        return globalThis.inboundData ?? null;
+        return Jig.data.inbound.get();
     }
 
     function init() {
@@ -213,7 +213,7 @@ const InboundApp = (() => {
 
             // 型単位のダイアグラムを描画
             const diagramGenerator = (dir) => {
-                const data = Diagram.prepareData(inboundType, globalThis.usecaseData);
+                const data = Diagram.prepareData(inboundType, Jig.data.usecase.get());
                 const builder = new Jig.mermaid.Builder();
                 Diagram.buildBuilder(data, builder);
                 return builder.build(dir);

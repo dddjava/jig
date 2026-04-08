@@ -127,6 +127,7 @@ test.describe('InboundApp', () => {
 
     test.beforeEach(() => {
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-util.js')];
+        delete require.cache[require.resolve('../../main/resources/templates/assets/jig-data.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-glossary.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/jig-mermaid.js')];
         delete require.cache[require.resolve('../../main/resources/templates/assets/inbound.js')];
@@ -157,6 +158,7 @@ test.describe('InboundApp', () => {
         delete globalThis.Jig;
 
         require('../../main/resources/templates/assets/jig-util.js');
+        require('../../main/resources/templates/assets/jig-data.js');
         require('../../main/resources/templates/assets/jig-glossary.js');
         require('../../main/resources/templates/assets/jig-mermaid.js');
         globalThis.Jig.dom = {

@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 require('../../main/resources/templates/assets/jig-util.js');
+require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 
 const mermaid = require('../../main/resources/templates/assets/jig-mermaid.js')

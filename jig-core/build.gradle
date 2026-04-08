@@ -88,6 +88,7 @@ def bundleJsOutputDir = layout.buildDirectory.dir("generated/resources/bundle")
 def bundleJsTask = tasks.register("bundleJs") {
     def inputFiles = files(
             'src/main/resources/templates/assets/jig-util.js',
+            'src/main/resources/templates/assets/jig-data.js',
             'src/main/resources/templates/assets/jig-glossary.js',
             'src/main/resources/templates/assets/jig-dom.js',
             'src/main/resources/templates/assets/jig-mermaid.js'

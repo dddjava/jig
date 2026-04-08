@@ -64,7 +64,7 @@ globalThis.Jig.dom = (() => {
     function setupHeaderNavigation() {
         if (document.body.classList.contains("index")) return;
 
-        const navigationData = globalThis.navigationData;
+        const navigationData = globalThis.Jig.data.navigation.get();
         if (!navigationData || !Array.isArray(navigationData.links) || navigationData.links.length === 0) return;
 
         const header = document.querySelector("header.top") || document.querySelector("header");

@@ -4,6 +4,7 @@ const {DocumentStub, EventStub, setGlossaryData} = require('./dom-stub.js');
 
 // モジュールを事前にロード
 require('../../main/resources/templates/assets/jig-util.js');
+require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');

@@ -9,6 +9,7 @@ global.window = global.window || {
 };
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-util.js');
+require('../../main/resources/templates/assets/jig-data.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
@@ -17,18 +18,18 @@ const Jig = globalThis.Jig;
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
 const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
 
-// ヘルパー関数：buildPackages で構築したパッケージから _childPackagesMap を設定
+// ヘルパー関数：domainData を設定し、Jig.data.domain の派生キャッシュを再構築する
 function setupDomainData(domainPackageRoots, types) {
-    const packages = buildPackages(domainPackageRoots, types);
     globalThis.domainData = {domainPackageRoots, types};
-    globalThis.domainData._typesMap = new Map(types.map(t => [t.fqn, t]));
-    globalThis.domainData._packages = packages;
+    Jig.data.resetCache();
+    const packages = buildPackages(domainPackageRoots, types);
+    Jig.data.domain.setPackages(packages);
     const childrenMap = new Map(packages.map(p => [p.fqn, []]));
     packages.forEach(p => {
         const parent = p.fqn.substring(0, p.fqn.lastIndexOf('.'));
         if (childrenMap.has(parent)) childrenMap.get(parent).push(p);
     });
-    globalThis.domainData._childPackagesMap = childrenMap;
+    Jig.data.domain.setChildPackagesMap(childrenMap);
 }
 
 test.describe('domain.js', () => {

@@ -16,7 +16,7 @@ const DomainApp = (() => {
      * @returns {DomainData}
      */
     function getDomainData() {
-        return globalThis.domainData;
+        return Jig.data.domain.get();
     }
 
     /**
@@ -603,7 +603,7 @@ const DomainApp = (() => {
     function renderPackages(packages, typeRelations, typesMap, allPackageRelations, childPackagesMap, container) {
         if (packages.length === 0) return;
 
-        const allPackages = getDomainData()._packages;
+        const allPackages = Jig.data.domain.getPackages();
 
         packages.forEach(pkg => {
             const section = Jig.dom.createElement("section", {
@@ -997,6 +997,9 @@ const DomainApp = (() => {
     function init() {
         if (typeof document === "undefined" || !document.body.classList.contains("domain-model")) return;
 
+        // init 毎に派生キャッシュをリセット（テストで globalThis.domainData を差し替えるケースに対応）
+        Jig.data.resetCache();
+
         const data = getDomainData();
         if (!data) {
             const main = document.getElementById("domain-main");
@@ -1012,13 +1015,12 @@ const DomainApp = (() => {
         initSettings();
 
         // types を FQN → type の Map にインデックス化（O(n) → O(1) 検索）
-        globalThis.domainData._typesMap = new Map(
-            data.types.map(type => [type.fqn, type])
-        );
+        // Jig.data.domain 内部のメモ化に保持する
+        const typesMap = Jig.data.domain.getTypesMap();
 
         // domainPackageRoots と types からパッケージを構築
         const packages = buildPackages(data.domainPackageRoots, data.types);
-        globalThis.domainData._packages = packages;
+        Jig.data.domain.setPackages(packages);
 
         // packages の直下の子を事前計算（O(n) → O(1) 取得）
         const childrenMap = new Map(packages.map(p => [p.fqn, []]));
@@ -1028,19 +1030,17 @@ const DomainApp = (() => {
                 childrenMap.get(parentFqn).push(p);
             }
         });
-        globalThis.domainData._childPackagesMap = childrenMap;
+        Jig.data.domain.setChildPackagesMap(childrenMap);
 
         // typeRelations を一度解決（以降は引数経由で渡す）
-        const typesMap = globalThis.domainData._typesMap;
-        const rawRelations = globalThis.typeRelationsData?.relations || [];
+        const rawRelations = Jig.data.typeRelations.getRelations();
         const typeRelations = rawRelations.filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
         const allPackageRelations = derivePackageRelations(typeRelations, typesMap);
 
-        // childPackagesMap を取得して関数に渡す
-        const childPackagesMap = globalThis.domainData._childPackagesMap;
+        const childPackagesMap = Jig.data.domain.getChildPackagesMap();
 
         Jig.dom.type.setResolver((fqn) => {
-            const domainType = getDomainData()?._typesMap?.get(fqn);
+            const domainType = Jig.data.domain.getType(fqn);
             if (domainType) {
                 return {
                     href: '#' + Jig.util.fqnToId("domain", fqn),
@@ -1062,10 +1062,10 @@ const DomainApp = (() => {
 
         // optional データの警告表示
         const warnings = [];
-        if (!globalThis.glossaryData) {
+        if (!Jig.data.glossary.get()) {
             warnings.push("用語集（glossary-data.js）が読み込まれていません");
         }
-        if (!globalThis.typeRelationsData) {
+        if (!Jig.data.typeRelations.get()) {
             warnings.push("型関連情報（type-relations-data.js）が読み込まれていません");
         }
 

@@ -29,7 +29,7 @@ const GlossaryApp = (() => {
     }
 
     function getDomainPackageRoots() {
-        const glossaryData = globalThis.glossaryData;
+        const glossaryData = Jig.data.glossary.get();
         if (glossaryData && glossaryData.domainPackageRoots) {
             return glossaryData.domainPackageRoots;
         }
@@ -37,7 +37,7 @@ const GlossaryApp = (() => {
     }
 
     function getGlossaryData() {
-        const glossaryData = globalThis.glossaryData;
+        const glossaryData = Jig.data.glossary.get();
         const normalized = normalizeGlossaryData(glossaryData);
         if (normalized) return normalized;
 

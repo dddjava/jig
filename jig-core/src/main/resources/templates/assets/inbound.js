@@ -2,7 +2,8 @@ const InboundApp = (() => {
     const Jig = globalThis.Jig;
 
     const state = {
-        data: null
+        data: null,
+        sidebarFilterText: '',
     };
 
     const Diagram = {
@@ -140,11 +141,18 @@ const InboundApp = (() => {
     function init() {
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
         state.data = null;
+        state.sidebarFilterText = '';
 
         state.data = parseInboundData();
         if (!state.data) {
             return;
         }
+
+        Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
+            state.sidebarFilterText = text;
+            renderSidebar(state.data.controllers || []);
+        });
+
         render();
     }
 
@@ -159,7 +167,12 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        const items = controllers.map(c => ({
+        const filterText = state.sidebarFilterText.toLowerCase();
+        const filteredControllers = filterText
+            ? controllers.filter(c => Jig.glossary.getTypeTerm(c.fqn).title.toLowerCase().includes(filterText))
+            : controllers;
+
+        const items = filteredControllers.map(c => ({
             id: Jig.util.fqnToId("adapter", c.fqn),
             label: Jig.glossary.getTypeTerm(c.fqn).title
         }));

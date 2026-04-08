@@ -173,6 +173,11 @@ test.describe('InboundApp', () => {
                     if (!container) return;
                     const section = createSidebarSection(title, items);
                     if (section) container.appendChild(section);
+                },
+                initTextFilter: (inputId, onChange) => {
+                    const input = document.getElementById(inputId);
+                    if (!input) return;
+                    input.addEventListener('input', () => onChange(input.value.trim()));
                 }
             },
             type: {

@@ -556,10 +556,7 @@ test.describe('domain.js', () => {
         test('子パッケージ間に関連がある場合、ダイアグラムが生成される', () => {
             const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
             const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA, typeB]);
-            globalThis.typeRelationsData = {
-                relations: [{from: 'org.example.model.TypeA', to: 'org.example.service.TypeB'}]
-            };
+
             setGlossaryData({
                 'org.example': {title: 'example'},
                 'org.example.model': {title: 'model'},
@@ -568,8 +565,13 @@ test.describe('domain.js', () => {
                 'org.example.service.TypeB': {title: 'TypeB'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            // パッケージ構造を直接構築
+            const packages = [
+                {fqn: 'org.example', types: []},
+                {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]},
+                {fqn: 'org.example.service', types: [{fqn: 'org.example.service.TypeB'}]},
+            ];
+            const parentPkg = packages[0];
             const allPackageRelations = [{from: 'org.example.model', to: 'org.example.service'}];
 
             const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
@@ -577,38 +579,34 @@ test.describe('domain.js', () => {
             assert.ok(result !== null, 'ダイアグラムが生成されること');
             assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
 
         test('子パッケージが存在しない場合はnullを返す', () => {
             const typeA = {fqn: 'org.example.TypeA', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA]);
-            globalThis.typeRelationsData = {relations: []};
+
             setGlossaryData({
                 'org.example': {title: 'example'},
                 'org.example.TypeA': {title: 'TypeA'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            const packages = [
+                {fqn: 'org.example', types: [{fqn: 'org.example.TypeA'}]},
+            ];
+            const parentPkg = packages[0];
             const allPackageRelations = [];
 
             const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
 
         test('子パッケージ間に関連がない場合はnullを返す', () => {
             const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
             const typeB = {fqn: 'org.example.service.TypeB', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA, typeB]);
-            globalThis.typeRelationsData = {relations: []}; // 型関連なし
+
             setGlossaryData({
                 'org.example': {title: 'example'},
                 'org.example.model': {title: 'model'},
@@ -617,28 +615,24 @@ test.describe('domain.js', () => {
                 'org.example.service.TypeB': {title: 'TypeB'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const parentPkg = packages.find(p => p.fqn === 'org.example');
-            const allPackageRelations = [];
+            const packages = [
+                {fqn: 'org.example', types: []},
+                {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]},
+                {fqn: 'org.example.service', types: [{fqn: 'org.example.service.TypeB'}]},
+            ];
+            const parentPkg = packages[0];
+            const allPackageRelations = [];  // 型関連なし
 
             const result = createPackageRelationDiagram(parentPkg, packages, allPackageRelations);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
     });
 
     test.describe('createPackageDirectRelationDiagram', () => {
         test('対象パッケージが他パッケージへ直接依存している場合、ダイアグラムが生成される', () => {
-            const typeA = {fqn: 'org.example.model.TypeA', isDeprecated: false};
-            const typeB = {fqn: 'org.external.TypeB', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA, typeB]);
-            globalThis.typeRelationsData = {
-                relations: [{from: 'org.example.model.TypeA', to: 'org.external.TypeB'}]
-            };
             setGlossaryData({
                 'org.example': {title: 'example'},
                 'org.example.model': {title: 'model'},
@@ -647,8 +641,7 @@ test.describe('domain.js', () => {
                 'org.external.TypeB': {title: 'TypeB'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const modelPkg = packages.find(p => p.fqn === 'org.example.model');
+            const modelPkg = {fqn: 'org.example.model', types: [{fqn: 'org.example.model.TypeA'}]};
             const allPackageRelations = [{from: 'org.example.model', to: 'org.external'}];
 
             const result = createPackageDirectRelationDiagram(modelPkg, allPackageRelations);
@@ -656,30 +649,22 @@ test.describe('domain.js', () => {
             assert.ok(result !== null, 'ダイアグラムが生成されること');
             assert.ok(result.includes('graph'), 'Mermaidグラフが含まれること');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
 
         test('対象パッケージに関連がない場合はnullを返す', () => {
-            const typeA = {fqn: 'org.example.TypeA', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA]);
-            globalThis.typeRelationsData = {relations: []};
             setGlossaryData({
                 'org.example': {title: 'example'},
                 'org.example.TypeA': {title: 'TypeA'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const parentPkg = packages.find(p => p.fqn === 'org.example');
+            const parentPkg = {fqn: 'org.example', types: [{fqn: 'org.example.TypeA'}]};
             const allPackageRelations = [];
 
             const result = createPackageDirectRelationDiagram(parentPkg, allPackageRelations);
 
             assert.equal(result, null, 'ダイアグラムが生成されないこと');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
     });

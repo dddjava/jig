@@ -37,27 +37,6 @@
                     <label><input type="checkbox" id="show-method"><span class="kind-badge" data-kind="メソッド">M</span>メソッド</label>
                     <label><input type="checkbox" id="show-field"><span class="kind-badge" data-kind="フィールド">F</span>フィールド</label>
                 </fieldset>
-                <div class="search-option">
-                    <div class="keyword-search">
-                        <label for="search-input">絞り込み</label>
-                        <input id="search-input" type="text" placeholder="検索ワード">
-                    </div>
-                    <div class="search-target-option">
-                        <div class="checkbox-options">
-                            <label><input type="checkbox" id="search-target-name" checked>名前</label>
-                            <label><input type="checkbox" id="search-target-description" checked>説明</label>
-                            <label><input type="checkbox" id="search-target-fqn">完全修飾名</label>
-                            <label><input type="checkbox" id="search-target-simple">単純名</label>
-                        </div>
-                    </div>
-                    <div class="search-method-option">
-                        <div class="radio-options">
-                            <label><input type="radio" name="search-method" value="exact">完全一致</label>
-                            <label><input type="radio" name="search-method" value="partial" checked>部分一致</label>
-                            <label><input type="radio" name="search-method" value="regex">正規表現</label>
-                        </div>
-                    </div>
-                </div>
                 <div class="display-option">
                     <div class="display-controls-row">
                         <div class="sorting-controls">
@@ -71,6 +50,9 @@
                 </div>
             </div>
         </details>
+        <div class="sidebar-filter">
+            <input type="search" id="glossary-sidebar-filter" placeholder="絞り込み" autocomplete="off">
+        </div>
         <div id="term-sidebar-list" class="in-page-sidebar__list"></div>
     </nav>
     <main id="glossary-main">

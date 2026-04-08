@@ -25,28 +25,8 @@ require('../../main/resources/templates/assets/jig-dom.js');
 
 const glossary = require('../../main/resources/templates/assets/glossary.js');
 
-/**
- * glossary.js のテスト用に拡張された DocumentStub
- */
-class GlossaryDocumentStub extends DocumentStub {
-    querySelector(selector) {
-        if (selector === 'input[name="search-method"]:checked') {
-            const radios = this.elementsByName.get('search-method') || [];
-            return radios.find(el => el.checked) || null;
-        }
-        return super.querySelector(selector);
-    }
-
-    querySelectorAll(selector) {
-        if (selector === 'input[name="search-method"]') {
-            return this.elementsByName.get('search-method') || [];
-        }
-        return super.querySelectorAll(selector);
-    }
-}
-
 function setupDocument() {
-    const doc = new GlossaryDocumentStub();
+    const doc = new DocumentStub();
     global.document = doc;
     global.window = {
         addEventListener: () => {
@@ -54,37 +34,22 @@ function setupDocument() {
     };
 
     // テストに必要なコントロール要素を初期化
-    const createInput = (id, type = 'checkbox', name = null, checked = false) => {
+    const createInput = (id, type = 'checkbox', checked = false) => {
         const input = doc.createElement('input');
         input.id = id;
         input.type = type;
         input.checked = checked;
-        if (name) {
-            input.name = name;
-        }
         doc.elementsById.set(id, input);
         return input;
     };
 
-    createInput('search-input', 'text');
-    createInput('show-empty-description', 'checkbox', null, true);
-    createInput('show-package', 'checkbox', null, true);
-    createInput('show-class', 'checkbox', null, true);
-    createInput('show-method', 'checkbox', null, true);
-    createInput('show-field', 'checkbox', null, true);
-
-    createInput('search-target-name', 'checkbox', null, true);
-    createInput('search-target-description', 'checkbox', null, true);
-    createInput('search-target-fqn', 'checkbox', null, false);
-    createInput('search-target-simple', 'checkbox', null, false);
-    createInput('search-target-kind', 'checkbox', null, false);
-
-    createInput('search-method-partial', 'radio', 'search-method', false).value = 'partial';
-    createInput('search-method-exact', 'radio', 'search-method', false).value = 'exact';
-    createInput('search-method-regex', 'radio', 'search-method', false).value = 'regex';
-
-    createInput('show-attributes', 'checkbox', null, false);
-    createInput('show-only-domain', 'checkbox', null, true);
+    createInput('show-empty-description', 'checkbox', true);
+    createInput('show-package', 'checkbox', true);
+    createInput('show-class', 'checkbox', true);
+    createInput('show-method', 'checkbox', true);
+    createInput('show-field', 'checkbox', true);
+    createInput('show-attributes', 'checkbox', false);
+    createInput('show-only-domain', 'checkbox', true);
 
     const jumpBar = doc.createElement('div');
     jumpBar.id = 'jump-bar';
@@ -112,110 +77,44 @@ test.describe('glossary.js', () => {
     });
 
     test.describe('絞り込み', () => {
-        test('種類・説明有無・検索語でフィルタする (デフォルト設定)', () => {
+        test('種類・説明有無でフィルタする', () => {
             const doc = setupDocument();
             const terms = [
-                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account', simpleText: 'Account'},
-                {title: 'Order', description: '', kind: 'クラス', fqn: 'app.Order', simpleText: 'Order'},
-                {title: 'Repo', description: 'data', kind: 'パッケージ', fqn: 'app.Repo', simpleText: 'Repo'},
-                {title: 'Submit', description: 'action', kind: 'メソッド', fqn: 'app.Submit', simpleText: 'Submit'},
+                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account'},
+                {title: 'Order', description: '', kind: 'クラス', fqn: 'app.Order'},
+                {title: 'Repo', description: 'data', kind: 'パッケージ', fqn: 'app.Repo'},
+                {title: 'Submit', description: 'action', kind: 'メソッド', fqn: 'app.Submit'},
             ];
             const controls = {
-                searchInput: doc.getElementById('search-input'),
                 showEmptyDescription: doc.getElementById('show-empty-description'),
                 showPackage: doc.getElementById('show-package'),
                 showClass: doc.getElementById('show-class'),
                 showMethod: doc.getElementById('show-method'),
                 showField: doc.getElementById('show-field'),
-                searchTargetName: doc.getElementById('search-target-name'),
-                searchTargetDescription: doc.getElementById('search-target-description'),
-                searchTargetFqn: doc.getElementById('search-target-fqn'),
-                searchTargetSimple: doc.getElementById('search-target-simple'),
-                searchTargetKind: doc.getElementById('search-target-kind'),
             };
 
-            controls.searchInput.value = 'acc';
-            doc.getElementById('search-method-partial').checked = true;
             controls.showEmptyDescription.checked = false;
             controls.showPackage.checked = false;
-            controls.showClass.checked = true;
-            controls.showMethod.checked = true;
-            controls.showField.checked = true;
 
             const result = glossary.getFilteredTerms(terms, controls);
-            assert.deepEqual(result, [terms[0]]);
+            assert.deepEqual(result, [terms[0], terms[3]]);
         });
 
-        test('完全一致でフィルタする', () => {
+        test('テキストフィルタで名前の部分一致絞り込みをする', () => {
             const doc = setupDocument();
             const terms = [
-                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account', simpleText: 'Account'},
-                {
-                    title: 'My Account',
-                    description: 'desc',
-                    kind: 'クラス',
-                    fqn: 'app.MyAccount',
-                    simpleText: 'MyAccount'
-                },
+                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account'},
+                {title: 'Order', description: 'desc', kind: 'クラス', fqn: 'app.Order'},
+                {title: 'AccountService', description: 'desc', kind: 'クラス', fqn: 'app.AccountService'},
             ];
             const controls = {
-                searchInput: doc.getElementById('search-input'),
+                filterText: 'acc',
                 showEmptyDescription: doc.getElementById('show-empty-description'),
                 showPackage: doc.getElementById('show-package'),
                 showClass: doc.getElementById('show-class'),
                 showMethod: doc.getElementById('show-method'),
                 showField: doc.getElementById('show-field'),
-                searchTargetName: doc.getElementById('search-target-name'),
-                searchTargetDescription: doc.getElementById('search-target-description'),
-                searchTargetFqn: doc.getElementById('search-target-fqn'),
-                searchTargetSimple: doc.getElementById('search-target-simple'),
-                searchTargetKind: doc.getElementById('search-target-kind'),
             };
-
-            controls.searchInput.value = 'Account';
-            controls.searchTargetDescription.checked = false;
-            doc.getElementById('search-method-exact').checked = true;
-
-            const result = glossary.getFilteredTerms(terms, controls);
-            assert.deepEqual(result, [terms[0]]);
-        });
-
-        test('正規表現でフィルタする', () => {
-            const doc = setupDocument();
-            const terms = [
-                {title: 'Account', description: 'desc', kind: 'クラス', fqn: 'app.Account', simpleText: 'Account'},
-                {
-                    title: 'MyService',
-                    description: 'desc',
-                    kind: 'クラス',
-                    fqn: 'app.MyService',
-                    simpleText: 'MyService'
-                },
-                {
-                    title: 'YourAccount',
-                    description: 'desc',
-                    kind: 'クラス',
-                    fqn: 'app.YourAccount',
-                    simpleText: 'YourAccount'
-                },
-            ];
-            const controls = {
-                searchInput: doc.getElementById('search-input'),
-                showEmptyDescription: doc.getElementById('show-empty-description'),
-                showPackage: doc.getElementById('show-package'),
-                showClass: doc.getElementById('show-class'),
-                showMethod: doc.getElementById('show-method'),
-                showField: doc.getElementById('show-field'),
-                searchTargetName: doc.getElementById('search-target-name'),
-                searchTargetDescription: doc.getElementById('search-target-description'),
-                searchTargetFqn: doc.getElementById('search-target-fqn'),
-                searchTargetSimple: doc.getElementById('search-target-simple'),
-                searchTargetKind: doc.getElementById('search-target-kind'),
-            };
-
-            controls.searchInput.value = '.*Account.*';
-            controls.searchTargetDescription.checked = false;
-            doc.getElementById('search-method-regex').checked = true;
 
             const result = glossary.getFilteredTerms(terms, controls);
             assert.deepEqual(result, [terms[0], terms[2]]);
@@ -235,42 +134,32 @@ test.describe('glossary.js', () => {
                     description: 'desc',
                     kind: 'クラス',
                     fqn: 'com.example.domain.model.Account',
-                    simpleText: 'Account'
                 },
                 {
                     title: 'AccountRepo',
                     description: 'desc',
                     kind: 'クラス',
                     fqn: 'com.example.domain.model.repository.AccountRepo',
-                    simpleText: 'AccountRepo'
                 },
                 {
                     title: 'ExternalService',
                     description: 'desc',
                     kind: 'クラス',
                     fqn: 'com.example.external.ExternalService',
-                    simpleText: 'ExternalService'
                 },
                 {
                     title: 'AccountMethod',
                     description: 'action',
                     kind: 'メソッド',
                     fqn: 'com.example.domain.model.Account#create',
-                    simpleText: 'create'
                 },
             ];
             const controls = {
-                searchInput: doc.getElementById('search-input'),
                 showEmptyDescription: doc.getElementById('show-empty-description'),
                 showPackage: doc.getElementById('show-package'),
                 showClass: doc.getElementById('show-class'),
                 showMethod: doc.getElementById('show-method'),
                 showField: doc.getElementById('show-field'),
-                searchTargetName: doc.getElementById('search-target-name'),
-                searchTargetDescription: doc.getElementById('search-target-description'),
-                searchTargetFqn: doc.getElementById('search-target-fqn'),
-                searchTargetSimple: doc.getElementById('search-target-simple'),
-                searchTargetKind: doc.getElementById('search-target-kind'),
                 showOnlyDomain: doc.getElementById('show-only-domain'),
             };
 
@@ -293,28 +182,20 @@ test.describe('glossary.js', () => {
                     description: 'desc',
                     kind: 'クラス',
                     fqn: 'com.example.domain.model.Account',
-                    simpleText: 'Account'
                 },
                 {
                     title: 'ExternalService',
                     description: 'desc',
                     kind: 'クラス',
                     fqn: 'com.example.external.ExternalService',
-                    simpleText: 'ExternalService'
                 },
             ];
             const controls = {
-                searchInput: doc.getElementById('search-input'),
                 showEmptyDescription: doc.getElementById('show-empty-description'),
                 showPackage: doc.getElementById('show-package'),
                 showClass: doc.getElementById('show-class'),
                 showMethod: doc.getElementById('show-method'),
                 showField: doc.getElementById('show-field'),
-                searchTargetName: doc.getElementById('search-target-name'),
-                searchTargetDescription: doc.getElementById('search-target-description'),
-                searchTargetFqn: doc.getElementById('search-target-fqn'),
-                searchTargetSimple: doc.getElementById('search-target-simple'),
-                searchTargetKind: doc.getElementById('search-target-kind'),
                 showOnlyDomain: doc.getElementById('show-only-domain'),
             };
 
@@ -327,30 +208,6 @@ test.describe('glossary.js', () => {
             const result = glossary.getFilteredTerms(terms, controls);
             assert.deepEqual(result, [terms[0], terms[1]]);
             delete globalThis.glossaryData;
-        });
-
-        test('不正な正規表現はマッチしない', () => {
-            const doc = setupDocument();
-            const terms = [{title: 'Account', kind: 'クラス'}];
-            const controls = {
-                searchInput: doc.getElementById('search-input'),
-                showPackage: doc.getElementById('show-package'),
-                showClass: doc.getElementById('show-class'),
-                showMethod: doc.getElementById('show-method'),
-                showField: doc.getElementById('show-field'),
-                showEmptyDescription: doc.getElementById('show-empty-description'),
-                searchTargetName: doc.getElementById('search-target-name'),
-                searchTargetDescription: doc.getElementById('search-target-description'),
-                searchTargetFqn: doc.getElementById('search-target-fqn'),
-                searchTargetSimple: doc.getElementById('search-target-simple'),
-                searchTargetKind: doc.getElementById('search-target-kind'),
-            };
-
-            controls.searchInput.value = '[';
-            doc.getElementById('search-method-regex').checked = true;
-
-            const result = glossary.getFilteredTerms(terms, controls);
-            assert.deepEqual(result, []);
         });
     });
 

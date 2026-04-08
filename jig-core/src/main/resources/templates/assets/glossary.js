@@ -274,29 +274,7 @@ const GlossaryApp = (() => {
             "メソッド": controls.showMethod.checked,
             "フィールド": controls.showField.checked,
         };
-        const searchKeyword = controls.searchInput.value;
-
-        const searchMethod = document.querySelector('input[name="search-method"]:checked')?.value || "partial";
-
-        // 正規表現を関数の先頭で一度だけコンパイル
-        let compiledRegex = null;
-        if (searchMethod === "regex" && searchKeyword.trim() !== "") {
-            try {
-                compiledRegex = new RegExp(searchKeyword, "i");
-            } catch (e) {
-                // 不正な正規表現: 全件不一致とする
-                return [];
-            }
-        }
-
-        const targetsToSearch = {
-            title: controls.searchTargetName.checked,
-            description: controls.searchTargetDescription.checked,
-            fqn: controls.searchTargetFqn.checked,
-            simpleText: controls.searchTargetSimple.checked,
-            kind: false,
-        };
-
+        const filterText = (controls.filterText || '').toLowerCase();
         const showOnlyDomain = controls.showOnlyDomain && controls.showOnlyDomain.checked;
         const domainPackageRoots = getDomainPackageRoots();
 
@@ -318,25 +296,9 @@ const GlossaryApp = (() => {
                 if (!isInDomainPackage) return false;
             }
 
-            // キーワード検索
-            if (searchKeyword) {
-                const isMatch = Object.keys(targetsToSearch).some(prop => {
-                    if (!targetsToSearch[prop]) return false;
-
-                    const targetText = term[prop] || "";
-
-                    switch (searchMethod) {
-                        case "exact":
-                            return targetText.toLowerCase() === searchKeyword.toLowerCase();
-                        case "regex":
-                            return compiledRegex ? compiledRegex.test(targetText) : false;
-                        case "partial":
-                        default:
-                            return targetText.toLowerCase().includes(searchKeyword.toLowerCase());
-                    }
-                });
-
-                if (!isMatch) return false;
+            // テキストフィルタ（名前の部分一致）
+            if (filterText) {
+                if (!(term.title || "").toLowerCase().includes(filterText)) return false;
             }
 
             return true;
@@ -351,16 +313,12 @@ const GlossaryApp = (() => {
         const terms = getGlossaryData();
 
         const controls = {
-            searchInput: document.getElementById("search-input"),
+            filterText: '',
             showEmptyDescription: document.getElementById("show-empty-description"),
             showPackage: document.getElementById("show-package"),
             showClass: document.getElementById("show-class"),
             showMethod: document.getElementById("show-method"),
             showField: document.getElementById("show-field"),
-            searchTargetName: document.getElementById("search-target-name"),
-            searchTargetDescription: document.getElementById("search-target-description"),
-            searchTargetFqn: document.getElementById("search-target-fqn"),
-            searchTargetSimple: document.getElementById("search-target-simple"),
             showAttributesCheckbox: document.getElementById("show-attributes"),
             showOnlyDomain: document.getElementById("show-only-domain"),
         };
@@ -383,18 +341,15 @@ const GlossaryApp = (() => {
             controls.showMethod,
             controls.showField,
             controls.showAttributesCheckbox,
-            controls.searchTargetName,
-            controls.searchTargetDescription,
-            controls.searchTargetFqn,
-            controls.searchTargetSimple,
             controls.showOnlyDomain,
         ].filter(Boolean);
 
         changeControls.forEach(el => el.addEventListener("change", updateArticles));
 
-        controls.searchInput.addEventListener("input", updateArticles);
-        document.querySelectorAll('input[name="search-method"]')
-            .forEach(radio => radio.addEventListener("change", updateArticles));
+        Jig.dom.sidebar.initTextFilter('glossary-sidebar-filter', text => {
+            controls.filterText = text;
+            updateArticles();
+        });
 
         const exportButton = document.getElementById("export-csv");
         if (exportButton) {

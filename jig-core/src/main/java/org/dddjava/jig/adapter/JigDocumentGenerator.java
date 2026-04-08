@@ -62,7 +62,7 @@ public class JigDocumentGenerator {
     }
 
     private void generateDebugHtml() {
-        JigDocumentWriter.copyResourceTo("templates/debug.html", outputDirectory.resolve("debug.html"));
+        JigDocumentWriter.copyResourceTo("templates/", "debug.html", outputDirectory);
     }
 
     private void generateSharedAssets() {

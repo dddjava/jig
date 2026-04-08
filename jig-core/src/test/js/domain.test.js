@@ -737,14 +737,6 @@ test.describe('domain.js', () => {
             const typeX = {fqn: 'org.other.X', isDeprecated: false};
             const typeY = {fqn: 'org.third.Y', isDeprecated: false};
 
-            setGlossaryData({
-                'org.example': {title: 'example'},
-                'org.example.A': {title: 'A'},
-                'org.example.B': {title: 'B'},
-                'org.other': {title: 'other'},
-                'org.third': {title: 'third'},
-            });
-
             const typesMap = new Map([
                 ['org.example.A', typeA],
                 ['org.example.B', typeB],
@@ -765,8 +757,6 @@ test.describe('domain.js', () => {
             const idThird = Jig.util.fqnToId("n", 'org.third');
             assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
-
-            delete globalThis.glossaryData;
         });
     });
 });

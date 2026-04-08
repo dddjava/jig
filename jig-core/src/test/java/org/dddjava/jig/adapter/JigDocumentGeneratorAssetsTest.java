@@ -36,12 +36,22 @@ class JigDocumentGeneratorAssetsTest {
         expected.remove("jig-mermaid.js");
         expected.remove("jig-util.js");
 
+        // 各ドキュメント用のファイルは generateDocuments でコピーされるため、generateSharedAssets のテストでは除外する
+        expected.remove("domain.js");
+        expected.remove("glossary.js");
+        expected.remove("inbound.js");
+        expected.remove("insight.js");
+        expected.remove("list-output.js");
+        expected.remove("outbound.js");
+        expected.remove("package.js");
+        expected.remove("usecase.js");
+
         assertEquals(expected, copied);
     }
 
     private void invokeGenerateSharedAssets(JigDocumentGenerator sut)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        var method = JigDocumentGenerator.class.getDeclaredMethod("generateAssets");
+        var method = JigDocumentGenerator.class.getDeclaredMethod("generateSharedAssets");
         method.setAccessible(true);
         method.invoke(sut);
     }

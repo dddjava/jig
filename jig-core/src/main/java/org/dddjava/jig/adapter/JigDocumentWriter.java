@@ -14,7 +14,7 @@ public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     public static void copyAssetsResource(String fileName, Path outputDirectory) {
-        copyResourceTo("templates/assets/" + fileName, outputDirectory.resolve("assets").resolve(fileName));
+        copyResourceTo("templates/assets/", fileName, outputDirectory.resolve("assets"));
     }
 
     public static Path writeHtmlAndJs(JigDocument jigDocument, Path outputDirectory) {
@@ -23,10 +23,9 @@ public class JigDocumentWriter {
     }
 
     private static Path writeHtmlAndJs(String fileName, Path outputDirectory) {
-        Path outputFilePath = outputDirectory.resolve(fileName + ".html");
-        copyResourceTo("templates/" + fileName + ".html", outputFilePath);
-        copyResourceTo("templates/assets/" + fileName + ".js", outputDirectory.resolve("assets").resolve(fileName + ".js"));
-        return outputFilePath;
+        copyResourceTo("templates/", fileName + ".html", outputDirectory);
+        copyAssetsResource(fileName + ".js", outputDirectory);
+        return outputDirectory.resolve(fileName + ".html");
     }
 
     public static void writeData(Path outputDirectory, String fileName, String variableName, String json) {
@@ -39,7 +38,9 @@ public class JigDocumentWriter {
         }
     }
 
-    public static void copyResourceTo(String resourcePath, Path outputPath) {
+    public static void copyResourceTo(String resourceDir, String fileName, Path outputDir) {
+        String resourcePath = resourceDir + fileName;
+        Path outputPath = outputDir.resolve(fileName);
         try (InputStream is = getResourceAsStream(resourcePath)) {
             Files.createDirectories(outputPath.getParent());
             Files.copy(is, outputPath, StandardCopyOption.REPLACE_EXISTING);

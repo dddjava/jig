@@ -18,16 +18,6 @@ public class IndexAdapter {
     static final String INDEX_FILE_NAME = "index.html";
     static final String NAVIGATION_DATA_JS = "navigation-data.js";
 
-    private static final List<JigDocument> HTML_SUMMARY_DOCUMENTS = List.of(
-            JigDocument.PackageRelation,
-            JigDocument.Glossary,
-            JigDocument.DomainModel,
-            JigDocument.UsecaseModel,
-            JigDocument.InboundInterface,
-            JigDocument.OutboundInterface,
-            JigDocument.Insight
-    );
-
     public void render(List<HandleResult> handleResultList, Path outputDirectory) {
         Map<JigDocument, String> documentLinks = new HashMap<>();
         for (HandleResult handleResult : handleResultList) {
@@ -108,10 +98,9 @@ public class IndexAdapter {
             Files.createDirectories(dataDirectory);
 
             List<NavigationLink> links = new ArrayList<>();
-            for (JigDocument doc : HTML_SUMMARY_DOCUMENTS) {
+            for (JigDocument doc : JigDocument.values()) {
                 addNavigationLinkIfPresent(links, documentLinks, doc);
             }
-            addNavigationLinkIfPresent(links, documentLinks, JigDocument.ListOutput);
 
             StringBuilder js = new StringBuilder();
             js.append("globalThis.navigationData = {\"links\": [");

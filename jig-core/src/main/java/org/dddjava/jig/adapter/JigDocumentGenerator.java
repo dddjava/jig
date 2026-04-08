@@ -2,7 +2,7 @@ package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
-import org.dddjava.jig.adapter.datajs.*;
+import org.dddjava.jig.adapter.datajs.DataAdapterResolver;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
@@ -16,7 +16,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class JigDocumentGenerator {
@@ -25,24 +24,12 @@ public class JigDocumentGenerator {
 
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
-    private final Map<JigDocument, List<JigDocumentDataAdapter>> adaptersMap;
+    private final DataAdapterResolver dataAdapterResolver;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
-
-        var typeRelationsDataAdapter = new TypeRelationsDataAdapter(jigService);
-        var glossaryDataAdapter = new GlossaryDataAdapter(jigService);
-        this.adaptersMap = Map.of(
-                JigDocument.DomainModel, List.of(new DomainDataAdapter(jigService), typeRelationsDataAdapter, glossaryDataAdapter),
-                JigDocument.PackageRelation, List.of(new PackageDataAdapter(jigService), typeRelationsDataAdapter, glossaryDataAdapter),
-                JigDocument.Glossary, List.of(glossaryDataAdapter),
-                JigDocument.Insight, List.of(new InsightDataAdapter(jigService)),
-                JigDocument.InboundInterface, List.of(new InboundDataAdapter(jigService), glossaryDataAdapter),
-                JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService), glossaryDataAdapter),
-                JigDocument.UsecaseModel, List.of(new UsecaseDataAdapter(jigService), glossaryDataAdapter),
-                JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService), glossaryDataAdapter)
-        );
+        this.dataAdapterResolver = new DataAdapterResolver(jigService);
     }
 
     public JigResult generate(JigRepository jigRepository) {
@@ -94,7 +81,7 @@ public class JigDocumentGenerator {
 
     private void writeDataFiles(JigRepository jigRepository) {
         jigDocuments.stream()
-                .flatMap(doc -> adaptersMap.getOrDefault(doc, List.of()).stream())
+                .flatMap(doc -> dataAdapterResolver.resolve(doc).stream())
                 // 同じDataAdapterは一度だけ出力する
                 .distinct()
                 .forEach(adapter -> {

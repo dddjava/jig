@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-
 /**
  * 取り扱うドキュメントの種類
  */

@@ -13,13 +13,6 @@ const DomainApp = (() => {
     };
 
     /**
-     * @returns {DomainData}
-     */
-    function getDomainData() {
-        return Jig.data.domain.get();
-    }
-
-    /**
      * domainPackageRoots と types からパッケージ一覧を構築する
      * @param {string[]} domainPackageRoots
      * @param {{fqn: string}[]} types
@@ -999,7 +992,7 @@ const DomainApp = (() => {
 
         Jig.data.resetCache();
 
-        const data = getDomainData();
+        const data = Jig.data.domain.get();
         if (!data) {
             const main = document.getElementById("domain-main");
             if (main) {

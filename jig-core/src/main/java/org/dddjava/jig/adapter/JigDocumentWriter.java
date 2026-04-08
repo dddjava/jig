@@ -13,10 +13,19 @@ import java.nio.file.StandardCopyOption;
 public class JigDocumentWriter {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
-    public static Path writeHtml(JigDocument jigDocument, Path outputDirectory) {
+    public static void copyAssetsResource(String fileName, Path outputDirectory) {
+        copyResourceTo("templates/assets/" + fileName, outputDirectory.resolve("assets").resolve(fileName));
+    }
+
+    public static Path writeHtmlAndJs(JigDocument jigDocument, Path outputDirectory) {
         String fileName = jigDocument.fileName();
+        return writeHtmlAndJs(fileName, outputDirectory);
+    }
+
+    private static Path writeHtmlAndJs(String fileName, Path outputDirectory) {
         Path outputFilePath = outputDirectory.resolve(fileName + ".html");
         copyResourceTo("templates/" + fileName + ".html", outputFilePath);
+        copyResourceTo("templates/assets/" + fileName + ".js", outputDirectory.resolve("assets").resolve(fileName + ".js"));
         return outputFilePath;
     }
 
@@ -67,5 +76,31 @@ public class JigDocumentWriter {
         // 見つからなければ例外
         throw new IllegalStateException(absolutePath + " not found." +
                 " This may be because the resource is not in the classpath or the module is not configured to allow resource access.");
+    }
+
+    public static void prepareOutputDirectory(Path outputDirectory) {
+        createOutputDirectory(outputDirectory);
+        createOutputDirectory(outputDirectory.resolve("assets"));
+        createOutputDirectory(outputDirectory.resolve("data"));
+    }
+
+    private static void createOutputDirectory(Path outputDirectory) {
+        File file = outputDirectory.toFile();
+        if (file.exists()) {
+            if (!file.isDirectory()) {
+                throw new IllegalStateException(file.getAbsolutePath() + " is not Directory. Please review your settings.");
+            }
+            if (!file.canWrite()) {
+                throw new IllegalStateException(file.getAbsolutePath() + " can not writable. Please specify another directory.");
+            }
+            return;
+        }
+
+        try {
+            Files.createDirectories(outputDirectory);
+            logger.info("[JIG] created {}", outputDirectory.toAbsolutePath());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

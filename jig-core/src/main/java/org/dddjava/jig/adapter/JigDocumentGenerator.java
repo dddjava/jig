@@ -7,20 +7,12 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class JigDocumentGenerator {
-
-    private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
 
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
@@ -33,47 +25,21 @@ public class JigDocumentGenerator {
     }
 
     public JigResult generate(JigRepository jigRepository) {
-        prepareOutputDirectory();
+        JigDocumentWriter.prepareOutputDirectory(outputDirectory);
 
         var handleResults = generateDocuments(jigRepository);
 
         generateIndex(handleResults);
         generateDebugHtml();
-        generateAssets();
+        generateSharedAssets();
         return new JigResultData(handleResults, IndexAdapter.indexFilePath(outputDirectory));
-    }
-
-    private void prepareOutputDirectory() {
-        createOutputDirectory(outputDirectory);
-        createOutputDirectory(outputDirectory.resolve("assets"));
-        createOutputDirectory(outputDirectory.resolve("data"));
-    }
-
-    private void createOutputDirectory(Path outputDirectory) {
-        File file = outputDirectory.toFile();
-        if (file.exists()) {
-            if (!file.isDirectory()) {
-                throw new IllegalStateException(file.getAbsolutePath() + " is not Directory. Please review your settings.");
-            }
-            if (!file.canWrite()) {
-                throw new IllegalStateException(file.getAbsolutePath() + " can not writable. Please specify another directory.");
-            }
-            return;
-        }
-
-        try {
-            Files.createDirectories(outputDirectory);
-            logger.info("[JIG] created {}", outputDirectory.toAbsolutePath());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     private List<HandleResult> generateDocuments(JigRepository jigRepository) {
         writeDataFiles(jigRepository);
         return jigDocuments.stream()
                 .map(jigDocument -> {
-                    Path htmlPath = JigDocumentWriter.writeHtml(jigDocument, outputDirectory);
+                    Path htmlPath = JigDocumentWriter.writeHtmlAndJs(jigDocument, outputDirectory);
                     return HandleResult.withOutput(jigDocument, List.of(htmlPath));
                 })
                 .toList();
@@ -90,38 +56,26 @@ public class JigDocumentGenerator {
                 });
     }
 
-    private void generateDebugHtml() {
-        JigDocumentWriter.copyResourceTo("templates/debug.html", outputDirectory.resolve("debug.html"));
-    }
-
     private void generateIndex(List<HandleResult> results) {
         IndexAdapter indexAdapter = new IndexAdapter();
         indexAdapter.render(results, outputDirectory);
     }
 
-    private void generateAssets() {
-        Path assetsPath = outputDirectory.resolve("assets");
+    private void generateDebugHtml() {
+        JigDocumentWriter.copyResourceTo("templates/debug.html", outputDirectory.resolve("debug.html"));
+    }
+
+    private void generateSharedAssets() {
         for (String fileName : List.of(
-                // 共通
                 "favicon.ico",
                 "index.js",
                 "style.css",
-                "jig-bundle.js",
-                // typesは開発用なので不要
-                // "types.js",
+                "jig-bundle.js"
 
-                // 各ドキュメント用
-                // TODO 出力対象のドキュメントだけにする
-                "domain.js",
-                "glossary.js",
-                "inbound.js",
-                "insight.js",
-                "list-output.js",
-                "outbound.js",
-                "package.js",
-                "usecase.js"
+                // 開発用なので不要
+                // "types.js"
         )) {
-            JigDocumentWriter.copyResourceTo("templates/assets/" + fileName, assetsPath.resolve(fileName));
+            JigDocumentWriter.copyAssetsResource(fileName, outputDirectory);
         }
     }
 

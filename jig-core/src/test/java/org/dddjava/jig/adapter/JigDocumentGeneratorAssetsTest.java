@@ -22,7 +22,7 @@ class JigDocumentGeneratorAssetsTest {
     @Test
     void templatesAssets配下の全ファイルをコピーする(JigDocumentGenerator sut, JigDocumentContext jigDocumentContext)
             throws Exception {
-        invokeGenerateAssets(sut);
+        invokeGenerateSharedAssets(sut);
 
         Path copiedAssetsDirectory = jigDocumentContext.outputDirectory().resolve("assets");
         Set<String> copied = collectRelativeFilePaths(copiedAssetsDirectory);
@@ -39,7 +39,7 @@ class JigDocumentGeneratorAssetsTest {
         assertEquals(expected, copied);
     }
 
-    private void invokeGenerateAssets(JigDocumentGenerator sut)
+    private void invokeGenerateSharedAssets(JigDocumentGenerator sut)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         var method = JigDocumentGenerator.class.getDeclaredMethod("generateAssets");
         method.setAccessible(true);

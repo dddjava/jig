@@ -432,24 +432,22 @@ test.describe('domain.js', () => {
         test('関係図のMermaidソースを生成する（fqnToMermaidIdが正常に動作すること）', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA, typeB]);
-            globalThis.typeRelationsData = {
-                relations: [
-                    {from: 'org.example.A', to: 'org.example.B'}
-                ]
-            };
+
             setGlossaryData({
                 'org.example.A': {title: 'A'},
                 'org.example.B': {title: 'B'},
                 'org.example': {title: 'example'}
             });
 
-            const typesMap = globalThis.domainData._typesMap;
-            const typeRelations = (globalThis.typeRelationsData?.relations || [])
-                .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'}
+            ];
 
-            const packages = globalThis.domainData._packages;
-            const pkg = packages.find(p => p.fqn === 'org.example');
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
             const result = createRelationDiagram(pkg, typeRelations, typesMap);
 
             assert.ok(result.includes('graph TB'), 'デフォルトの向きが含まれていること');
@@ -460,8 +458,6 @@ test.describe('domain.js', () => {
             const sgId = globalThis.Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
     });
@@ -471,22 +467,22 @@ test.describe('domain.js', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
             const typeC = {fqn: 'org.example.C', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA, typeB, typeC]);
-            globalThis.typeRelationsData = {
-                relations: [
-                    {from: 'org.example.A', to: 'org.example.B'},
-                    {from: 'org.example.C', to: 'org.example.A'},
-                ]
-            };
+
             setGlossaryData({
                 'org.example.A': {title: 'A'},
                 'org.example.B': {title: 'B'},
                 'org.example.C': {title: 'C'},
             });
 
-            const typesMap = globalThis.domainData._typesMap;
-            const typeRelations = (globalThis.typeRelationsData?.relations || [])
-                .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+                ['org.example.C', typeC],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.C', to: 'org.example.A'},
+            ];
 
             const result = createTypeRelationDiagram(typeA, typeRelations, typesMap);
 
@@ -503,27 +499,21 @@ test.describe('domain.js', () => {
             const sgId = globalThis.Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId}`), 'パッケージのサブグラフが含まれること');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
 
         test('関連がない場合は null を返す', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
-            setupDomainData(['org.example'], [typeA]);
-            globalThis.typeRelationsData = {relations: []};
+
             setGlossaryData({'org.example.A': {title: 'A'}});
 
-            const typesMap = globalThis.domainData._typesMap;
-            const typeRelations = (globalThis.typeRelationsData?.relations || [])
-                .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+            const typesMap = new Map([['org.example.A', typeA]]);
+            const typeRelations = [];
 
             const result = createTypeRelationDiagram(typeA, typeRelations, typesMap);
 
             assert.equal(result, null);
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
 
@@ -531,22 +521,22 @@ test.describe('domain.js', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
             const typeX = {fqn: 'org.other.X', isDeprecated: false};
-            setupDomainData([], [typeA, typeB, typeX]);
-            globalThis.typeRelationsData = {
-                relations: [
-                    {from: 'org.example.A', to: 'org.example.B'},
-                    {from: 'org.example.A', to: 'org.other.X'},
-                ]
-            };
+
             setGlossaryData({
                 'org.example.A': {title: 'A'},
                 'org.example.B': {title: 'B'},
                 'org.other.X': {title: 'X'},
             });
 
-            const typesMap = globalThis.domainData._typesMap;
-            const typeRelations = (globalThis.typeRelationsData?.relations || [])
-                .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+                ['org.other.X', typeX],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.A', to: 'org.other.X'},
+            ];
 
             const result = createTypeRelationDiagram(typeA, typeRelations, typesMap);
             const idA = globalThis.Jig.util.fqnToId("n", 'org.example.A');
@@ -835,46 +825,20 @@ test.describe('domain.js', () => {
 
     test.describe('パッケージ関連図の処理', () => {
         test('createRelationDiagramは空パッケージでnullを返す', () => {
-            const types = [];
-            // 空のパッケージを作成（type がない）
-            setupDomainData([], types);
-            globalThis.typeRelationsData = {relations: []};
+            const pkg = {fqn: 'app', types: []};  // type を持たないパッケージ
+            const typesMap = new Map();
+            const typeRelations = [];
 
-            const typesMap = globalThis.domainData._typesMap;
-            const typeRelations = (globalThis.typeRelationsData?.relations || [])
-                .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
-
-            // パッケージが存在しない場合はスキップ
-            const packages = globalThis.domainData._packages;
-            if (packages.length === 0) {
-                // 空パッケージの場合はテストをスキップ
-                delete globalThis.domainData;
-                delete globalThis.typeRelationsData;
-                return;
-            }
-
-            const result = createRelationDiagram(packages[0], typeRelations, typesMap);
+            const result = createRelationDiagram(pkg, typeRelations, typesMap);
             assert.equal(result, null);
-
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
         });
 
         test('createRelationDiagram: 外部向きエッジ長を調整する', () => {
-            const types = [
-                {fqn: 'org.example.A', isDeprecated: false},
-                {fqn: 'org.example.B', isDeprecated: false},
-                {fqn: 'org.other.X', isDeprecated: false},
-                {fqn: 'org.third.Y', isDeprecated: false},
-            ];
-            setupDomainData([], types);
-            globalThis.typeRelationsData = {
-                relations: [
-                    {from: 'org.example.A', to: 'org.example.B'},
-                    {from: 'org.example.A', to: 'org.other.X'},
-                    {from: 'org.example.B', to: 'org.third.Y'},
-                ]
-            };
+            const typeA = {fqn: 'org.example.A', isDeprecated: false};
+            const typeB = {fqn: 'org.example.B', isDeprecated: false};
+            const typeX = {fqn: 'org.other.X', isDeprecated: false};
+            const typeY = {fqn: 'org.third.Y', isDeprecated: false};
+
             setGlossaryData({
                 'org.example': {title: 'example'},
                 'org.example.A': {title: 'A'},
@@ -883,12 +847,19 @@ test.describe('domain.js', () => {
                 'org.third': {title: 'third'},
             });
 
-            const typesMap = globalThis.domainData._typesMap;
-            const typeRelations = (globalThis.typeRelationsData?.relations || [])
-                .filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
+            const typesMap = new Map([
+                ['org.example.A', typeA],
+                ['org.example.B', typeB],
+                ['org.other.X', typeX],
+                ['org.third.Y', typeY],
+            ]);
+            const typeRelations = [
+                {from: 'org.example.A', to: 'org.example.B'},
+                {from: 'org.example.A', to: 'org.other.X'},
+                {from: 'org.example.B', to: 'org.third.Y'},
+            ];
 
-            const packages = globalThis.domainData._packages;
-            const pkg = packages.find(p => p.fqn === 'org.example');
+            const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
             const result = createRelationDiagram(pkg, typeRelations, typesMap);
             const idA = globalThis.Jig.util.fqnToId("n", 'org.example.A');
             const idB = globalThis.Jig.util.fqnToId("n", 'org.example.B');
@@ -897,8 +868,6 @@ test.describe('domain.js', () => {
             assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
 
-            delete globalThis.domainData;
-            delete globalThis.typeRelationsData;
             delete globalThis.glossaryData;
         });
     });

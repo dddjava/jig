@@ -61,38 +61,43 @@ const DomainApp = (() => {
     /**
      * パッケージの直下の子パッケージを取得する
      * @param {PackageType} pkg
+     * @param {Map<string, PackageType[]>} childPackagesMap
      * @returns {PackageType[]}
      */
-    function getDirectChildPackages(pkg) {
-        return getDomainData()._childPackagesMap.get(pkg.fqn) ?? [];
+    function getDirectChildPackages(pkg, childPackagesMap) {
+        return childPackagesMap.get(pkg.fqn) ?? [];
     }
 
     /**
      * パッケージが enum 型を含むかを判定する（再帰的）
      * @param {PackageType} pkg
+     * @param {Map<string, PackageType[]>} childPackagesMap
+     * @param {Map<string, DomainType>} typesMap
      * @returns {boolean}
      */
-    function pkgHasEnum(pkg) {
+    function pkgHasEnum(pkg, childPackagesMap, typesMap) {
         // このパッケージのタイプに enum があるか
-        if (pkg.types.some(type => getDomainData()._typesMap?.get(type.fqn)?.enumInfo)) {
+        if (pkg.types.some(type => typesMap?.get(type.fqn)?.enumInfo)) {
             return true;
         }
         // 子パッケージに enum があるか
-        const childPackages = getDirectChildPackages(pkg);
-        return childPackages.some(childPkg => pkgHasEnum(childPkg));
+        const childPackages = getDirectChildPackages(pkg, childPackagesMap);
+        return childPackages.some(childPkg => pkgHasEnum(childPkg, childPackagesMap, typesMap));
     }
 
     /**
      * @param {PackageType} pkg
+     * @param {Map<string, PackageType[]>} childPackagesMap
+     * @param {Map<string, DomainType>} typesMap
      * @returns {HTMLElement}
      */
-    function renderPackageNavItem(pkg) {
+    function renderPackageNavItem(pkg, childPackagesMap, typesMap) {
         // 子が1つだけでタイプを持たないパッケージを統合して表示
         let currentPkg = pkg;
         const mergedNames = [Jig.glossary.getTypeTerm(pkg.fqn).title];
 
         while (true) {
-            const childPackages = getDirectChildPackages(currentPkg);
+            const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
             if (childPackages.length !== 1) break;
             if (currentPkg.types.length > 0) break;
 
@@ -108,7 +113,7 @@ const DomainApp = (() => {
         const details = Jig.dom.createElement("details", {
             attributes: {
                 open: "",
-                "data-has-enum-children": pkgHasEnum(currentPkg) ? "true" : "false"
+                "data-has-enum-children": pkgHasEnum(currentPkg, childPackagesMap, typesMap) ? "true" : "false"
             },
             children: [
                 Jig.dom.createElement("summary", {
@@ -119,14 +124,14 @@ const DomainApp = (() => {
         });
 
         // 子パッケージを表示（統合後の currentPkg の直下のみ）
-        const childPackages = getDirectChildPackages(currentPkg);
+        const childPackages = getDirectChildPackages(currentPkg, childPackagesMap);
         childPackages.forEach(childPkg => {
-            details.appendChild(renderPackageNavItem(childPkg));
+            details.appendChild(renderPackageNavItem(childPkg, childPackagesMap, typesMap));
         });
 
         // 子タイプを表示
         currentPkg.types.forEach(child => {
-            const domainType = getDomainData()._typesMap?.get(child.fqn);
+            const domainType = typesMap?.get(child.fqn);
             const link = Jig.dom.createElement("a", {
                 attributes: {href: "#" + Jig.util.fqnToId("domain", child.fqn)},
                 className: domainType?.isDeprecated ? "deprecated" : "",
@@ -425,9 +430,11 @@ const DomainApp = (() => {
 
     /**
      * @param {PackageType[]} packages
+     * @param {Map<string, PackageType[]>} childPackagesMap
+     * @param {Map<string, DomainType>} typesMap
      * @returns {void}
      */
-    function renderSidebar(packages) {
+    function renderSidebar(packages, childPackagesMap, typesMap) {
         const container = document.getElementById("domain-sidebar-list");
         if (!container) return;
         container.innerHTML = "";
@@ -435,7 +442,7 @@ const DomainApp = (() => {
         // 直接の子パッケージ fqn の集合
         const childPackageFqns = new Set();
         packages.forEach(pkg => {
-            const children = getDirectChildPackages(pkg);
+            const children = getDirectChildPackages(pkg, childPackagesMap);
             children.forEach(child => {
                 childPackageFqns.add(child.fqn);
             });
@@ -444,18 +451,19 @@ const DomainApp = (() => {
         // トップレベルのパッケージのみを表示（直接の親を持たないもの）
         packages.forEach(pkg => {
             if (!childPackageFqns.has(pkg.fqn)) {
-                container.appendChild(renderPackageNavItem(pkg));
+                container.appendChild(renderPackageNavItem(pkg, childPackagesMap, typesMap));
             }
         });
     }
 
     /**
      * @param {PackageType} pkg
+     * @param {Map<string, PackageType[]>} childPackagesMap
      * @returns {HTMLElement | null}
      */
-    function createChildrenTable(pkg) {
+    function createChildrenTable(pkg, childPackagesMap) {
         const types = pkg.types;
-        const childPackages = getDirectChildPackages(pkg);
+        const childPackages = getDirectChildPackages(pkg, childPackagesMap);
 
         // 子パッケージ（▶︎ プレフィックス） + 子タイプ を合わせて表示
         const allChildren = [
@@ -588,10 +596,11 @@ const DomainApp = (() => {
      * @param {Array} typeRelations
      * @param {Map} typesMap
      * @param {Array} allPackageRelations
+     * @param {Map<string, PackageType[]>} childPackagesMap
      * @param {HTMLElement} container
      * @returns {void}
      */
-    function renderPackages(packages, typeRelations, typesMap, allPackageRelations, container) {
+    function renderPackages(packages, typeRelations, typesMap, allPackageRelations, childPackagesMap, container) {
         if (packages.length === 0) return;
 
         const allPackages = getDomainData()._packages;
@@ -600,7 +609,7 @@ const DomainApp = (() => {
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
                 id: Jig.util.fqnToId("domain", pkg.fqn),
-                attributes: {"data-has-enum-children": pkgHasEnum(pkg) ? "true" : "false"},
+                attributes: {"data-has-enum-children": pkgHasEnum(pkg, childPackagesMap, typesMap) ? "true" : "false"},
                 children: [
                     Jig.dom.createElement("h3", {
                         children: [Jig.dom.kind.badgeElement("パッケージ"), document.createTextNode(Jig.glossary.getTypeTerm(pkg.fqn).title)]
@@ -617,7 +626,7 @@ const DomainApp = (() => {
                 section.appendChild(Jig.dom.createMarkdownElement(pkgDescription));
             }
 
-            const childrenTable = createChildrenTable(pkg);
+            const childrenTable = createChildrenTable(pkg, childPackagesMap);
             if (childrenTable) {
                 section.appendChild(childrenTable);
             }
@@ -1027,6 +1036,9 @@ const DomainApp = (() => {
         const typeRelations = rawRelations.filter(r => typesMap?.has(r.from) && typesMap?.has(r.to));
         const allPackageRelations = derivePackageRelations(typeRelations, typesMap);
 
+        // childPackagesMap を取得して関数に渡す
+        const childPackagesMap = globalThis.domainData._childPackagesMap;
+
         Jig.dom.type.setResolver((fqn) => {
             const domainType = getDomainData()?._typesMap?.get(fqn);
             if (domainType) {
@@ -1042,7 +1054,7 @@ const DomainApp = (() => {
             };
         });
 
-        renderSidebar(packages);
+        renderSidebar(packages, childPackagesMap, typesMap);
 
         const main = document.getElementById("domain-main");
         if (!main) return;
@@ -1066,7 +1078,7 @@ const DomainApp = (() => {
             });
         }
 
-        renderPackages(packages, typeRelations, typesMap, allPackageRelations, main);
+        renderPackages(packages, typeRelations, typesMap, allPackageRelations, childPackagesMap, main);
         renderTypes(data.types, typeRelations, typesMap, main);
     }
 

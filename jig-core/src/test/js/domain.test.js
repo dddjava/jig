@@ -266,19 +266,23 @@ test.describe('domain.js', () => {
     // パッケージナビゲーション要素のレンダリングをテスト（パッケージツリーの表示形式）
     test.describe('renderPackageNavItem', () => {
         test('子が1つだけでタイプを持たないパッケージの場合、統合して表示する', () => {
-            const types = [{
-                fqn: 'com.example.MyClass'
-            }];
+            const comPkg = {fqn: 'com', types: []};
+            const examplePkg = {fqn: 'com.example', types: [{fqn: 'com.example.MyClass'}]};
+            const childPackagesMap = new Map([
+                ['com', [examplePkg]],
+                ['com.example', []]
+            ]);
+            const typesMap = new Map([
+                ['com.example.MyClass', {fqn: 'com.example.MyClass', isDeprecated: false}]
+            ]);
 
-            setupDomainData(['com'], types);
             setGlossaryData({
                 'com': {title: 'com'},
-                'com.example': {title: 'example'}
+                'com.example': {title: 'example'},
+                'com.example.MyClass': {title: 'MyClass'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = renderPackageNavItem(comPkg);
+            const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             assert.equal(result.tagName, 'details');
             const summaryLink = result.children[0].children[0];
@@ -286,14 +290,23 @@ test.describe('domain.js', () => {
             assert.equal(summaryLink.textContent, 'com/example');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
 
-            delete globalThis.domainData;
             delete globalThis.glossaryData;
         });
 
         test('タイプを持つパッケージを表示する', () => {
-            const types = [{fqn: 'com.example.deep.MyClass', methods: []}];
+            const comPkg = {fqn: 'com', types: []};
+            const examplePkg = {fqn: 'com.example', types: []};
+            const deepPkg = {fqn: 'com.example.deep', types: [{fqn: 'com.example.deep.MyClass'}]};
+            const childPackagesMap = new Map([
+                ['com', [examplePkg]],
+                ['com.example', [deepPkg]],
+                ['com.example.deep', []]
+            ]);
+            const myClassType = {fqn: 'com.example.deep.MyClass', methods: [], isDeprecated: false};
+            const typesMap = new Map([
+                ['com.example.deep.MyClass', myClassType]
+            ]);
 
-            setupDomainData(['com'], types);
             setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
@@ -301,9 +314,7 @@ test.describe('domain.js', () => {
                 'com.example.deep.MyClass': {title: 'MyClass'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = renderPackageNavItem(comPkg);
+            const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             assert.equal(result.tagName, 'details');
             const summaryLink = result.children[0].children[0];
@@ -312,17 +323,24 @@ test.describe('domain.js', () => {
             assert.equal(summaryLink.textContent, 'com/example/deep');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.deep'));
 
-            delete globalThis.domainData;
             delete globalThis.glossaryData;
         });
 
         test('複数段階のパッケージが1つずつ続く場合、全て統合して表示する', () => {
-            const types = [{
-                fqn: 'com.example.sub.deep.MyClass',
-                methods: []
-            }];
+            const comPkg = {fqn: 'com', types: []};
+            const examplePkg = {fqn: 'com.example', types: []};
+            const subPkg = {fqn: 'com.example.sub', types: []};
+            const deepPkg = {fqn: 'com.example.sub.deep', types: [{fqn: 'com.example.sub.deep.MyClass'}]};
+            const childPackagesMap = new Map([
+                ['com', [examplePkg]],
+                ['com.example', [subPkg]],
+                ['com.example.sub', [deepPkg]],
+                ['com.example.sub.deep', []]
+            ]);
+            const typesMap = new Map([
+                ['com.example.sub.deep.MyClass', {fqn: 'com.example.sub.deep.MyClass', methods: [], isDeprecated: false}]
+            ]);
 
-            setupDomainData(['com'], types);
             setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
@@ -331,39 +349,45 @@ test.describe('domain.js', () => {
                 'com.example.sub.deep.MyClass': {title: 'MyClass'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = renderPackageNavItem(comPkg);
+            const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             const summaryLink = result.children[0].children[0];
             // com -> example -> sub -> deep と続くので、sub がタイプを持つまで統合
             assert.equal(summaryLink.textContent, 'com/example/sub/deep');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.sub.deep'));
 
-            delete globalThis.domainData;
             delete globalThis.glossaryData;
         });
 
         test('子パッケージを持つパッケージを表示する', () => {
-            const types = [
-                {fqn: 'com.example.sub1.MyClass1'},
-                {fqn: 'com.example.sub2.MyClass2'}
-            ];
+            const comPkg = {fqn: 'com', types: []};
+            const examplePkg = {fqn: 'com.example', types: []};
+            const sub1Pkg = {fqn: 'com.example.sub1', types: [{fqn: 'com.example.sub1.MyClass1'}]};
+            const sub2Pkg = {fqn: 'com.example.sub2', types: [{fqn: 'com.example.sub2.MyClass2'}]};
+            const childPackagesMap = new Map([
+                ['com', [examplePkg]],
+                ['com.example', [sub1Pkg, sub2Pkg]],
+                ['com.example.sub1', []],
+                ['com.example.sub2', []]
+            ]);
+            const typesMap = new Map([
+                ['com.example.sub1.MyClass1', {fqn: 'com.example.sub1.MyClass1', isDeprecated: false}],
+                ['com.example.sub2.MyClass2', {fqn: 'com.example.sub2.MyClass2', isDeprecated: false}]
+            ]);
 
-            setupDomainData(['com'], types);
             setGlossaryData({
                 'com': {title: 'com'},
                 'com.example': {title: 'example'},
                 'com.example.sub1': {title: 'sub1'},
-                'com.example.sub2': {title: 'sub2'}
+                'com.example.sub2': {title: 'sub2'},
+                'com.example.sub1.MyClass1': {title: 'MyClass1'},
+                'com.example.sub2.MyClass2': {title: 'MyClass2'}
             });
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = renderPackageNavItem(comPkg);
+            const result = renderPackageNavItem(comPkg, childPackagesMap, typesMap);
 
             const summaryLink = result.children[0].children[0];
-            // com -> example は統合（example は1つだけの子を持つから）
+            // com -> example は統合（example は2つの子を持つので統合されない）
             assert.equal(summaryLink.textContent, 'com/example');
             assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
 
@@ -374,7 +398,6 @@ test.describe('domain.js', () => {
             assert.ok(childPackageNames.includes('sub1'), 'example should have sub1 as child');
             assert.ok(childPackageNames.includes('sub2'), 'example should have sub2 as child');
 
-            delete globalThis.domainData;
             delete globalThis.glossaryData;
         });
 
@@ -383,48 +406,49 @@ test.describe('domain.js', () => {
     // パッケージツリー操作をテスト（親パッケージから直下の子パッケージのフィルタリング）
     test.describe('getDirectChildPackages', () => {
         test('直下の子パッケージのみを返す', () => {
-            const types = [{fqn: 'com.example.sub.deep.MyClass'}];
-            setupDomainData(['com'], types);
+            const comPkg = {fqn: 'com', types: []};
+            const examplePkg = {fqn: 'com.example', types: []};
+            const subPkg = {fqn: 'com.example.sub', types: []};
+            const deepPkg = {fqn: 'com.example.sub.deep', types: [{fqn: 'com.example.sub.deep.MyClass'}]};
+            const childPackagesMap = new Map([
+                ['com', [examplePkg]],
+                ['com.example', [subPkg]],
+                ['com.example.sub', [deepPkg]],
+                ['com.example.sub.deep', []]
+            ]);
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = getDirectChildPackages(comPkg);
+            const result = getDirectChildPackages(comPkg, childPackagesMap);
 
             assert.equal(result.length, 1);
             assert.equal(result[0].fqn, 'com.example');
-
-            delete globalThis.domainData;
         });
 
         test('直下の子パッケージが複数の場合、全て返す', () => {
-            const types = [
-                {fqn: 'com.example.MyClass'},
-                {fqn: 'com.util.MyClass'}
-            ];
-            setupDomainData(['com'], types);
+            const comPkg = {fqn: 'com', types: []};
+            const examplePkg = {fqn: 'com.example', types: [{fqn: 'com.example.MyClass'}]};
+            const utilPkg = {fqn: 'com.util', types: [{fqn: 'com.util.MyClass'}]};
+            const childPackagesMap = new Map([
+                ['com', [examplePkg, utilPkg]],
+                ['com.example', []],
+                ['com.util', []]
+            ]);
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = getDirectChildPackages(comPkg);
+            const result = getDirectChildPackages(comPkg, childPackagesMap);
 
             assert.equal(result.length, 2);
             assert.ok(result.some(p => p.fqn === 'com.example'));
             assert.ok(result.some(p => p.fqn === 'com.util'));
-
-            delete globalThis.domainData;
         });
 
         test('子パッケージがない場合は空配列を返す', () => {
-            const types = [{fqn: 'com.MyClass'}];
-            setupDomainData(['com'], types);
+            const comPkg = {fqn: 'com', types: [{fqn: 'com.MyClass'}]};
+            const childPackagesMap = new Map([
+                ['com', []]
+            ]);
 
-            const packages = globalThis.domainData._packages;
-            const comPkg = packages.find(p => p.fqn === 'com');
-            const result = getDirectChildPackages(comPkg);
+            const result = getDirectChildPackages(comPkg, childPackagesMap);
 
             assert.equal(result.length, 0);
-
-            delete globalThis.domainData;
         });
     });
 

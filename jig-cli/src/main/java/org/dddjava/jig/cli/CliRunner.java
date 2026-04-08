@@ -44,7 +44,7 @@ class CliRunner {
         if (!resultLog.isBlank()) {
             resultLog += "\n";
         }
-        resultLog += "index : [ " + jigResult.indexFilePath() + " ]";
+        resultLog += "index : [ file://" + jigResult.indexFilePath().toAbsolutePath() + " ]";
         logger.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime,
                 resultLog);

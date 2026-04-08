@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.documentformat;
+package org.dddjava.jig.domain.model.documents;
 
 public class JigDocumentLabel {
     String japanese;

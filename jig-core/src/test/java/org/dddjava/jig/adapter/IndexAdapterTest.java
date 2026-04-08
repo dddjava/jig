@@ -1,7 +1,7 @@
 package org.dddjava.jig.adapter;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

@@ -4,8 +4,8 @@ import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.JigDocument;
+import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -19,9 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @ExtendWith(JigTest.JigTestExtension.class)

@@ -1,6 +1,6 @@
 package org.dddjava.jig;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;

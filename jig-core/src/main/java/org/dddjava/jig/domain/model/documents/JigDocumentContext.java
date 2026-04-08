@@ -1,6 +1,4 @@
-package org.dddjava.jig.domain.model.documents.stationery;
-
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+package org.dddjava.jig.domain.model.documents;
 
 import java.nio.file.Path;
 import java.util.List;

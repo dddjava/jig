@@ -1,7 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;

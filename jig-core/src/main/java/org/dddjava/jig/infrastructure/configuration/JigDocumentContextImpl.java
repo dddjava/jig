@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.JigDocument;
+import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 
 import java.nio.file.Path;
 import java.util.List;

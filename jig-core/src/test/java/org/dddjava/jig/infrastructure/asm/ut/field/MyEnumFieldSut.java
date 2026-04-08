@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm.ut.field;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 
 public enum MyEnumFieldSut {
     通常の列挙値1,

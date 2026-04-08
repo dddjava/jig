@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.documentformat;
+package org.dddjava.jig.domain.model.documents;
 
 import java.util.Arrays;
 import java.util.List;

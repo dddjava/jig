@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter;
 
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.junit.jupiter.api.Test;
 import testing.JigTest;
 

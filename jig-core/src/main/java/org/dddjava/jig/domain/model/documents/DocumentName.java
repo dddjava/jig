@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.documentformat;
+package org.dddjava.jig.domain.model.documents;
 
 public record DocumentName(JigDocument jigDocument, String fileName, String label) {
 

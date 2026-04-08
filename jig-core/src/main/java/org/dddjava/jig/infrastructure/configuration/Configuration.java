@@ -4,7 +4,7 @@ import org.dddjava.jig.adapter.JigDocumentGenerator;
 import org.dddjava.jig.application.GlossaryRepository;
 import org.dddjava.jig.application.JigEventRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryGlossaryRepository;
 

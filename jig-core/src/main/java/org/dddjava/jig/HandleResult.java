@@ -1,6 +1,6 @@
 package org.dddjava.jig;
 
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.JigDocument;
 
 import java.nio.file.Path;
 import java.util.List;

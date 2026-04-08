@@ -12,7 +12,7 @@ public enum JigDocument {
     /**
      * 用語集
      */
-    Glossary(JigDocumentLabel.of("用語集", "glossary"), "glossary"),
+    Glossary(JigDocumentLabel.of("用語集", "Glossary"), "glossary"),
 
     /**
      * パッケージ関連
@@ -42,7 +42,7 @@ public enum JigDocument {
     /**
      * インサイト
      */
-    Insight(JigDocumentLabel.of("インサイト", "insight"), "insight"),
+    Insight(JigDocumentLabel.of("インサイト", "Insight"), "insight"),
 
     /**
      * 一覧出力

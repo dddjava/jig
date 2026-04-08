@@ -997,7 +997,6 @@ const DomainApp = (() => {
     function init() {
         if (typeof document === "undefined" || !document.body.classList.contains("domain-model")) return;
 
-        // init 毎に派生キャッシュをリセット（テストで globalThis.domainData を差し替えるケースに対応）
         Jig.data.resetCache();
 
         const data = getDomainData();

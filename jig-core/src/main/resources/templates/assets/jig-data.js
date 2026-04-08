@@ -9,8 +9,6 @@ globalThis.Jig ??= {};
  */
 globalThis.Jig.data = (() => {
 
-    // ---- domain ----
-
     /** @type {Map<string, object>|null} */
     let domainTypesMap = null;
     /** @type {Set<string>|null} */
@@ -29,9 +27,6 @@ globalThis.Jig.data = (() => {
         },
         getTypes() {
             return globalThis.domainData?.types ?? [];
-        },
-        getDomainPackageRoots() {
-            return globalThis.domainData?.domainPackageRoots ?? [];
         },
         getTypesMap() {
             if (!domainTypesMap) {
@@ -62,8 +57,6 @@ globalThis.Jig.data = (() => {
         },
     };
 
-    // ---- glossary ----
-
     const glossary = {
         get() {
             return globalThis.glossaryData;
@@ -73,15 +66,11 @@ globalThis.Jig.data = (() => {
         },
     };
 
-    // ---- usecase ----
-
     const usecase = {
         get() {
             return globalThis.usecaseData;
         },
     };
-
-    // ---- inbound ----
 
     const inbound = {
         get() {
@@ -92,15 +81,11 @@ globalThis.Jig.data = (() => {
         },
     };
 
-    // ---- outbound ----
-
     const outbound = {
         get() {
             return globalThis.outboundData;
         },
     };
-
-    // ---- package ----
 
     const pkg = {
         get() {
@@ -108,23 +93,17 @@ globalThis.Jig.data = (() => {
         },
     };
 
-    // ---- insight ----
-
     const insight = {
         get() {
             return globalThis.insightData ?? null;
         },
     };
 
-    // ---- list-output ----
-
     const list = {
         get() {
             return globalThis.listData;
         },
     };
-
-    // ---- navigation ----
 
     const navigation = {
         get() {
@@ -134,8 +113,6 @@ globalThis.Jig.data = (() => {
             return globalThis.navigationData?.links ?? [];
         },
     };
-
-    // ---- type-relations ----
 
     const typeRelations = {
         get() {
@@ -147,8 +124,8 @@ globalThis.Jig.data = (() => {
     };
 
     /**
-     * 全ての派生キャッシュを破棄する。
-     * テスト間で globalThis.<xxx>Data を差し替える場合に呼び出す。
+     * domain の派生キャッシュ（typesMap / fqnSet / packages / childPackagesMap）を破棄する。
+     * データが入れ替わる際（init の再実行など）に呼び出す。
      */
     function resetCache() {
         domainTypesMap = null;

@@ -943,7 +943,6 @@ const UsecaseApp = (() => {
         state.data = getUsecaseData();
         if (!state.data) return;
 
-        // domain 派生キャッシュはテスト間で再構築する必要がある
         Jig.data.resetCache();
 
         if (Jig.data.domain.has()) {

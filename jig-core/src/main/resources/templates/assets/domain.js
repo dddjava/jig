@@ -1008,13 +1008,10 @@ const DomainApp = (() => {
             });
         }
 
-        const filterInput = document.getElementById('domain-sidebar-filter');
-        if (filterInput) {
-            filterInput.addEventListener('input', () => {
-                domainSettings.sidebarFilterText = filterInput.value.trim();
-                applyVisibilitySettings();
-            });
-        }
+        Jig.dom.sidebar.initTextFilter('domain-sidebar-filter', text => {
+            domainSettings.sidebarFilterText = text;
+            applyVisibilitySettings();
+        });
     }
 
     /**

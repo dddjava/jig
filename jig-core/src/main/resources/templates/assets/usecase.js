@@ -4,7 +4,8 @@ const UsecaseApp = (() => {
     const state = {
         data: null,
         selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
-        handlerFqns: null        // ハンドラのみ表示時のFQN集合、nullはすべて表示
+        handlerFqns: null,       // ハンドラのみ表示時のFQN集合、nullはすべて表示
+        sidebarFilterText: '',
     };
 
     const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
@@ -494,8 +495,23 @@ const UsecaseApp = (() => {
         sidebar.innerHTML = "";
 
         const handlerFqns = state.handlerFqns;
+        const filterText = state.sidebarFilterText.toLowerCase();
         const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
-        const visibleUsecases = usecases.filter(u => u.methods.some(isVisibleMethod));
+
+        // テキストフィルタ: クラス名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
+        const filteredItems = usecases.flatMap(usecase => {
+            const visibleMethods = usecase.methods.filter(isVisibleMethod);
+            if (visibleMethods.length === 0) return [];
+            if (!filterText) return [{usecase, methods: visibleMethods}];
+
+            const classTitle = Jig.glossary.getTypeTerm(usecase.fqn).title.toLowerCase();
+            if (classTitle.includes(filterText)) return [{usecase, methods: visibleMethods}];
+
+            const matchingMethods = visibleMethods.filter(m =>
+                Jig.glossary.getMethodTerm(m.fqn).title.toLowerCase().includes(filterText)
+            );
+            return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
+        });
 
         const section = Jig.dom.createElement("section", {
             className: "in-page-sidebar__section",
@@ -506,7 +522,7 @@ const UsecaseApp = (() => {
                 }),
                 Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
-                    children: visibleUsecases.map(usecase => {
+                    children: filteredItems.map(({usecase, methods}) => {
                         const children = [
                             Jig.dom.createElement("a", {
                                 className: "in-page-sidebar__link",
@@ -514,24 +530,21 @@ const UsecaseApp = (() => {
                                 textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
                             })
                         ];
-                        const visibleMethods = usecase.methods.filter(isVisibleMethod);
-                        if (visibleMethods.length > 0) {
-                            children.push(Jig.dom.createElement("ul", {
-                                className: "in-page-sidebar__links",
-                                children: visibleMethods.map(method =>
-                                    Jig.dom.createElement("li", {
-                                        className: "in-page-sidebar__item",
-                                        children: [
-                                            Jig.dom.createElement("a", {
-                                                className: "in-page-sidebar__link in-page-sidebar__link--sub",
-                                                attributes: {href: "#" + fqnToMethodId(method.fqn)},
-                                                textContent: Jig.glossary.getMethodTerm(method.fqn).title
-                                            })
-                                        ]
-                                    })
-                                )
-                            }));
-                        }
+                        children.push(Jig.dom.createElement("ul", {
+                            className: "in-page-sidebar__links",
+                            children: methods.map(method =>
+                                Jig.dom.createElement("li", {
+                                    className: "in-page-sidebar__item",
+                                    children: [
+                                        Jig.dom.createElement("a", {
+                                            className: "in-page-sidebar__link in-page-sidebar__link--sub",
+                                            attributes: {href: "#" + fqnToMethodId(method.fqn)},
+                                            textContent: Jig.glossary.getMethodTerm(method.fqn).title
+                                        })
+                                    ]
+                                })
+                            )
+                        }));
                         return Jig.dom.createElement("li", {
                             className: "in-page-sidebar__item",
                             children
@@ -911,6 +924,11 @@ const UsecaseApp = (() => {
                 Jig.mermaid.diagram.rerenderVisible();
             });
         });
+
+        Jig.dom.sidebar.initTextFilter('usecase-sidebar-filter', text => {
+            state.sidebarFilterText = text;
+            renderSidebar(state.data.usecases);
+        });
     }
 
     /**
@@ -932,6 +950,7 @@ const UsecaseApp = (() => {
         state.data = null;
         state.selectedTabs = new Map();
         state.handlerFqns = null;
+        state.sidebarFilterText = '';
 
         state.data = Jig.data.usecase.get();
         if (!state.data) return;

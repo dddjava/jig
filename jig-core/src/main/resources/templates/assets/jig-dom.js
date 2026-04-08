@@ -438,6 +438,17 @@ globalThis.Jig.dom = (() => {
         }
     }
 
+    /**
+     * サイドバーのテキストフィルタ入力を初期化する
+     * @param {string} inputId - input要素のID
+     * @param {(filterText: string) => void} onChange
+     */
+    function initSidebarTextFilter(inputId, onChange) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('input', () => onChange(input.value.trim()));
+    }
+
     return {
         createElement,
         parseMarkdown,
@@ -463,6 +474,7 @@ globalThis.Jig.dom = (() => {
         sidebar: {
             createSection,
             renderSection,
+            initTextFilter: initSidebarTextFilter,
         },
     };
 })();

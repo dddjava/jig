@@ -12,6 +12,7 @@ require('../../main/resources/templates/assets/jig-util.js');
 require('../../main/resources/templates/assets/jig-glossary.js');
 require('../../main/resources/templates/assets/jig-mermaid.js');
 require('../../main/resources/templates/assets/jig-dom.js');
+const Jig = globalThis.Jig;
 
 const DomainApp = require('../../main/resources/templates/assets/domain.js');
 const {renderPackageNavItem, getDirectChildPackages, createRelationDiagram, createTypeRelationDiagram, createPackageRelationDiagram, createPackageDirectRelationDiagram, buildPackages} = DomainApp;
@@ -52,14 +53,14 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.type.getResolver()('org.example.Account');
-            assert.equal(resolved.href, '#' + globalThis.Jig.util.fqnToId("domain", 'org.example.Account'));
+            const resolved = Jig.dom.type.getResolver()('org.example.Account');
+            assert.equal(resolved.href, '#' + Jig.util.fqnToId("domain", 'org.example.Account'));
             assert.equal(resolved.className, undefined);
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('deprecatedなdomain型に対して、deprecatedクラスを返す', () => {
@@ -81,14 +82,14 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.type.getResolver()('org.example.OldClass');
-            assert.equal(resolved.href, '#' + globalThis.Jig.util.fqnToId("domain", 'org.example.OldClass'));
+            const resolved = Jig.dom.type.getResolver()('org.example.OldClass');
+            assert.equal(resolved.href, '#' + Jig.util.fqnToId("domain", 'org.example.OldClass'));
             assert.equal(resolved.className, 'deprecated');
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('domain型でない場合、weakクラスと単純名を返す（hrefなし）', () => {
@@ -103,7 +104,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const resolved = globalThis.Jig.dom.type.getResolver()('java.lang.String');
+            const resolved = Jig.dom.type.getResolver()('java.lang.String');
             assert.equal(resolved.href, undefined);
             assert.equal(resolved.className, 'weak');
             assert.equal(resolved.text, 'String');
@@ -111,7 +112,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('リゾルバー経由でdomain型はリンク付き要素になる', () => {
@@ -133,16 +134,16 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'org.example.User'}, 'my-class');
+            const result = Jig.dom.type.elementForRef({fqn: 'org.example.User'}, 'my-class');
             assert.equal(result.tagName, 'a');
             assert.equal(result.className, 'my-class');
             assert.equal(result.textContent, 'ユーザー');
-            assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'org.example.User'));
+            assert.equal(result.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'org.example.User'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('リゾルバー経由でdomain型でない場合はweak spanになる', () => {
@@ -157,7 +158,7 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'java.lang.String'}, 'my-class');
+            const result = Jig.dom.type.elementForRef({fqn: 'java.lang.String'}, 'my-class');
             assert.equal(result.tagName, 'span');
             assert.equal(result.textContent, 'String');
             assert.ok(result.className.includes('weak'));
@@ -166,7 +167,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('型引数がある場合、spanで型と型引数を組み立てる', () => {
@@ -189,7 +190,7 @@ test.describe('domain.js', () => {
                 fqn: 'java.util.List',
                 typeArgumentRefs: [{fqn: 'org.example.Item'}]
             };
-            const result = globalThis.Jig.dom.type.elementForRef(typeRef, 'generic-type');
+            const result = Jig.dom.type.elementForRef(typeRef, 'generic-type');
 
             assert.equal(result.tagName, 'span');
             assert.equal(result.className, 'generic-type');
@@ -198,7 +199,7 @@ test.describe('domain.js', () => {
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('配列型（Hoge[]）はベース型のリンクを解決して[]を付け直す', () => {
@@ -220,15 +221,15 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'org.example.Item[]'});
+            const result = Jig.dom.type.elementForRef({fqn: 'org.example.Item[]'});
             assert.equal(result.tagName, 'a');
             assert.equal(result.textContent, 'アイテム[]');
-            assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'org.example.Item'));
+            assert.equal(result.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'org.example.Item'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
 
         test('多次元配列型（Hoge[][]）もベース型のリンクを解決して[][]を付け直す', () => {
@@ -250,15 +251,15 @@ test.describe('domain.js', () => {
 
             DomainApp.init();
 
-            const result = globalThis.Jig.dom.type.elementForRef({fqn: 'org.example.Item[][]'});
+            const result = Jig.dom.type.elementForRef({fqn: 'org.example.Item[][]'});
             assert.equal(result.tagName, 'a');
             assert.equal(result.textContent, 'アイテム[][]');
-            assert.equal(result.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'org.example.Item'));
+            assert.equal(result.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'org.example.Item'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
             delete globalThis.typeRelationsData;
-            globalThis.Jig.dom.type.clearResolver();
+            Jig.dom.type.clearResolver();
         });
     });
 
@@ -283,7 +284,7 @@ test.describe('domain.js', () => {
             const summaryLink = result.children[0].children[0];
             assert.equal(summaryLink.tagName, 'a');
             assert.equal(summaryLink.textContent, 'com/example');
-            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'com.example'));
+            assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -309,7 +310,7 @@ test.describe('domain.js', () => {
             assert.equal(summaryLink.tagName, 'a');
             // com -> example -> deep で、deep がタイプを持つので統合が止まる
             assert.equal(summaryLink.textContent, 'com/example/deep');
-            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'com.example.deep'));
+            assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.deep'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -337,7 +338,7 @@ test.describe('domain.js', () => {
             const summaryLink = result.children[0].children[0];
             // com -> example -> sub -> deep と続くので、sub がタイプを持つまで統合
             assert.equal(summaryLink.textContent, 'com/example/sub/deep');
-            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'com.example.sub.deep'));
+            assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example.sub.deep'));
 
             delete globalThis.domainData;
             delete globalThis.glossaryData;
@@ -364,7 +365,7 @@ test.describe('domain.js', () => {
             const summaryLink = result.children[0].children[0];
             // com -> example は統合（example は1つだけの子を持つから）
             assert.equal(summaryLink.textContent, 'com/example');
-            assert.equal(summaryLink.attributes.get('href'), '#' + globalThis.Jig.util.fqnToId("domain", 'com.example'));
+            assert.equal(summaryLink.attributes.get('href'), '#' + Jig.util.fqnToId("domain", 'com.example'));
 
             // example の直下には sub1 と sub2 があるはず
             const childPackageNames = Array.from(result.children)
@@ -451,11 +452,11 @@ test.describe('domain.js', () => {
             const result = createRelationDiagram(pkg, typeRelations, typesMap);
 
             assert.ok(result.includes('graph TB'), 'デフォルトの向きが含まれていること');
-            const idA = globalThis.Jig.util.fqnToId("n", 'org.example.A');
-            const idB = globalThis.Jig.util.fqnToId("n", 'org.example.B');
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
             assert.ok(result.includes(`${idA} --> ${idB}`), '関連が含まれていること');
 
-            const sgId = globalThis.Jig.util.fqnToId("sg", 'org.example');
+            const sgId = Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
 
             delete globalThis.glossaryData;
@@ -488,15 +489,15 @@ test.describe('domain.js', () => {
 
             assert.ok(result, '図が生成されること');
             assert.ok(result.includes('graph TB'), '方向が含まれること');
-            const idA = globalThis.Jig.util.fqnToId("n", 'org.example.A');
-            const idB = globalThis.Jig.util.fqnToId("n", 'org.example.B');
-            const idC = globalThis.Jig.util.fqnToId("n", 'org.example.C');
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idC = Jig.util.fqnToId("n", 'org.example.C');
             assert.ok(result.includes(`${idA} --> ${idB}`), 'A→B の関連が含まれること');
             assert.ok(result.includes(`${idC} --> ${idA}`), 'C→A の関連が含まれること');
-            const domainIdA = globalThis.Jig.util.fqnToId("domain", 'org.example.A');
+            const domainIdA = Jig.util.fqnToId("domain", 'org.example.A');
             assert.ok(result.includes(`click ${idA} "#${domainIdA}"`), 'Aへのクリックリンクが含まれること');
             assert.ok(result.includes(`style ${idA} font-weight:bold`), '自身（A）が強調表示されること');
-            const sgId = globalThis.Jig.util.fqnToId("sg", 'org.example');
+            const sgId = Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId}`), 'パッケージのサブグラフが含まれること');
 
             delete globalThis.glossaryData;
@@ -539,9 +540,9 @@ test.describe('domain.js', () => {
             ];
 
             const result = createTypeRelationDiagram(typeA, typeRelations, typesMap);
-            const idA = globalThis.Jig.util.fqnToId("n", 'org.example.A');
-            const idB = globalThis.Jig.util.fqnToId("n", 'org.example.B');
-            const idX = globalThis.Jig.util.fqnToId("n", 'org.other.X');
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idX = Jig.util.fqnToId("n", 'org.other.X');
             assert.ok(result.includes(`${idA} ---> ${idX}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idA} --> ${idB}`), 'subgraph内エッジは通常長であること');
 
@@ -861,10 +862,10 @@ test.describe('domain.js', () => {
 
             const pkg = {fqn: 'org.example', types: [{fqn: 'org.example.A'}, {fqn: 'org.example.B'}]};
             const result = createRelationDiagram(pkg, typeRelations, typesMap);
-            const idA = globalThis.Jig.util.fqnToId("n", 'org.example.A');
-            const idB = globalThis.Jig.util.fqnToId("n", 'org.example.B');
-            const idOther = globalThis.Jig.util.fqnToId("n", 'org.other');
-            const idThird = globalThis.Jig.util.fqnToId("n", 'org.third');
+            const idA = Jig.util.fqnToId("n", 'org.example.A');
+            const idB = Jig.util.fqnToId("n", 'org.example.B');
+            const idOther = Jig.util.fqnToId("n", 'org.other');
+            const idThird = Jig.util.fqnToId("n", 'org.third');
             assert.ok(result.includes(`${idA} ---> ${idOther}`), '浅いノードから外部へのエッジは長くなること');
             assert.ok(result.includes(`${idB} --> ${idThird}`), '深いノードから外部へのエッジは短いこと');
 

@@ -15,6 +15,7 @@ import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
+import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeKind;
 import org.dddjava.jig.domain.model.knowledge.datasource.DatasourceAngle;
@@ -74,7 +75,6 @@ public class ListOutputDataAdapter implements JigDocumentAdapter {
         TypeRelationships allClassRelations = TypeRelationships.from(jigTypes);
         CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(repository);
         JigTypes coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
-        JigTypes categoryTypes = jigService.categoryTypes(repository);
 
         JigPackages packages = jigService.packages(repository);
         Set<PackageId> coreDomainPackages = coreDomainJigTypes.stream()
@@ -99,7 +99,8 @@ public class ListOutputDataAdapter implements JigDocumentAdapter {
         String allJson = coreDomainJigTypes.list().stream()
                 .map(jigType -> formatBusinessAllJson(jigType, coreTypesAndRelations, allClassRelations))
                 .collect(Collectors.joining(",", "[", "]"));
-        String enumJson = categoryTypes.list().stream()
+        String enumJson = coreDomainJigTypes.list().stream()
+                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
                 .map(jigType -> formatBusinessEnumJson(jigType, allClassRelations))
                 .collect(Collectors.joining(",", "[", "]"));
         String collectionJson = coreDomainJigTypes.listCollectionType().stream()

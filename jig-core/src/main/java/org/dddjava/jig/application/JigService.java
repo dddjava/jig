@@ -73,10 +73,6 @@ public class JigService {
         return typesQueryService.methodSmells(jigRepository);
     }
 
-    public JigTypes categoryTypes(JigRepository jigRepository) {
-        return typesQueryService.categoryTypes(jigRepository);
-    }
-
     public JigTypes serviceTypes(JigRepository jigRepository) {
         return typesQueryService.serviceTypes(jigRepository);
     }

@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
-import org.dddjava.jig.domain.model.information.types.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
@@ -66,12 +65,6 @@ public class TypesQueryService {
 
     public MethodSmells methodSmells(JigRepository jigRepository) {
         return MethodSmells.from(coreDomainJigTypes(jigRepository).jigTypes());
-    }
-
-    public JigTypes categoryTypes(JigRepository jigRepository) {
-        return jigTypesCache.get("categoryTypes", key ->
-                coreDomainJigTypes(jigRepository).jigTypes().filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
-        );
     }
 
     public JigTypes serviceTypes(JigRepository jigRepository) {

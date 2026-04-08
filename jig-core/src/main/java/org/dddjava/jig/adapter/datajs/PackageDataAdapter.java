@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * パッケージ関連（package-data.js）
  */
-public class PackageDataAdapter implements JigDocumentDataAdapter {
+public class PackageDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

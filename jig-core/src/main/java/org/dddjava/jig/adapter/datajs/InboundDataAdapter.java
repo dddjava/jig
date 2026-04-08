@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * 入力インタフェース（inbound-data.js）
  */
-public class InboundDataAdapter implements JigDocumentDataAdapter {
+public class InboundDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

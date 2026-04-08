@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * 一覧出力（list-output-data.js）
  */
-public class ListOutputDataAdapter implements JigDocumentDataAdapter {
+public class ListOutputDataAdapter implements DataAdapter {
 
     /**
      * 一覧出力で複数要素を文字列連結する際のコレクター

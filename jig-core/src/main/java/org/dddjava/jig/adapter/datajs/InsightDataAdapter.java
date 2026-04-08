@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * インサイト（insight-data.js）
  */
-public class InsightDataAdapter implements JigDocumentDataAdapter {
+public class InsightDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

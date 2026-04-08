@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * 出力インタフェース（outbound-data.js）
  */
-public class OutboundDataAdapter implements JigDocumentDataAdapter {
+public class OutboundDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

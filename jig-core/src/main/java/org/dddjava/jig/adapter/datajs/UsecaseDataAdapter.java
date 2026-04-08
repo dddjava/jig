@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * ユースケース（usecase-data.js）
  */
-public class UsecaseDataAdapter implements JigDocumentDataAdapter {
+public class UsecaseDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

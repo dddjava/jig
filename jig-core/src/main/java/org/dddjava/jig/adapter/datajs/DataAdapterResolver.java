@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class DataAdapterResolver {
 
-    private final Map<JigDocument, List<JigDocumentDataAdapter>> adaptersMap;
+    private final Map<JigDocument, List<DataAdapter>> adaptersMap;
 
     public DataAdapterResolver(JigService jigService) {
         var typeRelationsDataAdapter = new TypeRelationsDataAdapter(jigService);
@@ -28,7 +28,7 @@ public class DataAdapterResolver {
         );
     }
 
-    public List<JigDocumentDataAdapter> resolve(JigDocument jigDocument) {
+    public List<DataAdapter> resolve(JigDocument jigDocument) {
         return adaptersMap.getOrDefault(jigDocument, List.of());
     }
 }

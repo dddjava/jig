@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * ドメインモデル（domain-data.js）
  */
-public class DomainDataAdapter implements JigDocumentDataAdapter {
+public class DomainDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

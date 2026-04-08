@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.information.JigRepository;
  * 型関連情報（type-relations-data.js）
  * DomainModel と PackageRelation の両ドキュメントで共有。
  */
-public class TypeRelationsDataAdapter implements JigDocumentDataAdapter {
+public class TypeRelationsDataAdapter implements DataAdapter {
 
     private final JigService jigService;
 

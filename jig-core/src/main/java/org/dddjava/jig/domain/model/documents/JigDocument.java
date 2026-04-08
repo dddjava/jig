@@ -27,7 +27,7 @@ public enum JigDocument {
     /**
      * ユースケース
      */
-    UsecaseModel(JigDocumentLabel.of("ユースケース", "UsecaseModel"), "usecase"),
+    Usecase(JigDocumentLabel.of("ユースケース", "Usecase"), "usecase"),
 
     /**
      * 入力インタフェース

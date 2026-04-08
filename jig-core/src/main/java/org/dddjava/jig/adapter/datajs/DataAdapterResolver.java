@@ -23,7 +23,7 @@ public class DataAdapterResolver {
                 JigDocument.Insight, List.of(new InsightDataAdapter(jigService)),
                 JigDocument.InboundInterface, List.of(new InboundDataAdapter(jigService), glossaryDataAdapter),
                 JigDocument.OutboundInterface, List.of(new OutboundDataAdapter(jigService), glossaryDataAdapter),
-                JigDocument.UsecaseModel, List.of(new UsecaseDataAdapter(jigService), glossaryDataAdapter),
+                JigDocument.Usecase, List.of(new UsecaseDataAdapter(jigService), glossaryDataAdapter),
                 JigDocument.ListOutput, List.of(new ListOutputDataAdapter(jigService), glossaryDataAdapter)
         );
     }

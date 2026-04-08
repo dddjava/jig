@@ -1448,6 +1448,28 @@ table td.number {
     cursor: pointer;
 }
 
+/* サイドバー テキストフィルタ */
+.sidebar-filter {
+    flex-shrink: 0;
+    padding: 4px 0;
+}
+
+.sidebar-filter input[type="search"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 8px;
+    border: 1px solid #d9e1ea;
+    border-radius: 6px;
+    font-size: 0.85em;
+    background: #fff;
+    color: #1b3a66;
+}
+
+.sidebar-filter input[type="search"]:focus {
+    outline: none;
+    border-color: #5a7099;
+}
+
 .direction-toggle {
     padding: 6px 8px;
     border: 1px solid #ccc;

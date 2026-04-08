@@ -10,6 +10,7 @@ const DomainApp = (() => {
         showStaticMethods: true,
         showEnumOnly: false,
         transitiveReductionEnabled: true,
+        sidebarFilterText: '',
     };
 
     /**
@@ -911,6 +912,30 @@ const DomainApp = (() => {
                 });
             }
         }
+        applySidebarTextFilter();
+    }
+
+    function applySidebarTextFilter() {
+        const filterText = domainSettings.sidebarFilterText.toLowerCase();
+        if (!filterText) return;
+
+        const sidebar = document.getElementById('domain-sidebar');
+        if (!sidebar) return;
+
+        sidebar.querySelectorAll('div[data-has-enum]').forEach(div => {
+            const link = div.querySelector('a');
+            const text = link ? link.textContent.toLowerCase() : '';
+            div.style.display = text.includes(filterText) ? '' : 'none';
+        });
+
+        Array.from(sidebar.querySelectorAll('details[data-has-enum-children]'))
+            .reverse()
+            .forEach(details => {
+                const hasVisible = Array.from(details.children).some(child =>
+                    child.tagName !== 'SUMMARY' && child.style.display !== 'none'
+                );
+                details.style.display = hasVisible ? '' : 'none';
+            });
     }
 
     /**
@@ -979,6 +1004,14 @@ const DomainApp = (() => {
         if (enumOnlyCheckbox) {
             enumOnlyCheckbox.addEventListener('change', () => {
                 domainSettings.showEnumOnly = enumOnlyCheckbox.checked;
+                applyVisibilitySettings();
+            });
+        }
+
+        const filterInput = document.getElementById('domain-sidebar-filter');
+        if (filterInput) {
+            filterInput.addEventListener('input', () => {
+                domainSettings.sidebarFilterText = filterInput.value.trim();
                 applyVisibilitySettings();
             });
         }

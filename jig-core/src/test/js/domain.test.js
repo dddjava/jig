@@ -420,12 +420,6 @@ test.describe('domain.js', () => {
             const typeA = {fqn: 'org.example.A', isDeprecated: false};
             const typeB = {fqn: 'org.example.B', isDeprecated: false};
 
-            setGlossaryData({
-                'org.example.A': {title: 'A'},
-                'org.example.B': {title: 'B'},
-                'org.example': {title: 'example'}
-            });
-
             const typesMap = new Map([
                 ['org.example.A', typeA],
                 ['org.example.B', typeB],
@@ -444,8 +438,6 @@ test.describe('domain.js', () => {
 
             const sgId = Jig.util.fqnToId("sg", 'org.example');
             assert.ok(result.includes(`subgraph ${sgId} ["example"]`), 'subgraphにパッケージ名のラベルが含まれていること');
-
-            delete globalThis.glossaryData;
         });
     });
 

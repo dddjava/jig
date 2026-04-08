@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
@@ -73,8 +72,9 @@ public class ListOutputDataAdapter implements JigDocumentAdapter {
         MethodSmells methodSmells = jigService.methodSmells(repository);
         JigTypes jigTypes = jigService.jigTypes(repository);
         TypeRelationships allClassRelations = TypeRelationships.from(jigTypes);
-        CoreTypesAndRelations coreTypesAndRelations = jigService.coreTypesAndRelations(repository);
-        JigTypes coreDomainJigTypes = coreTypesAndRelations.coreJigTypes();
+
+        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(repository).jigTypes();
+        TypeRelationships coreInternalRelationships = TypeRelationships.internalRelation(coreDomainJigTypes);
 
         JigPackages packages = jigService.packages(repository);
         Set<PackageId> coreDomainPackages = coreDomainJigTypes.stream()
@@ -97,7 +97,7 @@ public class ListOutputDataAdapter implements JigDocumentAdapter {
                 .map(ListOutputDataAdapter::formatBusinessPackageJson)
                 .collect(Collectors.joining(",", "[", "]"));
         String allJson = coreDomainJigTypes.list().stream()
-                .map(jigType -> formatBusinessAllJson(jigType, coreTypesAndRelations, allClassRelations))
+                .map(jigType -> formatBusinessAllJson(jigType, coreInternalRelationships, allClassRelations))
                 .collect(Collectors.joining(",", "[", "]"));
         String enumJson = coreDomainJigTypes.list().stream()
                 .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
@@ -194,14 +194,14 @@ public class ListOutputDataAdapter implements JigDocumentAdapter {
                 .build();
     }
 
-    private static String formatBusinessAllJson(JigType jigType, CoreTypesAndRelations coreTypesAndRelations, TypeRelationships allClassRelations) {
+    private static String formatBusinessAllJson(JigType jigType, TypeRelationships coreInternalRelationships, TypeRelationships allClassRelations) {
         boolean samePackageOnly = allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).packageIds().values()
                 .equals(Set.of(jigType.packageId()));
         return Json.object("packageName", jigType.packageId().asText())
                 .and("typeName", jigType.id().asSimpleText())
                 .and("businessRuleKind", jigType.toValueKind().toString())
-                .and("incomingBusinessRuleCount", coreTypesAndRelations.internalTypeRelationships().filterTo(jigType.id()).size())
-                .and("outgoingBusinessRuleCount", coreTypesAndRelations.internalTypeRelationships().filterFrom(jigType.id()).size())
+                .and("incomingBusinessRuleCount", coreInternalRelationships.filterTo(jigType.id()).size())
+                .and("outgoingBusinessRuleCount", coreInternalRelationships.filterFrom(jigType.id()).size())
                 .and("incomingClassCount", allClassRelations.collectTypeIdWhichRelationTo(jigType.id()).list().size())
                 .and("nonPublic", jigType.visibility() != JigTypeVisibility.PUBLIC)
                 .and("samePackageOnly", samePackageOnly)

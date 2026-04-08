@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.terms.TermId;
 import org.dddjava.jig.domain.model.data.terms.TermKind;
-import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
@@ -91,10 +90,6 @@ public class JigService {
 
     public OutboundAdapters outboundAdapters(JigRepository jigRepository) {
         return infrastructureQueryService.outboundAdapters(jigRepository);
-    }
-
-    public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {
-        return typesQueryService.coreTypesAndRelations(jigRepository);
     }
 
     public JigPackages packages(JigRepository jigRepository) {

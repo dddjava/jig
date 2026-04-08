@@ -6,11 +6,9 @@ import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.documents.diagrams.CoreTypesAndRelations;
 import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.core.CoreDomainCondition;
 import org.dddjava.jig.domain.model.information.core.CoreDomainJigTypes;
-import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.domain.model.information.types.TypeCategory;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmells;
@@ -26,7 +24,6 @@ public class TypesQueryService {
 
     private final Cache<String, JigTypes> jigTypesCache;
     private final Cache<String, CoreDomainJigTypes> coreDomainJigTypesCache;
-    private final Cache<String, CoreTypesAndRelations> jigTypesWithRelationshipsCache;
 
     public TypesQueryService(CoreDomainCondition coreDomainCondition, JigEventRepository jigEventRepository) {
         this.coreDomainCondition = coreDomainCondition;
@@ -35,14 +32,11 @@ public class TypesQueryService {
         if (System.getProperty("jig.debug", "false").equals("true")) {
             this.jigTypesCache = Caffeine.newBuilder().recordStats().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().recordStats().build();
-            this.jigTypesWithRelationshipsCache = Caffeine.newBuilder().recordStats().build();
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesCache, "jigTypesCache");
             CaffeineCacheMetrics.monitor(Metrics.globalRegistry, coreDomainJigTypesCache, "coreDomainJigTypesCache");
-            CaffeineCacheMetrics.monitor(Metrics.globalRegistry, jigTypesWithRelationshipsCache, "jigTypesWithRelationshipsCache");
         } else {
             this.jigTypesCache = Caffeine.newBuilder().build();
             this.coreDomainJigTypesCache = Caffeine.newBuilder().build();
-            this.jigTypesWithRelationshipsCache = Caffeine.newBuilder().build();
         }
     }
 
@@ -71,13 +65,5 @@ public class TypesQueryService {
         return jigTypesCache.get("serviceTypes", key ->
                 jigTypes(jigRepository).filter(jigType -> jigType.typeCategory() == TypeCategory.InboundPort)
         );
-    }
-
-    public CoreTypesAndRelations coreTypesAndRelations(JigRepository jigRepository) {
-        return jigTypesWithRelationshipsCache.get("coreTypesAndRelations", key -> {
-            var jigTypes = coreDomainJigTypes(jigRepository).jigTypes();
-            var typeRelationships = TypeRelationships.internalRelation(jigTypes);
-            return new CoreTypesAndRelations(jigTypes, typeRelationships);
-        });
     }
 }

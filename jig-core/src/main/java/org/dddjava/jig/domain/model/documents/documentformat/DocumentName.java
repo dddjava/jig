@@ -10,7 +10,4 @@ public record DocumentName(JigDocument jigDocument, String fileName, String labe
         return of(jigDocument, jigDocument.fileName());
     }
 
-    public DocumentName withSuffix(String suffix) {
-        return of(this.jigDocument, this.fileName + suffix);
-    }
 }

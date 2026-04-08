@@ -12,13 +12,6 @@ const UsecaseApp = (() => {
     const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
 
     /**
-     * @return {UsecaseData}
-     */
-    function getUsecaseData() {
-        return Jig.data.usecase.get();
-    }
-
-    /**
      * @param {string} fqn
      * @returns {string}
      */
@@ -940,7 +933,7 @@ const UsecaseApp = (() => {
         state.selectedTabs = new Map();
         state.handlerFqns = null;
 
-        state.data = getUsecaseData();
+        state.data = Jig.data.usecase.get();
         if (!state.data) return;
 
         Jig.data.resetCache();

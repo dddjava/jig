@@ -59,29 +59,8 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return name().equals(title) ? "" : title;
     }
 
-    public String aliasText() {
-        if (aliasTextOrBlank().isEmpty()) {
-            return declaringType().asSimpleText() + "\\n" + name();
-        }
-        return aliasTextOrBlank();
-    }
-
-    /**
-     * 出力時に使用する名称
-     */
-    public String labelTextWithSymbol() {
-        return visibility().symbol() + ' ' + labelText();
-    }
-
     public String labelText() {
         return term.title();
-    }
-
-    public String labelTextOrLambda() {
-        if (jigMethodId().isLambda()) {
-            return "lambda";
-        }
-        return labelText();
     }
 
 

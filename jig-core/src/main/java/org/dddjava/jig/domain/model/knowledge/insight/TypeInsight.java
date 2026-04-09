@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.insight;
 
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
-import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigType;
@@ -13,13 +12,9 @@ import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
-public record TypeInsight(TypeId typeId, Term term, Collection<MethodInsight> methodInsights) {
+public record TypeInsight(TypeId typeId, Collection<MethodInsight> methodInsights) {
     public String fqn() {
         return typeId.value();
-    }
-
-    public String label() {
-        return term.title();
     }
 
     public int numberOfMethods() {

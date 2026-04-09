@@ -108,8 +108,7 @@ public class JigService {
                         packageTerms.stream().map(Term::id).map(TermId::asText).map(PackageId::valueOf))
                 .distinct()
                 .map(packageId -> {
-                    var packageTerm = glossary.termOf(packageId.asText(), TermKind.パッケージ);
-                    return new JigPackage(packageId, packageTerm, packageAndJigTypes.getOrDefault(packageId, List.of()));
+                    return new JigPackage(packageId, packageAndJigTypes.getOrDefault(packageId, List.of()));
                 })
                 .toList();
 

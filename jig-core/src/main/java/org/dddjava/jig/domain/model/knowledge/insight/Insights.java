@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.insight;
 
 import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
@@ -13,13 +12,14 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
-public record Insights(Collection<MethodInsight> values, Glossary glossary, TypeRelationships typeRelationships, JigTypes jigTypes) {
+public record Insights(Collection<MethodInsight> values, Glossary glossary, TypeRelationships typeRelationships,
+                       JigTypes jigTypes) {
     public List<PackageInsight> packageInsightList() {
         return typeInsightStream()
                 .collect(groupingBy(typeInsight -> typeInsight.typeId().packageId(), toList()))
                 .entrySet()
                 .stream()
-                .map(entry -> new PackageInsight(entry.getKey(), glossary.termOf(entry.getKey().asText(), TermKind.パッケージ), entry.getValue()))
+                .map(entry -> new PackageInsight(entry.getKey(), entry.getValue()))
                 .sorted(Comparator.comparing(PackageInsight::fqn))
                 .toList();
     }
@@ -35,7 +35,7 @@ public record Insights(Collection<MethodInsight> values, Glossary glossary, Type
                 .collect(groupingBy(MethodInsight::typeId, toList()))
                 .entrySet()
                 .stream()
-                .map(entry -> new TypeInsight(entry.getKey(), glossary.termOf(entry.getKey().value(), TermKind.クラス), entry.getValue()));
+                .map(entry -> new TypeInsight(entry.getKey(), entry.getValue()));
     }
 
     public List<MethodInsight> methodInsightList() {

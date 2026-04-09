@@ -79,28 +79,8 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
         });
     }
 
-    public boolean isNotPublicMethod() {
-        return !serviceMethod.isPublic();
-    }
-
     public JigMethodId jigMethodId() {
         return serviceMethod.method().jigMethodId();
-    }
-
-    public String usecaseIdentifier() {
-        return serviceMethod.method().fqn();
-    }
-
-    public String usecaseLabel() {
-        return serviceMethod.method().aliasText();
-    }
-
-    public String simpleTextWithDeclaringType() {
-        return serviceMethod.method().simpleText();
-    }
-
-    public boolean isHandler() {
-        return usecaseCategory.handler();
     }
 
     public TypeId declaringType() {

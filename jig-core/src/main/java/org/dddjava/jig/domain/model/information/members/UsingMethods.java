@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -36,7 +35,4 @@ public record UsingMethods(List<MethodCall> methodCalls) {
                 .anyMatch(invokedMethod -> invokedMethod.jigMethodIdIs(jigMethodId));
     }
 
-    public boolean containsAny(Predicate<MethodCall> predicate) {
-        return methodCalls.stream().anyMatch(predicate);
-    }
 }

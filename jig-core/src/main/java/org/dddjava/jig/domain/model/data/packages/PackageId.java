@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.data.packages;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -83,29 +86,6 @@ public class PackageId implements Comparable<PackageId> {
             sj.add(split[i]);
         }
         return valueOf(sj.toString());
-    }
-
-    /**
-     * @return hoge.fuga.piyo => [hoge, hoge.fuga, hoge.fuga.piyo]
-     */
-    public List<PackageId> genealogical() {
-        if (!hasName()) {
-            return Collections.emptyList();
-        }
-
-        // 最上位パッケージから全てのリスト
-        String[] split = value.split("\\.");
-        ArrayList<PackageId> list = new ArrayList<>();
-        StringJoiner currentPackageName = new StringJoiner(".");
-        for (String packageParts : split) {
-            currentPackageName.add(packageParts);
-            list.add(valueOf(currentPackageName.toString()));
-        }
-        return list;
-    }
-
-    public boolean hasName() {
-        return !value.equals("(default)");
     }
 
     public String simpleName() {

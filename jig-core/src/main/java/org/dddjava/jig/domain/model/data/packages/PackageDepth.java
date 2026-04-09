@@ -10,7 +10,4 @@ public record PackageDepth(int value) {
         return Integer.toString(value);
     }
 
-    public boolean just(PackageDepth other) {
-        return this.value == other.value;
-    }
 }

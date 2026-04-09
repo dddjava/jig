@@ -9,9 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
-
 public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRelations) {
 
     public static InputAdapters from(JigTypes jigTypes) {
@@ -45,9 +42,5 @@ public record InputAdapters(List<InputAdapter> groups, MethodRelations methodRel
                             .anyMatch(item -> item.equals(jigMethodId));
                 })
                 .toList();
-    }
-
-    public JigTypes jigTypes() {
-        return groups().stream().map(InputAdapter::jigType).collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

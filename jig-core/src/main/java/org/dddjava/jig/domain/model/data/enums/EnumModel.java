@@ -33,7 +33,4 @@ public record EnumModel(TypeId typeId,
                 .orElse(List.of());
     }
 
-    public boolean hasConstructorParameter() {
-        return !constructorParameterNames().isEmpty();
-    }
 }

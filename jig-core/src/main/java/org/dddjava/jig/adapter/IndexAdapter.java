@@ -139,13 +139,6 @@ public class IndexAdapter {
     record NavigationLink(String href, String label) {
     }
 
-    private void appendLinkIfPresent(StringBuilder html, Map<JigDocument, String> documentLinks, JigDocument key) {
-        String href = documentLinks.get(key);
-        if (href != null) {
-            html.append("            <li><a href=\"").append(href).append("\">").append(key.label()).append("</a></li>\n");
-        }
-    }
-
     public static Path indexFilePath(Path outputDirectory) {
         return outputDirectory.resolve(INDEX_FILE_NAME);
     }

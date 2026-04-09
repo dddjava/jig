@@ -15,12 +15,6 @@ public record Glossary(Collection<Term> terms) {
                 .toList();
     }
 
-    public Collection<Term> findRelated(TermId termId) {
-        return terms.stream()
-                .filter(term -> term.relatesTo(termId))
-                .toList();
-    }
-
     public Term termOf(String idText, TermKind termKind) {
         TermId termId = new TermId(idText);
         return terms.stream()

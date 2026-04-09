@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.data.packages;
 
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -23,12 +22,6 @@ public record PackageIds(Set<PackageId> values) {
                 .map(PackageId::depth)
                 .max(Comparator.comparing(PackageDepth::value))
                 .orElseGet(() -> new PackageDepth(0));
-    }
-
-    public String countDescriptionText() {
-        Locale locale = Locale.getDefault();
-        boolean isEnglish = locale.getLanguage().equals("en");
-        return (isEnglish ? "Packages: " : "パッケージ数: ") + size();
     }
 
     public int size() {

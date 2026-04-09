@@ -18,8 +18,4 @@ public enum JigMemberVisibility {
     public boolean isPublic() {
         return this == PUBLIC;
     }
-
-    public String symbol() {
-        return symbol;
-    }
 }

@@ -909,6 +909,21 @@ label {
     scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
 }
 
+@keyframes jig-card-highlight {
+    0% {
+        box-shadow: 0 0 0 3px #3b82f6, 0 4px 16px rgba(59, 130, 246, 0.25);
+        background: #eff6ff;
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(180deg, #f9fbff, #f3f6ff);
+    }
+}
+
+.jig-card.jig-card--type:target {
+    animation: jig-card-highlight 2s ease-out;
+}
+
 .jig-card.jig-card--compact h3 {
     margin: 0;
     font-size: 1rem;

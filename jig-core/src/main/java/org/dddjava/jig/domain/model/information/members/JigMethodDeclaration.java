@@ -38,8 +38,4 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
         return header.parameterTypeList().stream();
     }
 
-    public TypeId declaringTypeId() {
-        return header.id().tuple().declaringTypeId();
-    }
-
 }

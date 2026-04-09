@@ -54,11 +54,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return new TypeIds(jigMethodDeclaration.associatedTypes());
     }
 
-    public String aliasTextOrBlank() {
-        var title = term.title();
-        return name().equals(title) ? "" : title;
-    }
-
     public String labelText() {
         return term.title();
     }

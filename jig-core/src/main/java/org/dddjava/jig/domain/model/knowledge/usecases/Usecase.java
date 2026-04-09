@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.IfInstruction;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.instruction.SimpleInstruction;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
@@ -83,7 +82,4 @@ public record Usecase(ServiceMethod serviceMethod, List<JigMethod> usingReposito
         return serviceMethod.method().jigMethodId();
     }
 
-    public TypeId declaringType() {
-        return serviceMethod.declaringType();
-    }
 }

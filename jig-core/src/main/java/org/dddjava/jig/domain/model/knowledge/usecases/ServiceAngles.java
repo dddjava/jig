@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.information.types.JigType;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.Stream;
 
 /**
  * サービスの切り口一覧
@@ -35,9 +33,5 @@ public record ServiceAngles(Collection<Entry> entries) {
                 .flatMap(Collection::stream)
                 .sorted(Comparator.comparing(usecase -> usecase.jigMethodId()))
                 .toList();
-    }
-
-    public <T> Stream<T> streamAndMap(BiFunction<JigType, Collection<Usecase>, T> biFunction) {
-        return entries.stream().map(entry -> biFunction.apply(entry.jigType, entry.usecases));
     }
 }

@@ -17,8 +17,4 @@ public enum SqlReadStatus {
             default -> throw new IllegalArgumentException(toString());
         };
     }
-
-    public boolean not正常() {
-        return this != 成功;
-    }
 }

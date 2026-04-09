@@ -15,8 +15,4 @@ public record SourceBasePaths(SourceBasePath classFileBasePath, SourceBasePath j
     public List<Path> javaSourceBasePaths() {
         return javaFileBasePath.pathList();
     }
-
-    public SourceBasePaths merge(SourceBasePaths other) {
-        return new SourceBasePaths(classFileBasePath.merge(other.classFileBasePath), javaFileBasePath.merge(other.javaFileBasePath));
-    }
 }

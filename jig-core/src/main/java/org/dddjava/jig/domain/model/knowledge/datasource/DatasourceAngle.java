@@ -105,10 +105,6 @@ public class DatasourceAngle {
         return declaringType().asSimpleText();
     }
 
-    public String typeLabel() {
-        return outboundPort.jigType().label();
-    }
-
     private List<String> tableNames(PersistenceOperationType persistenceOperationType) {
         return tablesMap.getOrDefault(persistenceOperationType, List.of());
     }

@@ -118,7 +118,7 @@ public class DefaultJigRepositoryFactory {
             PersistenceAccessorRepository persistenceAccessorRepository = Objects.requireNonNull(Metrics.timer(metricName, "phase", "mybatis_reading").record(() ->
                     createPersistenceAccessorRepository(sources, classDeclarations)));
 
-            JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations, glossaryRepository.all());
+            JigTypes jigTypes = JigTypeFactory.createJigTypes(classDeclarations);
 
             // Swagger @Operation(summary) 由来の用語を登録する
             // Javadocに由来する用語が優先のため、TermIdが重複する場合はスキップしてログを出力する

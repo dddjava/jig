@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.types;
 
 import org.dddjava.jig.domain.model.data.packages.PackageId;
-import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigFields;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
@@ -15,7 +14,7 @@ import static java.util.stream.Collectors.toSet;
 /**
  * JIGが識別する型
  */
-public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers, JigTypeGlossary jigTypeGlossary) {
+public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers) {
 
     public TypeId id() {
         return jigTypeHeader.id();
@@ -31,14 +30,6 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
 
     public JigTypeVisibility visibility() {
         return jigTypeHeader.jigTypeAttributes().jigTypeVisibility();
-    }
-
-    public Term term() {
-        return jigTypeGlossary.typeTerm();
-    }
-
-    public String label() {
-        return term().title();
     }
 
     public TypeIds usingTypes() {

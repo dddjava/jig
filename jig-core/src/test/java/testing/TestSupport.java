@@ -1,13 +1,8 @@
 package testing;
 
-import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.data.terms.Term;
-import org.dddjava.jig.domain.model.data.terms.TermId;
-import org.dddjava.jig.domain.model.data.terms.TermKind;
 import org.dddjava.jig.domain.model.data.types.*;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePath;
 import org.dddjava.jig.domain.model.sources.filesystem.SourceBasePaths;
@@ -72,7 +67,7 @@ public class TestSupport {
     public static JigType buildJigType(Class<?> definitionClass) {
         AsmClassSourceReader sut = new AsmClassSourceReader();
         ClassDeclaration classDeclaration = sut.classDeclaration(getPathFromClass(definitionClass)).orElseThrow();
-        return JigTypeFactory.createJigTypes(List.of(classDeclaration), new Glossary(List.of())).orderedStream().findFirst().orElseThrow();
+        return JigTypeFactory.createJigTypes(List.of(classDeclaration)).orderedStream().findFirst().orElseThrow();
     }
 
     private static Path getPathFromClass(Class<?> definitionClass) {
@@ -118,10 +113,6 @@ public class TestSupport {
                 new JigBaseTypeDataBundle(Optional.of(JigTypeReference.fromId(TypeId.OBJECT)), List.of())
         );
         JigTypeMembers members = new JigTypeMembers(List.of(), List.of(), List.of(), List.of(), List.of());
-        JigTypeGlossary glossary = new JigTypeGlossary(
-                Term.simple(new TermId(typeId.fqn()), typeId.asSimpleName(), TermKind.クラス),
-                List.of()
-        );
-        return new JigType(header, members, glossary);
+        return new JigType(header, members);
     }
 }

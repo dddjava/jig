@@ -2,12 +2,10 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
-import org.dddjava.jig.domain.model.data.terms.Glossary;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
 import org.dddjava.jig.domain.model.information.types.JigType;
-import org.dddjava.jig.domain.model.information.types.JigTypeGlossary;
 import org.dddjava.jig.domain.model.information.types.JigTypeMembers;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 import org.dddjava.jig.infrastructure.asm.ClassDeclaration;
@@ -22,16 +20,15 @@ import static java.util.stream.Collectors.*;
  */
 public class JigTypeFactory {
 
-    public static JigTypes createJigTypes(Collection<ClassDeclaration> classDeclarations, Glossary glossary) {
+    public static JigTypes createJigTypes(Collection<ClassDeclaration> classDeclarations) {
         return classDeclarations.stream()
-                .map(classDeclaration -> createJigType(glossary, classDeclaration))
+                .map(classDeclaration -> createJigType(classDeclaration))
                 .collect(collectingAndThen(toList(), JigTypes::new));
     }
 
-    private static JigType createJigType(Glossary glossary, ClassDeclaration classDeclaration) {
-        JigTypeGlossary jigTypeGlossary = JigTypeGlossary.from(glossary, classDeclaration.jigTypeHeader().id());
+    private static JigType createJigType(ClassDeclaration classDeclaration) {
         JigTypeMembers jigTypeMembers = createJigMember(classDeclaration);
-        return new JigType(classDeclaration.jigTypeHeader(), jigTypeMembers, jigTypeGlossary);
+        return new JigType(classDeclaration.jigTypeHeader(), jigTypeMembers);
     }
 
     private enum MethodGrouping {

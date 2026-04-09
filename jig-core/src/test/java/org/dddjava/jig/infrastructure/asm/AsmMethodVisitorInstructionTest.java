@@ -268,7 +268,7 @@ public class AsmMethodVisitorInstructionTest {
                 .map(instruction -> (JumpTarget) instruction)
                 .toList();
 
-        assertTrue(branchTargetInstructions.containsAll(targetInstructions), "分岐命令のターゲットがすべて存在する");
+        assertTrue(targetInstructions.containsAll(branchTargetInstructions), "分岐命令のターゲットがすべて存在する");
     }
 
     @Test

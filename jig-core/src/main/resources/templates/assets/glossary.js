@@ -365,10 +365,21 @@ const GlossaryApp = (() => {
         // ページ内リンクが確実に機能するように hashchange を監視
         const scrollToHash = () => {
             const hash = location.hash;
-            if (hash) {
-                const el = document.getElementById(hash.substring(1));
-                if (el) el.scrollIntoView();
+            if (!hash) return;
+            const targetId = hash.substring(1);
+            let el = document.getElementById(targetId);
+            if (!el) {
+                // フィルタで非表示になっている場合、対象の用語を強制的に追加して再描画する
+                const targetTerm = terms.find((t, i) => buildTermAnchorId(t, i) === targetId);
+                if (targetTerm) {
+                    const filteredTerms = getFilteredTerms(terms, controls);
+                    const sortedTerms = sortTerms([...filteredTerms, targetTerm], "name");
+                    renderTermSidebar(sortedTerms);
+                    renderGlossaryTerms(sortedTerms, controls.showAttributesCheckbox?.checked);
+                    el = document.getElementById(targetId);
+                }
             }
+            if (el) el.scrollIntoView();
         };
         window.addEventListener("hashchange", scrollToHash);
         // 初期表示時

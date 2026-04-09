@@ -542,6 +542,63 @@ test.describe('glossary.js', () => {
         });
     });
 
+    test.describe('ハッシュによる強制表示', () => {
+        test('フィルタで非表示の用語でもハッシュで指定されていれば表示される', () => {
+            const doc = setupDocument();
+            doc.body.classList.add('glossary');
+            const list = doc.createElement('div');
+            doc.elementsById.set('term-list', list);
+            doc.elementsById.set('term-sidebar-list', doc.createElement('div'));
+
+            // メソッドは show-method=false でフィルタアウトされる
+            doc.elementsById.get('show-method').checked = false;
+
+            const targetFqn = 'com.example.Service#method()';
+            const targetId = Jig.util.fqnToId("term", targetFqn);
+            setGlossaryData([
+                {title: 'method', fqn: targetFqn, kind: 'メソッド', description: 'desc'}
+            ]);
+
+            // ハッシュを設定
+            global.location = {hash: '#' + targetId};
+            let scrolled = false;
+            doc.elementsById.set(targetId, (() => {
+                // getElementById が呼ばれたとき実際のDOMから探す
+                return undefined; // 初回はundefinedにしてforceを発動させる
+            })());
+
+            // scrollIntoView をモック
+            const originalGetById = doc.getElementById.bind(doc);
+            let scrollCalled = false;
+            doc.getElementById = (id) => {
+                const el = originalGetById(id);
+                if (el && !el.scrollIntoView) {
+                    el.scrollIntoView = () => { scrollCalled = true; };
+                }
+                return el;
+            };
+
+            glossary.init();
+
+            // フィルタアウトされていた用語が DOM に追加されること
+            const article = list.querySelector ? list.querySelector(`#${targetId}`) : null;
+            const found = (function findById(el, id) {
+                if (!el) return null;
+                if (el.id === id) return el;
+                if (!el.children) return null;
+                for (const child of el.children) {
+                    const r = findById(child, id);
+                    if (r) return r;
+                }
+                return null;
+            })(list, targetId);
+            assert.ok(found, 'フィルタで非表示の用語がハッシュ指定時に表示されること');
+
+            delete globalThis.glossaryData;
+            delete global.location;
+        });
+    });
+
     test.describe('初期化', () => {
         test('DOMContentLoaded で初期描画が行われる', () => {
             const doc = setupDocument();

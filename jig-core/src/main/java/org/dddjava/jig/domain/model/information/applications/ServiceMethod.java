@@ -1,15 +1,11 @@
 package org.dddjava.jig.domain.model.information.applications;
 
-import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.information.members.CallerMethods;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.UsingFields;
 import org.dddjava.jig.domain.model.information.members.UsingMethods;
 import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * サービスメソッド
@@ -37,20 +33,5 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
 
     public TypeId declaringType() {
         return method.declaringType();
-    }
-
-    public Optional<TypeId> primaryType() {
-        // 戻り値型が主要な関心
-        TypeId typeId = method.returnType().id();
-        if (typeId.isVoid()) return Optional.empty();
-        return Optional.of(typeId);
-    }
-
-    public List<TypeId> requireTypes() {
-        return method.jigMethodDeclaration().argumentStream()
-                .map(JigTypeReference::id)
-                // primaryTypeは除く
-                .filter(argumentType -> primaryType().filter(primaryType -> primaryType.equals(argumentType)).isEmpty())
-                .toList();
     }
 }

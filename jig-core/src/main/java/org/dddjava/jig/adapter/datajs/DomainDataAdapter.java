@@ -66,7 +66,6 @@ public class DomainDataAdapter implements DataAdapter {
         List<JsonObjectBuilder> methods = jigType.instanceJigMethods()
                 .filterProgrammerDefined()
                 .excludeNotNoteworthyObjectMethod()
-                .listRemarkable()
                 .stream()
                 .map(JsonSupport::buildMethodJson)
                 .toList();
@@ -74,7 +73,6 @@ public class DomainDataAdapter implements DataAdapter {
         List<JsonObjectBuilder> staticMethods = jigType.staticJigMethods()
                 .filterProgrammerDefined()
                 .excludeNotNoteworthyObjectMethod()
-                .listRemarkable()
                 .stream()
                 .map(JsonSupport::buildMethodJson)
                 .toList();

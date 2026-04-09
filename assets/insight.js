@@ -3,7 +3,7 @@ const InsightApp = (() => {
 
 
     function parseInsightData() {
-        return globalThis.insightData ?? null;
+        return Jig.data.insight.get();
     }
 
     function setInsightCount(elementId, count) {
@@ -34,7 +34,7 @@ const InsightApp = (() => {
             row.dataset.fqn = packageInsight.fqn;
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(packageInsight.fqn, "fqn"));
-            row.appendChild(Jig.dom.createCell(packageInsight.label));
+            row.appendChild(Jig.dom.createCell(Jig.glossary.getPackageTerm(packageInsight.fqn).title));
             row.appendChild(Jig.dom.createCell(packageInsight.numberOfTypes.toString(), "number"));
             row.appendChild(Jig.dom.createCell(packageInsight.numberOfMethods.toString(), "number"));
             row.appendChild(Jig.dom.createCell(packageInsight.numberOfUsingTypes.toString(), "number"));
@@ -55,7 +55,7 @@ const InsightApp = (() => {
             row.dataset.packageFqn = typeInsight.packageFqn;
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(typeInsight.fqn, "fqn"));
-            row.appendChild(Jig.dom.createCell(typeInsight.label));
+            row.appendChild(Jig.dom.createCell(Jig.glossary.getTypeTerm(typeInsight.fqn).title));
             row.appendChild(Jig.dom.createCell(typeInsight.numberOfMethods.toString(), "number"));
             row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsingTypes.toString(), "number"));
             row.appendChild(Jig.dom.createCell(typeInsight.numberOfUsedByTypes.toString(), "number"));
@@ -79,7 +79,7 @@ const InsightApp = (() => {
             row.dataset.typeFqn = methodInsight.typeFqn;
             row.appendChild(createZoomCell());
             row.appendChild(Jig.dom.createCell(methodInsight.fqn, "fqn"));
-            row.appendChild(Jig.dom.createCell(methodInsight.label));
+            row.appendChild(Jig.dom.createCell(Jig.glossary.getMethodTerm(methodInsight.fqn).title));
             row.appendChild(Jig.dom.createCell(methodInsight.cyclomaticComplexity.toString(), "number"));
             row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingTypes.toString(), "number"));
             row.appendChild(Jig.dom.createCell(methodInsight.numberOfUsingMethods.toString(), "number"));

@@ -49,7 +49,7 @@ const PackageApp = (() => {
     // データ取得/整形
     function getPackageRelationData(context) {
         if (context.packageRelationCache) return context.packageRelationCache;
-        const data = globalThis.packageData ?? {};
+        const data = Jig.data.package.get() ?? {};
         context.packageRelationCache = parsePackageRelationData(data);
         return context.packageRelationCache;
     }
@@ -59,7 +59,7 @@ const PackageApp = (() => {
         return {
             packages: isArrayFormat ? packageData : (packageData?.packages ?? []),
             relations: isArrayFormat ? [] : (packageData?.relations ?? []),
-            causeRelationEvidence: globalThis.typeRelationsData?.relations ?? [],
+            causeRelationEvidence: Jig.data.typeRelations.getRelations(),
             domainPackageRoots: isArrayFormat ? [] : (packageData?.domainPackageRoots ?? []),
         };
     }

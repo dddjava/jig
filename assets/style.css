@@ -483,25 +483,32 @@ main table.fields thead {
 }
 
 .usecase .depends {
-    background-color: #f0f2f5;
-    padding: 8px 12px;
-    border-radius: 4px;
+    background-color: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
     border: 1px solid #e2e4ea;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.usecase .depends dt {
+.usecase .depends-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.usecase .depends-section h4 {
+    margin: 0;
     font-weight: bold;
-    color: #31455f;
-    margin-bottom: 4px;
+    color: #1b3a66;
+    font-size: 0.95em;
 }
 
-.usecase .depends dd {
-    margin-left: 0;
-    margin-bottom: 8px;
-}
-
-.usecase .depends dd:last-child {
-    margin-bottom: 0;
+.usecase .depends-item {
+    color: #333;
+    margin-left: 8px;
 }
 
 .usecase .declaration {
@@ -900,6 +907,36 @@ label {
 
 .jig-card.jig-card--type {
     scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
+}
+
+@keyframes jig-card-type-highlight {
+    0% {
+        box-shadow: 0 0 0 3px #3b82f6, 0 4px 16px rgba(59, 130, 246, 0.25);
+        background: #eff6ff;
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        background: linear-gradient(180deg, #f9fbff, #f3f6ff);
+    }
+}
+
+.jig-card.jig-card--type:target {
+    animation: jig-card-type-highlight 2s ease-out;
+}
+
+@keyframes jig-card-item-highlight {
+    0% {
+        box-shadow: 0 0 0 3px #3b82f6, 0 2px 8px rgba(59, 130, 246, 0.2);
+        background: #eff6ff;
+    }
+    100% {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        background-color: #fff;
+    }
+}
+
+.jig-card.jig-card--item:target {
+    animation: jig-card-item-highlight 2s ease-out;
 }
 
 .jig-card.jig-card--compact h3 {
@@ -1439,6 +1476,28 @@ table td.number {
 .sidebar-settings-panel fieldset input[type="radio"],
 .sidebar-settings-panel fieldset input[type="checkbox"] {
     cursor: pointer;
+}
+
+/* サイドバー テキストフィルタ */
+.sidebar-filter {
+    flex-shrink: 0;
+    padding: 4px 0;
+}
+
+.sidebar-filter input[type="search"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 8px;
+    border: 1px solid #d9e1ea;
+    border-radius: 6px;
+    font-size: 0.85em;
+    background: #fff;
+    color: #1b3a66;
+}
+
+.sidebar-filter input[type="search"]:focus {
+    outline: none;
+    border-color: #5a7099;
 }
 
 .direction-toggle {

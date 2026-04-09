@@ -4,19 +4,13 @@ const UsecaseApp = (() => {
     const state = {
         data: null,
         selectedTabs: new Map(), // methodFqn -> 'usecase' | 'sequence'
-        handlerFqns: null        // ハンドラのみ表示時のFQN集合、nullはすべて表示
+        handlerFqns: null,       // ハンドラのみ表示時のFQN集合、nullはすべて表示
+        sidebarFilterText: '',
     };
 
-    const fqnToNodeId = (fqn) => Jig.fqnToId("node", fqn);    // Mermaid内部ノード
-    const fqnToTypeId = (fqn) => Jig.fqnToId("type", fqn);    // usecaseクラスのHTML id
-    const fqnToMethodId = (fqn) => Jig.fqnToId("method", fqn); // usecaseメソッドのHTML id
-
-    /**
-     * @return {UsecaseData}
-     */
-    function getUsecaseData() {
-        return globalThis.usecaseData;
-    }
+    const fqnToNodeId = (fqn) => Jig.util.fqnToId("node", fqn);    // Mermaid内部ノード
+    const fqnToTypeId = (fqn) => Jig.util.fqnToId("type", fqn);    // usecaseクラスのHTML id
+    const fqnToMethodId = (fqn) => Jig.util.fqnToId("method", fqn); // usecaseメソッドのHTML id
 
     /**
      * @param {string} fqn
@@ -41,7 +35,7 @@ const UsecaseApp = (() => {
      */
     function buildHandlerFqns() {
         const fqns = new Set();
-        (globalThis.inboundData?.controllers || []).forEach(controller => {
+        Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (relation?.to) fqns.add(relation.to);
             });
@@ -111,7 +105,7 @@ const UsecaseApp = (() => {
             });
         }
 
-        (globalThis.inboundData?.controllers || []).forEach(controller => {
+        Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (!relation?.from || !relation?.to) return;
                 const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
@@ -240,37 +234,41 @@ const UsecaseApp = (() => {
         traverse(rootMethod.fqn, rootMethod.callMethods);
 
         // ドメインモデルノードを追加（引数・戻り値）
-        const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
         if (diagramContext.showDiagramDomainTypes && domainFqnSet.size > 0) {
             [...nodes.keys()].forEach(fqn => {
                 const method = diagramContext.methodMap.get(fqn);
                 if (!method) return; // outbound / inbound-class はスキップ
 
                 // 引数の型 → メソッド
-                (method.parameterTypeRefs || []).forEach(typeRef => {
-                    if (!domainFqnSet.has(typeRef.fqn)) return;
-                    if (!nodes.has(typeRef.fqn)) {
-                        nodes.set(typeRef.fqn, {fqn: typeRef.fqn, kind: "domain-type"});
-                    }
-                    const edgeKey = typeRef.fqn + '\u2192' + fqn;
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: typeRef.fqn, to: fqn, dotted: true});
-                    }
+                (method.parameters || []).forEach(param => {
+                    Jig.util.collectTypeRefFqns(param.typeRef)
+                        .filter(domainFqn => domainFqnSet.has(domainFqn))
+                        .forEach(domainFqn => {
+                            if (!nodes.has(domainFqn)) {
+                                nodes.set(domainFqn, {fqn: domainFqn, kind: "domain-type"});
+                            }
+                            const edgeKey = domainFqn + '\u2192' + fqn;
+                            if (!edgeSet.has(edgeKey)) {
+                                edgeSet.add(edgeKey);
+                                edges.push({from: domainFqn, to: fqn, dotted: true});
+                            }
+                        });
                 });
 
                 // メソッド → 戻り値の型
-                const returnFqn = method.returnTypeRef?.fqn;
-                if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
-                    if (!nodes.has(returnFqn)) {
-                        nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
-                    }
-                    const edgeKey = fqn + '\u2192' + returnFqn;
-                    if (!edgeSet.has(edgeKey)) {
-                        edgeSet.add(edgeKey);
-                        edges.push({from: fqn, to: returnFqn, dotted: true});
-                    }
-                }
+                Jig.util.collectTypeRefFqns(method.returnTypeRef)
+                    .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
+                    .forEach(returnFqn => {
+                        if (!nodes.has(returnFqn)) {
+                            nodes.set(returnFqn, {fqn: returnFqn, kind: "domain-type"});
+                        }
+                        const edgeKey = fqn + '\u2192' + returnFqn;
+                        if (!edgeSet.has(edgeKey)) {
+                            edgeSet.add(edgeKey);
+                            edges.push({from: fqn, to: returnFqn, dotted: true});
+                        }
+                    });
             });
         }
 
@@ -291,7 +289,7 @@ const UsecaseApp = (() => {
         const domainNodeSet = new Set();
         const classMethods = [...usecase.methods.filter(m => isUsecase(m) && (!handlerFqns || handlerFqns.has(m.fqn))), ...usecase.staticMethods];
         const methodFqns = new Set(classMethods.map(m => m.fqn));
-        const domainFqnSet = new Set((globalThis.domainData?.types || []).map(t => t.fqn));
+        const domainFqnSet = Jig.data.domain.getDomainFqnSet();
 
         classMethods.forEach(method => {
             const kind = isUsecase(method) ? "usecase" : (usecase.staticMethods.includes(method) ? "static-method" : "method");
@@ -308,36 +306,40 @@ const UsecaseApp = (() => {
             });
 
             // ドメインモデルノード（引数・戻り値）
-            (method.parameterTypeRefs || []).forEach(typeRef => {
-                if (!domainFqnSet.has(typeRef.fqn)) return;
-                if (!domainNodeSet.has(typeRef.fqn)) {
-                    domainNodeSet.add(typeRef.fqn);
-                    nodes.push({fqn: typeRef.fqn, kind: "domain-type"});
-                }
-                const edgeKey = `${typeRef.fqn}->${method.fqn}`;
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: typeRef.fqn, to: method.fqn, dotted: true});
-                }
+            (method.parameters || []).forEach(param => {
+                Jig.util.collectTypeRefFqns(param.typeRef)
+                    .filter(domainFqn => domainFqnSet.has(domainFqn))
+                    .forEach(domainFqn => {
+                        if (!domainNodeSet.has(domainFqn)) {
+                            domainNodeSet.add(domainFqn);
+                            nodes.push({fqn: domainFqn, kind: "domain-type"});
+                        }
+                        const edgeKey = `${domainFqn}->${method.fqn}`;
+                        if (!edgeSet.has(edgeKey)) {
+                            edgeSet.add(edgeKey);
+                            edges.push({from: domainFqn, to: method.fqn, dotted: true});
+                        }
+                    });
             });
 
-            const returnFqn = method.returnTypeRef?.fqn;
-            if (returnFqn && returnFqn !== 'void' && domainFqnSet.has(returnFqn)) {
-                if (!domainNodeSet.has(returnFqn)) {
-                    domainNodeSet.add(returnFqn);
-                    nodes.push({fqn: returnFqn, kind: "domain-type"});
-                }
-                const edgeKey = `${method.fqn}->${returnFqn}`;
-                if (!edgeSet.has(edgeKey)) {
-                    edgeSet.add(edgeKey);
-                    edges.push({from: method.fqn, to: returnFqn, dotted: true});
-                }
-            }
+            Jig.util.collectTypeRefFqns(method.returnTypeRef)
+                .filter(returnFqn => returnFqn !== 'void' && domainFqnSet.has(returnFqn))
+                .forEach(returnFqn => {
+                    if (!domainNodeSet.has(returnFqn)) {
+                        domainNodeSet.add(returnFqn);
+                        nodes.push({fqn: returnFqn, kind: "domain-type"});
+                    }
+                    const edgeKey = `${method.fqn}->${returnFqn}`;
+                    if (!edgeSet.has(edgeKey)) {
+                        edgeSet.add(edgeKey);
+                        edges.push({from: method.fqn, to: returnFqn, dotted: true});
+                    }
+                });
         });
 
         // inboundクラスノード（このクラスのメソッドを呼び出すコントローラー）
         const inboundNodeSet = new Set();
-        (globalThis.inboundData?.controllers || []).forEach(controller => {
+        Jig.data.inbound.getControllers().forEach(controller => {
             (controller.relations || []).forEach(relation => {
                 if (!relation?.from || !relation?.to) return;
                 if (!methodFqns.has(relation.to)) return;
@@ -493,8 +495,23 @@ const UsecaseApp = (() => {
         sidebar.innerHTML = "";
 
         const handlerFqns = state.handlerFqns;
+        const filterText = state.sidebarFilterText.toLowerCase();
         const isVisibleMethod = (method) => isUsecase(method) && (!handlerFqns || handlerFqns.has(method.fqn));
-        const visibleUsecases = usecases.filter(u => u.methods.some(isVisibleMethod));
+
+        // テキストフィルタ: クラス名一致→全メソッド表示、メソッド名一致→該当メソッドのみ表示
+        const filteredItems = usecases.flatMap(usecase => {
+            const visibleMethods = usecase.methods.filter(isVisibleMethod);
+            if (visibleMethods.length === 0) return [];
+            if (!filterText) return [{usecase, methods: visibleMethods}];
+
+            const classTitle = Jig.glossary.getTypeTerm(usecase.fqn).title.toLowerCase();
+            if (classTitle.includes(filterText)) return [{usecase, methods: visibleMethods}];
+
+            const matchingMethods = visibleMethods.filter(m =>
+                Jig.glossary.getMethodTerm(m.fqn).title.toLowerCase().includes(filterText)
+            );
+            return matchingMethods.length > 0 ? [{usecase, methods: matchingMethods}] : [];
+        });
 
         const section = Jig.dom.createElement("section", {
             className: "in-page-sidebar__section",
@@ -505,7 +522,7 @@ const UsecaseApp = (() => {
                 }),
                 Jig.dom.createElement("ul", {
                     className: "in-page-sidebar__links",
-                    children: visibleUsecases.map(usecase => {
+                    children: filteredItems.map(({usecase, methods}) => {
                         const children = [
                             Jig.dom.createElement("a", {
                                 className: "in-page-sidebar__link",
@@ -513,24 +530,21 @@ const UsecaseApp = (() => {
                                 textContent: Jig.glossary.getTypeTerm(usecase.fqn).title
                             })
                         ];
-                        const visibleMethods = usecase.methods.filter(isVisibleMethod);
-                        if (visibleMethods.length > 0) {
-                            children.push(Jig.dom.createElement("ul", {
-                                className: "in-page-sidebar__links",
-                                children: visibleMethods.map(method =>
-                                    Jig.dom.createElement("li", {
-                                        className: "in-page-sidebar__item",
-                                        children: [
-                                            Jig.dom.createElement("a", {
-                                                className: "in-page-sidebar__link in-page-sidebar__link--sub",
-                                                attributes: {href: "#" + fqnToMethodId(method.fqn)},
-                                                textContent: Jig.glossary.getMethodTerm(method.fqn).title
-                                            })
-                                        ]
-                                    })
-                                )
-                            }));
-                        }
+                        children.push(Jig.dom.createElement("ul", {
+                            className: "in-page-sidebar__links",
+                            children: methods.map(method =>
+                                Jig.dom.createElement("li", {
+                                    className: "in-page-sidebar__item",
+                                    children: [
+                                        Jig.dom.createElement("a", {
+                                            className: "in-page-sidebar__link in-page-sidebar__link--sub",
+                                            attributes: {href: "#" + fqnToMethodId(method.fqn)},
+                                            textContent: Jig.glossary.getMethodTerm(method.fqn).title
+                                        })
+                                    ]
+                                })
+                            )
+                        }));
                         return Jig.dom.createElement("li", {
                             className: "in-page-sidebar__item",
                             children
@@ -566,7 +580,7 @@ const UsecaseApp = (() => {
             (usecase.staticMethods || []).forEach(m => methodMap.set(m.fqn, {...m, kind: "static-method"}));
         });
 
-        const outboundOperationSet = buildOutboundOperationSet(globalThis.outboundData);
+        const outboundOperationSet = buildOutboundOperationSet(Jig.data.outbound.get());
         const showDiagramInternalMethods = document.getElementById('show-diagram-internal-methods').checked;
         const showDiagramOutboundPorts = document.getElementById('show-diagram-outbound-ports').checked;
         const showDiagramDomainTypes = document.getElementById('show-diagram-domain-types').checked;
@@ -590,9 +604,10 @@ const UsecaseApp = (() => {
             const term = Jig.glossary.getTypeTerm(usecase.fqn);
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
+                id: fqnToTypeId(usecase.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
-                        children: [Jig.dom.createElement("a", {id: fqnToTypeId(usecase.fqn), textContent: term.title})]
+                        children: [Jig.dom.createElement("span", {textContent: term.title})]
                     }),
                     Jig.dom.createElement("div", {
                         className: "declaration",
@@ -622,12 +637,12 @@ const UsecaseApp = (() => {
                             const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "inbound");
-                            builder.addClick(nodeId, "./inbound.html#" + Jig.fqnToId("adapter", node.fqn));
+                            builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
                         } else if (node.kind === "domain-type") {
                             const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                             builder.addNode(nodeId, nodeLabel, 'class');
                             builder.addClass(nodeId, "domain");
-                            builder.addClick(nodeId, "./domain.html#" + Jig.fqnToId("domain", node.fqn));
+                            builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                         } else {
                             const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
                             if (node.kind === "usecase") {
@@ -677,8 +692,9 @@ const UsecaseApp = (() => {
 
                 const methodSection = Jig.dom.createElement("article", {
                     className: "jig-card jig-card--item",
+                    id: fqnToMethodId(method.fqn),
                     children: [
-                        Jig.dom.createElement("h4", {id: fqnToMethodId(method.fqn), textContent: methodTerm.title}),
+                        Jig.dom.createElement("h4", {textContent: methodTerm.title}),
                         Jig.dom.createElement("div", {
                             className: "declaration",
                             textContent: methodTerm.shortDeclaration
@@ -776,18 +792,18 @@ const UsecaseApp = (() => {
                                     builder.addNode(nodeId, nodeLabel, 'class');
                                     if (node.kind === "inbound-class") {
                                         builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + Jig.fqnToId("adapter", node.fqn));
+                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
                                     } else if (node.kind === "outbound") {
                                         builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + Jig.fqnToId("port", node.fqn));
+                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", node.fqn));
                                     } else if (node.kind === "domain-type") {
                                         builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, "./domain.html#" + Jig.fqnToId("domain", node.fqn));
+                                        builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                                     }
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);
-                                    const classNodeId = Jig.fqnToId("sg", classFqn);
+                                    const classNodeId = Jig.util.fqnToId("sg", classFqn);
                                     const classLabel = Jig.glossary.getTypeTerm(classFqn).title;
                                     const subgraph = builder.ensureSubgraph(classSubgraphs, classNodeId, classLabel, 'LR');
                                     if (node.kind === "usecase") {
@@ -841,18 +857,22 @@ const UsecaseApp = (() => {
                     }
                 }
 
-                const dl = Jig.dom.createElement("dl", {className: "depends"});
-                if (method.parameterTypeRefs.length > 0) {
-                    dl.appendChild(Jig.dom.createElement("dt", {textContent: "要求するもの（引数）"}));
-                    method.parameterTypeRefs.forEach(parameterTypeRef => {
-                        dl.appendChild(Jig.dom.createElement("dd", {children: [Jig.dom.type.elementForRef(parameterTypeRef)]}));
+                const depends = Jig.dom.createElement("div", {className: "depends"});
+                if (method.parameters.length > 0) {
+                    const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
+                    parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "要求するもの（引数）"}));
+                    method.parameters.forEach(param => {
+                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.parameterElement(param)]}));
                     });
+                    depends.appendChild(parametersSection);
                 }
                 if (method.returnTypeRef.fqn !== 'void') {
-                    dl.appendChild(Jig.dom.createElement("dt", {textContent: "得られるもの（戻り値）"}));
-                    dl.appendChild(Jig.dom.createElement("dd", {children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
+                    const returnSection = Jig.dom.createElement("section", {className: "depends-section"});
+                    returnSection.appendChild(Jig.dom.createElement("h4", {textContent: "得られるもの（戻り値）"}));
+                    returnSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.elementForRef(method.returnTypeRef)]}));
+                    depends.appendChild(returnSection);
                 }
-                methodSection.appendChild(dl);
+                methodSection.appendChild(depends);
 
                 section.appendChild(methodSection);
             });
@@ -906,6 +926,11 @@ const UsecaseApp = (() => {
                 Jig.mermaid.diagram.rerenderVisible();
             });
         });
+
+        Jig.dom.sidebar.initTextFilter('usecase-sidebar-filter', text => {
+            state.sidebarFilterText = text;
+            renderSidebar(state.data.usecases);
+        });
     }
 
     /**
@@ -927,28 +952,12 @@ const UsecaseApp = (() => {
         state.data = null;
         state.selectedTabs = new Map();
         state.handlerFqns = null;
+        state.sidebarFilterText = '';
 
-        state.data = getUsecaseData();
+        state.data = Jig.data.usecase.get();
         if (!state.data) return;
 
-        const domainData = globalThis.domainData;
-        if (domainData && domainData.types) {
-            if (!domainData._typesMap) {
-                domainData._typesMap = new Map(domainData.types.map(t => [t.fqn, t]));
-            }
-            Jig.dom.type.setResolver((fqn) => {
-                const domainType = domainData._typesMap.get(fqn);
-                if (domainType) {
-                    return {
-                        href: 'domain.html#' + Jig.fqnToId("domain", fqn),
-                        className: domainType.isDeprecated ? 'deprecated' : undefined
-                    };
-                }
-                return null;
-            });
-        } else {
-            Jig.dom.type.clearResolver();
-        }
+        Jig.data.resetCache();
 
         initControls();
         render();

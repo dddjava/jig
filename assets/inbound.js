@@ -2,7 +2,8 @@ const InboundApp = (() => {
     const Jig = globalThis.Jig;
 
     const state = {
-        data: null
+        data: null,
+        sidebarFilterText: '',
     };
 
     const Diagram = {
@@ -57,7 +58,7 @@ const InboundApp = (() => {
                 }
             });
 
-            const { edgeLengthByKey } = Jig.mermaid.graph.computeOutboundEdgeLengths({
+            const {edgeLengthByKey} = Jig.mermaid.graph.computeOutboundEdgeLengths({
                 nodesInSubgraph: adapterFqns,
                 edges: controller.relations
             });
@@ -79,12 +80,12 @@ const InboundApp = (() => {
          * 2. 構造化されたデータを元にMermaidBuilderを組み立てる
          */
         buildBuilder(data, builder) {
-            const fqnToNodeId = (fqn) => Jig.fqnToId("n", fqn);
+            const fqnToNodeId = (fqn) => Jig.util.fqnToId("n", fqn);
             builder.applyThemeClassDefs();
 
             // entrypointノード → クラス単位のsubgraph
             data.entrypointGroups.forEach((eps, typeFqn) => {
-                const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+                const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
                 eps.forEach(ep => {
                     const label = Jig.glossary.getMethodTerm(ep.fqn, true).title;
                     builder.addNodeToSubgraph(subgraph, fqnToNodeId(ep.fqn), label, 'method');
@@ -94,7 +95,7 @@ const InboundApp = (() => {
 
             // パスノードとdotted edge
             data.controller.entrypoints.forEach(ep => {
-                const pathNodeId = Jig.fqnToId("path", ep.fqn);
+                const pathNodeId = Jig.util.fqnToId("path", ep.fqn);
                 builder.addNode(pathNodeId, ep.path, '>"$LABEL"]');
                 builder.addEdge(pathNodeId, fqnToNodeId(ep.fqn), "", true);
             });
@@ -102,19 +103,19 @@ const InboundApp = (() => {
             // usecaseサブグラフ
             data.usecaseGroups.forEach((methods, typeFqn) => {
                 const sgLabel = Jig.glossary.getTypeTerm(typeFqn).title;
-                const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), sgLabel);
+                const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), sgLabel);
                 methods.forEach(fqn => {
                     const mId = fqnToNodeId(fqn);
                     const mLabel = Jig.glossary.getMethodTerm(fqn, true).title;
                     builder.addNodeToSubgraph(subgraph, mId, mLabel, 'method');
                     builder.addClass(mId, "usecase");
-                    builder.addClick(mId, `./usecase.html#${Jig.fqnToId("method", fqn)}`);
+                    builder.addClick(mId, `./usecase.html#${Jig.util.fqnToId("method", fqn)}`);
                 });
             });
 
             // methodノード
             data.methodGroups.forEach((methods, typeFqn) => {
-                const subgraph = builder.startSubgraph(Jig.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
+                const subgraph = builder.startSubgraph(Jig.util.fqnToId("sg", typeFqn), Jig.glossary.getTypeTerm(typeFqn).title);
                 methods.forEach(fqn => {
                     const label = Jig.glossary.getMethodTerm(fqn, true).title;
                     const nodeId = fqnToNodeId(fqn);
@@ -130,42 +131,35 @@ const InboundApp = (() => {
             });
         },
 
-        /**
-         * 3. MermaidBuilderからソースを作成してレンダリングする
-         */
-        render(section, controller, usecaseData) {
-            const generator = (dir) => {
-                const data = this.prepareData(controller, usecaseData);
-                const builder = new Jig.mermaid.Builder();
-                this.buildBuilder(data, builder);
-                return builder.build(dir);
-            };
 
-            Jig.mermaid.diagram.createAndRegister(section, (mmdContainer) => {
-                Jig.mermaid.render.renderWithControls(mmdContainer, generator, { direction: 'LR' });
-            });
-        }
     };
 
     function parseInboundData() {
-        return globalThis.inboundData ?? null;
+        return Jig.data.inbound.get();
     }
 
     function init() {
         // モジュールキャッシュを再ロードしなくても状態がリセットされるよう明示的にクリア
         state.data = null;
+        state.sidebarFilterText = '';
 
         state.data = parseInboundData();
         if (!state.data) {
             return;
         }
+
+        Jig.dom.sidebar.initTextFilter('inbound-sidebar-filter', text => {
+            state.sidebarFilterText = text;
+            renderSidebar(state.data.controllers || []);
+        });
+
         render();
     }
 
     function render() {
         const controllers = state.data.controllers || [];
         renderSidebar(controllers);
-        renderControllerList(controllers);
+        renderMain(controllers);
     }
 
     function renderSidebar(controllers) {
@@ -173,56 +167,75 @@ const InboundApp = (() => {
         if (!sidebar) return;
         sidebar.innerHTML = "";
 
-        const items = controllers.map(c => ({
-            id: Jig.fqnToId("adapter", c.fqn),
+        const filterText = state.sidebarFilterText.toLowerCase();
+        const filteredControllers = filterText
+            ? controllers.filter(c => Jig.glossary.getTypeTerm(c.fqn).title.toLowerCase().includes(filterText))
+            : controllers;
+
+        const items = filteredControllers.map(c => ({
+            id: Jig.util.fqnToId("adapter", c.fqn),
             label: Jig.glossary.getTypeTerm(c.fqn).title
         }));
         Jig.dom.sidebar.renderSection(sidebar, "コントローラー", items);
     }
 
-    function renderControllerList(controllers) {
+    function renderMain(inboundTypes) {
         const container = document.getElementById("inbound-list");
         if (!container) return;
         container.innerHTML = "";
 
-        if (!controllers || controllers.length === 0) {
+        if (!inboundTypes || inboundTypes.length === 0) {
             container.textContent = "データなし";
             return;
         }
 
-        controllers.forEach(controller => {
-            const typeTerm = Jig.glossary.getTypeTerm(controller.fqn);
-            const section = Jig.dom.createElement("section", {
+        inboundTypes.forEach(inboundType => {
+            const typeTerm = Jig.glossary.getTypeTerm(inboundType.fqn);
+
+            const jigCard = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
-                id: Jig.fqnToId("adapter", controller.fqn),
+                id: Jig.util.fqnToId("adapter", inboundType.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
-                        children: [Jig.dom.createElement("a", { textContent: typeTerm.title })]
+                        children: [Jig.dom.createElement("a", {textContent: typeTerm.title})]
                     }),
                     Jig.dom.createElement("div", {
                         className: "fully-qualified-name",
-                        textContent: controller.fqn
+                        textContent: inboundType.fqn
                     })
                 ]
             });
 
+            // 説明があれば出力
             if (typeTerm.description) {
-                section.appendChild(Jig.dom.createMarkdownElement(typeTerm.description));
+                jigCard.appendChild(Jig.dom.createMarkdownElement(typeTerm.description));
             }
 
-            if (controller.classPath) {
-                section.appendChild(Jig.dom.createElement("div", {
+            // マッピングパスがあれば出力
+            // TODO: classPath -> mappingPath
+            if (inboundType.classPath) {
+                jigCard.appendChild(Jig.dom.createElement("div", {
                     className: "class-path",
-                    textContent: controller.classPath
+                    textContent: inboundType.classPath
                 }));
             }
 
-            const methodsList = Jig.dom.type.methodsList("エントリーポイント", controller.entrypoints);
-            if (methodsList) section.appendChild(methodsList);
+            // エントリーポイントの一覧を出力
+            const methodsList = Jig.dom.type.methodsList("エントリーポイント", inboundType.entrypoints);
+            if (methodsList) jigCard.appendChild(methodsList);
 
-            Diagram.render(section, controller, globalThis.usecaseData);
+            // 型単位のダイアグラムを描画
+            const diagramGenerator = (dir) => {
+                const data = Diagram.prepareData(inboundType, Jig.data.usecase.get());
+                const builder = new Jig.mermaid.Builder();
+                Diagram.buildBuilder(data, builder);
+                return builder.build(dir);
+            };
+            Jig.mermaid.diagram.createAndRegister(jigCard, (mmdContainer) => {
+                Jig.mermaid.render.renderWithControls(mmdContainer, diagramGenerator, {direction: 'LR'});
+            });
 
-            container.appendChild(section);
+            container.appendChild(jigCard);
         });
     }
 
@@ -231,7 +244,7 @@ const InboundApp = (() => {
         parseInboundData,
         render,
         renderSidebar,
-        renderControllerList,
+        renderMain,
         Diagram
     };
 })();

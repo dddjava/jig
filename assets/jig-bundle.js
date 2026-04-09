@@ -121,6 +121,26 @@ globalThis.Jig.util = (() => {
         return `${prefix}_${sanitized}_${hashStr}`;
     }
 
+    /**
+     * TypeRef から FQN を再帰的に収集する
+     * コレクション型（List<Order> など）の場合、typeArgumentRefs に含まれる型も収集する
+     *
+     * @param {Object|null} typeRef - TypeRef オブジェクト（{fqn: string, typeArgumentRefs?: TypeRef[]}）
+     * @returns {string[]} 収集された FQN の配列（重複あり）
+     *
+     * @example
+     * collectTypeRefFqns({fqn: "java.util.List", typeArgumentRefs: [{fqn: "com.example.Order"}]});
+     * // => ["java.util.List", "com.example.Order"]
+     */
+    function collectTypeRefFqns(typeRef) {
+        if (!typeRef) return [];
+        const fqns = [typeRef.fqn];
+        (typeRef.typeArgumentRefs || []).forEach(argRef => {
+            fqns.push(...collectTypeRefFqns(argRef));
+        });
+        return fqns;
+    }
+
     return {
         fqnToId,
         getCommonPrefix,
@@ -129,14 +149,238 @@ globalThis.Jig.util = (() => {
         getPackageFqnFromTypeFqn,
         isWithinPackageFilters,
         getAggregatedFqn,
+        collectTypeRefFqns,
     }
 })();
 
-// 互換用
-globalThis.Jig.fqnToId = globalThis.Jig.util.fqnToId;
-
 if (typeof module !== "undefined" && module.exports) {
     module.exports = globalThis.Jig.util;
+}
+
+// Source: jig-data.js
+globalThis.Jig ??= {};
+
+/**
+ * globalThis.<xxx>Data への唯一の窓口。
+ *
+ * 各 asset スクリプト（domain.js / usecase.js / ...）は globalThis を直接参照せず、
+ * この名前空間を経由してデータを取得する。派生キャッシュ（FQN→type の Map など）も
+ * 元データを汚さず、このモジュール内部のクロージャに保持する。
+ */
+globalThis.Jig.data = (() => {
+
+    /** @type {Map<string, object>|null} */
+    let domainTypesMap = null;
+    /** @type {Set<string>|null} */
+    let domainFqnSet = null;
+    /** @type {object[]|null} */
+    let domainPackages = null;
+    /** @type {Map<string, object[]>|null} */
+    let domainChildPackagesMap = null;
+    /** @type {Map<string, object>|null} */
+    let usecaseTypesMap = null;
+
+    const domain = {
+        get() {
+            return globalThis.domainData;
+        },
+        has() {
+            return !!globalThis.domainData;
+        },
+        getTypes() {
+            return globalThis.domainData?.types ?? [];
+        },
+        getTypesMap() {
+            if (!domainTypesMap) {
+                domainTypesMap = new Map(domain.getTypes().map(t => [t.fqn, t]));
+            }
+            return domainTypesMap;
+        },
+        getType(fqn) {
+            return domain.getTypesMap().get(fqn);
+        },
+        getDomainFqnSet() {
+            if (!domainFqnSet) {
+                domainFqnSet = new Set(domain.getTypes().map(t => t.fqn));
+            }
+            return domainFqnSet;
+        },
+        getPackages() {
+            return domainPackages;
+        },
+        setPackages(packages) {
+            domainPackages = packages;
+        },
+        getChildPackagesMap() {
+            return domainChildPackagesMap;
+        },
+        setChildPackagesMap(map) {
+            domainChildPackagesMap = map;
+        },
+    };
+
+    const glossary = {
+        get() {
+            return globalThis.glossaryData;
+        },
+        has() {
+            return !!globalThis.glossaryData;
+        },
+        getTerm(fqn) {
+            return globalThis.glossaryData?.terms?.[fqn];
+        },
+    };
+
+    const usecase = {
+        get() {
+            return globalThis.usecaseData;
+        },
+        has() {
+            return !!globalThis.usecaseData;
+        },
+        getTypesMap() {
+            if (!usecaseTypesMap) {
+                usecaseTypesMap = new Map(
+                    (globalThis.usecaseData?.usecases ?? []).map(t => [t.fqn, t])
+                );
+            }
+            return usecaseTypesMap;
+        },
+        getType(fqn) {
+            return usecase.getTypesMap().get(fqn);
+        },
+    };
+
+    const inbound = {
+        get() {
+            return globalThis.inboundData ?? null;
+        },
+        getControllers() {
+            return globalThis.inboundData?.controllers ?? [];
+        },
+    };
+
+    const outbound = {
+        get() {
+            return globalThis.outboundData;
+        },
+    };
+
+    const pkg = {
+        get() {
+            return globalThis.packageData;
+        },
+    };
+
+    const insight = {
+        get() {
+            return globalThis.insightData ?? null;
+        },
+    };
+
+    const list = {
+        get() {
+            return globalThis.listData;
+        },
+    };
+
+    const navigation = {
+        get() {
+            return globalThis.navigationData;
+        },
+        getLinks() {
+            return globalThis.navigationData?.links ?? [];
+        },
+    };
+
+    const typeRelations = {
+        get() {
+            return globalThis.typeRelationsData;
+        },
+        getRelations() {
+            return globalThis.typeRelationsData?.relations ?? [];
+        },
+    };
+
+    /**
+     * domain の派生キャッシュ（typesMap / fqnSet / packages / childPackagesMap）を破棄する。
+     * データが入れ替わる際（init の再実行など）に呼び出す。
+     */
+    function resetCache() {
+        domainTypesMap = null;
+        domainFqnSet = null;
+        domainPackages = null;
+        domainChildPackagesMap = null;
+        usecaseTypesMap = null;
+    }
+
+    /**
+     * 利用可能なデータに基づいて型リンクリゾルバーを生成する。
+     * domain型があれば domain.html へ、usecase型があれば usecase.html へリンクする。
+     * 現在のページと同じドキュメントへのリンクはページ内アンカー（#）になる。
+     *
+     * @returns {(fqn: string) => {href?: string, className?: string, text?: string} | null}
+     */
+    function createTypeLinkResolver() {
+        if (!domain.has() && !usecase.has() && !glossary.has()) return null;
+
+        const currentPage = (typeof location !== 'undefined')
+            ? location.pathname.split('/').pop()
+            : '';
+
+        return function (fqn) {
+            if (domain.has()) {
+                const domainType = domain.getType(fqn);
+                if (domainType) {
+                    const prefix = (currentPage === 'domain.html') ? '#' : 'domain.html#';
+                    return {
+                        href: prefix + globalThis.Jig.util.fqnToId("domain", fqn),
+                        className: domainType.isDeprecated ? 'deprecated' : undefined
+                    };
+                }
+            }
+            if (usecase.has()) {
+                const usecaseType = usecase.getType(fqn);
+                if (usecaseType) {
+                    const prefix = (currentPage === 'usecase.html') ? '#' : 'usecase.html#';
+                    return {
+                        href: prefix + globalThis.Jig.util.fqnToId("type", fqn),
+                        className: usecaseType.isDeprecated ? 'deprecated' : undefined
+                    };
+                }
+            }
+            if (glossary.has()) {
+                const term = glossary.getTerm(fqn);
+                if (term) {
+                    const prefix = (currentPage === 'glossary.html') ? '#' : 'glossary.html#';
+                    return {href: prefix + globalThis.Jig.util.fqnToId("term", fqn)};
+                }
+            }
+            return {
+                className: 'weak',
+                text: fqn.substring(fqn.lastIndexOf('.') + 1)
+            };
+        };
+    }
+
+    return {
+        domain,
+        glossary,
+        usecase,
+        inbound,
+        outbound,
+        package: pkg,
+        insight,
+        list,
+        navigation,
+        typeRelations,
+        resetCache,
+        createTypeLinkResolver,
+    };
+})();
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = globalThis.Jig.data;
 }
 
 // Source: jig-glossary.js
@@ -149,7 +393,7 @@ globalThis.Jig.glossary = (() => {
      * @return {Term | undefined}
      */
     function findTerm(fqn) {
-        return globalThis.glossaryData?.terms?.[fqn];
+        return globalThis.Jig.data.glossary.getTerm(fqn);
     }
 
     /**
@@ -316,7 +560,7 @@ globalThis.Jig.dom = (() => {
     function setupHeaderNavigation() {
         if (document.body.classList.contains("index")) return;
 
-        const navigationData = globalThis.navigationData;
+        const navigationData = globalThis.Jig.data.navigation.get();
         if (!navigationData || !Array.isArray(navigationData.links) || navigationData.links.length === 0) return;
 
         const header = document.querySelector("header.top") || document.querySelector("header");
@@ -403,6 +647,9 @@ globalThis.Jig.dom = (() => {
     function initCommonUi() {
         setupHeaderNavigation();
         setupDocumentHelp();
+        if (globalThis.Jig?.data?.createTypeLinkResolver) {
+            setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
+        }
     }
 
     /**
@@ -532,6 +779,16 @@ globalThis.Jig.dom = (() => {
     }
 
     /**
+     * @param {MethodParameter} param
+     * @param {Function} [createTypeRefFn]
+     * @returns {HTMLElement}
+     */
+    function createParameterElement(param, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        return createElement("span", {children: [param.name + ': ', fn(param.typeRef)]});
+    }
+
+    /**
      * @param {Object} method
      * @param {Function} [createTypeRefFn]
      * @returns {HTMLElement}
@@ -540,8 +797,8 @@ globalThis.Jig.dom = (() => {
         const fn = createTypeRefFn || createElementForTypeRef;
         const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
 
-        const paramElements = method.parameterTypeRefs
-            .map(param => fn(param))
+        const paramElements = method.parameters
+            .map(param => createParameterElement(param, fn))
             .flatMap((el, i) => i ? [', ', el] : [el]);
 
         const signatureEl = createElement("div", {
@@ -690,6 +947,17 @@ globalThis.Jig.dom = (() => {
         }
     }
 
+    /**
+     * サイドバーのテキストフィルタ入力を初期化する
+     * @param {string} inputId - input要素のID
+     * @param {(filterText: string) => void} onChange
+     */
+    function initSidebarTextFilter(inputId, onChange) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        input.addEventListener('input', () => onChange(input.value.trim()));
+    }
+
     return {
         createElement,
         parseMarkdown,
@@ -704,6 +972,7 @@ globalThis.Jig.dom = (() => {
             clearResolver: clearTypeLinkResolver,
             getResolver: getTypeLinkResolver,
             elementForRef: createElementForTypeRef,
+            parameterElement: createParameterElement,
             fieldsList: createFieldsList,
             methodItem: createMethodItem,
             methodsList: createMethodsList,
@@ -715,6 +984,7 @@ globalThis.Jig.dom = (() => {
         sidebar: {
             createSection,
             renderSection,
+            initTextFilter: initSidebarTextFilter,
         },
     };
 })();

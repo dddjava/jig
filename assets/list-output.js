@@ -132,7 +132,7 @@ const ListOutputApp = (() => {
     }
 
     function getListData() {
-        const listData = globalThis.listData || {};
+        const listData = Jig.data.list.get() || {};
         const emptyBusinessRules = {
             packages: [],
             all: [],

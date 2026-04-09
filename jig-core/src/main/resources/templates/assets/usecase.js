@@ -862,9 +862,7 @@ const UsecaseApp = (() => {
                     const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
                     parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "要求するもの（引数）"}));
                     method.parameters.forEach(param => {
-                        const label = Jig.dom.createElement("span");
-                        label.append(param.name + ': ', Jig.dom.type.elementForRef(param.typeRef));
-                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [label]}));
+                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.parameterElement(param)]}));
                     });
                     depends.appendChild(parametersSection);
                 }

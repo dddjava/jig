@@ -283,6 +283,16 @@ globalThis.Jig.dom = (() => {
     }
 
     /**
+     * @param {MethodParameter} param
+     * @param {Function} [createTypeRefFn]
+     * @returns {HTMLElement}
+     */
+    function createParameterElement(param, createTypeRefFn) {
+        const fn = createTypeRefFn || createElementForTypeRef;
+        return createElement("span", {children: [param.name + ': ', fn(param.typeRef)]});
+    }
+
+    /**
      * @param {Object} method
      * @param {Function} [createTypeRefFn]
      * @returns {HTMLElement}
@@ -292,11 +302,7 @@ globalThis.Jig.dom = (() => {
         const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
 
         const paramElements = method.parameters
-            .map(param => {
-                const span = createElement("span");
-                span.append(param.name + ': ', fn(param.typeRef));
-                return span;
-            })
+            .map(param => createParameterElement(param, fn))
             .flatMap((el, i) => i ? [', ', el] : [el]);
 
         const signatureEl = createElement("div", {
@@ -470,6 +476,7 @@ globalThis.Jig.dom = (() => {
             clearResolver: clearTypeLinkResolver,
             getResolver: getTypeLinkResolver,
             elementForRef: createElementForTypeRef,
+            parameterElement: createParameterElement,
             fieldsList: createFieldsList,
             methodItem: createMethodItem,
             methodsList: createMethodsList,

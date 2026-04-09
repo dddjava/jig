@@ -43,7 +43,7 @@ public class JigTypeFactory {
 
     private static JigTypeMembers createJigMember(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
         var fields = classDeclaration.jigFieldHeaders().stream()
-                .map(jigFieldHeader -> JigField.from(jigFieldHeader, jigTypeGlossary.fieldTerm(jigFieldHeader.id())))
+                .map(jigFieldHeader -> JigField.from(jigFieldHeader))
                 .collect(groupingBy(jigField -> jigField.jigFieldHeader().ownership()));
 
         var methods = classDeclaration.jigMethodDeclarations().stream()

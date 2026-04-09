@@ -189,14 +189,33 @@ test.describe('jig-data.js', () => {
             assert.ok(result.href.startsWith('usecase.html#'));
         });
 
-        test('どちらにもない型は null を返す', () => {
+        test('どのデータにも該当しない型は weak クラスと短縮名を返す', () => {
             globalThis.domainData = {types: []};
             globalThis.usecaseData = {usecases: []};
             const resolver = jigData.createTypeLinkResolver();
-            assert.equal(resolver('java.lang.String'), null);
+            const result = resolver('java.lang.String');
+            assert.equal(result.className, 'weak');
+            assert.equal(result.text, 'String');
         });
 
-        test('domainData も usecaseData もない場合は null を返す（関数自体が null）', () => {
+        test('glossaryData にある型は glossary.html# プレフィックスのリンクを返す', () => {
+            globalThis.glossaryData = {terms: {'com.example.Foo': {title: 'Foo'}}};
+            const resolver = jigData.createTypeLinkResolver();
+            const result = resolver('com.example.Foo');
+            assert.ok(result.href.startsWith('glossary.html#'));
+            assert.ok(result.href.includes('com.example.Foo'));
+        });
+
+        test('どのデータにもない型は weak クラスと短縮名を返す', () => {
+            globalThis.domainData = {types: []};
+            const resolver = jigData.createTypeLinkResolver();
+            const result = resolver('java.lang.String');
+            assert.equal(result.className, 'weak');
+            assert.equal(result.text, 'String');
+            assert.equal(result.href, undefined);
+        });
+
+        test('domainData も usecaseData も glossaryData もない場合は null を返す（関数自体が null）', () => {
             const resolver = jigData.createTypeLinkResolver();
             assert.equal(resolver, null);
         });

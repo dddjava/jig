@@ -566,7 +566,7 @@ test.describe('jig-dom.js', () => {
             delete globalThis.glossaryData;
         });
 
-        test('どちらのデータもない型はnullを返す', () => {
+        test('どのデータにもない型は weak クラスと短縮名を返す', () => {
             globalThis.domainData = {types: []};
             globalThis.usecaseData = {usecases: []};
 
@@ -574,13 +574,15 @@ test.describe('jig-dom.js', () => {
 
             const resolver = Jig.dom.type.getResolver();
             assert.ok(resolver, 'リゾルバーが設定されていること');
-            assert.equal(resolver('java.lang.String'), null);
+            const result = resolver('java.lang.String');
+            assert.equal(result.className, 'weak');
+            assert.equal(result.text, 'String');
 
             delete globalThis.domainData;
             delete globalThis.usecaseData;
         });
 
-        test('domainData も usecaseData もない場合はリゾルバーは null のまま', () => {
+        test('domainData も usecaseData も glossaryData もない場合はリゾルバーは null のまま', () => {
             Jig.dom.initCommonUi();
 
             assert.equal(Jig.dom.type.getResolver(), null);

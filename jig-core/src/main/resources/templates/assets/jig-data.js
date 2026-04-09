@@ -63,6 +63,9 @@ globalThis.Jig.data = (() => {
         get() {
             return globalThis.glossaryData;
         },
+        has() {
+            return !!globalThis.glossaryData;
+        },
         getTerm(fqn) {
             return globalThis.glossaryData?.terms?.[fqn];
         },
@@ -159,7 +162,7 @@ globalThis.Jig.data = (() => {
      * @returns {(fqn: string) => {href?: string, className?: string, text?: string} | null}
      */
     function createTypeLinkResolver() {
-        if (!domain.has() && !usecase.has()) return null;
+        if (!domain.has() && !usecase.has() && !glossary.has()) return null;
 
         const currentPage = (typeof location !== 'undefined')
             ? location.pathname.split('/').pop()
@@ -186,7 +189,17 @@ globalThis.Jig.data = (() => {
                     };
                 }
             }
-            return null;
+            if (glossary.has()) {
+                const term = glossary.getTerm(fqn);
+                if (term) {
+                    const prefix = (currentPage === 'glossary.html') ? '#' : 'glossary.html#';
+                    return {href: prefix + fqn};
+                }
+            }
+            return {
+                className: 'weak',
+                text: fqn.substring(fqn.lastIndexOf('.') + 1)
+            };
         };
     }
 

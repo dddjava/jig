@@ -193,7 +193,7 @@ globalThis.Jig.data = (() => {
                 const term = glossary.getTerm(fqn);
                 if (term) {
                     const prefix = (currentPage === 'glossary.html') ? '#' : 'glossary.html#';
-                    return {href: prefix + fqn};
+                    return {href: prefix + globalThis.Jig.util.fqnToId("term", fqn)};
                 }
             }
             return {

@@ -202,8 +202,8 @@ test.describe('jig-data.js', () => {
             globalThis.glossaryData = {terms: {'com.example.Foo': {title: 'Foo'}}};
             const resolver = jigData.createTypeLinkResolver();
             const result = resolver('com.example.Foo');
-            assert.ok(result.href.startsWith('glossary.html#'));
-            assert.ok(result.href.includes('com.example.Foo'));
+            const expectedId = globalThis.Jig.util.fqnToId("term", 'com.example.Foo');
+            assert.equal(result.href, 'glossary.html#' + expectedId);
         });
 
         test('どのデータにもない型は weak クラスと短縮名を返す', () => {

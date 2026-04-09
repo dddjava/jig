@@ -54,7 +54,7 @@ const GlossaryApp = (() => {
     }
 
     function buildTermAnchorId(term, index) {
-        return term.fqn || `term-${index}`;
+        return term.fqn ? Jig.util.fqnToId("term", term.fqn) : `term-${index}`;
     }
 
     function escapeCsvValue(value) {

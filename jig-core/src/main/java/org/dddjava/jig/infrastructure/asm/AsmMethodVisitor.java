@@ -40,8 +40,6 @@ class AsmMethodVisitor extends MethodVisitor {
     private final ArrayList<Instruction> methodInstructionCollector = new ArrayList<>();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private final ArrayList<String> methodParameterNameCollector = new ArrayList<>();
-    // LocalVariableTableから取得したローカル変数名。スロットindex→nameのマップ
-    private final HashMap<Integer, String> localVariableSlotNames = new HashMap<>();
     private final ContextClass contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
 
@@ -75,7 +73,7 @@ class AsmMethodVisitor extends MethodVisitor {
             // signatureが使える場合はsignatureから型や引数を解釈する
             var methodSignatureVisitor = AsmMethodSignatureVisitor.readSignatureData(api, signature);
             var returnType = methodSignatureVisitor.returnType();
-            var parameterList = buildParameterList(access, methodType, methodSignatureVisitor.parameterTypeList());
+            var parameterList = buildParameterList(methodSignatureVisitor.parameterTypeList());
             return jigMethodHeader(jigMethodId, access, returnType, parameterList, throwsList);
         }).orElseGet(() -> {
             var returnType = JigTypeReference.fromId(AsmUtils.type2TypeId(methodType.getReturnType()));
@@ -83,12 +81,12 @@ class AsmMethodVisitor extends MethodVisitor {
                     .map(type -> AsmUtils.type2TypeId(type))
                     .map(JigTypeReference::fromId)
                     .toList();
-            var parameterList = buildParameterList(access, methodType, parameterTypeList);
+            var parameterList = buildParameterList(parameterTypeList);
             return jigMethodHeader(jigMethodId, access, returnType, parameterList, throwsList);
         });
     }
 
-    private List<JigMethodParameter> buildParameterList(int access, Type methodType, List<JigTypeReference> parameterTypeList) {
+    private List<JigMethodParameter> buildParameterList(List<JigTypeReference> parameterTypeList) {
         int paramCount = parameterTypeList.size();
 
         // MethodParameters属性がある場合（visitParameterで収集）
@@ -96,26 +94,6 @@ class AsmMethodVisitor extends MethodVisitor {
             return IntStream.range(0, paramCount)
                     .mapToObj(i -> new JigMethodParameter(methodParameterNameCollector.get(i), ParameterNameSource.METHOD_PARAMETERS, parameterTypeList.get(i)))
                     .toList();
-        }
-
-        // LocalVariableTable属性がある場合（visitLocalVariableで収集）
-        if (!localVariableSlotNames.isEmpty()) {
-            // インスタンスメソッドはindex=0がthisなのでoffset=1、staticはoffset=0
-            int offset = (access & Opcodes.ACC_STATIC) != 0 ? 0 : 1;
-            Type[] argTypes = methodType.getArgumentTypes();
-            List<JigMethodParameter> result = new ArrayList<>(paramCount);
-            int idx = offset;
-            for (int i = 0; i < argTypes.length; i++) {
-                String name = localVariableSlotNames.get(idx);
-                result.add(name != null
-                        ? new JigMethodParameter(name, ParameterNameSource.LOCAL_VARIABLE, parameterTypeList.get(i))
-                        : new JigMethodParameter("arg" + i, ParameterNameSource.POSITIONAL, parameterTypeList.get(i)));
-                idx += argTypes[i].getSize(); // long/doubleは2スロット使用
-            }
-            // 1つでもLOCAL_VARIABLEが取れていればLocalVariableTable由来として返す
-            if (result.stream().anyMatch(p -> p.nameSource() == ParameterNameSource.LOCAL_VARIABLE)) {
-                return result;
-            }
         }
 
         // 名前情報なし：位置ベース
@@ -350,13 +328,6 @@ class AsmMethodVisitor extends MethodVisitor {
                 type
         ));
         super.visitTryCatchBlock(start, end, handler, type);
-    }
-
-    @Override
-    public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
-        logger.debug("visitLocalVariable {} {} {}", name, descriptor, index);
-        localVariableSlotNames.put(index, name);
-        super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }
 
     /**

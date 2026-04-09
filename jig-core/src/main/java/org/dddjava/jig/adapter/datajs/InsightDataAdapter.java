@@ -60,7 +60,6 @@ public class InsightDataAdapter implements DataAdapter {
 
     private static String formatPackageJson(PackageInsight insight) {
         return Json.object("fqn", insight.fqn())
-                .and("label", insight.label())
                 .and("numberOfTypes", insight.numberOfTypes())
                 .and("numberOfMethods", insight.numberOfMethods())
                 .and("numberOfUsingTypes", insight.numberOfUsingTypes())
@@ -71,7 +70,6 @@ public class InsightDataAdapter implements DataAdapter {
 
     private static String formatTypeJson(TypeInsight insight, TypeRelationships typeRelationships, JigTypes jigTypes) {
         return Json.object("fqn", insight.fqn())
-                .and("label", insight.label())
                 .and("numberOfMethods", insight.numberOfMethods())
                 .and("numberOfUsingTypes", insight.numberOfUsingTypes())
                 .and("numberOfUsedByTypes", insight.numberOfUsedByTypes(typeRelationships))
@@ -85,7 +83,6 @@ public class InsightDataAdapter implements DataAdapter {
 
     private static String formatMethodJson(MethodInsight insight) {
         return Json.object("fqn", insight.fqn())
-                .and("label", insight.label())
                 .and("cyclomaticComplexity", insight.cyclomaticComplexity())
                 .and("numberOfUsingTypes", insight.numberOfUsingTypes())
                 .and("numberOfUsingMethods", insight.numberOfUsingMethods())

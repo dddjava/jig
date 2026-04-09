@@ -125,8 +125,6 @@ test.describe('insight.js', () => {
 
                     fqn: 'app',
 
-                    label: 'App',
-
                     numberOfTypes: 3,
 
                     numberOfMethods: 5,
@@ -150,7 +148,7 @@ test.describe('insight.js', () => {
 
             assert.equal(row.children[1].textContent, 'app');
 
-            assert.equal(row.children[2].textContent, 'App');
+            assert.equal(row.children[2].textContent, 'app');
 
         });
 
@@ -169,8 +167,6 @@ test.describe('insight.js', () => {
                     fqn: 'app.Type',
 
                     packageFqn: 'app',
-
-                    label: 'Type',
 
                     numberOfMethods: 1,
 
@@ -213,13 +209,11 @@ test.describe('insight.js', () => {
 
                 {
 
-                    fqn: 'app.Type#method',
+                    fqn: 'app.Type#method()',
 
                     packageFqn: 'app',
 
                     typeFqn: 'app.Type',
-
-                    label: 'method',
 
                     cyclomaticComplexity: 1,
 
@@ -244,7 +238,7 @@ test.describe('insight.js', () => {
 
             const row = methodTbody.children[0];
 
-            assert.equal(row.dataset.fqn, 'app.Type#method');
+            assert.equal(row.dataset.fqn, 'app.Type#method()');
 
             assert.equal(row.dataset.packageFqn, 'app');
 
@@ -270,7 +264,6 @@ test.describe('insight.js', () => {
             const testData = {
                 packages: [{
                     fqn: 'app',
-                    label: 'App',
                     numberOfTypes: 1,
                     numberOfMethods: 1,
                     numberOfUsingTypes: 0,
@@ -280,7 +273,6 @@ test.describe('insight.js', () => {
                 types: [{
                     fqn: 'app.Type',
                     packageFqn: 'app',
-                    label: 'Type',
                     numberOfMethods: 1,
                     numberOfUsingTypes: 0,
                     numberOfUsedByTypes: 0,
@@ -290,10 +282,9 @@ test.describe('insight.js', () => {
                     size: 1
                 }],
                 methods: [{
-                    fqn: 'app.Type#method',
+                    fqn: 'app.Type#method()',
                     packageFqn: 'app',
                     typeFqn: 'app.Type',
-                    label: 'method',
                     cyclomaticComplexity: 1,
                     numberOfUsingTypes: 0,
                     numberOfUsingMethods: 0,

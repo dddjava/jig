@@ -148,8 +148,8 @@ test.describe('usecase.js', () => {
             const mainList = document.getElementById('usecase-list');
             assert.equal(mainList.children.length, 1);
             const serviceSection = mainList.children[0];
-            assert.equal(serviceSection.querySelector('h3 a').id, globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
-            assert.equal(serviceSection.querySelector('h3 a').textContent, 'ServiceA');
+            assert.equal(serviceSection.id, globalThis.Jig.util.fqnToId("type", 'com.example.ServiceA'));
+            assert.equal(serviceSection.querySelector('h3 span').textContent, 'ServiceA');
             assert.equal(serviceSection.querySelector('.declaration').textContent, 'com.example.ServiceA');
             assert.equal(serviceSection.querySelector('.markdown').innerHTML, 'Description of ServiceA');
 

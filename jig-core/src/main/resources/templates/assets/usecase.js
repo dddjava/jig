@@ -604,9 +604,10 @@ const UsecaseApp = (() => {
             const term = Jig.glossary.getTypeTerm(usecase.fqn);
             const section = Jig.dom.createElement("section", {
                 className: "jig-card jig-card--type",
+                id: fqnToTypeId(usecase.fqn),
                 children: [
                     Jig.dom.createElement("h3", {
-                        children: [Jig.dom.createElement("a", {id: fqnToTypeId(usecase.fqn), textContent: term.title})]
+                        children: [Jig.dom.createElement("span", {textContent: term.title})]
                     }),
                     Jig.dom.createElement("div", {
                         className: "declaration",

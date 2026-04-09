@@ -68,10 +68,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return header().isObjectMethod();
     }
 
-    public boolean documented() {
-        return !aliasTextOrBlank().isEmpty();
-    }
-
     public String name() {
         return header().name();
     }

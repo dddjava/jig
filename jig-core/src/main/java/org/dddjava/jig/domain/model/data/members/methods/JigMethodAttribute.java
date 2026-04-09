@@ -14,12 +14,12 @@ import java.util.stream.Stream;
 /**
  * メンバの属性
  *
- * 仮引数型は順番に意味があるので List で扱う。
+ * 仮引数は順番に意味があるので List で扱う。
  */
 record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
                           Collection<JigAnnotationReference> declarationAnnotations,
                           JigTypeReference returnType,
-                          List<JigTypeReference> parameterTypeList,
+                          List<JigMethodParameter> parameterList,
                           Collection<JigTypeReference> throwTypes,
                           EnumSet<JigMethodFlag> flags) {
 
@@ -27,7 +27,7 @@ record JigMethodAttribute(JigMemberVisibility jigMemberVisibility,
         return Stream.of(
                         declarationAnnotations.stream().flatMap(JigAnnotationReference::allTypeIdStream),
                         returnType.toTypeIdStream(),
-                        parameterTypeList.stream().flatMap(JigTypeReference::toTypeIdStream),
+                        parameterList.stream().map(JigMethodParameter::typeReference).flatMap(JigTypeReference::toTypeIdStream),
                         throwTypes.stream().flatMap(JigTypeReference::toTypeIdStream))
                 .flatMap(Function.identity());
     }

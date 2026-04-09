@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodParameter;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
@@ -90,7 +91,7 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration) {
     }
 
     public Stream<JigTypeReference> parameterTypeStream() {
-        return header().parameterTypeList().stream();
+        return header().parameterList().stream().map(JigMethodParameter::typeReference);
     }
 
     public TypeId declaringType() {

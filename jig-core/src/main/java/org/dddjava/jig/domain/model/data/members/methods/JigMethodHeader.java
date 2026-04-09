@@ -24,11 +24,11 @@ public record JigMethodHeader(JigMethodId id,
                                        JigMemberVisibility jigMemberVisibility,
                                        Collection<JigAnnotationReference> declarationAnnotations,
                                        JigTypeReference returnType,
-                                       List<JigTypeReference> parameterTypeList,
+                                       List<JigMethodParameter> parameterList,
                                        Collection<JigTypeReference> throwTypes,
                                        EnumSet<JigMethodFlag> flags) {
         return new JigMethodHeader(id, ownership,
-                new JigMethodAttribute(jigMemberVisibility, declarationAnnotations, returnType, parameterTypeList, throwTypes, flags));
+                new JigMethodAttribute(jigMemberVisibility, declarationAnnotations, returnType, parameterList, throwTypes, flags));
     }
 
     public String name() {
@@ -48,8 +48,8 @@ public record JigMethodHeader(JigMethodId id,
     public String simpleMethodSignatureText() {
         return "%s(%s)".formatted(
                 id.name(),
-                jigMethodAttribute.parameterTypeList().stream()
-                        .map(JigTypeReference::simpleNameWithGenerics)
+                jigMethodAttribute.parameterList().stream()
+                        .map(p -> p.typeReference().simpleNameWithGenerics())
                         .collect(joining(", ")));
     }
 
@@ -76,8 +76,8 @@ public record JigMethodHeader(JigMethodId id,
         return jigMethodAttribute.flags().contains(JigMethodFlag.LAMBDA_SUPPORT);
     }
 
-    public List<JigTypeReference> parameterTypeList() {
-        return jigMethodAttribute.parameterTypeList();
+    public List<JigMethodParameter> parameterList() {
+        return jigMethodAttribute.parameterList();
     }
 
     public Stream<JigAnnotationReference> declarationAnnotationStream() {

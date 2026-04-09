@@ -4,9 +4,7 @@ import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.JigMemberVisibility;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.members.instruction.*;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodFlag;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.data.members.methods.*;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
@@ -40,6 +38,9 @@ class AsmMethodVisitor extends MethodVisitor {
 
     private final ArrayList<Instruction> methodInstructionCollector = new ArrayList<>();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
+    private final ArrayList<String> methodParameterNameCollector = new ArrayList<>();
+    // LocalVariableTableから取得したパラメータ名。index→nameのマップ
+    private final java.util.LinkedHashMap<Integer, String> localVariableParameterNames = new java.util.LinkedHashMap<>();
     private final ContextClass contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
 
@@ -73,19 +74,59 @@ class AsmMethodVisitor extends MethodVisitor {
             // signatureが使える場合はsignatureから型や引数を解釈する
             var methodSignatureVisitor = AsmMethodSignatureVisitor.readSignatureData(api, signature);
             var returnType = methodSignatureVisitor.returnType();
-            var parameterTypeList = methodSignatureVisitor.parameterTypeList();
-            return jigMethodHeader(jigMethodId, access, returnType, parameterTypeList, throwsList);
+            var parameterList = buildParameterList(access, methodType, methodSignatureVisitor.parameterTypeList());
+            return jigMethodHeader(jigMethodId, access, returnType, parameterList, throwsList);
         }).orElseGet(() -> {
             var returnType = JigTypeReference.fromId(AsmUtils.type2TypeId(methodType.getReturnType()));
             var parameterTypeList = Arrays.stream(methodType.getArgumentTypes())
                     .map(type -> AsmUtils.type2TypeId(type))
                     .map(JigTypeReference::fromId)
                     .toList();
-            return jigMethodHeader(jigMethodId, access, returnType, parameterTypeList, throwsList);
+            var parameterList = buildParameterList(access, methodType, parameterTypeList);
+            return jigMethodHeader(jigMethodId, access, returnType, parameterList, throwsList);
         });
     }
 
-    private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, JigTypeReference returnType, List<JigTypeReference> parameterTypeList, List<JigTypeReference> throwsList) {
+    private List<JigMethodParameter> buildParameterList(int access, Type methodType, List<JigTypeReference> parameterTypeList) {
+        int paramCount = parameterTypeList.size();
+
+        // MethodParameters属性がある場合（visitParameterで収集）
+        if (methodParameterNameCollector.size() == paramCount) {
+            return java.util.stream.IntStream.range(0, paramCount)
+                    .mapToObj(i -> new JigMethodParameter(methodParameterNameCollector.get(i), ParameterNameSource.METHOD_PARAMETERS, parameterTypeList.get(i)))
+                    .toList();
+        }
+
+        // LocalVariableTable属性がある場合（visitLocalVariableで収集）
+        if (!localVariableParameterNames.isEmpty()) {
+            // インスタンスメソッドはindex=0がthisなのでoffset=1、staticはoffset=0
+            int offset = (access & Opcodes.ACC_STATIC) != 0 ? 0 : 1;
+            Type[] argTypes = methodType.getArgumentTypes();
+            List<JigMethodParameter> result = new ArrayList<>();
+            int idx = offset;
+            boolean hasLocalVariable = false;
+            for (int i = 0; i < argTypes.length; i++) {
+                String name = localVariableParameterNames.get(idx);
+                if (name != null) {
+                    result.add(new JigMethodParameter(name, ParameterNameSource.LOCAL_VARIABLE, parameterTypeList.get(i)));
+                    hasLocalVariable = true;
+                } else {
+                    result.add(new JigMethodParameter("arg" + i, ParameterNameSource.POSITIONAL, parameterTypeList.get(i)));
+                }
+                idx += argTypes[i].getSize(); // long/doubleは2スロット使用
+            }
+            if (hasLocalVariable) {
+                return result;
+            }
+        }
+
+        // 名前情報なし：位置ベース
+        return java.util.stream.IntStream.range(0, paramCount)
+                .mapToObj(i -> new JigMethodParameter("arg" + i, ParameterNameSource.POSITIONAL, parameterTypeList.get(i)))
+                .toList();
+    }
+
+    private JigMethodHeader jigMethodHeader(JigMethodId jigMethodId, int access, JigTypeReference returnType, List<JigMethodParameter> parameterList, List<JigTypeReference> throwsList) {
         var jigMemberVisibility = AsmUtils.resolveMethodVisibility(access);
         JigMemberOwnership ownership = AsmUtils.jigMemberOwnership(access);
 
@@ -117,22 +158,29 @@ class AsmMethodVisitor extends MethodVisitor {
             // - public static MyEnum valueOf(java.lang.String);
             // - private static MyEnum[] $values();
             if (ownership == JigMemberOwnership.CLASS) {
-                if ((name.equals("values") && parameterTypeList.isEmpty())
-                        || (name.equals("$values()") && parameterTypeList.isEmpty())
-                        || (name.equals("valueOf") && parameterTypeList.size() == 1 && parameterTypeList.get(0).id().equals(TypeId.STRING))) {
+                if ((name.equals("values") && parameterList.isEmpty())
+                        || (name.equals("$values()") && parameterList.isEmpty())
+                        || (name.equals("valueOf") && parameterList.size() == 1 && parameterList.get(0).typeReference().id().equals(TypeId.STRING))) {
                     flags.add(JigMethodFlag.ENUM_SUPPORT);
                 }
             }
         }
         if (contextClass.isRecord()) {
             // recordの場合にcomponentをわかるようにしておく
-            if (parameterTypeList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
+            if (parameterList.isEmpty() && contextClass.isRecordComponentName(jigMethodId.name())) {
                 flags.add(JigMethodFlag.RECORD_COMPONENT_ACCESSOR);
             }
         }
 
         return JigMethodHeader.from(jigMethodId, ownership,
-                jigMemberVisibility, declarationAnnotationCollector, returnType, parameterTypeList, throwsList, flags);
+                jigMemberVisibility, declarationAnnotationCollector, returnType, parameterList, throwsList, flags);
+    }
+
+    @Override
+    public void visitParameter(String name, int access) {
+        logger.debug("visitParameter {} {}", name, access);
+        methodParameterNameCollector.add(name);
+        super.visitParameter(name, access);
     }
 
     @Override
@@ -304,6 +352,13 @@ class AsmMethodVisitor extends MethodVisitor {
                 type
         ));
         super.visitTryCatchBlock(start, end, handler, type);
+    }
+
+    @Override
+    public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
+        logger.debug("visitLocalVariable {} {} {}", name, descriptor, index);
+        localVariableParameterNames.put(index, name);
+        super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }
 
     /**

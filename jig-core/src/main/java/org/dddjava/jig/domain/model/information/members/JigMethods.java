@@ -10,21 +10,6 @@ import java.util.stream.Stream;
  */
 public record JigMethods(Collection<JigMethod> methods) {
 
-    /**
-     * 注目に値するメソッド一覧
-     *
-     * 「注目に値する」メソッドを可視性順で並べたもの。
-     * 主に概要での出力に使用する。
-     */
-    public List<JigMethod> listRemarkable() {
-        return stream()
-                .filter(JigMethod::remarkable)
-                .sorted(Comparator
-                        .comparing(JigMethod::visibility)
-                        .thenComparing(jigMethod -> jigMethod.jigMethodId().value()))
-                .toList();
-    }
-
     public List<JigMethod> list() {
         return stream()
                 .sorted(Comparator

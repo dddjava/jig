@@ -7,8 +7,6 @@ import java.util.Collection;
 
 /**
  * パッケージ単位のJigTypeのグループ
- *
- * JigPackageWithJigTypesとの違いはパッケージの用語を持つこと
  */
 public record JigPackage(PackageId packageId, Collection<JigType> jigTypes) {
 

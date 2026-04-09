@@ -241,8 +241,8 @@ const UsecaseApp = (() => {
                 if (!method) return; // outbound / inbound-class はスキップ
 
                 // 引数の型 → メソッド
-                (method.parameterTypeRefs || []).forEach(typeRef => {
-                    Jig.util.collectTypeRefFqns(typeRef)
+                (method.parameters || []).forEach(param => {
+                    Jig.util.collectTypeRefFqns(param.typeRef)
                         .filter(domainFqn => domainFqnSet.has(domainFqn))
                         .forEach(domainFqn => {
                             if (!nodes.has(domainFqn)) {
@@ -306,8 +306,8 @@ const UsecaseApp = (() => {
             });
 
             // ドメインモデルノード（引数・戻り値）
-            (method.parameterTypeRefs || []).forEach(typeRef => {
-                Jig.util.collectTypeRefFqns(typeRef)
+            (method.parameters || []).forEach(param => {
+                Jig.util.collectTypeRefFqns(param.typeRef)
                     .filter(domainFqn => domainFqnSet.has(domainFqn))
                     .forEach(domainFqn => {
                         if (!domainNodeSet.has(domainFqn)) {
@@ -858,11 +858,13 @@ const UsecaseApp = (() => {
                 }
 
                 const depends = Jig.dom.createElement("div", {className: "depends"});
-                if (method.parameterTypeRefs.length > 0) {
+                if (method.parameters.length > 0) {
                     const parametersSection = Jig.dom.createElement("section", {className: "depends-section"});
                     parametersSection.appendChild(Jig.dom.createElement("h4", {textContent: "要求するもの（引数）"}));
-                    method.parameterTypeRefs.forEach(parameterTypeRef => {
-                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [Jig.dom.type.elementForRef(parameterTypeRef)]}));
+                    method.parameters.forEach(param => {
+                        const label = Jig.dom.createElement("span");
+                        label.append(param.name + ': ', Jig.dom.type.elementForRef(param.typeRef));
+                        parametersSection.appendChild(Jig.dom.createElement("div", {className: "depends-item", children: [label]}));
                     });
                     depends.appendChild(parametersSection);
                 }

@@ -291,8 +291,12 @@ globalThis.Jig.dom = (() => {
         const fn = createTypeRefFn || createElementForTypeRef;
         const methodTerm = globalThis.Jig.glossary.getMethodTerm(method.fqn, true);
 
-        const paramElements = method.parameterTypeRefs
-            .map(param => fn(param))
+        const paramElements = method.parameters
+            .map(param => {
+                const span = createElement("span");
+                span.append(param.name + ': ', fn(param.typeRef));
+                return span;
+            })
             .flatMap((el, i) => i ? [', ', el] : [el]);
 
         const signatureEl = createElement("div", {

@@ -1,5 +1,6 @@
 package org.dddjava.jig.adapter.json;
 
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodParameter;
 import org.dddjava.jig.domain.model.data.types.JigTypeArgument;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.information.members.JigField;
@@ -77,7 +78,7 @@ public final class JsonSupport {
      * {@code
      * @typedef {Object} JigMethod
      * @property {string} fqn
-     * @property {TypeRef[]} parameterTypeRefs
+     * @property {MethodParameter[]} parameters
      * @property {TypeRef} returnTypeRef
      * @property {boolean} isDeprecated
      * }
@@ -85,11 +86,26 @@ public final class JsonSupport {
     public static JsonObjectBuilder buildMethodJson(JigMethod jigMethod) {
         return Json.object("fqn", jigMethod.fqn())
                 .and("visibility", jigMethod.visibility())
-                .and("parameterTypeRefs", Json.arrayObjects(jigMethod.parameterTypeStream()
-                        .map(JsonSupport::buildTypeRef)
+                .and("parameters", Json.arrayObjects(jigMethod.parameterList().stream()
+                        .map(JsonSupport::buildParameterJson)
                         .toList()))
                 .and("returnTypeRef", buildTypeRef(jigMethod.returnType()))
                 .and("isDeprecated", jigMethod.isDeprecated());
+    }
+
+    /**
+     * メソッドパラメータのJSONを組み立てる
+     * {@code
+     * @typedef {Object} MethodParameter
+     * @property {string} name
+     * @property {string} nameSource
+     * @property {TypeRef} typeRef
+     * }
+     */
+    private static JsonObjectBuilder buildParameterJson(JigMethodParameter parameter) {
+        return Json.object("name", parameter.name())
+                .and("nameSource", parameter.nameSource().name())
+                .and("typeRef", buildTypeRef(parameter.typeReference()));
     }
 
     /**

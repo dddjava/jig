@@ -20,9 +20,16 @@
  */
 
 /**
+ * @typedef {Object} MethodParameter
+ * @property {string} name
+ * @property {string} nameSource
+ * @property {TypeRef} typeRef
+ */
+
+/**
  * @typedef {Object} DomainMethod
  * @property {string} fqn
- * @property {TypeRef[]} parameterTypeRefs
+ * @property {MethodParameter[]} parameters
  * @property {TypeRef} returnTypeRef
  * @property {boolean} isDeprecated
  */
@@ -131,7 +138,7 @@
  * @typedef {Object} UsecaseMethod
  * @property {string} fqn
  * @property {string} visibility
- * @property {TypeRef[]} parameterTypeRefs
+ * @property {MethodParameter[]} parameters
  * @property {TypeRef} returnTypeRef
  * @property {boolean} isDeprecated
  * @property {string[]} callMethods 呼び出しているメソッドのFQN

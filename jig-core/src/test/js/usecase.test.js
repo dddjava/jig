@@ -31,7 +31,7 @@ const mockUsecaseAppData = {
                     fqn: "com.example.ServiceA#staticMethod1()",
                     visibility: "PUBLIC",
                     declaration: "staticMethod1():void",
-                    parameterTypeRefs: [],
+                    parameters: [],
                     returnTypeRef: {fqn: "void"}
                 }
             ],
@@ -39,7 +39,7 @@ const mockUsecaseAppData = {
                 {
                     fqn: "com.example.ServiceA#method1()",
                     visibility: "PUBLIC",
-                    parameterTypeRefs: [],
+                    parameters: [],
                     returnTypeRef: {fqn: "void"},
                     declaration: "method1():void",
                     isDeprecated: false,
@@ -48,7 +48,7 @@ const mockUsecaseAppData = {
                 {
                     fqn: "com.example.ServiceA#otherMethod()",
                     visibility: "PUBLIC",
-                    parameterTypeRefs: [],
+                    parameters: [],
                     returnTypeRef: {fqn: "void"},
                     declaration: "otherMethod():void",
                     isDeprecated: false,
@@ -208,7 +208,7 @@ test.describe('usecase.js', () => {
                         {
                             fqn: "com.example.ServiceA#publicMethod()",
                             visibility: "PUBLIC",
-                            parameterTypeRefs: [],
+                            parameters: [],
                             returnTypeRef: {fqn: "void"},
                             declaration: "publicMethod():void",
                             isDeprecated: false,
@@ -217,7 +217,7 @@ test.describe('usecase.js', () => {
                         {
                             fqn: "com.example.ServiceA#internalHelper()",
                             visibility: "PRIVATE",
-                            parameterTypeRefs: [],
+                            parameters: [],
                             returnTypeRef: {fqn: "void"},
                             declaration: "internalHelper():void",
                             isDeprecated: false,
@@ -280,7 +280,7 @@ test.describe('usecase.js', () => {
                         {
                             fqn: "com.example.ServiceA#method1(Order)",
                             visibility: "PUBLIC",
-                            parameterTypeRefs: [{fqn: "com.example.Order"}],
+                            parameters: [{name: "arg0", nameSource: "POSITIONAL", typeRef: {fqn: "com.example.Order"}}],
                             returnTypeRef: {fqn: "void"},
                             declaration: "method1(Order):void",
                             isDeprecated: false,
@@ -289,7 +289,7 @@ test.describe('usecase.js', () => {
                         {
                             fqn: "com.example.ServiceA#findOrder()",
                             visibility: "PUBLIC",
-                            parameterTypeRefs: [],
+                            parameters: [],
                             returnTypeRef: {fqn: "com.example.Order"},
                             declaration: "findOrder():Order",
                             isDeprecated: false,
@@ -339,7 +339,7 @@ test.describe('usecase.js', () => {
                         {
                             fqn: "com.example.ServiceA#findOrders()",
                             visibility: "PUBLIC",
-                            parameterTypeRefs: [],
+                            parameters: [],
                             returnTypeRef: {
                                 fqn: "java.util.List",
                                 typeArgumentRefs: [{fqn: "com.example.Order"}]
@@ -387,10 +387,10 @@ test.describe('usecase.js', () => {
                         {
                             fqn: "com.example.ServiceA#saveOrders()",
                             visibility: "PUBLIC",
-                            parameterTypeRefs: [{
+                            parameters: [{name: "arg0", nameSource: "POSITIONAL", typeRef: {
                                 fqn: "java.util.List",
                                 typeArgumentRefs: [{fqn: "com.example.Order"}]
-                            }],
+                            }}],
                             returnTypeRef: {fqn: "void"},
                             declaration: "saveOrders(List<Order>):void",
                             isDeprecated: false,
@@ -680,7 +680,7 @@ test.describe('usecase.js', () => {
                     methods: [{
                         fqn: "com.example.ServiceA#method1(Order)",
                         visibility: "PUBLIC",
-                        parameterTypeRefs: [{fqn: "com.example.Order"}],
+                        parameters: [{name: "arg0", nameSource: "POSITIONAL", typeRef: {fqn: "com.example.Order"}}],
                         returnTypeRef: {fqn: "void"},
                         declaration: "method1(Order):void",
                         isDeprecated: false,
@@ -724,7 +724,7 @@ test.describe('usecase.js', () => {
                     methods: [{
                         fqn: "com.example.ServiceA#findOrder()",
                         visibility: "PUBLIC",
-                        parameterTypeRefs: [],
+                        parameters: [],
                         returnTypeRef: {fqn: "com.example.Order"},
                         declaration: "findOrder():Order",
                         isDeprecated: false,
@@ -767,7 +767,7 @@ test.describe('usecase.js', () => {
                     methods: [{
                         fqn: "com.example.ServiceA#findOrder()",
                         visibility: "PUBLIC",
-                        parameterTypeRefs: [],
+                        parameters: [],
                         returnTypeRef: {fqn: "com.example.Order"},
                         declaration: "findOrder():Order",
                         isDeprecated: false,

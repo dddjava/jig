@@ -15,7 +15,7 @@ const mockInboundData = {
                 {
                     fqn: "com.example.ControllerA#method1()",
                     visibility: "PUBLIC",
-                    parameterTypeRefs: [],
+                    parameters: [],
                     returnTypeRef: {fqn: "void"},
                     isDeprecated: false,
                     path: "GET /method1"
@@ -257,7 +257,7 @@ test.describe('InboundApp', () => {
                     {
                         fqn: "com.example.ControllerA#method1()",
                         visibility: "PUBLIC",
-                        parameterTypeRefs: [],
+                        parameters: [],
                         returnTypeRef: {fqn: "void"},
                         isDeprecated: false,
                         path: "GET /method1"
@@ -265,7 +265,7 @@ test.describe('InboundApp', () => {
                     {
                         fqn: "com.example.ControllerA#method2()",
                         visibility: "PUBLIC",
-                        parameterTypeRefs: [],
+                        parameters: [],
                         returnTypeRef: {fqn: "void"},
                         isDeprecated: false,
                         path: "GET /method2"

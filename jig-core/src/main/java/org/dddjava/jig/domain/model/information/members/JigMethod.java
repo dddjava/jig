@@ -5,11 +5,13 @@ import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
+import org.dddjava.jig.domain.model.data.members.methods.JigMethodParameter;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 import org.dddjava.jig.domain.model.data.types.TypeIds;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -87,6 +89,10 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration) {
 
     public String simpleMethodSignatureText() {
         return header().simpleMethodSignatureText();
+    }
+
+    public List<JigMethodParameter> parameterList() {
+        return header().parameterList();
     }
 
     public Stream<JigTypeReference> parameterTypeStream() {

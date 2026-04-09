@@ -692,8 +692,9 @@ const UsecaseApp = (() => {
 
                 const methodSection = Jig.dom.createElement("article", {
                     className: "jig-card jig-card--item",
+                    id: fqnToMethodId(method.fqn),
                     children: [
-                        Jig.dom.createElement("h4", {id: fqnToMethodId(method.fqn), textContent: methodTerm.title}),
+                        Jig.dom.createElement("h4", {textContent: methodTerm.title}),
                         Jig.dom.createElement("div", {
                             className: "declaration",
                             textContent: methodTerm.shortDeclaration

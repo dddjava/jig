@@ -164,7 +164,7 @@ test.describe('usecase.js', () => {
 
             const methodSection = serviceSection.querySelector('article.jig-card--item');
             assert.ok(methodSection);
-            assert.equal(methodSection.querySelector('h4').id, globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()'));
+            assert.equal(methodSection.id, globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#method1()'));
             assert.equal(methodSection.querySelector('h4').textContent, 'method1');
             assert.equal(methodSection.querySelector('.declaration').textContent, 'ServiceA#method1()');
 
@@ -784,7 +784,7 @@ test.describe('usecase.js', () => {
             UsecaseApp.init();
 
             const methodId = globalThis.Jig.util.fqnToId("method", 'com.example.ServiceA#findOrder()');
-            const methodSection = document.getElementById(methodId)?.parentElement;
+            const methodSection = document.getElementById(methodId);
             // ドメインノードのみでエッジがなければ図自体が生成されないか、生成されてもドメインノードを含まない
             const mermaidPre = methodSection?.querySelector('.mermaid');
             if (mermaidPre) {

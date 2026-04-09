@@ -909,7 +909,7 @@ label {
     scroll-margin-top: 7em; /* jump-bar + group-header の高さ分 */
 }
 
-@keyframes jig-card-highlight {
+@keyframes jig-card-type-highlight {
     0% {
         box-shadow: 0 0 0 3px #3b82f6, 0 4px 16px rgba(59, 130, 246, 0.25);
         background: #eff6ff;
@@ -921,7 +921,22 @@ label {
 }
 
 .jig-card.jig-card--type:target {
-    animation: jig-card-highlight 2s ease-out;
+    animation: jig-card-type-highlight 2s ease-out;
+}
+
+@keyframes jig-card-item-highlight {
+    0% {
+        box-shadow: 0 0 0 3px #3b82f6, 0 2px 8px rgba(59, 130, 246, 0.2);
+        background: #eff6ff;
+    }
+    100% {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        background-color: #fff;
+    }
+}
+
+.jig-card.jig-card--item:target {
+    animation: jig-card-item-highlight 2s ease-out;
 }
 
 .jig-card.jig-card--compact h3 {

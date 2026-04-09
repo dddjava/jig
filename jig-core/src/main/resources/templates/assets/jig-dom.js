@@ -151,6 +151,9 @@ globalThis.Jig.dom = (() => {
     function initCommonUi() {
         setupHeaderNavigation();
         setupDocumentHelp();
+        if (globalThis.Jig?.data?.createTypeLinkResolver) {
+            setTypeLinkResolver(globalThis.Jig.data.createTypeLinkResolver());
+        }
     }
 
     /**

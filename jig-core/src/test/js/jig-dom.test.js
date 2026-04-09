@@ -535,6 +535,56 @@ test.describe('jig-dom.js', () => {
             assert.equal(markdowns[0].innerHTML, '# Heading');
             assert.equal(markdowns[1].innerHTML, '**Bold text**');
         });
+
+        test('domainData がある場合、domain型にリンクが設定される', () => {
+            globalThis.domainData = {types: [{fqn: 'com.example.Order', isDeprecated: false}]};
+            globalThis.glossaryData = {terms: {'com.example.Order': {title: '注文'}}};
+
+            Jig.dom.initCommonUi();
+
+            const resolver = Jig.dom.type.getResolver();
+            assert.ok(resolver, 'リゾルバーが設定されていること');
+            const resolved = resolver('com.example.Order');
+            assert.ok(resolved.href.includes('domain'), 'domain.htmlへのリンクであること');
+
+            delete globalThis.domainData;
+            delete globalThis.glossaryData;
+        });
+
+        test('usecaseData がある型はusecase.htmlへのリンクが設定される', () => {
+            globalThis.usecaseData = {usecases: [{fqn: 'com.example.ServiceA'}]};
+            globalThis.glossaryData = {terms: {}};
+
+            Jig.dom.initCommonUi();
+
+            const resolver = Jig.dom.type.getResolver();
+            assert.ok(resolver, 'リゾルバーが設定されていること');
+            const resolved = resolver('com.example.ServiceA');
+            assert.ok(resolved && resolved.href.includes('usecase'), 'usecase.htmlへのリンクであること');
+
+            delete globalThis.usecaseData;
+            delete globalThis.glossaryData;
+        });
+
+        test('どちらのデータもない型はnullを返す', () => {
+            globalThis.domainData = {types: []};
+            globalThis.usecaseData = {usecases: []};
+
+            Jig.dom.initCommonUi();
+
+            const resolver = Jig.dom.type.getResolver();
+            assert.ok(resolver, 'リゾルバーが設定されていること');
+            assert.equal(resolver('java.lang.String'), null);
+
+            delete globalThis.domainData;
+            delete globalThis.usecaseData;
+        });
+
+        test('domainData も usecaseData もない場合はリゾルバーは null のまま', () => {
+            Jig.dom.initCommonUi();
+
+            assert.equal(Jig.dom.type.getResolver(), null);
+        });
     });
 
     test.describe('initCommonUi - setupDocumentHelp', () => {

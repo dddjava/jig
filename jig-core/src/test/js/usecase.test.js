@@ -465,64 +465,6 @@ test.describe('usecase.js', () => {
             assert.equal(mainList.textContent, 'データなし');
         });
 
-        test('domain-data.jsがある場合にリゾルバーがdomain.html#fqnリンクを設定する', () => {
-            globalThis.domainData = {
-                types: [
-                    {fqn: 'com.example.Order', isDeprecated: false}
-                ]
-            };
-            globalThis.usecaseData = {usecases: []};
-            UsecaseApp.init();
-
-            const resolver = globalThis.Jig.dom.type.getResolver();
-            assert.ok(resolver, 'リゾルバーが設定されていること');
-
-            const resolved = resolver('com.example.Order');
-            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.Order'));
-            assert.equal(resolved.className, undefined);
-
-            delete globalThis.domainData;
-        });
-
-        test('domain-data.jsがない場合、リゾルバーは設定されない', () => {
-            delete globalThis.domainData;
-            globalThis.usecaseData = {usecases: []};
-            UsecaseApp.init();
-
-            assert.equal(globalThis.Jig.dom.type.getResolver(), null);
-        });
-
-        test('deprecatedなdomain型はdeprecatedクラスを返す', () => {
-            globalThis.domainData = {
-                types: [
-                    {fqn: 'com.example.OldClass', isDeprecated: true}
-                ]
-            };
-            globalThis.usecaseData = {usecases: []};
-            UsecaseApp.init();
-
-            const resolved = globalThis.Jig.dom.type.getResolver()('com.example.OldClass');
-            assert.equal(resolved.href, 'domain.html#' + globalThis.Jig.util.fqnToId("domain", 'com.example.OldClass'));
-            assert.equal(resolved.className, 'deprecated');
-
-            delete globalThis.domainData;
-        });
-
-        test('domain型でない場合、リゾルバーはnullを返す', () => {
-            globalThis.domainData = {
-                types: []
-            };
-            globalThis.usecaseData = {usecases: []};
-            UsecaseApp.init();
-
-            const resolver = globalThis.Jig.dom.type.getResolver();
-            assert.ok(resolver);
-            const resolved = resolver('java.lang.String');
-            assert.equal(resolved, null);
-
-            delete globalThis.domainData;
-        });
-
         test('initControls should toggle body classes', () => {
             globalThis.usecaseData = mockUsecaseAppData;
             UsecaseApp.init();

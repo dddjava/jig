@@ -17,6 +17,8 @@ globalThis.Jig.data = (() => {
     let domainPackages = null;
     /** @type {Map<string, object[]>|null} */
     let domainChildPackagesMap = null;
+    /** @type {Map<string, object>|null} */
+    let usecaseTypesMap = null;
 
     const domain = {
         get() {
@@ -69,6 +71,20 @@ globalThis.Jig.data = (() => {
     const usecase = {
         get() {
             return globalThis.usecaseData;
+        },
+        has() {
+            return !!globalThis.usecaseData;
+        },
+        getTypesMap() {
+            if (!usecaseTypesMap) {
+                usecaseTypesMap = new Map(
+                    (globalThis.usecaseData?.usecases ?? []).map(t => [t.fqn, t])
+                );
+            }
+            return usecaseTypesMap;
+        },
+        getType(fqn) {
+            return usecase.getTypesMap().get(fqn);
         },
     };
 
@@ -132,6 +148,46 @@ globalThis.Jig.data = (() => {
         domainFqnSet = null;
         domainPackages = null;
         domainChildPackagesMap = null;
+        usecaseTypesMap = null;
+    }
+
+    /**
+     * 利用可能なデータに基づいて型リンクリゾルバーを生成する。
+     * domain型があれば domain.html へ、usecase型があれば usecase.html へリンクする。
+     * 現在のページと同じドキュメントへのリンクはページ内アンカー（#）になる。
+     *
+     * @returns {(fqn: string) => {href?: string, className?: string, text?: string} | null}
+     */
+    function createTypeLinkResolver() {
+        if (!domain.has() && !usecase.has()) return null;
+
+        const currentPage = (typeof location !== 'undefined')
+            ? location.pathname.split('/').pop()
+            : '';
+
+        return function (fqn) {
+            if (domain.has()) {
+                const domainType = domain.getType(fqn);
+                if (domainType) {
+                    const prefix = (currentPage === 'domain.html') ? '#' : 'domain.html#';
+                    return {
+                        href: prefix + globalThis.Jig.util.fqnToId("domain", fqn),
+                        className: domainType.isDeprecated ? 'deprecated' : undefined
+                    };
+                }
+            }
+            if (usecase.has()) {
+                const usecaseType = usecase.getType(fqn);
+                if (usecaseType) {
+                    const prefix = (currentPage === 'usecase.html') ? '#' : 'usecase.html#';
+                    return {
+                        href: prefix + globalThis.Jig.util.fqnToId("type", fqn),
+                        className: usecaseType.isDeprecated ? 'deprecated' : undefined
+                    };
+                }
+            }
+            return null;
+        };
     }
 
     return {
@@ -146,6 +202,7 @@ globalThis.Jig.data = (() => {
         navigation,
         typeRelations,
         resetCache,
+        createTypeLinkResolver,
     };
 })();
 

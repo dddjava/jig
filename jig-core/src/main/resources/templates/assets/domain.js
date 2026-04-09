@@ -1061,20 +1061,6 @@ const DomainApp = (() => {
 
         const childPackagesMap = Jig.data.domain.getChildPackagesMap();
 
-        Jig.dom.type.setResolver((fqn) => {
-            const domainType = Jig.data.domain.getType(fqn);
-            if (domainType) {
-                return {
-                    href: '#' + Jig.util.fqnToId("domain", fqn),
-                    className: domainType.isDeprecated ? 'deprecated' : undefined
-                };
-            }
-            // domain型でなければ単純名 + weakクラス
-            return {
-                className: 'weak',
-                text: fqn.substring(fqn.lastIndexOf('.') + 1)
-            };
-        });
 
         renderSidebar(packages, childPackagesMap, typesMap);
 

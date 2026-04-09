@@ -957,21 +957,6 @@ const UsecaseApp = (() => {
 
         Jig.data.resetCache();
 
-        if (Jig.data.domain.has()) {
-            Jig.dom.type.setResolver((fqn) => {
-                const domainType = Jig.data.domain.getType(fqn);
-                if (domainType) {
-                    return {
-                        href: 'domain.html#' + Jig.util.fqnToId("domain", fqn),
-                        className: domainType.isDeprecated ? 'deprecated' : undefined
-                    };
-                }
-                return null;
-            });
-        } else {
-            Jig.dom.type.clearResolver();
-        }
-
         initControls();
         render();
     }

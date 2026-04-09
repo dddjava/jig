@@ -72,16 +72,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
         return !aliasTextOrBlank().isEmpty();
     }
 
-    /**
-     * 注目に値するかの判定
-     *
-     * publicもしくはドキュメントコメントが記述されているものを「注目に値する」と識別する。
-     * privateでもドキュメントコメントが書かれているものは注目する。
-     */
-    public boolean remarkable() {
-        return isPublic() || documented();
-    }
-
     public String name() {
         return header().name();
     }

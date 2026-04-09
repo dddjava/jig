@@ -30,7 +30,7 @@ public record JigMethods(Collection<JigMethod> methods) {
 
     public JigMethods excludeNotNoteworthyObjectMethod() {
         return new JigMethods(stream()
-                .filter(jigMethod -> !jigMethod.isObjectMethod() || jigMethod.documented())
+                .filter(jigMethod -> !jigMethod.isObjectMethod())
                 .toList());
     }
 

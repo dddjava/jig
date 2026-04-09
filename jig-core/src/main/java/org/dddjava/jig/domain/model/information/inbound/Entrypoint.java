@@ -37,10 +37,6 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
         return entrypointMapping.shortPathText();
     }
 
-    public String methodLabelText() {
-        return entrypointName();
-    }
-
     public String fullPathText() {
         return entrypointMapping.fullPathText();
     }
@@ -62,13 +58,4 @@ public record Entrypoint(EntrypointType entrypointType, JigType jigType, JigMeth
                 .findAny();
     }
 
-    private String entrypointName() {
-        if (entrypointType() == EntrypointType.HTTP_API) {
-            // Swaggerのアノテーションのsummaryが記述されていればそれを採用
-            // OpenAPIドキュメントの自動生成をしていないなど、解決できない場合は通常のメソッドラベル
-            return swaggerSummary().orElseGet(jigMethod::labelText);
-        } else {
-            return jigMethod().labelText();
-        }
-    }
 }

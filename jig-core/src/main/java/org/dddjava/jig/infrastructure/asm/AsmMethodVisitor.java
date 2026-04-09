@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 /**
  * メソッドのバイトコードから必要な情報を抽出するMethodVisitorの実装
@@ -39,8 +40,8 @@ class AsmMethodVisitor extends MethodVisitor {
     private final ArrayList<Instruction> methodInstructionCollector = new ArrayList<>();
     private final ArrayList<JigAnnotationReference> declarationAnnotationCollector = new ArrayList<>();
     private final ArrayList<String> methodParameterNameCollector = new ArrayList<>();
-    // LocalVariableTableから取得したパラメータ名。index→nameのマップ
-    private final java.util.LinkedHashMap<Integer, String> localVariableParameterNames = new java.util.LinkedHashMap<>();
+    // LocalVariableTableから取得したローカル変数名。スロットindex→nameのマップ
+    private final HashMap<Integer, String> localVariableSlotNames = new HashMap<>();
     private final ContextClass contextClass;
     private final Consumer<AsmMethodVisitor> finisher;
 
@@ -92,36 +93,33 @@ class AsmMethodVisitor extends MethodVisitor {
 
         // MethodParameters属性がある場合（visitParameterで収集）
         if (methodParameterNameCollector.size() == paramCount) {
-            return java.util.stream.IntStream.range(0, paramCount)
+            return IntStream.range(0, paramCount)
                     .mapToObj(i -> new JigMethodParameter(methodParameterNameCollector.get(i), ParameterNameSource.METHOD_PARAMETERS, parameterTypeList.get(i)))
                     .toList();
         }
 
         // LocalVariableTable属性がある場合（visitLocalVariableで収集）
-        if (!localVariableParameterNames.isEmpty()) {
+        if (!localVariableSlotNames.isEmpty()) {
             // インスタンスメソッドはindex=0がthisなのでoffset=1、staticはoffset=0
             int offset = (access & Opcodes.ACC_STATIC) != 0 ? 0 : 1;
             Type[] argTypes = methodType.getArgumentTypes();
-            List<JigMethodParameter> result = new ArrayList<>();
+            List<JigMethodParameter> result = new ArrayList<>(paramCount);
             int idx = offset;
-            boolean hasLocalVariable = false;
             for (int i = 0; i < argTypes.length; i++) {
-                String name = localVariableParameterNames.get(idx);
-                if (name != null) {
-                    result.add(new JigMethodParameter(name, ParameterNameSource.LOCAL_VARIABLE, parameterTypeList.get(i)));
-                    hasLocalVariable = true;
-                } else {
-                    result.add(new JigMethodParameter("arg" + i, ParameterNameSource.POSITIONAL, parameterTypeList.get(i)));
-                }
+                String name = localVariableSlotNames.get(idx);
+                result.add(name != null
+                        ? new JigMethodParameter(name, ParameterNameSource.LOCAL_VARIABLE, parameterTypeList.get(i))
+                        : new JigMethodParameter("arg" + i, ParameterNameSource.POSITIONAL, parameterTypeList.get(i)));
                 idx += argTypes[i].getSize(); // long/doubleは2スロット使用
             }
-            if (hasLocalVariable) {
+            // 1つでもLOCAL_VARIABLEが取れていればLocalVariableTable由来として返す
+            if (result.stream().anyMatch(p -> p.nameSource() == ParameterNameSource.LOCAL_VARIABLE)) {
                 return result;
             }
         }
 
         // 名前情報なし：位置ベース
-        return java.util.stream.IntStream.range(0, paramCount)
+        return IntStream.range(0, paramCount)
                 .mapToObj(i -> new JigMethodParameter("arg" + i, ParameterNameSource.POSITIONAL, parameterTypeList.get(i)))
                 .toList();
     }
@@ -357,7 +355,7 @@ class AsmMethodVisitor extends MethodVisitor {
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
         logger.debug("visitLocalVariable {} {} {}", name, descriptor, index);
-        localVariableParameterNames.put(index, name);
+        localVariableSlotNames.put(index, name);
         super.visitLocalVariable(name, descriptor, signature, start, end, index);
     }
 

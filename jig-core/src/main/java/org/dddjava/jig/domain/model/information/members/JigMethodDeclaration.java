@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.members;
 
 import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
-import org.dddjava.jig.domain.model.data.members.methods.JigMethodParameter;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
@@ -36,7 +35,7 @@ public record JigMethodDeclaration(JigMethodHeader header, Instructions instruct
     }
 
     public Stream<JigTypeReference> argumentStream() {
-        return header.parameterList().stream().map(JigMethodParameter::typeReference);
+        return header.parameterTypeStream();
     }
 
 }

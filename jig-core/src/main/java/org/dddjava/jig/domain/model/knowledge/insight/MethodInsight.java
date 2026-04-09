@@ -12,10 +12,6 @@ public record MethodInsight(JigMethod jigMethod) {
         return jigMethod.fqn();
     }
 
-    public String label() {
-        return jigMethod.labelText();
-    }
-
     public int cyclomaticComplexity() {
         return jigMethod.instructions().cyclomaticComplexity();
     }

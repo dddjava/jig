@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.javaproductreader;
 import org.dddjava.jig.domain.model.data.members.JigMemberOwnership;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.terms.Glossary;
-import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.information.members.JigField;
 import org.dddjava.jig.domain.model.information.members.JigMethod;
 import org.dddjava.jig.domain.model.information.members.JigMethodDeclaration;
@@ -31,7 +30,7 @@ public class JigTypeFactory {
 
     private static JigType createJigType(Glossary glossary, ClassDeclaration classDeclaration) {
         JigTypeGlossary jigTypeGlossary = JigTypeGlossary.from(glossary, classDeclaration.jigTypeHeader().id());
-        JigTypeMembers jigTypeMembers = createJigMember(classDeclaration, jigTypeGlossary);
+        JigTypeMembers jigTypeMembers = createJigMember(classDeclaration);
         return new JigType(classDeclaration.jigTypeHeader(), jigTypeMembers, jigTypeGlossary);
     }
 
@@ -41,13 +40,13 @@ public class JigTypeFactory {
         CLASS
     }
 
-    private static JigTypeMembers createJigMember(ClassDeclaration classDeclaration, JigTypeGlossary jigTypeGlossary) {
+    private static JigTypeMembers createJigMember(ClassDeclaration classDeclaration) {
         var fields = classDeclaration.jigFieldHeaders().stream()
                 .map(jigFieldHeader -> JigField.from(jigFieldHeader))
                 .collect(groupingBy(jigField -> jigField.jigFieldHeader().ownership()));
 
         var methods = classDeclaration.jigMethodDeclarations().stream()
-                .map(jigMethodDeclaration -> createJigMethod(jigMethodDeclaration, jigTypeGlossary))
+                .map(jigMethodDeclaration -> createJigMethod(jigMethodDeclaration))
                 .collect(groupingBy(jigMethod -> {
                     JigMethodHeader header = jigMethod.jigMethodDeclaration().header();
                     if (header.isStaticOrInstanceInitializer()) {
@@ -64,8 +63,7 @@ public class JigTypeFactory {
         );
     }
 
-    private static JigMethod createJigMethod(JigMethodDeclaration jigMethodDeclaration, JigTypeGlossary jigTypeGlossary) {
-        Term methodTerm = jigTypeGlossary.getMethodTermPossiblyMatches(jigMethodDeclaration.header().id());
-        return new JigMethod(jigMethodDeclaration, methodTerm);
+    private static JigMethod createJigMethod(JigMethodDeclaration jigMethodDeclaration) {
+        return new JigMethod(jigMethodDeclaration);
     }
 }

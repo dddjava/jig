@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.members.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.members.instruction.MethodCall;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodHeader;
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
-import org.dddjava.jig.domain.model.data.terms.Term;
 import org.dddjava.jig.domain.model.data.types.JigAnnotationReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.TypeId;
@@ -16,7 +15,7 @@ import java.util.stream.Stream;
 /**
  * メソッド
  */
-public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
+public record JigMethod(JigMethodDeclaration jigMethodDeclaration) {
 
     public JigMethodId jigMethodId() {
         return header().id();
@@ -53,11 +52,6 @@ public record JigMethod(JigMethodDeclaration jigMethodDeclaration, Term term) {
     public TypeIds usingTypes() {
         return new TypeIds(jigMethodDeclaration.associatedTypes());
     }
-
-    public String labelText() {
-        return term.title();
-    }
-
 
     public boolean isObjectMethod() {
         return header().isObjectMethod();

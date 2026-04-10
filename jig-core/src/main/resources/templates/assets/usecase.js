@@ -110,7 +110,7 @@ const UsecaseApp = (() => {
                 if (!relation?.from || !relation?.to) return;
                 const callerClassFqn = getClassFqnFromMethodFqn(relation.from);
                 if (diagramContext.methodMap.has(callerClassFqn)) return;
-                addReverseCaller(relation.to, {fqn: callerClassFqn, kind: "inbound-class"});
+                addReverseCaller(relation.to, {fqn: relation.from, kind: "inbound-method"});
             });
         });
 
@@ -786,14 +786,18 @@ const UsecaseApp = (() => {
                             const classSubgraphs = new Map();
                             currentUsecaseDiagram.nodes.forEach(node => {
                                 const nodeId = fqnToNodeId(node.fqn);
-                                if (node.kind === "outbound" || node.kind === "inbound-class" || node.kind === "domain-type") {
-                                    // 外部ポート / inboundクラス / ドメインモデル
+                                if (node.kind === "inbound-method") {
+                                    // inboundメソッド: メソッド名で表示
+                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                    builder.addNode(nodeId, nodeLabel, 'method');
+                                    builder.addClass(nodeId, "inbound");
+                                    const classFqn = getClassFqnFromMethodFqn(node.fqn);
+                                    builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
+                                } else if (node.kind === "outbound" || node.kind === "domain-type") {
+                                    // 外部ポート / ドメインモデル
                                     const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, 'class');
-                                    if (node.kind === "inbound-class") {
-                                        builder.addClass(nodeId, "inbound");
-                                        builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", node.fqn));
-                                    } else if (node.kind === "outbound") {
+                                    if (node.kind === "outbound") {
                                         builder.addClass(nodeId, "outbound");
                                         builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", node.fqn));
                                     } else if (node.kind === "domain-type") {

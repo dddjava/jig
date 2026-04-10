@@ -1567,7 +1567,7 @@ test.describe('usecase.js', () => {
             assert.ok(result.edges.find(e => e.from === 'pkg.Cls#U()' && e.to === 'pkg.Cls#A()'));
         });
 
-        test('usecaseDataにないinbound側の直接呼び出し元も表示される', () => {
+        test('usecaseDataにないinbound側の直接呼び出し元もメソッドとして表示される', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase'};
             const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
             globalThis.inboundData = {
@@ -1589,12 +1589,12 @@ test.describe('usecase.js', () => {
             });
 
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#A()'));
-            assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl'));
-            assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl').kind === 'inbound-class');
-            assert.ok(result.edges.find(e => e.from === 'web.Ctrl' && e.to === 'pkg.Cls#A()'));
+            assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl#entry()'));
+            assert.ok(result.nodes.find(n => n.fqn === 'web.Ctrl#entry()').kind === 'inbound-method');
+            assert.ok(result.edges.find(e => e.from === 'web.Ctrl#entry()' && e.to === 'pkg.Cls#A()'));
         });
 
-        test('同一inboundクラスの複数メソッド呼び出しはクラスノード1つに集約される', () => {
+        test('同一inboundクラスの複数メソッド呼び出しはそれぞれメソッドノードとして表示される', () => {
             const rootMethod = {fqn: 'pkg.Cls#A()', callMethods: [], kind: 'usecase'};
             const methodMap = new Map([['pkg.Cls#A()', rootMethod]]);
             globalThis.inboundData = {
@@ -1615,10 +1615,10 @@ test.describe('usecase.js', () => {
                 showDiagramOutboundPorts: true
             });
 
-            const inboundNodes = result.nodes.filter(n => n.fqn === 'web.Ctrl');
-            const inboundEdges = result.edges.filter(e => e.from === 'web.Ctrl' && e.to === 'pkg.Cls#A()');
-            assert.equal(inboundNodes.length, 1);
-            assert.equal(inboundEdges.length, 1);
+            const inboundNodes = result.nodes.filter(n => n.kind === 'inbound-method');
+            assert.equal(inboundNodes.length, 2);
+            assert.ok(result.edges.find(e => e.from === 'web.Ctrl#entry()' && e.to === 'pkg.Cls#A()'));
+            assert.ok(result.edges.find(e => e.from === 'web.Ctrl#entry2()' && e.to === 'pkg.Cls#A()'));
         });
     });
 });

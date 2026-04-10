@@ -68,67 +68,9 @@ const PackageApp = (() => {
         return Jig.glossary.getTypeTerm(fqn).title;
     }
 
-    function getMaxPackageDepth(context) {
-        const {packages} = getPackageRelationData(context);
-        return packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
-    }
-
-    // 集計
-    function buildAggregationStats(packages, relations, maxDepth) {
-        const stats = new Map();
-        for (let depth = 0; depth <= maxDepth; depth += 1) {
-            const aggregatedPackages = new Set(packages.map(item => Jig.util.getAggregatedFqn(item.fqn, depth)));
-            const relationKeys = new Set();
-            relations.forEach(relation => {
-                const from = Jig.util.getAggregatedFqn(relation.from, depth);
-                const to = Jig.util.getAggregatedFqn(relation.to, depth);
-                if (from === to) return;
-                relationKeys.add(`${from}::${to}`);
-            });
-            stats.set(depth, {
-                packageCount: aggregatedPackages.size,
-                relationCount: relationKeys.size,
-            });
-        }
-        return stats;
-    }
-
-    function buildAggregationStatsForFilters(packages, relations, packageFilterFqn, focusedPackageFqn, maxDepth, aggregationDepth, focusCallerMode, focusCalleeMode) {
-        let filteredPackages = packageFilterFqn.length > 0
-            ? packages.filter(item => Jig.util.isWithinPackageFilters(item.fqn, packageFilterFqn))
-            : packages;
-        let filteredRelations = packageFilterFqn.length > 0
-            ? relations.filter(relation => Jig.util.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.util.isWithinPackageFilters(relation.to, packageFilterFqn))
-            : relations;
-
-        if (focusedPackageFqn) {
-            const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
-            const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
-            filteredPackages = filteredPackages.filter(item =>
-                focusSet.has(Jig.util.getAggregatedFqn(item.fqn, aggregationDepth))
-            );
-
-            const filterDirectRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
-                const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
-                return isCaller || isCallee;
-            };
-
-            const filterTransitiveRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                return focusSet.has(from) && focusSet.has(to);
-            };
-
-            if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
-                filteredRelations = filteredRelations.filter(filterTransitiveRelation);
-            } else if (focusCallerMode === '1' || focusCalleeMode === '1') {
-                filteredRelations = filteredRelations.filter(filterDirectRelation);
-            }
-        }
-        return buildAggregationStats(filteredPackages, filteredRelations, maxDepth);
+    function getMaxPackageDepth() {
+        const data = parsePackageRelationData(Jig.data.package.get() ?? {});
+        return data.packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
     // フィルタ/正規化
@@ -903,7 +845,7 @@ const PackageApp = (() => {
     function renderDiagramAndTable(context) {
         renderPackageDiagram(context, context.packageFilterFqn, context.focusedPackageFqn);
         filterFocusTableRows(context.focusedPackageFqn, context);
-        renderAggregationDepthSelectOptions(getMaxPackageDepth(context), context);
+        renderAggregationDepthSelectOptions(getMaxPackageDepth(), context);
     }
 
     // UI配線
@@ -959,7 +901,7 @@ const PackageApp = (() => {
     function setupAggregationDepthControl(context) {
         const select = dom.getDepthSelect();
         if (!select) return;
-        const maxDepth = getMaxPackageDepth(context);
+        const maxDepth = getMaxPackageDepth();
         renderAggregationDepthSelectOptions(maxDepth, context);
         select.value = String(context.aggregationDepth);
 
@@ -1003,18 +945,7 @@ const PackageApp = (() => {
     function renderAggregationDepthSelectOptions(maxDepth, context) {
         const select = dom.getDepthSelect();
         if (!select) return;
-        const {packages, relations} = getPackageRelationData(context);
-        const aggregationStats = buildAggregationStatsForFilters(
-            packages,
-            relations,
-            context.packageFilterFqn,
-            context.focusedPackageFqn,
-            maxDepth,
-            context.aggregationDepth,
-            context.focusCallerMode,
-            context.focusCalleeMode
-        );
-        const options = buildAggregationDepthOptions(aggregationStats, maxDepth);
+        const options = buildAggregationDepthOptions(maxDepth);
         renderAggregationDepthOptionsIntoSelect(select, options, context.aggregationDepth, maxDepth);
 
         const upButton = dom.getDepthUpButton();
@@ -1022,22 +953,10 @@ const PackageApp = (() => {
         updateDepthButtonStates(select, upButton, downButton);
     }
 
-    function buildAggregationDepthOptions(aggregationStats, maxDepth) {
-        const options = [];
-        const noAggregationStats = aggregationStats.get(0);
-        options.push({
-            value: '0',
-            text: `集約なし（P${noAggregationStats.packageCount} / R${noAggregationStats.relationCount}）`,
-        });
+    function buildAggregationDepthOptions(maxDepth) {
+        const options = [{value: '0', text: '集約なし'}];
         for (let depth = 1; depth <= maxDepth; depth += 1) {
-            const stats = aggregationStats.get(depth);
-            if (!stats || stats.relationCount === 0) {
-                continue;
-            }
-            options.push({
-                value: String(depth),
-                text: `深さ${depth}（P${stats.packageCount} / R${stats.relationCount}）`,
-            });
+            options.push({value: String(depth), text: `深さ${depth}`});
         }
         return options;
     }
@@ -1142,8 +1061,6 @@ const PackageApp = (() => {
         parsePackageRelationData,
         getGlossaryTitle,
         getMaxPackageDepth,
-        buildAggregationStats,
-        buildAggregationStatsForFilters,
         normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,

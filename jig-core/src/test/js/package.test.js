@@ -136,84 +136,21 @@ test.describe('package.js', () => {
             });
 
             test('getMaxPackageDepth: 最大深さを返す', () => {
-                const doc = setupDocument();
-                setPackageData({
+                setupDocument();
+                globalThis.packageData = {
                     packages: [
                         {fqn: 'app.domain.a'},
                         {fqn: 'app.b'},
                         {fqn: 'app.domain.core.c'},
                     ],
                     relations: [],
-                }, testContext);
+                };
 
-                assert.equal(PackageApp.getMaxPackageDepth(testContext), 4);
+                assert.equal(PackageApp.getMaxPackageDepth(), 4);
             });
         });
     });
 
-    test.describe('集計', () => {
-        test.describe('ロジック', () => {
-            test('buildAggregationStatsForFilters: directモードの複合集計を行う', () => {
-                const packages = [
-                    {fqn: 'app.domain.a'},
-                    {fqn: 'app.domain.b'},
-                    {fqn: 'app.domain.c'},
-                    {fqn: 'app.other.d'},
-                ];
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.domain.c'},
-                    {from: 'app.domain.c', to: 'app.other.d'},
-                    {from: 'app.other.d', to: 'app.domain.a'},
-                ];
-
-                const stats = PackageApp.buildAggregationStatsForFilters(
-                    packages,
-                    relations,
-                    ['app.domain'],
-                    'app.domain.a',
-                    0,
-                    0,
-                    '1', // relatedCallerFilterMode: direct
-                    '1'  // relatedCalleeFilterMode: direct
-                );
-                const depth0 = stats.get(0);
-
-                assert.equal(depth0.packageCount, 2);
-                assert.equal(depth0.relationCount, 1);
-            });
-
-            test('buildAggregationStatsForFilters: allモードの複合集計を行う', () => {
-                const packages = [
-                    {fqn: 'app.domain.a'},
-                    {fqn: 'app.domain.b'},
-                    {fqn: 'app.domain.c'},
-                    {fqn: 'app.other.d'},
-                ];
-                const relations = [
-                    {from: 'app.domain.a', to: 'app.domain.b'},
-                    {from: 'app.domain.b', to: 'app.domain.c'},
-                    {from: 'app.domain.c', to: 'app.other.d'},
-                    {from: 'app.other.d', to: 'app.domain.a'},
-                ];
-
-                const stats = PackageApp.buildAggregationStatsForFilters(
-                    packages,
-                    relations,
-                    ['app.domain'],
-                    'app.domain.a',
-                    0,
-                    0,
-                    '-1', // focusCallerMode
-                    '-1'  // focusCalleeMode
-                );
-                const depth0 = stats.get(0);
-
-                assert.equal(depth0.packageCount, 3);
-                assert.equal(depth0.relationCount, 2);
-            });
-        });
-    });
 
     test.describe('フィルタ', () => {
         test.describe('ロジック', () => {
@@ -787,17 +724,12 @@ test.describe('package.js', () => {
             });
 
             test('buildAggregationDepthOptions: 集約オプションを組み立てる', () => {
-                const stats = new Map([
-                    [0, {packageCount: 2, relationCount: 1}],
-                    [1, {packageCount: 1, relationCount: 1}],
-                    [2, {packageCount: 1, relationCount: 0}],
-                ]);
-
-                const options = PackageApp.buildAggregationDepthOptions(stats, 2);
+                const options = PackageApp.buildAggregationDepthOptions(2);
 
                 assert.deepEqual(options, [
-                    {value: '0', text: '集約なし（P2 / R1）'},
-                    {value: '1', text: '深さ1（P1 / R1）'},
+                    {value: '0', text: '集約なし'},
+                    {value: '1', text: '深さ1'},
+                    {value: '2', text: '深さ2'},
                 ]);
             });
 

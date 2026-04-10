@@ -73,6 +73,34 @@ const PackageApp = (() => {
         return data.packages.reduce((max, item) => Math.max(max, Jig.util.getPackageDepth(item.fqn)), 0);
     }
 
+    function aggregatePackageData(packages, relations, depth) {
+        if (!depth || depth <= 0) return {packages, relations};
+
+        const packageMap = new Map();
+        packages.forEach(pkg => {
+            const aggFqn = Jig.util.getAggregatedFqn(pkg.fqn, depth);
+            if (!packageMap.has(aggFqn)) {
+                packageMap.set(aggFqn, {fqn: aggFqn, classCount: 0});
+            }
+            packageMap.get(aggFqn).classCount += (pkg.classCount ?? 0);
+        });
+
+        const relationKeys = new Set();
+        const aggregatedRelations = [];
+        relations.forEach(rel => {
+            const from = Jig.util.getAggregatedFqn(rel.from, depth);
+            const to = Jig.util.getAggregatedFqn(rel.to, depth);
+            if (from === to) return;
+            const key = `${from}::${to}`;
+            if (!relationKeys.has(key)) {
+                relationKeys.add(key);
+                aggregatedRelations.push({from, to});
+            }
+        });
+
+        return {packages: Array.from(packageMap.values()), relations: aggregatedRelations};
+    }
+
     // フィルタ/正規化
     function normalizePackageFilterValue(value) {
         const trimmed = (value ?? '').trim();
@@ -369,18 +397,36 @@ const PackageApp = (() => {
     }
 
     function renderPackageTable(context) {
+        const tbody = dom.getPackageTableBody();
+        if (!tbody) return;
+
         const {packages, relations} = getPackageRelationData(context);
-        const rows = buildPackageTableRowData(packages, relations);
+        const aggregated = aggregatePackageData(packages, relations, context.aggregationDepth);
+
+        const filteredPackages = context.packageFilterFqn.length > 0
+            ? aggregated.packages.filter(pkg => Jig.util.isWithinPackageFilters(pkg.fqn, context.packageFilterFqn))
+            : aggregated.packages;
+        const filteredRelations = context.packageFilterFqn.length > 0
+            ? aggregated.relations.filter(r =>
+                Jig.util.isWithinPackageFilters(r.from, context.packageFilterFqn) &&
+                Jig.util.isWithinPackageFilters(r.to, context.packageFilterFqn))
+            : aggregated.relations;
+
+        let focusSet = null;
+        if (context.focusedPackageFqn) {
+            const aggregatedRoot = Jig.util.getAggregatedFqn(context.focusedPackageFqn, context.aggregationDepth);
+            focusSet = collectFocusSet(aggregatedRoot, filteredRelations, 0, context.focusCallerMode, context.focusCalleeMode);
+        }
+
+        const rows = buildPackageTableRowData(filteredPackages, filteredRelations);
         const rowSpecs = buildPackageTableRowSpecs(rows);
 
-        const tbody = dom.getPackageTableBody();
+        tbody.innerHTML = '';
 
         const input = dom.getPackageFilterInput();
         const applyFilter = fqn => {
-            if (input) {
-                input.value = fqn;
-            }
-            context.packageFilterFqn = normalizePackageFilterValue(input.value);
+            if (input) input.value = fqn;
+            context.packageFilterFqn = normalizePackageFilterValue(input?.value);
             renderDiagramAndTable(context);
             renderFocusLabel(context);
         };
@@ -390,6 +436,9 @@ const PackageApp = (() => {
 
         rowSpecs.forEach(spec => {
             const tr = buildPackageTableRowElement(spec, applyFilter, applyFocusForRow);
+            if (focusSet !== null && !focusSet.has(spec.fqn)) {
+                tr.classList.add('hidden');
+            }
             tbody.appendChild(tr);
         });
     }
@@ -844,7 +893,7 @@ const PackageApp = (() => {
 
     function renderDiagramAndTable(context) {
         renderPackageDiagram(context, context.packageFilterFqn, context.focusedPackageFqn);
-        filterFocusTableRows(context.focusedPackageFqn, context);
+        renderPackageTable(context);
         renderAggregationDepthSelectOptions(getMaxPackageDepth(), context);
     }
 
@@ -1034,7 +1083,6 @@ const PackageApp = (() => {
     function init() {
         if (typeof document === 'undefined' || !document.body.classList.contains("package-relation")) return;
         Jig.dom.setupSortableTables();
-        renderPackageTable(state);
         setupPackageFilterControl(state);
         const {domainPackageRoots} = getPackageRelationData(state);
         state.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
@@ -1061,6 +1109,7 @@ const PackageApp = (() => {
         parsePackageRelationData,
         getGlossaryTitle,
         getMaxPackageDepth,
+        aggregatePackageData,
         normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,

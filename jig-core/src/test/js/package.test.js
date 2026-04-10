@@ -615,6 +615,36 @@ test.describe('package.js', () => {
                 assert.equal(specs.focus.ariaLabel, 'フォーカス');
                 assert.equal(specs.focus.screenReaderText, 'フォーカス');
             });
+
+            test('aggregatePackageData: depth=0はそのまま返す', () => {
+                const packages = [{fqn: 'app.domain.a', classCount: 1}];
+                const relations = [{from: 'app.domain.a', to: 'app.other.b'}];
+                const result = PackageApp.aggregatePackageData(packages, relations, 0);
+                assert.equal(result.packages, packages);
+                assert.equal(result.relations, relations);
+            });
+
+            test('aggregatePackageData: depth指定でパッケージと関連を集約する', () => {
+                const packages = [
+                    {fqn: 'app.domain.a', classCount: 2},
+                    {fqn: 'app.domain.b', classCount: 3},
+                    {fqn: 'app.other.c', classCount: 1},
+                ];
+                const relations = [
+                    {from: 'app.domain.a', to: 'app.other.c'},
+                    {from: 'app.domain.b', to: 'app.other.c'}, // 集約後は重複
+                    {from: 'app.domain.a', to: 'app.domain.b'}, // 集約後は自己ループ→除外
+                ];
+
+                const result = PackageApp.aggregatePackageData(packages, relations, 2);
+
+                assert.equal(result.packages.length, 2);
+                const domain = result.packages.find(p => p.fqn === 'app.domain');
+                assert.equal(domain.classCount, 5);
+                assert.equal(result.relations.length, 1);
+                assert.equal(result.relations[0].from, 'app.domain');
+                assert.equal(result.relations[0].to, 'app.other');
+            });
         });
 
         test.describe('UI', () => {
@@ -645,6 +675,33 @@ test.describe('package.js', () => {
                 assert.equal(tbody.children[0].children[6].textContent, '0');
                 assert.equal(tbody.children[0].children[7].textContent, '2');
                 delete globalThis.glossaryData;
+            });
+
+            test('renderPackageTable: aggregationDepthに従って集約して描画する', () => {
+                const doc = setupDocument();
+                setPackageData({
+                    packages: [
+                        {fqn: 'app.domain.a', classCount: 2},
+                        {fqn: 'app.domain.b', classCount: 3},
+                        {fqn: 'app.other.c', classCount: 1},
+                    ],
+                    relations: [
+                        {from: 'app.domain.a', to: 'app.other.c'},
+                        {from: 'app.domain.b', to: 'app.other.c'},
+                    ],
+                }, testContext);
+                testContext.aggregationDepth = 2;
+                const tbody = new Element('tbody', doc);
+                doc.selectors.set('#package-table tbody', tbody);
+
+                PackageApp.renderPackageTable(testContext);
+
+                assert.equal(tbody.children.length, 2);
+                const fqns = tbody.children.map(tr => tr.querySelector('td.fqn').textContent);
+                assert.ok(fqns.includes('app.domain'));
+                assert.ok(fqns.includes('app.other'));
+                const domainRow = tbody.children.find(tr => tr.querySelector('td.fqn').textContent === 'app.domain');
+                assert.equal(domainRow.children[5].textContent, '5'); // classCount合計
             });
         });
     });

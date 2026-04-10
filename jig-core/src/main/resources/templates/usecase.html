@@ -20,21 +20,20 @@
             </summary>
             <div class="sidebar-settings-panel">
                 <fieldset>
-                    <legend>表示対象</legend>
                     <label><input type="radio" name="display-target" id="display-target-all" value="all" checked> すべて</label>
                     <label><input type="radio" name="display-target" id="display-target-handlers-only" value="handlers-only"> ハンドラのみ</label>
                 </fieldset>
                 <fieldset>
-                    <legend>表示内容</legend>
+                    <legend>表示項目</legend>
                     <label><input type="checkbox" id="show-declarations" checked> 定義名</label>
                     <label><input type="checkbox" id="show-descriptions" checked> 説明</label>
+                    <label><input type="checkbox" id="show-fields"> フィールド</label>
+                    <label><input type="checkbox" id="show-static-methods"> staticメソッド</label>
+                    <label><input type="checkbox" id="show-diagrams" checked> ダイアグラム</label>
                     <label><input type="checkbox" id="show-details" checked> 入力・出力</label>
-                    <label><input type="checkbox" id="show-fields" checked> フィールド</label>
-                    <label><input type="checkbox" id="show-static-methods" checked> staticメソッド</label>
                 </fieldset>
                 <fieldset>
-                    <legend>ダイアグラム</legend>
-                    <label><input type="checkbox" id="show-diagrams" checked> ダイアグラムを表示</label>
+                    <legend>個別ダイアグラムの表示対象</legend>
                     <label><input type="checkbox" id="show-diagram-internal-methods" checked> 内部メソッド</label>
                     <label><input type="checkbox" id="show-diagram-outbound-ports" checked> 出力インタフェース</label>
                     <label><input type="checkbox" id="show-diagram-domain-types"> ドメインモデル</label>

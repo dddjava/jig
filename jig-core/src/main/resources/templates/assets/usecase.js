@@ -218,14 +218,13 @@ const UsecaseApp = (() => {
                     }
                 } else if (diagramContext.outboundOperationSet.has(calleeFqn)) {
                     if (!diagramContext.showDiagramOutboundPorts) continue;
-                    const classFqn = getClassFqnFromMethodFqn(calleeFqn);
-                    const edgeKey = effectiveCallerFqn + '\u2192' + classFqn;
+                    const edgeKey = effectiveCallerFqn + '\u2192' + calleeFqn;
                     if (!edgeSet.has(edgeKey)) {
                         edgeSet.add(edgeKey);
-                        edges.push({from: effectiveCallerFqn, to: classFqn});
+                        edges.push({from: effectiveCallerFqn, to: calleeFqn});
                     }
-                    if (!nodes.has(classFqn)) {
-                        nodes.set(classFqn, {fqn: classFqn, kind: "outbound"});
+                    if (!nodes.has(calleeFqn)) {
+                        nodes.set(calleeFqn, {fqn: calleeFqn, kind: "outbound-method"});
                     }
                 }
             }
@@ -793,17 +792,18 @@ const UsecaseApp = (() => {
                                     builder.addClass(nodeId, "inbound");
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);
                                     builder.addClick(nodeId, "./inbound.html#" + Jig.util.fqnToId("adapter", classFqn));
-                                } else if (node.kind === "outbound" || node.kind === "domain-type") {
-                                    // 外部ポート / ドメインモデル
+                                } else if (node.kind === "outbound-method") {
+                                    // outboundメソッド: メソッド名で表示
+                                    const nodeLabel = Jig.glossary.getMethodTerm(node.fqn, true).title;
+                                    builder.addNode(nodeId, nodeLabel, 'method');
+                                    builder.addClass(nodeId, "outbound");
+                                    const classFqn = getClassFqnFromMethodFqn(node.fqn);
+                                    builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", classFqn));
+                                } else if (node.kind === "domain-type") {
                                     const nodeLabel = Jig.glossary.getTypeTerm(node.fqn).title;
                                     builder.addNode(nodeId, nodeLabel, 'class');
-                                    if (node.kind === "outbound") {
-                                        builder.addClass(nodeId, "outbound");
-                                        builder.addClick(nodeId, "./outbound.html#" + Jig.util.fqnToId("port", node.fqn));
-                                    } else if (node.kind === "domain-type") {
-                                        builder.addClass(nodeId, "domain");
-                                        builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
-                                    }
+                                    builder.addClass(nodeId, "domain");
+                                    builder.addClick(nodeId, "./domain.html#" + Jig.util.fqnToId("domain", node.fqn));
                                 } else {
                                     // usecase / method / static-method: クラス単位でsubgraphにグルーピング
                                     const classFqn = getClassFqnFromMethodFqn(node.fqn);

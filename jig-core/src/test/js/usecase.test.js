@@ -1258,7 +1258,7 @@ test.describe('usecase.js', () => {
             assert.equal(result.edges.length, 0);
         });
 
-        test('outboundOperationSetに含まれる外部呼び出しはクラスノードとしてexternal:trueで追加される', () => {
+        test('outboundOperationSetに含まれる外部呼び出しはメソッドノードとして追加される', () => {
             const rootMethod = {
                 fqn: 'com.example.ServiceA#method1()',
                 callMethods: ['com.example.RepositoryB#save()']
@@ -1275,10 +1275,10 @@ test.describe('usecase.js', () => {
 
             assert.equal(result.nodes.length, 2);
             assert.equal(result.edges.length, 1);
-            const externalNode = result.nodes.find(n => n.fqn === 'com.example.RepositoryB');
+            const externalNode = result.nodes.find(n => n.fqn === 'com.example.RepositoryB#save()');
             assert.ok(externalNode);
-            assert.equal(externalNode.kind, 'outbound');
-            assert.equal(result.edges[0].to, 'com.example.RepositoryB');
+            assert.equal(externalNode.kind, 'outbound-method');
+            assert.equal(result.edges[0].to, 'com.example.RepositoryB#save()');
         });
 
         test('outboundOperationSetに含まれない外部呼び出しは追加されない', () => {
@@ -1298,8 +1298,8 @@ test.describe('usecase.js', () => {
 
             assert.equal(result.nodes.length, 2);
             const nodes = result.nodes.map(n => n.fqn);
-            assert.ok(nodes.includes('com.example.RepositoryB'));
-            assert.ok(!nodes.includes('com.example.OtherService'));
+            assert.ok(nodes.includes('com.example.RepositoryB#save()'));
+            assert.ok(!nodes.includes('com.example.OtherService#doWork()'));
         });
 
         test('内部ノードはexternal:falseで追加される', () => {
@@ -1366,10 +1366,10 @@ test.describe('usecase.js', () => {
             });
 
             assert.equal(result.nodes.length, 2);
-            assert.ok(result.nodes.find(n => n.fqn === 'ext'));
+            assert.ok(result.nodes.find(n => n.fqn === 'ext#method()'));
             assert.equal(result.edges.length, 1);
             assert.equal(result.edges[0].from, 'A');
-            assert.equal(result.edges[0].to, 'ext');
+            assert.equal(result.edges[0].to, 'ext#method()');
         });
 
         test('showDiagramInternalMethodsがfalseの場合、非ユースケースメソッドの循環参照があっても無限ループしない', () => {
@@ -1516,9 +1516,9 @@ test.describe('usecase.js', () => {
             });
 
             assert.ok(result.nodes.find(n => n.fqn === 'pkg.Cls#B()'));
-            assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo'));
+            assert.ok(result.nodes.find(n => n.fqn === 'ext.Repo#save()'));
             assert.ok(result.edges.find(e => e.from === 'pkg.Cls#B()' && e.to === 'pkg.Cls#A()'));
-            assert.ok(result.edges.find(e => e.from === 'pkg.Cls#A()' && e.to === 'ext.Repo'));
+            assert.ok(result.edges.find(e => e.from === 'pkg.Cls#A()' && e.to === 'ext.Repo#save()'));
         });
 
         test('showDiagramInternalMethods=falseで複数経路から同一ユースケース呼び出し元に到達しても重複しない', () => {

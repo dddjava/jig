@@ -101,6 +101,16 @@ const PackageApp = (() => {
         return {packages: Array.from(packageMap.values()), relations: aggregatedRelations};
     }
 
+    function filterByPackageFilter(packages, relations, packageFilterFqn) {
+        if (packageFilterFqn.length === 0) return {packages, relations};
+        return {
+            packages: packages.filter(pkg => Jig.util.isWithinPackageFilters(pkg.fqn, packageFilterFqn)),
+            relations: relations.filter(r =>
+                Jig.util.isWithinPackageFilters(r.from, packageFilterFqn) &&
+                Jig.util.isWithinPackageFilters(r.to, packageFilterFqn)),
+        };
+    }
+
     // フィルタ/正規化
     function normalizePackageFilterValue(value) {
         const trimmed = (value ?? '').trim();
@@ -135,11 +145,7 @@ const PackageApp = (() => {
             return rowFqns.map(rowFqn => Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn));
         }
 
-        const filteredRelations = packageFilterFqn.length > 0
-            ? relations.filter(relation =>
-                Jig.util.isWithinPackageFilters(relation.from, packageFilterFqn) && Jig.util.isWithinPackageFilters(relation.to, packageFilterFqn)
-            )
-            : relations;
+        const {relations: filteredRelations} = filterByPackageFilter([], relations, packageFilterFqn);
         const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
         const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
         return rowFqns.map(rowFqn => {
@@ -403,14 +409,8 @@ const PackageApp = (() => {
         const {packages, relations} = getPackageRelationData(context);
         const aggregated = aggregatePackageData(packages, relations, context.aggregationDepth);
 
-        const filteredPackages = context.packageFilterFqn.length > 0
-            ? aggregated.packages.filter(pkg => Jig.util.isWithinPackageFilters(pkg.fqn, context.packageFilterFqn))
-            : aggregated.packages;
-        const filteredRelations = context.packageFilterFqn.length > 0
-            ? aggregated.relations.filter(r =>
-                Jig.util.isWithinPackageFilters(r.from, context.packageFilterFqn) &&
-                Jig.util.isWithinPackageFilters(r.to, context.packageFilterFqn))
-            : aggregated.relations;
+        const {packages: filteredPackages, relations: filteredRelations} =
+            filterByPackageFilter(aggregated.packages, aggregated.relations, context.packageFilterFqn);
 
         let focusSet = null;
         if (context.focusedPackageFqn) {
@@ -426,7 +426,7 @@ const PackageApp = (() => {
         const input = dom.getPackageFilterInput();
         const applyFilter = fqn => {
             if (input) input.value = fqn;
-            context.packageFilterFqn = normalizePackageFilterValue(input?.value);
+            context.packageFilterFqn = normalizePackageFilterValue(fqn);
             renderDiagramAndTable(context);
             renderFocusLabel(context);
         };
@@ -1110,6 +1110,7 @@ const PackageApp = (() => {
         getGlossaryTitle,
         getMaxPackageDepth,
         aggregatePackageData,
+        filterByPackageFilter,
         normalizePackageFilterValue,
         normalizeAggregationDepthValue,
         findDefaultPackageFilterCandidate,

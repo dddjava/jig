@@ -813,42 +813,15 @@ test.describe('package.js', () => {
                 assert.equal(container.children.length, 1);
                 const details = container.children[0];
                 assert.equal(details.tagName, 'details');
-                // summary, settingsRow(div), list(ul)
+                // summary, list(ul)
                 assert.equal(details.children[0].tagName, 'summary');
-                assert.equal(details.children[1].className, 'control-row');
-                assert.equal(details.children[2].tagName, 'ul');
+                assert.equal(details.children[1].tagName, 'ul');
 
-                const li = details.children[2].children[0];
+                const li = details.children[1].children[0];
                 assert.equal(li.children[0].className, 'pair');
                 assert.equal(li.children[1].className, 'causes');
                 assert.equal(li.children[2].className, 'diagram-button');
                 assert.equal(li.children[3].className, 'mermaid mutual-dependency-diagram');
-            });
-
-            test('renderMutualDependencyList: 図の向きを変更するとcontextが更新される', () => {
-                const doc = setupDocument();
-                const container = new Element('div', doc);
-                doc.elementsById.set('mutual-dependency-list', container);
-
-                PackageApp.renderMutualDependencyList(
-                    new Set(['a::b']),
-                    [{from: 'a.A', to: 'b.B'}, {from: 'b.B', to: 'a.A'}],
-                    0,
-                    testContext
-                );
-
-                const details = container.children[0];
-                const settingsRow = details.children[1];
-                const tdRadio = settingsRow.children[1].children[0]; // 縦 TB
-                const lrRadio = settingsRow.children[2].children[0]; // 横 LR
-
-                assert.equal(testContext.mutualDependencyDiagramDirection, 'LR');
-                assert.equal(lrRadio.checked, true);
-
-                tdRadio.checked = true;
-                tdRadio.dispatchEvent({type: 'change'});
-
-                assert.equal(testContext.mutualDependencyDiagramDirection, 'TB');
             });
 
             test('renderMutualDependencyDiagram: 描画後にボタンを非表示にする', () => {
@@ -914,15 +887,6 @@ test.describe('package.js', () => {
 
             test('setupTransitiveReductionControl: UIをセットアップする', () => {
                 const doc = setupDocument();
-                const container = doc.createElement('div');
-                const pp = doc.createElement('div');
-                const input = doc.createElement('input');
-                input.name = 'diagram-direction';
-                pp.appendChild(input);
-                container.appendChild(pp);
-                doc.selectors.set('input[name="diagram-direction"]', input);
-                input.parentNode = pp;
-                pp.parentNode = container;
 
                 // renderDiagramAndTableの副作用をチェックするための準備
                 setupDiagramEnvironment(doc, testContext);

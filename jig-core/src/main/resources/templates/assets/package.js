@@ -37,8 +37,6 @@ const PackageApp = (() => {
         getFocusCallerModeSelect: () => document.getElementById('focus-caller-mode-select'),
         getFocusCalleeModeSelect: () => document.getElementById('focus-callee-mode-select'),
         getClearFocusButton: () => document.getElementById('clear-focus'),
-        getDiagramDirectionRadios: () => document.querySelectorAll('input[name="diagram-direction"]'),
-        getDiagramDirectionRadio: () => document.querySelector('input[name="diagram-direction"]'),
         getTransitiveReductionToggle: () => document.getElementById('transitive-reduction-toggle'),
         getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
         getDiagram: () => document.getElementById('package-relation-diagram'),
@@ -539,42 +537,6 @@ const PackageApp = (() => {
         summary.textContent = '相互依存と原因';
         const list = document.createElement('ul');
 
-        const settingsRow = document.createElement('div');
-        settingsRow.className = 'control-row';
-        const settingsLabel = document.createElement('span');
-        settingsLabel.className = 'control-label';
-        settingsLabel.textContent = '図の向き:';
-        settingsRow.appendChild(settingsLabel);
-
-        ['TB', 'LR'].forEach(direction => {
-            const label = document.createElement('label');
-            label.className = 'radio-label';
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = 'mutual-dependency-diagram-direction';
-            radio.value = direction;
-            radio.checked = context.mutualDependencyDiagramDirection === direction;
-            radio.addEventListener('change', () => {
-                if (radio.checked) {
-                    context.mutualDependencyDiagramDirection = direction;
-                    const itemsWithDiagram = Array.from(list.querySelectorAll('li')).filter(li => {
-                        const diag = li.querySelector('.mutual-dependency-diagram');
-                        return diag && diag.style.display !== 'none';
-                    });
-                    itemsWithDiagram.forEach(li => {
-                        const itemLabel = li.querySelector('.pair span').textContent;
-                        const item = items.find(i => i.pairLabel === itemLabel);
-                        if (item) {
-                            renderMutualDependencyDiagram(item, li, context);
-                        }
-                    });
-                }
-            });
-            label.appendChild(radio);
-            label.appendChild(document.createTextNode(direction === 'TB' ? ' 縦' : ' 横'));
-            settingsRow.appendChild(label);
-        });
-
         const applyFilterAndRender = (fqnsString) => {
             const input = dom.getPackageFilterInput();
             if (input) {
@@ -627,7 +589,6 @@ const PackageApp = (() => {
         });
         container.innerHTML = '';
         details.appendChild(summary);
-        details.appendChild(settingsRow);
         details.appendChild(list);
         container.appendChild(details);
     }
@@ -1056,20 +1017,6 @@ const PackageApp = (() => {
         }
     }
 
-    function setupDiagramDirectionControl(context) {
-        const radios = dom.getDiagramDirectionRadios();
-        radios.forEach(radio => {
-            if (radio.value === context.diagramDirection) {
-                radio.checked = true;
-            }
-            radio.addEventListener('change', () => {
-                if (!radio.checked) return;
-                context.diagramDirection = radio.value;
-                renderDiagramAndTable(context);
-            });
-        });
-    }
-
     function setupTransitiveReductionControl(context) {
         const checkbox = dom.getTransitiveReductionToggle();
         if (!checkbox) return;
@@ -1088,7 +1035,6 @@ const PackageApp = (() => {
         state.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
         setupAggregationDepthControl(state);
         setupFocusControl(state);
-        setupDiagramDirectionControl(state);
         setupTransitiveReductionControl(state);
         registerDiagramClickHandler(state);
         const applied = applyDefaultPackageFilterIfPresent(state);
@@ -1142,7 +1088,6 @@ const PackageApp = (() => {
         buildAggregationDepthOptions,
         renderAggregationDepthOptionsIntoSelect,
         setupFocusControl,
-        setupDiagramDirectionControl,
         setupTransitiveReductionControl,
     };
 })();

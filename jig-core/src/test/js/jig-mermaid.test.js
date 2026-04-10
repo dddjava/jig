@@ -531,6 +531,17 @@ test.describe('jig-mermaid.js', () => {
             assert.equal(actions.children[1].textContent, 'テキストで表示');
         });
 
+        test('renderTooLargeDiagramはmessageTextオプションで表示メッセージを変更できる', () => {
+            setupGlobals();
+
+            const diagram = new Element('div');
+            sut.renderTooLargeDiagram(diagram, 'graph TD; A-->B;', {messageText: '関連数が多いため表示を制限しています（エッジ数: 42）'});
+
+            const container = diagram.children[0];
+            const message = container.children[0];
+            assert.equal(message.textContent, '関連数が多いため表示を制限しています（エッジ数: 42）');
+        });
+
         test('flashButtonLabelはラベルを戻す', () => {
             setupGlobals();
 

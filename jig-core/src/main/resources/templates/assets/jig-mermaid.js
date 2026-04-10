@@ -835,7 +835,7 @@ globalThis.Jig.mermaid = (() => {
             }
         }
 
-        function renderTooLargeDiagram(diagram, source) {
+        function renderTooLargeDiagram(diagram, source, {messageText, onRender} = {}) {
             if (!diagram) return;
             diagram.classList.add("too-large");
             diagram.textContent = "";
@@ -845,7 +845,7 @@ globalThis.Jig.mermaid = (() => {
 
             const message = document.createElement("p");
             message.className = "mermaid-too-large__message";
-            message.textContent = "図が大きいため表示を制限しています";
+            message.textContent = messageText ?? "図が大きいため表示を制限しています";
             container.appendChild(message);
 
             const actions = document.createElement("div");
@@ -855,7 +855,11 @@ globalThis.Jig.mermaid = (() => {
             renderButton.type = "button";
             renderButton.textContent = "上限を上げて描画する";
             renderButton.addEventListener("click", () => {
-                renderWithExtendedLimit(diagram, source, renderButton);
+                if (typeof onRender === "function") {
+                    onRender(renderButton);
+                } else {
+                    renderWithExtendedLimit(diagram, source, renderButton);
+                }
             });
             actions.appendChild(renderButton);
 
@@ -1020,6 +1024,7 @@ globalThis.Jig.mermaid = (() => {
             const text = source != null ? String(source) : "";
             diagramEl.removeAttribute("data-processed");
             diagramEl.style.display = "";
+            diagramEl.classList.remove("too-large");
             setEdgeWarning(container, {visible: false});
 
             if (isTooLarge(text)) {
@@ -1040,15 +1045,9 @@ globalThis.Jig.mermaid = (() => {
                         if (message.includes("Edge limit exceeded")) {
                             const edgeCount = estimateEdgeCount(text);
                             const actionEdges = Math.max(edgeCount, DEFAULT_MAX_EDGES * 2);
-                            diagramEl.style.display = "none";
-                            setEdgeWarning(container, {
-                                visible: true,
-                                message: [
-                                    "関連数が多すぎるため描画を省略しました。",
-                                    `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
-                                    "描画する場合はボタンを押してください。"
-                                ].join("\n"),
-                                onAction: () => renderMermaidNode(diagramEl, text, actionEdges, container)
+                            renderTooLargeDiagram(diagramEl, text, {
+                                messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
+                                onRender: () => renderMermaidNode(diagramEl, text, actionEdges, container)
                             });
                         } else {
                             diagramEl.style.display = "none";
@@ -1101,15 +1100,10 @@ globalThis.Jig.mermaid = (() => {
 
                 const edgeCount = estimateEdgeCount(currentSource);
                 if (edgeCount > DEFAULT_MAX_EDGES) {
-                    diagramEl.style.display = "none";
-                    setEdgeWarning(container, {
-                        visible: true,
-                        message: [
-                            "関連数が多すぎるため描画を省略しました。",
-                            `エッジ数: ${edgeCount}（上限: ${DEFAULT_MAX_EDGES}）`,
-                            "描画する場合はボタンを押してください。"
-                        ].join("\n"),
-                        onAction: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
+                    setEdgeWarning(container, {visible: false});
+                    renderTooLargeDiagram(diagramEl, currentSource, {
+                        messageText: `関連数が多いため表示を制限しています（エッジ数: ${edgeCount}）`,
+                        onRender: () => renderMermaidNode(diagramEl, currentSource, edgeCount, container)
                     });
                     return;
                 }

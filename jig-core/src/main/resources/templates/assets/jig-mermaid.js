@@ -867,8 +867,10 @@ globalThis.Jig.mermaid = (() => {
             textButton.type = "button";
             textButton.textContent = "テキストで表示";
             textButton.addEventListener("click", () => {
-                diagram.classList.remove("too-large");
-                diagram.textContent = source;
+                const pre = document.createElement("pre");
+                pre.textContent = source;
+                diagram.textContent = "";
+                diagram.appendChild(pre);
             });
             actions.appendChild(textButton);
 

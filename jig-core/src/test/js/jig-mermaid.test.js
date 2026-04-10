@@ -520,7 +520,7 @@ test.describe('jig-mermaid.js', () => {
             const message = container.children[0];
             assert.equal(message.tagName, 'p');
             assert.equal(message.className, 'mermaid-too-large__message');
-            assert.equal(message.textContent, '図の内容が大きすぎるため描画を省略しました。');
+            assert.equal(message.textContent, '図が大きいため表示を制限しています');
 
             const actions = container.children[1];
             assert.equal(actions.className, 'mermaid-too-large__actions');
@@ -528,7 +528,7 @@ test.describe('jig-mermaid.js', () => {
             assert.equal(actions.children[0].tagName, 'button');
             assert.equal(actions.children[0].textContent, '上限を上げて描画する');
             assert.equal(actions.children[1].tagName, 'button');
-            assert.equal(actions.children[1].textContent, '図の内容をコピー');
+            assert.equal(actions.children[1].textContent, 'テキストで表示');
         });
 
         test('flashButtonLabelはラベルを戻す', () => {

@@ -845,7 +845,7 @@ globalThis.Jig.mermaid = (() => {
 
             const message = document.createElement("p");
             message.className = "mermaid-too-large__message";
-            message.textContent = "図の内容が大きすぎるため描画を省略しました。";
+            message.textContent = "図が大きいため表示を制限しています";
             container.appendChild(message);
 
             const actions = document.createElement("div");
@@ -859,13 +859,13 @@ globalThis.Jig.mermaid = (() => {
             });
             actions.appendChild(renderButton);
 
-            const copyButton = document.createElement("button");
-            copyButton.type = "button";
-            copyButton.textContent = "図の内容をコピー";
-            copyButton.addEventListener("click", () => {
-                copyMermaidText(source, copyButton);
+            const textButton = document.createElement("button");
+            textButton.type = "button";
+            textButton.textContent = "テキストで表示";
+            textButton.addEventListener("click", () => {
+                diagram.textContent = source;
             });
-            actions.appendChild(copyButton);
+            actions.appendChild(textButton);
 
             container.appendChild(actions);
             diagram.appendChild(container);

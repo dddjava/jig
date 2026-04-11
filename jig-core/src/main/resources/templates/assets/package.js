@@ -16,6 +16,7 @@ const PackageApp = (() => {
 
     const exploreState = {
         exploreTargetPackages: [],   // 指定したパッケージFQN[]（複数可）
+        exploreCollapsedPackages: [], // 折りたたみ中のパッケージFQN[]
         exploreCallerMode: '1',      // '0':なし, '1':直接, '-1':すべて
         exploreCalleeMode: '1',      // '0':なし, '1':直接, '-1':すべて
         diagramNodeIdToFqn: new Map(),
@@ -861,11 +862,16 @@ const PackageApp = (() => {
 
         const fqnSet = new Set(sortedPackages.map(p => p.fqn));
 
+        const collapsedSet = new Set(context.exploreCollapsedPackages ?? []);
+
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
             if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
+            if (collapsedSet.size > 0 && [...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
+                tr.classList.add('hidden-by-collapse');
+            }
 
             tr.addEventListener('click', () => {
                 if (context.exploreTargetPackages.includes(pkg.fqn)) {
@@ -880,11 +886,12 @@ const PackageApp = (() => {
             const toggleTd = document.createElement('td');
             if (hasChildrenSet.has(pkg.fqn)) {
                 const toggleBtn = document.createElement('button');
+                const initiallyCollapsed = collapsedSet.has(pkg.fqn);
                 toggleBtn.type = 'button';
                 toggleBtn.className = 'explore-collapse-toggle';
-                toggleBtn.textContent = '▼';
-                toggleBtn.setAttribute('aria-expanded', 'true');
-                toggleBtn.setAttribute('aria-label', '配下を折りたたむ');
+                toggleBtn.textContent = initiallyCollapsed ? '▶' : '▼';
+                toggleBtn.setAttribute('aria-expanded', String(!initiallyCollapsed));
+                toggleBtn.setAttribute('aria-label', initiallyCollapsed ? '配下を展開' : '配下を折りたたむ');
                 toggleBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
@@ -916,11 +923,18 @@ const PackageApp = (() => {
                         context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqnsToAdd];
                         renderExplorePackageList(context);
                     }
+                    if (collapsing) {
+                        context.exploreCollapsedPackages = [...(context.exploreCollapsedPackages ?? []), pkg.fqn];
+                    } else {
+                        context.exploreCollapsedPackages = (context.exploreCollapsedPackages ?? []).filter(p => p !== pkg.fqn);
+                    }
                     const affectsSelection = context.exploreTargetPackages.some(t =>
                         t === pkg.fqn || t.startsWith(pkg.fqn + '.') || pkg.fqn.startsWith(t + '.')
                     );
                     if (affectsSelection) {
                         renderExploreDiagram(context);
+                    } else {
+                        syncStateToURL();
                     }
                 });
                 toggleTd.appendChild(toggleBtn);
@@ -1218,6 +1232,7 @@ const PackageApp = (() => {
         if (activeTab === TAB.EXPLORE) {
             params.set('tab', TAB.EXPLORE);
             exploreState.exploreTargetPackages.forEach(p => params.append('target', p));
+            exploreState.exploreCollapsedPackages.forEach(p => params.append('collapsed', p));
             if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
             if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
         } else {
@@ -1249,6 +1264,9 @@ const PackageApp = (() => {
 
         const targets = params.getAll('target');
         if (targets.length > 0) exploreState.exploreTargetPackages = targets;
+
+        const collapsed = params.getAll('collapsed');
+        if (collapsed.length > 0) exploreState.exploreCollapsedPackages = collapsed;
 
         const caller = params.get('caller');
         if (caller) exploreState.exploreCallerMode = caller;

@@ -39,6 +39,7 @@ const PackageApp = (() => {
         getDiagram: () => document.getElementById('package-relation-diagram'),
         getExploreDiagram: () => document.getElementById('package-explore-diagram'),
         getExplorePackageList: () => document.getElementById('explore-package-list'),
+        getExploreListFilter: () => document.getElementById('explore-list-filter'),
         getExploreCallerModeSelect: () => document.getElementById('explore-caller-mode-select'),
         getExploreCalleeModeSelect: () => document.getElementById('explore-callee-mode-select'),
         getDocumentBody: () => document.body,
@@ -832,6 +833,19 @@ const PackageApp = (() => {
         table.appendChild(tbody);
         container.appendChild(table);
         Jig.dom.setupSortableTables();
+
+        const filterInput = dom.getExploreListFilter();
+        if (filterInput) {
+            filterInput.addEventListener('input', () => {
+                const filterText = filterInput.value.toLowerCase();
+                tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
+                    const matches = !filterText
+                        || tr.dataset.fqn.toLowerCase().includes(filterText)
+                        || tr.cells[1]?.textContent.toLowerCase().includes(filterText);
+                    tr.classList.toggle('hidden', !matches);
+                });
+            });
+        }
     }
 
     // UI配線

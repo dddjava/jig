@@ -1221,8 +1221,16 @@ label {
     max-width: 60ch;
 }
 
+.package-relation .explore-list-filter-row {
+    margin-top: 12px;
+}
+
+.package-relation .explore-list-filter-row input[type="text"] {
+    min-width: 30ch;
+}
+
 .package-relation #explore-package-list {
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 .package-relation .explore-package-table {

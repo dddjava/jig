@@ -791,11 +791,24 @@ const PackageApp = (() => {
         const {packages} = getPackageRelationData(hierarchyState);
         const sortedPackages = [...packages].sort((a, b) => a.fqn.localeCompare(b.fqn));
 
+        // ソート済みなので隣接する次のパッケージとのFQN前方一致で O(n) 判定
+        const hasChildrenSet = new Set();
+        for (let i = 0; i < sortedPackages.length - 1; i++) {
+            if (sortedPackages[i + 1].fqn.startsWith(sortedPackages[i].fqn + '.')) {
+                hasChildrenSet.add(sortedPackages[i].fqn);
+            }
+        }
+
+        const minDepth = sortedPackages.reduce((min, p) => Math.min(min, Jig.util.getPackageDepth(p.fqn)), Infinity);
+
         const table = document.createElement('table');
         table.className = 'explore-package-table sortable';
 
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
+        const toggleTh = document.createElement('th');
+        toggleTh.className = 'no-sort';
+        headerRow.appendChild(toggleTh);
         ['完全修飾名', '名称'].forEach(text => {
             const th = document.createElement('th');
             th.textContent = text;
@@ -806,6 +819,7 @@ const PackageApp = (() => {
 
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
+            const depth = Jig.util.getPackageDepth(pkg.fqn) - minDepth;
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
             if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
@@ -820,9 +834,34 @@ const PackageApp = (() => {
                 renderExploreDiagram(context);
             });
 
+            const toggleTd = document.createElement('td');
+            if (hasChildrenSet.has(pkg.fqn)) {
+                const toggleBtn = document.createElement('button');
+                toggleBtn.type = 'button';
+                toggleBtn.className = 'explore-collapse-toggle';
+                toggleBtn.textContent = '▼';
+                toggleBtn.setAttribute('aria-expanded', 'true');
+                toggleBtn.setAttribute('aria-label', '配下を折りたたむ');
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const collapsing = toggleBtn.getAttribute('aria-expanded') === 'true';
+                    toggleBtn.setAttribute('aria-expanded', String(!collapsing));
+                    toggleBtn.textContent = collapsing ? '▶' : '▼';
+                    toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
+                    tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                        if (childTr.dataset.fqn.startsWith(pkg.fqn + '.')) {
+                            childTr.classList.toggle('hidden-by-collapse', collapsing);
+                        }
+                    });
+                });
+                toggleTd.appendChild(toggleBtn);
+            }
+            tr.appendChild(toggleTd);
+
             const fqnTd = document.createElement('td');
             fqnTd.textContent = pkg.fqn;
             fqnTd.className = 'fqn';
+            fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
             tr.appendChild(fqnTd);
 
             const nameTd = document.createElement('td');
@@ -842,7 +881,7 @@ const PackageApp = (() => {
                 tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
                     const matches = !filterText
                         || tr.dataset.fqn.toLowerCase().includes(filterText)
-                        || tr.cells[1]?.textContent.toLowerCase().includes(filterText);
+                        || tr.cells[2]?.textContent.toLowerCase().includes(filterText);
                     tr.classList.toggle('hidden', !matches);
                 });
             });

@@ -1250,6 +1250,24 @@ label {
     background-color: #ffffce;
 }
 
+.package-relation .explore-package-table tbody tr.hidden-by-collapse {
+    display: none;
+}
+
+.package-relation .explore-collapse-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 0.75em;
+    color: #666;
+    line-height: 1;
+}
+
+.package-relation .explore-collapse-toggle:hover {
+    color: #000;
+}
+
 .package-relation #package-explore-diagram {
     display: flex;
     justify-content: center;

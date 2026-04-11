@@ -812,6 +812,16 @@ globalThis.Jig.mermaid = (() => {
         }
     })();
 
+    function renderMermaidDiagram(diagram) {
+        const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+        if (typeof renderResult.catch === 'function') {
+            renderResult.catch(error => {
+                console.error('Mermaid rendering error:', error);
+            });
+        }
+        return renderResult;
+    }
+
     const render = (() => {
         const DEFAULT_MAX_TEXT_SIZE = 50000;
         const EXTENDED_MAX_TEXT_SIZE = 200000;
@@ -899,7 +909,7 @@ globalThis.Jig.mermaid = (() => {
             diagram.classList.remove("too-large");
             diagram.innerHTML = source;
 
-            const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+            const renderResult = renderMermaidDiagram(diagram);
             if (renderResult && typeof renderResult.catch === "function") {
                 renderResult.catch(() => {
                     flashButtonLabel(button, "描画に失敗しました");
@@ -1114,7 +1124,7 @@ globalThis.Jig.mermaid = (() => {
             }
 
             try {
-                const result = globalThis.mermaid.run({nodes: [diagramEl]});
+                const result = renderMermaidDiagram(diagramEl);
                 if (result && typeof result.catch === "function") {
                     result.catch((err) => {
                         const message = err && err.message ? err.message : String(err);
@@ -1243,7 +1253,7 @@ globalThis.Jig.mermaid = (() => {
                 }
 
                 diagram.innerHTML = source;
-                const renderResult = globalThis.mermaid.run({nodes: [diagram]});
+                const renderResult = renderMermaidDiagram(diagram);
                 const handleFinish = () => {
                     rendered.add(diagram);
                     queued.delete(diagram);

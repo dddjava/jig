@@ -892,18 +892,28 @@ const PackageApp = (() => {
                     toggleBtn.textContent = collapsing ? '▶' : '▼';
                     toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
                     const selectedSet = new Set(context.exploreTargetPackages);
-                    const childFqns = [];
+                    const childPrefix = pkg.fqn + '.';
+                    const childFqnsToAdd = [];
                     tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
                         const childFqn = childTr.dataset.fqn;
-                        if (childFqn.startsWith(pkg.fqn + '.')) {
+                        if (childFqn.startsWith(childPrefix)) {
                             childTr.classList.toggle('hidden-by-collapse', collapsing);
                             if (!collapsing && selectedSet.has(pkg.fqn) && !selectedSet.has(childFqn)) {
-                                childFqns.push(childFqn);
+                                childFqnsToAdd.push(childFqn);
                             }
                         }
                     });
-                    if (childFqns.length > 0) {
-                        context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqns];
+                    if (collapsing) {
+                        const childrenSelected = context.exploreTargetPackages.some(t => t.startsWith(childPrefix));
+                        if (childrenSelected) {
+                            context.exploreTargetPackages = [
+                                ...context.exploreTargetPackages.filter(t => !t.startsWith(childPrefix)),
+                                ...(selectedSet.has(pkg.fqn) ? [] : [pkg.fqn]),
+                            ];
+                            renderExplorePackageList(context);
+                        }
+                    } else if (childFqnsToAdd.length > 0) {
+                        context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqnsToAdd];
                         renderExplorePackageList(context);
                     }
                     const affectsSelection = context.exploreTargetPackages.some(t =>

@@ -38,7 +38,7 @@ const PackageApp = (() => {
         getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
         getDiagram: () => document.getElementById('package-relation-diagram'),
         getExploreDiagram: () => document.getElementById('package-explore-diagram'),
-        getExplorePackageList: () => document.getElementById('explore-package-list'),
+        getExplorePackageList: () => document.getElementById('explore-package-table'),
         getExploreListFilter: () => document.getElementById('explore-list-filter'),
         getExploreClearSelectionButton: () => document.getElementById('explore-clear-selection'),
         getExploreCallerModeRadios: () => document.querySelectorAll('input[name="explore-caller-mode"]'),
@@ -783,10 +783,10 @@ const PackageApp = (() => {
 
         const targetSet = new Set(context.exploreTargetPackages);
 
-        // テーブルが既に存在する場合はクラスのみ更新する
-        const existingTable = container.querySelector('table.explore-package-table');
-        if (existingTable) {
-            existingTable.querySelectorAll('tbody tr[data-fqn]').forEach(tr => {
+        // TBODYが既に存在する場合はクラスのみ更新する
+        const existingTableBody = container.querySelector('tbody');
+        if (existingTableBody) {
+            existingTableBody.querySelectorAll('tr[data-fqn]').forEach(tr => {
                 tr.classList.toggle('explore-target-selected', targetSet.has(tr.dataset.fqn));
             });
             return;
@@ -815,22 +815,6 @@ const PackageApp = (() => {
             }
             return fqn;
         }
-
-        const table = document.createElement('table');
-        table.className = 'explore-package-table sortable';
-
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        const toggleTh = document.createElement('th');
-        toggleTh.className = 'no-sort';
-        headerRow.appendChild(toggleTh);
-        ['完全修飾名', '名称'].forEach(text => {
-            const th = document.createElement('th');
-            th.textContent = text;
-            headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
@@ -886,18 +870,14 @@ const PackageApp = (() => {
 
             tbody.appendChild(tr);
         });
-        table.appendChild(tbody);
-        container.appendChild(table);
-        Jig.dom.setupSortableTables();
+        container.appendChild(tbody);
 
         const filterInput = dom.getExploreListFilter();
         if (filterInput) {
             filterInput.addEventListener('input', () => {
                 const filterText = filterInput.value.toLowerCase();
                 tbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
-                    const matches = !filterText
-                        || tr.dataset.fqn.toLowerCase().includes(filterText)
-                        || tr.cells[2]?.textContent.toLowerCase().includes(filterText);
+                    const matches = !filterText || tr.dataset.fqn.toLowerCase().includes(filterText);
                     tr.classList.toggle('hidden', !matches);
                 });
             });

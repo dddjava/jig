@@ -1233,24 +1233,24 @@ label {
     margin-top: 8px;
 }
 
-.package-relation .explore-package-table {
+.package-relation #explore-package-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.package-relation .explore-package-table tbody tr {
+.package-relation #explore-package-table tbody tr {
     cursor: pointer;
 }
 
-.package-relation .explore-package-table tbody tr:hover {
+.package-relation #explore-package-table tbody tr:hover {
     background-color: #f0f0f0;
 }
 
-.package-relation .explore-package-table tbody tr.explore-target-selected {
+.package-relation #explore-package-table tbody tr.explore-target-selected {
     background-color: #ffffce;
 }
 
-.package-relation .explore-package-table tbody tr.hidden-by-collapse {
+.package-relation #explore-package-table tbody tr.hidden-by-collapse {
     display: none;
 }
 

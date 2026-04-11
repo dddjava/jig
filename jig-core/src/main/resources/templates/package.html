@@ -13,14 +13,17 @@
 </header>
 <main>
     <div id="jig-document-description" class="hidden">
-        <p>パッケージ間の依存関係と構成を俯瞰するための一覧です。2つのモードを使い分けて依存方向や責務の偏りを確認してください。</p>
-        <p><b>階層探索</b>: パッケージを選択して階層を集約し、全体を俯瞰します。相互依存は赤い双方向の矢印で表示されます。</p>
+        <p>
+            パッケージ間の依存関係と構成を俯瞰するための一覧です。2つのモードを使い分けて依存方向や責務の偏りを確認してください。</p>
+        <p><b>階層探索</b>: パッケージを選択して階層を集約し、全体を俯瞰します。相互依存は赤い双方向の矢印で表示されます。
+        </p>
         <ul>
             <li>階層集約: 深さを上げるとサブパッケージがまとめられ、全体像を把握しやすくなります。</li>
             <li>パッケージフィルタ: 対象のパッケージ配下だけを表示します。</li>
             <li>依存関係の簡略表示: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
         </ul>
-        <p><b>関連探索</b>: 特定のパッケージを起点として、その依存元・依存先ネットワークを探索します。依存元は青、依存先はオレンジ色で表示されます。</p>
+        <p><b>関連探索</b>: 特定のパッケージを起点として、その依存元・依存先ネットワークを探索します。依存元は青、依存先はオレンジ色で表示されます。
+        </p>
         <ul>
             <li>対象パッケージ: 起点となるパッケージを複数指定できます。</li>
             <li>依存元・依存先: 直接またはすべての依存を表示します。</li>
@@ -43,7 +46,8 @@
                 <button type="button" id="depth-down-button">▼</button>
             </div>
             <div class="control-row">
-                <button type="button" class="package-filter-icon icon-only"><span class="screen-reader-only">パッケージフィルタ</span></button>
+                <button type="button" class="package-filter-icon icon-only"><span
+                        class="screen-reader-only">パッケージフィルタ</span></button>
                 <label class="control-label" for="package-filter-select">パッケージフィルタ:</label>
                 <select id="package-filter-select" multiple size="5"></select>
                 <button id="clear-package-filter" type="button">解除</button>
@@ -88,47 +92,60 @@
     </div>
 
     <div id="panel-explore" class="package-tab-panel">
-        <details class="controls" open>
-            <summary>表示設定</summary>
-            <div class="control-row">
-                <div class="focus-group">
+        <pre id="package-explore-diagram" class="mermaid"></pre>
+
+        <div class="focus-group controls">
+            <fieldset class="control-label">
+                <legend>依存の表示</legend>
+                <div class="control-row">
                     <span class="control-label">依存元:</span>
                     <label class="radio-label" for="explore-caller-mode-0">
-                        <input type="radio" id="explore-caller-mode-0" name="explore-caller-mode" value="0">
-                        なし
+                        <input type="radio" id="explore-caller-mode-0" name="explore-caller-mode" value="0"> なし
                     </label>
                     <label class="radio-label" for="explore-caller-mode-1">
-                        <input type="radio" id="explore-caller-mode-1" name="explore-caller-mode" value="1" checked>
-                        直接
+                        <input type="radio" id="explore-caller-mode-1" name="explore-caller-mode" value="1" checked> 直接
                     </label>
                     <label class="radio-label" for="explore-caller-mode-all">
-                        <input type="radio" id="explore-caller-mode-all" name="explore-caller-mode" value="-1">
-                        すべて
-                    </label>
-                    <span class="control-label">依存先:</span>
-                    <label class="radio-label" for="explore-callee-mode-0">
-                        <input type="radio" id="explore-callee-mode-0" name="explore-callee-mode" value="0">
-                        なし
-                    </label>
-                    <label class="radio-label" for="explore-callee-mode-1">
-                        <input type="radio" id="explore-callee-mode-1" name="explore-callee-mode" value="1" checked>
-                        直接
-                    </label>
-                    <label class="radio-label" for="explore-callee-mode-all">
-                        <input type="radio" id="explore-callee-mode-all" name="explore-callee-mode" value="-1">
-                        すべて
+                        <input type="radio" id="explore-caller-mode-all" name="explore-caller-mode" value="-1"> すべて
                     </label>
                 </div>
+                <div class="control-row">
+                    <span class="control-label">依存先:</span>
+                    <label class="radio-label" for="explore-callee-mode-0">
+                        <input type="radio" id="explore-callee-mode-0" name="explore-callee-mode" value="0"> なし
+                    </label>
+                    <label class="radio-label" for="explore-callee-mode-1">
+                        <input type="radio" id="explore-callee-mode-1" name="explore-callee-mode" value="1" checked> 直接
+                    </label>
+                    <label class="radio-label" for="explore-callee-mode-all">
+                        <input type="radio" id="explore-callee-mode-all" name="explore-callee-mode" value="-1"> すべて
+                    </label>
+                </div>
+            </fieldset>
+            <div class="control-row">
+                <button type="button" id="explore-clear-selection">選択を全解除</button>
             </div>
-        </details>
+            <div class="control-row explore-list-filter-row">
 
-        <pre id="package-explore-diagram" class="mermaid"></pre>
-        <div class="control-row explore-list-filter-row">
-            <label class="control-label" for="explore-list-filter">一覧フィルタ:</label>
-            <input type="text" id="explore-list-filter" placeholder="パッケージを絞り込み...">
-            <button type="button" id="explore-clear-selection">選択を全解除</button>
+            </div>
         </div>
-        <section id="explore-package-list"></section>
+
+        <section id="explore-package-list">
+            <table id="explore-package-table">
+                <colgroup>
+                    <col class="col-action">
+                    <col class="col-fqn">
+                    <col class="col-name">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th class="no-sort"></th>
+                    <th>定義名 <input type="search" id="explore-list-filter" placeholder="絞り込み" autocomplete="off"></th>
+                    <th>名称</th>
+                </tr>
+                </thead>
+            </table>
+        </section>
     </div>
 </main>
 

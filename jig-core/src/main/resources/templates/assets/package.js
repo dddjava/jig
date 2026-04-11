@@ -757,31 +757,19 @@ const PackageApp = (() => {
         const visibleFqns = new Set([...targetSet, ...callerSet, ...calleeSet]);
         const visibleRelations = relations.filter(r => visibleFqns.has(r.from) && visibleFqns.has(r.to));
 
-        const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(
-            visibleFqns, visibleRelations,
-            {
-                targetFqns: targetSet,
-                callerFqns: callerSet,
-                calleeFqns: calleeSet,
-                diagramDirection: dir,
-                clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
-            }
-        ).source;
+        const exploreOptions = (dir) => ({
+            targetFqns: targetSet,
+            callerFqns: callerSet,
+            calleeFqns: calleeSet,
+            diagramDirection: dir,
+            clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+        });
 
-        const source = generator(context.diagramDirection);
-        setDiagramSource(diagram, source);
-        const renderPlan = Jig.mermaid.builder.buildExploreDiagramSource(
-            visibleFqns, visibleRelations,
-            {
-                targetFqns: targetSet,
-                callerFqns: callerSet,
-                calleeFqns: calleeSet,
-                diagramDirection: context.diagramDirection,
-                clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
-            }
-        );
+        const renderPlan = Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(context.diagramDirection));
+        setDiagramSource(diagram, renderPlan.source);
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
 
+        const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir)).source;
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
     }
 
@@ -992,7 +980,7 @@ const PackageApp = (() => {
         const callerSelect = dom.getExploreCallerModeSelect();
         const calleeSelect = dom.getExploreCalleeModeSelect();
 
-        // datalist に全パッケージFQNを設定
+        // datalist には探索フィルタに関係なく全パッケージを候補として表示するため hierarchyState を使う
         const datalist = dom.getExplorePackageDatalist();
         if (datalist) {
             const {packages} = getPackageRelationData(hierarchyState);

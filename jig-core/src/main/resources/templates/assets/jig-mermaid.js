@@ -184,7 +184,6 @@ globalThis.Jig.mermaid = (() => {
          */
         function buildMermaidDiagramSource(packageFqns, uniqueRelations, options) {
             const {diagramDirection, focusedPackageFqn, clickHandlerName, nodeClickUrlCallback} = options;
-            const escapeMermaidText = text => text.replace(/"/g, '\\"');
 
             // 親パッケージセットを構築し、関連を持つ親パッケージのみを抽出
             const allParentFqns = buildParentFqns(packageFqns);
@@ -254,7 +253,6 @@ globalThis.Jig.mermaid = (() => {
          */
         function buildExploreDiagramSource(packageFqns, uniqueRelations, options) {
             const {targetFqns, callerFqns, calleeFqns, diagramDirection, clickHandlerName} = options;
-            const escapeMermaidText = text => text.replace(/"/g, '\\"');
 
             const allParentFqns = buildParentFqns(packageFqns);
             const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
@@ -293,7 +291,6 @@ globalThis.Jig.mermaid = (() => {
             edgeLines.forEach(line => lines.push(line));
             linkStyles.forEach(styleLine => lines.push(styleLine));
 
-            // 3色のclassDef定義
             lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
             lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
             lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');

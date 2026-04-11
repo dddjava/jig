@@ -1136,15 +1136,18 @@ const PackageApp = (() => {
         if (typeof window === 'undefined') return;
         const params = new URLSearchParams();
         const activeTab = document.querySelector('.package-mode-tabs .tab-button.is-active')?.dataset.tab;
-        if (activeTab && activeTab !== 'hierarchy') params.set('tab', activeTab);
 
-        if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
-        hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
-        if (!hierarchyState.transitiveReductionEnabled) params.set('reduction', 'false');
-
-        exploreState.exploreTargetPackages.forEach(p => params.append('target', p));
-        if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
-        if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
+        if (activeTab === 'explore') {
+            params.set('tab', 'explore');
+            exploreState.exploreTargetPackages.forEach(p => params.append('target', p));
+            if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
+            if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
+        } else {
+            // デフォルトの hierarchy タブ
+            if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
+            hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
+            if (!hierarchyState.transitiveReductionEnabled) params.set('reduction', 'false');
+        }
 
         const queryString = params.toString();
         const newURL = queryString

@@ -48,9 +48,13 @@ test.describe('package.js URL同期', () => {
     });
 
     test('syncStateToURL: 階層探索の状態をURLに反映する', () => {
+        // デフォルトは hierarchy タブ
         PackageApp.hierarchyState.aggregationDepth = 2;
         PackageApp.hierarchyState.packageFilterFqn = ['app.a', 'app.b'];
         PackageApp.hierarchyState.transitiveReductionEnabled = false;
+
+        // 関係ない探索設定もセットしておくが、出力されないはず
+        PackageApp.exploreState.exploreTargetPackages = ['app.target'];
         
         PackageApp.syncStateToURL();
         
@@ -58,6 +62,7 @@ test.describe('package.js URL同期', () => {
         assert.equal(params.get('depth'), '2');
         assert.deepEqual(params.getAll('filter'), ['app.a', 'app.b']);
         assert.equal(params.get('reduction'), 'false');
+        assert.equal(params.has('target'), false); // 他方のパラメタは出ない
     });
 
     test('syncStateToURL: 関連探索の状態をURLに反映する', () => {
@@ -71,6 +76,9 @@ test.describe('package.js URL同期', () => {
         PackageApp.exploreState.exploreCallerMode = '-1';
         PackageApp.exploreState.exploreCalleeMode = '0';
         
+        // 関係ない階層設定もセットしておくが、出力されないはず
+        PackageApp.hierarchyState.aggregationDepth = 5;
+
         PackageApp.syncStateToURL();
         
         const params = new URLSearchParams(global.window.location.search);
@@ -78,6 +86,7 @@ test.describe('package.js URL同期', () => {
         assert.deepEqual(params.getAll('target'), ['app.target']);
         assert.equal(params.get('caller'), '-1');
         assert.equal(params.get('callee'), '0');
+        assert.equal(params.has('depth'), false); // 他方のパラメタは出ない
     });
 
     test('loadStateFromURL: URLから状態を復元する', () => {

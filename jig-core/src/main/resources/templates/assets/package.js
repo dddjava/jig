@@ -24,6 +24,7 @@ const PackageApp = (() => {
 
     const HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
     const EXPLORE_DIAGRAM_CLICK_HANDLER_NAME = 'explorePackageDiagram';
+    const TAB = {HIERARCHY: 'hierarchy', EXPLORE: 'explore'};
 
     const dom = {
         getPackageTableBody: () => document.querySelector('#package-table tbody'),
@@ -1124,7 +1125,16 @@ const PackageApp = (() => {
         };
     }
 
-    function setupTabControl() {
+    function renderTab(tabName) {
+        if (tabName === TAB.EXPLORE) {
+            renderExploreDiagram(exploreState);
+            renderExplorePackageList(exploreState);
+        } else if (tabName === TAB.HIERARCHY) {
+            renderHierarchyDiagramAndTable(hierarchyState);
+        }
+    }
+
+    function setupTabControl(onTabActivated) {
         const tabs = document.querySelectorAll('.package-mode-tabs .tab-button');
         const panels = document.querySelectorAll('.package-tab-panel');
         tabs.forEach(tab => {
@@ -1135,6 +1145,7 @@ const PackageApp = (() => {
                 const panelId = `panel-${tab.dataset.tab}`;
                 const panel = document.getElementById(panelId);
                 if (panel) panel.classList.add('is-active');
+                onTabActivated(tab.dataset.tab);
                 syncStateToURL();
             });
         });
@@ -1145,8 +1156,8 @@ const PackageApp = (() => {
         const params = new URLSearchParams();
         const activeTab = document.querySelector('.package-mode-tabs .tab-button.is-active')?.dataset.tab;
 
-        if (activeTab === 'explore') {
-            params.set('tab', 'explore');
+        if (activeTab === TAB.EXPLORE) {
+            params.set('tab', TAB.EXPLORE);
             exploreState.exploreTargetPackages.forEach(p => params.append('target', p));
             if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
             if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
@@ -1196,12 +1207,22 @@ const PackageApp = (() => {
     function init() {
         if (typeof document === 'undefined' || !document.body.classList.contains("package-relation")) return;
         Jig.dom.setupSortableTables();
-        setupTabControl();
+        const renderedTabs = new Set();
+        setupTabControl(tabName => {
+            if (!renderedTabs.has(tabName)) {
+                renderedTabs.add(tabName);
+                renderTab(tabName);
+            }
+        });
 
         // 階層探索の初期化
         setupPackageFilterControl(hierarchyState);
         const {domainPackageRoots} = getPackageRelationData(hierarchyState);
         hierarchyState.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
+
+        // 関連探索の初期化（loadStateFromURL より前に行い、タブクリック時の描画を可能にする）
+        setupExploreControl(exploreState);
+        registerExploreDiagramClickHandler(exploreState);
 
         loadStateFromURL();
 
@@ -1213,13 +1234,13 @@ const PackageApp = (() => {
         if (hierarchyState.packageFilterFqn.length === 0) {
             applyDefaultPackageFilterIfPresent(hierarchyState);
         }
-        renderHierarchyDiagramAndTable(hierarchyState);
 
-        // 関連探索の初期化
-        setupExploreControl(exploreState);
-        registerExploreDiagramClickHandler(exploreState);
-        renderExploreDiagram(exploreState);
-        renderExplorePackageList(exploreState);
+        // アクティブなタブのみ初期描画（loadStateFromURL のタブクリックで既に描画済みの場合はスキップ）
+        const activeTabName = document.querySelector('.package-mode-tabs .tab-button.is-active')?.dataset.tab ?? TAB.HIERARCHY;
+        if (!renderedTabs.has(activeTabName)) {
+            renderedTabs.add(activeTabName);
+            renderTab(activeTabName);
+        }
     }
 
     return {
@@ -1228,6 +1249,7 @@ const PackageApp = (() => {
         exploreState,
         HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME,
         EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+        TAB,
         dom,
 
         syncStateToURL,

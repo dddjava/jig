@@ -4,44 +4,47 @@ const PackageApp = (() => {
     // 状態/DOMヘルパー
     // stateは「UI状態・設定値など長期的に保持する値」に限定する。
     // 一時的な中間データはstateに保存せず、関数内のローカル変数で扱う。
-    const state = {
+    const hierarchyState = {
         packageRelationCache: null,
         diagramNodeIdToFqn: new Map(),
         aggregationDepth: 0,
         packageFilterFqn: [],
-        focusCallerMode: '1', // '0':なし, '1':直接, '-1':すべて
-        focusCalleeMode: '1', // '0':なし, '1':直接, '-1':すべて
-        focusedPackageFqn: null,
         diagramDirection: 'TB',
         mutualDependencyDiagramDirection: 'LR',
         transitiveReductionEnabled: true,
     };
 
-    const DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
+    const exploreState = {
+        exploreTargetPackages: [],   // 指定したパッケージFQN[]（複数可）
+        exploreCallerMode: '1',      // '0':なし, '1':直接, '-1':すべて
+        exploreCalleeMode: '1',      // '0':なし, '1':直接, '-1':すべて
+        diagramNodeIdToFqn: new Map(),
+        diagramDirection: 'TB',
+    };
+
+    const HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME = 'filterPackageDiagram';
+    const EXPLORE_DIAGRAM_CLICK_HANDLER_NAME = 'explorePackageDiagram';
 
     const dom = {
-        getFocusTarget: () => document.getElementById('focus-target'),
-        setFocusTargetText: (element, text) => {
-            if (element) element.textContent = text;
-        },
-
         getPackageTableBody: () => document.querySelector('#package-table tbody'),
         getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
-        getPackageFilterInput: () => document.getElementById('package-filter-input'),
-        getApplyPackageFilterButton: () => document.getElementById('apply-package-filter'),
+        getPackageFilterSelect: () => document.getElementById('package-filter-select'),
         getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
         getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
         getDepthSelect: () => document.getElementById('package-depth-select'),
         getDepthUpButton: () => document.getElementById('depth-up-button'),
         getDepthDownButton: () => document.getElementById('depth-down-button'),
-        getFocusCallerModeSelect: () => document.getElementById('focus-caller-mode-select'),
-        getFocusCalleeModeSelect: () => document.getElementById('focus-callee-mode-select'),
-        getClearFocusButton: () => document.getElementById('clear-focus'),
         getTransitiveReductionToggle: () => document.getElementById('transitive-reduction-toggle'),
         getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
         getDiagram: () => document.getElementById('package-relation-diagram'),
+        getExploreDiagram: () => document.getElementById('package-explore-diagram'),
+        getExplorePackageInput: () => document.getElementById('explore-package-input'),
+        getExplorePackageDatalist: () => document.getElementById('explore-package-datalist'),
+        getExplorePackageAddButton: () => document.getElementById('explore-package-add'),
+        getExplorePackageTags: () => document.getElementById('explore-package-tags'),
+        getExploreCallerModeSelect: () => document.getElementById('explore-caller-mode-select'),
+        getExploreCalleeModeSelect: () => document.getElementById('explore-callee-mode-select'),
         getDocumentBody: () => document.body,
-        getPackageDataScript: () => document.getElementById('package-data'),
     };
 
     // データ取得/整形
@@ -123,7 +126,7 @@ const PackageApp = (() => {
 
     function findDefaultPackageFilterCandidate(domainPackageRoots) {
         if (domainPackageRoots?.length) {
-            return domainPackageRoots.join('\n');
+            return domainPackageRoots;
         }
         return null;
     }
@@ -136,20 +139,6 @@ const PackageApp = (() => {
 
     function buildPackageRowVisibility(rowFqns, packageFilterFqn) {
         return rowFqns.map(fqn => Jig.util.isWithinPackageFilters(fqn, packageFilterFqn));
-    }
-
-    function buildFocusRowVisibility(rowFqns, relations, packageFilterFqn, aggregationDepth, focusCallerMode, focusCalleeMode, focusedPackageFqn) {
-        if (!focusedPackageFqn) {
-            return rowFqns.map(rowFqn => Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn));
-        }
-
-        const {relations: filteredRelations} = filterByPackageFilter([], relations, packageFilterFqn);
-        const aggregatedRoot = Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth);
-        const focusSet = collectFocusSet(aggregatedRoot, filteredRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
-        return rowFqns.map(rowFqn => {
-            const aggregatedRow = Jig.util.getAggregatedFqn(rowFqn, aggregationDepth);
-            return Jig.util.isWithinPackageFilters(rowFqn, packageFilterFqn) && focusSet.has(aggregatedRow);
-        });
     }
 
     function traverseGraph(root, adjacencyMap) {
@@ -228,68 +217,59 @@ const PackageApp = (() => {
         return focusSet;
     }
 
-    function filterFocusDiagramRelations(uniqueRelations, packageFqns, aggregatedRoot, aggregationDepth, focusCallerMode, focusCalleeMode) {
-        const nextVisibleSet = new Set(packageFqns);
-        let nextRelations = uniqueRelations;
-        if (aggregatedRoot) {
-            const focusSet = collectFocusSet(aggregatedRoot, uniqueRelations, aggregationDepth, focusCallerMode, focusCalleeMode);
+    // 関連探索: 複数の起点からcaller/calleeセットを収集する
+    function collectExploreNodeSets(targetPackages, relations, callerMode, calleeMode) {
+        const targetSet = new Set(targetPackages);
+        const callerSet = new Set();
+        const calleeSet = new Set();
 
-            const filterDirectRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                const isCaller = focusCallerMode === '1' && to === aggregatedRoot;
-                const isCallee = focusCalleeMode === '1' && from === aggregatedRoot;
-                return isCaller || isCallee;
-            };
+        if (targetSet.size === 0) return {targetSet, callerSet, calleeSet};
 
-            const filterTransitiveRelation = (relation) => {
-                const from = Jig.util.getAggregatedFqn(relation.from, aggregationDepth);
-                const to = Jig.util.getAggregatedFqn(relation.to, aggregationDepth);
-                return focusSet.has(from) && focusSet.has(to);
-            };
-
-            if (focusCallerMode === '-1' || focusCalleeMode === '-1') {
-                nextRelations = uniqueRelations.filter(filterTransitiveRelation);
-            } else if (focusCallerMode === '1' || focusCalleeMode === '1') {
-                nextRelations = uniqueRelations.filter(filterDirectRelation);
+        if (callerMode !== '0') {
+            if (callerMode === '1') {
+                relations.forEach(relation => {
+                    if (targetSet.has(relation.to)) callerSet.add(relation.from);
+                });
             } else {
-                nextRelations = uniqueRelations.filter(relation =>
-                    focusSet.has(Jig.util.getAggregatedFqn(relation.from, aggregationDepth)) &&
-                    focusSet.has(Jig.util.getAggregatedFqn(relation.to, aggregationDepth))
-                );
+                const reverseAdjacency = buildReverseAdjacency(relations, 0);
+                targetSet.forEach(target => {
+                    const callers = traverseGraph(target, reverseAdjacency);
+                    callers.forEach(caller => {
+                        if (!targetSet.has(caller)) callerSet.add(caller);
+                    });
+                });
             }
-
-            nextVisibleSet.clear();
-            focusSet.forEach(value => nextVisibleSet.add(value));
         }
-        nextRelations.forEach(relation => {
-            nextVisibleSet.add(relation.from);
-            nextVisibleSet.add(relation.to);
-        });
-        return {uniqueRelations: nextRelations, packageFqns: nextVisibleSet};
+
+        if (calleeMode !== '0') {
+            if (calleeMode === '1') {
+                relations.forEach(relation => {
+                    if (targetSet.has(relation.from)) calleeSet.add(relation.to);
+                });
+            } else {
+                const forwardAdjacency = buildForwardAdjacency(relations, 0);
+                targetSet.forEach(target => {
+                    const callees = traverseGraph(target, forwardAdjacency);
+                    callees.forEach(callee => {
+                        if (!targetSet.has(callee)) calleeSet.add(callee);
+                    });
+                });
+            }
+        }
+
+        // callerSet/calleeSet からターゲットを除外
+        targetSet.forEach(t => { callerSet.delete(t); calleeSet.delete(t); });
+
+        return {targetSet, callerSet, calleeSet};
     }
 
-    function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, focusedPackageFqn, aggregationDepth, focusCallerMode, focusCalleeMode, transitiveReductionEnabled) {
-        const base = Jig.mermaid.builder.buildVisibleDiagramRelations(
+    function buildVisibleDiagramElements(packages, relations, causeRelationEvidence, packageFilterFqn, aggregationDepth, transitiveReductionEnabled) {
+        return Jig.mermaid.builder.buildVisibleDiagramRelations(
             packages,
             relations,
             causeRelationEvidence,
             {packageFilterFqn, aggregationDepth, transitiveReductionEnabled}
         );
-        const aggregatedRoot = focusedPackageFqn ? Jig.util.getAggregatedFqn(focusedPackageFqn, aggregationDepth) : null;
-        const {uniqueRelations, packageFqns} = filterFocusDiagramRelations(
-            base.uniqueRelations,
-            base.packageFqns,
-            aggregatedRoot,
-            aggregationDepth,
-            focusCallerMode,
-            focusCalleeMode
-        );
-        return {
-            uniqueRelations,
-            packageFqns,
-            filteredCauseRelationEvidence: base.filteredCauseRelationEvidence,
-        };
     }
 
     // テーブル描画
@@ -317,48 +297,21 @@ const PackageApp = (() => {
         }));
     }
 
-    function buildPackageTableActionSpecs() {
-        return {
-            filter: {
-                ariaLabel: 'このパッケージで絞り込み',
-                screenReaderText: '絞り込み',
-            },
-            focus: {
-                ariaLabel: 'フォーカス',
-                screenReaderText: 'フォーカス',
-            },
-        };
-    }
-
-    function buildPackageTableRowElement(spec, applyFilter, applyFocusForRow) {
+    function buildPackageTableRowElement(spec, applyFilter) {
         const tr = document.createElement('tr');
-        const actionSpecs = buildPackageTableActionSpecs();
 
         const actionTd = document.createElement('td');
         const actionButton = document.createElement('button');
         actionButton.type = 'button';
         actionButton.className = 'package-filter-icon';
-        actionButton.setAttribute('aria-label', actionSpecs.filter.ariaLabel);
+        actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
         const actionText = document.createElement('span');
         actionText.className = 'screen-reader-only';
-        actionText.textContent = actionSpecs.filter.screenReaderText;
+        actionText.textContent = '絞り込み';
         actionButton.appendChild(actionText);
         actionButton.addEventListener('click', () => applyFilter(spec.fqn));
         actionTd.appendChild(actionButton);
         tr.appendChild(actionTd);
-
-        const focusTd = document.createElement('td');
-        const focusButton = document.createElement('button');
-        focusButton.type = 'button';
-        focusButton.className = 'focus-icon';
-        focusButton.setAttribute('aria-label', actionSpecs.focus.ariaLabel);
-        const focusText = document.createElement('span');
-        focusText.className = 'screen-reader-only';
-        focusText.textContent = actionSpecs.focus.screenReaderText;
-        focusButton.appendChild(focusText);
-        focusButton.addEventListener('click', () => applyFocusForRow(spec.fqn));
-        focusTd.appendChild(focusButton);
-        tr.appendChild(focusTd);
 
         const fqnTd = document.createElement('td');
         fqnTd.textContent = spec.fqn;
@@ -410,88 +363,20 @@ const PackageApp = (() => {
         const {packages: filteredPackages, relations: filteredRelations} =
             filterByPackageFilter(aggregated.packages, aggregated.relations, context.packageFilterFqn);
 
-        let focusSet = null;
-        if (context.focusedPackageFqn) {
-            const aggregatedRoot = Jig.util.getAggregatedFqn(context.focusedPackageFqn, context.aggregationDepth);
-            focusSet = collectFocusSet(aggregatedRoot, filteredRelations, 0, context.focusCallerMode, context.focusCalleeMode);
-        }
-
         const rows = buildPackageTableRowData(filteredPackages, filteredRelations);
         const rowSpecs = buildPackageTableRowSpecs(rows);
 
         tbody.innerHTML = '';
 
-        const input = dom.getPackageFilterInput();
         const applyFilter = fqn => {
-            if (input) input.value = fqn;
-            context.packageFilterFqn = normalizePackageFilterValue(fqn);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
-        };
-        const applyFocusForRow = fqn => {
-            setFocusAndRender(fqn, context);
+            setPackageFilterSelectValues(context, [fqn]);
+            renderHierarchyDiagramAndTable(context);
         };
 
         rowSpecs.forEach(spec => {
-            const tr = buildPackageTableRowElement(spec, applyFilter, applyFocusForRow);
-            if (focusSet !== null && !focusSet.has(spec.fqn)) {
-                tr.classList.add('hidden');
-            }
+            const tr = buildPackageTableRowElement(spec, applyFilter);
             tbody.appendChild(tr);
         });
-    }
-
-    function filterFocusTableRows(fqn, context) {
-        const rows = dom.getPackageTableRows();
-        const {relations} = getPackageRelationData(context);
-        const rowFqns = Array.from(rows, row => {
-            const fqnCell = row.querySelector('td.fqn');
-            return fqnCell ? fqnCell.textContent : '';
-        });
-        const visibility = buildFocusRowVisibility(
-            rowFqns,
-            relations,
-            context.packageFilterFqn,
-            context.aggregationDepth,
-            context.focusCallerMode,
-            context.focusCalleeMode,
-            fqn
-        );
-        rows.forEach((row, index) => {
-            row.classList.toggle('hidden', !visibility[index]);
-        });
-    }
-
-    function renderFocusLabel(context) {
-        const target = dom.getFocusTarget();
-        dom.setFocusTargetText(target, context.focusedPackageFqn ? context.focusedPackageFqn : '未選択');
-    }
-
-    function setFocusAndRender(fqn, context) {
-        context.focusedPackageFqn = fqn;
-        renderDiagramAndTable(context);
-        renderFocusLabel(context);
-    }
-
-    function registerDiagramClickHandler(context, applyFocus = setFocusAndRender) {
-        if (typeof window === 'undefined') return;
-        window[DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
-            const fqn = context.diagramNodeIdToFqn.get(nodeId);
-            if (!fqn) return;
-            applyFocus(fqn, context);
-        };
-    }
-
-    function applyDefaultPackageFilterIfPresent(context) {
-        const input = dom.getPackageFilterInput();
-        if (!input || normalizePackageFilterValue(input.value).length) return false;
-        const {domainPackageRoots} = getPackageRelationData(context);
-        const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
-        if (!candidate) return false;
-        input.value = candidate;
-        context.packageFilterFqn = normalizePackageFilterValue(input.value);
-        renderDiagramAndTable(context);
-        return true;
     }
 
     // 相互依存/依存関係の簡略表示
@@ -537,14 +422,9 @@ const PackageApp = (() => {
         summary.textContent = '相互依存と原因';
         const list = document.createElement('ul');
 
-        const applyFilterAndRender = (fqnsString) => {
-            const input = dom.getPackageFilterInput();
-            if (input) {
-                input.value = fqnsString;
-            }
-            context.packageFilterFqn = normalizePackageFilterValue(fqnsString);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
+        const applyFilterAndRender = (fqns) => {
+            setPackageFilterSelectValues(context, fqns);
+            renderHierarchyDiagramAndTable(context);
         };
 
         items.forEach(item => {
@@ -561,7 +441,7 @@ const PackageApp = (() => {
             button.textContent = 'フィルタにセット';
             button.className = 'filter-button';
             const [package1, package2] = item.pairLabel.split(' <-> ');
-            button.addEventListener('click', () => applyFilterAndRender(`${package1}\n${package2}`));
+            button.addEventListener('click', () => applyFilterAndRender([package1, package2]));
             pairDiv.appendChild(button);
 
             itemNode.appendChild(pairDiv);
@@ -800,19 +680,19 @@ const PackageApp = (() => {
         return {source: lines.join('\n')};
     }
 
-    function renderPackageDiagram(context, packageFilterFqn, focusedPackageFqn) {
+    function renderHierarchyDiagram(context) {
         const diagram = dom.getDiagram();
         if (!diagram) return;
 
-        const renderPlan = buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn);
-        applyDiagramRenderPlan(context, renderPlan);
+        const renderPlan = buildHierarchyDiagramRenderPlan(context);
+        applyHierarchyDiagramRenderPlan(context, renderPlan);
         setDiagramSource(diagram, renderPlan.source);
 
-        const generator = (dir) => buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, dir).source;
+        const generator = (dir) => buildHierarchyDiagramRenderPlan(context, dir).source;
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
     }
 
-    function buildDiagramRenderPlan(context, packageFilterFqn, focusedPackageFqn, direction = context.diagramDirection) {
+    function buildHierarchyDiagramRenderPlan(context, direction = context.diagramDirection) {
         const {packages, relations, causeRelationEvidence} = getPackageRelationData(context);
         const {
             uniqueRelations,
@@ -822,16 +702,13 @@ const PackageApp = (() => {
             packages,
             relations,
             causeRelationEvidence,
-            packageFilterFqn,
-            focusedPackageFqn,
+            context.packageFilterFqn,
             context.aggregationDepth,
-            context.focusCallerMode,
-            context.focusCalleeMode,
             context.transitiveReductionEnabled
         );
         const {source, nodeIdToFqn, mutualPairs} = Jig.mermaid.builder.buildMermaidDiagramSource(
             packageFqns, uniqueRelations,
-            {diagramDirection: direction, focusedPackageFqn, clickHandlerName: DIAGRAM_CLICK_HANDLER_NAME}
+            {diagramDirection: direction, clickHandlerName: HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME}
         );
         return {
             source,
@@ -842,7 +719,7 @@ const PackageApp = (() => {
         };
     }
 
-    function applyDiagramRenderPlan(context, renderPlan) {
+    function applyHierarchyDiagramRenderPlan(context, renderPlan) {
         context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
         renderMutualDependencyList(renderPlan.mutualPairs, renderPlan.filteredCauseRelationEvidence, context.aggregationDepth, context);
     }
@@ -852,50 +729,166 @@ const PackageApp = (() => {
         diagram.textContent = source;
     }
 
-    function renderDiagramAndTable(context) {
-        renderPackageDiagram(context, context.packageFilterFqn, context.focusedPackageFqn);
+    function renderHierarchyDiagramAndTable(context) {
+        renderHierarchyDiagram(context);
         renderPackageTable(context);
         renderAggregationDepthSelectOptions(getMaxPackageDepth(), context);
     }
 
+    // 関連探索ダイアグラム
+    function renderExploreDiagram(context) {
+        const diagram = dom.getExploreDiagram();
+        if (!diagram) return;
+
+        const {packages, relations} = getPackageRelationData(context);
+        const {targetSet, callerSet, calleeSet} = collectExploreNodeSets(
+            context.exploreTargetPackages,
+            relations,
+            context.exploreCallerMode,
+            context.exploreCalleeMode
+        );
+
+        if (targetSet.size === 0) {
+            setDiagramSource(diagram, '');
+            diagram.innerHTML = '<span class="placeholder-text">対象パッケージを追加してください</span>';
+            return;
+        }
+
+        const visibleFqns = new Set([...targetSet, ...callerSet, ...calleeSet]);
+        const visibleRelations = relations.filter(r => visibleFqns.has(r.from) && visibleFqns.has(r.to));
+
+        const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(
+            visibleFqns, visibleRelations,
+            {
+                targetFqns: targetSet,
+                callerFqns: callerSet,
+                calleeFqns: calleeSet,
+                diagramDirection: dir,
+                clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+            }
+        ).source;
+
+        const source = generator(context.diagramDirection);
+        setDiagramSource(diagram, source);
+        const renderPlan = Jig.mermaid.builder.buildExploreDiagramSource(
+            visibleFqns, visibleRelations,
+            {
+                targetFqns: targetSet,
+                callerFqns: callerSet,
+                calleeFqns: calleeSet,
+                diagramDirection: context.diagramDirection,
+                clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
+            }
+        );
+        context.diagramNodeIdToFqn = renderPlan.nodeIdToFqn;
+
+        Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+    }
+
+    // 関連探索タグUI
+    function buildExplorePackageTagElement(fqn, onRemove) {
+        const tag = document.createElement('span');
+        tag.className = 'package-tag';
+        tag.dataset.fqn = fqn;
+
+        const label = document.createElement('span');
+        label.textContent = fqn;
+        tag.appendChild(label);
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'package-tag-remove';
+        removeButton.setAttribute('aria-label', `${fqn} を削除`);
+        removeButton.textContent = '×';
+        removeButton.addEventListener('click', () => onRemove(fqn));
+        tag.appendChild(removeButton);
+
+        return tag;
+    }
+
+    function renderExplorePackageTags(context) {
+        const container = dom.getExplorePackageTags();
+        if (!container) return;
+        container.innerHTML = '';
+        context.exploreTargetPackages.forEach(fqn => {
+            const tag = buildExplorePackageTagElement(fqn, (removedFqn) => {
+                context.exploreTargetPackages = context.exploreTargetPackages.filter(p => p !== removedFqn);
+                renderExplorePackageTags(context);
+                renderExploreDiagram(context);
+            });
+            container.appendChild(tag);
+        });
+    }
+
     // UI配線
+    function setPackageFilterSelectValues(context, fqns) {
+        const select = dom.getPackageFilterSelect();
+        if (!select) return;
+        context.packageFilterFqn = fqns;
+        Array.from(select.children).forEach(option => {
+            option.selected = fqns.includes(option.value);
+        });
+    }
+
     function setupPackageFilterControl(context) {
-        const input = dom.getPackageFilterInput();
-        const applyButton = dom.getApplyPackageFilterButton();
+        const select = dom.getPackageFilterSelect();
         const clearPackageButton = dom.getClearPackageFilterButton();
         const resetButton = dom.getResetPackageFilterButton();
-        if (!input || !applyButton || !clearPackageButton) return;
+        if (!select) return;
 
-        let initialDefaultFilterValue = '';
         const {domainPackageRoots} = getPackageRelationData(context);
-        const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
-        if (candidate) {
-            initialDefaultFilterValue = candidate;
-        }
+        const defaultFqns = findDefaultPackageFilterCandidate(domainPackageRoots) ?? [];
 
-        const applyFilter = () => {
-            context.packageFilterFqn = normalizePackageFilterValue(input.value);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
-        };
         const clearPackageFilter = () => {
-            input.value = '';
             context.packageFilterFqn = [];
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
+            Array.from(select.children).forEach(option => { option.selected = false; });
+            renderHierarchyDiagramAndTable(context);
         };
         const resetPackageFilter = () => {
-            input.value = initialDefaultFilterValue;
-            context.packageFilterFqn = normalizePackageFilterValue(initialDefaultFilterValue);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
+            setPackageFilterSelectValues(context, defaultFqns);
+            renderHierarchyDiagramAndTable(context);
         };
 
-        applyButton.addEventListener('click', applyFilter);
-        clearPackageButton.addEventListener('click', clearPackageFilter);
-        if (resetButton) {
-            resetButton.addEventListener('click', resetPackageFilter);
-        }
+        select.addEventListener('change', () => {
+            context.packageFilterFqn = Array.from(select.selectedOptions).map(opt => opt.value);
+            renderHierarchyDiagramAndTable(context);
+        });
+
+        if (clearPackageButton) clearPackageButton.addEventListener('click', clearPackageFilter);
+        if (resetButton) resetButton.addEventListener('click', resetPackageFilter);
+    }
+
+    function buildPackageFilterSelectOptions(aggregatedPackages) {
+        return aggregatedPackages.map(pkg => pkg.fqn).sort();
+    }
+
+    function renderPackageFilterSelectOptions(context) {
+        const select = dom.getPackageFilterSelect();
+        if (!select) return;
+
+        const {packages, relations} = getPackageRelationData(context);
+        const {packages: aggregatedPackages} = aggregatePackageData(packages, relations, context.aggregationDepth);
+        const fqns = buildPackageFilterSelectOptions(aggregatedPackages);
+        const currentSelected = new Set(context.packageFilterFqn);
+
+        select.innerHTML = '';
+        fqns.forEach(fqn => {
+            const option = document.createElement('option');
+            option.value = fqn;
+            option.textContent = fqn;
+            option.selected = currentSelected.has(fqn);
+            select.appendChild(option);
+        });
+    }
+
+    function applyDefaultPackageFilterIfPresent(context) {
+        const {domainPackageRoots} = getPackageRelationData(context);
+        const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
+        if (!candidate || !candidate.length) return false;
+        context.packageFilterFqn = candidate;
+        renderPackageFilterSelectOptions(context);
+        renderHierarchyDiagramAndTable(context);
+        return true;
     }
 
     function updateDepthButtonStates(select, upButton, downButton) {
@@ -920,8 +913,8 @@ const PackageApp = (() => {
 
         select.addEventListener('change', () => {
             context.aggregationDepth = normalizeAggregationDepthValue(select.value);
-            renderDiagramAndTable(context);
-            renderFocusLabel(context);
+            renderPackageFilterSelectOptions(context);
+            renderHierarchyDiagramAndTable(context);
             renderAggregationDepthSelectOptions(maxDepth, context);
             updateDepthButtonStates(select, upButton, downButton);
         });
@@ -983,71 +976,147 @@ const PackageApp = (() => {
         select.value = String(value);
     }
 
-    function setupFocusControl(context) {
-        const callerSelect = dom.getFocusCallerModeSelect();
-        const calleeSelect = dom.getFocusCalleeModeSelect();
-        const clearButton = dom.getClearFocusButton();
-        if (!callerSelect || !calleeSelect) return;
-
-        callerSelect.value = context.focusCallerMode;
-        calleeSelect.value = context.focusCalleeMode;
-
-        const applyFilter = () => {
-            if (context.focusedPackageFqn) {
-                renderDiagramAndTable(context);
-            }
-        };
-
-        callerSelect.addEventListener('change', () => {
-            context.focusCallerMode = callerSelect.value;
-            applyFilter();
-        });
-        calleeSelect.addEventListener('change', () => {
-            context.focusCalleeMode = calleeSelect.value;
-            applyFilter();
-        });
-
-        if (clearButton) {
-            clearButton.addEventListener('click', () => {
-                context.focusedPackageFqn = null;
-                context.packageFilterFqn = normalizePackageFilterValue(dom.getPackageFilterInput()?.value);
-                renderDiagramAndTable(context);
-                renderFocusLabel(context);
-            });
-        }
-    }
-
     function setupTransitiveReductionControl(context) {
         const checkbox = dom.getTransitiveReductionToggle();
         if (!checkbox) return;
         checkbox.checked = context.transitiveReductionEnabled;
         checkbox.addEventListener('change', () => {
             context.transitiveReductionEnabled = checkbox.checked;
-            renderDiagramAndTable(context);
+            renderHierarchyDiagramAndTable(context);
+        });
+    }
+
+    function setupExploreControl(context) {
+        const input = dom.getExplorePackageInput();
+        const addButton = dom.getExplorePackageAddButton();
+        const callerSelect = dom.getExploreCallerModeSelect();
+        const calleeSelect = dom.getExploreCalleeModeSelect();
+
+        // datalist に全パッケージFQNを設定
+        const datalist = dom.getExplorePackageDatalist();
+        if (datalist) {
+            const {packages} = getPackageRelationData(hierarchyState);
+            packages.forEach(pkg => {
+                const option = document.createElement('option');
+                option.value = pkg.fqn;
+                datalist.appendChild(option);
+            });
+        }
+
+        const addPackage = (fqn) => {
+            const trimmed = fqn.trim();
+            if (!trimmed || context.exploreTargetPackages.includes(trimmed)) return;
+            context.exploreTargetPackages = [...context.exploreTargetPackages, trimmed];
+            renderExplorePackageTags(context);
+            renderExploreDiagram(context);
+        };
+
+        if (addButton) {
+            addButton.addEventListener('click', () => {
+                if (input) {
+                    addPackage(input.value);
+                    input.value = '';
+                }
+            });
+        }
+
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    addPackage(input.value);
+                    input.value = '';
+                    e.preventDefault();
+                }
+            });
+        }
+
+        if (callerSelect) {
+            callerSelect.value = context.exploreCallerMode;
+            callerSelect.addEventListener('change', () => {
+                context.exploreCallerMode = callerSelect.value;
+                if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+            });
+        }
+
+        if (calleeSelect) {
+            calleeSelect.value = context.exploreCalleeMode;
+            calleeSelect.addEventListener('change', () => {
+                context.exploreCalleeMode = calleeSelect.value;
+                if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+            });
+        }
+    }
+
+    function registerHierarchyDiagramClickHandler(context) {
+        if (typeof window === 'undefined') return;
+        window[HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+            const fqn = context.diagramNodeIdToFqn.get(nodeId);
+            if (!fqn) return;
+            // クリックしたパッケージでフィルタを絞り込む
+            setPackageFilterSelectValues(context, [fqn]);
+            renderHierarchyDiagramAndTable(context);
+        };
+    }
+
+    function registerExploreDiagramClickHandler(context) {
+        if (typeof window === 'undefined') return;
+        window[EXPLORE_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
+            const fqn = context.diagramNodeIdToFqn.get(nodeId);
+            if (!fqn) return;
+            if (!context.exploreTargetPackages.includes(fqn)) {
+                context.exploreTargetPackages = [...context.exploreTargetPackages, fqn];
+                renderExplorePackageTags(context);
+                renderExploreDiagram(context);
+            }
+        };
+    }
+
+    function setupTabControl() {
+        const tabs = document.querySelectorAll('.package-mode-tabs .tab-button');
+        const panels = document.querySelectorAll('.package-tab-panel');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('is-active'));
+                panels.forEach(p => p.classList.remove('is-active'));
+                tab.classList.add('is-active');
+                const panelId = `panel-${tab.dataset.tab}`;
+                const panel = document.getElementById(panelId);
+                if (panel) panel.classList.add('is-active');
+            });
         });
     }
 
     function init() {
         if (typeof document === 'undefined' || !document.body.classList.contains("package-relation")) return;
         Jig.dom.setupSortableTables();
-        setupPackageFilterControl(state);
-        const {domainPackageRoots} = getPackageRelationData(state);
-        state.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
-        setupAggregationDepthControl(state);
-        setupFocusControl(state);
-        setupTransitiveReductionControl(state);
-        registerDiagramClickHandler(state);
-        const applied = applyDefaultPackageFilterIfPresent(state);
+        setupTabControl();
+
+        // 階層探索の初期化
+        setupPackageFilterControl(hierarchyState);
+        const {domainPackageRoots} = getPackageRelationData(hierarchyState);
+        hierarchyState.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
+        setupAggregationDepthControl(hierarchyState);
+        renderPackageFilterSelectOptions(hierarchyState);
+        setupTransitiveReductionControl(hierarchyState);
+        registerHierarchyDiagramClickHandler(hierarchyState);
+
+        const applied = applyDefaultPackageFilterIfPresent(hierarchyState);
         if (!applied) {
-            renderDiagramAndTable(state);
+            renderHierarchyDiagramAndTable(hierarchyState);
         }
-        renderFocusLabel(state);
+
+        // 関連探索の初期化
+        setupExploreControl(exploreState);
+        registerExploreDiagramClickHandler(exploreState);
+        renderExploreDiagram(exploreState);
     }
 
     return {
         init,
-        state,
-        DIAGRAM_CLICK_HANDLER_NAME,
+        hierarchyState,
+        exploreState,
+        HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME,
+        EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
         dom,
 
         // For testing
@@ -1062,33 +1131,37 @@ const PackageApp = (() => {
         findDefaultPackageFilterCandidate,
         getInitialAggregationDepth,
         buildPackageRowVisibility,
-        buildFocusRowVisibility,
         collectFocusSet,
-        filterFocusDiagramRelations,
+        collectExploreNodeSets,
         buildVisibleDiagramElements,
         buildPackageTableRowData,
         buildPackageTableRowSpecs,
-        buildPackageTableActionSpecs,
         buildPackageTableRowElement,
         renderPackageTable,
-        filterFocusTableRows,
-        renderFocusLabel,
-        setFocusAndRender,
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         renderMutualDependencyList,
         renderMutualDependencyDiagram,
         buildMutualDependencyDiagramSource,
-        renderPackageDiagram,
-        renderDiagramAndTable,
-        registerDiagramClickHandler,
+        renderHierarchyDiagram,
+        renderHierarchyDiagramAndTable,
+        buildHierarchyDiagramRenderPlan,
+        renderExploreDiagram,
+        renderExplorePackageTags,
+        buildExplorePackageTagElement,
+        registerHierarchyDiagramClickHandler,
+        registerExploreDiagramClickHandler,
         setupPackageFilterControl,
         setupAggregationDepthControl,
         renderAggregationDepthSelectOptions,
         buildAggregationDepthOptions,
         renderAggregationDepthOptionsIntoSelect,
-        setupFocusControl,
+        renderPackageFilterSelectOptions,
+        buildPackageFilterSelectOptions,
         setupTransitiveReductionControl,
+        setupExploreControl,
+        setupTabControl,
+        setPackageFilterSelectValues,
     };
 })();
 

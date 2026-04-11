@@ -13,92 +13,110 @@
 </header>
 <main>
     <div id="jig-document-description" class="hidden">
-        <p>パッケージ間の依存関係と構成を俯瞰するための一覧です。図と表を組み合わせて、依存方向や責務の偏りを確認してください。</p>
+        <p>パッケージ間の依存関係と構成を俯瞰するための一覧です。2つのモードを使い分けて依存方向や責務の偏りを確認してください。</p>
+        <p><b>階層探索</b>: パッケージを選択して階層を集約し、全体を俯瞰します。相互依存は赤い双方向の矢印で表示されます。</p>
         <ul>
             <li>階層集約: 深さを上げるとサブパッケージがまとめられ、全体像を把握しやすくなります。</li>
             <li>パッケージフィルタ: 対象のパッケージ配下だけを表示します。</li>
-            <li>フォーカス: 特定のパッケージに焦点を当て、その依存関係のみを表示します。</li>
-            <li>図の向き: 横/縦の切り替えで読みやすい方向に調整できます。</li>
-            <li>図のノードクリック: クリックしたパッケージを関連フィルタの対象にします。</li>
             <li>依存関係の簡略表示: 直接の依存関係を優先して表示し、冗長な経路を省略します（循環参照は省略しません）。</li>
         </ul>
-        <p>相互依存は赤い双方向の矢印で強調表示され、下の一覧に原因となるクラス関係が表示されます。</p>
-        <p>依存が多い場合は階層集約やフィルタを活用し、関係が密な範囲から確認するのがおすすめです。</p>
+        <p><b>関連探索</b>: 特定のパッケージを起点として、その依存元・依存先ネットワークを探索します。依存元は青、依存先はオレンジ色で表示されます。</p>
+        <ul>
+            <li>対象パッケージ: 起点となるパッケージを複数指定できます。</li>
+            <li>依存元・依存先: 直接またはすべての依存を表示します。</li>
+            <li>図のノードクリック: クリックしたパッケージを対象パッケージに追加します。</li>
+        </ul>
     </div>
-    <details class="controls" open>
-        <summary>表示設定</summary>
-        <div class="control-row">
-            <label class="control-label" for="package-depth-select">階層集約:</label>
-            <select id="package-depth-select"></select>
-            <button type="button" id="depth-up-button">▲</button>
-            <button type="button" id="depth-down-button">▼</button>
-        </div>
-        <div class="control-row">
-            <button type="button" class="package-filter-icon icon-only"><span class="screen-reader-only">パッケージフィルタ</span></button>
-            <label class="control-label" for="package-filter-input">パッケージフィルタ:</label>
-            <textarea id="package-filter-input" placeholder="com.example&#10;foo.bar"></textarea>
-            <button id="apply-package-filter">適用</button>
-            <button id="clear-package-filter" type="button">解除</button>
-            <button id="reset-package-filter" type="button">デフォルトに戻す</button>
-        </div>
-        <div class="control-row">
-            <button type="button" class="focus-icon icon-only"><span class="screen-reader-only">フォーカス</span></button>
-            <span class="control-label">フォーカス:</span>
-            <span class="note" id="focus-target">未選択</span>
-            <button id="clear-focus" type="button">解除</button>
-            <div class="focus-group">
-                <label for="focus-caller-mode-select">依存元:</label>
-                <select id="focus-caller-mode-select">
-                    <option value="0">なし</option>
-                    <option value="1">直接</option>
-                    <option value="-1">すべて</option>
-                </select>
-                <label for="focus-callee-mode-select">依存先:</label>
-                <select id="focus-callee-mode-select">
-                    <option value="0">なし</option>
-                    <option value="1">直接</option>
-                    <option value="-1">すべて</option>
-                </select>
+
+    <nav class="package-mode-tabs">
+        <button class="tab-button is-active" data-tab="hierarchy">階層探索</button>
+        <button class="tab-button" data-tab="explore">関連探索</button>
+    </nav>
+
+    <div id="panel-hierarchy" class="package-tab-panel is-active">
+        <details class="controls" open>
+            <summary>表示設定</summary>
+            <div class="control-row">
+                <label class="control-label" for="package-depth-select">階層集約:</label>
+                <select id="package-depth-select"></select>
+                <button type="button" id="depth-up-button">▲</button>
+                <button type="button" id="depth-down-button">▼</button>
             </div>
-        </div>
-        <div class="control-row">
-            <label class="control-label" for="transitive-reduction-toggle">依存関係の簡略表示:</label>
-            <label class="radio-label">
-                <input type="checkbox" id="transitive-reduction-toggle" checked>
-                有効
-            </label>
-        </div>
-    </details>
+            <div class="control-row">
+                <button type="button" class="package-filter-icon icon-only"><span class="screen-reader-only">パッケージフィルタ</span></button>
+                <label class="control-label" for="package-filter-select">パッケージフィルタ:</label>
+                <select id="package-filter-select" multiple size="5"></select>
+                <button id="clear-package-filter" type="button">解除</button>
+                <button id="reset-package-filter" type="button">デフォルトに戻す</button>
+            </div>
+            <div class="control-row">
+                <label class="control-label" for="transitive-reduction-toggle">依存関係の簡略表示:</label>
+                <label class="radio-label">
+                    <input type="checkbox" id="transitive-reduction-toggle" checked>
+                    有効
+                </label>
+            </div>
+        </details>
 
-    <pre id="package-relation-diagram" class="mermaid"></pre>
-    <section id="mutual-dependency-list" class="mutual-dependencies"></section>
+        <pre id="package-relation-diagram" class="mermaid"></pre>
+        <section id="mutual-dependency-list" class="mutual-dependencies"></section>
 
-    <table id="package-table" class="sortable">
-        <colgroup>
-            <col class="col-action">
-            <col class="col-action">
-            <col class="col-fqn">
-            <col class="col-name">
-            <col class="col-glossary">
-            <col class="col-number">
-            <col class="col-number">
-            <col class="col-number">
-        </colgroup>
-        <thead>
-        <tr>
-            <th class="no-sort"><span class="screen-reader-only">絞り込み</span></th>
-            <th class="no-sort"><span class="screen-reader-only">関連のみ表示</span></th>
-            <th>完全修飾名</th>
-            <th>名称</th>
-            <th class="no-sort"><span class="screen-reader-only">用語集</span></th>
-            <th>クラス数</th>
-            <th>関連数（依存元）</th>
-            <th>関連数（依存先）</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+        <table id="package-table" class="sortable">
+            <colgroup>
+                <col class="col-action">
+                <col class="col-fqn">
+                <col class="col-name">
+                <col class="col-glossary">
+                <col class="col-number">
+                <col class="col-number">
+                <col class="col-number">
+            </colgroup>
+            <thead>
+            <tr>
+                <th class="no-sort"><span class="screen-reader-only">絞り込み</span></th>
+                <th>完全修飾名</th>
+                <th>名称</th>
+                <th class="no-sort"><span class="screen-reader-only">用語集</span></th>
+                <th>クラス数</th>
+                <th>関連数（依存元）</th>
+                <th>関連数（依存先）</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="panel-explore" class="package-tab-panel">
+        <details class="controls" open>
+            <summary>表示設定</summary>
+            <div class="control-row">
+                <label class="control-label" for="explore-package-input">対象パッケージ:</label>
+                <input type="text" id="explore-package-input" list="explore-package-datalist" placeholder="パッケージを入力...">
+                <datalist id="explore-package-datalist"></datalist>
+                <button type="button" id="explore-package-add">追加</button>
+                <div id="explore-package-tags" class="package-tags"></div>
+            </div>
+            <div class="control-row">
+                <div class="focus-group">
+                    <label for="explore-caller-mode-select">依存元:</label>
+                    <select id="explore-caller-mode-select">
+                        <option value="0">なし</option>
+                        <option value="1" selected>直接</option>
+                        <option value="-1">すべて</option>
+                    </select>
+                    <label for="explore-callee-mode-select">依存先:</label>
+                    <select id="explore-callee-mode-select">
+                        <option value="0">なし</option>
+                        <option value="1" selected>直接</option>
+                        <option value="-1">すべて</option>
+                    </select>
+                </div>
+            </div>
+        </details>
+
+        <pre id="package-explore-diagram" class="mermaid"></pre>
+    </div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>

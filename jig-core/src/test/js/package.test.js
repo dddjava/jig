@@ -53,16 +53,14 @@ function setupDomMocks() {
 }
 
 function createPackageFilterControls(doc) {
-    const input = doc.createElement('textarea');
-    input.id = 'package-filter-input';
-    const applyButton = doc.createElement('button');
-    applyButton.id = 'apply-package-filter';
+    const select = doc.createElement('select');
+    select.id = 'package-filter-select';
+    select.multiple = true;
     const clearButton = doc.createElement('button');
     clearButton.id = 'clear-package-filter';
-    doc.elementsById.set('package-filter-input', input);
-    doc.elementsById.set('apply-package-filter', applyButton);
+    doc.elementsById.set('package-filter-select', select);
     doc.elementsById.set('clear-package-filter', clearButton);
-    return {input, applyButton, clearButton};
+    return {select, clearButton};
 }
 
 function createDepthSelect(doc) {
@@ -93,14 +91,11 @@ function setupDiagramEnvironment(doc, context) {
 test.describe('package.js', () => {
     test.beforeEach(() => {
         // Use the module's internal state for testing, resetting it before each test
-        testContext = PackageApp.state;
+        testContext = PackageApp.hierarchyState;
         testContext.packageRelationCache = null;
         testContext.diagramNodeIdToFqn = new Map();
         testContext.aggregationDepth = 0;
         testContext.packageFilterFqn = [];
-        testContext.focusCallerMode = '1';
-        testContext.focusCalleeMode = '1';
-        testContext.focusedPackageFqn = null;
         testContext.diagramDirection = 'TB';
         testContext.mutualDependencyDiagramDirection = 'LR';
         testContext.transitiveReductionEnabled = true;
@@ -171,14 +166,14 @@ test.describe('package.js', () => {
                 assert.equal(PackageApp.normalizeAggregationDepthValue('abc'), 0);
             });
 
-            test('findDefaultPackageFilterCandidate: domainPackageRootsがあれば返す', () => {
+            test('findDefaultPackageFilterCandidate: domainPackageRootsがあれば配列を返す', () => {
                 const candidate = PackageApp.findDefaultPackageFilterCandidate(['app.domain']);
-                assert.equal(candidate, 'app.domain');
+                assert.deepEqual(candidate, ['app.domain']);
             });
 
-            test('findDefaultPackageFilterCandidate: 複数のdomainPackageRootsを改行結合して返す', () => {
+            test('findDefaultPackageFilterCandidate: 複数のdomainPackageRootsを配列で返す', () => {
                 const candidate = PackageApp.findDefaultPackageFilterCandidate(['com.a.domain', 'org.b.domain']);
-                assert.equal(candidate, 'com.a.domain\norg.b.domain');
+                assert.deepEqual(candidate, ['com.a.domain', 'org.b.domain']);
             });
 
             test('findDefaultPackageFilterCandidate: domainPackageRootsが空ならnullを返す', () => {
@@ -210,34 +205,6 @@ test.describe('package.js', () => {
                     ['app.domain.model', 'app.other']
                 );
                 assert.deepEqual(visibility, [true, false, true]);
-            });
-
-            test('buildRelatedRowVisibility: 関連フィルタ未指定はパッケージフィルタのみを表示する', () => {
-                const rowFqns = ['app.domain', 'app.other'];
-                const visibility = PackageApp.buildFocusRowVisibility(
-                    rowFqns,
-                    [],
-                    ['app.domain'],
-                    0,
-                    '1', // focusCallerMode
-                    '0' // focusCalleeMode
-                );
-                assert.deepEqual(visibility, [true, false]);
-            });
-
-            test('buildRelatedRowVisibility: 関係する行のみ表示する', () => {
-                const rowFqns = ['app.a', 'app.b', 'app.c'];
-                const relations = [{from: 'app.a', to: 'app.b'}];
-                const visibility = PackageApp.buildFocusRowVisibility(
-                    rowFqns,
-                    relations,
-                    [],
-                    0,
-                    '0', // focusCallerMode
-                    '1', // focusCalleeMode
-                    'app.a'
-                );
-                assert.deepEqual(visibility, [true, true, false]);
             });
 
             const packages = [
@@ -301,6 +268,55 @@ test.describe('package.js', () => {
                 assert.deepEqual(Array.from(focusSet).sort(), ['app.a', 'app.c', 'app.d']); // c -> a, d -> a (direct callers)
             });
 
+            test('collectExploreNodeSets: 直接モードで起点の依存元・依存先を収集する', () => {
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.c', to: 'app.b'},
+                    {from: 'app.b', to: 'app.d'},
+                ];
+                const {targetSet, callerSet, calleeSet} = PackageApp.collectExploreNodeSets(
+                    ['app.b'], relations, '1', '1'
+                );
+                assert.deepEqual(Array.from(targetSet).sort(), ['app.b']);
+                assert.deepEqual(Array.from(callerSet).sort(), ['app.a', 'app.c']);
+                assert.deepEqual(Array.from(calleeSet).sort(), ['app.d']);
+            });
+
+            test('collectExploreNodeSets: 複数起点の場合は和集合で収集する', () => {
+                const relations = [
+                    {from: 'app.a', to: 'app.b'},
+                    {from: 'app.c', to: 'app.b'},
+                    {from: 'app.b', to: 'app.d'},
+                    {from: 'app.e', to: 'app.c'},
+                    {from: 'app.c', to: 'app.f'},
+                ];
+                const {targetSet, callerSet, calleeSet} = PackageApp.collectExploreNodeSets(
+                    ['app.b', 'app.c'], relations, '1', '1'
+                );
+                assert.deepEqual(Array.from(targetSet).sort(), ['app.b', 'app.c']);
+                assert.deepEqual(Array.from(callerSet).sort(), ['app.a', 'app.e']); // targetに含まれるものは除外
+                assert.deepEqual(Array.from(calleeSet).sort(), ['app.d', 'app.f']); // targetに含まれるものは除外
+            });
+
+            test('collectExploreNodeSets: 依存元なしの場合', () => {
+                const relations = [{from: 'app.a', to: 'app.b'}];
+                const {callerSet, calleeSet} = PackageApp.collectExploreNodeSets(
+                    ['app.a'], relations, '0', '1'
+                );
+                assert.deepEqual(Array.from(callerSet).sort(), []);
+                assert.deepEqual(Array.from(calleeSet).sort(), ['app.b']);
+            });
+
+            test('collectExploreNodeSets: 起点が空の場合は空セットを返す', () => {
+                const relations = [{from: 'app.a', to: 'app.b'}];
+                const {targetSet, callerSet, calleeSet} = PackageApp.collectExploreNodeSets(
+                    [], relations, '1', '1'
+                );
+                assert.equal(targetSet.size, 0);
+                assert.equal(callerSet.size, 0);
+                assert.equal(calleeSet.size, 0);
+            });
+
             test('buildVisibleDiagramRelations: パッケージフィルタを適用する', () => {
                 const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
                     packageFilterFqn: ['app'],
@@ -311,216 +327,13 @@ test.describe('package.js', () => {
                 assert.equal(base.uniqueRelations.length, 2);
             });
 
-            test('filterFocusDiagramRelations: relatedSetで絞り込む', () => {
-                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
-                    packageFilterFqn: [],
-                    aggregationDepth: 0,
-                    transitiveReductionEnabled: false
-                });
-                const filtered = PackageApp.filterFocusDiagramRelations(
-                    base.uniqueRelations,
-                    base.packageFqns,
-                    'app.b',
-                    0,
-                    '1', // focusCallerMode
-                    '1'  // focusCalleeMode
-                );
-                assert.deepEqual(Array.from(filtered.packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
-                assert.equal(filtered.uniqueRelations.length, 2);
-            });
-
-            test('filterFocusDiagramRelations: 依存元なし、依存先なしの場合', () => {
-                const packages = [
-                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}
-                ];
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.b', to: 'app.c'}
-                ];
-                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
-                    packageFilterFqn: [],
-                    aggregationDepth: 0,
-                    transitiveReductionEnabled: false
-                });
-                const filtered = PackageApp.filterFocusDiagramRelations(
-                    base.uniqueRelations,
-                    base.packageFqns,
-                    'app.b',
-                    0,
-                    '0', // focusCallerMode: なし
-                    '0'  // focusCalleeMode: なし
-                );
-                assert.deepEqual(Array.from(filtered.packageFqns).sort(), ['app.b']); // Only the focused package
-                assert.equal(filtered.uniqueRelations.length, 0); // No relations
-            });
-
-            test('filterFocusDiagramRelations: 依存元すべて、依存先なしの場合', () => {
-                const packages = [
-                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}
-                ];
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.b', to: 'app.c'}
-                ];
-                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
-                    packageFilterFqn: [],
-                    aggregationDepth: 0,
-                    transitiveReductionEnabled: false
-                });
-                const filtered = PackageApp.filterFocusDiagramRelations(
-                    base.uniqueRelations,
-                    base.packageFqns,
-                    'app.b',
-                    0,
-                    '-1', // focusCallerMode: すべて
-                    '0'  // focusCalleeMode: なし
-                );
-                assert.deepEqual(Array.from(filtered.packageFqns).sort(), ['app.a', 'app.b']); // a -> b (all callers)
-                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`), ['app.a>app.b']);
-            });
-
-            test('filterFocusDiagramRelations: 依存元なし、依存先すべての場合', () => {
-                const packages = [
-                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}
-                ];
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.b', to: 'app.c'}
-                ];
-                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
-                    packageFilterFqn: [],
-                    aggregationDepth: 0,
-                    transitiveReductionEnabled: false
-                });
-                const filtered = PackageApp.filterFocusDiagramRelations(
-                    base.uniqueRelations,
-                    base.packageFqns,
-                    'app.b',
-                    0,
-                    '0', // focusCallerMode: なし
-                    '-1'  // focusCalleeMode: すべて
-                );
-                assert.deepEqual(Array.from(filtered.packageFqns).sort(), ['app.b', 'app.c']); // b -> c (all callees)
-                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`), ['app.b>app.c']);
-            });
-
-            test('filterFocusDiagramRelations: 依存元すべて、依存先直接の場合', () => {
-                const packages = [
-                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}, {fqn: 'app.d'}
-                ];
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.b', to: 'app.c'},
-                    {from: 'app.d', to: 'app.b'},
-                ];
-                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
-                    packageFilterFqn: [],
-                    aggregationDepth: 0,
-                    transitiveReductionEnabled: false
-                });
-                const filtered = PackageApp.filterFocusDiagramRelations(
-                    base.uniqueRelations,
-                    base.packageFqns,
-                    'app.b', // focus target
-                    0,       // aggregation depth
-                    '-1',    // focusCallerMode: すべて
-                    '1'      // focusCalleeMode: 直接
-                );
-                assert.deepEqual(Array.from(filtered.packageFqns).sort(), ['app.a', 'app.b', 'app.c', 'app.d']);
-                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`).sort(), ['app.a>app.b', 'app.b>app.c', 'app.d>app.b']);
-            });
-
-            test('filterFocusDiagramRelations: 依存元直接、依存先すべての場合', () => {
-                const packages = [
-                    {fqn: 'app.a'}, {fqn: 'app.b'}, {fqn: 'app.c'}, {fqn: 'app.d'}
-                ];
-                const relations = [
-                    {from: 'app.a', to: 'app.b'},
-                    {from: 'app.b', to: 'app.c'},
-                    {from: 'app.c', to: 'app.d'},
-                ];
-                const base = globalThis.Jig.mermaid.builder.buildVisibleDiagramRelations(packages, relations, [], {
-                    packageFilterFqn: [],
-                    aggregationDepth: 0,
-                    transitiveReductionEnabled: false
-                });
-                const filtered = PackageApp.filterFocusDiagramRelations(
-                    base.uniqueRelations,
-                    base.packageFqns,
-                    'app.b', // focus target
-                    0,       // aggregation depth
-                    '1',     // focusCallerMode: 直接
-                    '-1'     // focusCalleeMode: すべて
-                );
-                assert.deepEqual(Array.from(filtered.packageFqns).sort(), ['app.a', 'app.b', 'app.c', 'app.d']);
-                assert.deepEqual(filtered.uniqueRelations.map(r => `${r.from}>${r.to}`).sort(), ['app.a>app.b', 'app.b>app.c', 'app.c>app.d']);
-            });
-
             test('buildVisibleDiagramElements: packageFilterは配下のみを表示する', () => {
-                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], ['app'], null, 0, '1', '1');
+                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], ['app'], 0, false);
                 assert.deepEqual(Array.from(packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
-            });
-
-            test('buildVisibleDiagramElements: relatedFilter(direct)は隣接のみを表示する', () => {
-                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], [], 'app.b', 0, '1', '1', false);
-                assert.deepEqual(Array.from(packageFqns).sort(), ['app.a', 'app.b', 'app.c']);
-            });
-
-            test('buildVisibleDiagramElements: relatedFilter(all)は到達可能なものを表示する', () => {
-                const {packageFqns} = PackageApp.buildVisibleDiagramElements(packages, relations, [], [], 'app.a', 0, '-1', '-1');
-                assert.deepEqual(Array.from(packageFqns).sort(), ['app.a', 'app.b', 'app.c', 'lib.d']);
             });
         });
 
         test.describe('UI', () => {
-            test('filterRelatedTableRows: 関係する行のみ表示する', () => {
-                const doc = setupDocument();
-                setPackageData({
-                    packages: [
-                        {fqn: 'app.a'},
-                        {fqn: 'app.b'},
-                        {fqn: 'app.c'},
-                    ],
-                    relations: [
-                        {from: 'app.a', to: 'app.b'},
-                    ],
-                }, testContext);
-                const rows = buildPackageRows(doc, ['app.a', 'app.b', 'app.c']);
-                testContext.aggregationDepth = 0;
-                testContext.focusCallerMode = '1';
-                testContext.focusCalleeMode = '1';
-                testContext.packageFilterFqn = [];
-
-                PackageApp.filterFocusTableRows('app.a', testContext);
-
-                assert.equal(rows[0].classList.contains('hidden'), false);
-                assert.equal(rows[1].classList.contains('hidden'), false);
-                assert.equal(rows[2].classList.contains('hidden'), true);
-            });
-
-            test('renderFocusLabel: 対象表示を更新する', () => {
-                const mockTarget = {textContent: ''};
-                const getFocusTargetMock = test.mock.fn(() => mockTarget);
-                const setFocusTargetTextMock = test.mock.fn((element, text) => {
-                    element.textContent = text;
-                });
-
-                test.mock.method(PackageApp.dom, 'getFocusTarget', getFocusTargetMock);
-                test.mock.method(PackageApp.dom, 'setFocusTargetText', setFocusTargetTextMock);
-
-                testContext.focusedPackageFqn = null;
-                PackageApp.renderFocusLabel(testContext);
-                assert.equal(mockTarget.textContent, '未選択');
-                assert.equal(setFocusTargetTextMock.mock.calls.length, 1);
-                assert.deepEqual(setFocusTargetTextMock.mock.calls[0].arguments, [mockTarget, '未選択']);
-
-                testContext.focusedPackageFqn = 'app.domain';
-                PackageApp.renderFocusLabel(testContext);
-                assert.equal(mockTarget.textContent, 'app.domain');
-                assert.equal(setFocusTargetTextMock.mock.calls.length, 2);
-                assert.deepEqual(setFocusTargetTextMock.mock.calls[1].arguments, [mockTarget, 'app.domain']);
-            });
-
             test('applyDefaultPackageFilterIfPresent: domainPackageRootsがあれば適用する', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
@@ -533,14 +346,13 @@ test.describe('package.js', () => {
                     domainPackageRoots: ['app.domain'],
                 }, testContext);
                 doc.selectorsAll.set('#package-table tbody tr', []);
-                const {input} = createPackageFilterControls(doc);
-                createDepthSelect(doc); // for renderDiagramAndTable
+                createPackageFilterControls(doc);
+                createDepthSelect(doc); // for renderHierarchyDiagramAndTable
 
                 const applied = PackageApp.applyDefaultPackageFilterIfPresent(testContext);
 
                 assert.equal(applied, true);
                 assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
-                assert.equal(input.value, 'app.domain');
             });
 
             test('applyDefaultPackageFilterIfPresent: domainPackageRootsがなければ適用しない', () => {
@@ -562,7 +374,7 @@ test.describe('package.js', () => {
                 assert.equal(applied, false);
             });
 
-            test('setupPackageFilterControl: 適用/解除を扱う', () => {
+            test('setupPackageFilterControl: 解除を扱う', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -572,17 +384,21 @@ test.describe('package.js', () => {
                 doc.selectorsAll.set('#package-table tbody tr', []);
                 createDepthSelect(doc);
 
-                const {input, applyButton, clearButton} = createPackageFilterControls(doc);
+                const {select, clearButton} = createPackageFilterControls(doc);
 
                 PackageApp.setupPackageFilterControl(testContext);
 
-                input.value = 'app.domain\napp.other';
-                applyButton.dispatchEvent({type: 'click'});
-                assert.deepEqual(testContext.packageFilterFqn, ['app.domain', 'app.other']);
+                // select changeイベントで更新
+                const option = doc.createElement('option');
+                option.value = 'app.domain';
+                select.appendChild(option);
+                option.selected = true;
+                select.selectedOptions = [option];
+                select.dispatchEvent({type: 'change'});
+                assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
 
                 clearButton.dispatchEvent({type: 'click'});
                 assert.deepEqual(testContext.packageFilterFqn, []);
-                assert.equal(input.value, '');
             });
         });
     });
@@ -605,15 +421,6 @@ test.describe('package.js', () => {
                     outgoingCount: 1,
                 }]);
                 delete globalThis.glossaryData;
-            });
-
-            test('buildPackageTableActionSpecs: ボタン文言を返す', () => {
-                const specs = PackageApp.buildPackageTableActionSpecs();
-
-                assert.equal(specs.filter.ariaLabel, 'このパッケージで絞り込み');
-                assert.equal(specs.filter.screenReaderText, '絞り込み');
-                assert.equal(specs.focus.ariaLabel, 'フォーカス');
-                assert.equal(specs.focus.screenReaderText, 'フォーカス');
             });
 
             test('aggregatePackageData: depth=0はそのまま返す', () => {
@@ -669,11 +476,12 @@ test.describe('package.js', () => {
 
                 PackageApp.renderPackageTable(testContext);
 
+                // 列: [絞り込みボタン, fqn, name, glossary, classCount, incoming, outgoing]
                 assert.equal(tbody.children.length, 2);
-                assert.equal(tbody.children[0].children[3].textContent, 'A');
-                assert.equal(tbody.children[0].children[5].textContent, '2');
-                assert.equal(tbody.children[0].children[6].textContent, '0');
-                assert.equal(tbody.children[0].children[7].textContent, '2');
+                assert.equal(tbody.children[0].children[2].textContent, 'A');
+                assert.equal(tbody.children[0].children[4].textContent, '2');
+                assert.equal(tbody.children[0].children[5].textContent, '0');
+                assert.equal(tbody.children[0].children[6].textContent, '2');
                 delete globalThis.glossaryData;
             });
 
@@ -701,7 +509,7 @@ test.describe('package.js', () => {
                 assert.ok(fqns.includes('app.domain'));
                 assert.ok(fqns.includes('app.other'));
                 const domainRow = tbody.children.find(tr => tr.querySelector('td.fqn').textContent === 'app.domain');
-                assert.equal(domainRow.children[5].textContent, '5'); // classCount合計
+                assert.equal(domainRow.children[4].textContent, '5'); // classCount合計
             });
         });
     });
@@ -847,7 +655,7 @@ test.describe('package.js', () => {
                 assert.equal(renderWithControls.mock.calls.length, 1);
             });
 
-            test('renderPackageDiagram: 相互依存を含めて描画する', () => {
+            test('renderHierarchyDiagram: 相互依存を含めて描画する', () => {
                 const doc = setupDocument();
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({
@@ -861,7 +669,7 @@ test.describe('package.js', () => {
                     ],
                 }, testContext);
 
-                PackageApp.renderPackageDiagram(testContext, [], null);
+                PackageApp.renderHierarchyDiagram(testContext);
 
                 const diagram = doc.getElementById('package-relation-diagram');
                 assert.equal(diagram.textContent.includes('graph'), true);
@@ -870,25 +678,27 @@ test.describe('package.js', () => {
                 assert.equal(mutual.children.length > 0, true);
             });
 
-            test('registerDiagramClickHandler: クリックで関連フィルタへ切り替える', () => {
+            test('registerHierarchyDiagramClickHandler: クリックでフィルタへ切り替える', () => {
+                const doc = setupDocument();
+                setupDiagramEnvironment(doc, testContext);
+                setPackageData({packages: [{fqn: 'app.example', classCount: 1}], relations: []}, testContext);
+                doc.selectorsAll.set('#package-table tbody tr', []);
+                createPackageFilterControls(doc);
+                createDepthSelect(doc);
                 global.window = {};
                 testContext.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
-                let called = null;
-                const applyFocus = (fqn, context) => {
-                    called = {fqn, context};
-                };
 
-                PackageApp.registerDiagramClickHandler(testContext, applyFocus);
+                PackageApp.registerHierarchyDiagramClickHandler(testContext);
 
-                global.window[PackageApp.DIAGRAM_CLICK_HANDLER_NAME]('P1');
+                global.window[PackageApp.HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME]('P1');
 
-                assert.deepEqual(called, {fqn: 'app.example', context: testContext});
+                assert.deepEqual(testContext.packageFilterFqn, ['app.example']);
             });
 
             test('setupTransitiveReductionControl: UIをセットアップする', () => {
                 const doc = setupDocument();
 
-                // renderDiagramAndTableの副作用をチェックするための準備
+                // renderHierarchyDiagramAndTableの副作用をチェックするための準備
                 setupDiagramEnvironment(doc, testContext);
                 setPackageData({packages: [{fqn: 'a'}], relations: []}, testContext);
                 const depthSelect = createDepthSelect(doc);

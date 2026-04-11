@@ -246,6 +246,76 @@ globalThis.Jig.mermaid = (() => {
         }
 
         /**
+         * 関連探索ダイアグラムのMermaidソースを生成する（ノード色分けあり）
+         * @param {Set<string>} packageFqns - 表示するパッケージFQNセット
+         * @param {Relation[]} uniqueRelations - 表示する関連
+         * @param {{targetFqns: Set<string>, callerFqns: Set<string>, calleeFqns: Set<string>, diagramDirection: string, clickHandlerName: string}} options
+         * @returns {{source: string, nodeIdToFqn: Map<string, string>}}
+         */
+        function buildExploreDiagramSource(packageFqns, uniqueRelations, options) {
+            const {targetFqns, callerFqns, calleeFqns, diagramDirection, clickHandlerName} = options;
+            const escapeMermaidText = text => text.replace(/"/g, '\\"');
+
+            const allParentFqns = buildParentFqns(packageFqns);
+            const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
+
+            const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
+                if (allParentFqns.has(fqn)) return parentFqnsWithRelations.has(fqn);
+                return true;
+            }));
+
+            const lines = [
+                "---",
+                "config:",
+                "  theme: 'default'",
+                "  themeVariables:",
+                "    clusterBkg: '#ffffde'",
+                "---",
+                `graph ${diagramDirection}`];
+            const {nodeIdByFqn, nodeIdToFqn, nodeLabelById, ensureNodeId} = buildDiagramNodeMaps(packageFqnsToDisplay);
+            const subgraphNodeIds = new Map();
+
+            const nodeLines = buildDiagramNodeLines(
+                packageFqnsToDisplay,
+                nodeIdByFqn,
+                {
+                    nodeIdToFqn,
+                    nodeLabelById,
+                    escapeMermaidText,
+                    clickHandlerName,
+                    parentFqnsWithRelations,
+                    subgraphNodeIds,
+                }
+            );
+            const {edgeLines, linkStyles} = buildDiagramEdgeLines(uniqueRelations, ensureNodeId, {subgraphNodeIds});
+
+            nodeLines.forEach(line => lines.push(line));
+            edgeLines.forEach(line => lines.push(line));
+            linkStyles.forEach(styleLine => lines.push(styleLine));
+
+            // 3色のclassDef定義
+            lines.push('classDef parentPackage fill:#ffffce,stroke:#aaaa00,stroke-dasharray:10 3');
+            lines.push('classDef exploreTarget fill:#ffffce,stroke:#aaaa00,stroke-width:3px,font-weight:bold');
+            lines.push('classDef exploreCaller fill:#E8F0FE,stroke:#2E5C8A,stroke-width:2px');
+            lines.push('classDef exploreCallee fill:#FFF0E6,stroke:#CC6600,stroke-width:2px');
+
+            // 各ノードにクラスを適用（優先度: target > caller > callee）
+            packageFqnsToDisplay.forEach(fqn => {
+                if (!nodeIdByFqn.has(fqn)) return;
+                const nodeId = nodeIdByFqn.get(fqn);
+                if (targetFqns && targetFqns.has(fqn)) {
+                    lines.push(`class ${nodeId} exploreTarget`);
+                } else if (callerFqns && callerFqns.has(fqn)) {
+                    lines.push(`class ${nodeId} exploreCaller`);
+                } else if (calleeFqns && calleeFqns.has(fqn)) {
+                    lines.push(`class ${nodeId} exploreCallee`);
+                }
+            });
+
+            return {source: lines.join('\n'), nodeIdToFqn};
+        }
+
+        /**
          * ダイアグラムで使用する各種Mapを構築する
          * @param {Set<string>} packageFqns - 対象パッケージFQNセット
          * @returns {{nodeIdByFqn: Map<string, string>, nodeIdToFqn: Map<string, string>, nodeLabelById: Map<string, string>, ensureNodeId: function(string): string}} - ノードマップとノードID生成関数
@@ -524,6 +594,7 @@ globalThis.Jig.mermaid = (() => {
             getNodeDefinition,
             edgeTypeForLength,
             buildMermaidDiagramSource,
+            buildExploreDiagramSource,
             buildDiagramNodeMaps,
             buildDiagramEdgeLines,
             buildDiagramNodeLines,

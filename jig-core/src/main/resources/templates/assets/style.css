@@ -1004,10 +1004,6 @@ label {
     background-color: #fff;
 }
 
-.package-relation details.controls input[type="text"],
-.package-relation details.controls textarea {
-    min-width: 50ch;
-}
 
 .package-relation details.controls button {
     padding: 6px 10px;
@@ -1184,6 +1180,98 @@ label {
     .package-relation details.controls select {
         width: 100%;
     }
+}
+
+.package-relation .package-mode-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.package-relation .tab-button {
+    padding: 8px 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px 4px 0 0;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+
+.package-relation .tab-button:hover {
+    background-color: #dee2e6;
+}
+
+.package-relation .tab-button.is-active {
+    background-color: #fff;
+    border-color: #dee2e6;
+    border-bottom-color: #fff;
+    font-weight: 600;
+}
+
+.package-relation .package-tab-panel {
+    display: none;
+}
+
+.package-relation .package-tab-panel.is-active {
+    display: block;
+}
+
+.package-relation details.controls select[multiple] {
+    min-width: 30ch;
+    max-width: 60ch;
+}
+
+.package-relation details.controls input[type="text"] {
+    min-width: 30ch;
+}
+
+.package-relation .package-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.package-relation .package-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: #e8f0fe;
+    border: 1px solid #2e5c8a;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.9em;
+}
+
+.package-relation .package-tag-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    padding: 0 2px;
+    color: #2e5c8a;
+    line-height: 1;
+}
+
+.package-relation .package-tag-remove:hover {
+    color: #cc0000;
+}
+
+.package-relation #package-explore-diagram {
+    display: flex;
+    justify-content: center;
+}
+
+.package-relation #package-explore-diagram svg {
+    margin: 0 auto;
+}
+
+.package-relation .placeholder-text {
+    color: #888;
+    font-style: italic;
+    padding: 20px;
+    display: block;
+    text-align: center;
 }
 
 .insight table {

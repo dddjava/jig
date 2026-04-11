@@ -1089,7 +1089,8 @@ globalThis.Jig.mermaid = (() => {
                 startOnLoad: false,
                 securityLevel: "loose",
                 maxTextSize: DEFAULT_MAX_TEXT_SIZE,
-                maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES
+                maxEdges: maxEdges != null ? maxEdges : DEFAULT_MAX_EDGES,
+                suppressErrorRendering: true
             };
         }
 

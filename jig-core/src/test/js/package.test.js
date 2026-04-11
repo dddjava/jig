@@ -192,6 +192,14 @@ test.describe('package.js', () => {
                 assert.equal(PackageApp.getInitialAggregationDepth(['com.example', 'com.example.domain']), 3); // 深さ2 → 3
             });
 
+            test('getRelativeFqn: 親パッケージが存在する場合はその配下からの相対名を返す', () => {
+                const fqnSet = new Set(['app', 'app.domain', 'app.other']);
+                assert.equal(PackageApp.getRelativeFqn('app.domain.model', fqnSet), 'model');
+                assert.equal(PackageApp.getRelativeFqn('app.domain', fqnSet), 'domain'); // app があるので domain
+                assert.equal(PackageApp.getRelativeFqn('app.other.service', fqnSet), 'service');
+                assert.equal(PackageApp.getRelativeFqn('other.pkg', fqnSet), 'other.pkg'); // 親がいない
+            });
+
             test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {
                 const visibility = PackageApp.buildPackageRowVisibility(
                     ['app.domain', 'app.other'],

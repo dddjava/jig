@@ -783,6 +783,15 @@ const PackageApp = (() => {
         syncStateToURL();
     }
 
+    function getRelativeFqn(fqn, fqnSet) {
+        const parts = fqn.split('.');
+        for (let i = parts.length - 1; i > 0; i--) {
+            const ancestor = parts.slice(0, i).join('.');
+            if (fqnSet.has(ancestor)) return fqn.substring(ancestor.length + 1);
+        }
+        return fqn;
+    }
+
     function renderExplorePackageList(context) {
         const container = dom.getExplorePackageList();
         if (!container) return;
@@ -813,14 +822,6 @@ const PackageApp = (() => {
         const minDepth = sortedPackages.reduce((min, p) => Math.min(min, Jig.util.getPackageDepth(p.fqn)), Infinity);
 
         const fqnSet = new Set(sortedPackages.map(p => p.fqn));
-        function getRelativeFqn(fqn) {
-            const parts = fqn.split('.');
-            for (let i = parts.length - 1; i > 0; i--) {
-                const ancestor = parts.slice(0, i).join('.');
-                if (fqnSet.has(ancestor)) return fqn.substring(ancestor.length + 1);
-            }
-            return fqn;
-        }
 
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
@@ -864,7 +865,7 @@ const PackageApp = (() => {
             tr.appendChild(toggleTd);
 
             const fqnTd = document.createElement('td');
-            fqnTd.textContent = getRelativeFqn(pkg.fqn);
+            fqnTd.textContent = getRelativeFqn(pkg.fqn, fqnSet);
             fqnTd.title = pkg.fqn;
             fqnTd.className = 'fqn';
             fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
@@ -1271,6 +1272,7 @@ const PackageApp = (() => {
         setupExploreControl,
         setupTabControl,
         setPackageFilterSelectValues,
+        getRelativeFqn,
     };
 })();
 

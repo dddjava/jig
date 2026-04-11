@@ -754,6 +754,11 @@ const PackageApp = (() => {
         }
 
         const visibleFqns = new Set([...targetSet, ...callerSet, ...calleeSet]);
+        // ターゲットの配下パッケージをsubgraphとして表示するため可視FQNに追加する
+        const targetPrefixes = [...targetSet].map(t => t + '.');
+        packages.forEach(pkg => {
+            if (targetPrefixes.some(prefix => pkg.fqn.startsWith(prefix))) visibleFqns.add(pkg.fqn);
+        });
         const visibleRelations = relations.filter(r => visibleFqns.has(r.from) && visibleFqns.has(r.to));
 
         const exploreOptions = (dir) => ({

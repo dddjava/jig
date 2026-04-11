@@ -258,7 +258,11 @@ globalThis.Jig.mermaid = (() => {
             const parentFqnsWithRelations = filterParentFqnsWithRelations(allParentFqns, uniqueRelations);
 
             const packageFqnsToDisplay = new Set(Array.from(packageFqns).filter(fqn => {
-                if (allParentFqns.has(fqn)) return parentFqnsWithRelations.has(fqn);
+                if (allParentFqns.has(fqn)) {
+                    // 明示的に選択されたターゲットは関連の有無によらず常に表示する
+                    if (targetFqns.has(fqn)) return true;
+                    return parentFqnsWithRelations.has(fqn);
+                }
                 return true;
             }));
 

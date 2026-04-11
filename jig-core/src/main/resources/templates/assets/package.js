@@ -38,10 +38,7 @@ const PackageApp = (() => {
         getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
         getDiagram: () => document.getElementById('package-relation-diagram'),
         getExploreDiagram: () => document.getElementById('package-explore-diagram'),
-        getExplorePackageInput: () => document.getElementById('explore-package-input'),
-        getExplorePackageDatalist: () => document.getElementById('explore-package-datalist'),
-        getExplorePackageAddButton: () => document.getElementById('explore-package-add'),
-        getExplorePackageTags: () => document.getElementById('explore-package-tags'),
+        getExplorePackageList: () => document.getElementById('explore-package-list'),
         getExploreCallerModeSelect: () => document.getElementById('explore-caller-mode-select'),
         getExploreCalleeModeSelect: () => document.getElementById('explore-callee-mode-select'),
         getDocumentBody: () => document.body,
@@ -773,39 +770,57 @@ const PackageApp = (() => {
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
     }
 
-    // 関連探索タグUI
-    function buildExplorePackageTagElement(fqn, onRemove) {
-        const tag = document.createElement('span');
-        tag.className = 'package-tag';
-        tag.dataset.fqn = fqn;
-
-        const label = document.createElement('span');
-        label.textContent = fqn;
-        tag.appendChild(label);
-
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.className = 'package-tag-remove';
-        removeButton.setAttribute('aria-label', `${fqn} を削除`);
-        removeButton.textContent = '×';
-        removeButton.addEventListener('click', () => onRemove(fqn));
-        tag.appendChild(removeButton);
-
-        return tag;
-    }
-
-    function renderExplorePackageTags(context) {
-        const container = dom.getExplorePackageTags();
+    // 関連探索パッケージ一覧UI
+    function renderExplorePackageList(context) {
+        const container = dom.getExplorePackageList();
         if (!container) return;
+
+        const {packages} = getPackageRelationData(hierarchyState);
+        const sortedPackages = [...packages].sort((a, b) => a.fqn.localeCompare(b.fqn));
+        const targetSet = new Set(context.exploreTargetPackages);
+
         container.innerHTML = '';
-        context.exploreTargetPackages.forEach(fqn => {
-            const tag = buildExplorePackageTagElement(fqn, (removedFqn) => {
-                context.exploreTargetPackages = context.exploreTargetPackages.filter(p => p !== removedFqn);
-                renderExplorePackageTags(context);
+        const table = document.createElement('table');
+        table.className = 'explore-package-table sortable';
+
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['完全修飾名', '名称'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        sortedPackages.forEach(pkg => {
+            const tr = document.createElement('tr');
+            if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
+
+            tr.addEventListener('click', () => {
+                if (context.exploreTargetPackages.includes(pkg.fqn)) {
+                    context.exploreTargetPackages = context.exploreTargetPackages.filter(p => p !== pkg.fqn);
+                } else {
+                    context.exploreTargetPackages = [...context.exploreTargetPackages, pkg.fqn];
+                }
+                renderExplorePackageList(context);
                 renderExploreDiagram(context);
             });
-            container.appendChild(tag);
+
+            const fqnTd = document.createElement('td');
+            fqnTd.textContent = pkg.fqn;
+            fqnTd.className = 'fqn';
+            tr.appendChild(fqnTd);
+
+            const nameTd = document.createElement('td');
+            nameTd.textContent = getGlossaryTitle(pkg.fqn);
+            tr.appendChild(nameTd);
+
+            tbody.appendChild(tr);
         });
+        table.appendChild(tbody);
+        container.appendChild(table);
     }
 
     // UI配線
@@ -975,48 +990,8 @@ const PackageApp = (() => {
     }
 
     function setupExploreControl(context) {
-        const input = dom.getExplorePackageInput();
-        const addButton = dom.getExplorePackageAddButton();
         const callerSelect = dom.getExploreCallerModeSelect();
         const calleeSelect = dom.getExploreCalleeModeSelect();
-
-        // datalist には探索フィルタに関係なく全パッケージを候補として表示するため hierarchyState を使う
-        const datalist = dom.getExplorePackageDatalist();
-        if (datalist) {
-            const {packages} = getPackageRelationData(hierarchyState);
-            packages.forEach(pkg => {
-                const option = document.createElement('option');
-                option.value = pkg.fqn;
-                datalist.appendChild(option);
-            });
-        }
-
-        const addPackage = (fqn) => {
-            const trimmed = fqn.trim();
-            if (!trimmed || context.exploreTargetPackages.includes(trimmed)) return;
-            context.exploreTargetPackages = [...context.exploreTargetPackages, trimmed];
-            renderExplorePackageTags(context);
-            renderExploreDiagram(context);
-        };
-
-        if (addButton) {
-            addButton.addEventListener('click', () => {
-                if (input) {
-                    addPackage(input.value);
-                    input.value = '';
-                }
-            });
-        }
-
-        if (input) {
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    addPackage(input.value);
-                    input.value = '';
-                    e.preventDefault();
-                }
-            });
-        }
 
         if (callerSelect) {
             callerSelect.value = context.exploreCallerMode;
@@ -1053,7 +1028,7 @@ const PackageApp = (() => {
             if (!fqn) return;
             if (!context.exploreTargetPackages.includes(fqn)) {
                 context.exploreTargetPackages = [...context.exploreTargetPackages, fqn];
-                renderExplorePackageTags(context);
+                renderExplorePackageList(context);
                 renderExploreDiagram(context);
             }
         };
@@ -1097,6 +1072,7 @@ const PackageApp = (() => {
         setupExploreControl(exploreState);
         registerExploreDiagramClickHandler(exploreState);
         renderExploreDiagram(exploreState);
+        renderExplorePackageList(exploreState);
     }
 
     return {
@@ -1135,8 +1111,7 @@ const PackageApp = (() => {
         renderHierarchyDiagramAndTable,
         buildHierarchyDiagramRenderPlan,
         renderExploreDiagram,
-        renderExplorePackageTags,
-        buildExplorePackageTagElement,
+        renderExplorePackageList,
         registerHierarchyDiagramClickHandler,
         registerExploreDiagramClickHandler,
         setupPackageFilterControl,

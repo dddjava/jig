@@ -91,13 +91,6 @@
         <details class="controls" open>
             <summary>表示設定</summary>
             <div class="control-row">
-                <label class="control-label" for="explore-package-input">対象パッケージ:</label>
-                <input type="text" id="explore-package-input" list="explore-package-datalist" placeholder="パッケージを入力...">
-                <datalist id="explore-package-datalist"></datalist>
-                <button type="button" id="explore-package-add">追加</button>
-                <div id="explore-package-tags" class="package-tags"></div>
-            </div>
-            <div class="control-row">
                 <div class="focus-group">
                     <label for="explore-caller-mode-select">依存元:</label>
                     <select id="explore-caller-mode-select">
@@ -116,6 +109,7 @@
         </details>
 
         <pre id="package-explore-diagram" class="mermaid"></pre>
+        <section id="explore-package-list"></section>
     </div>
 </main>
 

@@ -1221,40 +1221,26 @@ label {
     max-width: 60ch;
 }
 
-.package-relation details.controls input[type="text"] {
-    min-width: 30ch;
+.package-relation #explore-package-list {
+    margin-top: 16px;
 }
 
-.package-relation .package-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    align-items: center;
+.package-relation .explore-package-table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-.package-relation .package-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background-color: #e8f0fe;
-    border: 1px solid #2e5c8a;
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: 0.9em;
-}
-
-.package-relation .package-tag-remove {
-    background: none;
-    border: none;
+.package-relation .explore-package-table tbody tr {
     cursor: pointer;
-    font-size: 1em;
-    padding: 0 2px;
-    color: #2e5c8a;
-    line-height: 1;
 }
 
-.package-relation .package-tag-remove:hover {
-    color: #cc0000;
+.package-relation .explore-package-table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+.package-relation .explore-package-table tbody tr.explore-target-selected {
+    background-color: #ffffce;
+    font-weight: bold;
 }
 
 .package-relation #package-explore-diagram {

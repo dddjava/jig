@@ -257,7 +257,10 @@ const PackageApp = (() => {
         }
 
         // callerSet/calleeSet からターゲットを除外
-        targetSet.forEach(t => { callerSet.delete(t); calleeSet.delete(t); });
+        targetSet.forEach(t => {
+            callerSet.delete(t);
+            calleeSet.delete(t);
+        });
 
         return {targetSet, callerSet, calleeSet};
     }
@@ -787,9 +790,12 @@ const PackageApp = (() => {
         const parts = fqn.split('.');
         for (let i = parts.length - 1; i > 0; i--) {
             const ancestor = parts.slice(0, i).join('.');
-            if (fqnSet.has(ancestor)) return fqn.substring(ancestor.length + 1);
+            if (fqnSet.has(ancestor)) {
+                const relative = fqn.substring(ancestor.length + 1);
+                return {ancestor, relative};
+            }
         }
-        return fqn;
+        return {ancestor: undefined, relative: fqn};
     }
 
     function renderExplorePackageList(context) {
@@ -819,13 +825,10 @@ const PackageApp = (() => {
             }
         }
 
-        const minDepth = sortedPackages.reduce((min, p) => Math.min(min, Jig.util.getPackageDepth(p.fqn)), Infinity);
-
         const fqnSet = new Set(sortedPackages.map(p => p.fqn));
 
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
-            const depth = Jig.util.getPackageDepth(pkg.fqn) - minDepth;
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
             if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
@@ -864,8 +867,11 @@ const PackageApp = (() => {
             }
             tr.appendChild(toggleTd);
 
+            const { ancestor, relative } = getRelativeFqn(pkg.fqn, fqnSet);
+            const depth = ancestor ? ancestor.split('.').length : 0;
+
             const fqnTd = document.createElement('td');
-            fqnTd.textContent = getRelativeFqn(pkg.fqn, fqnSet);
+            fqnTd.textContent = relative;
             fqnTd.title = pkg.fqn;
             fqnTd.className = 'fqn';
             fqnTd.style.paddingLeft = `${depth * 16 + 4}px`;
@@ -912,7 +918,9 @@ const PackageApp = (() => {
 
         const clearPackageFilter = () => {
             context.packageFilterFqn = [];
-            Array.from(select.children).forEach(option => { option.selected = false; });
+            Array.from(select.children).forEach(option => {
+                option.selected = false;
+            });
             renderHierarchyDiagramAndTable(context);
         };
         const resetPackageFilter = () => {

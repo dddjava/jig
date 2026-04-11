@@ -4,9 +4,13 @@ const {Element, DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // 依存モジュールを先にロードして Jig 名前空間をセットアップする
 global.window = {
-    location: { pathname: '', search: '', hash: '' },
-    history: { replaceState: () => {} },
-    addEventListener: () => {}
+    location: {pathname: '', search: '', hash: ''},
+    history: {
+        replaceState: () => {
+        }
+    },
+    addEventListener: () => {
+    }
 };
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-util.js');
@@ -194,10 +198,17 @@ test.describe('package.js', () => {
 
             test('getRelativeFqn: 親パッケージが存在する場合はその配下からの相対名を返す', () => {
                 const fqnSet = new Set(['app', 'app.domain', 'app.other']);
-                assert.equal(PackageApp.getRelativeFqn('app.domain.model', fqnSet), 'model');
-                assert.equal(PackageApp.getRelativeFqn('app.domain', fqnSet), 'domain'); // app があるので domain
-                assert.equal(PackageApp.getRelativeFqn('app.other.service', fqnSet), 'service');
-                assert.equal(PackageApp.getRelativeFqn('other.pkg', fqnSet), 'other.pkg'); // 親がいない
+
+                assert.deepEqual(PackageApp.getRelativeFqn('app.domain.model', fqnSet),
+                    {ancestor: 'app.domain', relative: 'model'});
+                assert.deepEqual(PackageApp.getRelativeFqn('app.domain', fqnSet),
+                    {ancestor: 'app', relative: 'domain'}); // app があるので domain
+                assert.deepEqual(PackageApp.getRelativeFqn('app.other.service', fqnSet),
+                    {ancestor: 'app.other', relative: 'service'});
+                assert.deepEqual(PackageApp.getRelativeFqn('app.another.service', fqnSet),
+                    {ancestor: 'app', relative: 'another.service'});
+                assert.deepEqual(PackageApp.getRelativeFqn('other.pkg', fqnSet),
+                    {ancestor: undefined, relative: 'other.pkg'}); // 親がいない
             });
 
             test('buildPackageRowVisibility: パッケージフィルタのみを表示する', () => {

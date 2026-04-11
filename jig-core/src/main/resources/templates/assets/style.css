@@ -1248,7 +1248,6 @@ label {
 
 .package-relation .explore-package-table tbody tr.explore-target-selected {
     background-color: #ffffce;
-    font-weight: bold;
 }
 
 .package-relation #package-explore-diagram {

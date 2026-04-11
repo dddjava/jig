@@ -1212,6 +1212,8 @@ globalThis.Jig.mermaid = (() => {
          */
         function setupLazyMermaidRender() {
             if (typeof window === "undefined" || !window.mermaid) return;
+
+            // 一覧で図を表示しないドキュメントでは不要
             if (document.body.classList.contains("package-relation")) return;
 
             const diagrams = Array.from(document.querySelectorAll(".mermaid"));

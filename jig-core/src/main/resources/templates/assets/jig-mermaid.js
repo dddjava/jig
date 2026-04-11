@@ -1212,7 +1212,7 @@ globalThis.Jig.mermaid = (() => {
          */
         function setupLazyMermaidRender() {
             if (typeof window === "undefined" || !window.mermaid) return;
-            if (document.body.classList.contains("package-summary")) return;
+            if (document.body.classList.contains("package-relation")) return;
 
             const diagrams = Array.from(document.querySelectorAll(".mermaid"));
             if (diagrams.length === 0) return;

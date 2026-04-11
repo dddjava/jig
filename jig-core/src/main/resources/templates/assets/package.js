@@ -732,12 +732,16 @@ const PackageApp = (() => {
         renderHierarchyDiagram(context);
         renderPackageTable(context);
         renderAggregationDepthSelectOptions(getMaxPackageDepth(), context);
+        syncStateToURL();
     }
 
     // 関連探索ダイアグラム
     function renderExploreDiagram(context) {
         const diagram = dom.getExploreDiagram();
-        if (!diagram) return;
+        if (!diagram) {
+            syncStateToURL();
+            return;
+        }
 
         const {packages, relations} = getPackageRelationData(context);
         const {targetSet, callerSet, calleeSet} = collectExploreNodeSets(
@@ -750,6 +754,7 @@ const PackageApp = (() => {
         if (targetSet.size === 0) {
             setDiagramSource(diagram, '');
             diagram.innerHTML = '<span class="placeholder-text">対象パッケージを追加してください</span>';
+            syncStateToURL();
             return;
         }
 
@@ -775,6 +780,7 @@ const PackageApp = (() => {
 
         const generator = (dir) => Jig.mermaid.builder.buildExploreDiagramSource(visibleFqns, visibleRelations, exploreOptions(dir)).source;
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
+        syncStateToURL();
     }
 
     function renderExplorePackageList(context) {
@@ -1069,7 +1075,7 @@ const PackageApp = (() => {
                 radio.addEventListener('change', () => {
                     if (!radio.checked) return;
                     context.exploreCallerMode = radio.value;
-                    if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+                    renderExploreDiagram(context);
                 });
             });
         }
@@ -1080,7 +1086,7 @@ const PackageApp = (() => {
                 radio.addEventListener('change', () => {
                     if (!radio.checked) return;
                     context.exploreCalleeMode = radio.value;
-                    if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+                    renderExploreDiagram(context);
                 });
             });
         }
@@ -1121,8 +1127,59 @@ const PackageApp = (() => {
                 const panelId = `panel-${tab.dataset.tab}`;
                 const panel = document.getElementById(panelId);
                 if (panel) panel.classList.add('is-active');
+                syncStateToURL();
             });
         });
+    }
+
+    function syncStateToURL() {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams();
+        const activeTab = document.querySelector('.package-mode-tabs .tab-button.is-active')?.dataset.tab;
+        if (activeTab && activeTab !== 'hierarchy') params.set('tab', activeTab);
+
+        if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
+        hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
+        if (!hierarchyState.transitiveReductionEnabled) params.set('reduction', 'false');
+
+        exploreState.exploreTargetPackages.forEach(p => params.append('target', p));
+        if (exploreState.exploreCallerMode !== '1') params.set('caller', exploreState.exploreCallerMode);
+        if (exploreState.exploreCalleeMode !== '1') params.set('callee', exploreState.exploreCalleeMode);
+
+        const queryString = params.toString();
+        const newURL = queryString
+            ? `${window.location.pathname}?${queryString}${window.location.hash}`
+            : `${window.location.pathname}${window.location.hash}`;
+        window.history.replaceState({}, '', newURL);
+    }
+
+    function loadStateFromURL() {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+
+        const depth = params.get('depth');
+        if (depth !== null) hierarchyState.aggregationDepth = Number(depth);
+
+        const filters = params.getAll('filter');
+        if (filters.length > 0) hierarchyState.packageFilterFqn = filters;
+
+        const reduction = params.get('reduction');
+        if (reduction === 'false') hierarchyState.transitiveReductionEnabled = false;
+
+        const targets = params.getAll('target');
+        if (targets.length > 0) exploreState.exploreTargetPackages = targets;
+
+        const caller = params.get('caller');
+        if (caller) exploreState.exploreCallerMode = caller;
+
+        const callee = params.get('callee');
+        if (callee) exploreState.exploreCalleeMode = callee;
+
+        const tab = params.get('tab');
+        if (tab) {
+            const tabButton = document.querySelector(`.package-mode-tabs .tab-button[data-tab="${tab}"]`);
+            if (tabButton) tabButton.click();
+        }
     }
 
     function init() {
@@ -1134,13 +1191,20 @@ const PackageApp = (() => {
         setupPackageFilterControl(hierarchyState);
         const {domainPackageRoots} = getPackageRelationData(hierarchyState);
         hierarchyState.aggregationDepth = getInitialAggregationDepth(domainPackageRoots);
+
+        loadStateFromURL();
+
         setupAggregationDepthControl(hierarchyState);
         renderPackageFilterSelectOptions(hierarchyState);
         setupTransitiveReductionControl(hierarchyState);
         registerHierarchyDiagramClickHandler(hierarchyState);
 
-        const applied = applyDefaultPackageFilterIfPresent(hierarchyState);
-        if (!applied) {
+        if (hierarchyState.packageFilterFqn.length === 0) {
+            const applied = applyDefaultPackageFilterIfPresent(hierarchyState);
+            if (!applied) {
+                renderHierarchyDiagramAndTable(hierarchyState);
+            }
+        } else {
             renderHierarchyDiagramAndTable(hierarchyState);
         }
 
@@ -1158,6 +1222,9 @@ const PackageApp = (() => {
         HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME,
         EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
         dom,
+
+        syncStateToURL,
+        loadStateFromURL,
 
         // For testing
         getPackageRelationData,

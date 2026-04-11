@@ -3,9 +3,10 @@ const assert = require('node:assert/strict');
 const {Element, DocumentStub, setGlossaryData} = require('./dom-stub.js');
 
 // 依存モジュールを先にロードして Jig 名前空間をセットアップする
-global.window = global.window || {
-    addEventListener: () => {
-    }
+global.window = {
+    location: { pathname: '', search: '', hash: '' },
+    history: { replaceState: () => {} },
+    addEventListener: () => {}
 };
 global.document = new DocumentStub();
 require('../../main/resources/templates/assets/jig-util.js');
@@ -685,7 +686,6 @@ test.describe('package.js', () => {
                 doc.selectorsAll.set('#package-table tbody tr', []);
                 createPackageFilterControls(doc);
                 createDepthSelect(doc);
-                global.window = {};
                 testContext.diagramNodeIdToFqn = new Map([['P1', 'app.example']]);
 
                 PackageApp.registerHierarchyDiagramClickHandler(testContext);

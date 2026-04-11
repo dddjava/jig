@@ -740,6 +740,23 @@ const PackageApp = (() => {
     }
 
     // 関連探索ダイアグラム
+
+    function buildCollapsedSubpackageMap(selectedPackages) {
+        const tbody = dom.getExplorePackageList()?.querySelector('tbody');
+        if (!tbody) return new Map();
+        const selectedSet = new Set(selectedPackages);
+        // 最も近い祖先を優先するため長さ降順でソート
+        const sortedSelected = [...selectedPackages].sort((a, b) => b.length - a.length);
+        const map = new Map();
+        tbody.querySelectorAll('tr[data-fqn].hidden-by-collapse').forEach(tr => {
+            const fqn = tr.dataset.fqn;
+            if (selectedSet.has(fqn)) return;
+            const parent = sortedSelected.find(p => fqn.startsWith(p + '.'));
+            if (parent) map.set(fqn, parent);
+        });
+        return map;
+    }
+
     function renderExploreDiagram(context) {
         const diagram = dom.getExploreDiagram();
         if (!diagram) {
@@ -748,8 +765,12 @@ const PackageApp = (() => {
         }
 
         const {relations} = getPackageRelationData(context);
+
+        const collapsedToParent = buildCollapsedSubpackageMap(context.exploreTargetPackages);
+        const effectiveTargets = [...context.exploreTargetPackages, ...collapsedToParent.keys()];
+
         const {targetSet, callerSet, calleeSet} = collectExploreNodeSets(
-            context.exploreTargetPackages,
+            effectiveTargets,
             relations,
             context.exploreCallerMode,
             context.exploreCalleeMode
@@ -762,13 +783,30 @@ const PackageApp = (() => {
             return;
         }
 
-        const visibleFqns = new Set([...targetSet, ...callerSet, ...calleeSet]);
-        const visibleRelations = relations.filter(r => visibleFqns.has(r.from) && visibleFqns.has(r.to));
+        const resolve = fqn => collapsedToParent.get(fqn) ?? fqn;
+        const resolvedTargetSet = new Set([...targetSet].map(resolve));
+        const resolvedCallerSet = new Set([...callerSet].map(resolve).filter(fqn => !resolvedTargetSet.has(fqn)));
+        const resolvedCalleeSet = new Set([...calleeSet].map(resolve).filter(fqn => !resolvedTargetSet.has(fqn)));
+
+        const visibleFqns = new Set([...resolvedTargetSet, ...resolvedCallerSet, ...resolvedCalleeSet]);
+
+        const seenRelations = new Set();
+        const visibleRelations = [];
+        relations.forEach(r => {
+            const from = resolve(r.from);
+            const to = resolve(r.to);
+            if (from === to) return;
+            if (!visibleFqns.has(from) || !visibleFqns.has(to)) return;
+            const key = `${from}::${to}`;
+            if (seenRelations.has(key)) return;
+            seenRelations.add(key);
+            visibleRelations.push({from, to});
+        });
 
         const exploreOptions = (dir) => ({
-            targetFqns: targetSet,
-            callerFqns: callerSet,
-            calleeFqns: calleeSet,
+            targetFqns: resolvedTargetSet,
+            callerFqns: resolvedCallerSet,
+            calleeFqns: resolvedCalleeSet,
             diagramDirection: dir,
             clickHandlerName: EXPLORE_DIAGRAM_CLICK_HANDLER_NAME,
         });
@@ -853,11 +891,27 @@ const PackageApp = (() => {
                     toggleBtn.setAttribute('aria-expanded', String(!collapsing));
                     toggleBtn.textContent = collapsing ? '▶' : '▼';
                     toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
+                    const selectedSet = new Set(context.exploreTargetPackages);
+                    const childFqns = [];
                     tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
-                        if (childTr.dataset.fqn.startsWith(pkg.fqn + '.')) {
+                        const childFqn = childTr.dataset.fqn;
+                        if (childFqn.startsWith(pkg.fqn + '.')) {
                             childTr.classList.toggle('hidden-by-collapse', collapsing);
+                            if (!collapsing && selectedSet.has(pkg.fqn) && !selectedSet.has(childFqn)) {
+                                childFqns.push(childFqn);
+                            }
                         }
                     });
+                    if (childFqns.length > 0) {
+                        context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqns];
+                        renderExplorePackageList(context);
+                    }
+                    const affectsSelection = context.exploreTargetPackages.some(t =>
+                        t === pkg.fqn || t.startsWith(pkg.fqn + '.') || pkg.fqn.startsWith(t + '.')
+                    );
+                    if (affectsSelection) {
+                        renderExploreDiagram(context);
+                    }
                 });
                 toggleTd.appendChild(toggleBtn);
             }
@@ -1277,6 +1331,7 @@ const PackageApp = (() => {
         renderHierarchyDiagram,
         renderHierarchyDiagramAndTable,
         buildHierarchyDiagramRenderPlan,
+        buildCollapsedSubpackageMap,
         renderExploreDiagram,
         renderExplorePackageList,
         registerHierarchyDiagramClickHandler,

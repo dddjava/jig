@@ -92,18 +92,32 @@
             <summary>表示設定</summary>
             <div class="control-row">
                 <div class="focus-group">
-                    <label for="explore-caller-mode-select">依存元:</label>
-                    <select id="explore-caller-mode-select">
-                        <option value="0">なし</option>
-                        <option value="1" selected>直接</option>
-                        <option value="-1">すべて</option>
-                    </select>
-                    <label for="explore-callee-mode-select">依存先:</label>
-                    <select id="explore-callee-mode-select">
-                        <option value="0">なし</option>
-                        <option value="1" selected>直接</option>
-                        <option value="-1">すべて</option>
-                    </select>
+                    <span class="control-label">依存元:</span>
+                    <label class="radio-label" for="explore-caller-mode-0">
+                        <input type="radio" id="explore-caller-mode-0" name="explore-caller-mode" value="0">
+                        なし
+                    </label>
+                    <label class="radio-label" for="explore-caller-mode-1">
+                        <input type="radio" id="explore-caller-mode-1" name="explore-caller-mode" value="1" checked>
+                        直接
+                    </label>
+                    <label class="radio-label" for="explore-caller-mode-all">
+                        <input type="radio" id="explore-caller-mode-all" name="explore-caller-mode" value="-1">
+                        すべて
+                    </label>
+                    <span class="control-label">依存先:</span>
+                    <label class="radio-label" for="explore-callee-mode-0">
+                        <input type="radio" id="explore-callee-mode-0" name="explore-callee-mode" value="0">
+                        なし
+                    </label>
+                    <label class="radio-label" for="explore-callee-mode-1">
+                        <input type="radio" id="explore-callee-mode-1" name="explore-callee-mode" value="1" checked>
+                        直接
+                    </label>
+                    <label class="radio-label" for="explore-callee-mode-all">
+                        <input type="radio" id="explore-callee-mode-all" name="explore-callee-mode" value="-1">
+                        すべて
+                    </label>
                 </div>
             </div>
         </details>

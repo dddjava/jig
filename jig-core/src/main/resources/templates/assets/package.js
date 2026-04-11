@@ -41,8 +41,8 @@ const PackageApp = (() => {
         getExplorePackageList: () => document.getElementById('explore-package-list'),
         getExploreListFilter: () => document.getElementById('explore-list-filter'),
         getExploreClearSelectionButton: () => document.getElementById('explore-clear-selection'),
-        getExploreCallerModeSelect: () => document.getElementById('explore-caller-mode-select'),
-        getExploreCalleeModeSelect: () => document.getElementById('explore-callee-mode-select'),
+        getExploreCallerModeRadios: () => document.querySelectorAll('input[name="explore-caller-mode"]'),
+        getExploreCalleeModeRadios: () => document.querySelectorAll('input[name="explore-callee-mode"]'),
         getDocumentBody: () => document.body,
     };
 
@@ -1072,8 +1072,8 @@ const PackageApp = (() => {
 
     function setupExploreControl(context) {
         const clearButton = dom.getExploreClearSelectionButton();
-        const callerSelect = dom.getExploreCallerModeSelect();
-        const calleeSelect = dom.getExploreCalleeModeSelect();
+        const callerRadios = dom.getExploreCallerModeRadios();
+        const calleeRadios = dom.getExploreCalleeModeRadios();
 
         if (clearButton) {
             clearButton.addEventListener('click', () => {
@@ -1083,19 +1083,25 @@ const PackageApp = (() => {
             });
         }
 
-        if (callerSelect) {
-            callerSelect.value = context.exploreCallerMode;
-            callerSelect.addEventListener('change', () => {
-                context.exploreCallerMode = callerSelect.value;
-                if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+        if (callerRadios.length > 0) {
+            callerRadios.forEach(radio => {
+                radio.checked = radio.value === context.exploreCallerMode;
+                radio.addEventListener('change', () => {
+                    if (!radio.checked) return;
+                    context.exploreCallerMode = radio.value;
+                    if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+                });
             });
         }
 
-        if (calleeSelect) {
-            calleeSelect.value = context.exploreCalleeMode;
-            calleeSelect.addEventListener('change', () => {
-                context.exploreCalleeMode = calleeSelect.value;
-                if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+        if (calleeRadios.length > 0) {
+            calleeRadios.forEach(radio => {
+                radio.checked = radio.value === context.exploreCalleeMode;
+                radio.addEventListener('change', () => {
+                    if (!radio.checked) return;
+                    context.exploreCalleeMode = radio.value;
+                    if (context.exploreTargetPackages.length > 0) renderExploreDiagram(context);
+                });
             });
         }
     }

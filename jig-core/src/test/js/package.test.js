@@ -369,9 +369,8 @@ test.describe('package.js', () => {
                 createPackageFilterControls(doc);
                 createDepthSelect(doc); // for renderHierarchyDiagramAndTable
 
-                const applied = PackageApp.applyDefaultPackageFilterIfPresent(testContext);
+                PackageApp.applyDefaultPackageFilterIfPresent(testContext);
 
-                assert.equal(applied, true);
                 assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
             });
 
@@ -389,9 +388,9 @@ test.describe('package.js', () => {
                 createPackageFilterControls(doc);
                 createDepthSelect(doc);
 
-                const applied = PackageApp.applyDefaultPackageFilterIfPresent(testContext);
+                PackageApp.applyDefaultPackageFilterIfPresent(testContext);
 
-                assert.equal(applied, false);
+                assert.deepEqual(testContext.packageFilterFqn, []);
             });
 
             test('setupPackageFilterControl: 解除を扱う', () => {

@@ -867,7 +867,7 @@ const PackageApp = (() => {
             }
             tr.appendChild(toggleTd);
 
-            const { ancestor, relative } = getRelativeFqn(pkg.fqn, fqnSet);
+            const {ancestor, relative} = getRelativeFqn(pkg.fqn, fqnSet);
             const depth = ancestor ? ancestor.split('.').length : 0;
 
             const fqnTd = document.createElement('td');
@@ -963,11 +963,10 @@ const PackageApp = (() => {
     function applyDefaultPackageFilterIfPresent(context) {
         const {domainPackageRoots} = getPackageRelationData(context);
         const candidate = findDefaultPackageFilterCandidate(domainPackageRoots);
-        if (!candidate || !candidate.length) return false;
+        if (!candidate || !candidate.length) return;
+
         context.packageFilterFqn = candidate;
         renderPackageFilterSelectOptions(context);
-        renderHierarchyDiagramAndTable(context);
-        return true;
     }
 
     function updateDepthButtonStates(select, upButton, downButton) {
@@ -1212,13 +1211,9 @@ const PackageApp = (() => {
         registerHierarchyDiagramClickHandler(hierarchyState);
 
         if (hierarchyState.packageFilterFqn.length === 0) {
-            const applied = applyDefaultPackageFilterIfPresent(hierarchyState);
-            if (!applied) {
-                renderHierarchyDiagramAndTable(hierarchyState);
-            }
-        } else {
-            renderHierarchyDiagramAndTable(hierarchyState);
+            applyDefaultPackageFilterIfPresent(hierarchyState);
         }
+        renderHierarchyDiagramAndTable(hierarchyState);
 
         // 関連探索の初期化
         setupExploreControl(exploreState);

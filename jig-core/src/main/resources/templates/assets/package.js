@@ -770,16 +770,25 @@ const PackageApp = (() => {
         Jig.mermaid.render.renderWithControls(diagram, generator, {direction: context.diagramDirection});
     }
 
-    // 関連探索パッケージ一覧UI
     function renderExplorePackageList(context) {
         const container = dom.getExplorePackageList();
         if (!container) return;
 
-        const {packages} = getPackageRelationData(hierarchyState);
-        const sortedPackages = [...packages].sort((a, b) => a.fqn.localeCompare(b.fqn));
         const targetSet = new Set(context.exploreTargetPackages);
 
-        container.innerHTML = '';
+        // テーブルが既に存在する場合はクラスのみ更新する
+        const existingTable = container.querySelector('table.explore-package-table');
+        if (existingTable) {
+            existingTable.querySelectorAll('tbody tr[data-fqn]').forEach(tr => {
+                tr.classList.toggle('explore-target-selected', targetSet.has(tr.dataset.fqn));
+            });
+            return;
+        }
+
+        // 初回のみテーブルを構築する
+        const {packages} = getPackageRelationData(hierarchyState);
+        const sortedPackages = [...packages].sort((a, b) => a.fqn.localeCompare(b.fqn));
+
         const table = document.createElement('table');
         table.className = 'explore-package-table sortable';
 
@@ -796,6 +805,7 @@ const PackageApp = (() => {
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
             const tr = document.createElement('tr');
+            tr.dataset.fqn = pkg.fqn;
             if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
 
             tr.addEventListener('click', () => {
@@ -821,6 +831,7 @@ const PackageApp = (() => {
         });
         table.appendChild(tbody);
         container.appendChild(table);
+        Jig.dom.setupSortableTables();
     }
 
     // UI配線

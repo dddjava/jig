@@ -96,7 +96,7 @@ public class JigService {
         var jigTypes = jigTypes(jigRepository);
         var glossary = glossary(jigRepository);
 
-        Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.orderedStream()
+        Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.stream()
                 .collect(groupingBy(JigType::packageId));
 
         List<Term> packageTerms = glossary.terms().stream()

@@ -40,6 +40,7 @@ const PackageApp = (() => {
         getExploreDiagram: () => document.getElementById('package-explore-diagram'),
         getExplorePackageList: () => document.getElementById('explore-package-list'),
         getExploreListFilter: () => document.getElementById('explore-list-filter'),
+        getExploreClearSelectionButton: () => document.getElementById('explore-clear-selection'),
         getExploreCallerModeSelect: () => document.getElementById('explore-caller-mode-select'),
         getExploreCalleeModeSelect: () => document.getElementById('explore-callee-mode-select'),
         getDocumentBody: () => document.body,
@@ -1015,8 +1016,17 @@ const PackageApp = (() => {
     }
 
     function setupExploreControl(context) {
+        const clearButton = dom.getExploreClearSelectionButton();
         const callerSelect = dom.getExploreCallerModeSelect();
         const calleeSelect = dom.getExploreCalleeModeSelect();
+
+        if (clearButton) {
+            clearButton.addEventListener('click', () => {
+                context.exploreTargetPackages = [];
+                renderExplorePackageList(context);
+                renderExploreDiagram(context);
+            });
+        }
 
         if (callerSelect) {
             callerSelect.value = context.exploreCallerMode;

@@ -99,13 +99,16 @@ public class JigService {
         Map<PackageId, List<JigType>> packageAndJigTypes = jigTypes.stream()
                 .collect(groupingBy(JigType::packageId));
 
-        List<Term> packageTerms = glossary.terms().stream()
+        // クラスがなくてもパッケージ一覧に表示するために用語集から抽出
+        List<PackageId> packageTerms = glossary.terms().stream()
                 .filter(term -> term.termKind() == TermKind.パッケージ)
+                // FIXME: 用語IDとパッケージIDの変換が漏れ出ている
+                .map(Term::id).map(TermId::asText).map(PackageId::valueOf)
                 .toList();
 
         List<JigPackage> jigPackages = Stream.concat(
                         packageAndJigTypes.keySet().stream(),
-                        packageTerms.stream().map(Term::id).map(TermId::asText).map(PackageId::valueOf))
+                        packageTerms.stream())
                 .distinct()
                 .map(packageId -> {
                     return new JigPackage(packageId, packageAndJigTypes.getOrDefault(packageId, List.of()));

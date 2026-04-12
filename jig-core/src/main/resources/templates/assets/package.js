@@ -862,14 +862,14 @@ const PackageApp = (() => {
 
         const fqnSet = new Set(sortedPackages.map(p => p.fqn));
 
-        const collapsedSet = new Set(context.exploreCollapsedPackages ?? []);
+        const collapsedSet = new Set(context.exploreCollapsedPackages);
 
         const tbody = document.createElement('tbody');
         sortedPackages.forEach(pkg => {
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
             if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
-            if (collapsedSet.size > 0 && [...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
+            if (context.exploreCollapsedPackages.some(c => pkg.fqn.startsWith(c + '.'))) {
                 tr.classList.add('hidden-by-collapse');
             }
 
@@ -924,9 +924,9 @@ const PackageApp = (() => {
                         renderExplorePackageList(context);
                     }
                     if (collapsing) {
-                        context.exploreCollapsedPackages = [...(context.exploreCollapsedPackages ?? []), pkg.fqn];
+                        context.exploreCollapsedPackages = [...context.exploreCollapsedPackages, pkg.fqn];
                     } else {
-                        context.exploreCollapsedPackages = (context.exploreCollapsedPackages ?? []).filter(p => p !== pkg.fqn);
+                        context.exploreCollapsedPackages = context.exploreCollapsedPackages.filter(p => p !== pkg.fqn);
                     }
                     const affectsSelection = context.exploreTargetPackages.some(t =>
                         t === pkg.fqn || t.startsWith(pkg.fqn + '.') || pkg.fqn.startsWith(t + '.')

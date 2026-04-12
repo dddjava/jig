@@ -301,6 +301,13 @@ const PackageApp = (() => {
         }));
     }
 
+    function createNumberTd(value) {
+        const td = document.createElement('td');
+        td.textContent = String(value ?? 0);
+        td.className = 'number';
+        return td;
+    }
+
     function buildPackageTableRowElement(spec, applyFilter) {
         const tr = document.createElement('tr');
 
@@ -339,20 +346,9 @@ const PackageApp = (() => {
         glossaryTd.appendChild(glossaryLink);
         tr.appendChild(glossaryTd);
 
-        const classCountTd = document.createElement('td');
-        classCountTd.textContent = String(spec.classCount);
-        classCountTd.className = 'number';
-        tr.appendChild(classCountTd);
-
-        const incomingCountTd = document.createElement('td');
-        incomingCountTd.textContent = String(spec.incomingCount ?? 0);
-        incomingCountTd.className = 'number';
-        tr.appendChild(incomingCountTd);
-
-        const outgoingCountTd = document.createElement('td');
-        outgoingCountTd.textContent = String(spec.outgoingCount ?? 0);
-        outgoingCountTd.className = 'number';
-        tr.appendChild(outgoingCountTd);
+        tr.appendChild(createNumberTd(spec.classCount));
+        tr.appendChild(createNumberTd(spec.incomingCount));
+        tr.appendChild(createNumberTd(spec.outgoingCount));
 
         return tr;
     }
@@ -849,7 +845,8 @@ const PackageApp = (() => {
         }
 
         // 初回のみテーブルを構築する
-        const {packages} = getPackageRelationData(hierarchyState);
+        const {packages, relations} = getPackageRelationData(hierarchyState);
+        const rowDataMap = new Map(buildPackageTableRowData(packages, relations).map(r => [r.fqn, r]));
         const sortedPackages = [...packages].sort((a, b) => a.fqn.localeCompare(b.fqn));
 
         // ソート済みなので隣接する次のパッケージとのFQN前方一致で O(n) 判定
@@ -868,6 +865,7 @@ const PackageApp = (() => {
         sortedPackages.forEach(pkg => {
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
+            const rowData = rowDataMap.get(pkg.fqn);
             if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
             if (context.exploreCollapsedPackages.some(c => pkg.fqn.startsWith(c + '.'))) {
                 tr.classList.add('hidden-by-collapse');
@@ -954,6 +952,10 @@ const PackageApp = (() => {
             const nameTd = document.createElement('td');
             nameTd.textContent = getGlossaryTitle(pkg.fqn);
             tr.appendChild(nameTd);
+
+            tr.appendChild(createNumberTd(rowData.classCount));
+            tr.appendChild(createNumberTd(rowData.incomingCount));
+            tr.appendChild(createNumberTd(rowData.outgoingCount));
 
             tbody.appendChild(tr);
         });

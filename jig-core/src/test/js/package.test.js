@@ -530,6 +530,45 @@ test.describe('package.js', () => {
                 const domainRow = tbody.children.find(tr => tr.querySelector('td.fqn').textContent === 'app.domain');
                 assert.equal(domainRow.children[4].textContent, '5'); // classCount合計
             });
+
+            test('renderExplorePackageList: クラス数・関連数を表示する', () => {
+                setGlossaryData({
+                    'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
+                    'app.b': {title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
+                });
+                const doc = setupDocument();
+                setPackageData({
+                    packages: [
+                        {fqn: 'app.a', classCount: 3},
+                        {fqn: 'app.b', classCount: 1},
+                    ],
+                    relations: [
+                        {from: 'app.a', to: 'app.b'},
+                    ],
+                }, PackageApp.hierarchyState);
+                const table = doc.createElement('table');
+                table.id = 'explore-package-table';
+                doc.elementsById.set('explore-package-table', table);
+
+                PackageApp.renderExplorePackageList(PackageApp.exploreState);
+
+                const tbody = table.querySelector('tbody');
+                assert.ok(tbody, 'tbodyが生成されること');
+                assert.equal(tbody.children.length, 2);
+
+                // ソート済みなので app.a が先
+                const rowA = tbody.children.find(tr => tr.dataset.fqn === 'app.a');
+                // 列: [toggle, fqn, name, classCount, incomingCount, outgoingCount]
+                assert.equal(rowA.children[3].textContent, '3'); // classCount
+                assert.equal(rowA.children[4].textContent, '0'); // incomingCount
+                assert.equal(rowA.children[5].textContent, '1'); // outgoingCount
+
+                const rowB = tbody.children.find(tr => tr.dataset.fqn === 'app.b');
+                assert.equal(rowB.children[3].textContent, '1'); // classCount
+                assert.equal(rowB.children[4].textContent, '1'); // incomingCount
+                assert.equal(rowB.children[5].textContent, '0'); // outgoingCount
+                delete globalThis.glossaryData;
+            });
         });
     });
 

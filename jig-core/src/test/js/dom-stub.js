@@ -5,6 +5,23 @@
 
 // ===== セレクタマッチングヘルパー =====
 
+function dataToCamel(str) {
+    return str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function matchesAttr(el, expr) {
+    const eqIdx = expr.indexOf('=');
+    if (eqIdx === -1) {
+        const name = expr.trim();
+        if (name.startsWith('data-')) return el.dataset && el.dataset[dataToCamel(name.slice(5))] !== undefined;
+        return el.getAttribute && el.getAttribute(name) !== null;
+    }
+    const name = expr.slice(0, eqIdx).trim();
+    const value = expr.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '');
+    if (name.startsWith('data-')) return el.dataset && String(el.dataset[dataToCamel(name.slice(5))]) === value;
+    return el.getAttribute && el.getAttribute(name) === value;
+}
+
 function matchesPart(el, part) {
     if (!part || part === '*') return true;
     // :not() の処理
@@ -12,13 +29,19 @@ function matchesPart(el, part) {
     if (notMatch) {
         return matchesPart(el, notMatch[1] || '*') && !matchesPart(el, notMatch[2]);
     }
+    // 属性セレクタ [attr] / [attr="value"] を抽出
+    const attrExprs = [];
+    const partWithoutAttrs = part.replace(/\[([^\]]+)\]/g, (_, expr) => { attrExprs.push(expr); return ''; });
     // タグ.クラス1.クラス2 形式
-    const dotParts = part.split('.');
+    const dotParts = partWithoutAttrs.split('.');
     const tag = dotParts[0];
-    const classes = dotParts.slice(1);
+    const classes = dotParts.slice(1).filter(Boolean);
     if (tag && tag !== '*' && el.tagName && el.tagName.toLowerCase() !== tag.toLowerCase()) return false;
     for (const cls of classes) {
         if (!el.classList || !el.classList.has(cls)) return false;
+    }
+    for (const expr of attrExprs) {
+        if (!matchesAttr(el, expr)) return false;
     }
     return true;
 }

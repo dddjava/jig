@@ -556,18 +556,52 @@ test.describe('package.js', () => {
                 assert.ok(tbody, 'tbodyが生成されること');
                 assert.equal(tbody.children.length, 2);
 
-                // ソート済みなので app.a が先
                 const rowA = tbody.children.find(tr => tr.dataset.fqn === 'app.a');
-                // 列: [toggle, fqn, name, classCount, incomingCount, outgoingCount]
-                assert.equal(rowA.children[3].textContent, '3'); // classCount
-                assert.equal(rowA.children[4].textContent, '0'); // incomingCount
-                assert.equal(rowA.children[5].textContent, '1'); // outgoingCount
+                assert.equal(rowA.querySelector('td[data-count="class"]').textContent, '3');
+                assert.equal(rowA.querySelector('td[data-count="incoming"]').textContent, '0');
+                assert.equal(rowA.querySelector('td[data-count="outgoing"]').textContent, '1');
 
                 const rowB = tbody.children.find(tr => tr.dataset.fqn === 'app.b');
-                assert.equal(rowB.children[3].textContent, '1'); // classCount
-                assert.equal(rowB.children[4].textContent, '1'); // incomingCount
-                assert.equal(rowB.children[5].textContent, '0'); // outgoingCount
+                assert.equal(rowB.querySelector('td[data-count="class"]').textContent, '1');
+                assert.equal(rowB.querySelector('td[data-count="incoming"]').textContent, '1');
+                assert.equal(rowB.querySelector('td[data-count="outgoing"]').textContent, '0');
                 delete globalThis.glossaryData;
+            });
+
+            test('renderExplorePackageList: 折りたたみ時にサブパッケージのカウントを合算する', () => {
+                const doc = setupDocument();
+                setPackageData({
+                    packages: [
+                        {fqn: 'app', classCount: 1},
+                        {fqn: 'app.domain', classCount: 2},
+                        {fqn: 'app.domain.sub', classCount: 3},
+                    ],
+                    relations: [
+                        {from: 'app', to: 'app.domain'},
+                        {from: 'app.domain', to: 'app.domain.sub'},
+                    ],
+                }, PackageApp.hierarchyState);
+                PackageApp.exploreState.exploreCollapsedPackages = ['app.domain'];
+                const table = doc.createElement('table');
+                table.id = 'explore-package-table';
+                doc.elementsById.set('explore-package-table', table);
+
+                PackageApp.renderExplorePackageList(PackageApp.exploreState);
+
+                const tbody = table.querySelector('tbody');
+                // app.domain は折りたたみ中 → classCount = 2 + 3 = 5
+                const domainRow = tbody.children.find(tr => tr.dataset.fqn === 'app.domain');
+                assert.equal(domainRow.querySelector('td[data-count="class"]').textContent, '5');    // classCount合算(2+3)
+                assert.equal(domainRow.querySelector('td[data-count="incoming"]').textContent, '2'); // incomingCount合算(app→domain:1, domain→sub:1)
+                assert.equal(domainRow.querySelector('td[data-count="outgoing"]').textContent, '1'); // outgoingCount合算(domain→sub:1, sub→:0)
+
+                // app は折りたたんでいない → 自身のカウントのみ
+                const appRow = tbody.children.find(tr => tr.dataset.fqn === 'app');
+                assert.equal(appRow.querySelector('td[data-count="class"]').textContent, '1');
+                assert.equal(appRow.querySelector('td[data-count="incoming"]').textContent, '0');
+                assert.equal(appRow.querySelector('td[data-count="outgoing"]').textContent, '1');
+
+                PackageApp.exploreState.exploreCollapsedPackages = [];
             });
         });
     });

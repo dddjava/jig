@@ -301,10 +301,11 @@ const PackageApp = (() => {
         }));
     }
 
-    function createNumberTd(value) {
+    function createNumberTd(value, countName) {
         const td = document.createElement('td');
         td.textContent = String(value ?? 0);
         td.className = 'number';
+        if (countName) td.dataset.count = countName;
         return td;
     }
 
@@ -862,6 +863,30 @@ const PackageApp = (() => {
         const collapsedSet = new Set(context.exploreCollapsedPackages);
 
         const tbody = document.createElement('tbody');
+
+        function refreshCountDisplay(targetTr) {
+            const toggleBtn = targetTr.querySelector('.explore-collapse-toggle');
+            const isCollapsed = toggleBtn?.getAttribute('aria-expanded') === 'false';
+            const fqn = targetTr.dataset.fqn;
+            let classCount, incomingCount, outgoingCount;
+            if (!isCollapsed) {
+                ({classCount, incomingCount, outgoingCount} = rowDataMap.get(fqn));
+            } else {
+                classCount = 0; incomingCount = 0; outgoingCount = 0;
+                const prefix = fqn + '.';
+                rowDataMap.forEach((data, key) => {
+                    if (key === fqn || key.startsWith(prefix)) {
+                        classCount += data.classCount;
+                        incomingCount += data.incomingCount;
+                        outgoingCount += data.outgoingCount;
+                    }
+                });
+            }
+            targetTr.querySelector('td[data-count="class"]').textContent = String(classCount);
+            targetTr.querySelector('td[data-count="incoming"]').textContent = String(incomingCount);
+            targetTr.querySelector('td[data-count="outgoing"]').textContent = String(outgoingCount);
+        }
+
         sortedPackages.forEach(pkg => {
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
@@ -934,6 +959,14 @@ const PackageApp = (() => {
                     } else {
                         syncStateToURL();
                     }
+                    refreshCountDisplay(tr);
+                    if (!collapsing) {
+                        tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                            if (childTr.dataset.fqn.startsWith(childPrefix)) {
+                                refreshCountDisplay(childTr);
+                            }
+                        });
+                    }
                 });
                 toggleTd.appendChild(toggleBtn);
             }
@@ -953,11 +986,16 @@ const PackageApp = (() => {
             nameTd.textContent = getGlossaryTitle(pkg.fqn);
             tr.appendChild(nameTd);
 
-            tr.appendChild(createNumberTd(rowData.classCount));
-            tr.appendChild(createNumberTd(rowData.incomingCount));
-            tr.appendChild(createNumberTd(rowData.outgoingCount));
+            tr.appendChild(createNumberTd(rowData.classCount, 'class'));
+            tr.appendChild(createNumberTd(rowData.incomingCount, 'incoming'));
+            tr.appendChild(createNumberTd(rowData.outgoingCount, 'outgoing'));
 
             tbody.appendChild(tr);
+        });
+        Array.from(tbody.children).forEach(tr => {
+            if (tr.querySelector('.explore-collapse-toggle')?.getAttribute('aria-expanded') === 'false') {
+                refreshCountDisplay(tr);
+            }
         });
         container.appendChild(tbody);
 

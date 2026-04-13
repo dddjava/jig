@@ -1275,6 +1275,7 @@ label {
     padding: 20px;
     display: block;
     text-align: center;
+    font-size: 1rem; /* pre.mermaid が font-size: 0 を設定するため上書きが必要 */
 }
 
 .insight table {

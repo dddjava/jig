@@ -763,9 +763,17 @@ const PackageApp = (() => {
         }
 
         // 初回のみテーブルを構築する
-        const {packages, relations} = getPackageRelationData(hierarchyState);
-        const rowDataMap = new Map(buildPackageTableRowData(packages, relations).map(r => [r.fqn, r]));
-        const sortedPackages = [...packages].sort((a, b) => a.fqn.localeCompare(b.fqn));
+        const {packages, relations, domainPackageRoots} = getPackageRelationData(hierarchyState);
+        // domainPackageRoots に含まれるが packages にないものを追加する
+        const packageFqnSet = new Set(packages.map(p => p.fqn));
+        const allPackages = [
+            ...packages,
+            ...(domainPackageRoots ?? [])
+                .filter(fqn => !packageFqnSet.has(fqn))
+                .map(fqn => ({fqn, classCount: 0})),
+        ];
+        const rowDataMap = new Map(buildPackageTableRowData(allPackages, relations).map(r => [r.fqn, r]));
+        const sortedPackages = [...allPackages].sort((a, b) => a.fqn.localeCompare(b.fqn));
 
         // ソート済みなので隣接する次のパッケージとのFQN前方一致で O(n) 判定
         const hasChildrenSet = new Set();

@@ -499,6 +499,31 @@ test.describe('package.js', () => {
                 assert.ok(!rowA.classList.has('explore-target-selected'));
             });
 
+            test('renderHierarchyPackageList: domainPackageRootsがpackagesにない場合は追加する', () => {
+                const doc = setupDocument();
+                setPackageData({
+                    packages: [
+                        {fqn: 'app.domain.core', classCount: 2},
+                    ],
+                    relations: [],
+                    domainPackageRoots: ['app.domain'],
+                }, PackageApp.hierarchyState);
+                const table = doc.createElement('table');
+                table.id = 'hierarchy-package-table';
+                doc.elementsById.set('hierarchy-package-table', table);
+
+                PackageApp.renderHierarchyPackageList(PackageApp.hierarchyState);
+
+                const tbody = table.querySelector('tbody');
+                assert.equal(tbody.children.length, 2);
+                const fqns = tbody.children.map(tr => tr.dataset.fqn);
+                assert.ok(fqns.includes('app.domain'), 'domainPackageRootが追加されること');
+                assert.ok(fqns.includes('app.domain.core'));
+
+                const domainRow = tbody.children.find(tr => tr.dataset.fqn === 'app.domain');
+                assert.equal(domainRow.querySelector('td[data-count="class"]').textContent, '0');
+            });
+
             test('renderExplorePackageList: クラス数・関連数を表示する', () => {
                 setGlossaryData({
                     'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},

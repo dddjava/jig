@@ -1077,6 +1077,7 @@ label {
     display: flex;
     justify-content: center;
     overflow: auto;
+    max-height: 50vh;
 }
 
 .package-relation #package-relation-diagram svg {
@@ -1260,6 +1261,8 @@ label {
 .package-relation #package-explore-diagram {
     display: flex;
     justify-content: center;
+    overflow: auto;
+    max-height: 50vh;
 }
 
 .package-relation #package-explore-diagram svg {

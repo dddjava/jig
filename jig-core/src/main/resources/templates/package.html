@@ -46,10 +46,7 @@
                 <button type="button" id="depth-down-button">▼</button>
             </div>
             <div class="control-row">
-                <button type="button" class="package-filter-icon icon-only"><span
-                        class="screen-reader-only">パッケージフィルタ</span></button>
-                <label class="control-label" for="package-filter-select">パッケージフィルタ:</label>
-                <select id="package-filter-select" multiple size="5"></select>
+                <span class="control-label">パッケージフィルタ:</span>
                 <button id="clear-package-filter" type="button">解除</button>
                 <button id="reset-package-filter" type="button">デフォルトに戻す</button>
             </div>
@@ -65,30 +62,28 @@
         <pre id="package-relation-diagram" class="mermaid"></pre>
         <section id="mutual-dependency-list" class="mutual-dependencies"></section>
 
-        <table id="package-table" class="sortable">
-            <colgroup>
-                <col class="col-action">
-                <col class="col-fqn">
-                <col class="col-name">
-                <col class="col-glossary">
-                <col class="col-number">
-                <col class="col-number">
-                <col class="col-number">
-            </colgroup>
-            <thead>
-            <tr>
-                <th class="no-sort"><span class="screen-reader-only">絞り込み</span></th>
-                <th>完全修飾名</th>
-                <th>名称</th>
-                <th class="no-sort"><span class="screen-reader-only">用語集</span></th>
-                <th>クラス数</th>
-                <th>関連数（依存元）</th>
-                <th>関連数（依存先）</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+        <section id="hierarchy-package-list">
+            <table id="hierarchy-package-table">
+                <colgroup>
+                    <col class="col-action">
+                    <col class="col-fqn">
+                    <col class="col-name">
+                    <col class="col-number">
+                    <col class="col-number">
+                    <col class="col-number">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th class="no-sort"></th>
+                    <th>定義名 <input type="search" id="hierarchy-list-filter" placeholder="絞り込み" autocomplete="off"></th>
+                    <th>名称</th>
+                    <th>クラス数</th>
+                    <th>関連数（依存元）</th>
+                    <th>関連数（依存先）</th>
+                </tr>
+                </thead>
+            </table>
+        </section>
     </div>
 
     <div id="panel-explore" class="package-tab-panel">

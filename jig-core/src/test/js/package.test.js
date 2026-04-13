@@ -31,19 +31,6 @@ function setupDocument() {
     return doc;
 }
 
-function buildPackageRows(doc, fqns) {
-    const rows = fqns.map(fqn => {
-        const row = new Element('tr');
-        const cell = new Element('td');
-        cell.className = 'fqn';
-        cell.textContent = fqn;
-        row.appendChild(cell);
-        return row;
-    });
-    doc.selectorsAll.set('#package-table tbody tr', rows);
-    return rows;
-}
-
 function setPackageData(data, context) {
     globalThis.packageData = data;
     context.packageRelationCache = null; // Reset cache
@@ -365,8 +352,6 @@ test.describe('package.js', () => {
                     relations: [],
                     domainPackageRoots: ['app.domain'],
                 }, testContext);
-                doc.selectorsAll.set('#package-table tbody tr', []);
-                createPackageFilterControls(doc);
                 createDepthSelect(doc); // for renderHierarchyDiagramAndTable
 
                 PackageApp.applyDefaultPackageFilterIfPresent(testContext);
@@ -384,8 +369,6 @@ test.describe('package.js', () => {
                     ],
                     relations: [],
                 }, testContext);
-                doc.selectorsAll.set('#package-table tbody tr', []);
-                createPackageFilterControls(doc);
                 createDepthSelect(doc);
 
                 PackageApp.applyDefaultPackageFilterIfPresent(testContext);
@@ -400,21 +383,12 @@ test.describe('package.js', () => {
                     packages: [{fqn: 'app.domain', classCount: 1}],
                     relations: [],
                 }, testContext);
-                doc.selectorsAll.set('#package-table tbody tr', []);
                 createDepthSelect(doc);
 
-                const {select, clearButton} = createPackageFilterControls(doc);
+                const {clearButton} = createPackageFilterControls(doc);
+                testContext.packageFilterFqn = ['app.domain'];
 
                 PackageApp.setupPackageFilterControl(testContext);
-
-                // select changeイベントで更新
-                const option = doc.createElement('option');
-                option.value = 'app.domain';
-                select.appendChild(option);
-                option.selected = true;
-                select.selectedOptions = [option];
-                select.dispatchEvent({type: 'change'});
-                assert.deepEqual(testContext.packageFilterFqn, ['app.domain']);
 
                 clearButton.dispatchEvent({type: 'click'});
                 assert.deepEqual(testContext.packageFilterFqn, []);
@@ -424,24 +398,6 @@ test.describe('package.js', () => {
 
     test.describe('テーブル', () => {
         test.describe('ロジック', () => {
-            test('buildPackageTableRowSpecs: 行データを整形する', () => {
-                setGlossaryData({'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''}});
-                const rows = [
-                    {fqn: 'app.a', classCount: 2, incomingCount: 0, outgoingCount: 1},
-                ];
-
-                const specs = PackageApp.buildPackageTableRowSpecs(rows);
-
-                assert.deepEqual(specs, [{
-                    fqn: 'app.a',
-                    name: 'A',
-                    classCount: 2,
-                    incomingCount: 0,
-                    outgoingCount: 1,
-                }]);
-                delete globalThis.glossaryData;
-            });
-
             test('aggregatePackageData: depth=0はそのまま返す', () => {
                 const packages = [{fqn: 'app.domain.a', classCount: 1}];
                 const relations = [{from: 'app.domain.a', to: 'app.other.b'}];
@@ -474,7 +430,7 @@ test.describe('package.js', () => {
         });
 
         test.describe('UI', () => {
-            test('renderPackageTable: 行とカウントを描画する', () => {
+            test('renderHierarchyPackageList: クラス数・関連数を表示する', () => {
                 setGlossaryData({
                     'app.a': {title: 'A', simpleText: 'a', kind: 'パッケージ', description: ''},
                     'app.b': {title: 'B', simpleText: 'b', kind: 'パッケージ', description: ''},
@@ -482,53 +438,65 @@ test.describe('package.js', () => {
                 const doc = setupDocument();
                 setPackageData({
                     packages: [
-                        {fqn: 'app.a', classCount: 2},
+                        {fqn: 'app.a', classCount: 3},
                         {fqn: 'app.b', classCount: 1},
                     ],
                     relations: [
                         {from: 'app.a', to: 'app.b'},
-                        {from: 'app.a', to: 'app.b'},
                     ],
-                }, testContext);
-                const tbody = new Element('tbody', doc);
-                doc.selectors.set('#package-table tbody', tbody);
+                }, PackageApp.hierarchyState);
+                const table = doc.createElement('table');
+                table.id = 'hierarchy-package-table';
+                doc.elementsById.set('hierarchy-package-table', table);
 
-                PackageApp.renderPackageTable(testContext);
+                PackageApp.renderHierarchyPackageList(PackageApp.hierarchyState);
 
-                // 列: [絞り込みボタン, fqn, name, glossary, classCount, incoming, outgoing]
+                const tbody = table.querySelector('tbody');
+                assert.ok(tbody, 'tbodyが生成されること');
                 assert.equal(tbody.children.length, 2);
-                assert.equal(tbody.children[0].children[2].textContent, 'A');
-                assert.equal(tbody.children[0].children[4].textContent, '2');
-                assert.equal(tbody.children[0].children[5].textContent, '0');
-                assert.equal(tbody.children[0].children[6].textContent, '2');
+
+                const rowA = tbody.children.find(tr => tr.dataset.fqn === 'app.a');
+                assert.equal(rowA.querySelector('td[data-count="class"]').textContent, '3');
+                assert.equal(rowA.querySelector('td[data-count="incoming"]').textContent, '0');
+                assert.equal(rowA.querySelector('td[data-count="outgoing"]').textContent, '1');
+
+                const rowB = tbody.children.find(tr => tr.dataset.fqn === 'app.b');
+                assert.equal(rowB.querySelector('td[data-count="class"]').textContent, '1');
+                assert.equal(rowB.querySelector('td[data-count="incoming"]').textContent, '1');
+                assert.equal(rowB.querySelector('td[data-count="outgoing"]').textContent, '0');
                 delete globalThis.glossaryData;
             });
 
-            test('renderPackageTable: aggregationDepthに従って集約して描画する', () => {
+            test('renderHierarchyPackageList: クリックでパッケージフィルタをトグルする', () => {
                 const doc = setupDocument();
+                setupDiagramEnvironment(doc, testContext);
                 setPackageData({
                     packages: [
-                        {fqn: 'app.domain.a', classCount: 2},
-                        {fqn: 'app.domain.b', classCount: 3},
-                        {fqn: 'app.other.c', classCount: 1},
+                        {fqn: 'app.a', classCount: 1},
+                        {fqn: 'app.b', classCount: 1},
                     ],
-                    relations: [
-                        {from: 'app.domain.a', to: 'app.other.c'},
-                        {from: 'app.domain.b', to: 'app.other.c'},
-                    ],
-                }, testContext);
-                testContext.aggregationDepth = 2;
-                const tbody = new Element('tbody', doc);
-                doc.selectors.set('#package-table tbody', tbody);
+                    relations: [],
+                }, PackageApp.hierarchyState);
+                createDepthSelect(doc);
+                const table = doc.createElement('table');
+                table.id = 'hierarchy-package-table';
+                doc.elementsById.set('hierarchy-package-table', table);
 
-                PackageApp.renderPackageTable(testContext);
+                PackageApp.renderHierarchyPackageList(PackageApp.hierarchyState);
 
-                assert.equal(tbody.children.length, 2);
-                const fqns = tbody.children.map(tr => tr.querySelector('td.fqn').textContent);
-                assert.ok(fqns.includes('app.domain'));
-                assert.ok(fqns.includes('app.other'));
-                const domainRow = tbody.children.find(tr => tr.querySelector('td.fqn').textContent === 'app.domain');
-                assert.equal(domainRow.children[4].textContent, '5'); // classCount合計
+                const tbody = table.querySelector('tbody');
+                const rowA = tbody.children.find(tr => tr.dataset.fqn === 'app.a');
+                assert.ok(!rowA.classList.has('explore-target-selected'));
+
+                // クリックで選択
+                rowA.dispatchEvent({type: 'click'});
+                assert.deepEqual(PackageApp.hierarchyState.packageFilterFqn, ['app.a']);
+                assert.ok(rowA.classList.has('explore-target-selected'));
+
+                // 再クリックで解除
+                rowA.dispatchEvent({type: 'click'});
+                assert.deepEqual(PackageApp.hierarchyState.packageFilterFqn, []);
+                assert.ok(!rowA.classList.has('explore-target-selected'));
             });
 
             test('renderExplorePackageList: クラス数・関連数を表示する', () => {

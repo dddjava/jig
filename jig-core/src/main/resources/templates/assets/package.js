@@ -9,6 +9,7 @@ const PackageApp = (() => {
         diagramNodeIdToFqn: new Map(),
         aggregationDepth: 0,
         packageFilterFqn: [],
+        hierarchyCollapsedPackages: [],
         diagramDirection: 'TB',
         mutualDependencyDiagramDirection: 'LR',
         transitiveReductionEnabled: true,
@@ -28,9 +29,6 @@ const PackageApp = (() => {
     const TAB = {HIERARCHY: 'hierarchy', EXPLORE: 'explore'};
 
     const dom = {
-        getPackageTableBody: () => document.querySelector('#package-table tbody'),
-        getPackageTableRows: () => document.querySelectorAll('#package-table tbody tr'),
-        getPackageFilterSelect: () => document.getElementById('package-filter-select'),
         getClearPackageFilterButton: () => document.getElementById('clear-package-filter'),
         getResetPackageFilterButton: () => document.getElementById('reset-package-filter'),
         getDepthSelect: () => document.getElementById('package-depth-select'),
@@ -40,6 +38,8 @@ const PackageApp = (() => {
         getMutualDependencyList: () => document.getElementById('mutual-dependency-list'),
         getDiagram: () => document.getElementById('package-relation-diagram'),
         getExploreDiagram: () => document.getElementById('package-explore-diagram'),
+        getHierarchyPackageList: () => document.getElementById('hierarchy-package-table'),
+        getHierarchyListFilter: () => document.getElementById('hierarchy-list-filter'),
         getExplorePackageList: () => document.getElementById('explore-package-table'),
         getExploreListFilter: () => document.getElementById('explore-list-filter'),
         getExploreClearSelectionButton: () => document.getElementById('explore-clear-selection'),
@@ -291,93 +291,12 @@ const PackageApp = (() => {
         }));
     }
 
-    function buildPackageTableRowSpecs(rows) {
-        return rows.map(item => ({
-            fqn: item.fqn,
-            name: getGlossaryTitle(item.fqn),
-            classCount: item.classCount,
-            incomingCount: item.incomingCount ?? 0,
-            outgoingCount: item.outgoingCount ?? 0,
-        }));
-    }
-
     function createNumberTd(value, countName) {
         const td = document.createElement('td');
         td.textContent = String(value ?? 0);
         td.className = 'number';
         if (countName) td.dataset.count = countName;
         return td;
-    }
-
-    function buildPackageTableRowElement(spec, applyFilter) {
-        const tr = document.createElement('tr');
-
-        const actionTd = document.createElement('td');
-        const actionButton = document.createElement('button');
-        actionButton.type = 'button';
-        actionButton.className = 'package-filter-icon';
-        actionButton.setAttribute('aria-label', 'このパッケージで絞り込み');
-        const actionText = document.createElement('span');
-        actionText.className = 'screen-reader-only';
-        actionText.textContent = '絞り込み';
-        actionButton.appendChild(actionText);
-        actionButton.addEventListener('click', () => applyFilter(spec.fqn));
-        actionTd.appendChild(actionButton);
-        tr.appendChild(actionTd);
-
-        const fqnTd = document.createElement('td');
-        fqnTd.textContent = spec.fqn;
-        fqnTd.className = 'fqn';
-        tr.appendChild(fqnTd);
-
-        const nameTd = document.createElement('td');
-        nameTd.textContent = spec.name;
-        tr.appendChild(nameTd);
-
-        const glossaryTd = document.createElement('td');
-        glossaryTd.className = 'glossary-cell';
-        const glossaryLink = document.createElement('a');
-        glossaryLink.className = 'glossary-link-icon';
-        glossaryLink.href = `glossary.html#${encodeURIComponent(spec.fqn)}`;
-        glossaryLink.setAttribute('aria-label', '用語集');
-        const glossaryText = document.createElement('span');
-        glossaryText.className = 'screen-reader-only';
-        glossaryText.textContent = '用語集';
-        glossaryLink.appendChild(glossaryText);
-        glossaryTd.appendChild(glossaryLink);
-        tr.appendChild(glossaryTd);
-
-        tr.appendChild(createNumberTd(spec.classCount));
-        tr.appendChild(createNumberTd(spec.incomingCount));
-        tr.appendChild(createNumberTd(spec.outgoingCount));
-
-        return tr;
-    }
-
-    function renderPackageTable(context) {
-        const tbody = dom.getPackageTableBody();
-        if (!tbody) return;
-
-        const {packages, relations} = getPackageRelationData(context);
-        const aggregated = aggregatePackageData(packages, relations, context.aggregationDepth);
-
-        const {packages: filteredPackages, relations: filteredRelations} =
-            filterByPackageFilter(aggregated.packages, aggregated.relations, context.packageFilterFqn);
-
-        const rows = buildPackageTableRowData(filteredPackages, filteredRelations);
-        const rowSpecs = buildPackageTableRowSpecs(rows);
-
-        tbody.innerHTML = '';
-
-        const applyFilter = fqn => {
-            setPackageFilterSelectValues(context, [fqn]);
-            renderHierarchyDiagramAndTable(context);
-        };
-
-        rowSpecs.forEach(spec => {
-            const tr = buildPackageTableRowElement(spec, applyFilter);
-            tbody.appendChild(tr);
-        });
     }
 
     // 相互依存/依存関係の簡略表示
@@ -424,7 +343,7 @@ const PackageApp = (() => {
         const list = document.createElement('ul');
 
         const applyFilterAndRender = (fqns) => {
-            setPackageFilterSelectValues(context, fqns);
+            context.packageFilterFqn = fqns;
             renderHierarchyDiagramAndTable(context);
         };
 
@@ -732,7 +651,7 @@ const PackageApp = (() => {
 
     function renderHierarchyDiagramAndTable(context) {
         renderHierarchyDiagram(context);
-        renderPackageTable(context);
+        renderHierarchyPackageList(context);
         renderAggregationDepthSelectOptions(getMaxPackageDepth(), context);
         syncStateToURL();
     }
@@ -830,17 +749,15 @@ const PackageApp = (() => {
         return {ancestor: undefined, relative: fqn};
     }
 
-    function renderExplorePackageList(context) {
-        const container = dom.getExplorePackageList();
+    function renderPackageList(config) {
+        const container = config.getContainer();
         if (!container) return;
 
-        const targetSet = new Set(context.exploreTargetPackages);
-
         // TBODYが既に存在する場合はクラスのみ更新する
-        const existingTableBody = container.querySelector('tbody');
-        if (existingTableBody) {
-            existingTableBody.querySelectorAll('tr[data-fqn]').forEach(tr => {
-                tr.classList.toggle('explore-target-selected', targetSet.has(tr.dataset.fqn));
+        const existingTbody = container.querySelector('tbody');
+        if (existingTbody) {
+            existingTbody.querySelectorAll('tr[data-fqn]').forEach(tr => {
+                tr.classList.toggle('explore-target-selected', config.isSelected(tr.dataset.fqn));
             });
             return;
         }
@@ -859,9 +776,7 @@ const PackageApp = (() => {
         }
 
         const fqnSet = new Set(sortedPackages.map(p => p.fqn));
-
-        const collapsedSet = new Set(context.exploreCollapsedPackages);
-
+        const collapsedSet = new Set(config.getCollapsedPackages());
         const tbody = document.createElement('tbody');
 
         function refreshCountDisplay(targetTr) {
@@ -891,20 +806,12 @@ const PackageApp = (() => {
             const tr = document.createElement('tr');
             tr.dataset.fqn = pkg.fqn;
             const rowData = rowDataMap.get(pkg.fqn);
-            if (targetSet.has(pkg.fqn)) tr.classList.add('explore-target-selected');
-            if (context.exploreCollapsedPackages.some(c => pkg.fqn.startsWith(c + '.'))) {
+            if (config.isSelected(pkg.fqn)) tr.classList.add('explore-target-selected');
+            if ([...collapsedSet].some(c => pkg.fqn.startsWith(c + '.'))) {
                 tr.classList.add('hidden-by-collapse');
             }
 
-            tr.addEventListener('click', () => {
-                if (context.exploreTargetPackages.includes(pkg.fqn)) {
-                    context.exploreTargetPackages = context.exploreTargetPackages.filter(p => p !== pkg.fqn);
-                } else {
-                    context.exploreTargetPackages = [...context.exploreTargetPackages, pkg.fqn];
-                }
-                renderExplorePackageList(context);
-                renderExploreDiagram(context);
-            });
+            tr.addEventListener('click', () => config.onRowClick(pkg.fqn));
 
             const toggleTd = document.createElement('td');
             if (hasChildrenSet.has(pkg.fqn)) {
@@ -921,44 +828,13 @@ const PackageApp = (() => {
                     toggleBtn.setAttribute('aria-expanded', String(!collapsing));
                     toggleBtn.textContent = collapsing ? '▶' : '▼';
                     toggleBtn.setAttribute('aria-label', collapsing ? '配下を展開' : '配下を折りたたむ');
-                    const selectedSet = new Set(context.exploreTargetPackages);
                     const childPrefix = pkg.fqn + '.';
-                    const childFqnsToAdd = [];
                     tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
-                        const childFqn = childTr.dataset.fqn;
-                        if (childFqn.startsWith(childPrefix)) {
+                        if (childTr.dataset.fqn.startsWith(childPrefix)) {
                             childTr.classList.toggle('hidden-by-collapse', collapsing);
-                            if (!collapsing && selectedSet.has(pkg.fqn) && !selectedSet.has(childFqn)) {
-                                childFqnsToAdd.push(childFqn);
-                            }
                         }
                     });
-                    if (collapsing) {
-                        const childrenSelected = context.exploreTargetPackages.some(t => t.startsWith(childPrefix));
-                        if (childrenSelected) {
-                            context.exploreTargetPackages = [
-                                ...context.exploreTargetPackages.filter(t => !t.startsWith(childPrefix)),
-                                ...(selectedSet.has(pkg.fqn) ? [] : [pkg.fqn]),
-                            ];
-                            renderExplorePackageList(context);
-                        }
-                    } else if (childFqnsToAdd.length > 0) {
-                        context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqnsToAdd];
-                        renderExplorePackageList(context);
-                    }
-                    if (collapsing) {
-                        context.exploreCollapsedPackages = [...context.exploreCollapsedPackages, pkg.fqn];
-                    } else {
-                        context.exploreCollapsedPackages = context.exploreCollapsedPackages.filter(p => p !== pkg.fqn);
-                    }
-                    const affectsSelection = context.exploreTargetPackages.some(t =>
-                        t === pkg.fqn || t.startsWith(pkg.fqn + '.') || pkg.fqn.startsWith(t + '.')
-                    );
-                    if (affectsSelection) {
-                        renderExploreDiagram(context);
-                    } else {
-                        syncStateToURL();
-                    }
+                    config.onCollapseChange(pkg.fqn, collapsing, childPrefix, tbody);
                     refreshCountDisplay(tr);
                     if (!collapsing) {
                         tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
@@ -992,6 +868,7 @@ const PackageApp = (() => {
 
             tbody.appendChild(tr);
         });
+
         Array.from(tbody.children).forEach(tr => {
             if (tr.querySelector('.explore-collapse-toggle')?.getAttribute('aria-expanded') === 'false') {
                 refreshCountDisplay(tr);
@@ -999,7 +876,7 @@ const PackageApp = (() => {
         });
         container.appendChild(tbody);
 
-        const filterInput = dom.getExploreListFilter();
+        const filterInput = config.getFilterInput();
         if (filterInput) {
             filterInput.addEventListener('input', () => {
                 const filterText = filterInput.value.toLowerCase();
@@ -1011,66 +888,109 @@ const PackageApp = (() => {
         }
     }
 
-    // UI配線
-    function setPackageFilterSelectValues(context, fqns) {
-        const select = dom.getPackageFilterSelect();
-        if (!select) return;
-        context.packageFilterFqn = fqns;
-        Array.from(select.children).forEach(option => {
-            option.selected = fqns.includes(option.value);
-        });
+    function buildHierarchyListConfig(context) {
+        const config = {
+            getContainer: () => dom.getHierarchyPackageList(),
+            getFilterInput: () => dom.getHierarchyListFilter(),
+            getCollapsedPackages: () => context.hierarchyCollapsedPackages,
+            isSelected: (fqn) => context.packageFilterFqn.includes(fqn),
+            onRowClick: (fqn) => {
+                if (context.packageFilterFqn.includes(fqn)) {
+                    context.packageFilterFqn = context.packageFilterFqn.filter(p => p !== fqn);
+                } else {
+                    context.packageFilterFqn = [...context.packageFilterFqn, fqn];
+                }
+                renderHierarchyDiagramAndTable(context);
+            },
+            onCollapseChange: (fqn, collapsing) => {
+                if (collapsing) {
+                    context.hierarchyCollapsedPackages = [...context.hierarchyCollapsedPackages, fqn];
+                } else {
+                    context.hierarchyCollapsedPackages = context.hierarchyCollapsedPackages.filter(p => p !== fqn);
+                }
+                syncStateToURL();
+            },
+        };
+        return config;
     }
 
+    function buildExploreListConfig(context) {
+        const config = {
+            getContainer: () => dom.getExplorePackageList(),
+            getFilterInput: () => dom.getExploreListFilter(),
+            getCollapsedPackages: () => context.exploreCollapsedPackages,
+            isSelected: (fqn) => context.exploreTargetPackages.includes(fqn),
+            onRowClick: (fqn) => {
+                if (context.exploreTargetPackages.includes(fqn)) {
+                    context.exploreTargetPackages = context.exploreTargetPackages.filter(p => p !== fqn);
+                } else {
+                    context.exploreTargetPackages = [...context.exploreTargetPackages, fqn];
+                }
+                renderPackageList(config);
+                renderExploreDiagram(context);
+            },
+            onCollapseChange: (fqn, collapsing, childPrefix, tbody) => {
+                const selectedSet = new Set(context.exploreTargetPackages);
+                if (collapsing) {
+                    const childrenSelected = context.exploreTargetPackages.some(t => t.startsWith(childPrefix));
+                    if (childrenSelected) {
+                        context.exploreTargetPackages = [
+                            ...context.exploreTargetPackages.filter(t => !t.startsWith(childPrefix)),
+                            ...(selectedSet.has(fqn) ? [] : [fqn]),
+                        ];
+                        renderPackageList(config);
+                    }
+                    context.exploreCollapsedPackages = [...context.exploreCollapsedPackages, fqn];
+                } else {
+                    const childFqnsToAdd = [];
+                    tbody.querySelectorAll('tr[data-fqn]').forEach(childTr => {
+                        const childFqn = childTr.dataset.fqn;
+                        if (childFqn.startsWith(childPrefix) && selectedSet.has(fqn) && !selectedSet.has(childFqn)) {
+                            childFqnsToAdd.push(childFqn);
+                        }
+                    });
+                    if (childFqnsToAdd.length > 0) {
+                        context.exploreTargetPackages = [...context.exploreTargetPackages, ...childFqnsToAdd];
+                        renderPackageList(config);
+                    }
+                    context.exploreCollapsedPackages = context.exploreCollapsedPackages.filter(p => p !== fqn);
+                }
+                const affectsSelection = context.exploreTargetPackages.some(t =>
+                    t === fqn || t.startsWith(fqn + '.') || fqn.startsWith(t + '.')
+                );
+                if (affectsSelection) {
+                    renderExploreDiagram(context);
+                } else {
+                    syncStateToURL();
+                }
+            },
+        };
+        return config;
+    }
+
+    function renderHierarchyPackageList(context) {
+        renderPackageList(buildHierarchyListConfig(context));
+    }
+
+    function renderExplorePackageList(context) {
+        renderPackageList(buildExploreListConfig(context));
+    }
+
+    // UI配線
     function setupPackageFilterControl(context) {
-        const select = dom.getPackageFilterSelect();
         const clearPackageButton = dom.getClearPackageFilterButton();
         const resetButton = dom.getResetPackageFilterButton();
-        if (!select) return;
 
         const {domainPackageRoots} = getPackageRelationData(context);
         const defaultFqns = findDefaultPackageFilterCandidate(domainPackageRoots) ?? [];
 
-        const clearPackageFilter = () => {
+        if (clearPackageButton) clearPackageButton.addEventListener('click', () => {
             context.packageFilterFqn = [];
-            Array.from(select.children).forEach(option => {
-                option.selected = false;
-            });
-            renderHierarchyDiagramAndTable(context);
-        };
-        const resetPackageFilter = () => {
-            setPackageFilterSelectValues(context, defaultFqns);
-            renderHierarchyDiagramAndTable(context);
-        };
-
-        select.addEventListener('change', () => {
-            context.packageFilterFqn = Array.from(select.selectedOptions).map(opt => opt.value);
             renderHierarchyDiagramAndTable(context);
         });
-
-        if (clearPackageButton) clearPackageButton.addEventListener('click', clearPackageFilter);
-        if (resetButton) resetButton.addEventListener('click', resetPackageFilter);
-    }
-
-    function buildPackageFilterSelectOptions(aggregatedPackages) {
-        return aggregatedPackages.map(pkg => pkg.fqn).sort();
-    }
-
-    function renderPackageFilterSelectOptions(context) {
-        const select = dom.getPackageFilterSelect();
-        if (!select) return;
-
-        const {packages, relations} = getPackageRelationData(context);
-        const {packages: aggregatedPackages} = aggregatePackageData(packages, relations, context.aggregationDepth);
-        const fqns = buildPackageFilterSelectOptions(aggregatedPackages);
-        const currentSelected = new Set(context.packageFilterFqn);
-
-        select.innerHTML = '';
-        fqns.forEach(fqn => {
-            const option = document.createElement('option');
-            option.value = fqn;
-            option.textContent = fqn;
-            option.selected = currentSelected.has(fqn);
-            select.appendChild(option);
+        if (resetButton) resetButton.addEventListener('click', () => {
+            context.packageFilterFqn = defaultFqns;
+            renderHierarchyDiagramAndTable(context);
         });
     }
 
@@ -1080,7 +1000,6 @@ const PackageApp = (() => {
         if (!candidate || !candidate.length) return;
 
         context.packageFilterFqn = candidate;
-        renderPackageFilterSelectOptions(context);
     }
 
     function updateDepthButtonStates(select, upButton, downButton) {
@@ -1105,7 +1024,6 @@ const PackageApp = (() => {
 
         select.addEventListener('change', () => {
             context.aggregationDepth = normalizeAggregationDepthValue(select.value);
-            renderPackageFilterSelectOptions(context);
             renderHierarchyDiagramAndTable(context);
             renderAggregationDepthSelectOptions(maxDepth, context);
             updateDepthButtonStates(select, upButton, downButton);
@@ -1219,8 +1137,7 @@ const PackageApp = (() => {
         window[HIERARCHY_DIAGRAM_CLICK_HANDLER_NAME] = function (nodeId) {
             const fqn = context.diagramNodeIdToFqn.get(nodeId);
             if (!fqn) return;
-            // クリックしたパッケージでフィルタを絞り込む
-            setPackageFilterSelectValues(context, [fqn]);
+            context.packageFilterFqn = [fqn];
             renderHierarchyDiagramAndTable(context);
         };
     }
@@ -1279,6 +1196,7 @@ const PackageApp = (() => {
             // デフォルトの hierarchy タブ
             if (hierarchyState.aggregationDepth !== 0) params.set('depth', hierarchyState.aggregationDepth);
             hierarchyState.packageFilterFqn.forEach(f => params.append('filter', f));
+            hierarchyState.hierarchyCollapsedPackages.forEach(p => params.append('hcollapsed', p));
             if (!hierarchyState.transitiveReductionEnabled) params.set('reduction', 'false');
         }
 
@@ -1298,6 +1216,9 @@ const PackageApp = (() => {
 
         const filters = params.getAll('filter');
         if (filters.length > 0) hierarchyState.packageFilterFqn = filters;
+
+        const hcollapsed = params.getAll('hcollapsed');
+        if (hcollapsed.length > 0) hierarchyState.hierarchyCollapsedPackages = hcollapsed;
 
         const reduction = params.get('reduction');
         if (reduction === 'false') hierarchyState.transitiveReductionEnabled = false;
@@ -1344,7 +1265,6 @@ const PackageApp = (() => {
         loadStateFromURL();
 
         setupAggregationDepthControl(hierarchyState);
-        renderPackageFilterSelectOptions(hierarchyState);
         setupTransitiveReductionControl(hierarchyState);
         registerHierarchyDiagramClickHandler(hierarchyState);
 
@@ -1388,9 +1308,6 @@ const PackageApp = (() => {
         collectExploreNodeSets,
         buildVisibleDiagramElements,
         buildPackageTableRowData,
-        buildPackageTableRowSpecs,
-        buildPackageTableRowElement,
-        renderPackageTable,
         applyDefaultPackageFilterIfPresent,
         buildMutualDependencyItems,
         renderMutualDependencyList,
@@ -1401,6 +1318,7 @@ const PackageApp = (() => {
         buildHierarchyDiagramRenderPlan,
         buildCollapsedSubpackageMap,
         renderExploreDiagram,
+        renderHierarchyPackageList,
         renderExplorePackageList,
         registerHierarchyDiagramClickHandler,
         registerExploreDiagramClickHandler,
@@ -1409,12 +1327,9 @@ const PackageApp = (() => {
         renderAggregationDepthSelectOptions,
         buildAggregationDepthOptions,
         renderAggregationDepthOptionsIntoSelect,
-        renderPackageFilterSelectOptions,
-        buildPackageFilterSelectOptions,
         setupTransitiveReductionControl,
         setupExploreControl,
         setupTabControl,
-        setPackageFilterSelectValues,
         getRelativeFqn,
     };
 })();

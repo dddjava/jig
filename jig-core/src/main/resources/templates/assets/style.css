@@ -1229,28 +1229,34 @@ label {
     min-width: 30ch;
 }
 
-.package-relation #explore-package-list {
+.package-relation #explore-package-list,
+.package-relation #hierarchy-package-list {
     margin-top: 8px;
 }
 
-.package-relation #explore-package-table {
+.package-relation #explore-package-table,
+.package-relation #hierarchy-package-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.package-relation #explore-package-table tbody tr {
+.package-relation #explore-package-table tbody tr,
+.package-relation #hierarchy-package-table tbody tr {
     cursor: pointer;
 }
 
-.package-relation #explore-package-table tbody tr:hover {
+.package-relation #explore-package-table tbody tr:hover,
+.package-relation #hierarchy-package-table tbody tr:hover {
     background-color: #f0f0f0;
 }
 
-.package-relation #explore-package-table tbody tr.explore-target-selected {
+.package-relation #explore-package-table tbody tr.explore-target-selected,
+.package-relation #hierarchy-package-table tbody tr.explore-target-selected {
     background-color: #ffffce;
 }
 
-.package-relation #explore-package-table tbody tr.hidden-by-collapse {
+.package-relation #explore-package-table tbody tr.hidden-by-collapse,
+.package-relation #hierarchy-package-table tbody tr.hidden-by-collapse {
     display: none;
 }
 

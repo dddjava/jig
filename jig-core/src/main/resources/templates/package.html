@@ -37,8 +37,10 @@
     </nav>
 
     <div id="panel-hierarchy" class="package-tab-panel is-active">
-        <details class="controls" open>
-            <summary>表示設定</summary>
+        <pre id="package-relation-diagram" class="mermaid"></pre>
+        <section id="mutual-dependency-list" class="mutual-dependencies"></section>
+
+        <div class="controls">
             <div class="control-row">
                 <label class="control-label" for="package-depth-select">階層集約:</label>
                 <select id="package-depth-select"></select>
@@ -46,21 +48,14 @@
                 <button type="button" id="depth-down-button">▼</button>
             </div>
             <div class="control-row">
-                <span class="control-label">パッケージフィルタ:</span>
-                <button id="clear-package-filter" type="button">解除</button>
-                <button id="reset-package-filter" type="button">デフォルトに戻す</button>
+                <label class="control-label" for="transitive-reduction-toggle">依存関係の簡略表示:</label>
+                <label class="radio-label"> <input type="checkbox" id="transitive-reduction-toggle" checked> 有効 </label>
             </div>
             <div class="control-row">
-                <label class="control-label" for="transitive-reduction-toggle">依存関係の簡略表示:</label>
-                <label class="radio-label">
-                    <input type="checkbox" id="transitive-reduction-toggle" checked>
-                    有効
-                </label>
+                <button id="clear-package-filter" type="button">選択を全解除</button>
+                <button id="reset-package-filter" type="button">選択をデフォルトに戻す</button>
             </div>
-        </details>
-
-        <pre id="package-relation-diagram" class="mermaid"></pre>
-        <section id="mutual-dependency-list" class="mutual-dependencies"></section>
+        </div>
 
         <section id="hierarchy-package-list">
             <table id="hierarchy-package-table">

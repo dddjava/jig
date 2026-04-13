@@ -947,7 +947,7 @@ label {
 /* Glossaryのレイアウトは split-view / in-page-sidebar / jig-card を利用する */
 
 /* パッケージ概要の表示設定 */
-.package-relation details.controls,
+.package-relation .controls,
 .package-relation details.usage {
     background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
     border: 1px solid #ccc;
@@ -959,7 +959,7 @@ label {
     max-width: 980px;
 }
 
-.package-relation details.controls summary,
+.package-relation .controls summary,
 .package-relation details.usage summary {
     list-style: none;
     cursor: pointer;
@@ -967,37 +967,20 @@ label {
     font-weight: 600;
 }
 
-.package-relation details.controls > :not(summary),
+.package-relation .controls > *,
 .package-relation details.usage > :not(summary) {
     display: block;
     margin: 8px 0;
 }
 
-.package-relation details.controls .control-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.package-relation details.controls .focus-group {
-    display: flex;
-    align-items: center;
-    gap: 8px; /* スペースを調整 */
-}
-
-.package-relation details.controls .control-label {
-    font-weight: 600;
-}
-
-.package-relation details.controls .radio-label {
+.package-relation .controls .radio-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
 
-.package-relation details.controls input[type="text"],
-.package-relation details.controls select {
+.package-relation .controls input[type="text"],
+.package-relation .controls select {
     padding: 6px 8px;
     border: 1px solid #bbb;
     border-radius: 6px;
@@ -1005,7 +988,7 @@ label {
 }
 
 
-.package-relation details.controls button {
+.package-relation .controls button {
     padding: 6px 10px;
     border: 1px solid #888;
     border-radius: 6px;
@@ -1013,19 +996,19 @@ label {
     cursor: pointer;
 }
 
-.package-relation details.controls #depth-up-button,
-.package-relation details.controls #depth-down-button {
+.package-relation .controls #depth-up-button,
+.package-relation .controls #depth-down-button {
     padding: 4px 8px;
     min-width: 32px;
     font-size: 14px;
     line-height: 1;
 }
 
-.package-relation details.controls button:hover {
+.package-relation .controls button:hover {
     background-color: #e6e6e6;
 }
 
-.package-relation details.controls .note {
+.package-relation .controls .note {
     font-size: 0.9em;
     color: #555;
 }
@@ -1168,16 +1151,16 @@ label {
 }
 
 @media (max-width: 720px) {
-    .package-relation details.controls .control-row {
+    .package-relation .controls .control-row {
         align-items: flex-start;
     }
 
-    .package-relation details.controls .control-label {
+    .package-relation .controls .control-label {
         width: 100%;
     }
 
-    .package-relation details.controls input[type="text"],
-    .package-relation details.controls select {
+    .package-relation .controls input[type="text"],
+    .package-relation .controls select {
         width: 100%;
     }
 }
@@ -1216,7 +1199,7 @@ label {
     display: block;
 }
 
-.package-relation details.controls select[multiple] {
+.package-relation .controls select[multiple] {
     min-width: 30ch;
     max-width: 60ch;
 }

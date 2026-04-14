@@ -10,12 +10,9 @@ import java.util.Optional;
 public record TypeRelationship(TypeId from, TypeId to, TypeRelationKind typeRelationKind) {
 
     static Optional<TypeRelationship> of不明(TypeId from, TypeId to) {
-        // TODO ここでnormalizeしなくてよくなってるかもしれない
-        TypeId normalizeFrom = from.normalize();
-        TypeId normalizeTo = to.normalize();
         // 自己参照を除く
-        if (normalizeFrom.equals(normalizeTo)) return Optional.empty();
-        return Optional.of(of(normalizeFrom, normalizeTo, TypeRelationKind.不明));
+        if (from.equals(to)) return Optional.empty();
+        return Optional.of(of(from, to, TypeRelationKind.不明));
     }
 
     static TypeRelationship of型引数(TypeId from, TypeId to) {

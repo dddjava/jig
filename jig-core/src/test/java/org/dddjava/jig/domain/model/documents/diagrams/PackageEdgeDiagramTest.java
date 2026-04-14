@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationKind;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationship;
@@ -21,7 +20,7 @@ class PackageEdgeDiagramTest {
     }
 
     private static TypeRelationship classRelationFrom(String value, String value1) {
-        return new TypeRelationship(Edge.of(TypeId.valueOf(value), TypeId.valueOf(value1)), TypeRelationKind.不明);
+        return new TypeRelationship(TypeId.valueOf(value), TypeId.valueOf(value1), TypeRelationKind.不明);
     }
 
     @Test

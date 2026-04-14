@@ -2,23 +2,14 @@ package org.dddjava.jig.domain.model.information.relation.methods;
 
 import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 
 /**
  * メソッドの使用しているメソッド
  */
-public record MethodRelation(Edge<JigMethodId> edge) {
+public record MethodRelation(JigMethodId from, JigMethodId to) {
 
     public static MethodRelation from(JigMethodId from, JigMethodId to) {
-        return new MethodRelation(Edge.of(from, to));
-    }
-
-    public JigMethodId from() {
-        return edge.from();
-    }
-
-    public JigMethodId to() {
-        return edge.to();
+        return new MethodRelation(from, to);
     }
 
     public boolean calleeMethodIs(JigMethodId jigMethodId) {

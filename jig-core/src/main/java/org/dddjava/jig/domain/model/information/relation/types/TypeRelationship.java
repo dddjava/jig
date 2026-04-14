@@ -1,14 +1,13 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.relation.graph.Edge;
 
 import java.util.Optional;
 
 /**
  * 型の関連
  */
-public record TypeRelationship(Edge<TypeId> edge, TypeRelationKind typeRelationKind) {
+public record TypeRelationship(TypeId from, TypeId to, TypeRelationKind typeRelationKind) {
 
     static Optional<TypeRelationship> of不明(TypeId from, TypeId to) {
         // TODO ここでnormalizeしなくてよくなってるかもしれない
@@ -28,15 +27,7 @@ public record TypeRelationship(Edge<TypeId> edge, TypeRelationKind typeRelationK
     }
 
     static TypeRelationship of(TypeId from, TypeId to, TypeRelationKind typeRelationKind) {
-        return new TypeRelationship(Edge.of(from, to), typeRelationKind);
-    }
-
-    public TypeId from() {
-        return edge.from();
-    }
-
-    public TypeId to() {
-        return edge.to();
+        return new TypeRelationship(from, to, typeRelationKind);
     }
 
     public boolean toIs(TypeId typeId) {

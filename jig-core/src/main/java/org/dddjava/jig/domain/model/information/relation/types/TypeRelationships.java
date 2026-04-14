@@ -15,9 +15,9 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
- * 型依存関係一覧
+ * 型関係一覧
  */
-public record TypeRelationships(Collection<TypeRelationship> typeRelationships) {
+public record TypeRelationships(Collection<TypeRelationship> relationships) {
 
     public static TypeRelationships from(JigTypes jigTypes) {
         return new TypeRelationships(jigTypes.orderedStream()
@@ -80,7 +80,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     }
 
     public TypeIds collectTypeIdWhichRelationTo(TypeId typeId) {
-        return typeRelationships.stream()
+        return relationships.stream()
                 .filter(classRelation -> classRelation.toIs(typeId))
                 .map(TypeRelationship::from)
                 .collect(TypeIds.collector())
@@ -88,7 +88,7 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     }
 
     public List<TypeRelationship> list() {
-        return typeRelationships.stream()
+        return relationships.stream()
                 .sorted(Comparator.comparing(TypeRelationship::from).thenComparing(TypeRelationship::to))
                 .toList();
     }
@@ -103,16 +103,16 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
     }
 
     private TypeRelationships filterRelationships(Predicate<TypeRelationship> typeRelationshipPredicate) {
-        return new TypeRelationships(typeRelationships.stream()
+        return new TypeRelationships(relationships.stream()
                 .filter(typeRelationshipPredicate)
                 .toList());
     }
 
     public int size() {
-        return typeRelationships.size();
+        return relationships.size();
     }
 
     public boolean isEmpty() {
-        return typeRelationships.isEmpty();
+        return relationships.isEmpty();
     }
 }

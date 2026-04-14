@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.members.methods.JigMethodId;
 import org.dddjava.jig.domain.model.data.types.TypeId;
 
 /**
- * メソッドの使用しているメソッド
+ * メソッドの関連
  */
 public record MethodRelation(JigMethodId from, JigMethodId to) {
 

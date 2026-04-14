@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.data.types.TypeId;
 import java.util.Optional;
 
 /**
- * 型の関連
+ * 型の関係
  */
 public record TypeRelationship(TypeId from, TypeId to, TypeRelationKind typeRelationKind) {
 

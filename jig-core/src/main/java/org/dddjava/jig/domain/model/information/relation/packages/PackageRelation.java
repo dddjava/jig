@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.relation.packages;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 
 /**
- * パッケージの依存関係
+ * パッケージの関連
  */
 public record PackageRelation(PackageId from, PackageId to) {
 

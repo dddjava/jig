@@ -3,21 +3,22 @@ package org.dddjava.jig.domain.model.information.relation.packages;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.information.relation.types.TypeRelationships;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
 /**
- * パッケージの依存関係
+ * パッケージの関連一覧
  *
  * @param relations 重複・自己参照・順序に関わらず保持するコレクション
  */
-public record PackageRelations(List<PackageRelation> relations) {
+public record PackageRelations(Collection<PackageRelation> relations) {
 
     /**
      * クラスの関連をパッケージの関連に丸める
      */
     public static PackageRelations from(TypeRelationships typeRelationships) {
-        var packageRelations = typeRelationships.typeRelationships().stream()
+        var packageRelations = typeRelationships.relationships().stream()
                 .map(classRelation -> PackageRelation.from(classRelation.from().packageId(), classRelation.to().packageId()))
                 .toList();
         return new PackageRelations(packageRelations);

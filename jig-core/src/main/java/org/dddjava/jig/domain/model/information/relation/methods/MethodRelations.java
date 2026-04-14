@@ -13,9 +13,9 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.*;
 
 /**
- * メソッドの使用しているメソッド一覧
+ * メソッドの関連一覧
  */
-public record MethodRelations(List<MethodRelation> list) implements CallerMethodsFactory {
+public record MethodRelations(Collection<MethodRelation> relations) implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
     public static MethodRelations from(JigTypes jigTypes) {
@@ -29,7 +29,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
     }
 
     public MethodRelations filterApplicationComponent(JigTypes jigTypes) {
-        return list().stream()
+        return relations().stream()
                 .filter(methodRelation ->
                         jigTypes.isApplicationComponent(methodRelation.fromType())
                                 && jigTypes.isApplicationComponent(methodRelation.toType())
@@ -42,7 +42,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
      */
     @Override
     public CallerMethods callerMethodsOf(JigMethodId jigMethodId) {
-        return new CallerMethods(list.stream()
+        return new CallerMethods(relations.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(jigMethodId))
                 .map(MethodRelation::from)
                 .collect(toSet()));
@@ -64,7 +64,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
             return Stream.empty();
         }
 
-        return list.stream()
+        return relations.stream()
                 .filter(methodRelation -> methodRelation.from().equals(jigMethodId))
                 .flatMap(methodRelation -> Stream.concat(
                         Stream.of(methodRelation),
@@ -81,7 +81,7 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
         List<MethodRelation> inlined = new ArrayList<>();
         List<MethodRelation> pending = new ArrayList<>();
 
-        for (MethodRelation methodRelation : list) {
+        for (MethodRelation methodRelation : relations) {
             if (methodRelation.to().isLambda()) {
                 // lambdaへの関連
                 // この関連自体は残らない。ここで示されるfromにlambdaからの関連を置き換える

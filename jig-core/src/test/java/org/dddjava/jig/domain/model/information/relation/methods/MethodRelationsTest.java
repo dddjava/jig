@@ -20,7 +20,7 @@ class MethodRelationsTest {
                 relationOf("A", "B")
         ));
 
-        assertEquals(4, source.list().size());
+        assertEquals(4, source.relations().size());
     }
 
     @Test
@@ -31,7 +31,7 @@ class MethodRelationsTest {
         ))
                 .inlineLambda();
 
-        assertEquals(1, source.list().size());
+        assertEquals(1, source.relations().size());
     }
 
     @Test
@@ -50,7 +50,7 @@ class MethodRelationsTest {
 
         var actual = source.inlineLambda();
 
-        assertEquals(4, actual.list().size());
+        assertEquals(4, actual.relations().size());
     }
 
     private static MethodRelation relationOf(String from, String to) {

@@ -56,7 +56,7 @@ public class InboundDataAdapter implements DataAdapter {
                 var entrypointMethodId = entrypoint.jigMethod().jigMethodId();
 
                 MethodRelations declaredMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethodId, jigTypes::isService);
-                declaredMethodRelations.list().forEach(relation -> {
+                declaredMethodRelations.relations().forEach(relation -> {
                     edges.add(Json.object("from", relation.from().fqn())
                             .and("to", relation.to().fqn()));
                 });

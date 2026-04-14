@@ -2,8 +2,8 @@ package org.dddjava.jig.adapter.datajs;
 
 import org.dddjava.jig.adapter.json.Json;
 import org.dddjava.jig.adapter.json.JsonObjectBuilder;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outbound.OutboundAdapters;
 
 import java.util.ArrayList;

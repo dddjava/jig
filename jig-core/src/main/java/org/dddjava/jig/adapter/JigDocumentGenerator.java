@@ -3,10 +3,10 @@ package org.dddjava.jig.adapter;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigResult;
 import org.dddjava.jig.adapter.datajs.DataAdapterResolver;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.JigDocument;
 import org.dddjava.jig.domain.model.documents.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.JigRepository;
 
 import java.nio.file.Path;
 import java.util.List;

@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorRepository;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

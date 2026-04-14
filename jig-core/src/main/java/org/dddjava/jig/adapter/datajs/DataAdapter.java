@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.datajs;
 
-import org.dddjava.jig.domain.model.information.JigRepository;
+import org.dddjava.jig.application.JigRepository;
 
 public interface DataAdapter {
     String variableName();

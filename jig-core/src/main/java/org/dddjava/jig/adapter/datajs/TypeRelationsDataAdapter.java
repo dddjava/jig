@@ -1,8 +1,8 @@
 package org.dddjava.jig.adapter.datajs;
 
 import org.dddjava.jig.adapter.json.Json;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.domain.model.information.JigRepository;
 
 /**
  * 型関連情報（type-relations-data.js）

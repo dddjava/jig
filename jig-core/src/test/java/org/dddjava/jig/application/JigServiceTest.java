@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.information.JigRepository;
 import org.junit.jupiter.api.Test;
 import testing.JigTest;
 

@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.information.outbound;
 
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperation;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceAccessorOperationId;
 import org.dddjava.jig.domain.model.data.persistence.PersistenceOperationType;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.outbound.other.OtherExternalAccessorRepository;
 import org.junit.jupiter.api.Test;
 import stub.infrastructure.datasource.springdata.SpringDataJdbcCrudDelegatingOutbohndAdapter;

@@ -1,13 +1,13 @@
 package org.dddjava.jig.adapter.datajs;
 
 import org.dddjava.jig.adapter.json.Json;
+import org.dddjava.jig.application.JigRepository;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.members.fields.JigFieldId;
 import org.dddjava.jig.domain.model.data.packages.PackageId;
 import org.dddjava.jig.domain.model.data.types.JigTypeReference;
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.inbound.Entrypoint;
 import org.dddjava.jig.domain.model.information.inbound.InputAdapters;
 import org.dddjava.jig.domain.model.information.members.JigMethod;

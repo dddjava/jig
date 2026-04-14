@@ -2,7 +2,6 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.types.JigTypeVisibility;
 import org.dddjava.jig.domain.model.data.types.TypeId;
-import org.dddjava.jig.domain.model.information.JigRepository;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.junit.jupiter.api.Test;
 import testing.JigTest;

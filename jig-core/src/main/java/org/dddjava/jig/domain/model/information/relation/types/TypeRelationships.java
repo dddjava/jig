@@ -1,13 +1,11 @@
 package org.dddjava.jig.domain.model.information.relation.types;
 
 import org.dddjava.jig.domain.model.data.types.*;
-import org.dddjava.jig.domain.model.information.relation.graph.Edges;
 import org.dddjava.jig.domain.model.information.types.JigType;
 import org.dddjava.jig.domain.model.information.types.JigTypes;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -81,12 +79,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
                 .map(annoRef -> TypeRelationship.of使用アノテーション(id, annoRef.id()));
     }
 
-    public Edges<TypeId> toEdges() {
-        return new Edges<>(typeRelationships.stream()
-                .map(TypeRelationship::edge)
-                .toList());
-    }
-
     public TypeIds collectTypeIdWhichRelationTo(TypeId typeId) {
         return typeRelationships.stream()
                 .filter(classRelation -> classRelation.toIs(typeId))
@@ -99,32 +91,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return typeRelationships.stream()
                 .sorted(Comparator.comparing(TypeRelationship::from).thenComparing(TypeRelationship::to))
                 .toList();
-    }
-
-    public TypeIds toTypeIds() {
-        return typeRelationships.stream()
-                .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
-                .map(TypeId::normalize) // ここでnormalizeいる？？
-                .collect(TypeIds.collector());
-    }
-
-    public TypeRelationships relationsFromRootTo(TypeIds toTypeIds) {
-        HashSet<TypeRelationship> set = new HashSet<>();
-
-        int size = 0;
-        while (true) {
-            TypeRelationships temp = filterRelationsTo(toTypeIds);
-            set.addAll(temp.typeRelationships());
-
-            if (size == set.size()) break;
-            size = set.size();
-            toTypeIds = temp.fromTypeIds();
-        }
-        return new TypeRelationships(set);
-    }
-
-    private TypeRelationships filterRelationsTo(TypeIds toTypeIds) {
-        return filterRelationships(classRelation -> toTypeIds.contains(classRelation.to()));
     }
 
     public TypeRelationships filterFrom(TypeId typeId) {
@@ -140,12 +106,6 @@ public record TypeRelationships(Collection<TypeRelationship> typeRelationships) 
         return new TypeRelationships(typeRelationships.stream()
                 .filter(typeRelationshipPredicate)
                 .toList());
-    }
-
-    public TypeIds fromTypeIds() {
-        return typeRelationships.stream()
-                .map(classRelation -> classRelation.from())
-                .collect(TypeIds.collector());
     }
 
     public int size() {

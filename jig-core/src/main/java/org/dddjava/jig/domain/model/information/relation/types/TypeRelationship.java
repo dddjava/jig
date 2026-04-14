@@ -48,7 +48,4 @@ public record TypeRelationship(Edge<TypeId> edge, TypeRelationKind typeRelationK
         return from().fqn() + " -> " + to().fqn();
     }
 
-    public String formatText() {
-        return toString();
-    }
 }

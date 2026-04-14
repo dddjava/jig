@@ -27,21 +27,6 @@ public class PackageId implements Comparable<PackageId> {
         return instance;
     }
 
-    public PackageId applyDepth(PackageDepth packageDepth) {
-        String[] split = value.split("\\.");
-        if (split.length < packageDepth.value()) return this;
-
-        StringJoiner sj = new StringJoiner(".");
-        for (int i = 0; i < packageDepth.value(); i++) {
-            sj.add(split[i]);
-        }
-        return valueOf(sj.toString());
-    }
-
-    public PackageDepth depth() {
-        return new PackageDepth(value.split("\\.").length);
-    }
-
     public static PackageId defaultPackage() {
         return valueOf("(default)");
     }

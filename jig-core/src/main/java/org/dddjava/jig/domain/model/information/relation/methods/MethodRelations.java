@@ -48,16 +48,6 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                 .collect(toSet()));
     }
 
-    public MethodRelations filterFromRecursive(JigMethodId baseMethod) {
-        var processedMethodId = new HashSet<JigMethodId>();
-
-        return filterFromRecursiveInternal(baseMethod, (jigMethodId -> {
-            if (processedMethodId.contains(jigMethodId)) return true;
-            processedMethodId.add(jigMethodId);
-            return false;
-        })).collect(collectingAndThen(toList(), MethodRelations::new));
-    }
-
     public MethodRelations filterFromRecursive(JigMethodId baseMethod, Predicate<JigMethodId> stopper) {
         var processedMethodId = new HashSet<JigMethodId>();
 
@@ -79,17 +69,6 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
                 .flatMap(methodRelation -> Stream.concat(
                         Stream.of(methodRelation),
                         filterFromRecursiveInternal(methodRelation.to(), stopper)));
-    }
-
-    public MethodRelations filterTo(JigMethodId jigMethodId) {
-        return list.stream()
-                .filter(methodRelation -> methodRelation.to().equals(jigMethodId))
-                .collect(collectingAndThen(toList(), MethodRelations::new));
-    }
-
-    public MethodRelations merge(MethodRelations others) {
-        return Stream.concat(list.stream(), others.list.stream())
-                .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
     /**
@@ -134,11 +113,5 @@ public record MethodRelations(List<MethodRelation> list) implements CallerMethod
 
         inlined.addAll(list2);
         return new MethodRelations(inlined);
-    }
-
-    public Stream<JigMethodId> toJigMethodIdStream() {
-        return list.stream()
-                .flatMap(methodRelation -> Stream.of(methodRelation.from(), methodRelation.to()))
-                .distinct();
     }
 }

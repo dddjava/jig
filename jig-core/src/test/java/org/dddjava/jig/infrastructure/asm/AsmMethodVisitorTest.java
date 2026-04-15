@@ -52,7 +52,8 @@ class AsmMethodVisitorTest {
         }
 
         Consumer<?> 戻り値がvoidのlambda() {
-            return arg -> {};
+            return arg -> {
+            };
         }
 
         Consumer<?> 戻り値がvoidのメソッド参照() {
@@ -170,31 +171,41 @@ class AsmMethodVisitorTest {
     void メソッドで使用している型にvoidは含まれない_void呼び出し() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのメソッドを呼び出しているメソッド");
 
-        assertEquals("[Object]", method.usingTypes().asSimpleText(),
-                () -> "using types: " + method.usingTypes());
+        var actual = method.jigMethodDeclaration().associatedTypes();
+        assertEquals(Set.of(TypeId.valueOf("java.lang.Object")), actual,
+                () -> "using types: " + actual);
     }
 
     @Test
     void メソッドで使用している型にvoidは含まれない_戻り値なしのlambda() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのlambda");
 
-        assertEquals("[AsmMethodVisitorTest$MethodVisitorSut, Consumer, Object]", method.usingTypes().asSimpleText(),
-                () -> "using types: " + method.usingTypes());
+        var actual = method.jigMethodDeclaration().associatedTypes();
+        assertEquals(Set.of(
+                        TypeId.valueOf(MethodVisitorSut.class.getName()),
+                        TypeId.valueOf(Consumer.class.getName()),
+                        TypeId.valueOf(Object.class.getName()))
+                , actual,
+                () -> "using types: " + actual);
     }
 
     @Test
     void メソッドで使用している型にvoidは含まれない_戻り値がvoidのメソッド参照() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "戻り値がvoidのメソッド参照");
 
-        assertEquals("[Consumer, Object]", method.usingTypes().asSimpleText(),
-                () -> "using types: " + method.usingTypes());
+        var actual = method.jigMethodDeclaration().associatedTypes();
+        assertEquals(Set.of(
+                        TypeId.valueOf(Consumer.class.getName()),
+                        TypeId.valueOf(Object.class.getName()))
+                , actual,
+                () -> "using types: " + actual);
     }
 
     @Test
     void メソッドで使用している型が取得できる() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用している基本的な型が取得できる");
 
-        Set<String> actual = method.usingTypes().list()
+        Set<String> actual = method.jigMethodDeclaration().associatedTypes()
                 // アサーションのための名前でsetで収集する
                 .stream().map(TypeId::asSimpleName).collect(toSet());
 
@@ -216,7 +227,7 @@ class AsmMethodVisitorTest {
     void メソッドで使用している型が取得できる_フィールド() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているフィールドの型が取得できる");
 
-        Set<String> actual = method.usingTypes().list()
+        Set<String> actual = method.jigMethodDeclaration().associatedTypes()
                 // アサーションのための名前でsetで収集する
                 .stream().map(TypeId::asSimpleName).collect(toSet());
 
@@ -234,7 +245,7 @@ class AsmMethodVisitorTest {
     void メソッドで使用しているジェネリクスが取得できる() {
         JigMethod method = TestSupport.JigMethod準備(MethodVisitorSut.class, "メソッドで使用しているジェネリクスが取得できる");
 
-        var actual = method.usingTypes().list()
+        var actual = method.jigMethodDeclaration().associatedTypes()
                 // アサーションのための名前でsetで収集する
                 .stream().map(TypeId::asSimpleName).collect(toSet());
 

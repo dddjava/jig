@@ -100,7 +100,7 @@ public record TypeId(String value) implements Comparable<TypeId> {
         return value.equals("void");
     }
 
-    public boolean isJavaLanguageType() {
+    public boolean isJavaStandardLanguageType() {
         return isPrimitive() || isVoid() || value.startsWith("java.") || value.startsWith("javax.");
     }
 

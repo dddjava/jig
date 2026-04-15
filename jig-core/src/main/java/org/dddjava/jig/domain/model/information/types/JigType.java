@@ -39,7 +39,7 @@ public record JigType(JigTypeHeader jigTypeHeader, JigTypeMembers jigTypeMembers
                 )
                 .distinct()
                 // java標準型は usingTypes で出てきて嬉しいことはないので取り除く。
-                .filter(typeId -> !typeId.isJavaLanguageType())
+                .filter(typeId -> !typeId.isJavaStandardLanguageType())
                 .collect(toSet());
         return new TypeIds(collect);
     }

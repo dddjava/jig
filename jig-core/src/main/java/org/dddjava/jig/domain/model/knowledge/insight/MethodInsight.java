@@ -21,7 +21,7 @@ public record MethodInsight(JigMethod jigMethod) {
                 // この除外はusingのほうに持って行った方がいい気はする
                 .values()
                 .stream()
-                .filter(not(TypeId::isJavaLanguageType))
+                .filter(not(TypeId::isJavaStandardLanguageType))
                 .count());
     }
 

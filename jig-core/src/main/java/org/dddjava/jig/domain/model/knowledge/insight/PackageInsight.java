@@ -24,7 +24,7 @@ public record PackageInsight(PackageId packageId, Collection<TypeInsight> typeIn
         return Math.toIntExact(typeInsights.stream()
                 .flatMap(typeInsight -> typeInsight.methodInsights().stream())
                 .flatMap(methodInsight -> methodInsight.jigMethod().usingTypes().values().stream())
-                .filter(not(TypeId::isJavaLanguageType))
+                .filter(not(TypeId::isJavaStandardLanguageType))
                 .distinct()
                 .count());
     }

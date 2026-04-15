@@ -48,7 +48,7 @@ public record MethodCall(TypeId methodOwner, String methodName,
     }
 
     public boolean isNotJSL() {
-        return !methodOwner.isJavaLanguageType();
+        return !methodOwner.isJavaStandardLanguageType();
     }
 
     public boolean isConstructor() {

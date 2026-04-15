@@ -28,7 +28,7 @@ public record OtherExternalAccessorRepository(Collection<OtherExternalAccessor> 
                     Set<TypeId> externalFieldTypes = jigType.instanceJigFields().fields().stream()
                             .map(jigField -> jigField.typeId())
                             .filter(typeId -> !jigTypes.contains(typeId))
-                            .filter(typeId -> !typeId.isJavaLanguageType())
+                            .filter(typeId -> !typeId.isJavaStandardLanguageType())
                             .collect(Collectors.toSet());
 
                     // 外部型を持たないものは外部アクセサではない

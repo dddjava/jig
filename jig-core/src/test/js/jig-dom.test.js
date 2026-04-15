@@ -662,6 +662,22 @@ test.describe('jig-dom.js', () => {
         });
     });
 
+    test.describe('parameterElement', () => {
+        test('nameSource が METHOD_PARAMETERS の場合、名前と型を表示', () => {
+            const param = {name: 'orderId', nameSource: 'METHOD_PARAMETERS', typeRef: {fqn: 'com.example.OrderId'}};
+            const el = Jig.dom.type.parameterElement(param);
+            assert.ok(el.textContent.includes('orderId'));
+            assert.ok(el.textContent.includes('OrderId'));
+        });
+
+        test('nameSource が POSITIONAL の場合、型のみ表示（名前は非表示）', () => {
+            const param = {name: 'arg0', nameSource: 'POSITIONAL', typeRef: {fqn: 'com.example.OrderId'}};
+            const el = Jig.dom.type.parameterElement(param);
+            assert.ok(!el.textContent.includes('arg0'));
+            assert.ok(el.textContent.includes('OrderId'));
+        });
+    });
+
     test.describe('initCommonUi - setupHeaderNavigation', () => {
         test('navigationData.links からナビゲーションドロップダウンを生成', () => {
             // require キャッシュをクリア

@@ -289,7 +289,11 @@ globalThis.Jig.dom = (() => {
      */
     function createParameterElement(param, createTypeRefFn) {
         const fn = createTypeRefFn || createElementForTypeRef;
-        return createElement("span", {children: [param.name + ': ', fn(param.typeRef)]});
+        return createElement("span", {
+            children: param.nameSource === 'METHOD_PARAMETERS'
+                ? [param.name + ': ', fn(param.typeRef)]
+                : [fn(param.typeRef)]
+        });
     }
 
     /**
